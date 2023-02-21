@@ -182,8 +182,17 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BigScreenController.cs" />
+    <Compile Include="Controllers\EquipmentMaintainPeriod_ManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
+    <Compile Include="Controllers\MaintainForm_ManagementController.cs" />
+    <Compile Include="Controllers\MaintainItemManagementController.cs" />
+    <Compile Include="Controllers\MaintainRecord_ManagementController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\RepairRecord_ManagementController.cs" />
+    <Compile Include="Controllers\Report_ManagementController.cs" />
+    <Compile Include="Controllers\SamplePath_ManagementController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -252,6 +261,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\BigScreen\" />
+    <Folder Include="Views\EquipmentMaintainPeriod_Management\" />
+    <Folder Include="Views\InspectionPlanManagement\" />
+    <Folder Include="Views\MaintainForm_Management\" />
+    <Folder Include="Views\MaintainItemManagement\" />
+    <Folder Include="Views\MaintainRecord_Management\" />
+    <Folder Include="Views\RepairRecord_Management\" />
+    <Folder Include="Views\Report_Management\" />
+    <Folder Include="Views\SamplePath_Management\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
