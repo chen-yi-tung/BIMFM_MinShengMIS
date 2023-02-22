@@ -258,6 +258,13 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\MaintainItemManagement\MaintainItem_Management.cshtml" />
+    <Content Include="Views\Report_Management\Report_Management.cshtml" />
+    <Content Include="Views\Report_Management\Report_Read.cshtml" />
+    <Content Include="Views\MaintainItemManagement\MaintainItem_Create.cshtml" />
+    <Content Include="Views\MaintainItemManagement\MaintainItem_Read.cshtml" />
+    <Content Include="Views\MaintainItemManagement\MaintainItem_Edit.cshtml" />
+    <Content Include="Views\MaintainItemManagement\MaintainItem_Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -265,10 +272,8 @@
     <Folder Include="Views\EquipmentMaintainPeriod_Management\" />
     <Folder Include="Views\InspectionPlanManagement\" />
     <Folder Include="Views\MaintainForm_Management\" />
-    <Folder Include="Views\MaintainItemManagement\" />
     <Folder Include="Views\MaintainRecord_Management\" />
     <Folder Include="Views\RepairRecord_Management\" />
-    <Folder Include="Views\Report_Management\" />
     <Folder Include="Views\SamplePath_Management\" />
   </ItemGroup>
   <ItemGroup>
