@@ -187,7 +187,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
     <Compile Include="Controllers\MaintainForm_ManagementController.cs" />
-    <Compile Include="Controllers\MaintainItemManagementController.cs" />
+    <Compile Include="Controllers\MaintainItem_ManagementController.cs" />
     <Compile Include="Controllers\MaintainRecord_ManagementController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RepairRecord_ManagementController.cs" />
@@ -260,11 +260,11 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Report_Management\Management.cshtml" />
     <Content Include="Views\Report_Management\Read.cshtml" />
-    <Content Include="Views\MaintainItemManagement\Management.cshtml" />
-    <Content Include="Views\MaintainItemManagement\Create.cshtml" />
-    <Content Include="Views\MaintainItemManagement\Read.cshtml" />
-    <Content Include="Views\MaintainItemManagement\Edit.cshtml" />
-    <Content Include="Views\MaintainItemManagement\Delete.cshtml" />
+    <Content Include="Views\MaintainItem_Management\Create.cshtml" />
+    <Content Include="Views\MaintainItem_Management\Delete.cshtml" />
+    <Content Include="Views\MaintainItem_Management\Edit.cshtml" />
+    <Content Include="Views\MaintainItem_Management\Management.cshtml" />
+    <Content Include="Views\MaintainItem_Management\Read.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
