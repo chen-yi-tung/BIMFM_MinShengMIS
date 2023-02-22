@@ -1,7 +1,187 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "報修管理";
 }
 
-<h2>報修管理</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
 
+<h2>@ViewBag.Title</h2>
+
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="Area">棟別</label>
+            <select class="form-select" name="Area" id="Area">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Floor">樓層</label>
+            <select class="form-select" name="Floor" id="Floor">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        @* <div class="form-group">
+            <label for="IPSN">巡檢計畫編號</label>
+            <select class="form-select" name="IPSN" id="IPSN">
+                <option value="">請選擇</option>
+            </select>
+        </div> *@
+
+        @* <div class="form-group">
+            <label for="IPName">巡檢計畫名稱</label>
+            <select class="form-select" name="IPName" id="IPName">
+                <option value="">請選擇</option>
+            </select>
+        </div> *@
+
+        <div class="form-group">
+            <label for="ReportState">報修單狀態</label>
+            <input class="form-control" id="ReportState" name="ReportState" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Level">報修等級</label>
+            <input class="form-control" id="Level" name="Level" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="RSN">報修單號</label>
+            <input class="form-control" id="RSN" name="RSN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <select class="form-select" name="EName" id="EName">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="PropertyCode">國有財產編碼</label>
+            <select class="form-select" name="PropertyCode" id="PropertyCode">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ReportContent">報修說明</label>
+            <input class="form-control" id="ReportContent" name="ReportContent" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="InformantUserID">報修人員</label>
+            <input class="form-control" id="InformantUserID" name="InformantUserID" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateFrom">日期(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateTo">日期(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="text" />
+        </div>
+
+    </form>
+</div>
+
+<div style="align-content:center">
+    <table id="DataGrid"></table>
+</div>
+
+<script>
+
+    const fakeData = [
+        {
+            State: "已派工",
+            Level: "最速件",
+            Area: "A棟",
+            Floor: "1F",
+            ReportSource: "APP",
+            RSN: "R23010601",
+            Date: "2023/1/6 15:00:02",
+            PropertyCode: "無",
+            ESN: "E00001",
+            EName: "日光燈",
+            Memo: "故障",
+            MyName: "王大明",
+        }
+    ]
+
+    $(function () {
+        var getGridJSON = '';
+        Initialize_DataGrid(getGridJSON);
+    });
+    function Initialize_DataGrid(getGridJSON) {
+
+        $('#DataGrid').datagrid({
+
+            // url: getGridJSON,
+            // method: 'POST',
+            data: fakeData,
+            queryParams: {
+                Query: ''
+            },
+            rownumbers: true,
+            idField: 'RSN',
+            sortName: 'RSN',
+            remoteSort: false,
+            //sortOrder: 'desc',
+            fit: true,
+            frozenColumns: [[
+                { field: '_detail', title: '', align: 'center', formatter: format },
+                { field: '_dispatch', title: '', align: 'center', formatter: format },
+                { field: '_locate', title: '', align: 'center', formatter: format },
+                { field: '_cancel', title: '', align: 'center', formatter: format },
+            ]],
+            columns: [[
+                { field: 'State', title: '報修單狀態', align: 'center', width: 100, sortable: true },
+                { field: 'Level', title: '報修等級', align: 'center', width: 100, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 100, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 100, sortable: true },
+                { field: 'ReportSource', title: '報修來源', align: 'center', width: 100, sortable: true },
+                { field: 'RSN', title: '報修單號', align: 'center', width: 100, sortable: true },
+                { field: 'Date', title: '報修時間', align: 'center', width: 100, sortable: true },
+                { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 100, sortable: true },
+                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 100, sortable: true },
+                { field: 'Memo', title: '報修內容', align: 'center', width: 100, sortable: true },
+                { field: 'MyName', title: '報修人員', align: 'center', width: 100, sortable: true },
+            ]],
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+
+            pagination: true,
+            pagePosition: 'bottom',
+            pageSize: 10
+        });
+        //------------Pager --------------------------------------------------
+        var pager = $('#DataGrid').datagrid('getPager');
+        $(pager).pagination({
+            pageSize: 10,
+            showPageList: true,
+            pageList: [10, 20, 50],
+            beforePageText: '第',
+            afterPageText: '頁，共 {pages} 頁',
+            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+
+        });
+
+        function format(val, row, index) {
+            return '<button class="btn-datagrid" onclick="">button</button>';
+        }
+    }
+</script>

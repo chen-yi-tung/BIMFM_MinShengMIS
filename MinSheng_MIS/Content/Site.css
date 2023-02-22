@@ -21,3 +21,52 @@ h2 {
     font-weight: bold;
     font-size: 46px;
 }
+
+@media (min-width: 576px) {
+
+    .container.render-body {
+        max-width: 540px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .container.render-body {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) {
+
+    .container.render-body {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    .container.render-body {
+        max-width: 1140px;
+    }
+}
+
+@media (min-width: 1400px) {
+
+    .container.render-body {
+        max-width: 1320px;
+    }
+}
+
+@media (min-width: 1600px) {
+
+    .container.render-body {
+        max-width: 1540px;
+    }
+}
+
+@media (min-width: 1800px) {
+
+    .container.render-body {
+        max-width: 1764px;
+    }
+}

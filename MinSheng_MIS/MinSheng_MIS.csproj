@@ -1402,6 +1402,8 @@
     <Content Include="Content\easyui\themes\material-teal\images\Thumbs.db" />
     <Content Include="Content\easyui\themes\material\images\Thumbs.db" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\datagrid-export.js" />
+    <Content Include="Scripts\easyui-datagrid-client-paging.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
