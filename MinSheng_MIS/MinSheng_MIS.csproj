@@ -260,11 +260,11 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Report_Management\Management.cshtml" />
     <Content Include="Views\Report_Management\Read.cshtml" />
-    <Content Include="Views\MaintainItem_Management\Create.cshtml" />
-    <Content Include="Views\MaintainItem_Management\Delete.cshtml" />
-    <Content Include="Views\MaintainItem_Management\Edit.cshtml" />
     <Content Include="Views\MaintainItem_Management\Management.cshtml" />
+    <Content Include="Views\MaintainItem_Management\Create.cshtml" />
     <Content Include="Views\MaintainItem_Management\Read.cshtml" />
+    <Content Include="Views\MaintainItem_Management\Edit.cshtml" />
+    <Content Include="Views\MaintainItem_Management\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
