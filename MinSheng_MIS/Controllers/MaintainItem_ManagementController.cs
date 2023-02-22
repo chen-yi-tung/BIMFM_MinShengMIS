@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
 {
-    public class MaintainItemManagementController : Controller
+    public class MaintainItem_ManagementController : Controller
     {
         // GET: MaintainItemManagement
         public ActionResult Index()
@@ -14,34 +14,39 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
 
-        //保養項目管理
+        #region 保養項目管理
         public ActionResult Management()
         {
             return View();
         }
+        #endregion
 
-        //新增保養項目
+        #region 新增保養項目
         public ActionResult Create()
         {
             return View();
         }
+        #endregion
 
-        //查詢保養項目 (詳情)
+        #region 查詢保養項目 (詳情)
         public ActionResult Read()
         {
             return View();
         }
+        #endregion
 
-        //編輯保養項目
+        #region 編輯保養項目
         public ActionResult Edit()
         {
             return View();
         }
+        #endregion
 
-        //刪除保養項目
+        #region 刪除保養項目
         public ActionResult Delete()
         {
             return View();
         }
+        #endregion
     }
 }

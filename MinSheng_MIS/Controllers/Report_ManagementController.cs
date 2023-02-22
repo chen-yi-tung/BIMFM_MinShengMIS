@@ -14,16 +14,18 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
 
-        //報修管理
+        #region 報修管理
         public ActionResult Management()
         {
             return View();
         }
+        #endregion
 
-        //報修管理詳情
+        #region 報修管理詳情
         public ActionResult Read()
         {
             return View();
         }
+        #endregion
     }
 }
