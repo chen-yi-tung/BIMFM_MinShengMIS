@@ -1,44 +1,67 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>@ViewBag.Title - 我的 ASP.NET 應用程式</title>
-	@Styles.Render("~/Content/css")
-	@Scripts.Render("~/bundles/modernizr")
-	@Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 我的 ASP.NET 應用程式</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
 </head>
+
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" title="其他選項">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("應用程式名稱", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+    <nav class="navbar navbar-light navbar-expand-xl fixed-top">
+        <div class="container-fluid d-flex">
+            <a class="navbar-brand" href="/">
+                <img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
+                <span class="navbar-brand-title">BIM智慧管理系統</span>
+            </a>
+
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <a class="navbar-brand" href="/">
+                        <img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
+                    </a>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <span class="navbar-brand-title d-xl-none">BIM智慧管理系統</span>
+                    <div class="navbar-end order-xl-last mt-3 mt-xl-0">
+                        <span class="navbar-user">您好 <span>Admin</span> ！</span>
+                        <a class="navbar-logout" href="/">登出</a>
+                    </div>
+                    <ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
+                        <li class="nav-item"><a class="nav-link" href="#">ArcGIS</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">BIM</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">巡檢管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">定期保養管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">報修管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">設備管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">庫存管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">實驗室管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">文件管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">系統管理</a></li>
+                    </ul>
+                    
+                </div>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("首頁", "Index", "Home")</li>
-                    <li>@Html.ActionLink("關於", "About", "Home")</li>
-                    <li>@Html.ActionLink("連絡人", "Contact", "Home")</li>
-                </ul>
-                @Html.Partial("_LoginPartial")
-            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
-    </div>
-    <div class="container body-content">
+    </nav>
+
+    <div class="container render-body">
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - 我的 ASP.NET 應用程式</p>
-        </footer>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
     @RenderSection("scripts", required: false)
 </body>
+
 </html>
