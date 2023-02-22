@@ -1,16 +1,23 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
 
-:root{
-    --navbar-height:50px;
+:root {
+    --navbar-height: 50px;
 }
 
-body{
+body {
     font-family: 'Noto Sans TC', sans-serif;
     background: url("/Content/img/bg.png");
 }
 
-.render-body{
-    margin-top: var(--navbar-height) ;
+.render-body {
+    margin-top: var(--navbar-height);
     padding-top: 30px;
     padding-bottom: 20px;
+}
+
+h2 {
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-size: 46px;
 }
