@@ -13,5 +13,20 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
+
+        #region 設備保養週期管理
+        public ActionResult Management()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 設備保養週期管理編輯
+        public ActionResult Edit()
+        {
+            return View();
+        }
+        #endregion
+
     }
 }
