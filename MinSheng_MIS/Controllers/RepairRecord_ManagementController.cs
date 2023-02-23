@@ -15,7 +15,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 巡檢維修紀錄詳情
+        #region 查詢巡檢維修紀錄 (詳情)
         public ActionResult Read()
         {
             return View();
@@ -30,7 +30,7 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 巡檢維修紀錄補件
-        public ActionResult supplement()
+        public ActionResult Supplement()
         {
             return View();
         }

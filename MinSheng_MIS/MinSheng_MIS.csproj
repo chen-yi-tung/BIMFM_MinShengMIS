@@ -1468,11 +1468,11 @@
     <Content Include="Views\MaintainRecord_Management\Management.cshtml" />
     <Content Include="Views\MaintainRecord_Management\Read.cshtml" />
     <Content Include="Views\MaintainRecord_Management\Audit.cshtml" />
-    <Content Include="Views\MaintainRecord_Management\supplement.cshtml" />
+    <Content Include="Views\MaintainRecord_Management\Supplement.cshtml" />
     <Content Include="Views\RepairRecord_Management\Management.cshtml" />
     <Content Include="Views\RepairRecord_Management\Read.cshtml" />
     <Content Include="Views\RepairRecord_Management\Audit.cshtml" />
-    <Content Include="Views\RepairRecord_Management\supplement.cshtml" />
+    <Content Include="Views\RepairRecord_Management\Supplement.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Management.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Create.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Read.cshtml" />
