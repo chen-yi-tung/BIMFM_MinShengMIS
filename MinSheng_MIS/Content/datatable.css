@@ -14,6 +14,12 @@
 .datatable-secondary>.datatable-header {
     background: #3385A9;
 }
+.datatable-secondary>.datatable-body>.accordion>.accordion-item>.accordion-header>.accordion-button {
+    background: #a4e2ff;
+}
+.datatable-secondary>.datatable-body>.accordion>.accordion-item>.accordion-header>.accordion-button:not(.collapsed) {
+    background: #BFECFF;
+}
 
 .datatable-body {
     background: #E7F6FF;
@@ -65,9 +71,15 @@
 .datatable-accordion .accordion-button:not(.collapsed) {
     border-bottom: 1px solid #8A9BA5;
 }
-.datatable-accordion+.datatable-accordion .accordion-header{
+
+.datatable-accordion .accordion-item {
+    border-bottom: 1px solid #8A9BA5;
+}
+
+.datatable-accordion+.datatable-accordion .accordion-header {
     border-top: 1px solid #8A9BA5;
 }
+
 .datatable-accordion .accordion-header .accordion-button {
     padding: 8px 12px;
     color: #3D3D3D;

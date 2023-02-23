@@ -11,9 +11,9 @@
     </div>
 </div>
 
-<div class="datatable datatable-secondary mt-5">
+<div class="datatable datatable-secondary mt-5 d-none" id="InspectionPlan_List">
     <div class="datatable-header">本報修單相關維修紀錄</div>
-    <div class="datatable-body" id="InspectionPlan_List">
+    <div class="datatable-body">
         <div class="accordion accordion-flush datatable-accordion" id="accordion-InspectionPlan">
             @* <div class="accordion-item" id="InspectionPlan-1">
             <h2 class="accordion-header" id="header-InspectionPlan-1">
@@ -292,12 +292,14 @@
     window.onload = function () {
         $("#ReportDetail").append(createTableInner(fakeData, SerializedName));
         if (fakeData.InspectionPlan) {
-            let accordion = $("#InspectionPlan_List").children(".accordion");
+            let accordion = $("#accordion-InspectionPlan");
             fakeData.InspectionPlan.forEach((d, i) => {
                 accordion.append(putData_InspectionPlan(d, null, i));
             })
+            $("#InspectionPlan_List").removeClass("d-none");
         }
 
         ImageDisplay(".datatable-img-item>img");
     }
+    
 </script>
