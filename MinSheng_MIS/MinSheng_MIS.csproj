@@ -1462,12 +1462,13 @@
     <Content Include="Views\SamplePath_Management\Read.cshtml" />
     <Content Include="Views\SamplePath_Management\Update.cshtml" />
     <Content Include="Views\SamplePath_Management\Delete.cshtml" />
+    <Content Include="Views\MaintainForm_Management\Management.cshtml" />
+    <Content Include="Views\MaintainForm_Management\Read.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\BigScreen\" />
     <Folder Include="Views\InspectionPlanManagement\" />
-    <Folder Include="Views\MaintainForm_Management\" />
     <Folder Include="Views\MaintainRecord_Management\" />
     <Folder Include="Views\RepairRecord_Management\" />
   </ItemGroup>

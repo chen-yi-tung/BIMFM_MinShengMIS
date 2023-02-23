@@ -13,5 +13,19 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
+
+        #region 定期保養管理
+        public ActionResult Management()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 定期保養詳情
+        public ActionResult Read()
+        {
+            return View();
+        }
+        #endregion
     }
 }
