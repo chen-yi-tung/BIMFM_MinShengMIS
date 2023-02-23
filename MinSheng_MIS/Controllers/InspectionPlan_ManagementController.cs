@@ -8,10 +8,55 @@ namespace MinSheng_MIS.Controllers
 {
     public class InspectionPlan_ManagementController : Controller
     {
-        // GET: InspectionPlanManagement
-        public ActionResult Index()
+        #region 巡檢計畫管理
+        public ActionResult Management()
         {
             return View();
         }
+        #endregion
+
+        #region 新增巡檢計畫
+        public ActionResult Create()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 巡檢計畫詳情
+        public ActionResult Read()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 編輯巡檢計畫
+        public ActionResult Edit()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 刪除巡檢計畫
+        public ActionResult Delete()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 巡檢紀錄
+        public ActionResult Record()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 巡檢軌跡紀錄
+        public ActionResult TrackRecord()
+        {
+            return View();
+        }
+        #endregion
+
+
     }
 }
