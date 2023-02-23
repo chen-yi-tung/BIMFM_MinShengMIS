@@ -27,17 +27,17 @@
         </div>
 
         @* <div class="form-group">
-            <label for="IPSN">巡檢計畫編號</label>
-            <select class="form-select" name="IPSN" id="IPSN">
-                <option value="">請選擇</option>
-            </select>
+        <label for="IPSN">巡檢計畫編號</label>
+        <select class="form-select" name="IPSN" id="IPSN">
+        <option value="">請選擇</option>
+        </select>
         </div> *@
 
         @* <div class="form-group">
-            <label for="IPName">巡檢計畫名稱</label>
-            <select class="form-select" name="IPName" id="IPName">
-                <option value="">請選擇</option>
-            </select>
+        <label for="IPName">巡檢計畫名稱</label>
+        <select class="form-select" name="IPName" id="IPName">
+        <option value="">請選擇</option>
+        </select>
         </div> *@
 
         <div class="form-group">
@@ -94,10 +94,16 @@
             <input class="form-control" id="DateTo" name="DateTo" type="text" />
         </div>
 
+        <div class="button-group">
+            <button class="btn btn-search">查詢</button>
+            <button class="btn btn-clear">清除</button>
+            <button class="btn btn-export">匯出</button>
+        </div>
+
     </form>
 </div>
 
-<div style="align-content:center">
+<div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
 
@@ -141,24 +147,44 @@
             //sortOrder: 'desc',
             fit: true,
             frozenColumns: [[
-                { field: '_detail', title: '', align: 'center', formatter: format },
-                { field: '_dispatch', title: '', align: 'center', formatter: format },
-                { field: '_locate', title: '', align: 'center', formatter: format },
-                { field: '_cancel', title: '', align: 'center', formatter: format },
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return '<button class="btn btn-datagrid" onclick="">詳情</button>';
+                    }
+                },
+                {
+                    field: '_dispatch', align: 'center',
+                    formatter: (val, row, index) => {
+                        return '<button class="btn btn-datagrid" onclick="">派工</button>';
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return '<button class="btn btn-datagrid" onclick="">定位</button>';
+                    }
+                },
+                {
+                    field: '_cancel', align: 'center',
+                    formatter: (val, row, index) => {
+                        return '<button class="btn btn-datagrid btn-datagrid-secondary" onclick="">取消保留</button>';
+                    }
+                },
             ]],
             columns: [[
-                { field: 'State', title: '報修單狀態', align: 'center', width: 100, sortable: true },
-                { field: 'Level', title: '報修等級', align: 'center', width: 100, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 100, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 100, sortable: true },
-                { field: 'ReportSource', title: '報修來源', align: 'center', width: 100, sortable: true },
-                { field: 'RSN', title: '報修單號', align: 'center', width: 100, sortable: true },
-                { field: 'Date', title: '報修時間', align: 'center', width: 100, sortable: true },
-                { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 100, sortable: true },
-                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 100, sortable: true },
-                { field: 'Memo', title: '報修內容', align: 'center', width: 100, sortable: true },
-                { field: 'MyName', title: '報修人員', align: 'center', width: 100, sortable: true },
+                { field: 'State', title: '報修單狀態', align: 'center',width: 126, sortable: true },
+                { field: 'Level', title: '報修等級', align: 'center',width: 106, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center',width: 66, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center',width: 66, sortable: true },
+                { field: 'ReportSource', title: '報修來源', align: 'center', width: 110, sortable: true },
+                { field: 'RSN', title: '報修單號', align: 'center', width: 120, sortable: true },
+                { field: 'Date', title: '報修時間', align: 'center', width: 180, sortable: true },
+                { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
+                { field: 'ESN', title: '設備編號', align: 'center', width: 110, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 110, sortable: true },
+                { field: 'Memo', title: '報修內容', align: 'center', width: 110, sortable: true },
+                { field: 'MyName', title: '報修人員', align: 'center', width: 110, sortable: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,
@@ -177,11 +203,6 @@
             beforePageText: '第',
             afterPageText: '頁，共 {pages} 頁',
             displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-
         });
-
-        function format(val, row, index) {
-            return '<button class="btn-datagrid" onclick="">button</button>';
-        }
     }
 </script>
