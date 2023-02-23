@@ -1,2 +1,133 @@
-﻿body {
+﻿.datagrid-area {
+    margin-top: 28px;
+}
+
+/* easyui */
+.datagrid {
+    --theme-datagrid-thead-bg: #357BAD;
+    --theme-datagrid-thead-hover-bg: #306f9c;
+    --theme-datagrid-thead-color: white;
+    --theme-datagrid-tbody-bg: white;
+    --theme-datagrid-color: #494949;
+    /* border */
+    --theme-datagrid-thead-border: transparent;
+    --theme-datagrid-tbody-border: transparent;
+    --theme-datagrid-pagination-separator: transparent;
+    /* btn */
+    --theme-datagrid-btn-bg: #6487B0;
+    --theme-datagrid-btn-hover-bg: #6487B0;
+    --theme-datagrid-btn-color: white;
+}
+
+.datagrid-wrap {
+    height: 440px !important;
+}
+
+.datagrid-view {
+    background: var(--theme-datagrid-tbody-bg);
+}
+
+.datagrid-body .datagrid-cell {
+    color: var(--theme-datagrid-color);
+}
+
+.datagrid-sort-icon {
+    opacity: 0.5;
+}
+
+.datagrid-sort-asc .datagrid-sort-icon,
+.datagrid-sort-desc .datagrid-sort-icon{
+    opacity: 1;
+    filter: grayscale(100%) brightness(150%);
+}
+
+.datagrid-header-inner {
+    background: var(--theme-datagrid-thead-bg);
+}
+
+.datagrid-header td {
+    border-color: var(--theme-datagrid-thead-border) !important;
+}
+
+.datagrid-header td:hover {
+    background-color: var(--theme-datagrid-thead-hover-bg) !important;
+}
+
+.datagrid-body td {
+    border-color: var(--theme-datagrid-tbody-border) !important;
+}
+
+.datagrid-cell {
+    font-size: 20px !important;
+    padding: 12px 6px !important;
+}
+
+.datagrid-header .datagrid-cell span {
+    font-size: 20px !important;
+    color: var(--theme-datagrid-thead-color) !important;
+}
+
+.datagrid-td-rownumber {
+    background: transparent !important;
+}
+
+.datagrid-td-rownumber .datagrid-cell-rownumber {
+    font-size: 20px !important;
+    color: var(--theme-datagrid-tbody-color) !important;
+}
+
+/* form footer info*/
+.datagrid .datagrid-pager {
+    background: var(--theme-datagrid-thead-bg);
+}
+
+.pagination-info {
+    float: right !important;
+    margin: 0.3em 1em !important;
+    padding: 0 !important;
+}
+
+.pagination table {
+    float: left !important;
+    height: 40px !important;
+    margin: 0em 0.6em !important;
+}
+
+.pagination-info,
+.pagination span {
+    font-size: 16px !important;
+    color: var(--theme-datagrid-thead-color) !important;
+}
+
+.pagination-btn-separator {
+    float: left !important;
+    height: 30px !important;
+    border-left: 1px solid var(--theme-datagrid-pagination-separator) !important;
+    border-right: none !important;
+    margin: 0px 0em !important;
+}
+
+/* footer btn style */
+.l-btn {
+    border: none !important;
+    margin: 2px !important;
+    padding: 0 !important;
+}
+
+.l-btn:hover {
+    background-color: hsla(0, 0%, 100%, 0.2) !important;
+    border: none !important;
+    outline: none !important;
+    padding: 0 !important;
+}
+
+.l-btn-icon {
+    filter: brightness(200%);
+}
+
+.l-btn-disabled:hover {
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
+    padding: 0 !important;
 }

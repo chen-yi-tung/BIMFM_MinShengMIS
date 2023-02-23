@@ -2,15 +2,18 @@
     background: rgba(35, 106, 146, 0.43);
     box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.4);
     padding: 20px 36px;
+    font-size: 18px;
 }
 
 .search-area .form {
     display: flex;
     flex-wrap: wrap;
     gap: 24px 0px;
+    align-items: flex-end;
 }
 .search-area .form-group{
     padding: 0 16px;
+    flex: 0 0 auto;
 }
 .search-area .form-group label {
     color: white;
@@ -20,6 +23,14 @@
 .search-area .form-control,
 .search-area .form-select {
     border-radius: 0;
+}
+
+.search-area .button-group{
+    display: flex;
+    gap: 18px;
+    padding: 0 16px;
+    flex: 1 0 0%;
+    justify-content: center;
 }
 
 @media (max-width: 768px) {

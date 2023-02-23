@@ -23,6 +23,7 @@ namespace MinSheng_MIS
 				"~/Content/bootstrap-5.2.3-dist/css/bootstrap.min.css",
 				"~/Content/Site.css",
 				"~/Content/navbar.css",
+				"~/Content/button.css",
 				"~/Content/form.css",
 				"~/Content/datagrid.css"
 			));

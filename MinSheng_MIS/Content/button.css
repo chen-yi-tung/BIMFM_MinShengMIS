@@ -1,0 +1,42 @@
+﻿.btn{
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.btn-search{
+    --bs-btn-bg: #44BCC2;
+    --bs-btn-color: white;
+    --bs-btn-hover-bg: #3daaaf;
+    --bs-btn-hover-color: white;
+}
+
+.btn-clear{
+    --bs-btn-bg: #A1B3AE;
+    --bs-btn-color: white;
+    --bs-btn-hover-bg: #91a19d;
+    --bs-btn-hover-color: white;
+}
+
+.btn-export{
+    --bs-btn-bg: #0457D1;
+    --bs-btn-color: white;
+    --bs-btn-hover-bg: #044ebd;
+    --bs-btn-hover-color: white;
+    --bs-btn-border-width: 1.5px;
+    --bs-btn-border-color: #5C97ED;
+    --bs-btn-hover-border-color: #5C97ED;
+}
+
+.btn-datagrid{
+    --bs-btn-bg: #6487B0;
+    --bs-btn-color: white;
+    --bs-btn-hover-bg: #5a7a9f;
+    --bs-btn-hover-color: white;
+    --bs-btn-padding-x: 10px;
+    --bs-btn-padding-y: 3px;
+}
+
+.btn-datagrid-secondary{
+    --bs-btn-bg: #708298;
+    --bs-btn-hover-bg: #657589;
+}
