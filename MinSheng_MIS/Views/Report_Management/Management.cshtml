@@ -42,12 +42,16 @@
 
         <div class="form-group">
             <label for="ReportState">報修單狀態</label>
-            <input class="form-control" id="ReportState" name="ReportState" type="text" />
+            <select class="form-select" name="ReportState" id="ReportState">
+                <option value="">請選擇</option>
+            </select>
         </div>
 
         <div class="form-group">
             <label for="Level">報修等級</label>
-            <input class="form-control" id="Level" name="Level" type="text" />
+            <select class="form-select" name="Level" id="Level">
+                <option value="">請選擇</option>
+            </select>
         </div>
 
         <div class="form-group">
@@ -57,7 +61,9 @@
 
         <div class="form-group">
             <label for="ESN">設備編號</label>
-            <input class="form-control" id="ESN" name="ESN" type="text" />
+            <select class="form-select" name="ESN" id="ESN">
+                <option value="">請選擇</option>
+            </select>
         </div>
 
         <div class="form-group">
@@ -69,9 +75,7 @@
 
         <div class="form-group">
             <label for="PropertyCode">國有財產編碼</label>
-            <select class="form-select" name="PropertyCode" id="PropertyCode">
-                <option value="">請選擇</option>
-            </select>
+            <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" />
         </div>
 
         <div class="form-group">
@@ -81,7 +85,9 @@
 
         <div class="form-group">
             <label for="InformantUserID">報修人員</label>
-            <input class="form-control" id="InformantUserID" name="InformantUserID" type="text" />
+            <select class="form-select" name="InformantUserID" id="InformantUserID">
+                <option value="">請選擇</option>
+            </select>
         </div>
 
         <div class="form-group">
@@ -173,10 +179,10 @@
                 },
             ]],
             columns: [[
-                { field: 'State', title: '報修單狀態', align: 'center',width: 126, sortable: true },
-                { field: 'Level', title: '報修等級', align: 'center',width: 106, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center',width: 66, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center',width: 66, sortable: true },
+                { field: 'State', title: '報修單狀態', align: 'center', width: 126, sortable: true },
+                { field: 'Level', title: '報修等級', align: 'center', width: 106, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
                 { field: 'ReportSource', title: '報修來源', align: 'center', width: 110, sortable: true },
                 { field: 'RSN', title: '報修單號', align: 'center', width: 120, sortable: true },
                 { field: 'Date', title: '報修時間', align: 'center', width: 180, sortable: true },
