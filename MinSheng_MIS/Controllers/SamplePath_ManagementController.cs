@@ -8,12 +8,6 @@ namespace MinSheng_MIS.Controllers
 {
     public class SamplePath_ManagementController : Controller
     {
-        // GET: SamplePath_Management
-        public ActionResult Index()
-        {
-            return View();
-        }
-
         #region 巡檢路線模板管理
         public ActionResult Management()
         {

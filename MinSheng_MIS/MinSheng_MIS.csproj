@@ -1464,13 +1464,19 @@
     <Content Include="Views\SamplePath_Management\Delete.cshtml" />
     <Content Include="Views\MaintainForm_Management\Management.cshtml" />
     <Content Include="Views\MaintainForm_Management\Read.cshtml" />
+    <Content Include="Views\MaintainRecord_Management\Management.cshtml" />
+    <Content Include="Views\MaintainRecord_Management\Read.cshtml" />
+    <Content Include="Views\MaintainRecord_Management\Audit.cshtml" />
+    <Content Include="Views\MaintainRecord_Management\supplement.cshtml" />
+    <Content Include="Views\RepairRecord_Management\Management.cshtml" />
+    <Content Include="Views\RepairRecord_Management\Read.cshtml" />
+    <Content Include="Views\RepairRecord_Management\Audit.cshtml" />
+    <Content Include="Views\RepairRecord_Management\supplement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\BigScreen\" />
     <Folder Include="Views\InspectionPlanManagement\" />
-    <Folder Include="Views\MaintainRecord_Management\" />
-    <Folder Include="Views\RepairRecord_Management\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
