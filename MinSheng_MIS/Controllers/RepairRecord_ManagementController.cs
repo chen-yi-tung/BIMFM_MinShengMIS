@@ -8,10 +8,33 @@ namespace MinSheng_MIS.Controllers
 {
     public class RepairRecord_ManagementController : Controller
     {
-        // GET: RepairRecord_Management
-        public ActionResult Index()
+        #region 巡檢維修紀錄管理
+        public ActionResult Management()
         {
             return View();
         }
+        #endregion
+
+        #region 巡檢維修紀錄詳情
+        public ActionResult Read()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 巡檢維修紀錄審核
+        public ActionResult Audit()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 巡檢維修紀錄補件
+        public ActionResult supplement()
+        {
+            return View();
+        }
+        #endregion
+
     }
 }

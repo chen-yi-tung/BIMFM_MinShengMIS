@@ -8,12 +8,6 @@ namespace MinSheng_MIS.Controllers
 {
     public class MaintainItem_ManagementController : Controller
     {
-        // GET: MaintainItemManagement
-        public ActionResult Index()
-        {
-            return View();
-        }
-
         #region 保養項目管理
         public ActionResult Management()
         {

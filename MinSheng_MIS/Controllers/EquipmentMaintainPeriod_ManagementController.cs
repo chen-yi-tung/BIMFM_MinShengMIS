@@ -8,10 +8,19 @@ namespace MinSheng_MIS.Controllers
 {
     public class EquipmentMaintainPeriod_ManagementController : Controller
     {
-        // GET: EquipmentMaintainPeriod_Management
-        public ActionResult Index()
+        #region 設備保養週期管理
+        public ActionResult Management()
         {
             return View();
         }
+        #endregion
+
+        #region 設備保養週期管理編輯
+        public ActionResult Edit()
+        {
+            return View();
+        }
+        #endregion
+
     }
 }

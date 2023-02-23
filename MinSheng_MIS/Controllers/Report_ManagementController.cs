@@ -8,12 +8,6 @@ namespace MinSheng_MIS.Controllers
 {
     public class Report_ManagementController : Controller
     {
-        // GET: Report_Management
-        public ActionResult Index()
-        {
-            return View();
-        }
-
         #region 報修管理
         public ActionResult Management()
         {
