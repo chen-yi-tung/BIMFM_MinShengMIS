@@ -36,5 +36,19 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 定期保養單詳情
+        public ActionResult ReadMaintainForm()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 設備報修單詳情
+        public ActionResult ReadReportForm()
+        {
+            return View();
+        }
+        #endregion
+
     }
 }
