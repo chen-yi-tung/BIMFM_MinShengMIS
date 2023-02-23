@@ -1429,8 +1429,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
@@ -1471,11 +1469,11 @@
     <Content Include="Views\MaintainRecord_Management\Management.cshtml" />
     <Content Include="Views\MaintainRecord_Management\Read.cshtml" />
     <Content Include="Views\MaintainRecord_Management\Audit.cshtml" />
-    <Content Include="Views\MaintainRecord_Management\supplement.cshtml" />
+    <Content Include="Views\MaintainRecord_Management\Supplement.cshtml" />
     <Content Include="Views\RepairRecord_Management\Management.cshtml" />
     <Content Include="Views\RepairRecord_Management\Read.cshtml" />
     <Content Include="Views\RepairRecord_Management\Audit.cshtml" />
-    <Content Include="Views\RepairRecord_Management\supplement.cshtml" />
+    <Content Include="Views\RepairRecord_Management\Supplement.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Management.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Create.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Read.cshtml" />
@@ -1483,6 +1481,9 @@
     <Content Include="Views\InspectionPlan_Management\Delete.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Record.cshtml" />
     <Content Include="Views\InspectionPlan_Management\TrackRecord.cshtml" />
+    <Content Include="Views\RepairRecord_Management\ReadMaintainForm.cshtml" />
+    <Content Include="Views\RepairRecord_Management\ReadReportForm.cshtml" />
+    <Content Include="Views\Home\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
