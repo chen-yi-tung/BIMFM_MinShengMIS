@@ -1,0 +1,98 @@
+﻿.datatable {
+    margin: auto;
+    border: 1px solid #8A9BA5;
+    width: 100%;
+}
+
+.datatable-header {
+    background: #357BAD;
+    color: white;
+    text-align: center;
+    padding: 6px;
+}
+
+.datatable-secondary>.datatable-header {
+    background: #3385A9;
+}
+
+.datatable-body {
+    background: #E7F6FF;
+}
+
+.datatable-table {
+    color: #3D3D3D;
+    text-align: center;
+    width: 100%;
+}
+
+.datatable-table tr+tr td {
+    border-top: 1px solid #8A9BA5;
+}
+
+.datatable-table td {
+    padding: 6px;
+}
+
+.datatable-table-th {
+    border-right: 1px solid #8A9BA5;
+    width: 30%;
+}
+
+.datatable-img-area {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 7px 12px;
+    gap: 18px;
+}
+
+.datatable-img-item {
+    background: #AFD5FF;
+    border-radius: 5px;
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+    flex: 0 0 auto;
+}
+
+.datatable-img-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    cursor: pointer;
+}
+
+.datatable-accordion .accordion-button:not(.collapsed) {
+    border-bottom: 1px solid #8A9BA5;
+}
+.datatable-accordion+.datatable-accordion .accordion-header{
+    border-top: 1px solid #8A9BA5;
+}
+.datatable-accordion .accordion-header .accordion-button {
+    padding: 8px 12px;
+    color: #3D3D3D;
+    background: #C7EBFA;
+}
+
+.datatable-accordion .accordion-body {
+    padding: 0;
+}
+
+@media (min-width: 992px) {
+    .datatable {
+        width: 914px;
+    }
+
+    .datatable-table-th {
+        width: 300px;
+    }
+
+    .datatable-img-area {
+        padding: 7px 60px;
+        gap: 30px;
+    }
+
+    .datatable-img-item {
+        width: 97px;
+    }
+}

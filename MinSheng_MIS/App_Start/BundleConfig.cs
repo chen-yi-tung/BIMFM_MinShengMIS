@@ -25,7 +25,8 @@ namespace MinSheng_MIS
 				"~/Content/navbar.css",
 				"~/Content/button.css",
 				"~/Content/form.css",
-				"~/Content/datagrid.css"
+				"~/Content/datagrid.css",
+				"~/Content/datatable.css"
 			));
 		}
 	}

@@ -356,6 +356,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\button.css" />
     <Content Include="Content\datagrid.css" />
+    <Content Include="Content\datatable.css" />
     <Content Include="Content\easyui\changelog.txt" />
     <Content Include="Content\easyui\datagrid-cellediting.js" />
     <Content Include="Content\easyui\datagrid-export.js" />
@@ -1404,7 +1405,9 @@
     <Content Include="Content\easyui\themes\material\images\Thumbs.db" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
+    <Content Include="Scripts\datatable.js" />
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
+    <Content Include="Scripts\ImageDisplay.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
