@@ -23,6 +23,7 @@
 .search-area .form-control,
 .search-area .form-select {
     border-radius: 0;
+    color: #7E7E7E;
 }
 
 .search-area .button-group{
