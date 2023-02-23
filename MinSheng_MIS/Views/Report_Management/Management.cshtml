@@ -101,9 +101,9 @@
         </div>
 
         <div class="button-group">
-            <button class="btn btn-search">查詢</button>
-            <button class="btn btn-clear">清除</button>
-            <button class="btn btn-export">匯出</button>
+            <button type="button" class="btn btn-search">查詢</button>
+            <button type="button" class="btn btn-clear">清除</button>
+            <button type="button" class="btn btn-export">匯出</button>
         </div>
 
     </form>
@@ -133,9 +133,11 @@
     ]
 
     $(function () {
-        var getGridJSON = '';
+        let getGridJSON = '';
         Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
     });
+
     function Initialize_DataGrid(getGridJSON) {
 
         $('#DataGrid').datagrid({
@@ -156,25 +158,25 @@
                 {
                     field: '_detail', align: 'center',
                     formatter: (val, row, index) => {
-                        return '<button class="btn btn-datagrid" onclick="">詳情</button>';
+                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
                     }
                 },
                 {
                     field: '_dispatch', align: 'center',
                     formatter: (val, row, index) => {
-                        return '<button class="btn btn-datagrid" onclick="">派工</button>';
+                        return `<button class="btn btn-datagrid" onclick="onDispatch(${index})">派工</button>`;
                     }
                 },
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        return '<button class="btn btn-datagrid" onclick="">定位</button>';
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
                     }
                 },
                 {
                     field: '_cancel', align: 'center',
                     formatter: (val, row, index) => {
-                        return '<button class="btn btn-datagrid btn-datagrid-secondary" onclick="">取消保留</button>';
+                        return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
                     }
                 },
             ]],
@@ -209,6 +211,48 @@
             beforePageText: '第',
             afterPageText: '頁，共 {pages} 頁',
             displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+        });
+    }
+
+    // datagrid onClick Function
+    function onDetail(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = '/';
+        window.open(url, "_self");
+    }
+
+    function onDispatch(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = '/';
+        window.open(url, "_self");
+    }
+
+    function onLocate(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = '/';
+        window.open(url, "_self");
+    }
+
+    function onCancel(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = '/';
+        window.open(url, "_self");
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $(".btn-clear").click(function () {
+            $("form")[0].reset();
+        });
+
+        $(".btn-search").click(function () {
+            let url = "/";
+            window.open(url, "_self");
+        });
+
+        $(".btn-export").click(function () {
+            let url = "/";
+            window.open(url, "_self");
         });
     }
 </script>
