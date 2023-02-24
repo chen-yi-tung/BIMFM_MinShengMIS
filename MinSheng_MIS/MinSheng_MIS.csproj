@@ -1486,6 +1486,8 @@
     <Content Include="Views\RepairRecord_Management\ReadMaintainForm.cshtml" />
     <Content Include="Views\RepairRecord_Management\ReadReportForm.cshtml" />
     <Content Include="Views\Home\Login.cshtml" />
+    <Content Include="Views\InspectionPlan_Management\ReadMaintainForm.cshtml" />
+    <Content Include="Views\InspectionPlan_Management\ReadReportForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
