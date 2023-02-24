@@ -115,6 +115,8 @@
 
 <script>
 
+    var baseUrl = "/Report_Management/";
+
     const fakeData = [
         {
             State: "已派工",
@@ -217,25 +219,25 @@
     // datagrid onClick Function
     function onDetail(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = '/Report_Management/Read';
+        let url = baseUrl + 'Read';
         window.open(url, "_self");
     }
 
     function onDispatch(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = '/';
+        let url = baseUrl + 'Dispatch';
         window.open(url, "_self");
     }
 
     function onLocate(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = '/';
+        let url = baseUrl + 'Locate';
         window.open(url, "_self");
     }
 
     function onCancel(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = '/';
+        let url = baseUrl + 'Cancel';
         window.open(url, "_self");
     }
 
@@ -251,7 +253,7 @@
         });
 
         $(".btn-export").click(function () {
-            let url = "/";
+            let url = baseUrl + 'Export';
             window.open(url, "_self");
         });
     }

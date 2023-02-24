@@ -2,14 +2,15 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - 我的 ASP.NET 應用程式</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewBag.Title - 我的 ASP.NET 應用程式</title>
+	@Styles.Render("~/Content/css")
+	@Scripts.Render("~/bundles/modernizr")
+	@Scripts.Render("~/bundles/jquery")
+	@Scripts.Render("~/Scripts/popper.min.js")
+	@Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
 </head>
 
 <body>
@@ -35,18 +36,90 @@
                         <span class="navbar-user">您好 <span>Admin</span> ！</span>
                         <a class="navbar-logout" href="/">登出</a>
                     </div>
-                    <ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
-                        <li class="nav-item"><a class="nav-link" href="#">ArcGIS</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">BIM</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">巡檢管理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">定期保養管理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Report_Management/Management">報修管理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">設備管理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">庫存管理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">實驗室管理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">文件管理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">系統管理</a></li>
-                    </ul>
+					<ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								巡檢管理
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								<li><a class="dropdown-item" href="#">巡檢計畫管理</a></li>
+								<li><a class="dropdown-item" href="#">巡檢路線模板管理</a></li>
+								<li><a class="dropdown-item" href="#">巡檢即時位置</a></li>
+								<li><a class="dropdown-item" href="#">巡檢資訊管理</a></li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								定期保養管理
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								<li><a class="dropdown-item" href="#">定期保養單管理</a></li>
+								<li><a class="dropdown-item" href="/MaintainItem_Management/Management">保養項目管理</a></li>
+								<li><a class="dropdown-item" href="#">設備保養週期管理</a></li>
+								<li><a class="dropdown-item" href="#">巡檢保養紀錄管理</a></li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								報修管理
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								<li><a class="dropdown-item" href="/Report_Management/Management">報修管理</a></li>
+								<li><a class="dropdown-item" href="#">巡檢維修紀錄管理</a></li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								設備管理
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								<li><a class="dropdown-item" href="#">竣工圖說管理</a></li>
+								<li><a class="dropdown-item" href="#">以資查圖</a></li>
+								<li><a class="dropdown-item" href="#">設計圖說</a></li>
+								<li><a class="dropdown-item" href="#">操作手冊</a></li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								庫存管理
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								<li><a class="dropdown-item" href="#">入庫作業管理</a></li>
+								<li><a class="dropdown-item" href="#">出庫作業管理</a></li>
+								<li><a class="dropdown-item" href="#">庫存管理</a></li>
+								<li><a class="dropdown-item" href="#">物料標籤管理</a></li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								實驗室管理
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								<li><a class="dropdown-item" href="#">實驗室操作手冊</a></li>
+								<li><a class="dropdown-item" href="#">實驗數據紀錄</a></li>
+								<li><a class="dropdown-item" href="#">實驗維護管理</a></li>
+								<li><a class="dropdown-item" href="#">實驗標籤製作</a></li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								文件管理
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								<li><a class="dropdown-item" href="#">月報管理</a></li>
+								<li><a class="dropdown-item" href="#">會議紀錄管理</a></li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								系統管理
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								<li><a class="dropdown-item" href="#">帳號管理</a></li>
+								<li><a class="dropdown-item" href="#">密碼變更</a></li>
+							</ul>
+						</li>
+					</ul>
                     
                 </div>
             </div>
