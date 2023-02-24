@@ -1,7 +1,62 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "保養項目詳情";
 }
 
-<h2>Read</h2>
+<h2>@ViewBag.Title</h2>
+
+<div class="datatable mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="MaintainItemInfo"></table>
+    </div>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+
+    const apiUrl = null;
+
+    const SerializedName = [
+        { text: "報修單號", value: "RSN" },
+        { text: "報修時間", value: "Date" },
+        { text: "報修等級", value: "ReportLevel" },
+        { text: "報修人員", value: "MyName" },
+        { text: "本報修單狀態", value: "ReportState" },
+        { text: "區域", value: "Area" },
+    ]
+
+    const fakeData = {
+        RSN: "R23010601",
+        Date: "2023/1/6 15:00:02",
+        ReportLevel: "最速件",
+        MyName: "王大明",
+        ReportState: "已派工",
+        Area: "A棟",
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                body: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+    }
+</script>
 

@@ -128,6 +128,8 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
 
+    const apiUrl = null;
+
     const SerializedName = [
         { text: "報修單號", value: "RSN" },
         { text: "報修時間", value: "Date" },
@@ -194,7 +196,69 @@
                         MyName: "王大明",
                         SupplementaryDate: "2023/1/15",
                         SupplementaryContent: "OOXX",
-                        FilePath: ["/file/電燈故障.pdf","/file/電燈故障2.pdf"],
+                        FilePath: ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
+                    },
+                ],
+                RepairAuditInfo: [
+                    {
+                        MyName: "陳組長",
+                        AuditDate: "2023/1/15",
+                        AuditResult: "審核未過",
+                        AuditMemo: "未處理完善",
+                        ImgPath: [
+                            "/Content/img/bg.png",
+                            "/Content/img/bg.png",
+                            "/Content/img/bg.png",
+                            "/Content/img/bg.png",
+                        ],
+                    },
+                    {
+                        MyName: "陳組長",
+                        AuditDate: "2023/1/15",
+                        AuditResult: "審核未過",
+                        AuditMemo: "未處理完善",
+                        ImgPath: [
+                            "/Content/img/bg.png",
+                            "/Content/img/bg.png",
+                            "/Content/img/bg.png",
+                            "/Content/img/bg.png",
+                        ],
+                    },
+                ],
+            },
+            {
+                InspectionPlan: {
+                    IPSN: "P23010402",
+                    IPName: "巡檢A區計畫",
+                    PlanDate: "2023/1/9",
+                    PlanState: "巡檢完成",
+                    Shift: "早班",
+                    MyName: "王大明、李泰順",
+                },
+                InspectionPlanRepair: {
+                    RepairState: "完成",
+                    RepairContent: "修復完成",
+                    MyName: "王大明",
+                    RepairDate: "2023/1/7 12:40:56",
+                    ImgPath: [
+                        "/Content/img/bg.png",
+                        "/Content/img/bg.png",
+                        "/Content/img/bg.png",
+                        "/Content/img/bg.png",
+                    ],
+                },
+                RepairSupplementaryInfo: [
+                    {
+                        MyName: "王大明",
+                        SupplementaryDate: "2023/1/15",
+                        SupplementaryContent: "OOXX",
+                        FilePath: ["/file/電燈故障.pdf"],
+                    },
+                    {
+                        MyName: "王大明",
+                        SupplementaryDate: "2023/1/15",
+                        SupplementaryContent: "OOXX",
+                        FilePath: ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
                     },
                 ],
                 RepairAuditInfo: [
@@ -227,17 +291,39 @@
         ]
     }
 
-    window.onload = function () {
-        $("#ReportDetail").append(createTableInner(fakeData, SerializedName));
-        if (fakeData.InspectionPlan) {
-            let accordion = $("#accordion-InspectionPlan");
-            fakeData.InspectionPlan.forEach((d, i) => {
-                accordion.append(putData_InspectionPlan(d, null, i));
-            })
-            $("#InspectionPlan_List").removeClass("d-none");
-        }
+    function readData(url = null) {
 
-        ImageDisplay(".datatable-img-item>img");
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                body: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#ReportDetail").append(createTableInner(res, SerializedName));
+            if (fakeData.InspectionPlan) {
+                let accordion = $("#accordion-InspectionPlan");
+                fakeData.InspectionPlan.forEach((d, i) => {
+                    accordion.append(putData_InspectionPlan(d, null, i));
+                })
+                $("#InspectionPlan_List").removeClass("d-none");
+            }
+
+            ImageDisplay(".datatable-img-item>img");
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
     }
 
 </script>
