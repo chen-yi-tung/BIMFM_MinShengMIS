@@ -33,12 +33,13 @@
     function putImage(imgs) {
         let div = `<div class="datatable-img-area">${imgs.map(img => {
             return `<div class="datatable-img-item"><img src="${img}"/></div>`;
-        }).join("")}</div>`;
+        }).join("")}
+        </div>`;
         return div;
     }
 
-    function putFile(url){
-        let div = `<a href="${url}" target="_blank">${url.split('/').at(-1)}</a>`;
+    function putFile(urls) {
+        let div = urls.map(url => { return `<a href="${url}" target="_blank">${url.split('/').at(-1)}</a>` }).join("<br>");
         return div;
     }
 }
@@ -102,7 +103,7 @@ function putData_InspectionPlan(data = null, sn = null, i = 0) {
                 MyName: "王大明",
                 SupplementaryDate: "2023/1/15",
                 SupplementaryContent: "OOXX",
-                FilePath: "/file/電燈故障.pdf",
+                FilePath: ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
             }
         ],
         RepairAuditInfo: [
