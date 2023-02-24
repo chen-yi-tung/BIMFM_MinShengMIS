@@ -54,6 +54,14 @@
     --bs-btn-hover-bg: #657589;
 }
 
+
+.btn-delete{
+    --bs-btn-bg: #E06666;
+    --bs-btn-color: white;
+    --bs-btn-hover-bg: #ca5c5c;
+    --bs-btn-hover-color: white;
+}
+
 .btn-delete-item{
     --btn-bg: #E06666;
     border: 0;

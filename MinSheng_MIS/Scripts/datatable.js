@@ -44,6 +44,35 @@
     }
 }
 
+function createTableGrid(data, options) {
+    console.log(options)
+    let columns = options.columns;
+    let thead = options.thead == true ? `<thead><tr>${createThs(columns)}</tr></thead>` : "";
+    let tbody = `<tbody>${createTrs(columns, data)}</tbody>`;
+    return thead + tbody;
+    function createThs(op) {
+        return op.map(o => {
+            let w = typeof o.width == "string" ? o.width : o.width + "px";
+            let th = `<th class="datatable-header" style="width:${w}">${o.title}</th>`;
+            return th;
+        }).join("");
+    }
+
+    function createTrs(op, ds) {
+        return ds.map((d) => {
+            let tr = `<tr>${createTds(op, d)}</tr>`;
+            return tr;
+        }).join("");
+    }
+
+    function createTds(op, d) {
+        return op.map((o) => {
+            let td = `<td>${d[o.id]}</td>`;
+            return td;
+        }).join("");
+    }
+}
+
 function putData_InspectionPlan(data = null, sn = null, i = 0) {
 
     sn == null ? sn = {
@@ -210,3 +239,4 @@ function putData_InspectionPlan(data = null, sn = null, i = 0) {
     }
 
 }
+

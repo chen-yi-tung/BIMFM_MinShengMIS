@@ -4,9 +4,16 @@
 
 <h2>@ViewBag.Title</h2>
 
-<div class="datatable mt-5">
+<div class="datatable datatable-small mt-5">
     <div class="datatable-body">
         <table class="datatable-table" id="MaintainItemInfo"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-small-grid mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="EquipmentMaintainItem">
+        </table>
     </div>
 </div>
 
@@ -24,6 +31,15 @@
         { text: "保養週期", value: "Period" },
     ]
 
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "ESN", title: "設備編號", width: "36%" },
+            { id: "Unit", title: "保養週期單位", width: "36%" },
+            { id: "Period", title: "保養週期", width: "28%" },
+        ]
+    }
+
     const fakeData = {
         System: "前處理",
         SubSystem: "前處理",
@@ -31,6 +47,28 @@
         MIName: "軸承潤滑",
         Unit: "月",
         Period: "1",
+        EquipmentMaintainItem: [
+            {
+                ESN: "E00001",
+                Unit: "月",
+                Period: "1",
+            },
+            {
+                ESN: "E00002",
+                Unit: "天",
+                Period: "7",
+            },
+            {
+                ESN: "E00003",
+                Unit: "月",
+                Period: "2",
+            },
+            {
+                ESN: "E00004",
+                Unit: "月",
+                Period: "2",
+            },
+        ]
     }
 
     function readData(url = null) {
@@ -49,6 +87,7 @@
         function onSuccess(res) {
             console.log(res);
             $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
+            $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
         }
         function onError(res) {
             console.log(res);
