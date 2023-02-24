@@ -103,7 +103,7 @@
                 </div>
                 <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0  
                         position-absolute text-end order-first pt-2 px-2">
-                    <button class="btn-delete-item" onclick="deleteMaintainItem(0)"></button>
+                    <button class="btn-delete-item" onclick="deleteEquipmentMaintainItem(0)"></button>
                 </div>
             </div>
         </div>
@@ -128,14 +128,14 @@
             history.back();
         })
         $(".btn-submit").click(function () {
-            saveMaintainItems();
+            saveMaintainItem();
         })
         $(".btn-create-item").click(function () {
-            createMaintainItem();
+            createEquipmentMaintainItem();
         })
     }
 
-    function createMaintainItem() {
+    function createEquipmentMaintainItem() {
         let item = `
         <div class="maintain-item row w-100" id="maintain-item-${itemCount}">
             <div class="d-lg-contents col py-2">
@@ -158,7 +158,7 @@
             </div>
             <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0  
                         position-absolute text-end order-first pt-2 px-2">
-                <button class="btn-delete-item" onClick="deleteMaintainItem(${itemCount})"></button>
+                <button class="btn-delete-item" onClick="deleteEquipmentMaintainItem(${itemCount})"></button>
             </div>
         </div>
         `;
@@ -166,11 +166,11 @@
         itemCount++;
     }
 
-    function deleteMaintainItem(i) {
+    function deleteEquipmentMaintainItem(i) {
         $(`#maintain-item-${i}`).remove();
     }
 
-    function saveMaintainItems() {
+    function saveMaintainItem() {
         //todo
 
         let isValidity = $("form").toArray().map(e => e.checkValidity()).every(e => e);
@@ -181,7 +181,7 @@
             System: $("#System").val(),
             SubSystem: $("#SubSystem").val(),
             EName: $("#EName").val(),
-            MaintainItem: calcMaintainItem()
+            MaintainItem: calcEquipmentMaintainItem()
         }
 
         console.log("jsonData:", jsonData);
@@ -197,7 +197,7 @@
         }) */
 
 
-        function calcMaintainItem() {
+        function calcEquipmentMaintainItem() {
             let arr = $(".maintain-item").toArray().map((e, i) => {
                 return {
                     MIName: $(e).find("#MIName").val(),

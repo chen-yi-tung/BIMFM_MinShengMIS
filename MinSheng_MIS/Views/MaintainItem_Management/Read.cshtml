@@ -16,21 +16,21 @@
     const apiUrl = null;
 
     const SerializedName = [
-        { text: "報修單號", value: "RSN" },
-        { text: "報修時間", value: "Date" },
-        { text: "報修等級", value: "ReportLevel" },
-        { text: "報修人員", value: "MyName" },
-        { text: "本報修單狀態", value: "ReportState" },
-        { text: "區域", value: "Area" },
+        { text: "系統別", value: "System" },
+        { text: "子系統別", value: "SubSystem" },
+        { text: "設備名稱", value: "EName" },
+        { text: "項目名稱", value: "MIName" },
+        { text: "保養週期單位", value: "Unit" },
+        { text: "保養週期", value: "Period" },
     ]
 
     const fakeData = {
-        RSN: "R23010601",
-        Date: "2023/1/6 15:00:02",
-        ReportLevel: "最速件",
-        MyName: "王大明",
-        ReportState: "已派工",
-        Area: "A棟",
+        System: "前處理",
+        SubSystem: "前處理",
+        EName: "除物皮帶輸送機",
+        MIName: "軸承潤滑",
+        Unit: "月",
+        Period: "1",
     }
 
     function readData(url = null) {
