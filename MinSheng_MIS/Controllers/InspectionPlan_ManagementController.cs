@@ -57,9 +57,19 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        //註:巡檢保養紀錄-詳情 會連至 MaintainRecord_Management/Read
-        //註:巡檢維修紀錄-詳情 會連至 RepairRecord_Management/Read
+        #region 定期保養單詳情
+        public ActionResult ReadMaintainForm()
+        {
+            return View();
+        }
+        #endregion
 
+        #region 設備維修單詳情
+        public ActionResult ReadReportForm()
+        {
+            return View();
+        }
+        #endregion
 
     }
 }
