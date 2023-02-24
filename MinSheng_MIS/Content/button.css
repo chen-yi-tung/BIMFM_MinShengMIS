@@ -1,9 +1,9 @@
-﻿.btn{
+﻿.btn {
     border-radius: 5px;
     font-size: 20px;
 }
 
-.btn-create{
+.btn-create {
     --bs-btn-bg: #0457D1;
     --bs-btn-color: white;
     --bs-btn-hover-bg: #044ebd;
@@ -13,21 +13,24 @@
     --bs-btn-hover-border-color: rgba(92, 151, 237, 0.5);
 }
 
-.btn-search{
+.btn-create-item,
+.btn-search {
     --bs-btn-bg: #44BCC2;
     --bs-btn-color: white;
     --bs-btn-hover-bg: #3daaaf;
     --bs-btn-hover-color: white;
 }
 
-.btn-clear{
+.btn-back,
+.btn-clear {
     --bs-btn-bg: #A1B3AE;
     --bs-btn-color: white;
     --bs-btn-hover-bg: #91a19d;
     --bs-btn-hover-color: white;
 }
 
-.btn-export{
+.btn-submit,
+.btn-export {
     --bs-btn-bg: #0457D1;
     --bs-btn-color: white;
     --bs-btn-hover-bg: #044ebd;
@@ -37,7 +40,7 @@
     --bs-btn-hover-border-color: #5C97ED;
 }
 
-.btn-datagrid{
+.btn-datagrid {
     --bs-btn-bg: #6487B0;
     --bs-btn-color: white;
     --bs-btn-hover-bg: #5a7a9f;
@@ -46,7 +49,23 @@
     --bs-btn-padding-y: 3px;
 }
 
-.btn-datagrid-secondary{
+.btn-datagrid-secondary {
     --bs-btn-bg: #708298;
     --bs-btn-hover-bg: #657589;
+}
+
+.btn-delete-item{
+    --btn-bg: #E06666;
+    border: 0;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    transition: all .3s;
+    background: var(--btn-bg) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+}
+
+.btn-delete-item:hover,
+.btn-delete-item:focus{
+    --btn-bg: #ca5c5c;
 }

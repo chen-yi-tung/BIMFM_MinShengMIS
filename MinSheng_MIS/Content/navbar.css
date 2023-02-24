@@ -8,6 +8,9 @@
     font-size: 18px;
 }
 
+.navbar-nav{
+    align-items: center;
+}
 
 .navbar .container-fluid {
     height: 100%
@@ -54,6 +57,7 @@
 
     .offcanvas .navbar-nav {
         padding-top: 1rem;
+        align-items: flex-start;
     }
 
     .offcanvas .nav-link {

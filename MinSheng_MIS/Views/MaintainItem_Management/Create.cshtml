@@ -1,7 +1,219 @@
-﻿
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = "新增保養項目";
 }
+<style>
+    .maintain-item-list .row {
+        --bs-gutter-x: 0;
+    }
 
-<h2>Create</h2>
+    .maintain-item {
+        position: relative;
+    }
 
+    .maintain-item+.maintain-item {
+        margin-top: 16px;
+    }
+
+    .maintain-item::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        right: 0;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        z-index: -1;
+    }
+
+    .maintain-item label {
+        position: relative;
+    }
+
+    .maintain-item .form-control,
+    .maintain-item .form-select {
+        display: block;
+        width: 100%;
+        border-radius: 0;
+        color: #7E7E7E;
+    }
+
+    @@media (min-width:992px) {
+        .maintain-item::before {
+            right: 8.33333333%;
+        }
+    }
+</style>
+<h2>@ViewBag.Title</h2>
+
+<div class="edit-area edit-area-small">
+    <form class="form" action="">
+        <div class="form-group d-lg-contents required">
+            <label for="System">系統別</label>
+            <select class="form-select" name="System" id="System" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div class="form-group d-lg-contents required">
+            <label for="SubSystem">子系統別</label>
+            <select class="form-select" name="SubSystem" id="SubSystem" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div class="form-group d-lg-contents required">
+            <label for="EName">設備名稱</label>
+            <select class="form-select" name="EName" id="EName" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+    </form>
+    <hr class="hr-dashed">
+    <button class="btn btn-create-item align-self-start">+新增</button>
+
+    <form class="d-contents">
+        <div class="maintain-item-list text-center w-100 mt-4 mt-lg-0">
+            <div class="row d-lg-flex d-none w-100 pb-2">
+                <div class="th col-5 text-white ps-4 px-3">
+                    <span class="form-required">項目名稱</span>
+                </div>
+                <div class="th col-3 text-white px-3">
+                    <span class="form-required">保養週期單位</span>
+                </div>
+                <div class="th col-3 text-white pe-4 px-3">
+                    <span class="form-required">保養週期</span>
+                </div>
+                <div class="th col-1 text-white"></div>
+            </div>
+            <div class="maintain-item row w-100" id="maintain-item-0">
+                <div class="d-lg-contents col py-2">
+                    <div class="form-group required col-lg-5 ps-lg-4 pe-lg-3 ps-4 pe-4 py-2 text-start">
+                        <label for="MIName" class="d-lg-none text-white">項目名稱</label>
+                        <input class="form-control" type="text" name="MIName" id="MIName" required>
+                    </div>
+                    <div class="form-group required col-lg-3 ps-lg-3 pe-lg-3 ps-4 pe-4 py-2 text-start">
+                        <label for="Unit" class="d-lg-none text-white">保養週期單位</label>
+                        <select class="form-select" name="Unit" id="Unit" required>
+                            <option value="日">日</option>
+                            <option value="月">月</option>
+                            <option value="年">年</option>
+                        </select>
+                    </div>
+                    <div class="form-group required col-lg-3 ps-lg-3 pe-lg-4 ps-4 pe-4 py-2 text-start">
+                        <label for="Period" class="d-lg-none text-white">保養週期</label>
+                        <input class="form-control" type="number" name="Period" id="Period" required>
+                    </div>
+                </div>
+                <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0  
+                        position-absolute text-end order-first pt-2 px-2">
+                    <button class="btn-delete-item" onclick="deleteMaintainItem(0)"></button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back">返回</button>
+    <button class="btn btn-submit">新增</button>
+</div>
+
+<script>
+
+    var itemCount = 1;
+
+    window.onload = function () {
+        addButtonEvent();
+    }
+
+    function addButtonEvent() {
+        $(".btn-back").click(function () {
+            history.back();
+        })
+        $(".btn-submit").click(function () {
+            saveMaintainItems();
+        })
+        $(".btn-create-item").click(function () {
+            createMaintainItem();
+        })
+    }
+
+    function createMaintainItem() {
+        let item = `
+        <div class="maintain-item row w-100" id="maintain-item-${itemCount}">
+            <div class="d-lg-contents col py-2">
+                <div class="form-group required col-lg-5 ps-lg-4 pe-lg-3 ps-4 pe-4 py-2 text-start">
+                    <label for="MIName" class="d-lg-none text-white">項目名稱</label>
+                    <input class="form-control" type="text" name="MIName" id="MIName" required>
+                </div>
+                <div class="form-group required col-lg-3 ps-lg-3 pe-lg-3 ps-4 pe-4 py-2 text-start">
+                    <label for="Unit" class="d-lg-none text-white">保養週期單位</label>
+                    <select class="form-select" name="Unit" id="Unit" required>
+                        <option value="日">日</option>
+                        <option value="月">月</option>
+                        <option value="年">年</option>
+                    </select>
+                </div>
+                <div class="form-group required col-lg-3 ps-lg-3 pe-lg-4 ps-4 pe-4 py-2 text-start">
+                    <label for="Period" class="d-lg-none text-white">保養週期</label>
+                    <input class="form-control" type="number" name="Period" id="Period" required>
+                </div>
+            </div>
+            <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0  
+                        position-absolute text-end order-first pt-2 px-2">
+                <button class="btn-delete-item" onClick="deleteMaintainItem(${itemCount})"></button>
+            </div>
+        </div>
+        `;
+        $(".maintain-item-list").append(item);
+        itemCount++;
+    }
+
+    function deleteMaintainItem(i) {
+        $(`#maintain-item-${i}`).remove();
+    }
+
+    function saveMaintainItems() {
+        //todo
+
+        let isValidity = $("form").toArray().map(e => e.checkValidity()).every(e => e);
+        console.log("isValidity:", isValidity);
+        if (!isValidity) return;
+
+        let jsonData = {
+            System: $("#System").val(),
+            SubSystem: $("#SubSystem").val(),
+            EName: $("#EName").val(),
+            MaintainItem: calcMaintainItem()
+        }
+
+        console.log("jsonData:", jsonData);
+
+        /* $.ajax({
+            url: "",
+            body: JSON.stringify(jsonData),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        }) */
+
+
+        function calcMaintainItem() {
+            let arr = $(".maintain-item").toArray().map((e, i) => {
+                return {
+                    MIName: $(e).find("#MIName").val(),
+                    Unit: $(e).find("#Unit").val(),
+                    Period: $(e).find("#Period").val(),
+                };
+            })
+            return arr;
+        }
+
+        function onSuccess(res) {
+            console.log(res);
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+</script>

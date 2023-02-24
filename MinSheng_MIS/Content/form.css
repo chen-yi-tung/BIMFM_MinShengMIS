@@ -1,4 +1,5 @@
-﻿.search-area {
+﻿/* management */
+.search-area {
     background: rgba(35, 106, 146, 0.43);
     box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.4);
     padding: 20px 36px;
@@ -12,10 +13,12 @@
     gap: 24px 0px;
     align-items: flex-end;
 }
-.search-area .form-group{
+
+.search-area .form-group {
     padding: 0 16px;
     flex: 0 0 auto;
 }
+
 .search-area .form-group label {
     color: white;
     margin-bottom: 4px;
@@ -27,7 +30,7 @@
     color: #7E7E7E;
 }
 
-.search-area .button-group{
+.search-area .button-group {
     display: flex;
     gap: 18px;
     padding: 0 16px;
@@ -35,30 +38,110 @@
     justify-content: center;
 }
 
-@media (max-width: 768px) {
+/* create / edit */
 
+.edit-area {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(51, 77, 121, 0.5);
+    border-radius: 5px;
+    padding: 18px;
+    margin-top: 24px;
+}
+
+.edit-button-area {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    margin-top: 36px;
+}
+
+.edit-area .form {
+    display: flex;
+    width: 100%;
+    gap: 24px;
+    padding: 8px 16px;
+    align-items: stretch;
+    flex-direction: column;
+}
+.form-required{
+    position: relative;
+}
+.form-required::before,
+.edit-area .form-group.required label::before {
+    content: '*';
+    position: absolute;
+    color: red;
+    left: -10px;
+}
+
+.edit-area .form label {
+    position: relative;
+    grid-column-start: 1;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.edit-area .form .form-control,
+.edit-area .form .form-select {
+    grid-column-start: 2;
+    border-radius: 0;
+    color: #7E7E7E;
+}
+
+.hr-dashed {
+    width: 100%;
+    border: 2px dashed #A6D0FC;
+    transform: rotate(-0.22deg);
+    margin: 24px 0;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
     .search-area .form-group {
         width: calc(100%);
     }
 }
 
 @media (min-width: 768px) {
-
     .search-area .form-group {
         width: calc(100% / 2);
     }
 }
 
 @media (min-width: 992px) {
-
     .search-area .form-group {
         width: calc(100% / 3);
+    }
+
+    .edit-area.edit-area-small {
+        width: 816px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .edit-area .form {
+        display: grid;
+        width: auto;
+        grid-template-columns: max-content 250px;
+        gap: 24px;
+        padding: 18px 0;
+        align-items: flex-end;
     }
 }
 
 @media (min-width:1200px) {
     .search-area .form-group {
         width: calc(100% / 4);
+    }
+
+    .edit-area.edit-area-middle {
+        width: 1060px;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
