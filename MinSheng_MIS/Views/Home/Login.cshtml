@@ -20,18 +20,27 @@
 
 <body>
     <div class="login-body">
-        <form method="post" action="" class="p-3">
+        <form method="post" class="p-3">
             <div class="px-4 mb-3">
                 <img class="login-logo w-100" src="/Content/img/logo.png" alt="臺北市政府工務局衛生下水道工程處">
             </div>
             <h1 class="login-title mb-5">汙水資訊作業系統</h1>
             <input class="form-control mb-4" type="text" id="UserID" name="UserID" placeholder="帳號">
             <input class="form-control mb-5" type="password" id="UserPW" name="UserPW" placeholder="密碼">
-            <button type="submit" class="btn btn-login">登入</button>
+            <button class="btn btn-login">登入</button>
         </form>
     </div>
 </body>
 
 </html>
+
+<script>
+    document.querySelector(".btn-login").addEventListener("click", onSubmit);
+    function onSubmit(e) {
+        console.log(e);
+        e.preventDefault();
+        window.open("/Home/Index", "_self");
+    }
+</script>
 
 
