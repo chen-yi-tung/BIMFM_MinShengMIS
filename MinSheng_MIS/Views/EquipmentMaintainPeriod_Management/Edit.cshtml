@@ -4,6 +4,7 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="datatable datatable-small mt-5">
+    <input type="text" id="EMISN" name="EMISN" hidden>
     <div class="datatable-body">
         <table class="datatable-table" id="EquipemtMaintainItem"></table>
     </div>
@@ -56,6 +57,7 @@
     ]
 
     const fakeData = {
+        EMISN: "E00001_000001",
         Area: "A",
         Floor: "1F",
         System: "處理",
@@ -85,6 +87,7 @@
 
         function onSuccess(res) {
             console.log(res);
+            $("#EMISN").val(res.EMISN);
             $("#EquipemtMaintainItem").append(createTableInner(res, SerializedName));
             $("#Unit").val(res.Unit);
             $("#Period").val(res.Period);
@@ -110,7 +113,7 @@
         console.log("isValidity:", isValidity);
 
         let jsonData = {
-            ESN: $("#d-ESN").text(),
+            EMISN: $("#EMISN").val(),
             Unit: $("#Unit").val(),
             Period: $("#Period").val(),
             IsEnable: $("#IsEnable").val(),
