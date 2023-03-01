@@ -20,7 +20,7 @@
 }
 
 .datagrid-wrap {
-    height: 540px !important;
+    height: 500px !important;
 }
 
 .datagrid-view {
@@ -36,7 +36,7 @@
 }
 
 .datagrid-sort-asc .datagrid-sort-icon,
-.datagrid-sort-desc .datagrid-sort-icon{
+.datagrid-sort-desc .datagrid-sort-icon {
     opacity: 1;
     filter: grayscale(100%) brightness(150%);
 }
@@ -60,6 +60,9 @@
 .datagrid-cell {
     font-size: 20px !important;
     padding: 12px 6px !important;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .datagrid-header .datagrid-cell span {

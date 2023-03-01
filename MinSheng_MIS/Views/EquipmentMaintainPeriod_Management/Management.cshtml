@@ -72,7 +72,15 @@
 </div>
 
 <div class="datagrid-area">
+    <label for="checkall" class="btn btn-search mb-2">
+        <input type="checkbox" class="form-check-input" id="checkall">
+        全選啟用
+    </label>
     <table id="DataGrid"></table>
+</div>
+
+<div class="d-flex justify-content-center mt-3" style="gap:1rem">
+    <button type="button" class="btn btn-search" id="save">儲存變更</button>
 </div>
 
 <script>
@@ -214,6 +222,7 @@
         let getGridJSON = '';
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
+        addSaveClickEvent();
     });
 
     function Initialize_DataGrid(getGridJSON) {
@@ -242,13 +251,18 @@
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">刪除</button>`;
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
                     }
                 }
             ]],
             columns: [[
                 { field: 'EMISN', title: 'EMISN', hidden: true },
-                { field: 'IsEnable', title: '啟用狀態', align: 'center', width: 100, sortable: true },
+                {
+                    field: 'IsEnable', title: '啟用狀態', align: 'center', width: 120, sortable: true,
+                    formatter: function (val, row, index) {
+                        return `<input type="checkbox" class="form-check-input check-item" data-index="${index}" ${!!val ? "checked" : ""}/>`;
+                    }
+                },
 
                 { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
                 { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
@@ -257,9 +271,9 @@
                 { field: 'SubSystem', title: '子系統別', align: 'center', width: 110, sortable: true },
 
                 { field: 'ESN', title: '設備編號', align: 'center', width: 150, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 150, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 160, sortable: true },
 
-                { field: 'MISN', title: '保養項目編號', align: 'center', width: 150, sortable: true },
+                { field: 'MISN', title: '保養項目編號', align: 'center', width: 160, sortable: true },
                 { field: 'MIName', title: '項目名稱', align: 'center', width: 150, sortable: true },
 
                 { field: 'Unit', title: '保養週期單位', align: 'center', width: 150, sortable: true },
@@ -289,7 +303,6 @@
     }
 
     // datagrid onClick Function
-
     function onEdit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
         let url = baseUrl + 'Edit';
@@ -309,8 +322,19 @@
         });
 
         $("#search").click(function () {
-            let url = "/";
-            window.open(url, "_self");
+            console.log("onclick search");
         });
+    }
+
+    //save onClick Function
+    function addSaveClickEvent(){
+        $("#checkall").change(function (e) {
+            let checked = e.target.checked;
+            $(".check-item").prop("checked", checked);
+        })
+
+        $("#save").click(function (e) {
+            console.log("onclick save");
+        })
     }
 </script>

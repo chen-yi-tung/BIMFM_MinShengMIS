@@ -4,7 +4,8 @@
     --bs-navbar-hover-color: #002b4a;
     --bs-navbar-disabled-color: #2f6d996e;
     height: var(--navbar-height);
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(157, 203, 245, 1);
+    /* backdrop-filter: blur(10px); */
     font-size: 18px;
 }
 
