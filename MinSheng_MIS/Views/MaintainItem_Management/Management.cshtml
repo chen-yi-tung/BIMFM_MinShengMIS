@@ -1,4 +1,6 @@
-﻿@{
+﻿@model MinSheng_MIS.Models.MaintainItemViewModel
+
+@{
     ViewBag.Title = "保養項目管理";
 }
 
@@ -12,47 +14,55 @@
 <button class="btn btn-create" id="create">新增保養項目</button>
 
 <div class="search-area">
-    <form class="form" method="post" action="">
+    <form class="form">
 
         <div class="form-group">
             <label for="System">系統別</label>
-            <select class="form-select" name="System" id="System">
-                <option value="">請選擇</option>
+            <select class="form-select" name="System" id="SystemOption">
+                <option value="none"> -- 請選擇 -- </option>
+                @{
+                    for (var i = 0; i < @Model.SystemItemList.Count(); i++)
+                    {
+                        <option value=@Model.SystemItemList[i].SystemName>
+                            @Model.SystemItemList[i].SystemName
+                        </option>
+                    }
+                }
             </select>
         </div>
 
         <div class="form-group">
             <label for="SubSystem">子系統別</label>
-            <select class="form-select" name="SubSystem" id="SubSystem">
-                <option value="">請選擇</option>
+            <select class="form-select" name="SubSystem" id="SubSystemOption">
+                <option value="none"> -- 請選擇 -- </option>
             </select>
         </div>
 
         <div class="form-group">
             <label for="EName">設備名稱</label>
-            <select class="form-select" name="EName" id="EName">
-                <option value="">請選擇</option>
+            <select class="form-select" name="EName" id="ENameOption">
+                <option value="none"> -- 請選擇 -- </option>
             </select>
         </div>
 
         <div class="form-group">
             <label for="MIName">保養項目名稱</label>
-            <input class="form-control" id="MIName" name="MIName" type="text" />
+            <input class="form-control" name="MIName" id="MINameOption" type="text" />
         </div>
 
         <div class="form-group">
             <label for="Unit">保養週期單位</label>
-            <input class="form-control" id="Unit" name="Unit" type="text" />
+            <input class="form-control" name="Unit" id="UnitOption" type="text" />
         </div>
 
         <div class="form-group">
             <label for="Period">保養週期</label>
-            <input class="form-control" id="Period" name="Period" type="text" />
+            <input class="form-control" name="Period" id="PeriodOption" type="text" />
         </div>
 
         <div class="button-group">
-            <button type="button" class="btn btn-search" id="search">查詢</button>
-            <button type="button" class="btn btn-clear" id="clear">清除</button>
+            <button id="SearchBtn" type="button" class="btn btn-search">查詢</button>
+            <button type="button" class="btn btn-clear">清除</button>
         </div>
 
     </form>
@@ -62,7 +72,146 @@
     <table id="DataGrid"></table>
 </div>
 
-<script>
+<script type="text/javascript">
+    var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.EquipmentInfoList));
+    eqList = eqList.replace("\r", "").replace("\n", "");
+    var equipmentList = JSON.parse(eqList);
+    //console.log(`所有設備清單`);
+    //console.log(equipmentList);
+    CreateAllENameOptions(equipmentList.EquipmentInfo);
+
+    //#region Searchform - Auto generate the select options
+
+    //Change event listener of SystemOption element
+    const selectSystemElement = document.querySelector('#SystemOption');
+    selectSystemElement.addEventListener('change', (event) => {
+        var chooseSystem = document.getElementById('SystemOption').value;
+        console.log(`Choose System: ${event.target.value}`);
+
+        //When user didn't choose system option
+        if (chooseSystem == "none") {
+            ClearOptions("SubSystemOption");
+            $("#SubSystemOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+
+            CreateAllENameOptions(equipmentList.EquipmentInfo);
+            //ClearOptions("ENameOption");
+            //$("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+        }
+        //When user choose system option
+        else {
+            ClearOptions("SubSystemOption");
+            $("#SubSystemOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            CreateSubSystemOptions(chooseSystem, equipmentList.EquipmentInfo);
+        }
+    });
+
+    const selectSubSystemElement = document.querySelector('#SubSystemOption');
+    selectSubSystemElement.addEventListener('change', (event) => {
+        var chooseSystem = document.getElementById('SystemOption').value;
+        var chooseSubSystem = document.getElementById('SubSystemOption').value;
+        console.log(`Choose SubSystem: ${event.target.value}`);
+
+        //When user didn't choose subsystem option
+        if (chooseSystem == "none") {
+            ClearOptions("ENameOption");
+            CreateAllENameOptions(equipmentList.EquipmentInfo);
+        //    ClearOptions("ENameOption");
+        //    $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+        }
+        //When user choose subsystem option
+        else {
+            ClearOptions("ENameOption");
+            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
+        }
+    });
+
+    //Clear all options in select
+    function ClearOptions(id) {
+        document.getElementById(id).options.length = 0;
+    }
+
+    function CreateSubSystemOptions(optionvalue, data) {
+        var systemOption = optionvalue;
+        var tempArray = [];
+        //console.log(data);
+        //列出不重複的子系統別類型
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            //console.log(item);
+            if (item.System == systemOption) {
+                var tempSubSystem = item.SubSystem;
+                var isRepeat = false;
+                for (var i = 0; i < arrLength; i++) {
+                    if (item.SubSystem == tempArray[i]) {
+                        isRepeat = true;
+                        break;
+                    }
+                }
+
+                if (!isRepeat) {
+                    tempArray.push(item.SubSystem);
+                    $("#SubSystemOption").append(`<option value="${item.SubSystem}">${item.SubSystem}</option>`);
+                }
+            }
+        });
+        //console.log(tempArray);
+    }
+
+    //創建所有EName element
+    function CreateAllENameOptions(data) {
+        var tempArray = [];
+        //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
+
+        //列出不重複的設備名稱
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            var tempSubSystem = item.SubSystem;
+            var isRepeat = false;
+            for (var i = 0; i < arrLength; i++) {
+                if (item.EName == tempArray[i]) {
+                    isRepeat = true;
+                    break;
+                }
+            }
+
+            if (!isRepeat) {
+                tempArray.push(item.EName);
+                $("#ENameOption").append(`<option value="${item.EName}">${item.EName}</option>`);
+            }
+        });
+    }
+
+    //依據所選系統與子系統，創建相關的EName element
+    function CreateENameOptions(systemVal, subSystemVal, data) {
+        var systemOption = systemVal;
+        var subSystemOption = subSystemVal;
+        var tempArray = [];
+        //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
+
+        //列出不重複的設備名稱
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            //console.log(item);
+            if (item.System == systemOption && item.SubSystem == subSystemOption) {
+                var tempSubSystem = item.SubSystem;
+                var isRepeat = false;
+                for (var i = 0; i < arrLength; i++) {
+                    if (item.EName == tempArray[i]) {
+                        isRepeat = true;
+                        break;
+                    }
+                }
+
+                if (!isRepeat) {
+                    tempArray.push(item.EName);
+                    $("#ENameOption").append(`<option value="${item.EName}">${item.EName}</option>`);
+                }
+            }
+        });
+    }
+
+    //#endregion
 
     var baseUrl = "/MaintainItem_Management/";
 
@@ -79,24 +228,27 @@
     ]
 
     $(function () {
-        let getGridJSON = '';
-        Initialize_DataGrid(getGridJSON);
+        let getGridJSON = '@Url.Action("GetGridJson", "MaintainItem_Management")';
+        var QueryStr = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.QueryStr));
+
+        console.log(QueryStr);
+        Initialize_DataGrid(getGridJSON, QueryStr);
         addSearchAreaClickEvent();
     });
 
-    function Initialize_DataGrid(getGridJSON) {
+    function Initialize_DataGrid(getGridJSON, searchQuery) {
 
         $('#DataGrid').datagrid({
 
-            // url: getGridJSON,
-            // method: 'POST',
-            data: fakeData,
+            url: getGridJSON,
+            //method: 'POST',
+            //data: fakeData,
             queryParams: {
-                Query: ''
+                Query: searchQuery
             },
             rownumbers: true,
-            idField: 'RSN',
-            sortName: 'RSN',
+            idField: 'MISN',
+            sortName: 'MISN',
             remoteSort: false,
             //sortOrder: 'desc',
             fit: true,
@@ -121,12 +273,14 @@
                 }
             ]],
             columns: [[
-                { field: 'System', title: '系統別', align: 'center', width: 100, sortable: true },
-                { field: 'SubSystem', title: '子系統別', align: 'center', width: 110, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 200, sortable: true },
-                { field: 'MIName', title: '保養項目名稱', align: 'center', width: 150, sortable: true },
+                { field: 'MISN', title: '保養項目編號', align: 'center', width: 150, sortable: true },
+                { field: 'System', title: '系統別', align: 'center', width: 150, sortable: true },
+                { field: 'SubSystem', title: '子系統別', align: 'center', width: 150, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 250, sortable: true },
+                { field: 'MIName', title: '保養項目名稱', align: 'center', width: 200, sortable: true },
                 { field: 'Unit', title: '保養週期單位', align: 'center', width: 150, sortable: true },
                 { field: 'Period', title: '保養週期', align: 'center', width: 110, sortable: true },
+                { field: 'MaintainItemIsEnable', title: '啟停狀態', align: 'center', width: 110, sortable: true, formatter: (value, row, index) => { return formattedEnable(value); } }
             ]],
             singleSelect: true,
             selectOnCheck: true,
@@ -146,6 +300,14 @@
             afterPageText: '頁，共 {pages} 頁',
             displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
         });
+    }
+
+    function formattedEnable(value) {
+        if (value == 1)
+            return "啟用";
+        else if (value == 2)
+            return "永久停用";
+
     }
 
     // datagrid onClick Function
@@ -173,14 +335,50 @@
             $("form")[0].reset();
         });
 
-        $("#search").click(function () {
-            let url = "/";
-            window.open(url, "_self");
+        //檢索按鍵
+        $(".btn-search").click(function () {
+            //宣告FormData
+            var formData = new FormData();
+            //將欄位append到FormData內
+            formData.append('System', $("#SystemOption").val());
+            formData.append('SubSystem', $("#SubSystemOption").val());
+            formData.append('EName', $("#ENameOption").val());
+            formData.append('MIName', $("#MINameOption").val());
+            formData.append('Unit', $("#UnitOption").val());
+            formData.append('Period', $("#PeriodOption").val());
+
+            $.ajax({
+                contentType: false,
+                processData: false,
+                cache: false,
+                type: 'POST',
+                url: '@Url.Action("VerifyField", "MaintainItem_Management")',
+                data: formData,
+                success: function (response) {
+                    //console.log('response.QueryStr');
+                    //console.log(response.QueryStr);
+                    if (response.ResponseCode == 0) {
+                        var getGridJSON = '@Url.Action("GetGridJson", "MaintainItem_Management")';
+                        var originalQuery = response.QueryStr;
+                        Initialize_DataGrid(getGridJSON, originalQuery);
+                        alert(response.ResponseMessage);
+                    }
+                    else {
+                        alert(response.ResponseMessage);
+                    }
+                },
+                error: function () {
+                    alert("Something went wrong please contact admin.");
+                }
+
+            });
         });
 
         $("#create").click(function () {
             let url = baseUrl + 'Create';
             window.open(url, "_self");
         });
-    }
+    }   
+
+
 </script>
