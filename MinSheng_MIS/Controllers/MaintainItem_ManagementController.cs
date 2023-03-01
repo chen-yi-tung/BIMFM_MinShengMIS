@@ -80,30 +80,41 @@ namespace MinSheng_MIS.Controllers
         public ActionResult VerifyField(MaintainItemQuery queryViewModel)
         {
             JsonResponseViewModel model = new JsonResponseViewModel();
-            //驗證欄位，視需求調整
-            if (queryViewModel.System == "none")
-                queryViewModel.System = null;
-            if (queryViewModel.SubSystem == "none")
-                queryViewModel.SubSystem = null;
-            if (queryViewModel.EName == "none")
-                queryViewModel.EName = null;
 
-            //if (queryViewModel.System == "none" || queryViewModel.SubSystem == "none")
-            //{
-            //    model.ResponseCode = 1;
-            //    model.ResponseMessage = "請選擇必填的檢索欄位";
-            //    return Json(model);
-            //}
             try
             {
+                //驗證欄位，視需求調整
+                if (queryViewModel.System == "none")
+                    queryViewModel.System = null;
+                if (queryViewModel.SubSystem == "none")
+                    queryViewModel.SubSystem = null;
+                if (queryViewModel.EName == "none")
+                    queryViewModel.EName = null;
+                if (!string.IsNullOrEmpty(queryViewModel.Period))
+                {
+                    int PP = Convert.ToInt16(queryViewModel.Period);
+                }
+                //if (queryViewModel.System == "none" || queryViewModel.SubSystem == "none")
+                //{
+                //    model.ResponseCode = 1;
+                //    model.ResponseMessage = "請選擇必填的檢索欄位";
+                //    return Json(model);
+                //}
+
                 string querystr = JsonConvert.SerializeObject(queryViewModel, Formatting.Indented);
                 model.QueryStr = querystr;
                 model.ResponseCode = 0;
                 model.ResponseMessage = "已完成檢索";
             }
-            catch (Exception)
+            catch(System.OverflowException)
             {
                 model.ResponseCode = 1;
+                model.ResponseMessage = "保養週期必須小於或等於 32767";
+
+            }
+            catch (Exception)
+            {
+                model.ResponseCode = 2;
                 model.ResponseMessage = "檢索未完成";
             }
             return Json(model);
