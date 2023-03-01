@@ -102,6 +102,10 @@
             ClearOptions("SubSystemOption");
             $("#SubSystemOption").append(`<option value="none"> -- 請選擇 -- </option>`);
             CreateSubSystemOptions(chooseSystem, equipmentList.EquipmentInfo);
+
+            ClearOptions("ENameOption");
+            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            CreateENameOptionsWithSystem(chooseSystem, equipmentList.EquipmentInfo);
         }
     });
 
@@ -143,7 +147,7 @@
                 var tempSubSystem = item.SubSystem;
                 var isRepeat = false;
                 for (var i = 0; i < arrLength; i++) {
-                    if (item.SubSystem == tempArray[i]) {
+                    if (tempSubSystem == tempArray[i]) {
                         isRepeat = true;
                         break;
                     }
@@ -182,6 +186,36 @@
         });
     }
 
+    //依據所選系統，創建相關的EName element
+    function CreateENameOptionsWithSystem(systemVal, data) {
+        var systemOption = systemVal;
+        //var subSystemOption = subSystemVal;
+        var tempArray = [];
+        //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
+
+        //列出不重複的設備名稱
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            //console.log(item);
+            if (item.System == systemOption) {
+                var tempEName = item.EName;
+                var isRepeat = false;
+                for (var i = 0; i < arrLength; i++) {
+                    if (tempEName == tempArray[i]) {
+                        isRepeat = true;
+                        break;
+                    }
+                }
+
+                if (!isRepeat) {
+                    tempArray.push(item.EName);
+                    $("#ENameOption").append(`<option value="${item.EName}">${item.EName}</option>`);
+                }
+            }
+        });
+
+
+    }
     //依據所選系統與子系統，創建相關的EName element
     function CreateENameOptions(systemVal, subSystemVal, data) {
         var systemOption = systemVal;
@@ -194,7 +228,7 @@
             var arrLength = tempArray.length;
             //console.log(item);
             if (item.System == systemOption && item.SubSystem == subSystemOption) {
-                var tempSubSystem = item.SubSystem;
+                //var tempSubSystem = item.SubSystem;
                 var isRepeat = false;
                 for (var i = 0; i < arrLength; i++) {
                     if (item.EName == tempArray[i]) {
