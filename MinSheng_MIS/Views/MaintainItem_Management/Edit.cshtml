@@ -1,7 +1,249 @@
-﻿
-@{
-    ViewBag.Title = "Edit";
+﻿@{
+    ViewBag.Title = "保養項目編輯";
 }
 
-<h2>Edit</h2>
+<h2>@ViewBag.Title</h2>
+
+<form class="d-contents">
+    <div class="datatable datatable-small mt-5">
+        <div class="datatable-body">
+            <table class="datatable-table" id="MaintainItemInfo"></table>
+        </div>
+    </div>
+</form>
+
+<form class="d-contents">
+    <div class="datatable datatable-small-grid mt-5">
+        <div class="datatable-body">
+            <table class="datatable-table" id="EquipmentMaintainItem">
+            </table>
+        </div>
+    </div>
+</form>
+
+<div class="edit-button-area">
+    <button class="btn btn-create-item">套用預設週期</button>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back">返回</button>
+    <button class="btn btn-submit">儲存</button>
+</div>
+
+
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+
+    const apiUrl = null;
+
+    const SerializedName = [
+        { text: "系統別", value: "System" },
+        { text: "子系統別", value: "SubSystem" },
+        { text: "設備名稱", value: "EName" },
+        { text: "項目名稱", value: "MIName" },
+        {
+            text: "保養週期單位", value: "Unit", formatter: (data) => {
+                return `
+                <select class="form-select" name="Unit" id="Unit" required>
+                    <option value="日" ${data == "日" ? "selected" : ""}>日</option>
+                    <option value="月" ${data == "月" ? "selected" : ""}>月</option>
+                    <option value="年" ${data == "年" ? "selected" : ""}>年</option>
+                </select>
+                `
+            }
+        },
+        {
+            text: "保養週期", value: "Period", formatter: (data) => {
+                return `<input class="form-control" type="number" name="Period" id="Period" value="${data}" required/>`
+            }
+        },
+    ]
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            {
+                id: "_checkbox",
+                title: `<input class="form-check-input check-all" type="checkbox" name="checkbox-all" id="checkbox-all"/>`,
+                width: "6%",
+                formatter: (data, row, index) => {
+                    return `<input class="form-check-input check-item" type="checkbox" name="checkbox-${index}" id="checkbox-${index}"/>`
+                }
+            },
+            { id: "ESN", title: "設備編號", width: "30%" },
+            {
+                id: "Unit", title: "保養週期單位", width: "36%", formatter: (data) => {
+                    return `
+                    <select class="form-select" name="Unit" id="Unit" required>
+                        <option value="日" ${data == "日" ? "selected" : ""}>日</option>
+                        <option value="月" ${data == "月" ? "selected" : ""}>月</option>
+                        <option value="年" ${data == "年" ? "selected" : ""}>年</option>
+                    </select>
+                    `
+                }
+            },
+            {
+                id: "Period", title: "保養週期", width: "28%", formatter: (data) => {
+                    return `<input class="form-control" type="number" name="Period" id="Period" value="${data}" required/>`
+                }
+            },
+        ]
+    }
+
+    const fakeData = {
+        System: "前處理",
+        SubSystem: "前處理",
+        EName: "除物皮帶輸送機",
+        MIName: "軸承潤滑",
+        Unit: "月",
+        Period: "1",
+        EquipmentMaintainItem: [
+            {
+                ESN: "E00001",
+                Unit: "月",
+                Period: "1",
+            },
+            {
+                ESN: "E00002",
+                Unit: "天",
+                Period: "7",
+            },
+            {
+                ESN: "E00003",
+                Unit: "月",
+                Period: "2",
+            },
+            {
+                ESN: "E00004",
+                Unit: "月",
+                Period: "2",
+            },
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                body: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
+            $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
+
+            let container = $("#EquipmentMaintainItem");
+            let checkbox_all = container.find("#checkbox-all");
+            let checkbox_item = container.find(".check-item");
+
+            container.on("change", ".check-item", function (e) {
+                let checked = $(e.target).prop('checked');
+                let checkeds = checkbox_item.toArray().map(item => {
+                    return item.checked;
+                })
+
+                if (checkeds.every(e => e)) {
+                    checkbox_all.prop('checked', true);
+                    checkbox_all.prop('indeterminate', false);
+                }
+                else if (checkeds.some(e => e)) {
+                    checkbox_all.prop('checked', false);
+                    checkbox_all.prop('indeterminate', true);
+                }
+                else {
+                    checkbox_all.prop('checked', false);
+                    checkbox_all.prop('indeterminate', false);
+                }
+            })
+            checkbox_all.change((e) => {
+                let checked = $(e.target).prop('checked');
+                checkbox_item.prop('checked', checked);
+                checkbox_all.prop('indeterminate', false);
+            })
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function addButtonEvent() {
+        $(".btn-back").click(function () {
+            history.back();
+        });
+
+        $(".btn-submit").click(function () {
+            saveMaintainItem();
+        });
+
+        $(".btn-create-item").click(function () {
+            let Unit = $("#MaintainItemInfo").find("#Unit").val(),
+                Period = $("#MaintainItemInfo").find("#Period").val();
+            $("#EquipmentMaintainItem").find(".check-item").toArray().forEach((item, i) => {
+                if (item.checked) {
+                    let tr = $("#EquipmentMaintainItem").find("tr#"+i);
+                    tr.find("#Unit").val(Unit);
+                    tr.find("#Period").val(Period);
+                }
+            })
+        });
+    }
+
+    function saveMaintainItem() {
+        //todo
+
+        let isValidity = $("form").toArray().map(e => e.checkValidity()).every(e => e);
+        console.log("isValidity:", isValidity);
+        if (!isValidity) return;
+
+        let jsonData = {
+            Unit: $("#MaintainItemInfo").find("#Unit").val(),
+            Period: $("#MaintainItemInfo").find("#Period").val(),
+            EquipmentMaintainItem: calcEquipmentMaintainItem()
+        }
+
+        console.log("jsonData:", jsonData);
+
+        /* $.ajax({
+            url: "",
+            body: JSON.stringify(jsonData),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        }) */
+
+
+        function calcEquipmentMaintainItem() {
+            let arr = $("#EquipmentMaintainItem tbody tr").toArray().map((e, i) => {
+                return {
+                    ESN: $(e).find("#d-ESN").text(),
+                    Unit: $(e).find("#Unit").val(),
+                    Period: $(e).find("#Period").val(),
+                };
+            })
+            return arr;
+        }
+
+        function onSuccess(res) {
+            console.log(res);
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+        addButtonEvent();
+    }
+</script>
 

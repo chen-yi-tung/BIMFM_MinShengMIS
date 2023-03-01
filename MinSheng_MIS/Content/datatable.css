@@ -116,6 +116,58 @@ th.datatable-header+th.datatable-header {
     width: 100%;
 } */
 
+/* input */
+
+.datatable .form-select,
+.datatable .form-control {
+    filter: drop-shadow(0 0 2px hsla(0, 0%, 0%, 0.25));
+    color: #494949;
+    border: 0;
+}
+
+.datatable .form-control {
+    padding: 0.2rem 0.75rem;
+}
+
+.datatable .form-select {
+    padding: 0.2rem 2.25rem 0.2rem 0.75rem;
+}
+
+.datatable-table td:has(.form-select, .form-control) {
+    padding: 6px 24px;
+}
+
+.datatable .form-check-input[type=checkbox] {
+    --check-color: #357BAD;
+    border-width: 2px;
+    background-color: transparent;
+    border-color: var(--check-color);
+}
+
+.datatable-header .form-check-input[type=checkbox] {
+    --check-color: #fff;
+}
+
+.datatable .form-check-input:indeterminate[type=checkbox] {
+    background-color: var(--check-color);
+    border-color: var(--check-color);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
+}
+
+.datatable .form-check-input:checked[type=checkbox] {
+    background-color: var(--check-color);
+    border-color: var(--check-color);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+.datatable-header .form-check-input:indeterminate[type=checkbox] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
+}
+
+.datatable-header .form-check-input:checked[type=checkbox] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
 /* RWD */
 
 @media (min-width: 992px) {

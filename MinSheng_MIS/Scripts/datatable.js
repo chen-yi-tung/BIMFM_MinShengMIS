@@ -6,7 +6,7 @@
                 html = `
                     <tr>
                         <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td">${putImage(data[e.value])}</td>
+                        <td class="datatable-table-td" id="d-${e.value}">${putImage(data[e.value])}</td>
                     </tr>
                 `;
                 break;
@@ -14,17 +14,29 @@
                 html = `
                     <tr>
                         <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td">${putFile(data[e.value])}</td>
+                        <td class="datatable-table-td" id="d-${e.value}">${putFile(data[e.value])}</td>
                     </tr>
                 `;
                 break;
             default:
-                html = `
+                if (e.formatter) {
+                    html = `
                     <tr>
                         <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td">${data[e.value]}</td>
+                        <td class="datatable-table-td" id="d-${e.value}">
+                            ${e.formatter(data[e.value])}
+                        </td>
                     </tr>
-                `;
+                    `;
+                }
+                else {
+                    html = `
+                    <tr>
+                        <td class="datatable-table-th">${e.text}</td>
+                        <td class="datatable-table-td" id="d-${e.value}">${data[e.value]}</td>
+                    </tr>
+                    `;
+                }
                 break;
         }
         return html;
@@ -59,15 +71,24 @@ function createTableGrid(data, options) {
     }
 
     function createTrs(op, ds) {
-        return ds.map((d) => {
-            let tr = `<tr>${createTds(op, d)}</tr>`;
+        return ds.map((d, i) => {
+            let tr = `<tr id="${i}">${createTds(op, d, i)}</tr>`;
             return tr;
         }).join("");
     }
 
-    function createTds(op, d) {
+    function createTds(op, d, i) {
         return op.map((o) => {
-            let td = `<td>${d[o.id]}</td>`;
+            let td
+            if (o.formatter) {
+                td = `
+                <td id="d-${o.id}">
+                    ${o.formatter(d[o.id], d, i)}
+                </td>`;
+            }
+            else {
+                td = `<td id="d-${o.id}">${d[o.id]}</td>`;
+            }
             return td;
         }).join("");
     }
