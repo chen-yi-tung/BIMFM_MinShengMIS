@@ -14,7 +14,7 @@
 <button class="btn btn-create" id="create">新增保養項目</button>
 
 <div class="search-area">
-    <form class="form">
+    <form id="Searchform"class="form">
 
         <div class="form-group">
             <label for="System">系統別</label>
@@ -365,8 +365,9 @@
 
     //search area onClick Function
     function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $("form")[0].reset();
+        $(".btn-clear").click(function () {
+            document.getElementById("Searchform").reset();
+
         });
 
         //檢索按鍵
