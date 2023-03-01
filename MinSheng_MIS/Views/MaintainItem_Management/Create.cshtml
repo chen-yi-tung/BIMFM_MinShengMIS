@@ -82,30 +82,30 @@
                 </div>
                 <div class="th col-1 text-white"></div>
             </div>
-            <div class="maintain-item row w-100" id="maintain-item-0">
-                <div class="d-lg-contents col py-2">
-                    <div class="form-group required col-lg-5 ps-lg-4 pe-lg-3 ps-4 pe-4 py-2 text-start">
-                        <label for="MIName" class="d-lg-none text-white">項目名稱</label>
-                        <input class="form-control" type="text" name="MIName" id="MIName" required>
-                    </div>
-                    <div class="form-group required col-lg-3 ps-lg-3 pe-lg-3 ps-4 pe-4 py-2 text-start">
-                        <label for="Unit" class="d-lg-none text-white">保養週期單位</label>
-                        <select class="form-select" name="Unit" id="Unit" required>
-                            <option value="日">日</option>
-                            <option value="月">月</option>
-                            <option value="年">年</option>
-                        </select>
-                    </div>
-                    <div class="form-group required col-lg-3 ps-lg-3 pe-lg-4 ps-4 pe-4 py-2 text-start">
-                        <label for="Period" class="d-lg-none text-white">保養週期</label>
-                        <input class="form-control" type="number" name="Period" id="Period" required>
-                    </div>
-                </div>
-                <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0  
-                        position-absolute text-end order-first pt-2 px-2">
-                    <button class="btn-delete-item" onclick="deleteEquipmentMaintainItem(0)"></button>
-                </div>
+            @* <div class="maintain-item row w-100" id="maintain-item-0">
+            <div class="d-lg-contents col py-2">
+            <div class="form-group required col-lg-5 ps-lg-4 pe-lg-3 ps-4 pe-4 py-2 text-start">
+            <label for="MIName" class="d-lg-none text-white">項目名稱</label>
+            <input class="form-control" type="text" name="MIName" id="MIName" required>
             </div>
+            <div class="form-group required col-lg-3 ps-lg-3 pe-lg-3 ps-4 pe-4 py-2 text-start">
+            <label for="Unit" class="d-lg-none text-white">保養週期單位</label>
+            <select class="form-select" name="Unit" id="Unit" required>
+            <option value="日">日</option>
+            <option value="月">月</option>
+            <option value="年">年</option>
+            </select>
+            </div>
+            <div class="form-group required col-lg-3 ps-lg-3 pe-lg-4 ps-4 pe-4 py-2 text-start">
+            <label for="Period" class="d-lg-none text-white">保養週期</label>
+            <input class="form-control" type="number" name="Period" id="Period" min="1" value="1" required>
+            </div>
+            </div>
+            <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0
+            position-absolute text-end order-first pt-2 px-2">
+            <button class="btn-delete-item" onclick="deleteEquipmentMaintainItem(0)"></button>
+            </div>
+            </div> *@
         </div>
     </form>
 </div>
@@ -117,10 +117,11 @@
 
 <script>
 
-    var itemCount = 1;
+    var itemCount = 0;
 
     window.onload = function () {
         addButtonEvent();
+        createEquipmentMaintainItem();
     }
 
     function addButtonEvent() {
@@ -146,6 +147,7 @@
                 <div class="form-group required col-lg-3 ps-lg-3 pe-lg-3 ps-4 pe-4 py-2 text-start">
                     <label for="Unit" class="d-lg-none text-white">保養週期單位</label>
                     <select class="form-select" name="Unit" id="Unit" required>
+                        <option value="" disabled hidden>日/月/年</option>
                         <option value="日">日</option>
                         <option value="月">月</option>
                         <option value="年">年</option>
@@ -153,7 +155,7 @@
                 </div>
                 <div class="form-group required col-lg-3 ps-lg-3 pe-lg-4 ps-4 pe-4 py-2 text-start">
                     <label for="Period" class="d-lg-none text-white">保養週期</label>
-                    <input class="form-control" type="number" name="Period" id="Period" required>
+                    <input class="form-control" type="number" name="Period" id="Period" min="1" value="1" required>
                 </div>
             </div>
             <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0  
@@ -175,7 +177,7 @@
 
         let isValidity = $("form").toArray().map(e => e.checkValidity()).every(e => e);
         console.log("isValidity:", isValidity);
-        if (!isValidity) return;
+
 
         let jsonData = {
             System: $("#System").val(),
@@ -185,6 +187,8 @@
         }
 
         console.log("jsonData:", jsonData);
+        
+        if (!isValidity) return;
 
         /* $.ajax({
             url: "",

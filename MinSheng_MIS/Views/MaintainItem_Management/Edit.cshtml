@@ -55,7 +55,7 @@
         },
         {
             text: "保養週期", value: "Period", formatter: (data) => {
-                return `<input class="form-control" type="number" name="Period" id="Period" value="${data}" required/>`
+                return `<input class="form-control" type="number" name="Period" id="Period" min="1" value="${data}" required/>`
             }
         },
     ]
@@ -85,7 +85,7 @@
             },
             {
                 id: "Period", title: "保養週期", width: "28%", formatter: (data) => {
-                    return `<input class="form-control" type="number" name="Period" id="Period" value="${data}" required/>`
+                    return `<input class="form-control" type="number" name="Period" id="Period" min="1" value="${data}" required/>`
                 }
             },
         ]
