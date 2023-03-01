@@ -164,10 +164,16 @@ namespace MinSheng_MIS.Controllers
 
             #endregion
 
-            TotalNo_AsBuilt = table.Count();
-
             //回傳JSON陣列
             JArray ja = new JArray();
+
+            //注意:"{0} {1}"中間必須為一個空格，以讓系統識別此二參數，注意:必須使用OrderBy，不可使用 OrderByDescent
+            //table = table.OrderBy(string.Format("{0} {1}", propertyName, order));
+            TotalNo_AsBuilt = table.Count();
+
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            //table = table.Skip((page - 1) * pageSize).Take(pageSize);
+
             if (table != null && TotalNo_AsBuilt > 0)
             {
                 var itemObjects = new JObject();
@@ -200,8 +206,6 @@ namespace MinSheng_MIS.Controllers
                     ja.Add(itemObjects);
                 }
             }
-
-            TotalNo_AsBuilt = ja.Count();
             return ja;
         }
 
