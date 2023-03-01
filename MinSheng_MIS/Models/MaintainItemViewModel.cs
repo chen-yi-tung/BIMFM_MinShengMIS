@@ -11,6 +11,8 @@ namespace MinSheng_MIS.Models
 
         public List<EquipmentInfo> EquipmentInfo { get; set; }
         public string EquipmentInfoList { get; set; }
+
+        public string QueryStr { get; set; }
     }
 
     public class SystemItems
