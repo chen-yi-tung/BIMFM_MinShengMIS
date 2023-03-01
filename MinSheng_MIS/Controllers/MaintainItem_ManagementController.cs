@@ -175,10 +175,10 @@ namespace MinSheng_MIS.Controllers
             //table = table.Skip((page - 1) * pageSize).Take(pageSize);
 
             if (table != null && TotalNo_AsBuilt > 0)
-            {
-                var itemObjects = new JObject();
+            {                
                 foreach (var item in table)
                 {
+                    var itemObjects = new JObject();
                     if (itemObjects["MISN"] == null)
                         itemObjects.Add("MISN", item.MISN);                                    //保養設備編號
 
