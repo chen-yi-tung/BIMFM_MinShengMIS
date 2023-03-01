@@ -263,6 +263,7 @@
     <Compile Include="Models\InspectionTrack.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\JsonResponseViewModel.cs" />
     <Compile Include="Models\MaintainAuditImage.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -275,6 +276,8 @@
     <Compile Include="Models\MaintainItem.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MaintainItemQuery.cs" />
+    <Compile Include="Models\MaintainItemViewModel.cs" />
     <Compile Include="Models\MaintainSupplementaryFile.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
