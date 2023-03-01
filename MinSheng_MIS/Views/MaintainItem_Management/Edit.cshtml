@@ -5,6 +5,7 @@
 <h2>@ViewBag.Title</h2>
 
 <form class="d-contents">
+    <input type="text" id="MISN" name="MISN" hidden>
     <div class="datatable datatable-small mt-5">
         <div class="datatable-body">
             <table class="datatable-table" id="MaintainItemInfo"></table>
@@ -92,6 +93,7 @@
     }
 
     const fakeData = {
+        MISN: "000001",
         System: "前處理",
         SubSystem: "前處理",
         EName: "除物皮帶輸送機",
@@ -137,6 +139,9 @@
 
         function onSuccess(res) {
             console.log(res);
+
+            $("#MISN").val(res.MISN);
+
             $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
             $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
 
@@ -188,7 +193,7 @@
                 Period = $("#MaintainItemInfo").find("#Period").val();
             $("#EquipmentMaintainItem").find(".check-item").toArray().forEach((item, i) => {
                 if (item.checked) {
-                    let tr = $("#EquipmentMaintainItem").find("tr#"+i);
+                    let tr = $("#EquipmentMaintainItem").find("tr#" + i);
                     tr.find("#Unit").val(Unit);
                     tr.find("#Period").val(Period);
                 }
@@ -204,6 +209,7 @@
         if (!isValidity) return;
 
         let jsonData = {
+            MISN: $("#MISN").val(),
             Unit: $("#MaintainItemInfo").find("#Unit").val(),
             Period: $("#MaintainItemInfo").find("#Period").val(),
             EquipmentMaintainItem: calcEquipmentMaintainItem()

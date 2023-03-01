@@ -4,6 +4,8 @@
 
 <h2>@ViewBag.Title</h2>
 
+<input type="text" id="MISN" name="MISN" hidden>
+
 <div class="datatable datatable-small mt-5">
     <div class="datatable-body">
         <table class="datatable-table" id="MaintainItemInfo"></table>
@@ -21,27 +23,6 @@
     <button class="btn btn-back">返回</button>
     <button class="btn btn-delete">刪除</button>
 </div>
-
-<div class="modal fade modal-delete" id="DeleteModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                    class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
-                    <path
-                        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-                </svg>
-                確認是否刪除？
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-delete-confirm">確定刪除</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 
 <script src="/Scripts/datatable.js"></script>
 <script>
@@ -67,6 +48,7 @@
     }
 
     const fakeData = {
+        MISN: "000001",
         System: "前處理",
         SubSystem: "前處理",
         EName: "除物皮帶輸送機",
@@ -112,6 +94,7 @@
 
         function onSuccess(res) {
             console.log(res);
+            $("#MISN").val(res.MISN);
             $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
             $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
         }
@@ -126,13 +109,104 @@
         });
 
         $(".btn-delete").click(function () {
-            let myModal = bootstrap.Modal.getOrCreateInstance($("#DeleteModal")[0]);
+            let modal = $(`
+            <div class="modal fade modal-delete" id="DeleteModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                            </svg>
+                            確認是否刪除？
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-delete" id="delete">確定刪除</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `);
+            let myModal = bootstrap.Modal.getOrCreateInstance(modal[0]);
             myModal.show();
+            modal[0].addEventListener("hidden.bs.modal", () => {
+                myModal.dispose();
+                modal.remove();
+            })
+
+            modal.find("#delete").click(function () {
+                let jsonData = $("#MISN").val();
+                console.log(jsonData);
+                let spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+                modal.find("#delete").append(spinner);
+
+                setTimeout(onSuccess,1000);
+
+                /* $.ajax({
+                url: "",
+                body: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+                }) */
+
+            });
+
+            function onSuccess(res) {
+                console.log(res);
+                myModal.hide();
+                let modal_success = $(`
+                    <div class="modal fade modal-delete" id="DeleteModal-success" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    刪除成功！
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-delete" data-bs-dismiss="modal">確定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `);
+                $(document.body).append(modal_success);
+                let myModal_success = bootstrap.Modal.getOrCreateInstance(modal_success[0]);
+                myModal_success.show();
+                modal_success[0].addEventListener("hidden.bs.modal", () => {
+                    myModal_success.dispose();
+                    history.back();
+                })
+            }
+            function onError(res) {
+                console.log(res);
+                let modal_error = $(`
+                    <div class="modal fade modal-delete" id="DeleteModal-error" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    刪除失敗！
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-delete" data-bs-dismiss="modal">確定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `);
+                $(document.body).append(modal_error);
+                let myModal_error = bootstrap.Modal.getOrCreateInstance(modal_error[0]);
+                myModal_error.show();
+                modal_error[0].addEventListener("hidden.bs.modal", () => {
+                    myModal_error.dispose();
+                    modal_error.remove();
+                })
+            }
         });
 
-        $(".btn-delete-confirm").click(function () {
-            
-        });
     }
 
     window.onload = function () {
