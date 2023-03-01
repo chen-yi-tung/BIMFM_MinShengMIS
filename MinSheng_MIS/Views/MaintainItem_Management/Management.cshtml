@@ -104,24 +104,26 @@
         }
     });
 
-    const selectSubSystemElement = document.querySelector('#SubSystemOption');
-    selectSubSystemElement.addEventListener('change', (event) => {
-        var chooseSystem = document.getElementById('SystemOption').value;
-        var chooseSubSystem = document.getElementById('SubSystemOption').value;
-        console.log(`Choose SubSystem: ${event.target.value}`);
+    CreateENameOptions(equipmentList.EquipmentInfo);
 
-        //When user didn't choose subsystem option
-        if (chooseSystem == "none") {
-            ClearOptions("ENameOption");
-            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
-        }
-        //When user choose subsystem option
-        else {
-            ClearOptions("ENameOption");
-            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
-            CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
-        }
-    });
+    //const selectSubSystemElement = document.querySelector('#SubSystemOption');
+    //selectSubSystemElement.addEventListener('change', (event) => {
+    //    var chooseSystem = document.getElementById('SystemOption').value;
+    //    var chooseSubSystem = document.getElementById('SubSystemOption').value;
+    //    console.log(`Choose SubSystem: ${event.target.value}`);
+
+    //    //When user didn't choose subsystem option
+    //    if (chooseSystem == "none") {
+    //    //    ClearOptions("ENameOption");
+    //    //    $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+    //    }
+    //    //When user choose subsystem option
+    //    else {
+    //        ClearOptions("ENameOption");
+    //        $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+    //        CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
+    //    }
+    //});
 
     //Clear all options in select
     function ClearOptions(id) {
@@ -155,9 +157,9 @@
         //console.log(tempArray);
     }
 
-    function CreateENameOptions(systemVal, subSystemVal, data) {
-        var systemOption = systemVal;
-        var subSystemOption = subSystemVal;
+    function CreateENameOptions(data) {
+        //var systemOption = systemVal;
+        //var subSystemOption = subSystemVal;
         var tempArray = [];
         //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
 
@@ -165,7 +167,7 @@
         data.forEach(function (item, i) {
             var arrLength = tempArray.length;
             //console.log(item);
-            if (item.System == systemOption && item.SubSystem == subSystemOption) {
+            //if (item.System == systemOption && item.SubSystem == subSystemOption) {
                 var tempSubSystem = item.SubSystem;
                 var isRepeat = false;
                 for (var i = 0; i < arrLength; i++) {
@@ -179,7 +181,7 @@
                     tempArray.push(item.EName);
                     $("#ENameOption").append(`<option value="${item.EName}">${item.EName}</option>`);
                 }
-            }
+            //}
         });
 
     }
