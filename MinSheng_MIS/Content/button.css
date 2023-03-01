@@ -21,6 +21,7 @@
     --bs-btn-hover-color: white;
 }
 
+.btn-cancel,
 .btn-back,
 .btn-clear {
     --bs-btn-bg: #A1B3AE;
@@ -54,8 +55,8 @@
     --bs-btn-hover-bg: #657589;
 }
 
-
-.btn-delete{
+.btn-delete,
+.btn-delete-confirm{
     --bs-btn-bg: #E06666;
     --bs-btn-color: white;
     --bs-btn-hover-bg: #ca5c5c;

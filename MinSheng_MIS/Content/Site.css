@@ -73,10 +73,26 @@ h2 {
     object-position: center;
 }
 
+.modal-delete {
+    --bs-modal-bg: #D3E5FB;
+    --bs-modal-border-radius: 5px;
+}
+
+.modal-delete .modal-body {
+    padding: 40px;
+    font-size: 20px;
+}
+
+.modal-delete .modal-footer {
+    border-top: 0;
+}
+
+
 @media (min-width: 576px) {
     .d-sm-contents {
         display: contents !important;
     }
+
     .container.render-body {
         max-width: 540px;
     }
@@ -93,9 +109,10 @@ h2 {
 }
 
 @media (min-width: 992px) {
-    .position-lg-relative{
+    .position-lg-relative {
         position: relative !important;
     }
+
     .d-lg-contents {
         display: contents !important;
     }
