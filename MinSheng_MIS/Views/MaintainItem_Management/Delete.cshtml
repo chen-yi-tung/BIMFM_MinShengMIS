@@ -20,8 +20,8 @@
 </div>
 
 <div class="edit-button-area">
-    <button class="btn btn-back">返回</button>
-    <button class="btn btn-delete">刪除</button>
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
 </div>
 
 <script src="/Scripts/datatable.js"></script>
@@ -104,11 +104,11 @@
     }
 
     function addButtonEvent() {
-        $(".btn-back").click(function () {
+        $("#back").click(function () {
             history.back();
         });
 
-        $(".btn-delete").click(function () {
+        $("#delete").click(function () {
             let modal = $(`
             <div class="modal fade modal-delete" id="DeleteModal" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
@@ -123,7 +123,7 @@
                         </div>
                         <div class="modal-footer justify-content-center">
                             <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-delete" id="delete">確定刪除</button>
+                            <button type="button" class="btn btn-delete" id="delete-2">確定刪除</button>
                         </div>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
                 modal.remove();
             })
 
-            modal.find("#delete").click(function () {
+            modal.find("#delete-2").click(function () {
                 let jsonData = $("#MISN").val();
                 console.log(jsonData);
                 let spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;

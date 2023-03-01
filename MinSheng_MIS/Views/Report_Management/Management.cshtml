@@ -101,9 +101,9 @@
         </div>
 
         <div class="button-group">
-            <button type="button" class="btn btn-search">查詢</button>
-            <button type="button" class="btn btn-clear">清除</button>
-            <button type="button" class="btn btn-export">匯出</button>
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+            <button type="button" class="btn btn-export" id="export">匯出</button>
         </div>
 
     </form>
@@ -243,16 +243,16 @@
 
     //search area onClick Function
     function addSearchAreaClickEvent() {
-        $(".btn-clear").click(function () {
+        $("#clear").click(function () {
             $("form")[0].reset();
         });
 
-        $(".btn-search").click(function () {
+        $("#search").click(function () {
             let url = "/";
             window.open(url, "_self");
         });
 
-        $(".btn-export").click(function () {
+        $("#export").click(function () {
             let url = baseUrl + 'Export';
             window.open(url, "_self");
         });

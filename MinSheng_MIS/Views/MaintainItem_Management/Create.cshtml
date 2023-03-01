@@ -66,7 +66,7 @@
         </div>
     </form>
     <hr class="hr-dashed">
-    <button class="btn btn-create-item align-self-start">+新增</button>
+    <button class="btn btn-create-item align-self-start" id="create-item">+新增</button>
 
     <form class="d-contents">
         <div class="maintain-item-list text-center w-100 mt-4 mt-lg-0">
@@ -111,8 +111,8 @@
 </div>
 
 <div class="edit-button-area">
-    <button class="btn btn-back">返回</button>
-    <button class="btn btn-submit">新增</button>
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">新增</button>
 </div>
 
 <script>
@@ -125,13 +125,13 @@
     }
 
     function addButtonEvent() {
-        $(".btn-back").click(function () {
+        $("#back").click(function () {
             history.back();
         })
-        $(".btn-submit").click(function () {
+        $("#submit").click(function () {
             saveMaintainItem();
         })
-        $(".btn-create-item").click(function () {
+        $("#create-item").click(function () {
             createEquipmentMaintainItem();
         })
     }

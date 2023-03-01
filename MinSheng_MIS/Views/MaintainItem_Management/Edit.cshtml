@@ -23,12 +23,12 @@
 </form>
 
 <div class="edit-button-area">
-    <button class="btn btn-create-item">套用預設週期</button>
+    <button class="btn btn-create-item" id="changePeriod">套用預設週期</button>
 </div>
 
 <div class="edit-button-area">
-    <button class="btn btn-back">返回</button>
-    <button class="btn btn-submit">儲存</button>
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">儲存</button>
 </div>
 
 
@@ -180,15 +180,15 @@
     }
 
     function addButtonEvent() {
-        $(".btn-back").click(function () {
+        $("#back").click(function () {
             history.back();
         });
 
-        $(".btn-submit").click(function () {
+        $("#submit").click(function () {
             saveMaintainItem();
         });
 
-        $(".btn-create-item").click(function () {
+        $("#changePeriod").click(function () {
             let Unit = $("#MaintainItemInfo").find("#Unit").val(),
                 Period = $("#MaintainItemInfo").find("#Period").val();
             $("#EquipmentMaintainItem").find(".check-item").toArray().forEach((item, i) => {

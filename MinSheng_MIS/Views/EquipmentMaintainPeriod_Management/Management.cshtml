@@ -1,7 +1,316 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "設備保養週期管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
 
+<h2>@ViewBag.Title</h2>
+
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="Area">棟別</label>
+            <select class="form-select" name="Area" id="Area">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Floor">樓層</label>
+            <select class="form-select" name="Floor" id="Floor">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="System">系統別</label>
+            <select class="form-select" name="System" id="System">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="SubSystem">子系統別</label>
+            <select class="form-select" name="SubSystem" id="SubSystem">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <select class="form-select" name="ESN" id="ESN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <select class="form-select" name="EName" id="EName">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="IsEnable">啟用狀態</label>
+            <select class="form-select" name="IsEnable" id="IsEnable">
+                <option value="">請選擇</option>
+                <option value="0">停用</option>
+                <option value="1">啟用</option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+<script>
+
+    var baseUrl = "/EquipmentMaintainPeriod_Management/";
+
+    const fakeData = [
+        {
+            EMISN: "000003",
+            IsEnable: 1,
+            Area: "A棟",
+            Floor: "1F",
+            System: "處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            MISN: "E00001_000001",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            NextTime: "2023/01/01",
+        },
+        {
+            EMISN: "000002",
+            IsEnable: 0,
+            Area: "A棟",
+            Floor: "1F",
+            System: "處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            MISN: "E00001_000001",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            NextTime: "2023/01/01",
+        },
+        {
+            EMISN: "000001",
+            IsEnable: 1,
+            Area: "B棟",
+            Floor: "1F",
+            System: "處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            MISN: "E00001_000001",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            NextTime: "2023/01/01",
+        },
+        {
+            EMISN: "000001",
+            IsEnable: 1,
+            Area: "B棟",
+            Floor: "1F",
+            System: "處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            MISN: "E00001_000001",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            NextTime: "2023/01/01",
+        },
+        {
+            EMISN: "000001",
+            IsEnable: 1,
+            Area: "B棟",
+            Floor: "1F",
+            System: "處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            MISN: "E00001_000001",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            NextTime: "2023/01/01",
+        },
+        {
+            EMISN: "000001",
+            IsEnable: 1,
+            Area: "B棟",
+            Floor: "1F",
+            System: "處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            MISN: "E00001_000001",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            NextTime: "2023/01/01",
+        },
+        {
+            EMISN: "000001",
+            IsEnable: 1,
+            Area: "B棟",
+            Floor: "1F",
+            System: "處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            MISN: "E00001_000001",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            NextTime: "2023/01/01",
+        },
+        {
+            EMISN: "000001",
+            IsEnable: 1,
+            Area: "B棟",
+            Floor: "1F",
+            System: "處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            MISN: "E00001_000001",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            NextTime: "2023/01/01",
+        },
+    ]
+
+    $(function () {
+        let getGridJSON = '';
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+
+        $('#DataGrid').datagrid({
+
+            // url: getGridJSON,
+            // method: 'POST',
+            data: fakeData,
+            queryParams: {
+                Query: ''
+            },
+            rownumbers: true,
+            idField: 'EMISN',
+            sortName: 'EMISN',
+            remoteSort: false,
+            //sortOrder: 'desc',
+            fit: true,
+            frozenColumns: [[
+                {
+                    field: '_edit', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">刪除</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'EMISN', title: 'EMISN', hidden: true },
+                { field: 'IsEnable', title: '啟用狀態', align: 'center', width: 100, sortable: true },
+
+                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
+
+                { field: 'System', title: '系統別', align: 'center', width: 100, sortable: true },
+                { field: 'SubSystem', title: '子系統別', align: 'center', width: 110, sortable: true },
+
+                { field: 'ESN', title: '設備編號', align: 'center', width: 150, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 150, sortable: true },
+
+                { field: 'MISN', title: '保養項目編號', align: 'center', width: 150, sortable: true },
+                { field: 'MIName', title: '項目名稱', align: 'center', width: 150, sortable: true },
+
+                { field: 'Unit', title: '保養週期單位', align: 'center', width: 150, sortable: true },
+                { field: 'Period', title: '保養週期', align: 'center', width: 110, sortable: true },
+
+                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 180, sortable: true },
+                { field: 'NextTime', title: '最近應保養日期', align: 'center', width: 180, sortable: true },
+            ]],
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+
+            pagination: true,
+            pagePosition: 'bottom',
+            pageSize: 10
+        });
+        //------------Pager --------------------------------------------------
+        var pager = $('#DataGrid').datagrid('getPager');
+        $(pager).pagination({
+            pageSize: 10,
+            showPageList: true,
+            pageList: [10, 20, 50],
+            beforePageText: '第',
+            afterPageText: '頁，共 {pages} 頁',
+            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+        });
+    }
+
+    // datagrid onClick Function
+
+    function onEdit(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Edit';
+        window.open(url, "_self");
+    }
+
+    function onLocate(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Locate';
+        window.open(url, "_self");
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+        });
+
+        $("#search").click(function () {
+            let url = "/";
+            window.open(url, "_self");
+        });
+    }
+</script>

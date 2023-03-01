@@ -9,7 +9,7 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create">新增保養項目</button>
+<button class="btn btn-create" id="create">新增保養項目</button>
 
 <div class="search-area">
     <form class="form" method="post" action="">
@@ -51,8 +51,8 @@
         </div>
 
         <div class="button-group">
-            <button type="button" class="btn btn-search">查詢</button>
-            <button type="button" class="btn btn-clear">清除</button>
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
         </div>
 
     </form>
@@ -169,16 +169,16 @@
 
     //search area onClick Function
     function addSearchAreaClickEvent() {
-        $(".btn-clear").click(function () {
+        $("#clear").click(function () {
             $("form")[0].reset();
         });
 
-        $(".btn-search").click(function () {
+        $("#search").click(function () {
             let url = "/";
             window.open(url, "_self");
         });
 
-        $(".btn-create").click(function () {
+        $("#create").click(function () {
             let url = baseUrl + 'Create';
             window.open(url, "_self");
         });
