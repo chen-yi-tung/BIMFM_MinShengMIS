@@ -1,7 +1,162 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "巡檢路線模板管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
 
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增巡檢路線模板</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="PathTitle">巡檢路線模板名稱</label>
+            <input class="form-control" id="PathTitle" name="PathTitle" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Area">棟別</label>
+            <select class="form-select" name="Area" id="Area">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Floor">樓層</label>
+            <select class="form-select" name="Floor" id="Floor">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+<script>
+
+    var baseUrl = "/SamplePath_Management/";
+
+    const fakeData = [
+        {
+            PSSN: "000001",
+            PathTitle: "A棟1F路線",
+            Area: "A棟",
+            Floor: "1F",
+        }
+    ]
+
+    $(function () {
+        let getGridJSON = '';
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+
+        $('#DataGrid').datagrid({
+
+            // url: getGridJSON,
+            // method: 'POST',
+            data: fakeData,
+            queryParams: {
+                Query: ''
+            },
+            rownumbers: true,
+            idField: 'PSSN',
+            sortName: 'PSSN',
+            remoteSort: false,
+            // sortOrder: 'desc',
+            fit: true,
+            frozenColumns: [[
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
+                    }
+                },
+                {
+                    field: '_dispatch', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onDelete(${index})">刪除</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'PSSN', title: 'PSSN', hidden: true },
+                { field: 'PathTitle', title: '巡檢路線模板名稱', align: 'center', width: 250, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
+            ]],
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+
+            pagination: true,
+            pagePosition: 'bottom',
+            pageSize: 10
+        });
+        //------------Pager --------------------------------------------------
+        var pager = $('#DataGrid').datagrid('getPager');
+        $(pager).pagination({
+            pageSize: 10,
+            showPageList: true,
+            pageList: [10, 20, 50],
+            beforePageText: '第',
+            afterPageText: '頁，共 {pages} 頁',
+            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+        });
+    }
+
+    // datagrid onClick Function
+    function onDetail(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Read';
+        window.open(url, "_blank");
+    }
+
+    function onEdit(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Edit';
+        window.open(url, "_self");
+    }
+
+    function onDelete(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Delete';
+        window.open(url, "_self");
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+        });
+
+        $("#search").click(function () {
+            console.log("onclick search");
+        });
+
+        $("#create").click(function () {
+            let url = baseUrl + 'Create';
+            window.open(url, "_self");
+        });
+    }
+</script>

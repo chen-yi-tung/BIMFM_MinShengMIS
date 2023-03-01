@@ -1,7 +1,53 @@
-﻿
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = "新增巡檢路線模板";
 }
 
-<h2>Create</h2>
+<h2>@ViewBag.Title</h2>
 
+<div class="search-area">
+    <form class="form" action="">
+        <div class="form-group required">
+            <label for="Area">棟別</label>
+            <select class="form-select" name="Area" id="Area" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div class="form-group required">
+            <label for="Floor">樓層</label>
+            <select class="form-select" name="Floor" id="Floor" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div class="form-group required">
+            <label for="PathTitle">巡檢路線模板</label>
+            <input type="text" class="form-control" name="PathTitle" id="PathTitle">
+        </div>
+        <div class="button-group">
+            <button class="btn btn-search" id="create">確認</button>
+        </div>
+    </form>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">新增</button>
+</div>
+
+<script>
+    window.onload = function () {
+        addButtonEvent();
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+        $("#submit").click(function () {
+            save();
+        })
+    }
+
+    function save() {
+
+    }
+</script>
