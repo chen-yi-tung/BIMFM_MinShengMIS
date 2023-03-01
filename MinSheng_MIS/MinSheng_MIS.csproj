@@ -275,6 +275,7 @@
     <Compile Include="Models\MaintainItem.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MaintainItemViewModel.cs" />
     <Compile Include="Models\MaintainSupplementaryFile.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

@@ -1,4 +1,6 @@
-﻿@{
+﻿@model MinSheng_MIS.Models.MaintainItemViewModel
+
+@{
     ViewBag.Title = "保養項目管理";
 }
 
@@ -16,22 +18,30 @@
 
         <div class="form-group">
             <label for="System">系統別</label>
-            <select class="form-select" name="System" id="System">
-                <option value="">請選擇</option>
+            <select class="form-select" name="System" id="SystemOption">
+                <option value="none"> -- 請選擇 -- </option>
+                @{
+                    for (var i = 0; i < @Model.SystemItemList.Count(); i++)
+                    {
+                        <option value=@Model.SystemItemList[i].SystemName>
+                            @Model.SystemItemList[i].SystemName
+                        </option>
+                    }
+                }
             </select>
         </div>
 
         <div class="form-group">
             <label for="SubSystem">子系統別</label>
-            <select class="form-select" name="SubSystem" id="SubSystem">
-                <option value="">請選擇</option>
+            <select class="form-select" name="SubSystem" id="SubSystemOption">
+                <option value="none"> -- 請選擇 -- </option>
             </select>
         </div>
 
         <div class="form-group">
             <label for="EName">設備名稱</label>
-            <select class="form-select" name="EName" id="EName">
-                <option value="">請選擇</option>
+            <select class="form-select" name="EName" id="ENameOption">
+                <option value="none"> -- 請選擇 -- </option>
             </select>
         </div>
 
@@ -63,6 +73,118 @@
 </div>
 
 <script>
+    var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.EquipmentInfoList));
+    eqList = eqList.replace("\r", "").replace("\n", "");
+    var equipmentList = JSON.parse(eqList);
+    //console.log(`所有設備清單`);
+    //console.log(equipmentList);
+
+
+    //#region Searchform - Auto generate the select options
+
+    //Change event listener of SystemOption element
+    const selectSystemElement = document.querySelector('#SystemOption');
+    selectSystemElement.addEventListener('change', (event) => {
+        var chooseSystem = document.getElementById('SystemOption').value;
+        console.log(`Choose System: ${event.target.value}`);
+
+        //When user didn't choose system option
+        if (chooseSystem == "none") {
+            ClearOptions("SubSystemOption");
+            $("#SubSystemOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            ClearOptions("ENameOption");
+            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+
+        }
+        //When user choose system option
+        else {
+            ClearOptions("SubSystemOption");
+            $("#SubSystemOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            CreateSubSystemOptions(chooseSystem, equipmentList.EquipmentInfo);
+        }
+    });
+
+    const selectSubSystemElement = document.querySelector('#SubSystemOption');
+    selectSubSystemElement.addEventListener('change', (event) => {
+        var chooseSystem = document.getElementById('SystemOption').value;
+        var chooseSubSystem = document.getElementById('SubSystemOption').value;
+        console.log(`Choose SubSystem: ${event.target.value}`);
+
+        //When user didn't choose subsystem option
+        if (chooseSystem == "none") {
+            ClearOptions("ENameOption");
+            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+        }
+        //When user choose subsystem option
+        else {
+            ClearOptions("ENameOption");
+            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
+        }
+    });
+
+    //Clear all options in select
+    function ClearOptions(id) {
+        document.getElementById(id).options.length = 0;
+    }
+
+    function CreateSubSystemOptions(optionvalue, data) {
+        var systemOption = optionvalue;
+        var tempArray = [];
+        //console.log(data);
+        //列出不重複的子系統別類型
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            //console.log(item);
+            if (item.System == systemOption) {
+                var tempSubSystem = item.SubSystem;
+                var isRepeat = false;
+                for (var i = 0; i < arrLength; i++) {
+                    if (item.SubSystem == tempArray[i]) {
+                        isRepeat = true;
+                        break;
+                    }
+                }
+
+                if (!isRepeat) {
+                    tempArray.push(item.SubSystem);
+                    $("#SubSystemOption").append(`<option value="${item.SubSystem}">${item.SubSystem}</option>`);
+                }
+            }
+        });
+        //console.log(tempArray);
+    }
+
+    function CreateENameOptions(systemVal, subSystemVal, data) {
+        var systemOption = systemVal;
+        var subSystemOption = subSystemVal;
+        var tempArray = [];
+        //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
+
+        //列出不重複的設備名稱
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            //console.log(item);
+            if (item.System == systemOption && item.SubSystem == subSystemOption) {
+                var tempSubSystem = item.SubSystem;
+                var isRepeat = false;
+                for (var i = 0; i < arrLength; i++) {
+                    if (item.EName == tempArray[i]) {
+                        isRepeat = true;
+                        break;
+                    }
+                }
+
+                if (!isRepeat) {
+                    tempArray.push(item.EName);
+                    $("#ENameOption").append(`<option value="${item.EName}">${item.EName}</option>`);
+                }
+            }
+        });
+
+    }
+
+    //#endregion
 
     var baseUrl = "/MaintainItem_Management/";
 
