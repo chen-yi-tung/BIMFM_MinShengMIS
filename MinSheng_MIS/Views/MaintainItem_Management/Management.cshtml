@@ -78,7 +78,7 @@
     var equipmentList = JSON.parse(eqList);
     //console.log(`所有設備清單`);
     //console.log(equipmentList);
-
+    CreateAllENameOptions(equipmentList.EquipmentInfo);
 
     //#region Searchform - Auto generate the select options
 
@@ -92,9 +92,10 @@
         if (chooseSystem == "none") {
             ClearOptions("SubSystemOption");
             $("#SubSystemOption").append(`<option value="none"> -- 請選擇 -- </option>`);
-            ClearOptions("ENameOption");
-            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
 
+            CreateAllENameOptions(equipmentList.EquipmentInfo);
+            //ClearOptions("ENameOption");
+            //$("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
         }
         //When user choose system option
         else {
@@ -104,26 +105,26 @@
         }
     });
 
-    CreateENameOptions(equipmentList.EquipmentInfo);
+    const selectSubSystemElement = document.querySelector('#SubSystemOption');
+    selectSubSystemElement.addEventListener('change', (event) => {
+        var chooseSystem = document.getElementById('SystemOption').value;
+        var chooseSubSystem = document.getElementById('SubSystemOption').value;
+        console.log(`Choose SubSystem: ${event.target.value}`);
 
-    //const selectSubSystemElement = document.querySelector('#SubSystemOption');
-    //selectSubSystemElement.addEventListener('change', (event) => {
-    //    var chooseSystem = document.getElementById('SystemOption').value;
-    //    var chooseSubSystem = document.getElementById('SubSystemOption').value;
-    //    console.log(`Choose SubSystem: ${event.target.value}`);
-
-    //    //When user didn't choose subsystem option
-    //    if (chooseSystem == "none") {
-    //    //    ClearOptions("ENameOption");
-    //    //    $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
-    //    }
-    //    //When user choose subsystem option
-    //    else {
-    //        ClearOptions("ENameOption");
-    //        $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
-    //        CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
-    //    }
-    //});
+        //When user didn't choose subsystem option
+        if (chooseSystem == "none") {
+            ClearOptions("ENameOption");
+            CreateAllENameOptions(equipmentList.EquipmentInfo);
+        //    ClearOptions("ENameOption");
+        //    $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+        }
+        //When user choose subsystem option
+        else {
+            ClearOptions("ENameOption");
+            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
+        }
+    });
 
     //Clear all options in select
     function ClearOptions(id) {
@@ -157,9 +158,34 @@
         //console.log(tempArray);
     }
 
-    function CreateENameOptions(data) {
-        //var systemOption = systemVal;
-        //var subSystemOption = subSystemVal;
+    //創建所有EName element
+    function CreateAllENameOptions(data) {
+        var tempArray = [];
+        //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
+
+        //列出不重複的設備名稱
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            var tempSubSystem = item.SubSystem;
+            var isRepeat = false;
+            for (var i = 0; i < arrLength; i++) {
+                if (item.EName == tempArray[i]) {
+                    isRepeat = true;
+                    break;
+                }
+            }
+
+            if (!isRepeat) {
+                tempArray.push(item.EName);
+                $("#ENameOption").append(`<option value="${item.EName}">${item.EName}</option>`);
+            }
+        });
+    }
+
+    //依據所選系統與子系統，創建相關的EName element
+    function CreateENameOptions(systemVal, subSystemVal, data) {
+        var systemOption = systemVal;
+        var subSystemOption = subSystemVal;
         var tempArray = [];
         //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
 
@@ -167,7 +193,7 @@
         data.forEach(function (item, i) {
             var arrLength = tempArray.length;
             //console.log(item);
-            //if (item.System == systemOption && item.SubSystem == subSystemOption) {
+            if (item.System == systemOption && item.SubSystem == subSystemOption) {
                 var tempSubSystem = item.SubSystem;
                 var isRepeat = false;
                 for (var i = 0; i < arrLength; i++) {
@@ -181,9 +207,8 @@
                     tempArray.push(item.EName);
                     $("#ENameOption").append(`<option value="${item.EName}">${item.EName}</option>`);
                 }
-            //}
+            }
         });
-
     }
 
     //#endregion
@@ -255,7 +280,7 @@
                 { field: 'MIName', title: '保養項目名稱', align: 'center', width: 200, sortable: true },
                 { field: 'Unit', title: '保養週期單位', align: 'center', width: 150, sortable: true },
                 { field: 'Period', title: '保養週期', align: 'center', width: 110, sortable: true },
-                { field: 'MaintainItemIsEnable', title: '啟停狀態', align: 'center', width: 110, sortable: true }
+                { field: 'MaintainItemIsEnable', title: '啟停狀態', align: 'center', width: 110, sortable: true, formatter: (value, row, index) => { return formattedEnable(value); } }
             ]],
             singleSelect: true,
             selectOnCheck: true,
@@ -275,6 +300,14 @@
             afterPageText: '頁，共 {pages} 頁',
             displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
         });
+    }
+
+    function formattedEnable(value) {
+        if (value == 1)
+            return "啟用";
+        else if (value == 2)
+            return "永久停用";
+
     }
 
     // datagrid onClick Function
