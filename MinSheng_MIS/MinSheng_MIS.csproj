@@ -185,6 +185,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
+    <Compile Include="Controllers\DropDownListController.cs" />
     <Compile Include="Controllers\EquipmentMaintainPeriod_ManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
@@ -1425,6 +1426,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\popper.min.js" />
+    <Content Include="Scripts\tool.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1497,6 +1499,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\BigScreen\" />
+    <Folder Include="Views\DropDownList\" />
     <Folder Include="Views\InspectionPlanManagement\" />
   </ItemGroup>
   <ItemGroup>
