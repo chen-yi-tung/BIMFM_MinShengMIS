@@ -112,7 +112,7 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-
+<script src="../../Scripts/tool.js"></script>
 <script>
 
     var baseUrl = "/Report_Management/";
@@ -136,6 +136,8 @@
 
     $(function () {
         let getGridJSON = '';
+        pushSelect("Area", '@Url.Action("SearchLocation", "DropDownList")');
+        pushSelect("ProjectNameList", '@Url.Action("SearchProjectName", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });
