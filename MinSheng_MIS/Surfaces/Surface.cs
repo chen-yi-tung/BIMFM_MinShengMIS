@@ -65,6 +65,32 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        #region MaintainItemIsEnable 保養項目是否被刪除
+        public static Dictionary<string, string> MaintainItemIsEnable()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("0", "停用");
+            ValueOption.Add("1", "啟用");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-3 維修相關狀態編碼對照
+        #region InspectionPlanRepairState 巡檢計畫中維修單狀態
+        public static Dictionary<string, string> InspectionPlanRepairState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "已派工");
+            ValueOption.Add("2", "施工中");
+            ValueOption.Add("3", "待審核");
+            ValueOption.Add("4", "未完成");
+            ValueOption.Add("5", "待補件");
+            ValueOption.Add("6", "完成");
+            ValueOption.Add("7", "審核未過");
+            return ValueOption;
+        }
+        #endregion
+
         #region EquipmentReportFormState 設備報修單狀態
         public static Dictionary<string, string> EquipmentReportFormState()
         {
@@ -84,5 +110,63 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        //5-2-4 設備狀態編碼對照
+        #region EState 設備狀態
+        public static Dictionary<string, string> EState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "正常");
+            ValueOption.Add("2", "報修中");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-5 審核結果編碼對照
+        #region AuditResult 審核結果
+        public static Dictionary<string, string> AuditResult()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "審核通過");
+            ValueOption.Add("2", "審核未過");
+            ValueOption.Add("3", "請補件");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-6 報修等級編碼對照
+        #region ReportLevel 報修等級
+        public static Dictionary<string, string> ReportLevel()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "一般");
+            ValueOption.Add("2", "緊急");
+            ValueOption.Add("3", "最速件");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-7 班別對照表
+        #region Shift 班別
+        public static Dictionary<string, string> Shift()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "早班");
+            ValueOption.Add("2", "午班");
+            ValueOption.Add("3", "晚班");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-8 報修來源對照表
+        #region ReportSource 報修來源
+        public static Dictionary<string, string> ReportSource()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "APP");
+            ValueOption.Add("2", "BIM模型");
+            ValueOption.Add("3", "以資查圖");
+            return ValueOption;
+        }
+        #endregion
     }
 }
