@@ -1469,7 +1469,6 @@
     <Content Include="Views\SamplePath_Management\Management.cshtml" />
     <Content Include="Views\SamplePath_Management\Create.cshtml" />
     <Content Include="Views\SamplePath_Management\Read.cshtml" />
-    <Content Include="Views\SamplePath_Management\Update.cshtml" />
     <Content Include="Views\SamplePath_Management\Delete.cshtml" />
     <Content Include="Views\MaintainForm_Management\Management.cshtml" />
     <Content Include="Views\MaintainForm_Management\Read.cshtml" />
@@ -1493,6 +1492,7 @@
     <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\InspectionPlan_Management\ReadMaintainForm.cshtml" />
     <Content Include="Views\InspectionPlan_Management\ReadReportForm.cshtml" />
+    <Content Include="Views\SamplePath_Management\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

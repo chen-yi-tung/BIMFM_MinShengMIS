@@ -30,7 +30,7 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯巡檢路線模板
-        public ActionResult Update()
+        public ActionResult Edit()
         {
             return View();
         }
