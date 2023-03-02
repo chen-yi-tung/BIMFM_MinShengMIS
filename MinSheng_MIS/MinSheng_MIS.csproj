@@ -331,6 +331,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Test.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Surfaces\Surface.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.css" />
