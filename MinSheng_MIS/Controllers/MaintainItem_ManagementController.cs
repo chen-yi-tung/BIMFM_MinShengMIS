@@ -134,7 +134,7 @@ namespace MinSheng_MIS.Controllers
 
         }
 
-        public JArray GetJsonForGrid_AsBuilt(string Query, int page, int pageSize, string propertyName = "MISN", string order = "asc")
+        public JArray GetJsonForGrid_AsBuilt(string Query, int page, int pageSize, string propertyName = "Date", string order = "desc")
         {
             //說明: 因為JSON字串格式中包含""，Easy UI Post上傳時，會將""轉換為&quot; 無法直接解析回正確的JSON Object，因此需將其轉換為""以利後續處理 
             string QT = Query.Trim();

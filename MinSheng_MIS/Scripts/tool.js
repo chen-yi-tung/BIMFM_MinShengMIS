@@ -19,25 +19,25 @@ function readURL(input, imgId) {
  * @param {string} [optionName=name]
  * @param {string} [optionValue=uuid]
  */
-function pushSelectOptions(selectId, jsonUrl, optionName, optionValue) {
+async function pushSelectOptions(selectId, jsonUrl, optionName, optionValue) {
     const $select = $("#" + selectId);
     let name = optionName ? optionName : "Name";
     let value = optionValue ? optionValue : "Uuid";
-    $.getJSON(jsonUrl, function (data) {
+    await $.getJSON(jsonUrl, function (data) {
         $select.empty();
-        $select.append('<option value="">-- 請選擇 --</option>');
+        $select.append('<option value="">請選擇</option>');
         $.each(data.rows, function (i, e) {
             $select.append('<option value="' + e[value] + '">' + e[name] + '</option>')
         })
     });
 }
-function pushSelect(selectId, jsonUrl, optionName, optionValue) {
+async function pushSelect(selectId, jsonUrl, optionName, optionValue) {
     const $select = $("#" + selectId);
     let name = optionName ? optionName : "Text";
     let value = optionValue ? optionValue : "Value";
-    $.getJSON(jsonUrl, function (data) {
+    await $.getJSON(jsonUrl, function (data) {
         $select.empty();
-        $select.append('<option value="">-- 請選擇 --</option>');
+        $select.append('<option value="">請選擇</option>');
         $.each(data, function (i, e) {
             $select.append('<option value="' + e[value] + '">' + e[name] + '</option>')
         })

@@ -10,7 +10,7 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="search-area">
-    <form class="form" method="post" action="">
+    <form class="form" method="post" action="" id="ReportManagementForm">
 
         <div class="form-group">
             <label for="Area">棟別</label>
@@ -61,16 +61,18 @@
 
         <div class="form-group">
             <label for="ESN">設備編號</label>
-            <select class="form-select" name="ESN" id="ESN">
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+            @*<select class="form-select" name="ESN" id="ESN">
                 <option value="">請選擇</option>
-            </select>
+            </select>*@
         </div>
 
         <div class="form-group">
             <label for="EName">設備名稱</label>
-            <select class="form-select" name="EName" id="EName">
+            <input class="form-control" id="EName" name="EName" type="text" />
+            @*<select class="form-select" name="EName" id="EName">
                 <option value="">請選擇</option>
-            </select>
+            </select>*@
         </div>
 
         <div class="form-group">
@@ -116,7 +118,14 @@
 <script>
 
     var baseUrl = "/Report_Management/";
+    var areas = document.getElementById("Area");
 
+    areas.addEventListener("change", function () {
+        let url = '@Url.Action("Floor", "DropDownList")';
+        url = url + `?ASN=${areas.value}`;
+        console.log(url);
+        pushSelect("Floor", url);
+    });
     const fakeData = [
         {
             State: "已派工",
@@ -134,14 +143,17 @@
         }
     ]
 
-    $(function () {
+    $(async function () {
         let getGridJSON = '';
-        pushSelect("Area", '@Url.Action("SearchLocation", "DropDownList")');
-        pushSelect("ProjectNameList", '@Url.Action("SearchProjectName", "DropDownList")');
+        await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
+        //document.getElementById('Area').value = '1'
+        await pushSelect("Level", '@Url.Action("ReportLevel", "DropDownList")');
+        await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
+        //$("#Area option[value=1]").attr('selected', 'selected');
     });
-
     function Initialize_DataGrid(getGridJSON) {
 
         $('#DataGrid').datagrid({
@@ -153,10 +165,10 @@
                 Query: ''
             },
             rownumbers: true,
-            idField: 'RSN',
-            sortName: 'RSN',
+            idField: 'Date',
+            sortName: 'Date',
             remoteSort: false,
-            //sortOrder: 'desc',
+            sortOrder: 'desc',
             fit: true,
             frozenColumns: [[
                 {
@@ -247,11 +259,12 @@
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $("form")[0].reset();
+            pushSelect("Floor", '@Url.Action("Floor", "DropDownList")');
         });
 
         $("#search").click(function () {
-            let url = "/";
-            window.open(url, "_self");
+            let newgetgridJson = ''
+            Initialize_DataGrid(newgetgridJson)
         });
 
         $("#export").click(function () {
