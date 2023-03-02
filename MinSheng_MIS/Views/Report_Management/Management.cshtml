@@ -10,7 +10,7 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="search-area">
-    <form class="form" method="post" action="">
+    <form class="form" method="post" action="" id="ReportManagementForm">
 
         <div class="form-group">
             <label for="Area">棟別</label>
@@ -119,12 +119,7 @@
 
     var baseUrl = "/Report_Management/";
     var areas = document.getElementById("Area");
-    areas.addEventListener("click", function () {
-        let url = '@Url.Action("Floor", "DropDownList")';
-        url = url + `?ASN=${areas.value}`;
-        console.log(url);
-        pushSelect("Floor", url);
-    });
+
     areas.addEventListener("change", function () {
         let url = '@Url.Action("Floor", "DropDownList")';
         url = url + `?ASN=${areas.value}`;
@@ -150,20 +145,15 @@
 
     $(async function () {
         let getGridJSON = '';
-        console.log('AAA')
         await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
-        console.log('BBB')
         await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
         //document.getElementById('Area').value = '1'
-        //$('#Area').change();
-        $("#Area").val(1)
         await pushSelect("Level", '@Url.Action("ReportLevel", "DropDownList")');
         await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
-        document.getElementById('Area').dispatchEvent('change')
+        //$("#Area option[value=1]").attr('selected', 'selected');
     });
-
     function Initialize_DataGrid(getGridJSON) {
 
         $('#DataGrid').datagrid({
@@ -175,10 +165,10 @@
                 Query: ''
             },
             rownumbers: true,
-            idField: 'RSN',
-            sortName: 'RSN',
+            idField: 'Date',
+            sortName: 'Date',
             remoteSort: false,
-            //sortOrder: 'desc',
+            sortOrder: 'desc',
             fit: true,
             frozenColumns: [[
                 {
@@ -269,11 +259,12 @@
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $("form")[0].reset();
+            pushSelect("Floor", '@Url.Action("Floor", "DropDownList")');
         });
 
         $("#search").click(function () {
-            let url = "/";
-            window.open(url, "_self");
+            let newgetgridJson = ''
+            Initialize_DataGrid(newgetgridJson)
         });
 
         $("#export").click(function () {

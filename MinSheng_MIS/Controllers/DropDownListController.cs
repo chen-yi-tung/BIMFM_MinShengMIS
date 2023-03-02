@@ -32,17 +32,19 @@ namespace MinSheng_MIS.Controllers
         #endregion
         #region 根據樓層查詢棟別
         [System.Web.Http.HttpGet]
-        public ActionResult Floor(int ASN)
+        public ActionResult Floor(int? ASN)
         {
             List<JObject> list = new List<JObject>();
-            var abc = db.Floor_Info.Where(x=>x.ASN == ASN).ToList();
-            foreach (var item in abc) {
-                JObject jo = new JObject();
-                jo.Add("Text", item.FloorName);//Floor Name
-                jo.Add("Value", item.FSN); // FSN 
-                list.Add(jo);
+            if (ASN != null) {
+                var abc = db.Floor_Info.Where(x => x.ASN == ASN).ToList();
+                foreach (var item in abc)
+                {
+                    JObject jo = new JObject();
+                    jo.Add("Text", item.FloorName);//Floor Name
+                    jo.Add("Value", item.FSN); // FSN 
+                    list.Add(jo);
+                }
             }
-
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }

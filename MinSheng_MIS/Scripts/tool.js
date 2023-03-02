@@ -25,7 +25,7 @@ async function pushSelectOptions(selectId, jsonUrl, optionName, optionValue) {
     let value = optionValue ? optionValue : "Uuid";
     await $.getJSON(jsonUrl, function (data) {
         $select.empty();
-        $select.append('<option value="">-- 請選擇 --</option>');
+        $select.append('<option value="">請選擇</option>');
         $.each(data.rows, function (i, e) {
             $select.append('<option value="' + e[value] + '">' + e[name] + '</option>')
         })
@@ -37,7 +37,7 @@ async function pushSelect(selectId, jsonUrl, optionName, optionValue) {
     let value = optionValue ? optionValue : "Value";
     await $.getJSON(jsonUrl, function (data) {
         $select.empty();
-        $select.append('<option value="">-- 請選擇 --</option>');
+        $select.append('<option value="">請選擇</option>');
         $.each(data, function (i, e) {
             $select.append('<option value="' + e[value] + '">' + e[name] + '</option>')
         })
