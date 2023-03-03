@@ -92,7 +92,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult ReportLevel()
         {
             List<JObject> list = new List<JObject>();
-            var Dics = Surface.EquipmentReportFormState();
+            var Dics = Surface.ReportLevel();
 
             foreach (var a in Dics)
             {
@@ -107,7 +107,7 @@ namespace MinSheng_MIS.Controllers
             return Content(text, "application/json");
         }
         #endregion
-        #region InformantUserID 報修等級
+        #region InformantUserID 使用者名稱
         [System.Web.Http.HttpGet]
         public ActionResult InformantUserID()
         {
