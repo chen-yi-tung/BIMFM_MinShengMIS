@@ -52,8 +52,8 @@
         </div>
 
         <div class="form-group">
-            <label for="Level">報修等級</label>
-            <select class="form-select" name="Level" id="Level">
+            <label for="ReportLevel">報修等級</label>
+            <select class="form-select" name="ReportLevel" id="ReportLevel">
                 <option value="">請選擇</option>
             </select>
         </div>
@@ -130,10 +130,7 @@
         else {
             $('#Area').val('');
         }
-        console.log($('#Area').val())
-        //console.log($("#ASN option:selected").text());
         url = url + `?ASN=${areas.value}`;
-        //console.log(url);
         pushSelect("FSN", url);
         $('#Floor').val('');
     });
@@ -145,12 +142,11 @@
         else {
             $('#Floor').val('');
         }
-        console.log($('#Floor').val())
     });
     //const fakeData = [
     //    {
-    //        State: "已派工",
-    //        Level: "最速件",
+    //        ReportState: "已派工",
+    //        ReportLevel: "最速件",
     //        Area: "A棟",
     //        Floor: "1F",
     //        ReportSource: "APP",
@@ -168,7 +164,7 @@
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
         //document.getElementById('Area').value = '1'
-        await pushSelect("Level", '@Url.Action("ReportLevel", "DropDownList")');
+        await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
         await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
@@ -176,7 +172,7 @@
     });
     function Initialize_DataGrid(getGridJSON) {
 
-        const searchParams = $("form").find("input:not([type='button']):not([type='submit']), select").toArray().map(e => $(e).attr("name"));
+        const searchParams = $("form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
         console.log(searchParams)
         let queryParams = searchParams.reduce((total, c) => {
             total[c] = $(`#${c}`).val()
@@ -222,8 +218,8 @@
                 },
             ]],
             columns: [[
-                { field: 'State', title: '報修單狀態', align: 'center', width: 126, sortable: true },
-                { field: 'Level', title: '報修等級', align: 'center', width: 106, sortable: true },
+                { field: 'ReportState', title: '報修單狀態', align: 'center', width: 126, sortable: true },
+                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 106, sortable: true },
                 { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
                 { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
                 { field: 'ReportSource', title: '報修來源', align: 'center', width: 110, sortable: true },

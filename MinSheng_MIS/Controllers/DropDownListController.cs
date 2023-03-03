@@ -107,7 +107,7 @@ namespace MinSheng_MIS.Controllers
             return Content(text, "application/json");
         }
         #endregion
-        #region InformantUserID 報修等級
+        #region InformantUserID 使用者名稱
         [System.Web.Http.HttpGet]
         public ActionResult InformantUserID()
         {
