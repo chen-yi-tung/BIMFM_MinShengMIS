@@ -1528,7 +1528,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="Views\BigScreen\" />
     <Folder Include="Views\DropDownList\" />
-    <Folder Include="Views\InspectionPlanManagement\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
