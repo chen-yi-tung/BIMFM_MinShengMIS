@@ -92,7 +92,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult ReportLevel()
         {
             List<JObject> list = new List<JObject>();
-            var Dics = Surface.ReportLevel();
+            var Dics = Surface.EquipmentReportFormState();
 
             foreach (var a in Dics)
             {

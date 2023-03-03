@@ -21,7 +21,7 @@ namespace MinSheng_MIS.Controllers
             string rows = form["rows"]?.ToString();
             JObject jo = new JObject();
             var service = new DatagridService();
-            var a = service.GetJsonForGrid_ReportManagement(form);
+            var a = service.GetJsonForGrid_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
