@@ -116,35 +116,33 @@
 </div>
 <script src="../../Scripts/tool.js"></script>
 <script>
-
     var baseUrl = "/Report_Management/";
     var areas = document.getElementById("Area");
-
+    var getGridJSON = '@Url.Action("Management_datagrid", "Report_Management")';
     areas.addEventListener("change", function () {
         let url = '@Url.Action("Floor", "DropDownList")';
         url = url + `?ASN=${areas.value}`;
         console.log(url);
         pushSelect("Floor", url);
     });
-    const fakeData = [
-        {
-            State: "已派工",
-            Level: "最速件",
-            Area: "A棟",
-            Floor: "1F",
-            ReportSource: "APP",
-            RSN: "R23010601",
-            Date: "2023/1/6 15:00:02",
-            PropertyCode: "無",
-            ESN: "E00001",
-            EName: "日光燈",
-            ReportContent: "故障",
-            MyName: "王大明",
-        }
-    ]
+    //const fakeData = [
+    //    {
+    //        State: "已派工",
+    //        Level: "最速件",
+    //        Area: "A棟",
+    //        Floor: "1F",
+    //        ReportSource: "APP",
+    //        RSN: "R23010601",
+    //        Date: "2023/1/6 15:00:02",
+    //        PropertyCode: "無",
+    //        ESN: "E00001",
+    //        EName: "日光燈",
+    //        ReportContent: "故障",
+    //        MyName: "王大明",
+    //    }
+    //]
 
     $(async function () {
-        let getGridJSON = '';
         await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
         await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
         //document.getElementById('Area').value = '1'
@@ -155,14 +153,35 @@
         //$("#Area option[value=1]").attr('selected', 'selected');
     });
     function Initialize_DataGrid(getGridJSON) {
-
+        let Area = $('#Area').val();
+        let Floor = $('#Floor').val();
+        let ReportState = $('#ReportState').val();
+        let Level = $('#Level').val();
+        let RSN = $('#RSN').val();
+        let ESN = $('#ESN').val();
+        let EName = $('#EName').val();
+        let PropertyCode = $('#PropertyCode').val();
+        let ReportContent = $('#ReportContent').val();
+        let InformantUserID = $('#InformantUserID').val();
+        let DateFrom = $('#DateFrom').val();
+        let DateTo = $('#DateTo').val();
         $('#DataGrid').datagrid({
 
-            // url: getGridJSON,
-            // method: 'POST',
-            data: fakeData,
+            url: getGridJSON,
+            method: 'POST',
             queryParams: {
-                Query: ''
+                Area: `${Area}`,
+                Floor: `${Floor}`,
+                ReportState: `${ReportState}`,
+                Level: `${Level}`,
+                RSN: `${RSN}`,
+                ESN: `${ESN}`,
+                EName: `${EName}`,
+                PropertyCode: `${PropertyCode}`,
+                ReportContent: `${ReportContent}`,
+                InformantUserID: `${InformantUserID}`,
+                DateFrom: `${DateFrom}`,
+                DateTo: `${DateTo}`,
             },
             rownumbers: true,
             idField: 'Date',
@@ -263,8 +282,7 @@
         });
 
         $("#search").click(function () {
-            let newgetgridJson = ''
-            Initialize_DataGrid(newgetgridJson)
+            Initialize_DataGrid(getGridJSON)
         });
 
         $("#export").click(function () {
