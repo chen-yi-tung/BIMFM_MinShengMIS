@@ -76,6 +76,7 @@ var ForgeDraw = (function (e) {
             strokeColor: Colors.Line,
             color: Colors.BlueTooth,
             interactive: true,
+            nearestLine: false,
             contextMenu: {
                 html: `<div class="contextMenu"><ul></ul></div>`,
                 button: [
@@ -578,7 +579,7 @@ var ForgeDraw = (function (e) {
             })
             if (result.i != undefined) {
                 this.result = result;
-                this.line
+                this.options.nearestLine && this.line
                     .clear()
                     .lineStyle(this.options.strokeWeight, this.options.strokeColor, 1)
                     .moveTo(this.position.x, this.position.y)

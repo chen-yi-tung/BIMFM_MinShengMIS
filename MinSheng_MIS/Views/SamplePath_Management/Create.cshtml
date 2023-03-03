@@ -6,22 +6,24 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="search-area bg-transparent">
-    <form class="form" action="">
+    <form class="form">
         <div class="form-group required">
             <label for="Area">棟別</label>
             <select class="form-select" name="Area" id="Area" required>
                 <option value="">請選擇</option>
+                <!--TEST--><option value="1" selected>1</option>
             </select>
         </div>
         <div class="form-group required">
             <label for="Floor">樓層</label>
             <select class="form-select" name="Floor" id="Floor" required>
                 <option value="">請選擇</option>
+                <!--TEST--><option value="1" selected>1</option>
             </select>
         </div>
         <div class="form-group required">
             <label for="PathTitle">巡檢路線模板</label>
-            <input type="text" class="form-control" name="PathTitle" id="PathTitle">
+            <input type="text" class="form-control" name="PathTitle" id="PathTitle" value="PathTitle標題"><!--TEST-->
         </div>
         <div class="button-group justify-content-start">
             <button class="btn btn-search" id="path-create">確認</button>
@@ -35,10 +37,10 @@
     <div class="edit-area">
         <div class="sample-path-group-area">
             <div class="input-group sample-path-group">
-                <span class="input-group-text">A區1F路線</span>
+                <span class="input-group-text" id="sample-path-name"></span>
                 <div type="text" class="form-control">
                     <nav>
-                        <ol class="breadcrumb" id="path-display">
+                        <ol class="breadcrumb d-none" id="path-display">
                             <li class="breadcrumb-item">起點</li>
                             <li class="breadcrumb-item">終點</li>
                         </ol>
@@ -46,15 +48,7 @@
                 </div>
             </div>
         </div>
-        <div class="sample-path-draw-area">
-            @* <div class="sample-path-group inner">
-                <nav>
-                    <ol class="breadcrumb" id="path-display">
-                        <li class="breadcrumb-item">起點</li>
-                        <li class="breadcrumb-item">終點</li>
-                    </ol>
-                </nav>
-            </div> *@
+        <div class="sample-path-draw-area d-none">
 
             <div class="viewer3Dcontainer">
                 <div id="viewer3d" style="margin:0;"></div>
@@ -436,18 +430,26 @@
 
 <!-- EVENT -->
 <script>
-    $(async function () {
-        await initializeViewer(initializeDrawer);
+    $(function () {
         addButtonEvent();
+
+        //TEST
+        $("#path-create").click();
     });
 
     function addButtonEvent() {
         $("#back").click(function () {
             history.back();
         })
-        $("#path-create").click(function () {
-            console.log("onclick path-create")
-            //todo
+        $("#path-create").click(function (e) {
+            e.preventDefault();
+            console.log("onclick path-create");
+            if ($("form")[0].checkValidity()) {
+                $("#sample-path-name").text($("#PathTitle").val());
+                $(".sample-path-draw-area").removeClass("d-none");
+                $("#path-display").removeClass("d-none");
+                initializeViewer(initializeDrawer);
+            }
         })
         $("#submit").click(function () {
             console.log("onclick submit")
