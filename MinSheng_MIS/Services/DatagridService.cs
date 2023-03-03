@@ -19,17 +19,20 @@ namespace MinSheng_MIS.Services
             {
                 page = short.Parse(form["page"].ToString());
             }
-            int pageSize = 10;
-            if (!string.IsNullOrEmpty(form["pageSize"]?.ToString()))
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
             {
-                pageSize = short.Parse(form["pageSize"]?.ToString());
+                rows = short.Parse(form["rows"]?.ToString());
             }
-            string propertyName = "MISN";
-            string order = "asc";
+            //string propertyName = "MISN";
+            //string order = "asc";
 
             //塞來自formdata的資料
-            string Area = form["Area"]?.ToString();
-            string Floor = form["Floor"]?.ToString();
+            //string Area = form["Area"]?.ToString();
+            int ASN = short.Parse(form["Area"]?.ToString());
+            //string Floor = form["Floor"]?.ToString();
+            int FSN = short.Parse(form["Floor"]?.ToString());
+
             string ReportState = form["ReportState"]?.ToString();
             string Level = form["Level"]?.ToString();
             string RSN = form["RSN"]?.ToString();
@@ -43,12 +46,10 @@ namespace MinSheng_MIS.Services
 
 
             #region 依據查詢字串檢索資料表
-            //var table = db.MaintainItem.AsQueryable();
-            //if (!string.IsNullOrEmpty(form["System"]?.ToString()))
-            //    table = table.Where(t => t.System == form["System"].ToString());
-            //if (!string.IsNullOrEmpty(form["System"]?.ToString()))
-            //    table = table.Where(t => t.System == form["System"].ToString());
-            //table = table.Skip((page - 1) * pageSize).Take(pageSize);
+            //Area查詢table方式 以Area至表[設備資訊]查詢出ESN，再以ESN至表[設備報修單]查詢出相關報修單。
+            var atable_ESN = db.EquipmentInfo.Where(x => x.ESN == ASN).Select(x=>x.E);
+            var atable_SearchTable = db.EquipmentReportForm.Where(x=>x.ESN == atable.)
+
             #endregion
 
             //回傳JSON陣列
