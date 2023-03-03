@@ -29,9 +29,9 @@ namespace MinSheng_MIS.Services
 
             //塞來自formdata的資料
             //string Area = form["Area"]?.ToString();
-            int ASN = short.Parse(form["Area"]?.ToString());
+            //int ASN = short.Parse(form["Area"]?.ToString());
             //string Floor = form["Floor"]?.ToString();
-            int FSN = short.Parse(form["Floor"]?.ToString());
+            //int FSN = short.Parse(form["Floor"]?.ToString());
 
             string ReportState = form["ReportState"]?.ToString();
             string Level = form["Level"]?.ToString();
@@ -47,8 +47,8 @@ namespace MinSheng_MIS.Services
 
             #region 依據查詢字串檢索資料表
             //Area查詢table方式 以Area至表[設備資訊]查詢出ESN，再以ESN至表[設備報修單]查詢出相關報修單。
-            var atable_ESN = db.EquipmentInfo.Where(x => x.ESN == ASN).Select(x=>x.E);
-            var atable_SearchTable = db.EquipmentReportForm.Where(x=>x.ESN == atable.)
+            //var atable_ESN = db.EquipmentInfo.Where(x => x.ESN == ASN).Select(x=>x.E);
+            //var atable_SearchTable = db.EquipmentReportForm.Where(x=>x.ESN == atable.)
 
             #endregion
 
