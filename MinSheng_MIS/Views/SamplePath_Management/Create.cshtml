@@ -11,14 +11,16 @@
             <label for="Area">棟別</label>
             <select class="form-select" name="Area" id="Area" required>
                 <option value="">請選擇</option>
-                <!--TEST--><option value="1" selected>1</option>
+                <!--TEST-->
+                <option value="1" selected>1</option>
             </select>
         </div>
         <div class="form-group required">
             <label for="Floor">樓層</label>
             <select class="form-select" name="Floor" id="Floor" required>
                 <option value="">請選擇</option>
-                <!--TEST--><option value="1" selected>1</option>
+                <!--TEST-->
+                <option value="1" selected>1</option>
             </select>
         </div>
         <div class="form-group required">
@@ -45,6 +47,9 @@
                             <li class="breadcrumb-item">終點</li>
                         </ol>
                     </nav>
+                    <button class="path-edit" id="path-edit">
+                        <i class="icon-edit"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -63,10 +68,10 @@
 </div>
 
 <div class="modal fade" tabindex="-1" id="sortRouteModal">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
+                <h5 class="modal-title">修改路徑</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -284,11 +289,7 @@
             route.push("終點");
 
             //顯示在網頁上
-            $route.empty();
-            route.forEach(r => {
-                let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
-                $route.append(pathPoint);
-            })
+            updatePathDisplay(route);
         }
 
         function removeAll() {
@@ -312,65 +313,18 @@
             $("#point-detail").addClass("d-none");
         }
     }
+
+    //更新網頁顯示的路徑
+    function updatePathDisplay(path) {
+        let $path = $("#path-display");
+        $path.empty();
+        path.forEach(r => {
+            let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
+            $path.append(pathPoint);
+        })
+    }
 </script>
 
-<style>
-    /* (A) LIST STYLES */
-    .sortlist {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .sortlist li {
-        position: relative;
-        display: inline-block;
-        margin: 10px 16px;
-        padding: 16px 12px;
-        border-radius: 50px;
-        min-width: 50px;
-        text-align: center;
-        background: white;
-        border: 1px solid #6db1ff;
-    }
-
-    .sortlist li::after {
-        content: "->";
-        position: absolute;
-        right: -24px;
-    }
-
-    .sortlist li.ghost,
-    .sortlist li.drag {
-        opacity: 0.5;
-        background: #c3dfff;
-    }
-
-    .sortlist li.drag::after {
-        content: "";
-    }
-
-    .sortlist li.disable {
-        border-width: 0;
-        color: white;
-    }
-
-    .sortlist li.disable:first-child {
-        background: #f15bb5;
-    }
-
-    .sortlist li.disable:first-child::after {
-        color: black;
-    }
-
-    .sortlist li.disable:last-child {
-        background: #9b5de5;
-    }
-
-    .sortlist li.disable:last-child::after {
-        content: "";
-    }
-</style>
 
 <!-- Drag and Drop -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -379,7 +333,7 @@
     let sortlist = $(`<ul class="sortlist" id="sortlist"></ul>`);
     function DragRoute() {
         let $area = $(".sort-list-area");
-        let $route = $("#RouteOrder");
+        let $route = $("#path-display");
         createRouteItems();
         let sortable = Sortable.create(sortlist[0], {
             swapThreshold: 0.45,
@@ -395,7 +349,8 @@
         sortRouteModal.show();
         function createRouteItems() {
             sortlist.empty();
-            let list = $route.text().split(" -> ");
+            console.log($route)
+            let list = $route.children().toArray().map(e => e.innerHTML);
             list.forEach((e, i, arr) => {
                 let li = $(`<li class="${i == 0 || i == arr.length - 1 ? "disable" : "item"}">${e}</li>`);
                 sortlist.append(li);
@@ -405,15 +360,13 @@
     function SaveRoute() {
         AutoRoute(false);
 
-        let $route = $("#RouteOrder");
+        let $route = $("#path-display");
 
         let route = sortlist.find("li").toArray().map((e) => {
             return $(e).text();
         })
 
-        console.log(route);
-
-        $route.text(route.join(" -> "));
+        updatePathDisplay(route);
 
         sortRouteModal.hide();
     }
@@ -450,6 +403,9 @@
                 $("#path-display").removeClass("d-none");
                 initializeViewer(initializeDrawer);
             }
+        })
+        $("#path-edit").click(function () {
+            DragRoute();
         })
         $("#submit").click(function () {
             console.log("onclick submit")

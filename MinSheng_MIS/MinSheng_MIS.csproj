@@ -1343,6 +1343,12 @@
     <Content Include="Content\easyui\themes\react.css" />
     <Content Include="Content\easyui\themes\vue.css" />
     <Content Include="Content\form.css" />
+    <Content Include="Content\icomoon-v1.0\demo-files\demo.css" />
+    <Content Include="Content\icomoon-v1.0\demo-files\demo.js" />
+    <Content Include="Content\icomoon-v1.0\demo.html" />
+    <Content Include="Content\icomoon-v1.0\fonts\icomoon.svg" />
+    <Content Include="Content\icomoon-v1.0\Read Me.txt" />
+    <Content Include="Content\icomoon-v1.0\style.css" />
     <Content Include="Content\img\bg.png" />
     <Content Include="Content\img\loginBG.png" />
     <Content Include="Content\img\logo.png" />
@@ -1437,6 +1443,10 @@
     <Content Include="BimModels\Site01\Resource\objects_vals.json.gz" />
     <Content Include="BimModels\Site01\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\Site01\viewable.json" />
+    <Content Include="Content\icomoon-v1.0\fonts\icomoon.eot" />
+    <Content Include="Content\icomoon-v1.0\fonts\icomoon.ttf" />
+    <Content Include="Content\icomoon-v1.0\fonts\icomoon.woff" />
+    <Content Include="Content\icomoon-v1.0\selection.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datatable.js" />

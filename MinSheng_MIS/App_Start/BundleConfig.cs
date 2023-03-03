@@ -26,7 +26,8 @@ namespace MinSheng_MIS
 				"~/Content/button.css",
 				"~/Content/form.css",
 				"~/Content/datagrid.css",
-				"~/Content/datatable.css"
+				"~/Content/datatable.css",
+				"~/Content/icomoon-v1.0/style.css"
 			));
 		}
 	}

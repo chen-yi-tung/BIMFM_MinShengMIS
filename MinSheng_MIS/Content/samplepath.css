@@ -1,4 +1,4 @@
-﻿.sample-path-area{
+﻿.sample-path-area {
     padding-left: 16px;
     padding-right: 16px;
 }
@@ -9,7 +9,7 @@
     margin-top: 12px;
 }
 
-.sample-path-group-area{
+.sample-path-group-area {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -35,6 +35,7 @@
 }
 
 .sample-path-group .form-control {
+    display: flex;
     background-color: #D3E5FB;
     color: #5B5B5B;
     border-radius: 5px;
@@ -55,14 +56,14 @@
     padding-top: 2px;
 }
 
-.sample-path-draw-area{
+.sample-path-draw-area {
     background-color: #D3E5FB;
     border-radius: 5px;
     width: 100%;
     padding: 36px 72px;
 }
 
-.sample-path-draw-area .button-area{
+.sample-path-draw-area .button-area {
     display: flex;
     justify-content: center;
 }
@@ -75,7 +76,27 @@
     padding: 12px 26px;
     min-height: calc(24px + 1.612em);
 }
- */
+*/
+.sample-path-group .form-control nav {
+    flex: 1 0 0;
+}
+
+.sample-path-group .form-control .path-edit {
+    flex: 0 0 auto;
+    width: 1.6em;
+    height: 100%;
+    background: rgba(68, 188, 194, 0.5);
+    color: #fff;
+    border-radius: 5px;
+    padding: 0;
+    border: 0;
+    opacity: 1;
+    transition: all .3s;
+}
+
+.sample-path-group .form-control .path-edit:hover{
+    background: rgba(68, 188, 194, 1);
+}
 
 /* Autodesk forge */
 .adsk-viewing-viewer {
@@ -134,4 +155,64 @@
 
 .contextMenu .btn:hover {
     background: rgb(221, 221, 221);
+}
+
+/*  */
+
+/* (A) LIST STYLES */
+.sortlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sortlist li {
+    position: relative;
+    display: inline-block;
+    margin: 10px 16px;
+    padding: 16px 12px;
+    border-radius: 50px;
+    min-width: 50px;
+    text-align: center;
+    background: #2750B9;
+    border: 3px solid #FFFFFF;
+    color: #fff;
+}
+
+.sortlist li::after {
+    --divider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-arrow-right-short' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z'/%3E%3C/svg%3E");
+    content: var(--divider);
+    position: absolute;
+    right: -24px;
+}
+
+.sortlist li.ghost,
+.sortlist li.drag {
+    opacity: 0.5;
+    background: #c3dfff;
+}
+
+.sortlist li.drag::after {
+    content: "";
+}
+
+.sortlist li.disable {
+    border-width: 0;
+    color: white;
+}
+
+.sortlist li.disable:first-child {
+    background: #f15bb5;
+}
+
+.sortlist li.disable:first-child::after {
+    color: black;
+}
+
+.sortlist li.disable:last-child {
+    background: #9b5de5;
+}
+
+.sortlist li.disable:last-child::after {
+    content: "";
 }
