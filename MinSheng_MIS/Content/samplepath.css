@@ -1,0 +1,107 @@
+﻿.sample-path-area{
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.sample-path-title {
+    font-size: 18px;
+    color: #fff;
+    margin-top: 12px;
+}
+
+.sample-path-group-area{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 16px;
+    margin-bottom: 36px;
+}
+
+.sample-path-group {
+    font-size: 18px;
+}
+
+.sample-path-group .input-group-text {
+    background-color: #BED4EF;
+    color: #3D3D3D;
+    border-radius: 5px;
+    border: 0;
+    border-right: 1px dashed #8899AE;
+    z-index: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.sample-path-group .form-control {
+    background-color: #D3E5FB;
+    color: #5B5B5B;
+    border-radius: 5px;
+    border: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.sample-path-group .breadcrumb {
+    --bs-breadcrumb-margin-bottom: 0;
+}
+
+.sample-path-group nav {
+    --bs-breadcrumb-divider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-arrow-right-short' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z'/%3E%3C/svg%3E");
+}
+
+.sample-path-group .breadcrumb-item+.breadcrumb-item::before {
+    padding-top: 2px;
+}
+
+.sample-path-draw-area{
+    background-color: #D3E5FB;
+    border-radius: 5px;
+    width: 100%;
+    padding: 56px 72px 36px;
+}
+
+.sample-path-draw-area .button-area{
+    display: flex;
+    justify-content: center;
+}
+
+.sample-path-group.inner{
+    background: #ABC4E3;
+    color: #404040;
+    width: 100%;
+    border-radius: 24px;
+    padding: 12px 26px;
+    min-height: calc(24px + 1.612em);
+}
+
+/* Autodesk forge */
+.adsk-viewing-viewer {
+    background: none !important;
+}
+
+.viewer3Dcontainer {
+    position: relative;
+    height: 80vh;
+    margin: 0;
+    background-color: #F0F8FF;
+    margin-top: 36px;
+    margin-bottom: 36px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#viewer3d {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+#PathCanvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    z-index: 10;
+    user-select: none;
+}

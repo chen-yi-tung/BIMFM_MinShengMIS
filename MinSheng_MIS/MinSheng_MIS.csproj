@@ -334,6 +334,12 @@
     <Compile Include="Surfaces\Surface.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BimModels\Site01\preview1.png" />
+    <Content Include="BimModels\Site01\preview2.png" />
+    <Content Include="BimModels\Site01\preview4.png" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\林口%28一%291.png" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\林口%28一%292.png" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\林口%28一%294.png" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.rtl.css" />
@@ -1342,6 +1348,7 @@
     <Content Include="Content\img\logo.png" />
     <Content Include="Content\login.css" />
     <Content Include="Content\navbar.css" />
+    <Content Include="Content\samplepath.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -1411,10 +1418,30 @@
     <Content Include="Content\easyui\demo\tree\tree_data2.json" />
     <Content Include="Content\easyui\themes\material-teal\images\Thumbs.db" />
     <Content Include="Content\easyui\themes\material\images\Thumbs.db" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\0.pf" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\CameraDefinitions.bin" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\CameraList.bin" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\FragmentList.pack" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\GeometryMetadata.pf" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\InstanceTree.bin" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\LightDefinitions.bin" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\LightList.bin" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\Materials.json.gz" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\Set.bin" />
+    <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\林口%28一%29.svf" />
+    <Content Include="BimModels\Site01\Resource\model.sdb" />
+    <Content Include="BimModels\Site01\Resource\objects_attrs.json.gz" />
+    <Content Include="BimModels\Site01\Resource\objects_avs.json.gz" />
+    <Content Include="BimModels\Site01\Resource\objects_ids.json.gz" />
+    <Content Include="BimModels\Site01\Resource\objects_offs.json.gz" />
+    <Content Include="BimModels\Site01\Resource\objects_vals.json.gz" />
+    <Content Include="BimModels\Site01\Resource\objects_viewables.json.gz" />
+    <Content Include="BimModels\Site01\viewable.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datatable.js" />
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
+    <Content Include="Scripts\ForgeDraw.js" />
     <Content Include="Scripts\ImageDisplay.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

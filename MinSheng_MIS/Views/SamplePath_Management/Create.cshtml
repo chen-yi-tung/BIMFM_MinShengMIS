@@ -1,10 +1,11 @@
 ﻿@{
     ViewBag.Title = "新增巡檢路線模板";
 }
+<link rel="stylesheet" href="/Content/samplepath.css">
 
 <h2>@ViewBag.Title</h2>
 
-<div class="search-area">
+<div class="search-area bg-transparent">
     <form class="form" action="">
         <div class="form-group required">
             <label for="Area">棟別</label>
@@ -22,25 +23,439 @@
             <label for="PathTitle">巡檢路線模板</label>
             <input type="text" class="form-control" name="PathTitle" id="PathTitle">
         </div>
-        <div class="button-group">
-            <button class="btn btn-search" id="create">確認</button>
+        <div class="button-group justify-content-start">
+            <button class="btn btn-search" id="path-create">確認</button>
         </div>
     </form>
 </div>
 
+<div class="sample-path-area">
+    <h3 class="sample-path-title">巡檢路線規劃</h3>
+
+    <div class="edit-area">
+        <div class="sample-path-group-area">
+            <div class="input-group sample-path-group">
+                <span class="input-group-text">A區1F路線</span>
+                <div type="text" class="form-control">
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">起點</li>
+                            <li class="breadcrumb-item">終點</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="sample-path-draw-area">
+            <div class="sample-path-group inner">
+                <nav>
+                    <ol class="breadcrumb" id="path-display">
+                        <li class="breadcrumb-item">起點</li>
+                        <li class="breadcrumb-item">終點</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="viewer3Dcontainer">
+                <div id="viewer3d" style="margin:0;"></div>
+                <canvas id="PathCanvas"></canvas>
+            </div>
+
+            <div class="button-area">
+                <button class="btn btn-search" id="path-save">儲存變更</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
+<div class="modal fade" tabindex="-1" id="sortRouteModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="sort-list-area"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    onclick="sortRouteModal.hide()">取消</button>
+                <button type="button" class="btn btn-primary" onclick="SaveRoute()">儲存變更</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CDN -->
+<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
+    type="text/css">
+<script language="JavaScript"
+    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
+
+<!-- Autodesk Forge -->
 <script>
-    window.onload = function () {
-        addButtonEvent();
+    var viewer;
+    var myProfileSettings_up = {
+        name: "mySettings_up",
+        description: "My personal settings.",
+        settings: {
+            viewType: 1, //orthographic
+        },
+        persistent: [],
+        extensions: {
+            load: [],
+            unload: [
+                //減少toolbar物件
+                "Autodesk.Section",
+                "Autodesk.Measure",
+                "Autodesk.Explode",
+                "Autodesk.BimWalk",
+                "Autodesk.Viewing.FusionOrbit"
+            ]
+        }
     }
+    async function initializeViewer(callback) {
+        Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
+        var myViewerDiv = document.getElementById('viewer3d');
+        viewer = new Autodesk.Viewing.GuiViewer3D(myViewerDiv, { profileSettings: myProfileSettings_up });
+        var options = {
+            'env': "Local",
+            'document': "../BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf" //svf檔路徑
+        };
+        Autodesk.Viewing.Initializer(options, function () {
+            viewer.start(options.document, options, onSuccessCallback, onErrorCallback);
+            async function onSuccessCallback() {
+                console.log("onSuccessCallback");
+                viewer.setBackgroundOpacity(0);
+                viewer.setBackgroundColor();
+                viewer.setLightPreset(16);
+
+                viewer.toolbar.removeControl("navTools");
+                viewer.toolbar.removeControl("settingsTools");
+
+                viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function (e) {
+                    console.log("GEOMETRY_LOADED_EVENT");
+                    viewer.addEventListener(
+                        Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT,
+                        loadWireFrame);
+
+                    function loadWireFrame() {
+                        console.log("FINAL_FRAME_RENDERED_CHANGED_EVENT");
+                        if (!viewer.isExtensionLoaded('Autodesk.Viewing.Wireframes')) {
+                            viewer.loadExtension('Autodesk.Viewing.Wireframes').then(callback);
+                            viewer.removeEventListener(
+                                Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT,
+                                loadWireFrame);
+                        }
+                    }
+                });
+                viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, function (e) {
+                    console.log("EXTENSION_LOADED_EVENT = " + e.extensionId);
+                    switch (e.extensionId) {
+                        case "Autodesk.ViewCubeUi":
+                            const ViewCubeExt = viewer.getExtension("Autodesk.ViewCubeUi");
+                            ViewCubeExt.setVisible(false);
+
+                            //上視圖視角設定
+                            let pos = new THREE.Vector3(0, 0, 160);
+                            let target = new THREE.Vector3(0, 0, 0);
+                            viewer.navigation.setView(pos, target);
+                            viewer.navigation.setCameraUpVector(new THREE.Vector3(-1, 0, 0));
+                            break;
+                        case 'Autodesk.Viewing.Wireframes':
+                            const wfExt = viewer.getExtension('Autodesk.Viewing.Wireframes');
+                            wfExt.activate(); //開啟
+                            wfExt.showSolidMaterial(false); //取消固體材質
+                            let lineMaterial = new THREE.LineBasicMaterial({
+                                color: 0x000000,
+                                linewidth: 0.2
+                            });
+                            wfExt.setLinesMaterial(lineMaterial);
+                            wfExt.setLightPreset(16); //開啟邊線時燈光會自動換到大頭貼燈光，所以要設定回自訂燈光
+                            console.log("wfExt run end");
+                            break;
+                    }
+                })
+            }
+            function onErrorCallback() { console.log("onErrorCallback"); }
+        });
+    }
+
+</script>
+
+<!-- PIXI Draw -->
+<script src="https://pixijs.download/release/pixi.js"></script>
+<script src="/Scripts/ForgeDraw.js"></script>
+<script>
+    var app;
+
+    var stage;
+
+    var autoCalcRoute = true;
+
+    const deviceDbId = [
+        {
+            dbId: 3078,
+            deviceName: "BT-11014"
+        },
+        {
+            dbId: 3239,
+            deviceName: "BT-11015"
+        },
+        {
+            dbId: 3162,
+            deviceName: "BT-11016"
+        }
+    ];
+
+    function initializeDrawer() {
+        let view = document.querySelector("#PathCanvas");
+        let $list = $("#point-list").find("tbody");
+        let $detail = $("#point-detail").find("tbody");
+        let $route = $("#path-display");
+        app = ForgeDraw.init(view, viewer, function () {
+            view.addEventListener("fd.linedata.change", function (event) {
+                console.log("view => fd.linedata.change");
+                updateChange();
+                calcRoute();
+            });
+            view.addEventListener("fd.linedata.detail", function (event) {
+                console.log("view => fd.linedata.detail", event.detail);
+                showDetail(event.detail);
+            });
+            view.addEventListener("fd.linedata.removeall", function (event) {
+                console.log("view => fd.linedata.removeall");
+                removeAll();
+            });
+            view.addEventListener("fd.devicepoint.ignore", function (event) {
+                console.log("view => fd.devicepoint.ignore");
+                calcRoute();
+            });
+
+            deviceDbId.forEach((e) => {
+                let dp = new ForgeDraw.DevicePoint(e.dbId, e.deviceName);
+            });
+        });
+
+        $("#point-detail").find("button").on("click", hideDetail);
+
+        function updateChange() {
+            let html = "";
+
+            ForgeDraw.lineData.forEach((e, i, arr) => {
+
+                let p = viewer.clientToWorld(
+                    e.position.x,
+                    e.position.y,
+                );
+
+                html += `
+                    <tr id="lineData_${i}">
+                        <td>${i}</td>
+                        <td>${p ? +(Math.floor(p.point.x + "e+2") + "e-2") : "null"}</td>
+                        <td>${p ? +(Math.floor(p.point.y + "e+2") + "e-2") : "null"}</td>
+                        <td>${e.isBool}</td>
+                    </tr>
+                    `;
+            })
+            $list.empty();
+            $list.append(html);
+        }
+
+        function calcRoute() {
+
+            if (ForgeDraw.lineData.length > 1) {
+                ForgeDraw.devices.forEach((dp) => {
+                    dp.update();
+                })
+            }
+
+            if (!autoCalcRoute) {
+                return;
+            }
+
+            //開始計算路徑
+            let route = ForgeDraw.devices
+                .filter(e => e.result != undefined)
+                .sort((a, b) => {
+                    if (a.result.i == b.result.i) {
+                        return a.result.distanceToA - b.result.distanceToA;
+                    }
+                    return a.result.i - b.result.i;
+                }).map(e => e.name);
+            console.log(ForgeDraw.devices.map(e => e.result));
+
+            route.unshift("起點");
+            route.push("終點");
+
+            //顯示在網頁上
+            $route.empty();
+            route.forEach(r => {
+                let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
+                $route.append(pathPoint);
+            })
+        }
+
+        function removeAll() {
+            $list.empty();
+            $route.empty();
+        }
+
+        function showDetail(data) {
+            let html = `
+                <tr><td>dbId</td><td>${data.dbId}</td></tr>
+                <tr><td>名稱</td><td>${data.name}</td></tr>
+                <tr><td>是否忽略</td><td>${!data.isUpdate}</td></tr>
+                `;
+            $detail.empty();
+            $detail.append(html);
+
+            $("#point-detail").removeClass("d-none");
+        }
+
+        function hideDetail() {
+            $("#point-detail").addClass("d-none");
+        }
+    }
+</script>
+
+<style>
+    /* (A) LIST STYLES */
+    .sortlist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sortlist li {
+        position: relative;
+        display: inline-block;
+        margin: 10px 16px;
+        padding: 16px 12px;
+        border-radius: 50px;
+        min-width: 50px;
+        text-align: center;
+        background: white;
+        border: 1px solid #6db1ff;
+    }
+
+    .sortlist li::after {
+        content: "->";
+        position: absolute;
+        right: -24px;
+    }
+
+    .sortlist li.ghost,
+    .sortlist li.drag {
+        opacity: 0.5;
+        background: #c3dfff;
+    }
+
+    .sortlist li.drag::after {
+        content: "";
+    }
+
+    .sortlist li.disable {
+        border-width: 0;
+        color: white;
+    }
+
+    .sortlist li.disable:first-child {
+        background: #f15bb5;
+    }
+
+    .sortlist li.disable:first-child::after {
+        color: black;
+    }
+
+    .sortlist li.disable:last-child {
+        background: #9b5de5;
+    }
+
+    .sortlist li.disable:last-child::after {
+        content: "";
+    }
+</style>
+
+<!-- Drag and Drop -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    var sortRouteModal = new bootstrap.Modal(document.getElementById('sortRouteModal'));
+    let sortlist = $(`<ul class="sortlist" id="sortlist"></ul>`);
+    function DragRoute() {
+        let $area = $(".sort-list-area");
+        let $route = $("#RouteOrder");
+        createRouteItems();
+        let sortable = Sortable.create(sortlist[0], {
+            swapThreshold: 0.45,
+            animation: 150,
+            ghostClass: "ghost",
+            dragClass: "drag",
+            direction: 'horizontal',
+            filter: '.disable',
+            draggable: ".item"
+        });
+        $area.empty();
+        $area.append(sortlist);
+        sortRouteModal.show();
+        function createRouteItems() {
+            sortlist.empty();
+            let list = $route.text().split(" -> ");
+            list.forEach((e, i, arr) => {
+                let li = $(`<li class="${i == 0 || i == arr.length - 1 ? "disable" : "item"}">${e}</li>`);
+                sortlist.append(li);
+            })
+        }
+    }
+    function SaveRoute() {
+        AutoRoute(false);
+
+        let $route = $("#RouteOrder");
+
+        let route = sortlist.find("li").toArray().map((e) => {
+            return $(e).text();
+        })
+
+        console.log(route);
+
+        $route.text(route.join(" -> "));
+
+        sortRouteModal.hide();
+    }
+    function AutoRoute(bool = undefined) {
+        if (bool != undefined) {
+            autoCalcRoute = bool;
+            $("#AutoRoute").toggleClass("active", bool);
+            return;
+        }
+        autoCalcRoute = !autoCalcRoute;
+        $("#AutoRoute").toggleClass("active", autoCalcRoute);
+    }
+</script>
+
+<!-- EVENT -->
+<script>
+    $(async function () {
+        await initializeViewer(initializeDrawer);
+        addButtonEvent();
+    });
 
     function addButtonEvent() {
         $("#back").click(function () {
             history.back();
+        })
+        $("#path-create").click(function () {
+            console.log("onclick path-create")
+            //todo
+        })
+        $("#path-save").click(function () {
+            console.log("onclick path-save")
+            //todo
         })
         $("#submit").click(function () {
             save();

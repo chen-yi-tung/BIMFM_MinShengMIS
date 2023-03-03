@@ -1,10 +1,21 @@
-﻿/* management */
+﻿
+
+/* management */
 .search-area {
     background: rgba(35, 106, 146, 0.43);
     box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.4);
     padding: 20px 36px;
     font-size: 18px;
     margin-top: 16px;
+}
+
+.bg-transparent{
+    background: transparent;
+}
+
+.search-area.bg-transparent{
+    box-shadow: none;
+    padding: 20px 0;
 }
 
 .search-area .form {
