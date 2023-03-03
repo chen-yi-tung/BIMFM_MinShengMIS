@@ -128,7 +128,7 @@
         if (areas.value != "") {
             $('#Area').val($("#ASN option:selected").text());
         }
-        else{
+        else {
             $('#Area').val('');
         }
         console.log($('#Area').val())
@@ -143,7 +143,7 @@
         if (FSNs.value != "") {
             $('#Floor').val($("#FSN option:selected").text());
         }
-        else{
+        else {
             $('#Floor').val('');
         }
         console.log($('#Floor').val())
@@ -177,35 +177,21 @@
     });
     function Initialize_DataGrid(getGridJSON) {
 
-        const searchParams = [
-            "Area",
-            "ASN",
-            "Floor",
-            "FSN",
-            "ReportState",
-            "Level",
-            "RSN",
-            "ESN",
-            "EName",
-            "PropertyCode",
-            "ReportContent",
-            "InformantUserID",
-            "DateFrom",
-            "DateTo"
-        ]
-
+        const searchParams = $(".search-area").find("label").toArray().map(e=>{
+            return $(e).attr("for");
+        });
+        console.log(searchParams)
         let queryParams = searchParams.reduce((total, c) => {
             total[c] = $(`#${c}`).val()
             return total;
         }, {})
-
         console.log(queryParams)
 
         $('#DataGrid').datagrid({
 
             url: getGridJSON,
             method: 'POST',
-            queryParams:queryParams,
+            queryParams: queryParams,
             rownumbers: true,
             idField: 'Date',
             sortName: 'Date',
