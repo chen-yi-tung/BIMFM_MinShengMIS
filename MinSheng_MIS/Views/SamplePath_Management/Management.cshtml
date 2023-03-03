@@ -43,10 +43,17 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-
+<script src="../../Scripts/tool.js"></script>
 <script>
 
     var baseUrl = "/SamplePath_Management/";
+    var areas = document.getElementById("Area");
+
+    areas.addEventListener("change", function () {
+        let url = '@Url.Action("Floor", "DropDownList")';
+        url = url + `?ASN=${areas.value}`;
+        pushSelect("Floor", url);
+    });
 
     const fakeData = [
         {
@@ -57,7 +64,9 @@
         }
     ]
 
-    $(function () {
+    $(async function () {
+        await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
+
         let getGridJSON = '';
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
@@ -148,6 +157,7 @@
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $("form")[0].reset();
+            pushSelect("Floor", '@Url.Action("Floor", "DropDownList")');
         });
 
         $("#search").click(function () {
