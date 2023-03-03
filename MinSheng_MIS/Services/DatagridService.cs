@@ -5,41 +5,50 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Microsoft.Owin;
 
 namespace MinSheng_MIS.Services
 {
     public class DatagridService
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-        int TotalNo_ReportManagement = 0;
-        public JArray GetJsonForGrid_ReportManagement(string Query, int page, int pageSize, string propertyName = "MISN", string order = "asc")
+        public JObject GetJsonForGrid_ReportManagement(System.Web.Mvc.FormCollection form)
         {
-            //說明: 因為JSON字串格式中包含""，Easy UI Post上傳時，會將""轉換為&quot; 無法直接解析回正確的JSON Object，因此需將其轉換為""以利後續處理 
-            string QT = Query.Trim();
-            QT = QT.Replace("&quot;", "\"");
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int pageSize = 10;
+            if (!string.IsNullOrEmpty(form["pageSize"]?.ToString()))
+            {
+                pageSize = short.Parse(form["pageSize"]?.ToString());
+            }
+            string propertyName = "MISN";
+            string order = "asc";
 
-            #region 解析查詢字串
-            var Target = JsonConvert.DeserializeObject<MaintainItemQuery>(QT);
-            #endregion
+            //塞來自formdata的資料
+            string Area = form["Area"]?.ToString();
+            string Floor = form["Floor"]?.ToString();
+            string ReportState = form["ReportState"]?.ToString();
+            string Level = form["Level"]?.ToString();
+            string RSN = form["RSN"]?.ToString();
+            string ESN = form["ESN"]?.ToString();
+            string EName = form["EName"]?.ToString();
+            string PropertyCode = form["PropertyCode"]?.ToString();
+            string ReportContent = form["ReportContent"]?.ToString();
+            string InformantUserID = form["InformantUserID"]?.ToString();
+            string DateFrom = form["DateFrom"]?.ToString();
+            string DateTo = form["DateTo"]?.ToString();
+
 
             #region 依據查詢字串檢索資料表
-            var table = db.MaintainItem.AsQueryable();
-            if (!string.IsNullOrEmpty(Target.System) && Target.System != "none")
-                table = table.Where(t => t.System == Target.System);
-            if (!string.IsNullOrEmpty(Target.SubSystem) && Target.SubSystem != "none")
-                table = table.Where(t => t.SubSystem == Target.SubSystem);
-            if (!string.IsNullOrEmpty(Target.EName) && Target.EName != "none")
-                table = table.Where(t => t.EName == Target.EName);
-            if (!string.IsNullOrEmpty(Target.MIName))
-                table = table.Where(t => t.MIName.Contains(Target.MIName));
-            if (!string.IsNullOrEmpty(Target.Unit))
-                table = table.Where(t => t.Unit == Target.Unit);
-            if (!string.IsNullOrEmpty(Target.Period))
-            {
-                int period = Convert.ToInt16(Target.Period);
-                table = table.Where(t => t.Period == period);
-            }
-
+            //var table = db.MaintainItem.AsQueryable();
+            //if (!string.IsNullOrEmpty(form["System"]?.ToString()))
+            //    table = table.Where(t => t.System == form["System"].ToString());
+            //if (!string.IsNullOrEmpty(form["System"]?.ToString()))
+            //    table = table.Where(t => t.System == form["System"].ToString());
+            //table = table.Skip((page - 1) * pageSize).Take(pageSize);
             #endregion
 
             //回傳JSON陣列
@@ -47,49 +56,87 @@ namespace MinSheng_MIS.Services
 
             //注意:"{0} {1}"中間必須為一個空格，以讓系統識別此二參數，注意:必須使用OrderBy，不可使用 OrderByDescent
             //table = table.OrderBy(string.Format("{0} {1}", propertyName, order));
-            TotalNo_ReportManagement = table.Count();
-
+            //int total = table.Count();
+            int total = 1;
             //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-            //table = table.Skip((page - 1) * pageSize).Take(pageSize);
+            #region
+            //if (table != null && total > 0)
+            //{
+            //    foreach (var item in table)
+            //    {
+            //        var itemObjects = new JObject();
+            //        if (itemObjects["State"] == null)
+            //            itemObjects.Add("State", "已派工");                                    //保養設備編號
 
-            if (table != null && TotalNo_ReportManagement > 0)
-            {
-                foreach (var item in table)
-                {
-                    var itemObjects = new JObject();
-                    if (itemObjects["MISN"] == null)
-                        itemObjects.Add("MISN", item.MISN);                                    //保養設備編號
+            //        if (itemObjects["Level"] == null)
+            //            itemObjects.Add("Level", "最速件");                                //保養項目名稱
 
-                    if (itemObjects["MIName"] == null)
-                        itemObjects.Add("MIName", item.MIName);                                //保養項目名稱
+            //        if (itemObjects["Area"] == null)
+            //            itemObjects.Add("System", "A棟");                                //系統別
 
-                    if (itemObjects["System"] == null)
-                        itemObjects.Add("System", item.System);                                //系統別
+            //        if (itemObjects["Floor"] == null)
+            //            itemObjects.Add("SubSystem", "1F");                          //子系統別
 
-                    if (itemObjects["SubSystem"] == null)
-                        itemObjects.Add("SubSystem", item.SubSystem);                          //子系統別
+            //        if (itemObjects["ReportSource"] == null)
+            //            itemObjects.Add("EName", "APP");                                  //設備名稱
 
-                    if (itemObjects["EName"] == null)
-                        itemObjects.Add("EName", item.EName);                                  //設備名稱
+            //        if (itemObjects["RSN"] == null)
+            //            itemObjects.Add("Unit", "R23010601");                                    //保養週期單位
 
-                    if (itemObjects["Unit"] == null)
-                        itemObjects.Add("Unit", item.Unit);                                    //保養週期單位
+            //        if (itemObjects["Date"] == null)
+            //            itemObjects.Add("Period", "2023/1/6 15:00:02");                                //保養週期
 
-                    if (itemObjects["Period"] == null)
-                        itemObjects.Add("Period", item.Period);                                //保養週期
+            //        if (itemObjects["PropertyCode"] == null)
+            //            itemObjects.Add("MaintainItemIsEnable", "無");    //保養項目停啟用狀態
+            //        if (itemObjects["ESN"] == null)
+            //            itemObjects.Add("MaintainItemIsEnable", "E00001");    //保養項目停啟用狀態
+            //        if (itemObjects["EName"] == null)
+            //            itemObjects.Add("MaintainItemIsEnable", "日光燈");    //保養項目停啟用狀態
+            //        if (itemObjects["ReportContent"] == null)
+            //            itemObjects.Add("ReportContent", "故障");    //保養項目停啟用狀態
+            //        if (itemObjects["MyName"] == null)
+            //            itemObjects.Add("MyName", "王大明");    //保養項目停啟用狀態
+            //        ja.Add(itemObjects);
+            //    }
+            //}
+            #endregion
+            var itemObjects = new JObject();
+            if (itemObjects["State"] == null)
+                itemObjects.Add("State", "已派工");                                    //保養設備編號
 
-                    if (itemObjects["MaintainItemIsEnable"] == null)
-                        itemObjects.Add("MaintainItemIsEnable", item.MaintainItemIsEnable);    //保養項目停啟用狀態
+            if (itemObjects["Level"] == null)
+                itemObjects.Add("Level", "最速件");                                //保養項目名稱
 
-                    ja.Add(itemObjects);
-                }
-            }
-            return ja;
-        }
+            if (itemObjects["Area"] == null)
+                itemObjects.Add("System", "A棟");                                //系統別
 
-        public int TotalCount_ReportManagement()
-        {
-            return TotalNo_ReportManagement;
+            if (itemObjects["Floor"] == null)
+                itemObjects.Add("SubSystem", "1F");                          //子系統別
+
+            if (itemObjects["ReportSource"] == null)
+                itemObjects.Add("EName", "APP");                                  //設備名稱
+
+            if (itemObjects["RSN"] == null)
+                itemObjects.Add("Unit", "R23010601");                                    //保養週期單位
+
+            if (itemObjects["Date"] == null)
+                itemObjects.Add("Period", "2023/1/6 15:00:02");                                //保養週期
+
+            if (itemObjects["PropertyCode"] == null)
+                itemObjects.Add("MaintainItemIsEnable", "無");    //保養項目停啟用狀態
+            if (itemObjects["ESN"] == null)
+                itemObjects.Add("ESN", "E00001");    //保養項目停啟用狀態
+            if (itemObjects["EName"] == null)
+                itemObjects.Add("EName", "日光燈");    //保養項目停啟用狀態
+            if (itemObjects["ReportContent"] == null)
+                itemObjects.Add("ReportContent", "故障");    //保養項目停啟用狀態
+            if (itemObjects["MyName"] == null)
+                itemObjects.Add("MyName", "王大明");    //保養項目停啟用狀態
+            ja.Add(itemObjects);
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            return jo;
         }
     }
 }
