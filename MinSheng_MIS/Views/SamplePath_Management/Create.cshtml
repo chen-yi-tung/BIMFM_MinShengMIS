@@ -38,7 +38,7 @@
                 <span class="input-group-text">A區1F路線</span>
                 <div type="text" class="form-control">
                     <nav>
-                        <ol class="breadcrumb">
+                        <ol class="breadcrumb" id="path-display">
                             <li class="breadcrumb-item">起點</li>
                             <li class="breadcrumb-item">終點</li>
                         </ol>
@@ -47,22 +47,18 @@
             </div>
         </div>
         <div class="sample-path-draw-area">
-            <div class="sample-path-group inner">
+            @* <div class="sample-path-group inner">
                 <nav>
                     <ol class="breadcrumb" id="path-display">
                         <li class="breadcrumb-item">起點</li>
                         <li class="breadcrumb-item">終點</li>
                     </ol>
                 </nav>
-            </div>
+            </div> *@
 
             <div class="viewer3Dcontainer">
                 <div id="viewer3d" style="margin:0;"></div>
                 <canvas id="PathCanvas"></canvas>
-            </div>
-
-            <div class="button-area">
-                <button class="btn btn-search" id="path-save">儲存變更</button>
             </div>
         </div>
     </div>
@@ -453,11 +449,8 @@
             console.log("onclick path-create")
             //todo
         })
-        $("#path-save").click(function () {
-            console.log("onclick path-save")
-            //todo
-        })
         $("#submit").click(function () {
+            console.log("onclick submit")
             save();
         })
     }

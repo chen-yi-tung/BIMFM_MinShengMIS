@@ -63,7 +63,7 @@
             <label for="ESN">設備編號</label>
             <input class="form-control" id="ESN" name="ESN" type="text" />
             @*<select class="form-select" name="ESN" id="ESN">
-                <option value="">請選擇</option>
+            <option value="">請選擇</option>
             </select>*@
         </div>
 
@@ -71,7 +71,7 @@
             <label for="EName">設備名稱</label>
             <input class="form-control" id="EName" name="EName" type="text" />
             @*<select class="form-select" name="EName" id="EName">
-                <option value="">請選擇</option>
+            <option value="">請選擇</option>
             </select>*@
         </div>
 
@@ -153,36 +153,34 @@
         //$("#Area option[value=1]").attr('selected', 'selected');
     });
     function Initialize_DataGrid(getGridJSON) {
-        let Area = $('#Area').val();
-        let Floor = $('#Floor').val();
-        let ReportState = $('#ReportState').val();
-        let Level = $('#Level').val();
-        let RSN = $('#RSN').val();
-        let ESN = $('#ESN').val();
-        let EName = $('#EName').val();
-        let PropertyCode = $('#PropertyCode').val();
-        let ReportContent = $('#ReportContent').val();
-        let InformantUserID = $('#InformantUserID').val();
-        let DateFrom = $('#DateFrom').val();
-        let DateTo = $('#DateTo').val();
+
+        const searchParams = [
+            "Area",
+            "Floor",
+            "ReportState",
+            "Level",
+            "RSN",
+            "ESN",
+            "EName",
+            "PropertyCode",
+            "ReportContent",
+            "InformantUserID",
+            "DateFrom",
+            "DateTo"
+        ]
+
+        let queryParams = searchParams.reduce((total, c) => {
+            total[c] = $(`#${c}`).val()
+            return total;
+        }, {})
+        
+        console.log(queryParams)
+
         $('#DataGrid').datagrid({
 
             url: getGridJSON,
             method: 'POST',
-            queryParams: {
-                Area: `${Area}`,
-                Floor: `${Floor}`,
-                ReportState: `${ReportState}`,
-                Level: `${Level}`,
-                RSN: `${RSN}`,
-                ESN: `${ESN}`,
-                EName: `${EName}`,
-                PropertyCode: `${PropertyCode}`,
-                ReportContent: `${ReportContent}`,
-                InformantUserID: `${InformantUserID}`,
-                DateFrom: `${DateFrom}`,
-                DateTo: `${DateTo}`,
-            },
+            queryParams:queryParams,
             rownumbers: true,
             idField: 'Date',
             sortName: 'Date',
