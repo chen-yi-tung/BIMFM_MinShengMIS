@@ -112,11 +112,13 @@ namespace MinSheng_MIS.Services
             }
             if (!string.IsNullOrEmpty(DateFrom))
             {
-                SourceTable = SourceTable.Where(x => x.Date >= DateTime.Parse(DateFrom));
+                var datefrom = DateTime.Parse(DateFrom);
+                SourceTable = SourceTable.Where(x => x.Date >= datefrom);
             }
             if (!string.IsNullOrEmpty(DateTo))
             {
-                SourceTable = SourceTable.Where(x => x.Date <= DateTime.Parse(DateTo).AddDays(1));
+                var dateto = DateTime.Parse(DateTo).AddDays(1);
+                SourceTable = SourceTable.Where(x => x.Date <= dateto);
             }
             //var atable_ESN_list = db.EquipmentInfo.Where(x => x.Area == Area).Select(x=>x.ESN).ToList();
             //var atable_SearchTable = db.EquipmentReportForm.Where(x=> atable_ESN_list.Contains(x.ESN));
