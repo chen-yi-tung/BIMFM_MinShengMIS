@@ -105,7 +105,6 @@
             <label for="DateTo">日期(迄)</label>
             <input class="form-control" id="DateTo" name="DateTo" type="date" />
         </div>
-
         <div class="button-group">
             <button type="button" class="btn btn-search" id="search">查詢</button>
             <button type="button" class="btn btn-clear" id="clear">清除</button>
@@ -177,9 +176,7 @@
     });
     function Initialize_DataGrid(getGridJSON) {
 
-        const searchParams = $(".search-area").find("label").toArray().map(e=>{
-            return $(e).attr("for");
-        });
+        const searchParams = $("form").find("input:not([type='button']):not([type='submit']), select").toArray().map(e => $(e).attr("name"));
         console.log(searchParams)
         let queryParams = searchParams.reduce((total, c) => {
             total[c] = $(`#${c}`).val()
