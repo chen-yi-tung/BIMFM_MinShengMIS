@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="Bimfm_MinSheng_MISModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="Bimfm_MinSheng_MISModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="__MigrationHistory">
           <Key>
             <PropertyRef Name="MigrationId" />
@@ -124,6 +124,7 @@
           <Property Name="DBID" Type="nvarchar(max)" />
           <Property Name="RFID" Type="nvarchar(max)" />
           <Property Name="EState" Type="char" MaxLength="1" />
+          <Property Name="FSN" Type="nvarchar" MaxLength="5" />
         </EntityType>
         <EntityType Name="EquipmentMaintainFormItem">
           <Key>
@@ -955,20 +956,181 @@
             <End Role="ReportImage" EntitySet="ReportImage" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="Bimfm_MinSheng_MISModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="Bimfm_MinSheng_MISEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__MigrationHistory" EntityType="Bimfm_MinSheng_MISModel.C__MigrationHistory" />
+          <EntitySet Name="AreaInfo" EntityType="Bimfm_MinSheng_MISModel.AreaInfo" />
+          <EntitySet Name="AspNetRoles" EntityType="Bimfm_MinSheng_MISModel.AspNetRoles" />
+          <EntitySet Name="AspNetUserClaims" EntityType="Bimfm_MinSheng_MISModel.AspNetUserClaims" />
+          <EntitySet Name="AspNetUserLogins" EntityType="Bimfm_MinSheng_MISModel.AspNetUserLogins" />
+          <EntitySet Name="AspNetUsers" EntityType="Bimfm_MinSheng_MISModel.AspNetUsers" />
+          <EntitySet Name="CompletionReportImage" EntityType="Bimfm_MinSheng_MISModel.CompletionReportImage" />
+          <EntitySet Name="DrawInspectionPlanPath" EntityType="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath" />
+          <EntitySet Name="DrawPathSample" EntityType="Bimfm_MinSheng_MISModel.DrawPathSample" />
+          <EntitySet Name="EquipmentInfo" EntityType="Bimfm_MinSheng_MISModel.EquipmentInfo" />
+          <EntitySet Name="EquipmentMaintainFormItem" EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainFormItem" />
+          <EntitySet Name="EquipmentMaintainItem" EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainItem" />
+          <EntitySet Name="EquipmentReportForm" EntityType="Bimfm_MinSheng_MISModel.EquipmentReportForm" />
+          <EntitySet Name="Floor_Info" EntityType="Bimfm_MinSheng_MISModel.Floor_Info" />
+          <EntitySet Name="ImspectionPlanFloorPath" EntityType="Bimfm_MinSheng_MISModel.ImspectionPlanFloorPath" />
+          <EntitySet Name="InspectionPlan" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan" />
+          <EntitySet Name="InspectionPlanMaintain" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" />
+          <EntitySet Name="InspectionPlanMember" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanMember" />
+          <EntitySet Name="InspectionPlanPath" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanPath" />
+          <EntitySet Name="InspectionPlanRepair" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanRepair" />
+          <EntitySet Name="InspectionTrack" EntityType="Bimfm_MinSheng_MISModel.InspectionTrack" />
+          <EntitySet Name="MaintainAuditImage" EntityType="Bimfm_MinSheng_MISModel.MaintainAuditImage" />
+          <EntitySet Name="MaintainAuditInfo" EntityType="Bimfm_MinSheng_MISModel.MaintainAuditInfo" />
+          <EntitySet Name="MaintainCompletionImage" EntityType="Bimfm_MinSheng_MISModel.MaintainCompletionImage" />
+          <EntitySet Name="MaintainItem" EntityType="Bimfm_MinSheng_MISModel.MaintainItem" />
+          <EntitySet Name="MaintainSupplementaryFile" EntityType="Bimfm_MinSheng_MISModel.MaintainSupplementaryFile" />
+          <EntitySet Name="MaintainSupplementaryInfo" EntityType="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo" />
+          <EntitySet Name="PathSample" EntityType="Bimfm_MinSheng_MISModel.PathSample" />
+          <EntitySet Name="PathSampleOrder" EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" />
+          <EntitySet Name="RepairAuditImage" EntityType="Bimfm_MinSheng_MISModel.RepairAuditImage" />
+          <EntitySet Name="RepairAuditInfo" EntityType="Bimfm_MinSheng_MISModel.RepairAuditInfo" />
+          <EntitySet Name="RepairCompletionImage" EntityType="Bimfm_MinSheng_MISModel.RepairCompletionImage" />
+          <EntitySet Name="RepairSupplementaryFile" EntityType="Bimfm_MinSheng_MISModel.RepairSupplementaryFile" />
+          <EntitySet Name="RepairSupplementaryInfo" EntityType="Bimfm_MinSheng_MISModel.RepairSupplementaryInfo" />
+          <EntitySet Name="ReportImage" EntityType="Bimfm_MinSheng_MISModel.ReportImage" />
+          <EntitySet Name="sysdiagrams" EntityType="Bimfm_MinSheng_MISModel.sysdiagrams" />
+          <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo">
+            <End Role="AreaInfo" EntitySet="AreaInfo" />
+            <End Role="Floor_Info" EntitySet="Floor_Info" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompletionReportImage_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_CompletionReportImage_InspectionPlan">
+            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
+            <End Role="CompletionReportImage" EntitySet="CompletionReportImage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DrawInspectionPlanPath_InspectionPlanPath" Association="Bimfm_MinSheng_MISModel.FK_DrawInspectionPlanPath_InspectionPlanPath">
+            <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
+            <End Role="DrawInspectionPlanPath" EntitySet="DrawInspectionPlanPath" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DrawPathSample_DrawPathSample" Association="Bimfm_MinSheng_MISModel.FK_DrawPathSample_DrawPathSample">
+            <End Role="PathSample" EntitySet="PathSample" />
+            <End Role="DrawPathSample" EntitySet="DrawPathSample" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EquipmentReportForm_EquipmentInfo" Association="Bimfm_MinSheng_MISModel.FK_EquipmentReportForm_EquipmentInfo">
+            <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
+            <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EquipmentMaintainFormItem_EquipmentMaintainItem" Association="Bimfm_MinSheng_MISModel.FK_EquipmentMaintainFormItem_EquipmentMaintainItem">
+            <End Role="EquipmentMaintainItem" EntitySet="EquipmentMaintainItem" />
+            <End Role="EquipmentMaintainFormItem" EntitySet="EquipmentMaintainFormItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlanMaintain_EquipmentMaintainFormItem" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_EquipmentMaintainFormItem">
+            <End Role="EquipmentMaintainFormItem" EntitySet="EquipmentMaintainFormItem" />
+            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlanRepair_InspectionPlanRepair" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlanRepair">
+            <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
+            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ReportImage_EquipmentReportForm" Association="Bimfm_MinSheng_MISModel.FK_ReportImage_EquipmentReportForm">
+            <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
+            <End Role="ReportImage" EntitySet="ReportImage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ImspectionPlanFloorPath_InspectionPlanPath" Association="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath">
+            <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
+            <End Role="ImspectionPlanFloorPath" EntitySet="ImspectionPlanFloorPath" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlanMaintain_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan">
+            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
+            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlanMaintain_InspectionPlan1" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan1">
+            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
+            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlanMember_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanMember_InspectionPlan">
+            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
+            <End Role="InspectionPlanMember" EntitySet="InspectionPlanMember" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlanPath_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanPath_InspectionPlan">
+            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
+            <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlanRepair_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlan">
+            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
+            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MaintainAuditInfo_InspectionPlanMaintain" Association="Bimfm_MinSheng_MISModel.FK_MaintainAuditInfo_InspectionPlanMaintain">
+            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
+            <End Role="MaintainAuditInfo" EntitySet="MaintainAuditInfo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MaintainCompletionImage_InspectionPlanMaintain" Association="Bimfm_MinSheng_MISModel.FK_MaintainCompletionImage_InspectionPlanMaintain">
+            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
+            <End Role="MaintainCompletionImage" EntitySet="MaintainCompletionImage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MaintainSupplementaryInfo_InspectionPlanMaintain" Association="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_InspectionPlanMaintain">
+            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
+            <End Role="MaintainSupplementaryInfo" EntitySet="MaintainSupplementaryInfo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionTrack_InspectionPlanMember" Association="Bimfm_MinSheng_MISModel.FK_InspectionTrack_InspectionPlanMember">
+            <End Role="InspectionPlanMember" EntitySet="InspectionPlanMember" />
+            <End Role="InspectionTrack" EntitySet="InspectionTrack" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RepairAuditInfo_InspectionPlanRepair" Association="Bimfm_MinSheng_MISModel.FK_RepairAuditInfo_InspectionPlanRepair">
+            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
+            <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RepairCompletionImage_InspectionPlanRepair" Association="Bimfm_MinSheng_MISModel.FK_RepairCompletionImage_InspectionPlanRepair">
+            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
+            <End Role="RepairCompletionImage" EntitySet="RepairCompletionImage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RepairSupplementaryInfo_InspectionPlanRepair" Association="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryInfo_InspectionPlanRepair">
+            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
+            <End Role="RepairSupplementaryInfo" EntitySet="RepairSupplementaryInfo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MaintainAuditImage_MaintainAuditInfo" Association="Bimfm_MinSheng_MISModel.FK_MaintainAuditImage_MaintainAuditInfo">
+            <End Role="MaintainAuditInfo" EntitySet="MaintainAuditInfo" />
+            <End Role="MaintainAuditImage" EntitySet="MaintainAuditImage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" Association="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo">
+            <End Role="MaintainSupplementaryInfo" EntitySet="MaintainSupplementaryInfo" />
+            <End Role="MaintainSupplementaryFile" EntitySet="MaintainSupplementaryFile" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" Association="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo">
+            <End Role="MaintainSupplementaryInfo" EntitySet="MaintainSupplementaryInfo" />
+            <End Role="MaintainSupplementaryInfo1" EntitySet="MaintainSupplementaryInfo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PathSampleOrder_PathSample" Association="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample">
+            <End Role="PathSample" EntitySet="PathSample" />
+            <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RepairAuditImage_RepairAuditInfo" Association="Bimfm_MinSheng_MISModel.FK_RepairAuditImage_RepairAuditInfo">
+            <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
+            <End Role="RepairAuditImage" EntitySet="RepairAuditImage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RepairSupplementaryFile_RepairSupplementaryInfo" Association="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryFile_RepairSupplementaryInfo">
+            <End Role="RepairSupplementaryInfo" EntitySet="RepairSupplementaryInfo" />
+            <End Role="RepairSupplementaryFile" EntitySet="RepairSupplementaryFile" />
+          </AssociationSet>
+          <AssociationSet Name="AspNetUserRoles" Association="Bimfm_MinSheng_MISModel.AspNetUserRoles">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="C__MigrationHistory">
           <Key>
             <PropertyRef Name="MigrationId" />
             <PropertyRef Name="ContextKey" />
           </Key>
-          <Property Name="MigrationId" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ContextKey" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Model" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
-          <Property Name="ProductVersion" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MigrationId" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ContextKey" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
+          <Property Name="ProductVersion" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="AreaInfo">
           <Key>
@@ -976,25 +1138,25 @@
           </Key>
           <Property Name="ASN" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Area" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Floor_Info" Relationship="Self.FK_Floor_Info_AreaInfo" FromRole="AreaInfo" ToRole="Floor_Info" />
+          <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="AreaInfo" ToRole="Floor_Info" />
         </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="AspNetUsers" Relationship="Self.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUsers" Relationship="Bimfm_MinSheng_MISModel.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUserClaims">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUsers" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaims" ToRole="AspNetUsers" />
+          <NavigationProperty Name="AspNetUsers" Relationship="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaims" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUserLogins">
           <Key>
@@ -1002,16 +1164,16 @@
             <PropertyRef Name="ProviderKey" />
             <PropertyRef Name="UserId" />
           </Key>
-          <Property Name="LoginProvider" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ProviderKey" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="AspNetUsers" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogins" ToRole="AspNetUsers" />
+          <Property Name="LoginProvider" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ProviderKey" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUsers" Relationship="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogins" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUsers">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
           <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -1022,49 +1184,49 @@
           <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
           <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
           <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
-          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="IsEnabled" Type="Boolean" />
           <Property Name="MyName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Authority" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="Apartment" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Title" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUserClaims" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
-          <NavigationProperty Name="AspNetUserLogins" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
-          <NavigationProperty Name="AspNetRoles" Relationship="Self.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
+          <NavigationProperty Name="AspNetUserClaims" Relationship="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
+          <NavigationProperty Name="AspNetUserLogins" Relationship="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
+          <NavigationProperty Name="AspNetRoles" Relationship="Bimfm_MinSheng_MISModel.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
         </EntityType>
         <EntityType Name="CompletionReportImage">
           <Key>
             <PropertyRef Name="ImgPath" />
           </Key>
-          <Property Name="ImgPath" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IPSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="InspectionPlan" Relationship="Self.FK_CompletionReportImage_InspectionPlan" FromRole="CompletionReportImage" ToRole="InspectionPlan" />
+          <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_CompletionReportImage_InspectionPlan" FromRole="CompletionReportImage" ToRole="InspectionPlan" />
         </EntityType>
         <EntityType Name="DrawInspectionPlanPath">
           <Key>
             <PropertyRef Name="ISN" />
           </Key>
-          <Property Name="ISN" Type="String" MaxLength="15" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="PSN" Type="String" MaxLength="12" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="LocationX" Type="Decimal" Precision="19" Scale="11" Nullable="false" />
-          <Property Name="LocationY" Type="Decimal" Precision="19" Scale="11" Nullable="false" />
-          <NavigationProperty Name="InspectionPlanPath" Relationship="Self.FK_DrawInspectionPlanPath_InspectionPlanPath" FromRole="DrawInspectionPlanPath" ToRole="InspectionPlanPath" />
+          <Property Name="ISN" Type="String" Nullable="false" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="PSN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="true" />
+          <Property Name="LocationX" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
+          <Property Name="LocationY" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
+          <NavigationProperty Name="InspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_DrawInspectionPlanPath_InspectionPlanPath" FromRole="DrawInspectionPlanPath" ToRole="InspectionPlanPath" />
         </EntityType>
         <EntityType Name="DrawPathSample">
           <Key>
             <PropertyRef Name="SISN" />
           </Key>
-          <Property Name="SISN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="PSSN" Type="String" MaxLength="6" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="LocationX" Type="Decimal" Precision="19" Scale="11" Nullable="false" />
-          <Property Name="LocationY" Type="Decimal" Precision="19" Scale="11" Nullable="false" />
-          <NavigationProperty Name="PathSample" Relationship="Self.FK_DrawPathSample_DrawPathSample" FromRole="DrawPathSample" ToRole="PathSample" />
+          <Property Name="SISN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <Property Name="PSSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="LocationX" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
+          <Property Name="LocationY" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
+          <NavigationProperty Name="PathSample" Relationship="Bimfm_MinSheng_MISModel.FK_DrawPathSample_DrawPathSample" FromRole="DrawPathSample" ToRole="PathSample" />
         </EntityType>
         <EntityType Name="EquipmentInfo">
           <Key>
             <PropertyRef Name="ESN" />
           </Key>
-          <Property Name="ESN" Type="String" MaxLength="6" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="ESN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
           <Property Name="System" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="SubSystem" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="EName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
@@ -1081,44 +1243,45 @@
           <Property Name="DBID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="RFID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="EState" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <NavigationProperty Name="EquipmentReportForm" Relationship="Self.FK_EquipmentReportForm_EquipmentInfo" FromRole="EquipmentInfo" ToRole="EquipmentReportForm" />
+          <Property Name="FSN" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="EquipmentReportForm" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentReportForm_EquipmentInfo" FromRole="EquipmentInfo" ToRole="EquipmentReportForm" />
         </EntityType>
         <EntityType Name="EquipmentMaintainFormItem">
           <Key>
             <PropertyRef Name="EMFISN" />
           </Key>
-          <Property Name="EMFISN" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="EMISN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="EMFISN" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="EMISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
           <Property Name="LastTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="NextTime" Type="DateTime" Precision="3" />
-          <Property Name="Unit" Type="String" MaxLength="1" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="true" />
           <Property Name="Period" Type="Int32" Nullable="false" />
-          <Property Name="FormItemState" Type="String" MaxLength="2" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="FormItemState" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
           <Property Name="StockState" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="EquipmentMaintainItem" Relationship="Self.FK_EquipmentMaintainFormItem_EquipmentMaintainItem" FromRole="EquipmentMaintainFormItem" ToRole="EquipmentMaintainItem" />
-          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Self.FK_InspectionPlanMaintain_EquipmentMaintainFormItem" FromRole="EquipmentMaintainFormItem" ToRole="InspectionPlanMaintain" />
+          <NavigationProperty Name="EquipmentMaintainItem" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentMaintainFormItem_EquipmentMaintainItem" FromRole="EquipmentMaintainFormItem" ToRole="EquipmentMaintainItem" />
+          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_EquipmentMaintainFormItem" FromRole="EquipmentMaintainFormItem" ToRole="InspectionPlanMaintain" />
         </EntityType>
         <EntityType Name="EquipmentMaintainItem">
           <Key>
             <PropertyRef Name="EMISN" />
           </Key>
-          <Property Name="EMISN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="ESN" Type="String" MaxLength="6" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="MISN" Type="String" MaxLength="6" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="EMISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="ESN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="MISN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
           <Property Name="LastTime" Type="DateTime" Precision="3" />
           <Property Name="NextTime" Type="DateTime" Precision="3" />
-          <Property Name="Unit" Type="String" MaxLength="1" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="true" />
           <Property Name="Period" Type="Int32" Nullable="false" />
-          <Property Name="IsEnable" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="IsEnable" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="IsCreate" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="EquipmentMaintainFormItem" Relationship="Self.FK_EquipmentMaintainFormItem_EquipmentMaintainItem" FromRole="EquipmentMaintainItem" ToRole="EquipmentMaintainFormItem" />
+          <NavigationProperty Name="EquipmentMaintainFormItem" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentMaintainFormItem_EquipmentMaintainItem" FromRole="EquipmentMaintainItem" ToRole="EquipmentMaintainFormItem" />
         </EntityType>
         <EntityType Name="EquipmentReportForm">
           <Key>
             <PropertyRef Name="RSN" />
           </Key>
-          <Property Name="RSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="RSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
           <Property Name="ESN" Type="String" MaxLength="6" FixedLength="true" Unicode="false" />
           <Property Name="Date" Type="DateTime" Precision="3" />
           <Property Name="ReportLevel" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
@@ -1127,41 +1290,41 @@
           <Property Name="ReportState" Type="String" MaxLength="2" FixedLength="true" Unicode="false" />
           <Property Name="StockState" Type="Boolean" />
           <Property Name="ReportSource" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <NavigationProperty Name="EquipmentInfo" Relationship="Self.FK_EquipmentReportForm_EquipmentInfo" FromRole="EquipmentReportForm" ToRole="EquipmentInfo" />
-          <NavigationProperty Name="InspectionPlanRepair" Relationship="Self.FK_InspectionPlanRepair_InspectionPlanRepair" FromRole="EquipmentReportForm" ToRole="InspectionPlanRepair" />
-          <NavigationProperty Name="ReportImage" Relationship="Self.FK_ReportImage_EquipmentReportForm" FromRole="EquipmentReportForm" ToRole="ReportImage" />
+          <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentReportForm_EquipmentInfo" FromRole="EquipmentReportForm" ToRole="EquipmentInfo" />
+          <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlanRepair" FromRole="EquipmentReportForm" ToRole="InspectionPlanRepair" />
+          <NavigationProperty Name="ReportImage" Relationship="Bimfm_MinSheng_MISModel.FK_ReportImage_EquipmentReportForm" FromRole="EquipmentReportForm" ToRole="ReportImage" />
         </EntityType>
         <EntityType Name="Floor_Info">
           <Key>
             <PropertyRef Name="FSN" />
           </Key>
-          <Property Name="FSN" Type="String" MaxLength="5" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
           <Property Name="ASN" Type="Int32" Nullable="false" />
-          <Property Name="FloorName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="BIMPath" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="AreaInfo" Relationship="Self.FK_Floor_Info_AreaInfo" FromRole="Floor_Info" ToRole="AreaInfo" />
+          <Property Name="FloorName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="BIMPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AreaInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="Floor_Info" ToRole="AreaInfo" />
         </EntityType>
         <EntityType Name="ImspectionPlanFloorPath">
           <Key>
             <PropertyRef Name="FPSN" />
           </Key>
-          <Property Name="FPSN" Type="String" MaxLength="15" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="PSN" Type="String" MaxLength="12" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="DeviceID" Type="String" MaxLength="6" FixedLength="true" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="InspectionPlanPath" Relationship="Self.FK_ImspectionPlanFloorPath_InspectionPlanPath" FromRole="ImspectionPlanFloorPath" ToRole="InspectionPlanPath" />
+          <Property Name="FPSN" Type="String" Nullable="false" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="PSN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="true" />
+          <Property Name="DeviceID" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="InspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath" FromRole="ImspectionPlanFloorPath" ToRole="InspectionPlanPath" />
         </EntityType>
         <EntityType Name="InspectionPlan">
           <Key>
             <PropertyRef Name="IPSN" />
           </Key>
-          <Property Name="IPSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="IPName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <Property Name="IPName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="PlanDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Shift" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Shift" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="MaintainAmount" Type="Int32" Nullable="false" />
           <Property Name="RepairAmount" Type="Int32" Nullable="false" />
-          <Property Name="PlanState" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="PlanCreateUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PlanState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="PlanCreateUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="InformatUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="DateOfFilling" Type="DateTime" Precision="3" />
           <Property Name="InspectionRecord" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
@@ -1169,245 +1332,245 @@
           <Property Name="MaintainUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="RepairUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="PlanStartTime" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="CompletionReportImage" Relationship="Self.FK_CompletionReportImage_InspectionPlan" FromRole="InspectionPlan" ToRole="CompletionReportImage" />
-          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Self.FK_InspectionPlanMaintain_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanMaintain" />
-          <NavigationProperty Name="InspectionPlanMaintain1" Relationship="Self.FK_InspectionPlanMaintain_InspectionPlan1" FromRole="InspectionPlan" ToRole="InspectionPlanMaintain" />
-          <NavigationProperty Name="InspectionPlanMember" Relationship="Self.FK_InspectionPlanMember_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanMember" />
-          <NavigationProperty Name="InspectionPlanPath" Relationship="Self.FK_InspectionPlanPath_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanPath" />
-          <NavigationProperty Name="InspectionPlanRepair" Relationship="Self.FK_InspectionPlanRepair_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanRepair" />
+          <NavigationProperty Name="CompletionReportImage" Relationship="Bimfm_MinSheng_MISModel.FK_CompletionReportImage_InspectionPlan" FromRole="InspectionPlan" ToRole="CompletionReportImage" />
+          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanMaintain" />
+          <NavigationProperty Name="InspectionPlanMaintain1" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan1" FromRole="InspectionPlan" ToRole="InspectionPlanMaintain" />
+          <NavigationProperty Name="InspectionPlanMember" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMember_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanMember" />
+          <NavigationProperty Name="InspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanPath_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanPath" />
+          <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanRepair" />
         </EntityType>
         <EntityType Name="InspectionPlanMaintain">
           <Key>
             <PropertyRef Name="IPMSN" />
           </Key>
-          <Property Name="IPMSN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="IPSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="EMFISN" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="MaintainState" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="MaintainUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IPMSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <Property Name="EMFISN" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="MaintainState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="MaintainUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="MaintainDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="MaintainContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="MaintainStateOfFilling" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="EquipmentMaintainFormItem" Relationship="Self.FK_InspectionPlanMaintain_EquipmentMaintainFormItem" FromRole="InspectionPlanMaintain" ToRole="EquipmentMaintainFormItem" />
-          <NavigationProperty Name="InspectionPlan" Relationship="Self.FK_InspectionPlanMaintain_InspectionPlan" FromRole="InspectionPlanMaintain" ToRole="InspectionPlan" />
-          <NavigationProperty Name="InspectionPlan1" Relationship="Self.FK_InspectionPlanMaintain_InspectionPlan1" FromRole="InspectionPlanMaintain" ToRole="InspectionPlan" />
-          <NavigationProperty Name="MaintainAuditInfo" Relationship="Self.FK_MaintainAuditInfo_InspectionPlanMaintain" FromRole="InspectionPlanMaintain" ToRole="MaintainAuditInfo" />
-          <NavigationProperty Name="MaintainCompletionImage" Relationship="Self.FK_MaintainCompletionImage_InspectionPlanMaintain" FromRole="InspectionPlanMaintain" ToRole="MaintainCompletionImage" />
-          <NavigationProperty Name="MaintainSupplementaryInfo" Relationship="Self.FK_MaintainSupplementaryInfo_InspectionPlanMaintain" FromRole="InspectionPlanMaintain" ToRole="MaintainSupplementaryInfo" />
+          <Property Name="MaintainContent" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="MaintainStateOfFilling" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="EquipmentMaintainFormItem" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_EquipmentMaintainFormItem" FromRole="InspectionPlanMaintain" ToRole="EquipmentMaintainFormItem" />
+          <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan" FromRole="InspectionPlanMaintain" ToRole="InspectionPlan" />
+          <NavigationProperty Name="InspectionPlan1" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan1" FromRole="InspectionPlanMaintain" ToRole="InspectionPlan" />
+          <NavigationProperty Name="MaintainAuditInfo" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainAuditInfo_InspectionPlanMaintain" FromRole="InspectionPlanMaintain" ToRole="MaintainAuditInfo" />
+          <NavigationProperty Name="MaintainCompletionImage" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainCompletionImage_InspectionPlanMaintain" FromRole="InspectionPlanMaintain" ToRole="MaintainCompletionImage" />
+          <NavigationProperty Name="MaintainSupplementaryInfo" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_InspectionPlanMaintain" FromRole="InspectionPlanMaintain" ToRole="MaintainSupplementaryInfo" />
         </EntityType>
         <EntityType Name="InspectionPlanMember">
           <Key>
             <PropertyRef Name="PMSN" />
           </Key>
-          <Property Name="PMSN" Type="String" MaxLength="11" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="IPSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="UserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PMSN" Type="String" Nullable="false" MaxLength="11" FixedLength="true" Unicode="true" />
+          <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <Property Name="UserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="WatchID" Type="String" MaxLength="2" FixedLength="true" Unicode="false" />
-          <NavigationProperty Name="InspectionPlan" Relationship="Self.FK_InspectionPlanMember_InspectionPlan" FromRole="InspectionPlanMember" ToRole="InspectionPlan" />
-          <NavigationProperty Name="InspectionTrack" Relationship="Self.FK_InspectionTrack_InspectionPlanMember" FromRole="InspectionPlanMember" ToRole="InspectionTrack" />
+          <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMember_InspectionPlan" FromRole="InspectionPlanMember" ToRole="InspectionPlan" />
+          <NavigationProperty Name="InspectionTrack" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionTrack_InspectionPlanMember" FromRole="InspectionPlanMember" ToRole="InspectionTrack" />
         </EntityType>
         <EntityType Name="InspectionPlanPath">
           <Key>
             <PropertyRef Name="PSN" />
           </Key>
-          <Property Name="PSN" Type="String" MaxLength="12" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="IPSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Area" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Floor" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PathTitle" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="FSN" Type="String" MaxLength="5" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="DrawInspectionPlanPath" Relationship="Self.FK_DrawInspectionPlanPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="DrawInspectionPlanPath" />
-          <NavigationProperty Name="ImspectionPlanFloorPath" Relationship="Self.FK_ImspectionPlanFloorPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="ImspectionPlanFloorPath" />
-          <NavigationProperty Name="InspectionPlan" Relationship="Self.FK_InspectionPlanPath_InspectionPlan" FromRole="InspectionPlanPath" ToRole="InspectionPlan" />
+          <Property Name="PSN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="true" />
+          <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <Property Name="Area" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Floor" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DrawInspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_DrawInspectionPlanPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="DrawInspectionPlanPath" />
+          <NavigationProperty Name="ImspectionPlanFloorPath" Relationship="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="ImspectionPlanFloorPath" />
+          <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanPath_InspectionPlan" FromRole="InspectionPlanPath" ToRole="InspectionPlan" />
         </EntityType>
         <EntityType Name="InspectionPlanRepair">
           <Key>
             <PropertyRef Name="IPRSN" />
           </Key>
-          <Property Name="IPRSN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="IPSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="RSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="RepairState" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="IPRSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <Property Name="RSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <Property Name="RepairState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="RepairUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="RepairDate" Type="DateTime" Precision="3" />
           <Property Name="RepairContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="RepairStateOfFilling" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <NavigationProperty Name="EquipmentReportForm" Relationship="Self.FK_InspectionPlanRepair_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="EquipmentReportForm" />
-          <NavigationProperty Name="InspectionPlan" Relationship="Self.FK_InspectionPlanRepair_InspectionPlan" FromRole="InspectionPlanRepair" ToRole="InspectionPlan" />
-          <NavigationProperty Name="RepairAuditInfo" Relationship="Self.FK_RepairAuditInfo_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="RepairAuditInfo" />
-          <NavigationProperty Name="RepairCompletionImage" Relationship="Self.FK_RepairCompletionImage_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="RepairCompletionImage" />
-          <NavigationProperty Name="RepairSupplementaryInfo" Relationship="Self.FK_RepairSupplementaryInfo_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="RepairSupplementaryInfo" />
+          <NavigationProperty Name="EquipmentReportForm" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="EquipmentReportForm" />
+          <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlan" FromRole="InspectionPlanRepair" ToRole="InspectionPlan" />
+          <NavigationProperty Name="RepairAuditInfo" Relationship="Bimfm_MinSheng_MISModel.FK_RepairAuditInfo_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="RepairAuditInfo" />
+          <NavigationProperty Name="RepairCompletionImage" Relationship="Bimfm_MinSheng_MISModel.FK_RepairCompletionImage_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="RepairCompletionImage" />
+          <NavigationProperty Name="RepairSupplementaryInfo" Relationship="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryInfo_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="RepairSupplementaryInfo" />
         </EntityType>
         <EntityType Name="InspectionTrack">
           <Key>
             <PropertyRef Name="ITSN" />
           </Key>
-          <Property Name="ITSN" Type="String" MaxLength="17" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="PMSN" Type="String" MaxLength="11" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Arae" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Floor" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="LocationX" Type="Decimal" Precision="19" Scale="11" Nullable="false" />
-          <Property Name="LocationY" Type="Decimal" Precision="19" Scale="11" Nullable="false" />
+          <Property Name="ITSN" Type="String" Nullable="false" MaxLength="17" FixedLength="true" Unicode="true" />
+          <Property Name="PMSN" Type="String" Nullable="false" MaxLength="11" FixedLength="true" Unicode="true" />
+          <Property Name="Arae" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Floor" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="LocationX" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
+          <Property Name="LocationY" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
           <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Heartbeat" Type="Int32" Nullable="false" />
           <Property Name="StepNum" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="InspectionPlanMember" Relationship="Self.FK_InspectionTrack_InspectionPlanMember" FromRole="InspectionTrack" ToRole="InspectionPlanMember" />
+          <NavigationProperty Name="InspectionPlanMember" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionTrack_InspectionPlanMember" FromRole="InspectionTrack" ToRole="InspectionPlanMember" />
         </EntityType>
         <EntityType Name="MaintainAuditImage">
           <Key>
             <PropertyRef Name="ImgPath" />
           </Key>
-          <Property Name="ImgPath" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PMASN" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="MaintainAuditInfo" Relationship="Self.FK_MaintainAuditImage_MaintainAuditInfo" FromRole="MaintainAuditImage" ToRole="MaintainAuditInfo" />
+          <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PMASN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="MaintainAuditInfo" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainAuditImage_MaintainAuditInfo" FromRole="MaintainAuditImage" ToRole="MaintainAuditInfo" />
         </EntityType>
         <EntityType Name="MaintainAuditInfo">
           <Key>
             <PropertyRef Name="PMASN" />
           </Key>
-          <Property Name="PMASN" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="IPMSN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="AuditUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PMASN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <Property Name="IPMSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="AuditUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="AuditDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="AuditMemo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="AuditResult" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Self.FK_MaintainAuditInfo_InspectionPlanMaintain" FromRole="MaintainAuditInfo" ToRole="InspectionPlanMaintain" />
-          <NavigationProperty Name="MaintainAuditImage" Relationship="Self.FK_MaintainAuditImage_MaintainAuditInfo" FromRole="MaintainAuditInfo" ToRole="MaintainAuditImage" />
+          <Property Name="AuditResult" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainAuditInfo_InspectionPlanMaintain" FromRole="MaintainAuditInfo" ToRole="InspectionPlanMaintain" />
+          <NavigationProperty Name="MaintainAuditImage" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainAuditImage_MaintainAuditInfo" FromRole="MaintainAuditInfo" ToRole="MaintainAuditImage" />
         </EntityType>
         <EntityType Name="MaintainCompletionImage">
           <Key>
             <PropertyRef Name="ImgPath" />
           </Key>
-          <Property Name="ImgPath" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IPMSN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Self.FK_MaintainCompletionImage_InspectionPlanMaintain" FromRole="MaintainCompletionImage" ToRole="InspectionPlanMaintain" />
+          <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IPMSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainCompletionImage_InspectionPlanMaintain" FromRole="MaintainCompletionImage" ToRole="InspectionPlanMaintain" />
         </EntityType>
         <EntityType Name="MaintainItem">
           <Key>
             <PropertyRef Name="MISN" />
           </Key>
-          <Property Name="MISN" Type="String" MaxLength="6" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="MIName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="System" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="SubSystem" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="EName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Unit" Type="String" MaxLength="1" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="MISN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="MIName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="System" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="SubSystem" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="EName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="true" />
           <Property Name="Period" Type="Int32" Nullable="false" />
-          <Property Name="MaintainItemIsEnable" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="MaintainItemIsEnable" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
         </EntityType>
         <EntityType Name="MaintainSupplementaryFile">
           <Key>
             <PropertyRef Name="FilePath" />
           </Key>
-          <Property Name="FilePath" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PMSN" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="MaintainSupplementaryInfo" Relationship="Self.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryFile" ToRole="MaintainSupplementaryInfo" />
+          <Property Name="FilePath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PMSN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="MaintainSupplementaryInfo" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryFile" ToRole="MaintainSupplementaryInfo" />
         </EntityType>
         <EntityType Name="MaintainSupplementaryInfo">
           <Key>
             <PropertyRef Name="PMSN" />
           </Key>
-          <Property Name="PMSN" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="IPMSN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="SupplementaryUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PMSN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <Property Name="IPMSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="SupplementaryUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="SupplementaryDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="SupplementaryContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Self.FK_MaintainSupplementaryInfo_InspectionPlanMaintain" FromRole="MaintainSupplementaryInfo" ToRole="InspectionPlanMaintain" />
-          <NavigationProperty Name="MaintainSupplementaryFile" Relationship="Self.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryFile" />
-          <NavigationProperty Name="MaintainSupplementaryInfo1" Relationship="Self.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryInfo1" />
-          <NavigationProperty Name="MaintainSupplementaryInfo2" Relationship="Self.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo1" ToRole="MaintainSupplementaryInfo" />
+          <Property Name="SupplementaryContent" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_InspectionPlanMaintain" FromRole="MaintainSupplementaryInfo" ToRole="InspectionPlanMaintain" />
+          <NavigationProperty Name="MaintainSupplementaryFile" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryFile" />
+          <NavigationProperty Name="MaintainSupplementaryInfo1" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryInfo1" />
+          <NavigationProperty Name="MaintainSupplementaryInfo2" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo1" ToRole="MaintainSupplementaryInfo" />
         </EntityType>
         <EntityType Name="PathSample">
           <Key>
             <PropertyRef Name="PSSN" />
           </Key>
-          <Property Name="PSSN" Type="String" MaxLength="6" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="Area" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Floor" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="PathTitle" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="FSN" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="DrawPathSample" Relationship="Self.FK_DrawPathSample_DrawPathSample" FromRole="PathSample" ToRole="DrawPathSample" />
-          <NavigationProperty Name="PathSampleOrder" Relationship="Self.FK_PathSampleOrder_PathSample" FromRole="PathSample" ToRole="PathSampleOrder" />
+          <Property Name="PSSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="Area" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="Floor" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="FSN" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DrawPathSample" Relationship="Bimfm_MinSheng_MISModel.FK_DrawPathSample_DrawPathSample" FromRole="PathSample" ToRole="DrawPathSample" />
+          <NavigationProperty Name="PathSampleOrder" Relationship="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" FromRole="PathSample" ToRole="PathSampleOrder" />
         </EntityType>
         <EntityType Name="PathSampleOrder">
           <Key>
             <PropertyRef Name="FPSSN" />
           </Key>
-          <Property Name="FPSSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="PSSN" Type="String" MaxLength="6" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="BeaconID" Type="String" MaxLength="6" FixedLength="true" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="PathSample" Relationship="Self.FK_PathSampleOrder_PathSample" FromRole="PathSampleOrder" ToRole="PathSample" />
+          <Property Name="FPSSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <Property Name="PSSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="BeaconID" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="PathSample" Relationship="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" FromRole="PathSampleOrder" ToRole="PathSample" />
         </EntityType>
         <EntityType Name="RepairAuditImage">
           <Key>
             <PropertyRef Name="ImgPath" />
           </Key>
-          <Property Name="ImgPath" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PRASN" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="RepairAuditInfo" Relationship="Self.FK_RepairAuditImage_RepairAuditInfo" FromRole="RepairAuditImage" ToRole="RepairAuditInfo" />
+          <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PRASN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="RepairAuditInfo" Relationship="Bimfm_MinSheng_MISModel.FK_RepairAuditImage_RepairAuditInfo" FromRole="RepairAuditImage" ToRole="RepairAuditInfo" />
         </EntityType>
         <EntityType Name="RepairAuditInfo">
           <Key>
             <PropertyRef Name="PRASN" />
           </Key>
-          <Property Name="PRASN" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="IPRSN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="AuditUserID" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PRASN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <Property Name="IPRSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="AuditUserID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="AuditDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="AuditMemo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="AuditResult" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="InspectionPlanRepair" Relationship="Self.FK_RepairAuditInfo_InspectionPlanRepair" FromRole="RepairAuditInfo" ToRole="InspectionPlanRepair" />
-          <NavigationProperty Name="RepairAuditImage" Relationship="Self.FK_RepairAuditImage_RepairAuditInfo" FromRole="RepairAuditInfo" ToRole="RepairAuditImage" />
+          <Property Name="AuditMemo" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="AuditResult" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_RepairAuditInfo_InspectionPlanRepair" FromRole="RepairAuditInfo" ToRole="InspectionPlanRepair" />
+          <NavigationProperty Name="RepairAuditImage" Relationship="Bimfm_MinSheng_MISModel.FK_RepairAuditImage_RepairAuditInfo" FromRole="RepairAuditInfo" ToRole="RepairAuditImage" />
         </EntityType>
         <EntityType Name="RepairCompletionImage">
           <Key>
             <PropertyRef Name="ImgPath" />
           </Key>
-          <Property Name="ImgPath" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IPRSN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="InspectionPlanRepair" Relationship="Self.FK_RepairCompletionImage_InspectionPlanRepair" FromRole="RepairCompletionImage" ToRole="InspectionPlanRepair" />
+          <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IPRSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_RepairCompletionImage_InspectionPlanRepair" FromRole="RepairCompletionImage" ToRole="InspectionPlanRepair" />
         </EntityType>
         <EntityType Name="RepairSupplementaryFile">
           <Key>
             <PropertyRef Name="FilePath" />
           </Key>
-          <Property Name="FilePath" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PRSN" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="RepairSupplementaryInfo" Relationship="Self.FK_RepairSupplementaryFile_RepairSupplementaryInfo" FromRole="RepairSupplementaryFile" ToRole="RepairSupplementaryInfo" />
+          <Property Name="FilePath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PRSN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="RepairSupplementaryInfo" Relationship="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryFile_RepairSupplementaryInfo" FromRole="RepairSupplementaryFile" ToRole="RepairSupplementaryInfo" />
         </EntityType>
         <EntityType Name="RepairSupplementaryInfo">
           <Key>
             <PropertyRef Name="PRSN" />
           </Key>
-          <Property Name="PRSN" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="IPRSN" Type="String" MaxLength="13" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="SupplementaryUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PRSN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <Property Name="IPRSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="SupplementaryUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="SupplementaryDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="SupplementaryContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="InspectionPlanRepair" Relationship="Self.FK_RepairSupplementaryInfo_InspectionPlanRepair" FromRole="RepairSupplementaryInfo" ToRole="InspectionPlanRepair" />
-          <NavigationProperty Name="RepairSupplementaryFile" Relationship="Self.FK_RepairSupplementaryFile_RepairSupplementaryInfo" FromRole="RepairSupplementaryInfo" ToRole="RepairSupplementaryFile" />
+          <Property Name="SupplementaryContent" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryInfo_InspectionPlanRepair" FromRole="RepairSupplementaryInfo" ToRole="InspectionPlanRepair" />
+          <NavigationProperty Name="RepairSupplementaryFile" Relationship="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryFile_RepairSupplementaryInfo" FromRole="RepairSupplementaryInfo" ToRole="RepairSupplementaryFile" />
         </EntityType>
         <EntityType Name="ReportImage">
           <Key>
             <PropertyRef Name="ImgPath" />
           </Key>
-          <Property Name="ImgPath" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="RSN" Type="String" MaxLength="9" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="EquipmentReportForm" Relationship="Self.FK_ReportImage_EquipmentReportForm" FromRole="ReportImage" ToRole="EquipmentReportForm" />
+          <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="EquipmentReportForm" Relationship="Bimfm_MinSheng_MISModel.FK_ReportImage_EquipmentReportForm" FromRole="ReportImage" ToRole="EquipmentReportForm" />
         </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
           </Key>
-          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="principal_id" Type="Int32" Nullable="false" />
           <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <Association Name="FK_Floor_Info_AreaInfo">
-          <End Role="AreaInfo" Type="Self.AreaInfo" Multiplicity="1" />
-          <End Role="Floor_Info" Type="Self.Floor_Info" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.AreaInfo" Role="AreaInfo" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="AreaInfo">
               <PropertyRef Name="ASN" />
@@ -1418,10 +1581,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
-          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
+          <End Type="Bimfm_MinSheng_MISModel.AspNetUsers" Role="AspNetUsers" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="AspNetUserClaims" Type="Self.AspNetUserClaims" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.AspNetUserClaims" Role="AspNetUserClaims" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="AspNetUsers">
               <PropertyRef Name="Id" />
@@ -1432,10 +1595,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
-          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
+          <End Type="Bimfm_MinSheng_MISModel.AspNetUsers" Role="AspNetUsers" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="AspNetUserLogins" Type="Self.AspNetUserLogins" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.AspNetUserLogins" Role="AspNetUserLogins" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="AspNetUsers">
               <PropertyRef Name="Id" />
@@ -1446,8 +1609,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_CompletionReportImage_InspectionPlan">
-          <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
-          <End Role="CompletionReportImage" Type="Self.CompletionReportImage" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan" Role="InspectionPlan" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.CompletionReportImage" Role="CompletionReportImage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlan">
               <PropertyRef Name="IPSN" />
@@ -1458,8 +1621,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_DrawInspectionPlanPath_InspectionPlanPath">
-          <End Role="InspectionPlanPath" Type="Self.InspectionPlanPath" Multiplicity="1" />
-          <End Role="DrawInspectionPlanPath" Type="Self.DrawInspectionPlanPath" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanPath" Role="InspectionPlanPath" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath" Role="DrawInspectionPlanPath" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanPath">
               <PropertyRef Name="PSN" />
@@ -1470,8 +1633,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_DrawPathSample_DrawPathSample">
-          <End Role="PathSample" Type="Self.PathSample" Multiplicity="1" />
-          <End Role="DrawPathSample" Type="Self.DrawPathSample" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.PathSample" Role="PathSample" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.DrawPathSample" Role="DrawPathSample" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PathSample">
               <PropertyRef Name="PSSN" />
@@ -1482,8 +1645,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_EquipmentReportForm_EquipmentInfo">
-          <End Role="EquipmentInfo" Type="Self.EquipmentInfo" Multiplicity="0..1" />
-          <End Role="EquipmentReportForm" Type="Self.EquipmentReportForm" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.EquipmentInfo" Role="EquipmentInfo" Multiplicity="0..1" />
+          <End Type="Bimfm_MinSheng_MISModel.EquipmentReportForm" Role="EquipmentReportForm" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="EquipmentInfo">
               <PropertyRef Name="ESN" />
@@ -1494,8 +1657,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_EquipmentMaintainFormItem_EquipmentMaintainItem">
-          <End Role="EquipmentMaintainItem" Type="Self.EquipmentMaintainItem" Multiplicity="1" />
-          <End Role="EquipmentMaintainFormItem" Type="Self.EquipmentMaintainFormItem" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.EquipmentMaintainItem" Role="EquipmentMaintainItem" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.EquipmentMaintainFormItem" Role="EquipmentMaintainFormItem" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="EquipmentMaintainItem">
               <PropertyRef Name="EMISN" />
@@ -1506,8 +1669,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionPlanMaintain_EquipmentMaintainFormItem">
-          <End Role="EquipmentMaintainFormItem" Type="Self.EquipmentMaintainFormItem" Multiplicity="1" />
-          <End Role="InspectionPlanMaintain" Type="Self.InspectionPlanMaintain" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.EquipmentMaintainFormItem" Role="EquipmentMaintainFormItem" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" Role="InspectionPlanMaintain" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="EquipmentMaintainFormItem">
               <PropertyRef Name="EMFISN" />
@@ -1518,8 +1681,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionPlanRepair_InspectionPlanRepair">
-          <End Role="EquipmentReportForm" Type="Self.EquipmentReportForm" Multiplicity="1" />
-          <End Role="InspectionPlanRepair" Type="Self.InspectionPlanRepair" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.EquipmentReportForm" Role="EquipmentReportForm" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanRepair" Role="InspectionPlanRepair" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="EquipmentReportForm">
               <PropertyRef Name="RSN" />
@@ -1530,8 +1693,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ReportImage_EquipmentReportForm">
-          <End Role="EquipmentReportForm" Type="Self.EquipmentReportForm" Multiplicity="1" />
-          <End Role="ReportImage" Type="Self.ReportImage" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.EquipmentReportForm" Role="EquipmentReportForm" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.ReportImage" Role="ReportImage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="EquipmentReportForm">
               <PropertyRef Name="RSN" />
@@ -1542,8 +1705,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ImspectionPlanFloorPath_InspectionPlanPath">
-          <End Role="InspectionPlanPath" Type="Self.InspectionPlanPath" Multiplicity="1" />
-          <End Role="ImspectionPlanFloorPath" Type="Self.ImspectionPlanFloorPath" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanPath" Role="InspectionPlanPath" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.ImspectionPlanFloorPath" Role="ImspectionPlanFloorPath" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanPath">
               <PropertyRef Name="PSN" />
@@ -1554,8 +1717,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionPlanMaintain_InspectionPlan">
-          <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
-          <End Role="InspectionPlanMaintain" Type="Self.InspectionPlanMaintain" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan" Role="InspectionPlan" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" Role="InspectionPlanMaintain" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlan">
               <PropertyRef Name="IPSN" />
@@ -1566,8 +1729,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionPlanMaintain_InspectionPlan1">
-          <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
-          <End Role="InspectionPlanMaintain" Type="Self.InspectionPlanMaintain" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan" Role="InspectionPlan" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" Role="InspectionPlanMaintain" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlan">
               <PropertyRef Name="IPSN" />
@@ -1578,8 +1741,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionPlanMember_InspectionPlan">
-          <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
-          <End Role="InspectionPlanMember" Type="Self.InspectionPlanMember" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan" Role="InspectionPlan" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanMember" Role="InspectionPlanMember" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlan">
               <PropertyRef Name="IPSN" />
@@ -1590,8 +1753,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionPlanPath_InspectionPlan">
-          <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
-          <End Role="InspectionPlanPath" Type="Self.InspectionPlanPath" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan" Role="InspectionPlan" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanPath" Role="InspectionPlanPath" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlan">
               <PropertyRef Name="IPSN" />
@@ -1602,8 +1765,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionPlanRepair_InspectionPlan">
-          <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
-          <End Role="InspectionPlanRepair" Type="Self.InspectionPlanRepair" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan" Role="InspectionPlan" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanRepair" Role="InspectionPlanRepair" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlan">
               <PropertyRef Name="IPSN" />
@@ -1614,8 +1777,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_MaintainAuditInfo_InspectionPlanMaintain">
-          <End Role="InspectionPlanMaintain" Type="Self.InspectionPlanMaintain" Multiplicity="1" />
-          <End Role="MaintainAuditInfo" Type="Self.MaintainAuditInfo" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" Role="InspectionPlanMaintain" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.MaintainAuditInfo" Role="MaintainAuditInfo" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanMaintain">
               <PropertyRef Name="IPMSN" />
@@ -1626,8 +1789,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_MaintainCompletionImage_InspectionPlanMaintain">
-          <End Role="InspectionPlanMaintain" Type="Self.InspectionPlanMaintain" Multiplicity="1" />
-          <End Role="MaintainCompletionImage" Type="Self.MaintainCompletionImage" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" Role="InspectionPlanMaintain" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.MaintainCompletionImage" Role="MaintainCompletionImage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanMaintain">
               <PropertyRef Name="IPMSN" />
@@ -1638,8 +1801,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_MaintainSupplementaryInfo_InspectionPlanMaintain">
-          <End Role="InspectionPlanMaintain" Type="Self.InspectionPlanMaintain" Multiplicity="1" />
-          <End Role="MaintainSupplementaryInfo" Type="Self.MaintainSupplementaryInfo" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" Role="InspectionPlanMaintain" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo" Role="MaintainSupplementaryInfo" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanMaintain">
               <PropertyRef Name="IPMSN" />
@@ -1650,8 +1813,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionTrack_InspectionPlanMember">
-          <End Role="InspectionPlanMember" Type="Self.InspectionPlanMember" Multiplicity="1" />
-          <End Role="InspectionTrack" Type="Self.InspectionTrack" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanMember" Role="InspectionPlanMember" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionTrack" Role="InspectionTrack" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanMember">
               <PropertyRef Name="PMSN" />
@@ -1662,8 +1825,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_RepairAuditInfo_InspectionPlanRepair">
-          <End Role="InspectionPlanRepair" Type="Self.InspectionPlanRepair" Multiplicity="1" />
-          <End Role="RepairAuditInfo" Type="Self.RepairAuditInfo" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanRepair" Role="InspectionPlanRepair" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.RepairAuditInfo" Role="RepairAuditInfo" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanRepair">
               <PropertyRef Name="IPRSN" />
@@ -1674,8 +1837,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_RepairCompletionImage_InspectionPlanRepair">
-          <End Role="InspectionPlanRepair" Type="Self.InspectionPlanRepair" Multiplicity="1" />
-          <End Role="RepairCompletionImage" Type="Self.RepairCompletionImage" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanRepair" Role="InspectionPlanRepair" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.RepairCompletionImage" Role="RepairCompletionImage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanRepair">
               <PropertyRef Name="IPRSN" />
@@ -1686,8 +1849,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_RepairSupplementaryInfo_InspectionPlanRepair">
-          <End Role="InspectionPlanRepair" Type="Self.InspectionPlanRepair" Multiplicity="1" />
-          <End Role="RepairSupplementaryInfo" Type="Self.RepairSupplementaryInfo" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanRepair" Role="InspectionPlanRepair" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.RepairSupplementaryInfo" Role="RepairSupplementaryInfo" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanRepair">
               <PropertyRef Name="IPRSN" />
@@ -1698,8 +1861,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_MaintainAuditImage_MaintainAuditInfo">
-          <End Role="MaintainAuditInfo" Type="Self.MaintainAuditInfo" Multiplicity="1" />
-          <End Role="MaintainAuditImage" Type="Self.MaintainAuditImage" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.MaintainAuditInfo" Role="MaintainAuditInfo" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.MaintainAuditImage" Role="MaintainAuditImage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="MaintainAuditInfo">
               <PropertyRef Name="PMASN" />
@@ -1710,8 +1873,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_MaintainSupplementaryFile_MaintainSupplementaryInfo">
-          <End Role="MaintainSupplementaryInfo" Type="Self.MaintainSupplementaryInfo" Multiplicity="1" />
-          <End Role="MaintainSupplementaryFile" Type="Self.MaintainSupplementaryFile" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo" Role="MaintainSupplementaryInfo" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.MaintainSupplementaryFile" Role="MaintainSupplementaryFile" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="MaintainSupplementaryInfo">
               <PropertyRef Name="PMSN" />
@@ -1722,8 +1885,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo">
-          <End Role="MaintainSupplementaryInfo" Type="Self.MaintainSupplementaryInfo" Multiplicity="1" />
-          <End Role="MaintainSupplementaryInfo1" Type="Self.MaintainSupplementaryInfo" Multiplicity="0..1" />
+          <End Type="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo" Role="MaintainSupplementaryInfo" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo" Role="MaintainSupplementaryInfo1" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="MaintainSupplementaryInfo">
               <PropertyRef Name="PMSN" />
@@ -1734,8 +1897,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PathSampleOrder_PathSample">
-          <End Role="PathSample" Type="Self.PathSample" Multiplicity="1" />
-          <End Role="PathSampleOrder" Type="Self.PathSampleOrder" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.PathSample" Role="PathSample" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.PathSampleOrder" Role="PathSampleOrder" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PathSample">
               <PropertyRef Name="PSSN" />
@@ -1746,8 +1909,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_RepairAuditImage_RepairAuditInfo">
-          <End Role="RepairAuditInfo" Type="Self.RepairAuditInfo" Multiplicity="1" />
-          <End Role="RepairAuditImage" Type="Self.RepairAuditImage" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.RepairAuditInfo" Role="RepairAuditInfo" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.RepairAuditImage" Role="RepairAuditImage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RepairAuditInfo">
               <PropertyRef Name="PRASN" />
@@ -1758,8 +1921,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_RepairSupplementaryFile_RepairSupplementaryInfo">
-          <End Role="RepairSupplementaryInfo" Type="Self.RepairSupplementaryInfo" Multiplicity="1" />
-          <End Role="RepairSupplementaryFile" Type="Self.RepairSupplementaryFile" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.RepairSupplementaryInfo" Role="RepairSupplementaryInfo" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.RepairSupplementaryFile" Role="RepairSupplementaryFile" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RepairSupplementaryInfo">
               <PropertyRef Name="PRSN" />
@@ -1770,171 +1933,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="AspNetUserRoles">
-          <End Role="AspNetRoles" Type="Self.AspNetRoles" Multiplicity="*" />
-          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
+          <End Type="Bimfm_MinSheng_MISModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
         </Association>
-        <EntityContainer Name="Bimfm_MinSheng_MISEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="C__MigrationHistory" EntityType="Self.C__MigrationHistory" />
-          <EntitySet Name="AreaInfo" EntityType="Self.AreaInfo" />
-          <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" />
-          <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaims" />
-          <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" />
-          <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" />
-          <EntitySet Name="CompletionReportImage" EntityType="Self.CompletionReportImage" />
-          <EntitySet Name="DrawInspectionPlanPath" EntityType="Self.DrawInspectionPlanPath" />
-          <EntitySet Name="DrawPathSample" EntityType="Self.DrawPathSample" />
-          <EntitySet Name="EquipmentInfo" EntityType="Self.EquipmentInfo" />
-          <EntitySet Name="EquipmentMaintainFormItem" EntityType="Self.EquipmentMaintainFormItem" />
-          <EntitySet Name="EquipmentMaintainItem" EntityType="Self.EquipmentMaintainItem" />
-          <EntitySet Name="EquipmentReportForm" EntityType="Self.EquipmentReportForm" />
-          <EntitySet Name="Floor_Info" EntityType="Self.Floor_Info" />
-          <EntitySet Name="ImspectionPlanFloorPath" EntityType="Self.ImspectionPlanFloorPath" />
-          <EntitySet Name="InspectionPlan" EntityType="Self.InspectionPlan" />
-          <EntitySet Name="InspectionPlanMaintain" EntityType="Self.InspectionPlanMaintain" />
-          <EntitySet Name="InspectionPlanMember" EntityType="Self.InspectionPlanMember" />
-          <EntitySet Name="InspectionPlanPath" EntityType="Self.InspectionPlanPath" />
-          <EntitySet Name="InspectionPlanRepair" EntityType="Self.InspectionPlanRepair" />
-          <EntitySet Name="InspectionTrack" EntityType="Self.InspectionTrack" />
-          <EntitySet Name="MaintainAuditImage" EntityType="Self.MaintainAuditImage" />
-          <EntitySet Name="MaintainAuditInfo" EntityType="Self.MaintainAuditInfo" />
-          <EntitySet Name="MaintainCompletionImage" EntityType="Self.MaintainCompletionImage" />
-          <EntitySet Name="MaintainItem" EntityType="Self.MaintainItem" />
-          <EntitySet Name="MaintainSupplementaryFile" EntityType="Self.MaintainSupplementaryFile" />
-          <EntitySet Name="MaintainSupplementaryInfo" EntityType="Self.MaintainSupplementaryInfo" />
-          <EntitySet Name="PathSample" EntityType="Self.PathSample" />
-          <EntitySet Name="PathSampleOrder" EntityType="Self.PathSampleOrder" />
-          <EntitySet Name="RepairAuditImage" EntityType="Self.RepairAuditImage" />
-          <EntitySet Name="RepairAuditInfo" EntityType="Self.RepairAuditInfo" />
-          <EntitySet Name="RepairCompletionImage" EntityType="Self.RepairCompletionImage" />
-          <EntitySet Name="RepairSupplementaryFile" EntityType="Self.RepairSupplementaryFile" />
-          <EntitySet Name="RepairSupplementaryInfo" EntityType="Self.RepairSupplementaryInfo" />
-          <EntitySet Name="ReportImage" EntityType="Self.ReportImage" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
-          <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Self.FK_Floor_Info_AreaInfo">
-            <End Role="AreaInfo" EntitySet="AreaInfo" />
-            <End Role="Floor_Info" EntitySet="Floor_Info" />
-          </AssociationSet>
-          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
-          </AssociationSet>
-          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CompletionReportImage_InspectionPlan" Association="Self.FK_CompletionReportImage_InspectionPlan">
-            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
-            <End Role="CompletionReportImage" EntitySet="CompletionReportImage" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DrawInspectionPlanPath_InspectionPlanPath" Association="Self.FK_DrawInspectionPlanPath_InspectionPlanPath">
-            <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
-            <End Role="DrawInspectionPlanPath" EntitySet="DrawInspectionPlanPath" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DrawPathSample_DrawPathSample" Association="Self.FK_DrawPathSample_DrawPathSample">
-            <End Role="PathSample" EntitySet="PathSample" />
-            <End Role="DrawPathSample" EntitySet="DrawPathSample" />
-          </AssociationSet>
-          <AssociationSet Name="FK_EquipmentReportForm_EquipmentInfo" Association="Self.FK_EquipmentReportForm_EquipmentInfo">
-            <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
-            <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
-          </AssociationSet>
-          <AssociationSet Name="FK_EquipmentMaintainFormItem_EquipmentMaintainItem" Association="Self.FK_EquipmentMaintainFormItem_EquipmentMaintainItem">
-            <End Role="EquipmentMaintainItem" EntitySet="EquipmentMaintainItem" />
-            <End Role="EquipmentMaintainFormItem" EntitySet="EquipmentMaintainFormItem" />
-          </AssociationSet>
-          <AssociationSet Name="FK_InspectionPlanMaintain_EquipmentMaintainFormItem" Association="Self.FK_InspectionPlanMaintain_EquipmentMaintainFormItem">
-            <End Role="EquipmentMaintainFormItem" EntitySet="EquipmentMaintainFormItem" />
-            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
-          </AssociationSet>
-          <AssociationSet Name="FK_InspectionPlanRepair_InspectionPlanRepair" Association="Self.FK_InspectionPlanRepair_InspectionPlanRepair">
-            <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
-            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ReportImage_EquipmentReportForm" Association="Self.FK_ReportImage_EquipmentReportForm">
-            <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
-            <End Role="ReportImage" EntitySet="ReportImage" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ImspectionPlanFloorPath_InspectionPlanPath" Association="Self.FK_ImspectionPlanFloorPath_InspectionPlanPath">
-            <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
-            <End Role="ImspectionPlanFloorPath" EntitySet="ImspectionPlanFloorPath" />
-          </AssociationSet>
-          <AssociationSet Name="FK_InspectionPlanMaintain_InspectionPlan" Association="Self.FK_InspectionPlanMaintain_InspectionPlan">
-            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
-            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
-          </AssociationSet>
-          <AssociationSet Name="FK_InspectionPlanMaintain_InspectionPlan1" Association="Self.FK_InspectionPlanMaintain_InspectionPlan1">
-            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
-            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
-          </AssociationSet>
-          <AssociationSet Name="FK_InspectionPlanMember_InspectionPlan" Association="Self.FK_InspectionPlanMember_InspectionPlan">
-            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
-            <End Role="InspectionPlanMember" EntitySet="InspectionPlanMember" />
-          </AssociationSet>
-          <AssociationSet Name="FK_InspectionPlanPath_InspectionPlan" Association="Self.FK_InspectionPlanPath_InspectionPlan">
-            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
-            <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
-          </AssociationSet>
-          <AssociationSet Name="FK_InspectionPlanRepair_InspectionPlan" Association="Self.FK_InspectionPlanRepair_InspectionPlan">
-            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
-            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MaintainAuditInfo_InspectionPlanMaintain" Association="Self.FK_MaintainAuditInfo_InspectionPlanMaintain">
-            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
-            <End Role="MaintainAuditInfo" EntitySet="MaintainAuditInfo" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MaintainCompletionImage_InspectionPlanMaintain" Association="Self.FK_MaintainCompletionImage_InspectionPlanMaintain">
-            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
-            <End Role="MaintainCompletionImage" EntitySet="MaintainCompletionImage" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MaintainSupplementaryInfo_InspectionPlanMaintain" Association="Self.FK_MaintainSupplementaryInfo_InspectionPlanMaintain">
-            <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
-            <End Role="MaintainSupplementaryInfo" EntitySet="MaintainSupplementaryInfo" />
-          </AssociationSet>
-          <AssociationSet Name="FK_InspectionTrack_InspectionPlanMember" Association="Self.FK_InspectionTrack_InspectionPlanMember">
-            <End Role="InspectionPlanMember" EntitySet="InspectionPlanMember" />
-            <End Role="InspectionTrack" EntitySet="InspectionTrack" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RepairAuditInfo_InspectionPlanRepair" Association="Self.FK_RepairAuditInfo_InspectionPlanRepair">
-            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
-            <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RepairCompletionImage_InspectionPlanRepair" Association="Self.FK_RepairCompletionImage_InspectionPlanRepair">
-            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
-            <End Role="RepairCompletionImage" EntitySet="RepairCompletionImage" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RepairSupplementaryInfo_InspectionPlanRepair" Association="Self.FK_RepairSupplementaryInfo_InspectionPlanRepair">
-            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
-            <End Role="RepairSupplementaryInfo" EntitySet="RepairSupplementaryInfo" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MaintainAuditImage_MaintainAuditInfo" Association="Self.FK_MaintainAuditImage_MaintainAuditInfo">
-            <End Role="MaintainAuditInfo" EntitySet="MaintainAuditInfo" />
-            <End Role="MaintainAuditImage" EntitySet="MaintainAuditImage" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" Association="Self.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo">
-            <End Role="MaintainSupplementaryInfo" EntitySet="MaintainSupplementaryInfo" />
-            <End Role="MaintainSupplementaryFile" EntitySet="MaintainSupplementaryFile" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" Association="Self.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo">
-            <End Role="MaintainSupplementaryInfo" EntitySet="MaintainSupplementaryInfo" />
-            <End Role="MaintainSupplementaryInfo1" EntitySet="MaintainSupplementaryInfo" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PathSampleOrder_PathSample" Association="Self.FK_PathSampleOrder_PathSample">
-            <End Role="PathSample" EntitySet="PathSample" />
-            <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RepairAuditImage_RepairAuditInfo" Association="Self.FK_RepairAuditImage_RepairAuditInfo">
-            <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
-            <End Role="RepairAuditImage" EntitySet="RepairAuditImage" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RepairSupplementaryFile_RepairSupplementaryInfo" Association="Self.FK_RepairSupplementaryFile_RepairSupplementaryInfo">
-            <End Role="RepairSupplementaryInfo" EntitySet="RepairSupplementaryInfo" />
-            <End Role="RepairSupplementaryFile" EntitySet="RepairSupplementaryFile" />
-          </AssociationSet>
-          <AssociationSet Name="AspNetUserRoles" Association="Self.AspNetUserRoles">
-            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-          </AssociationSet>
-        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1944,425 +1945,426 @@
           <EntitySetMapping Name="C__MigrationHistory">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.C__MigrationHistory">
               <MappingFragment StoreEntitySet="__MigrationHistory">
-                <ScalarProperty Name="MigrationId" ColumnName="MigrationId" />
-                <ScalarProperty Name="ContextKey" ColumnName="ContextKey" />
-                <ScalarProperty Name="Model" ColumnName="Model" />
                 <ScalarProperty Name="ProductVersion" ColumnName="ProductVersion" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="ContextKey" ColumnName="ContextKey" />
+                <ScalarProperty Name="MigrationId" ColumnName="MigrationId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AreaInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.AreaInfo">
               <MappingFragment StoreEntitySet="AreaInfo">
-                <ScalarProperty Name="ASN" ColumnName="ASN" />
                 <ScalarProperty Name="Area" ColumnName="Area" />
+                <ScalarProperty Name="ASN" ColumnName="ASN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetRoles">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.AspNetRoles">
               <MappingFragment StoreEntitySet="AspNetRoles">
-                <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserClaims">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.AspNetUserClaims">
               <MappingFragment StoreEntitySet="AspNetUserClaims">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
                 <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
+                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserLogins">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.AspNetUserLogins">
               <MappingFragment StoreEntitySet="AspNetUserLogins">
-                <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
-                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
+                <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.AspNetUsers">
               <MappingFragment StoreEntitySet="AspNetUsers">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
-                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
-                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
-                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
-                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
-                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
-                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="IsEnabled" ColumnName="IsEnabled" />
-                <ScalarProperty Name="MyName" ColumnName="MyName" />
-                <ScalarProperty Name="Authority" ColumnName="Authority" />
-                <ScalarProperty Name="Apartment" ColumnName="Apartment" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Apartment" ColumnName="Apartment" />
+                <ScalarProperty Name="Authority" ColumnName="Authority" />
+                <ScalarProperty Name="MyName" ColumnName="MyName" />
+                <ScalarProperty Name="IsEnabled" ColumnName="IsEnabled" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="CompletionReportImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.CompletionReportImage">
               <MappingFragment StoreEntitySet="CompletionReportImage">
-                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
                 <ScalarProperty Name="IPSN" ColumnName="IPSN" />
+                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DrawInspectionPlanPath">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath">
               <MappingFragment StoreEntitySet="DrawInspectionPlanPath">
-                <ScalarProperty Name="ISN" ColumnName="ISN" />
-                <ScalarProperty Name="PSN" ColumnName="PSN" />
-                <ScalarProperty Name="LocationX" ColumnName="LocationX" />
                 <ScalarProperty Name="LocationY" ColumnName="LocationY" />
+                <ScalarProperty Name="LocationX" ColumnName="LocationX" />
+                <ScalarProperty Name="PSN" ColumnName="PSN" />
+                <ScalarProperty Name="ISN" ColumnName="ISN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DrawPathSample">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DrawPathSample">
               <MappingFragment StoreEntitySet="DrawPathSample">
-                <ScalarProperty Name="SISN" ColumnName="SISN" />
-                <ScalarProperty Name="PSSN" ColumnName="PSSN" />
-                <ScalarProperty Name="LocationX" ColumnName="LocationX" />
                 <ScalarProperty Name="LocationY" ColumnName="LocationY" />
+                <ScalarProperty Name="LocationX" ColumnName="LocationX" />
+                <ScalarProperty Name="PSSN" ColumnName="PSSN" />
+                <ScalarProperty Name="SISN" ColumnName="SISN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="EquipmentInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.EquipmentInfo">
               <MappingFragment StoreEntitySet="EquipmentInfo">
-                <ScalarProperty Name="ESN" ColumnName="ESN" />
-                <ScalarProperty Name="System" ColumnName="System" />
-                <ScalarProperty Name="SubSystem" ColumnName="SubSystem" />
-                <ScalarProperty Name="EName" ColumnName="EName" />
-                <ScalarProperty Name="Area" ColumnName="Area" />
-                <ScalarProperty Name="Floor" ColumnName="Floor" />
-                <ScalarProperty Name="Room" ColumnName="Room" />
-                <ScalarProperty Name="RoomName" ColumnName="RoomName" />
-                <ScalarProperty Name="SourceSpace" ColumnName="SourceSpace" />
-                <ScalarProperty Name="SourceObject" ColumnName="SourceObject" />
-                <ScalarProperty Name="PropertyCode" ColumnName="PropertyCode" />
-                <ScalarProperty Name="Brand" ColumnName="Brand" />
-                <ScalarProperty Name="InstallDate" ColumnName="InstallDate" />
-                <ScalarProperty Name="GuaranteeDeadline" ColumnName="GuaranteeDeadline" />
-                <ScalarProperty Name="DBID" ColumnName="DBID" />
-                <ScalarProperty Name="RFID" ColumnName="RFID" />
+                <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="EState" ColumnName="EState" />
+                <ScalarProperty Name="RFID" ColumnName="RFID" />
+                <ScalarProperty Name="DBID" ColumnName="DBID" />
+                <ScalarProperty Name="GuaranteeDeadline" ColumnName="GuaranteeDeadline" />
+                <ScalarProperty Name="InstallDate" ColumnName="InstallDate" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="PropertyCode" ColumnName="PropertyCode" />
+                <ScalarProperty Name="SourceObject" ColumnName="SourceObject" />
+                <ScalarProperty Name="SourceSpace" ColumnName="SourceSpace" />
+                <ScalarProperty Name="RoomName" ColumnName="RoomName" />
+                <ScalarProperty Name="Room" ColumnName="Room" />
+                <ScalarProperty Name="Floor" ColumnName="Floor" />
+                <ScalarProperty Name="Area" ColumnName="Area" />
+                <ScalarProperty Name="EName" ColumnName="EName" />
+                <ScalarProperty Name="SubSystem" ColumnName="SubSystem" />
+                <ScalarProperty Name="System" ColumnName="System" />
+                <ScalarProperty Name="ESN" ColumnName="ESN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="EquipmentMaintainFormItem">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.EquipmentMaintainFormItem">
               <MappingFragment StoreEntitySet="EquipmentMaintainFormItem">
-                <ScalarProperty Name="EMFISN" ColumnName="EMFISN" />
-                <ScalarProperty Name="EMISN" ColumnName="EMISN" />
-                <ScalarProperty Name="LastTime" ColumnName="LastTime" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="NextTime" ColumnName="NextTime" />
-                <ScalarProperty Name="Unit" ColumnName="Unit" />
-                <ScalarProperty Name="Period" ColumnName="Period" />
-                <ScalarProperty Name="FormItemState" ColumnName="FormItemState" />
                 <ScalarProperty Name="StockState" ColumnName="StockState" />
+                <ScalarProperty Name="FormItemState" ColumnName="FormItemState" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="NextTime" ColumnName="NextTime" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="LastTime" ColumnName="LastTime" />
+                <ScalarProperty Name="EMISN" ColumnName="EMISN" />
+                <ScalarProperty Name="EMFISN" ColumnName="EMFISN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="EquipmentMaintainItem">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.EquipmentMaintainItem">
               <MappingFragment StoreEntitySet="EquipmentMaintainItem">
-                <ScalarProperty Name="EMISN" ColumnName="EMISN" />
-                <ScalarProperty Name="ESN" ColumnName="ESN" />
-                <ScalarProperty Name="MISN" ColumnName="MISN" />
-                <ScalarProperty Name="LastTime" ColumnName="LastTime" />
-                <ScalarProperty Name="NextTime" ColumnName="NextTime" />
-                <ScalarProperty Name="Unit" ColumnName="Unit" />
-                <ScalarProperty Name="Period" ColumnName="Period" />
-                <ScalarProperty Name="IsEnable" ColumnName="IsEnable" />
                 <ScalarProperty Name="IsCreate" ColumnName="IsCreate" />
+                <ScalarProperty Name="IsEnable" ColumnName="IsEnable" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="NextTime" ColumnName="NextTime" />
+                <ScalarProperty Name="LastTime" ColumnName="LastTime" />
+                <ScalarProperty Name="MISN" ColumnName="MISN" />
+                <ScalarProperty Name="ESN" ColumnName="ESN" />
+                <ScalarProperty Name="EMISN" ColumnName="EMISN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="EquipmentReportForm">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.EquipmentReportForm">
               <MappingFragment StoreEntitySet="EquipmentReportForm">
-                <ScalarProperty Name="RSN" ColumnName="RSN" />
-                <ScalarProperty Name="ESN" ColumnName="ESN" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="ReportLevel" ColumnName="ReportLevel" />
-                <ScalarProperty Name="ReportContent" ColumnName="ReportContent" />
-                <ScalarProperty Name="InformatUserID" ColumnName="InformatUserID" />
-                <ScalarProperty Name="ReportState" ColumnName="ReportState" />
-                <ScalarProperty Name="StockState" ColumnName="StockState" />
                 <ScalarProperty Name="ReportSource" ColumnName="ReportSource" />
+                <ScalarProperty Name="StockState" ColumnName="StockState" />
+                <ScalarProperty Name="ReportState" ColumnName="ReportState" />
+                <ScalarProperty Name="InformatUserID" ColumnName="InformatUserID" />
+                <ScalarProperty Name="ReportContent" ColumnName="ReportContent" />
+                <ScalarProperty Name="ReportLevel" ColumnName="ReportLevel" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="ESN" ColumnName="ESN" />
+                <ScalarProperty Name="RSN" ColumnName="RSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Floor_Info">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.Floor_Info">
               <MappingFragment StoreEntitySet="Floor_Info">
-                <ScalarProperty Name="FSN" ColumnName="FSN" />
-                <ScalarProperty Name="ASN" ColumnName="ASN" />
-                <ScalarProperty Name="FloorName" ColumnName="FloorName" />
                 <ScalarProperty Name="BIMPath" ColumnName="BIMPath" />
+                <ScalarProperty Name="FloorName" ColumnName="FloorName" />
+                <ScalarProperty Name="ASN" ColumnName="ASN" />
+                <ScalarProperty Name="FSN" ColumnName="FSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ImspectionPlanFloorPath">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ImspectionPlanFloorPath">
               <MappingFragment StoreEntitySet="ImspectionPlanFloorPath">
-                <ScalarProperty Name="FPSN" ColumnName="FPSN" />
-                <ScalarProperty Name="PSN" ColumnName="PSN" />
                 <ScalarProperty Name="DeviceID" ColumnName="DeviceID" />
+                <ScalarProperty Name="PSN" ColumnName="PSN" />
+                <ScalarProperty Name="FPSN" ColumnName="FPSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="InspectionPlan">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan">
               <MappingFragment StoreEntitySet="InspectionPlan">
-                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
-                <ScalarProperty Name="IPName" ColumnName="IPName" />
-                <ScalarProperty Name="PlanDate" ColumnName="PlanDate" />
-                <ScalarProperty Name="Shift" ColumnName="Shift" />
-                <ScalarProperty Name="MaintainAmount" ColumnName="MaintainAmount" />
-                <ScalarProperty Name="RepairAmount" ColumnName="RepairAmount" />
-                <ScalarProperty Name="PlanState" ColumnName="PlanState" />
-                <ScalarProperty Name="PlanCreateUserID" ColumnName="PlanCreateUserID" />
-                <ScalarProperty Name="InformatUserID" ColumnName="InformatUserID" />
-                <ScalarProperty Name="DateOfFilling" ColumnName="DateOfFilling" />
-                <ScalarProperty Name="InspectionRecord" ColumnName="InspectionRecord" />
-                <ScalarProperty Name="InspectionStateOfFilling" ColumnName="InspectionStateOfFilling" />
-                <ScalarProperty Name="MaintainUserID" ColumnName="MaintainUserID" />
-                <ScalarProperty Name="RepairUserID" ColumnName="RepairUserID" />
                 <ScalarProperty Name="PlanStartTime" ColumnName="PlanStartTime" />
+                <ScalarProperty Name="RepairUserID" ColumnName="RepairUserID" />
+                <ScalarProperty Name="MaintainUserID" ColumnName="MaintainUserID" />
+                <ScalarProperty Name="InspectionStateOfFilling" ColumnName="InspectionStateOfFilling" />
+                <ScalarProperty Name="InspectionRecord" ColumnName="InspectionRecord" />
+                <ScalarProperty Name="DateOfFilling" ColumnName="DateOfFilling" />
+                <ScalarProperty Name="InformatUserID" ColumnName="InformatUserID" />
+                <ScalarProperty Name="PlanCreateUserID" ColumnName="PlanCreateUserID" />
+                <ScalarProperty Name="PlanState" ColumnName="PlanState" />
+                <ScalarProperty Name="RepairAmount" ColumnName="RepairAmount" />
+                <ScalarProperty Name="MaintainAmount" ColumnName="MaintainAmount" />
+                <ScalarProperty Name="Shift" ColumnName="Shift" />
+                <ScalarProperty Name="PlanDate" ColumnName="PlanDate" />
+                <ScalarProperty Name="IPName" ColumnName="IPName" />
+                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="InspectionPlanMaintain">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlanMaintain">
               <MappingFragment StoreEntitySet="InspectionPlanMaintain">
-                <ScalarProperty Name="IPMSN" ColumnName="IPMSN" />
-                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
-                <ScalarProperty Name="EMFISN" ColumnName="EMFISN" />
-                <ScalarProperty Name="MaintainState" ColumnName="MaintainState" />
-                <ScalarProperty Name="MaintainUserID" ColumnName="MaintainUserID" />
-                <ScalarProperty Name="MaintainDate" ColumnName="MaintainDate" />
-                <ScalarProperty Name="MaintainContent" ColumnName="MaintainContent" />
                 <ScalarProperty Name="MaintainStateOfFilling" ColumnName="MaintainStateOfFilling" />
+                <ScalarProperty Name="MaintainContent" ColumnName="MaintainContent" />
+                <ScalarProperty Name="MaintainDate" ColumnName="MaintainDate" />
+                <ScalarProperty Name="MaintainUserID" ColumnName="MaintainUserID" />
+                <ScalarProperty Name="MaintainState" ColumnName="MaintainState" />
+                <ScalarProperty Name="EMFISN" ColumnName="EMFISN" />
+                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
+                <ScalarProperty Name="IPMSN" ColumnName="IPMSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="InspectionPlanMember">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlanMember">
               <MappingFragment StoreEntitySet="InspectionPlanMember">
-                <ScalarProperty Name="PMSN" ColumnName="PMSN" />
-                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="WatchID" ColumnName="WatchID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
+                <ScalarProperty Name="PMSN" ColumnName="PMSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="InspectionPlanPath">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlanPath">
               <MappingFragment StoreEntitySet="InspectionPlanPath">
-                <ScalarProperty Name="PSN" ColumnName="PSN" />
-                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
-                <ScalarProperty Name="Area" ColumnName="Area" />
-                <ScalarProperty Name="Floor" ColumnName="Floor" />
-                <ScalarProperty Name="PathTitle" ColumnName="PathTitle" />
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
+                <ScalarProperty Name="PathTitle" ColumnName="PathTitle" />
+                <ScalarProperty Name="Floor" ColumnName="Floor" />
+                <ScalarProperty Name="Area" ColumnName="Area" />
+                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
+                <ScalarProperty Name="PSN" ColumnName="PSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="InspectionPlanRepair">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlanRepair">
               <MappingFragment StoreEntitySet="InspectionPlanRepair">
-                <ScalarProperty Name="IPRSN" ColumnName="IPRSN" />
-                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
-                <ScalarProperty Name="RSN" ColumnName="RSN" />
-                <ScalarProperty Name="RepairState" ColumnName="RepairState" />
-                <ScalarProperty Name="RepairUserID" ColumnName="RepairUserID" />
-                <ScalarProperty Name="RepairDate" ColumnName="RepairDate" />
-                <ScalarProperty Name="RepairContent" ColumnName="RepairContent" />
                 <ScalarProperty Name="RepairStateOfFilling" ColumnName="RepairStateOfFilling" />
+                <ScalarProperty Name="RepairContent" ColumnName="RepairContent" />
+                <ScalarProperty Name="RepairDate" ColumnName="RepairDate" />
+                <ScalarProperty Name="RepairUserID" ColumnName="RepairUserID" />
+                <ScalarProperty Name="RepairState" ColumnName="RepairState" />
+                <ScalarProperty Name="RSN" ColumnName="RSN" />
+                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
+                <ScalarProperty Name="IPRSN" ColumnName="IPRSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="InspectionTrack">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionTrack">
               <MappingFragment StoreEntitySet="InspectionTrack">
-                <ScalarProperty Name="ITSN" ColumnName="ITSN" />
-                <ScalarProperty Name="PMSN" ColumnName="PMSN" />
-                <ScalarProperty Name="Arae" ColumnName="Arae" />
-                <ScalarProperty Name="Floor" ColumnName="Floor" />
-                <ScalarProperty Name="LocationX" ColumnName="LocationX" />
-                <ScalarProperty Name="LocationY" ColumnName="LocationY" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="Heartbeat" ColumnName="Heartbeat" />
                 <ScalarProperty Name="StepNum" ColumnName="StepNum" />
+                <ScalarProperty Name="Heartbeat" ColumnName="Heartbeat" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="LocationY" ColumnName="LocationY" />
+                <ScalarProperty Name="LocationX" ColumnName="LocationX" />
+                <ScalarProperty Name="Floor" ColumnName="Floor" />
+                <ScalarProperty Name="Arae" ColumnName="Arae" />
+                <ScalarProperty Name="PMSN" ColumnName="PMSN" />
+                <ScalarProperty Name="ITSN" ColumnName="ITSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="MaintainAuditImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MaintainAuditImage">
               <MappingFragment StoreEntitySet="MaintainAuditImage">
-                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
                 <ScalarProperty Name="PMASN" ColumnName="PMASN" />
+                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="MaintainAuditInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MaintainAuditInfo">
               <MappingFragment StoreEntitySet="MaintainAuditInfo">
-                <ScalarProperty Name="PMASN" ColumnName="PMASN" />
-                <ScalarProperty Name="IPMSN" ColumnName="IPMSN" />
-                <ScalarProperty Name="AuditUserID" ColumnName="AuditUserID" />
-                <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
-                <ScalarProperty Name="AuditMemo" ColumnName="AuditMemo" />
                 <ScalarProperty Name="AuditResult" ColumnName="AuditResult" />
+                <ScalarProperty Name="AuditMemo" ColumnName="AuditMemo" />
+                <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
+                <ScalarProperty Name="AuditUserID" ColumnName="AuditUserID" />
+                <ScalarProperty Name="IPMSN" ColumnName="IPMSN" />
+                <ScalarProperty Name="PMASN" ColumnName="PMASN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="MaintainCompletionImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MaintainCompletionImage">
               <MappingFragment StoreEntitySet="MaintainCompletionImage">
-                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
                 <ScalarProperty Name="IPMSN" ColumnName="IPMSN" />
+                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="MaintainItem">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MaintainItem">
               <MappingFragment StoreEntitySet="MaintainItem">
-                <ScalarProperty Name="MISN" ColumnName="MISN" />
-                <ScalarProperty Name="MIName" ColumnName="MIName" />
-                <ScalarProperty Name="System" ColumnName="System" />
-                <ScalarProperty Name="SubSystem" ColumnName="SubSystem" />
-                <ScalarProperty Name="EName" ColumnName="EName" />
-                <ScalarProperty Name="Unit" ColumnName="Unit" />
-                <ScalarProperty Name="Period" ColumnName="Period" />
                 <ScalarProperty Name="MaintainItemIsEnable" ColumnName="MaintainItemIsEnable" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="EName" ColumnName="EName" />
+                <ScalarProperty Name="SubSystem" ColumnName="SubSystem" />
+                <ScalarProperty Name="System" ColumnName="System" />
+                <ScalarProperty Name="MIName" ColumnName="MIName" />
+                <ScalarProperty Name="MISN" ColumnName="MISN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="MaintainSupplementaryFile">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MaintainSupplementaryFile">
               <MappingFragment StoreEntitySet="MaintainSupplementaryFile">
-                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
                 <ScalarProperty Name="PMSN" ColumnName="PMSN" />
+                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="MaintainSupplementaryInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo">
               <MappingFragment StoreEntitySet="MaintainSupplementaryInfo">
-                <ScalarProperty Name="PMSN" ColumnName="PMSN" />
-                <ScalarProperty Name="IPMSN" ColumnName="IPMSN" />
-                <ScalarProperty Name="SupplementaryUserID" ColumnName="SupplementaryUserID" />
-                <ScalarProperty Name="SupplementaryDate" ColumnName="SupplementaryDate" />
                 <ScalarProperty Name="SupplementaryContent" ColumnName="SupplementaryContent" />
+                <ScalarProperty Name="SupplementaryDate" ColumnName="SupplementaryDate" />
+                <ScalarProperty Name="SupplementaryUserID" ColumnName="SupplementaryUserID" />
+                <ScalarProperty Name="IPMSN" ColumnName="IPMSN" />
+                <ScalarProperty Name="PMSN" ColumnName="PMSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PathSample">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PathSample">
               <MappingFragment StoreEntitySet="PathSample">
-                <ScalarProperty Name="PSSN" ColumnName="PSSN" />
-                <ScalarProperty Name="Area" ColumnName="Area" />
-                <ScalarProperty Name="Floor" ColumnName="Floor" />
-                <ScalarProperty Name="PathTitle" ColumnName="PathTitle" />
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
+                <ScalarProperty Name="PathTitle" ColumnName="PathTitle" />
+                <ScalarProperty Name="Floor" ColumnName="Floor" />
+                <ScalarProperty Name="Area" ColumnName="Area" />
+                <ScalarProperty Name="PSSN" ColumnName="PSSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PathSampleOrder">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PathSampleOrder">
               <MappingFragment StoreEntitySet="PathSampleOrder">
-                <ScalarProperty Name="FPSSN" ColumnName="FPSSN" />
-                <ScalarProperty Name="PSSN" ColumnName="PSSN" />
                 <ScalarProperty Name="BeaconID" ColumnName="BeaconID" />
+                <ScalarProperty Name="PSSN" ColumnName="PSSN" />
+                <ScalarProperty Name="FPSSN" ColumnName="FPSSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="RepairAuditImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairAuditImage">
               <MappingFragment StoreEntitySet="RepairAuditImage">
-                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
                 <ScalarProperty Name="PRASN" ColumnName="PRASN" />
+                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="RepairAuditInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairAuditInfo">
               <MappingFragment StoreEntitySet="RepairAuditInfo">
-                <ScalarProperty Name="PRASN" ColumnName="PRASN" />
-                <ScalarProperty Name="IPRSN" ColumnName="IPRSN" />
-                <ScalarProperty Name="AuditUserID" ColumnName="AuditUserID" />
-                <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
-                <ScalarProperty Name="AuditMemo" ColumnName="AuditMemo" />
                 <ScalarProperty Name="AuditResult" ColumnName="AuditResult" />
+                <ScalarProperty Name="AuditMemo" ColumnName="AuditMemo" />
+                <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
+                <ScalarProperty Name="AuditUserID" ColumnName="AuditUserID" />
+                <ScalarProperty Name="IPRSN" ColumnName="IPRSN" />
+                <ScalarProperty Name="PRASN" ColumnName="PRASN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="RepairCompletionImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairCompletionImage">
               <MappingFragment StoreEntitySet="RepairCompletionImage">
-                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
                 <ScalarProperty Name="IPRSN" ColumnName="IPRSN" />
+                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="RepairSupplementaryFile">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairSupplementaryFile">
               <MappingFragment StoreEntitySet="RepairSupplementaryFile">
-                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
                 <ScalarProperty Name="PRSN" ColumnName="PRSN" />
+                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="RepairSupplementaryInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairSupplementaryInfo">
               <MappingFragment StoreEntitySet="RepairSupplementaryInfo">
-                <ScalarProperty Name="PRSN" ColumnName="PRSN" />
-                <ScalarProperty Name="IPRSN" ColumnName="IPRSN" />
-                <ScalarProperty Name="SupplementaryUserID" ColumnName="SupplementaryUserID" />
-                <ScalarProperty Name="SupplementaryDate" ColumnName="SupplementaryDate" />
                 <ScalarProperty Name="SupplementaryContent" ColumnName="SupplementaryContent" />
+                <ScalarProperty Name="SupplementaryDate" ColumnName="SupplementaryDate" />
+                <ScalarProperty Name="SupplementaryUserID" ColumnName="SupplementaryUserID" />
+                <ScalarProperty Name="IPRSN" ColumnName="IPRSN" />
+                <ScalarProperty Name="PRSN" ColumnName="PRSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ReportImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ReportImage">
               <MappingFragment StoreEntitySet="ReportImage">
-                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
                 <ScalarProperty Name="RSN" ColumnName="RSN" />
+                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="version" ColumnName="version" />
                 <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <AssociationSetMapping Name="AspNetUserRoles" TypeName="Bimfm_MinSheng_MISModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
-            <EndProperty Name="AspNetRoles">
-              <ScalarProperty Name="Id" ColumnName="RoleId" />
-            </EndProperty>
             <EndProperty Name="AspNetUsers">
               <ScalarProperty Name="Id" ColumnName="UserId" />
+            </EndProperty>
+            <EndProperty Name="AspNetRoles">
+              <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
         </EntityContainerMapping>

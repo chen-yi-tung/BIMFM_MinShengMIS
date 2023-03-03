@@ -37,6 +37,7 @@ namespace MinSheng_MIS.Models
         public string DBID { get; set; }
         public string RFID { get; set; }
         public string EState { get; set; }
+        public string FSN { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EquipmentReportForm> EquipmentReportForm { get; set; }

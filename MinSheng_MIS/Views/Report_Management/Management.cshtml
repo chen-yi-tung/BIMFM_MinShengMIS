@@ -14,18 +14,22 @@
 
         <div class="form-group">
             <label for="Area">棟別</label>
-            <select class="form-select" name="Area" id="Area">
+            <select class="form-select" name="ASN" id="ASN">
                 <option value="">請選擇</option>
             </select>
         </div>
-
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
         <div class="form-group">
             <label for="Floor">樓層</label>
-            <select class="form-select" name="Floor" id="Floor">
+            <select class="form-select" name="FSN" id="FSN">
                 <option value="">請選擇</option>
             </select>
         </div>
-
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
         @* <div class="form-group">
         <label for="IPSN">巡檢計畫編號</label>
         <select class="form-select" name="IPSN" id="IPSN">
@@ -117,13 +121,32 @@
 <script src="../../Scripts/tool.js"></script>
 <script>
     var baseUrl = "/Report_Management/";
-    var areas = document.getElementById("Area");
+    var areas = document.getElementById("ASN");
     var getGridJSON = '@Url.Action("Management_datagrid", "Report_Management")';
     areas.addEventListener("change", function () {
         let url = '@Url.Action("Floor", "DropDownList")';
+        if (areas.value != "") {
+            $('#Area').val($("#ASN option:selected").text());
+        }
+        else{
+            $('#Area').val('');
+        }
+        console.log($('#Area').val())
+        //console.log($("#ASN option:selected").text());
         url = url + `?ASN=${areas.value}`;
-        console.log(url);
-        pushSelect("Floor", url);
+        //console.log(url);
+        pushSelect("FSN", url);
+        $('#Floor').val('');
+    });
+    var FSNs = document.getElementById("FSN");
+    FSNs.addEventListener("change", function () {
+        if (FSNs.value != "") {
+            $('#Floor').val($("#FSN option:selected").text());
+        }
+        else{
+            $('#Floor').val('');
+        }
+        console.log($('#Floor').val())
     });
     //const fakeData = [
     //    {
@@ -143,7 +166,7 @@
     //]
 
     $(async function () {
-        await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
         //document.getElementById('Area').value = '1'
         await pushSelect("Level", '@Url.Action("ReportLevel", "DropDownList")');
@@ -156,7 +179,9 @@
 
         const searchParams = [
             "Area",
+            "ASN",
             "Floor",
+            "FSN",
             "ReportState",
             "Level",
             "RSN",
@@ -173,7 +198,7 @@
             total[c] = $(`#${c}`).val()
             return total;
         }, {})
-        
+
         console.log(queryParams)
 
         $('#DataGrid').datagrid({
