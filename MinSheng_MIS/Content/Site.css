@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
 
 :root {
     --navbar-height: 50px;
@@ -25,7 +25,7 @@ body {
 h2 {
     text-align: center;
     color: white;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 46px;
 }
 
