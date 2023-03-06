@@ -1,4 +1,6 @@
-﻿@{
+﻿@model MinSheng_MIS.Models.MaintainItemViewModel
+
+@{
     ViewBag.Title = "新增保養項目";
 }
 <style>
@@ -10,31 +12,31 @@
         position: relative;
     }
 
-    .maintain-item+.maintain-item {
-        margin-top: 16px;
-    }
+        .maintain-item + .maintain-item {
+            margin-top: 16px;
+        }
 
-    .maintain-item::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        right: 0;
-        border-radius: 5px;
-        background: rgba(255, 255, 255, 0.5);
-        z-index: -1;
-    }
+        .maintain-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            right: 0;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            z-index: -1;
+        }
 
-    .maintain-item label {
-        position: relative;
-    }
+        .maintain-item label {
+            position: relative;
+        }
 
-    .maintain-item .form-control,
-    .maintain-item .form-select {
-        display: block;
-        width: 100%;
-        border-radius: 0;
-        color: #7E7E7E;
-    }
+        .maintain-item .form-control,
+        .maintain-item .form-select {
+            display: block;
+            width: 100%;
+            border-radius: 0;
+            color: #7E7E7E;
+        }
 
     @@media (min-width:992px) {
         .maintain-item::before {
@@ -50,6 +52,14 @@
             <label for="System">系統別</label>
             <select class="form-select" name="System" id="System" required>
                 <option value="">請選擇</option>
+                @{
+                    for (var i = 0; i < @Model.SystemItemList.Count(); i++)
+                    {
+                        <option value=@Model.SystemItemList[i].SystemName>
+                            @Model.SystemItemList[i].SystemName
+                        </option>
+                    }
+                }
             </select>
         </div>
         <div class="form-group d-lg-contents required">
@@ -83,29 +93,29 @@
                 <div class="th col-1 text-white"></div>
             </div>
             @* <div class="maintain-item row w-100" id="maintain-item-0">
-            <div class="d-lg-contents col py-2">
-            <div class="form-group required col-lg-5 ps-lg-4 pe-lg-3 ps-4 pe-4 py-2 text-start">
-            <label for="MIName" class="d-lg-none text-white">項目名稱</label>
-            <input class="form-control" type="text" name="MIName" id="MIName" required>
-            </div>
-            <div class="form-group required col-lg-3 ps-lg-3 pe-lg-3 ps-4 pe-4 py-2 text-start">
-            <label for="Unit" class="d-lg-none text-white">保養週期單位</label>
-            <select class="form-select" name="Unit" id="Unit" required>
-            <option value="日">日</option>
-            <option value="月">月</option>
-            <option value="年">年</option>
-            </select>
-            </div>
-            <div class="form-group required col-lg-3 ps-lg-3 pe-lg-4 ps-4 pe-4 py-2 text-start">
-            <label for="Period" class="d-lg-none text-white">保養週期</label>
-            <input class="form-control" type="number" name="Period" id="Period" min="1" value="1" required>
-            </div>
-            </div>
-            <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0
-            position-absolute text-end order-first pt-2 px-2">
-            <button class="btn-delete-item" onclick="deleteEquipmentMaintainItem(0)"></button>
-            </div>
-            </div> *@
+                <div class="d-lg-contents col py-2">
+                <div class="form-group required col-lg-5 ps-lg-4 pe-lg-3 ps-4 pe-4 py-2 text-start">
+                <label for="MIName" class="d-lg-none text-white">項目名稱</label>
+                <input class="form-control" type="text" name="MIName" id="MIName" required>
+                </div>
+                <div class="form-group required col-lg-3 ps-lg-3 pe-lg-3 ps-4 pe-4 py-2 text-start">
+                <label for="Unit" class="d-lg-none text-white">保養週期單位</label>
+                <select class="form-select" name="Unit" id="Unit" required>
+                <option value="日">日</option>
+                <option value="月">月</option>
+                <option value="年">年</option>
+                </select>
+                </div>
+                <div class="form-group required col-lg-3 ps-lg-3 pe-lg-4 ps-4 pe-4 py-2 text-start">
+                <label for="Period" class="d-lg-none text-white">保養週期</label>
+                <input class="form-control" type="number" name="Period" id="Period" min="1" value="1" required>
+                </div>
+                </div>
+                <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0
+                position-absolute text-end order-first pt-2 px-2">
+                <button class="btn-delete-item" onclick="deleteEquipmentMaintainItem(0)"></button>
+                </div>
+                </div> *@
         </div>
     </form>
 </div>
@@ -116,6 +126,179 @@
 </div>
 
 <script>
+    var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.EquipmentInfoList));
+    eqList = eqList.replace("\r", "").replace("\n", "");
+    var equipmentList = JSON.parse(eqList);
+    //console.log(`所有設備清單`);
+    //console.log(equipmentList);
+    CreateAllENameOptions(equipmentList.EquipmentInfo);
+
+    //#region form - Auto generate the select options
+
+    //Change event listener of SystemOption element
+    const selectSystemElement = document.querySelector('#System');
+    selectSystemElement.addEventListener('change', (event) => {
+        var chooseSystem = document.getElementById('System').value;
+        console.log(`Choose System: ${event.target.value}`);
+
+        //When user didn't choose system option
+        if (chooseSystem == "none") {
+            ClearOptions("SubSystem");
+            $("#SubSystem").append(`<option value=""> -- 請選擇 -- </option>`);
+
+            CreateAllENameOptions(equipmentList.EquipmentInfo);
+            //ClearOptions("ENameOption");
+            //$("#ENameOption").append(`<option value=""> -- 請選擇 -- </option>`);
+        }
+        //When user choose system option
+        else {
+            ClearOptions("SubSystem");
+            $("#SubSystem").append(`<option value=""> -- 請選擇 -- </option>`);
+            CreateSubSystemOptions(chooseSystem, equipmentList.EquipmentInfo);
+
+            ClearOptions("EName");
+            $("#EName").append(`<option value=""> -- 請選擇 -- </option>`);
+            CreateENameOptionsWithSystem(chooseSystem, equipmentList.EquipmentInfo);
+        }
+    });
+
+    const selectSubSystemElement = document.querySelector('#SubSystem');
+    selectSubSystemElement.addEventListener('change', (event) => {
+        var chooseSystem = document.getElementById('System').value;
+        var chooseSubSystem = document.getElementById('SubSystem').value;
+        console.log(`Choose SubSystem: ${event.target.value}`);
+
+        //When user didn't choose subsystem option
+        if (chooseSystem == "none") {
+            ClearOptions("EName");
+            CreateAllENameOptions(equipmentList.EquipmentInfo);
+        //    ClearOptions("ENameOption");
+        //    $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+        }
+        //When user choose subsystem option
+        else {
+            ClearOptions("EName");
+            $("#EName").append(`<option value=""> -- 請選擇 -- </option>`);
+            CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
+        }
+    });
+
+    //Clear all options in select
+    function ClearOptions(id) {
+        document.getElementById(id).options.length = 0;
+    }
+
+    function CreateSubSystemOptions(optionvalue, data) {
+        var systemOption = optionvalue;
+        var tempArray = [];
+        //console.log(data);
+        //列出不重複的子系統別類型
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            //console.log(item);
+            if (item.System == systemOption) {
+                var tempSubSystem = item.SubSystem;
+                var isRepeat = false;
+                for (var i = 0; i < arrLength; i++) {
+                    if (tempSubSystem == tempArray[i]) {
+                        isRepeat = true;
+                        break;
+                    }
+                }
+
+                if (!isRepeat) {
+                    tempArray.push(item.SubSystem);
+                    $("#SubSystem").append(`<option value="${item.SubSystem}">${item.SubSystem}</option>`);
+                }
+            }
+        });
+        //console.log(tempArray);
+    }
+
+    //創建所有EName element
+    function CreateAllENameOptions(data) {
+        var tempArray = [];
+        //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
+
+        //列出不重複的設備名稱
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            var tempSubSystem = item.SubSystem;
+            var isRepeat = false;
+            for (var i = 0; i < arrLength; i++) {
+                if (item.EName == tempArray[i]) {
+                    isRepeat = true;
+                    break;
+                }
+            }
+
+            if (!isRepeat) {
+                tempArray.push(item.EName);
+                $("#EName").append(`<option value="${item.EName}">${item.EName}</option>`);
+            }
+        });
+    }
+
+    //依據所選系統，創建相關的EName element
+    function CreateENameOptionsWithSystem(systemVal, data) {
+        var systemOption = systemVal;
+        //var subSystemOption = subSystemVal;
+        var tempArray = [];
+        //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
+
+        //列出不重複的設備名稱
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            //console.log(item);
+            if (item.System == systemOption) {
+                var tempEName = item.EName;
+                var isRepeat = false;
+                for (var i = 0; i < arrLength; i++) {
+                    if (tempEName == tempArray[i]) {
+                        isRepeat = true;
+                        break;
+                    }
+                }
+
+                if (!isRepeat) {
+                    tempArray.push(item.EName);
+                    $("#EName").append(`<option value="${item.EName}">${item.EName}</option>`);
+                }
+            }
+        });
+
+
+    }
+    //依據所選系統與子系統，創建相關的EName element
+    function CreateENameOptions(systemVal, subSystemVal, data) {
+        var systemOption = systemVal;
+        var subSystemOption = subSystemVal;
+        var tempArray = [];
+        //console.log(`system:${systemOption},subSystem ${subSystemOption}`);
+
+        //列出不重複的設備名稱
+        data.forEach(function (item, i) {
+            var arrLength = tempArray.length;
+            //console.log(item);
+            if (item.System == systemOption && item.SubSystem == subSystemOption) {
+                //var tempSubSystem = item.SubSystem;
+                var isRepeat = false;
+                for (var i = 0; i < arrLength; i++) {
+                    if (item.EName == tempArray[i]) {
+                        isRepeat = true;
+                        break;
+                    }
+                }
+
+                if (!isRepeat) {
+                    tempArray.push(item.EName);
+                    $("#EName").append(`<option value="${item.EName}">${item.EName}</option>`);
+                }
+            }
+        });
+    }
+
+    //#endregion
 
     var itemCount = 0;
 
@@ -158,7 +341,7 @@
                     <input class="form-control" type="number" name="Period" id="Period" min="1" value="1" required>
                 </div>
             </div>
-            <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0  
+            <div class="col-lg-1 position-lg-relative m-lg-auto text-lg-center order-lg-last pt-lg-0
                         position-absolute text-end order-first pt-2 px-2">
                 <button class="btn-delete-item" onClick="deleteEquipmentMaintainItem(${itemCount})"></button>
             </div>
@@ -187,18 +370,19 @@
         }
 
         console.log("jsonData:", jsonData);
-        
+
         if (!isValidity) return;
 
-        /* $.ajax({
-            url: "",
-            body: JSON.stringify(jsonData),
+        $.ajax({
+            url: '@Url.Action("CreateMaintainItem", "MaintainItem_Management")',
+            //body: JSON.stringify(jsonData),
+            data: JSON.stringify(jsonData),
             type: "POST",
             dataType: "json",
             contentType: "application/json;charset=utf-8",
             success: onSuccess,
             error: onError
-        }) */
+        })
 
 
         function calcEquipmentMaintainItem() {
@@ -214,9 +398,12 @@
 
         function onSuccess(res) {
             console.log(res);
+            alert(res.ResponseMessage);
+            history.back();
         }
         function onError(res) {
             console.log(res);
+            alert(res.ResponseMessage);
         }
     }
 

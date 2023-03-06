@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -12,7 +16,7 @@ namespace MinSheng_MIS.Controllers
     public class MaintainItem_ManagementController : Controller
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-        int TotalNo_AsBuilt = 0;
+        int TotalNum = 0;
 
         #region 保養項目管理
         public ActionResult Management()
@@ -128,7 +132,7 @@ namespace MinSheng_MIS.Controllers
             JObject result = new JObject();
 
             result.Add("rows", MaintainItemMgr_GetJsonForGrid(Query, page, rows, sort, order));
-            result.Add("total", TotalCount_AsBuilt());
+            result.Add("total", TotalCount());
 
             return Content(JsonConvert.SerializeObject(result), "application/json");
 
@@ -169,12 +173,12 @@ namespace MinSheng_MIS.Controllers
 
             //注意:"{0} {1}"中間必須為一個空格，以讓系統識別此二參數，注意:必須使用OrderBy，不可使用 OrderByDescent
             table = table.OrderBy(x => x.MISN).AsQueryable();
-            TotalNo_AsBuilt = table.Count();
+            TotalNum = table.Count();
 
             //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
             table = table.Skip((page - 1) * pageSize).Take(pageSize);
 
-            if (table != null && TotalNo_AsBuilt > 0)
+            if (table != null && TotalNum > 0)
             {                
                 foreach (var item in table)
                 {
@@ -209,35 +213,193 @@ namespace MinSheng_MIS.Controllers
             return ja;
         }
 
-        public int TotalCount_AsBuilt()
+        public int TotalCount()
         {
-            return TotalNo_AsBuilt;
+            return TotalNum;
         }
         #endregion
 
         #region 新增保養項目
         public ActionResult Create()
         {
-            return View();
+            MaintainItemViewModel maintainItemViewModel = new MaintainItemViewModel();
+
+            #region 下拉選單列出所有系統別
+            var SystemList = db.EquipmentInfo
+                .GroupBy(s => s.System, (key, items) => new SystemItems
+                { SystemName = key })
+                .ToList();
+
+            if (SystemList == null)
+            {
+                return HttpNotFound();
+            }
+
+            maintainItemViewModel.SystemItemList = SystemList;
+            #endregion
+
+            #region 下拉選單列出所有設備資訊
+            var MVM = new MaintainItemViewModel();
+            var equipmentList = db.EquipmentInfo
+                .OrderBy(e => e.ESN)
+                .ToList();
+            if (equipmentList == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (equipmentList.Count() > 0)
+            {
+                MVM.EquipmentInfo = new List<EquipmentInfo>();
+                foreach (var item in equipmentList)
+                {
+                    MVM.EquipmentInfo.Add(new EquipmentInfo { ESN = item.ESN, System = item.System, SubSystem = item.SubSystem, EName = item.EName, Area = item.Area, Floor = item.Floor, Room = item.Room, RoomName = item.RoomName });
+                }
+            }
+
+            var equipmentItemJson = JsonConvert.SerializeObject(MVM, Formatting.Indented);
+
+            maintainItemViewModel.EquipmentInfoList = equipmentItemJson;
+            #endregion
+
+
+            return View(maintainItemViewModel);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateMaintainItem(NewMaintainItems inputItems)
+        {
+            JsonResponseViewModel model = new JsonResponseViewModel();
+
+            try
+            {
+                int itemCount = inputItems.MaintainItem.Count();
+                var lastItem = db.MaintainItem
+                .OrderByDescending(m => m.MISN)
+                .Take(1)
+                .FirstOrDefault();
+
+                int lastItemIndex = Convert.ToInt32(lastItem.MISN);
+
+                for (int i = 0; i < itemCount; i++)
+                {
+                    #region 將保養項目新增至 table Maintain Item
+                    Models.MaintainItem newItems = new Models.MaintainItem();
+                    newItems.System = inputItems.System;
+                    newItems.SubSystem = inputItems.SubSystem;
+                    newItems.EName = inputItems.EName;
+
+                    string newMISN = (lastItemIndex++).ToString();
+                    newMISN = newMISN.PadLeft(6, '0');
+
+                    newItems.MISN = newMISN;
+                    newItems.MIName = inputItems.MaintainItem[i].MIName;
+                    newItems.Unit = inputItems.MaintainItem[i].Unit;
+                    newItems.Period = inputItems.MaintainItem[i].Period;
+                    newItems.MaintainItemIsEnable = inputItems.MaintainItem[i].MaintainItemIsEnable;
+
+                    db.MaintainItem.AddOrUpdate(newItems);
+                    #endregion
+
+                    #region 將目前相關設備(同系統別、子系統別與設備名稱)都加上該新增的保養項目 table Equipment Maintain Item
+
+                    var eqList = db.EquipmentInfo
+                        .Where(e => e.System == inputItems.System)
+                        .Where(e => e.SubSystem == inputItems.SubSystem)
+                        .Where(e => e.EName == inputItems.EName)
+                        .ToList();
+
+                    int eqNum = eqList.Count();
+                    for (int j = 0; j < eqNum; j++)
+                    {
+                        Models.EquipmentMaintainItem equipmentMaintainItem = new Models.EquipmentMaintainItem();
+                        equipmentMaintainItem.MISN = newMISN;
+                        equipmentMaintainItem.ESN = eqList[j].ESN;
+                        equipmentMaintainItem.EMISN = eqList[j].ESN + "_" + newMISN;
+                        equipmentMaintainItem.Unit = inputItems.MaintainItem[i].Unit;
+                        equipmentMaintainItem.Period = inputItems.MaintainItem[i].Period;
+                        equipmentMaintainItem.IsEnable = "1";
+                        equipmentMaintainItem.IsCreate = false;
+
+                        db.EquipmentMaintainItem.AddOrUpdate(equipmentMaintainItem);
+                    }
+
+                    #endregion
+
+                    await db.SaveChangesAsync();
+
+                }
+                model.ResponseCode = 0;
+                model.ResponseMessage = "已新增完成";
+            }
+            catch (Exception ex)
+            {
+                model.ResponseCode = 1;
+                model.ResponseMessage = $"新增失敗\r\n{ex.Message}";
+
+            }
+            return Json(model);
         }
         #endregion
 
         #region 查詢保養項目 (詳情)
-        public ActionResult Read()
+        [HttpGet]
+        public ActionResult Read(string MISN)
         {
-            return View();
+            MISN = MISN.PadLeft(6, '0');
+            ReadEqMaintainItemViewModel viewModel = new ReadEqMaintainItemViewModel();
+
+            //設備名稱
+            var mItem = db.MaintainItem.Where(m => m.MISN == MISN).FirstOrDefault();
+
+            if (mItem == null)
+            {
+                return HttpNotFound();
+            }
+            viewModel.System = mItem.System;
+            viewModel.SubSystem = mItem.SubSystem;
+            viewModel.EName = mItem.EName;
+            viewModel.MIName = mItem.MIName;
+            viewModel.Unit = mItem.Unit;
+            viewModel.Period = mItem.Period;
+
+            var eqList = db.EquipmentMaintainItem
+                .Where(x => x.MISN == MISN)
+                .ToList();
+
+            if (eqList == null)
+            {
+                return HttpNotFound();
+            }
+
+            int Count = eqList.Count;
+            if (Count > 0)
+            {
+                viewModel.EquipmentMaintainItem = new List<EquipmentMaintainItemInfo>();
+                foreach (var item in eqList)
+                {
+                    viewModel.EquipmentMaintainItem.Add(new EquipmentMaintainItemInfo { ESN = item.ESN, Unit = item.Unit, Period = item.Period });
+                }
+            }
+
+            var JsonStr = JsonConvert.SerializeObject(viewModel, Formatting.Indented);
+            viewModel.JsonStr = JsonStr;
+
+            return View(viewModel);
         }
         #endregion
 
         #region 編輯保養項目
-        public ActionResult Edit()
+        [HttpGet]
+        public ActionResult Edit(string MISN)
         {
             return View();
         }
         #endregion
 
         #region 刪除保養項目
-        public ActionResult Delete()
+        [HttpGet]
+        public ActionResult Delete(string MISN)
         {
             return View();
         }
