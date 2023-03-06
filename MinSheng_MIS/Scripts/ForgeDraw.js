@@ -11,7 +11,20 @@ var ForgeDraw = (function (e) {
 
     var forgeViewer;
     var selectPos = {};
+    var layer = {
+        stage: new PIXI.Container(),
+        line: new PIXI.Container(),
+        point: new PIXI.Container(),
+        device: new PIXI.Container(),
+    }
 
+    /* control */
+    var control = {
+        isUseDraw: true,
+        isUseEraser: false,
+    }
+
+    /* event */
     class LineDataChangeEvent {
         constructor(detail) {
             return new CustomEvent('fd.linedata.change', { 'detail': detail })
@@ -33,18 +46,19 @@ var ForgeDraw = (function (e) {
         }
     }
 
+    /* setting */
     const Colors = {
-        Start: 0xf15bb5,
-        Middle: 0x00bbf9,
+        Start: 0xEC6767,
+        Middle: 0xFE9292,
         Bool: 0x00f5d4,
-        End: 0x9b5de5,
-        Line: 0xfee440,
-        BlueTooth: 0x0000ff
+        End: 0xFF9559,
+        Line: 0xFCC7C7,
+        BlueTooth: 0x2750B9
     };
 
     const drawSetting = {
         point: {
-            width: 6,
+            width: 8,
             hoverWidth: 8,
             strokeWeight: 2,
             color: Colors.Middle,
@@ -70,7 +84,7 @@ var ForgeDraw = (function (e) {
             }
         },
         devicePoint: {
-            width: 6,
+            width: 8,
             hoverWidth: 8,
             strokeWeight: 3,
             strokeColor: Colors.Line,
@@ -101,19 +115,13 @@ var ForgeDraw = (function (e) {
             }
         },
         line: {
-            strokeWeight: 3,
+            strokeWeight: 6,
             color: Colors.Line,
             interactive: true
         }
     };
 
-    var layer = {
-        stage: new PIXI.Container(),
-        line: new PIXI.Container(),
-        point: new PIXI.Container(),
-        device: new PIXI.Container(),
-    }
-
+    /* function */
     function init(canvas, forgeGuiViewer3D, callback = function () { }) {
         view = canvas;
         let rect = view.getBoundingClientRect();
@@ -166,6 +174,7 @@ var ForgeDraw = (function (e) {
             }
             else {
                 points[i].color = Colors.Middle;
+                points[i].graphics.alpha = 0;
                 lines[i].redraw(e.position, arr[i + 1].position);
             }
             points[i].position = e.position;
@@ -195,6 +204,26 @@ var ForgeDraw = (function (e) {
         view.dispatchEvent(new LineDataRemoveAllEvent());
     }
 
+    function getRoute() {
+        return devices
+            .filter(e => e.result != undefined)
+            .sort((a, b) => {
+                if (a.result.i == b.result.i) {
+                    return a.result.distanceToA - b.result.distanceToA;
+                }
+                return a.result.i - b.result.i;
+            });
+    }
+
+    function getControl(name) {
+        return control[name];
+    }
+
+    function setControl(name, value) {
+        control[name] = value;
+    }
+
+    /* class */
     class drawObject {
         constructor() {
             this.name = "drawObject";
@@ -221,6 +250,13 @@ var ForgeDraw = (function (e) {
             super();
             this.name = "Line";
             this.options = Object.assign({}, drawSetting.line, options);
+            this.lineStyle = {
+                width: this.options.strokeWeight,
+                color: this.options.color,
+                alpha: 1,
+                cap: PIXI.LINE_CAP.ROUND,
+                join: PIXI.LINE_JOIN.ROUND,
+            };
             this.graphics;
             this.start = start;
             this.end = end;
@@ -239,7 +275,7 @@ var ForgeDraw = (function (e) {
 
         create() {
             this.graphics = new PIXI.Graphics()
-                .lineStyle(this.options.strokeWeight, this.options.color, 1)
+                .lineStyle(this.lineStyle)
                 .moveTo(this.start.x, this.start.y)
                 .lineTo(this.end.x, this.end.y);
 
@@ -254,7 +290,7 @@ var ForgeDraw = (function (e) {
             //console.log(this.start, this.end);
             this.graphics
                 .clear()
-                .lineStyle(this.options.strokeWeight, this.options.color, 1)
+                .lineStyle(this.lineStyle)
                 .moveTo(this.start.x, this.start.y)
                 .lineTo(this.end.x, this.end.y);
         }
@@ -348,10 +384,16 @@ var ForgeDraw = (function (e) {
 
             this.onOverEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onOverEvent`);
+                !(self.index == 0 || self.index == points.length - 1) && (
+                    self.graphics.alpha = 1
+                )
                 self.over.visible = true;
             }
             this.onOutEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onOutEvent`);
+                !(self.index == 0 || self.index == points.length - 1) && (
+                    self.graphics.alpha = 0
+                )
                 self.over.visible = false;
             }
             this.onRightDownEvent = function (event) {
@@ -454,11 +496,13 @@ var ForgeDraw = (function (e) {
     }
 
     class DevicePoint extends drawObject {
-        constructor(dbId, name, options = {}) {
+        constructor(data, sprite = undefined, options = {}) {
             super();
             this.options = Object.assign({}, drawSetting.devicePoint, options);
-            this.name = name;
-            this.dbId = dbId;
+            this.name = data.deviceName;
+            this.dbId = data.dbId;
+            this.type = data.deviceType;
+            this.sprite = sprite;
             this.position;
             this.isUpdate = true;
             this.result = undefined;
@@ -480,7 +524,7 @@ var ForgeDraw = (function (e) {
             }));
             let b = new PIXI.Graphics()
                 .lineStyle(0)
-                .beginFill(this.options.color, 0.6)
+                .beginFill(this.options.color, 0.8)
                 .drawRect(-padding, -padding, t.width + (padding * 2), t.height + (padding * 2))
                 .endFill();
             c.addChild(b, t);
@@ -493,11 +537,16 @@ var ForgeDraw = (function (e) {
             this.position = forgeViewer.worldToClient(selectPos[this.dbId]);
             console.log(`${this.name} => create`, this.position);
 
-            this.graphics = new PIXI.Graphics()
-                .lineStyle(this.options.strokeWeight, 0xffffff)
-                .beginFill(this.options.color, 1)
-                .drawCircle(0, 0, this.options.width)
-                .endFill();
+            if (this.sprite !== undefined) {
+                this.graphics = this.sprite;
+            }
+            else {
+                this.graphics = new PIXI.Graphics()
+                    .lineStyle(this.options.strokeWeight, 0xffffff)
+                    .beginFill(this.options.color, 1)
+                    .drawCircle(0, 0, this.options.width)
+                    .endFill();
+            }
             this.line = new PIXI.Graphics();
 
             this.text = this.drawText(this.name);
@@ -505,7 +554,7 @@ var ForgeDraw = (function (e) {
             this.graphics.position = this.position;
             this.text.position = this.position;
             this.text.position.x += (this.options.strokeWeight + this.options.width) / 2;
-            this.text.position.y += 30;
+            this.text.position.y += 32;
 
             this.graphics.interactive = this.options.interactive;
 
@@ -659,6 +708,7 @@ var ForgeDraw = (function (e) {
                 }
 
                 if (lineData.length >= 2) {
+                    points.at(-1).graphics.alpha = 0;
                     points.at(-1).color = Colors.Middle;
                 }
 
@@ -742,7 +792,7 @@ var ForgeDraw = (function (e) {
         }
     }
 
-
+    /* exports */
     var exports = {
         "Line": Line,
         "Point": Point,
@@ -750,6 +800,9 @@ var ForgeDraw = (function (e) {
         "Stage": Stage,
         "init": init,
         "removeAllData": removeAllData,
+        "getRoute": getRoute,
+        "getControl":getControl,
+        "setControl":setControl,
         "drawSetting": drawSetting,
         "layer": layer,
         "lineData": lineData,
