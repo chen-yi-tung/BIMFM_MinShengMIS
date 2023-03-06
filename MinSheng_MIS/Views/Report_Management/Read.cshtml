@@ -163,7 +163,7 @@
             "/Content/img/bg.png",
             "/Content/img/bg.png",
         ],
-        InspectionPlan: [
+        InspectionPlanList: [
             {
                 InspectionPlan: {
                     IPSN: "P23010401",
@@ -307,9 +307,9 @@
         function onSuccess(res) {
             console.log(res);
             $("#ReportDetail").append(createTableInner(res, SerializedName));
-            if (fakeData.InspectionPlan) {
+            if (fakeData.InspectionPlanList) {
                 let accordion = $("#accordion-InspectionPlan");
-                fakeData.InspectionPlan.forEach((d, i) => {
+                fakeData.InspectionPlanList.forEach((d, i) => {
                     accordion.append(putData_InspectionPlan(d, null, i));
                 })
                 $("#InspectionPlan_List").removeClass("d-none");
