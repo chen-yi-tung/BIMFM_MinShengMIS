@@ -84,11 +84,11 @@ namespace MinSheng_MIS.Controllers
             try
             {
                 //驗證欄位，視需求調整
-                if (queryViewModel.System == "none")
+                if (string.IsNullOrEmpty(queryViewModel.System))
                     queryViewModel.System = null;
-                if (queryViewModel.SubSystem == "none")
+                if (string.IsNullOrEmpty(queryViewModel.SubSystem))
                     queryViewModel.SubSystem = null;
-                if (queryViewModel.EName == "none")
+                if (string.IsNullOrEmpty(queryViewModel.EName))
                     queryViewModel.EName = null;
                 if (!string.IsNullOrEmpty(queryViewModel.Period))
                 {
@@ -127,14 +127,14 @@ namespace MinSheng_MIS.Controllers
 
             JObject result = new JObject();
 
-            result.Add("rows", GetJsonForGrid_AsBuilt(Query, page, rows, sort, order));
+            result.Add("rows", MaintainItemMgr_GetJsonForGrid(Query, page, rows, sort, order));
             result.Add("total", TotalCount_AsBuilt());
 
             return Content(JsonConvert.SerializeObject(result), "application/json");
 
         }
 
-        public JArray GetJsonForGrid_AsBuilt(string Query, int page, int pageSize, string propertyName = "Date", string order = "desc")
+        public JArray MaintainItemMgr_GetJsonForGrid(string Query, int page, int pageSize, string propertyName = "Date", string order = "desc")
         {
             //說明: 因為JSON字串格式中包含""，Easy UI Post上傳時，會將""轉換為&quot; 無法直接解析回正確的JSON Object，因此需將其轉換為""以利後續處理 
             string QT = Query.Trim();
@@ -168,11 +168,11 @@ namespace MinSheng_MIS.Controllers
             JArray ja = new JArray();
 
             //注意:"{0} {1}"中間必須為一個空格，以讓系統識別此二參數，注意:必須使用OrderBy，不可使用 OrderByDescent
-            //table = table.OrderBy(string.Format("{0} {1}", propertyName, order));
+            table = table.OrderBy(x => x.MISN).AsQueryable();
             TotalNo_AsBuilt = table.Count();
 
             //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-            //table = table.Skip((page - 1) * pageSize).Take(pageSize);
+            table = table.Skip((page - 1) * pageSize).Take(pageSize);
 
             if (table != null && TotalNo_AsBuilt > 0)
             {                
