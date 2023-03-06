@@ -126,10 +126,11 @@ namespace MinSheng_MIS.Services
             var resulttable = SourceTable.OrderBy(x => x.Date).AsQueryable();
             //回傳JSON陣列
             JArray ja = new JArray();
+            //記住總筆數
+            int total = resulttable.Count();
             //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
             resulttable = resulttable.Skip((page - 1) * rows).Take(rows);
 
-            int total = resulttable.Count();
 
             foreach (var a in resulttable) {
                 var itemObjects = new JObject();

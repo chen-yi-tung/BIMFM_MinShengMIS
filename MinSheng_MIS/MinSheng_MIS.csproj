@@ -185,6 +185,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
+    <Compile Include="Controllers\DatagridController.cs" />
     <Compile Include="Controllers\DropDownListController.cs" />
     <Compile Include="Controllers\EquipmentMaintainPeriod_ManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -1537,6 +1538,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\BigScreen\" />
+    <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
   </ItemGroup>
   <ItemGroup>

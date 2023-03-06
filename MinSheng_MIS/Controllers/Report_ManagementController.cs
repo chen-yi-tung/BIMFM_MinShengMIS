@@ -15,16 +15,16 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-        [HttpPost]
-        public ActionResult Management_datagrid(FormCollection form) {
-            string page = form["page"]?.ToString();
-            string rows = form["rows"]?.ToString();
-            JObject jo = new JObject();
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult Management_datagrid(FormCollection form) {
+        //    string page = form["page"]?.ToString();
+        //    string rows = form["rows"]?.ToString();
+        //    JObject jo = new JObject();
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
 
         #endregion
         #region 報修管理詳情
