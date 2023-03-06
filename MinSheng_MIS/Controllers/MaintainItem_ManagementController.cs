@@ -289,7 +289,7 @@ namespace MinSheng_MIS.Controllers
                     newItems.SubSystem = inputItems.SubSystem;
                     newItems.EName = inputItems.EName;
 
-                    string newMISN = (lastItemIndex++).ToString();
+                    string newMISN = (lastItemIndex + 1).ToString();
                     newMISN = newMISN.PadLeft(6, '0');
 
                     newItems.MISN = newMISN;
@@ -297,7 +297,7 @@ namespace MinSheng_MIS.Controllers
                     newItems.Unit = inputItems.MaintainItem[i].Unit;
                     newItems.Period = inputItems.MaintainItem[i].Period;
                     newItems.MaintainItemIsEnable = inputItems.MaintainItem[i].MaintainItemIsEnable;
-
+                    lastItemIndex++;
                     db.MaintainItem.AddOrUpdate(newItems);
                     #endregion
 
@@ -393,7 +393,63 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult Edit(string MISN)
         {
-            return View();
+            MISN = MISN.PadLeft(6, '0');
+            ReadEqMaintainItemViewModel viewModel = new ReadEqMaintainItemViewModel();
+
+            //設備名稱
+            var mItem = db.MaintainItem.Where(m => m.MISN == MISN).FirstOrDefault();
+
+            if (mItem == null)
+            {
+                return HttpNotFound();
+            }
+            viewModel.System = mItem.System;
+            viewModel.SubSystem = mItem.SubSystem;
+            viewModel.EName = mItem.EName;
+            viewModel.MIName = mItem.MIName;
+            viewModel.Unit = mItem.Unit;
+            viewModel.Period = mItem.Period;
+
+            var eqList = db.EquipmentMaintainItem
+                .Where(x => x.MISN == MISN)
+                .ToList();
+
+            if (eqList == null)
+            {
+                return HttpNotFound();
+            }
+
+            int Count = eqList.Count;
+            if (Count > 0)
+            {
+                viewModel.EquipmentMaintainItem = new List<EquipmentMaintainItemInfo>();
+                foreach (var item in eqList)
+                {
+                    viewModel.EquipmentMaintainItem.Add(new EquipmentMaintainItemInfo { ESN = item.ESN, Unit = item.Unit, Period = item.Period });
+                }
+            }
+
+            var JsonStr = JsonConvert.SerializeObject(viewModel, Formatting.Indented);
+            viewModel.JsonStr = JsonStr;
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UpdateMaintainItem(ReadEqMaintainItemViewModel inputItems)
+        {
+            JsonResponseViewModel model = new JsonResponseViewModel();
+            try
+            {
+
+
+            }
+            catch (Exception ex)
+            {
+                model.ResponseCode = 1;
+                model.ResponseMessage = $"新增失敗\r\n{ex.Message}";
+            }
+            return Json(model);
         }
         #endregion
 
