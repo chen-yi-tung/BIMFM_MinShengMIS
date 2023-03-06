@@ -74,12 +74,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string GetJsonForRead(string RSN)
         {
             Root root = new Root();
-            var SourceTable = from x1 in db.EquipmentReportForm //主表
-                              join x2 in db.AspNetUsers on x1.InformatUserID equals x2.UserName//找尋使用者名稱
-                              join x3 in db.EquipmentInfo on x1.ESN equals x3.ESN //找尋設備資訊
-                              join x4 in db.ReportImage on x1.RSN equals x4.RSN //找照片路徑
-                              select new { x1.RSN, x1.Date, x1.ReportLevel, x2.MyName, x1.ReportState, x3.Area, x3.Floor, x3.PropertyCode, x1.ESN, x3.EName, x1.ReportContent, x4.ImgPath};
-            var table = SourceTable.Where(x => x.RSN == RSN).ToList();
+            var table = db.EquipmentReportForm.Where(x => x.RSN == RSN).ToList();
             if (table.Count > 0) 
             {
                 root.RSN = RSN;
@@ -89,29 +84,29 @@ namespace MinSheng_MIS.Models.ViewModels
                 var levelDic = Surface.EquipmentReportFormState();
                 root.ReportLevel = levelDic[table[0].ReportLevel];
 
-                root.MyName = table[0].MyName;
+                var userid = table[0].InformatUserID;
+                var Reportuser = db.AspNetUsers.Where(x => x.UserName== userid).FirstOrDefault();
+                root.MyName = Reportuser.MyName;
 
                 var stateDic = Surface.EquipmentReportFormState();
                 root.ReportState = stateDic[table[0].ReportState];
 
-                root.Area = table[0].Area;
+                var ESN = table[0].ESN;
+                var equipmentinfo = db.EquipmentInfo.Where(x=>x.ESN == ESN).FirstOrDefault();
+                root.Area = equipmentinfo.Area;
 
-                root.Floor = table[0].Floor;
+                root.Floor = equipmentinfo.Floor;
 
-                root.PropertyCode = table[0].PropertyCode;
+                root.PropertyCode = equipmentinfo.PropertyCode;
 
                 root.ESN = table[0].ESN;
 
-                root.EName = table[0].EName;
+                root.EName = equipmentinfo.EName;
 
                 root.ReportContent = table[0].ReportContent;
 
-                List<string> imgpathlist = new List<string>();
-                foreach (var item in table)
-                {
-                    imgpathlist.Add(item.ImgPath);
-                }
-                root.ImgPath = imgpathlist;
+                var ReportImgList = db.ReportImage.Where(x=>x.RSN == RSN).Select(x=>x.ImgPath).ToList();
+                root.ImgPath = ReportImgList;
 
                 var inspectionplanlists = new List<InspectionPlanList>();
                 //找出所有IPSN
