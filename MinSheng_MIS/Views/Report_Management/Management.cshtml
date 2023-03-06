@@ -121,7 +121,6 @@
 <script>
     var baseUrl = "/Report_Management/";
     var areas = document.getElementById("ASN");
-    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
     areas.addEventListener("change", function () {
         let url = '@Url.Action("Floor", "DropDownList")';
         if (areas.value != "") {
@@ -143,6 +142,7 @@
             $('#Floor').val('');
         }
     });
+    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
     //const fakeData = [
     //    {
     //        ReportState: "已派工",
