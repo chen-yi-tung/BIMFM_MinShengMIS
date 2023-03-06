@@ -57,6 +57,7 @@
 }
 
 .sample-path-draw-area {
+    position: relative;
     background-color: #D3E5FB;
     border-radius: 5px;
     width: 100%;
@@ -157,13 +158,54 @@
     background: rgb(221, 221, 221);
 }
 
-/*  */
+.sample-path-tooltip {
+    --bs-tooltip-color: #fff;
+    --bs-tooltip-bg: hsla(223, 65%, 44%, 0.8);
+}
 
-/* (A) LIST STYLES */
+.sample-path-toolbar{
+    position: absolute;
+    left: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sample-path-toolbar .path-icon{
+    width: 2em;
+    height: 2em;
+    border-radius: 1em;
+    /* background: #fff; */
+    background: transparent;
+    color: #ACB2B1;
+    border: 0;
+}
+
+.sample-path-toolbar .path-icon:hover{
+    border-radius: 50px;
+    background: #f7f7f7;
+    color: #999e9d;
+    border: 0;
+}
+.sample-path-toolbar .path-icon.active,
+.sample-path-toolbar .path-icon:focus{
+    border-radius: 50px;
+    background: #FFF0F0;
+    color: #EC6767;
+    border: 0;
+}
+
+/* sortlist */
+.sort-list-modal {
+    --bs-modal-bg: #D3E5FB;
+    --bs-modal-border-color: none;
+}
+
 .sortlist {
     list-style: none;
     padding: 0;
-    margin: 0;
+    width: fit-content;
+    margin: auto;
 }
 
 .sortlist li {
@@ -174,6 +216,12 @@
     border-radius: 50px;
     min-width: 50px;
     text-align: center;
+    background: #f1852a;
+    border: 3px solid #FFFFFF;
+    color: #fff;
+}
+
+.sortlist li.bluetooth {
     background: #2750B9;
     border: 3px solid #FFFFFF;
     color: #fff;
@@ -189,7 +237,7 @@
 .sortlist li.ghost,
 .sortlist li.drag {
     opacity: 0.5;
-    background: #c3dfff;
+    /* background: #c3dfff; */
 }
 
 .sortlist li.drag::after {
@@ -197,12 +245,12 @@
 }
 
 .sortlist li.disable {
-    border-width: 0;
+    /* border-width: 0; */
     color: white;
 }
 
 .sortlist li.disable:first-child {
-    background: #f15bb5;
+    background: #EC6767;
 }
 
 .sortlist li.disable:first-child::after {
@@ -210,7 +258,7 @@
 }
 
 .sortlist li.disable:last-child {
-    background: #9b5de5;
+    background: #FF9559;
 }
 
 .sortlist li.disable:last-child::after {

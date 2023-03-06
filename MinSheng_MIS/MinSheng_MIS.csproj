@@ -1350,6 +1350,7 @@
     <Content Include="Content\icomoon-v1.0\Read Me.txt" />
     <Content Include="Content\icomoon-v1.0\style.css" />
     <Content Include="Content\img\bg.png" />
+    <Content Include="Content\img\bluetooth.svg" />
     <Content Include="Content\img\loginBG.png" />
     <Content Include="Content\img\logo.png" />
     <Content Include="Content\login.css" />
