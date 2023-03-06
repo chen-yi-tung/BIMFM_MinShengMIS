@@ -215,12 +215,14 @@
         if (!isValidity) return;
 
         let jsonData = {
-            System: $("#System").val(),
-            SubSystem: $("#SubSystem").val(),
-            EName: $("#EName").val(),
+            System: $("#MaintainItemInfo").find("#d-System").val(),
+            SubSystem: $("#MaintainItemInfo").find("#d-SubSystem").val(),
+            EName: $("#MaintainItemInfo").find("#d-EName").val(),
+            MIName: $("#MaintainItemInfo").find("#d-MIName").val(),
+
             MISN: $("#MISN").val(),
-            Unit: $("#MaintainItemInfo").find("#Unit").val(),
-            Period: $("#MaintainItemInfo").find("#Period").val(),
+            Unit: $("#MaintainItemInfo").find("#d-Unit").val(),
+            Period: $("#MaintainItemInfo").find("#d-Period").val(),
             EquipmentMaintainItem: calcEquipmentMaintainItem()
         }
 
