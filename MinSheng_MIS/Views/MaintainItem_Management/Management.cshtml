@@ -91,7 +91,7 @@
         //When user didn't choose system option
         if (chooseSystem == "none") {
             ClearOptions("SubSystemOption");
-            $("#SubSystemOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            $("#SubSystemOption").append(`<option value=""> -- 請選擇 -- </option>`);
 
             CreateAllENameOptions(equipmentList.EquipmentInfo);
             //ClearOptions("ENameOption");
@@ -100,11 +100,11 @@
         //When user choose system option
         else {
             ClearOptions("SubSystemOption");
-            $("#SubSystemOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            $("#SubSystemOption").append(`<option value=""> -- 請選擇 -- </option>`);
             CreateSubSystemOptions(chooseSystem, equipmentList.EquipmentInfo);
 
             ClearOptions("ENameOption");
-            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            $("#ENameOption").append(`<option value=""> -- 請選擇 -- </option>`);
             CreateENameOptionsWithSystem(chooseSystem, equipmentList.EquipmentInfo);
         }
     });
@@ -125,7 +125,7 @@
         //When user choose subsystem option
         else {
             ClearOptions("ENameOption");
-            $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+            $("#ENameOption").append(`<option value=""> -- 請選擇 -- </option>`);
             CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
         }
     });
@@ -249,23 +249,23 @@
 
     var baseUrl = "/MaintainItem_Management/";
 
-    const fakeData = [
-        {
-            MISN: "000001",
-            System: "處理",
-            SubSystem: "前處理",
-            EName: "除物皮帶輸送機",
-            MIName: "軸承潤滑",
-            Unit: "月",
-            Period: "1",
-        }
-    ]
+    //const fakeData = [
+    //    {
+    //        MISN: "000001",
+    //        System: "處理",
+    //        SubSystem: "前處理",
+    //        EName: "除物皮帶輸送機",
+    //        MIName: "軸承潤滑",
+    //        Unit: "月",
+    //        Period: "1",
+    //    }
+    //]
 
     $(function () {
         let getGridJSON = '@Url.Action("GetGridJson", "MaintainItem_Management")';
         var QueryStr = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.QueryStr));
 
-        console.log(QueryStr);
+        //console.log(QueryStr);
         Initialize_DataGrid(getGridJSON, QueryStr);
         addSearchAreaClickEvent();
     });
