@@ -30,6 +30,7 @@ namespace MinSheng_MIS.Controllers
             return Content(text, "application/json");
         }
         #endregion
+
         #region 根據樓層查詢棟別
         [System.Web.Http.HttpGet]
         public ActionResult Floor(int? ASN)
@@ -49,6 +50,7 @@ namespace MinSheng_MIS.Controllers
             return Content(text, "application/json");
         }
         #endregion
+
         #region ReportFormState相關 報修單狀態
         [System.Web.Http.HttpGet]
         public ActionResult Report_Management_Management_ReportFormState(string url = "")
@@ -107,6 +109,7 @@ namespace MinSheng_MIS.Controllers
             return Content(text, "application/json");
         }
         #endregion
+
         #region InformantUserID 使用者名稱
         [System.Web.Http.HttpGet]
         public ActionResult InformantUserID()
@@ -118,6 +121,42 @@ namespace MinSheng_MIS.Controllers
                 JObject jo = new JObject();
                 jo.Add("Text", item.MyName);//Area Name
                 jo.Add("Value", item.UserName); // ASN 
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 主系統
+        [System.Web.Http.HttpGet]
+        public ActionResult System()
+        {
+            List<JObject> list = new List<JObject>();
+            var abc = db.EquipmentInfo.Select(x=>x.System).Distinct().ToList();
+            foreach (var item in abc)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item);//System
+                jo.Add("Value", item); // System
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 子系統
+        [System.Web.Http.HttpGet]
+        public ActionResult SubSystem()
+        {
+            List<JObject> list = new List<JObject>();
+            var abc = db.EquipmentInfo.Select(x => x.SubSystem).Distinct().ToList();
+            foreach (var item in abc)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item);//SubSystem
+                jo.Add("Value", item); // SubSystem
                 list.Add(jo);
             }
             string text = JsonConvert.SerializeObject(list);

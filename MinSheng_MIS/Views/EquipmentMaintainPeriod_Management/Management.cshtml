@@ -248,6 +248,8 @@
     $(async function () {
         let getGridJSON = '';
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
         addSaveClickEvent();
