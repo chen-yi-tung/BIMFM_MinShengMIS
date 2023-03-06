@@ -121,7 +121,7 @@
 <script>
     var baseUrl = "/Report_Management/";
     var areas = document.getElementById("ASN");
-    var getGridJSON = '@Url.Action("Management_datagrid", "Report_Management")';
+    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
     areas.addEventListener("change", function () {
         let url = '@Url.Action("Floor", "DropDownList")';
         if (areas.value != "") {

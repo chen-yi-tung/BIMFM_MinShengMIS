@@ -12,28 +12,28 @@
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.AspNetUserLogins" Width="1.5" PointX="8.25" PointY="5.625" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.AspNetUsers" Width="1.5" PointX="6" PointY="5.375" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.CompletionReportImage" Width="1.5" PointX="3" PointY="11.375" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath" Width="1.5" PointX="5.25" PointY="37.25" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.DrawPathSample" Width="1.5" PointX="13" PointY="1.375" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath" Width="1.5" PointX="5.25" PointY="31.125" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.DrawPathSample" Width="1.5" PointX="13" PointY="3.875" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.EquipmentInfo" Width="1.5" PointX="1.5" PointY="0.75" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainFormItem" Width="1.5" PointX="0.75" PointY="10" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainItem" Width="1.5" PointX="1.5" PointY="6.125" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.EquipmentReportForm" Width="1.5" PointX="3.75" PointY="0.875" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.Floor_Info" Width="1.5" PointX="13" PointY="7.25" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.ImspectionPlanFloorPath" Width="1.5" PointX="5.25" PointY="34.75" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.ImspectionPlanFloorPath" Width="1.5" PointX="5.25" PointY="33.875" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.InspectionPlan" Width="1.5" PointX="0.75" PointY="14" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" Width="1.5" PointX="3" PointY="14.75" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.InspectionPlanMember" Width="1.5" PointX="3" PointY="31.5" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.InspectionPlanPath" Width="1.5" PointX="3" PointY="35.625" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.InspectionPlanMember" Width="1.5" PointX="3" PointY="36.625" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.InspectionPlanPath" Width="1.5" PointX="3" PointY="32.25" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.InspectionPlanRepair" Width="1.5" PointX="6" PointY="14.75" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.InspectionTrack" Width="1.5" PointX="5.25" PointY="31.125" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.InspectionTrack" Width="1.5" PointX="5.25" PointY="36.25" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.MaintainAuditImage" Width="1.5" PointX="7.5" PointY="11.875" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.MaintainAuditInfo" Width="1.5" PointX="5.25" PointY="11.375" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.MaintainCompletionImage" Width="1.5" PointX="5.25" PointY="23" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.MaintainItem" Width="1.5" PointX="12.75" PointY="10.125" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.MaintainSupplementaryFile" Width="1.5" PointX="7.5" PointY="20.125" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo" Width="1.5" PointX="5.25" PointY="19.625" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PathSample" Width="1.5" PointX="10.75" PointY="2.5" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" Width="1.5" PointX="13" PointY="4.125" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PathSample" Width="1.5" PointX="10.75" PointY="2.625" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" Width="1.5" PointX="13" PointY="1.375" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.RepairAuditImage" Width="1.5" PointX="10.5" PointY="15" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.RepairAuditInfo" Width="1.5" PointX="8.25" PointY="14.625" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.RepairCompletionImage" Width="1.5" PointX="8.25" PointY="17.875" />

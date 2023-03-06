@@ -46,6 +46,8 @@
 <script src="../../Scripts/tool.js"></script>
 <script>
 
+    var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
+
     var baseUrl = "/SamplePath_Management/";
     var areas = document.getElementById("Area");
 
@@ -67,26 +69,30 @@
     $(async function () {
         await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
 
-        let getGridJSON = '';
+        //let getGridJSON = '';
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });
 
     function Initialize_DataGrid(getGridJSON) {
+        const searchParams = $("form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
+        console.log(searchParams)
+        let queryParams = searchParams.reduce((total, c) => {
+            total[c] = $(`#${c}`).val()
+            return total;
+        }, {})
+        console.log(queryParams)
 
         $('#DataGrid').datagrid({
 
-            // url: getGridJSON,
-            // method: 'POST',
-            data: fakeData,
-            queryParams: {
-                Query: ''
-            },
+            url: getGridJSON,
+            method: 'POST',
+            queryParams: queryParams,
             rownumbers: true,
             idField: 'PSSN',
             sortName: 'PSSN',
             remoteSort: false,
-            // sortOrder: 'desc',
+            sortOrder: 'asc',
             fit: true,
             frozenColumns: [[
                 {
@@ -110,9 +116,9 @@
             ]],
             columns: [[
                 { field: 'PSSN', title: 'PSSN', hidden: true },
-                { field: 'PathTitle', title: '巡檢路線模板名稱', align: 'center', width: 250, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
+                { field: 'PathTitle', title: '巡檢路線模板名稱', align: 'center', width: 500, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 350, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 200, sortable: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,
@@ -161,7 +167,8 @@
         });
 
         $("#search").click(function () {
-            console.log("onclick search");
+            //console.log("onclick search");
+            Initialize_DataGrid(getGridJSON)
         });
 
         $("#create").click(function () {

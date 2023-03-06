@@ -137,7 +137,7 @@
           <Property Name="NextTime" Type="datetime" />
           <Property Name="Unit" Type="nchar" MaxLength="1" Nullable="false" />
           <Property Name="Period" Type="int" Nullable="false" />
-          <Property Name="FormItemState" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="FormItemState" Type="varchar" MaxLength="2" Nullable="false" />
           <Property Name="StockState" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="EquipmentMaintainItem">
@@ -164,7 +164,7 @@
           <Property Name="ReportLevel" Type="char" MaxLength="1" />
           <Property Name="ReportContent" Type="nvarchar" MaxLength="200" />
           <Property Name="InformatUserID" Type="nvarchar" MaxLength="256" />
-          <Property Name="ReportState" Type="char" MaxLength="2" />
+          <Property Name="ReportState" Type="varchar" MaxLength="2" />
           <Property Name="StockState" Type="bit" />
           <Property Name="ReportSource" Type="char" MaxLength="1" />
         </EntityType>
@@ -233,8 +233,6 @@
           </Key>
           <Property Name="PSN" Type="nchar" MaxLength="12" Nullable="false" />
           <Property Name="IPSN" Type="nchar" MaxLength="9" Nullable="false" />
-          <Property Name="Area" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Floor" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="PathTitle" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
         </EntityType>
@@ -325,8 +323,6 @@
             <PropertyRef Name="PSSN" />
           </Key>
           <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
-          <Property Name="Area" Type="nchar" MaxLength="20" Nullable="false" />
-          <Property Name="Floor" Type="nchar" MaxLength="20" Nullable="false" />
           <Property Name="PathTitle" Type="nchar" MaxLength="20" Nullable="false" />
           <Property Name="FSN" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
@@ -1257,7 +1253,7 @@
           <Property Name="NextTime" Type="DateTime" Precision="3" />
           <Property Name="Unit" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="true" />
           <Property Name="Period" Type="Int32" Nullable="false" />
-          <Property Name="FormItemState" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
+          <Property Name="FormItemState" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
           <Property Name="StockState" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="EquipmentMaintainItem" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentMaintainFormItem_EquipmentMaintainItem" FromRole="EquipmentMaintainFormItem" ToRole="EquipmentMaintainItem" />
           <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_EquipmentMaintainFormItem" FromRole="EquipmentMaintainFormItem" ToRole="InspectionPlanMaintain" />
@@ -1287,7 +1283,7 @@
           <Property Name="ReportLevel" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="ReportContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="InformatUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="ReportState" Type="String" MaxLength="2" FixedLength="true" Unicode="false" />
+          <Property Name="ReportState" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
           <Property Name="StockState" Type="Boolean" />
           <Property Name="ReportSource" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentReportForm_EquipmentInfo" FromRole="EquipmentReportForm" ToRole="EquipmentInfo" />
@@ -1375,8 +1371,6 @@
           </Key>
           <Property Name="PSN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="true" />
           <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
-          <Property Name="Area" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Floor" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawInspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_DrawInspectionPlanPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="DrawInspectionPlanPath" />
@@ -1485,8 +1479,6 @@
             <PropertyRef Name="PSSN" />
           </Key>
           <Property Name="PSSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
-          <Property Name="Area" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
-          <Property Name="Floor" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
           <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawPathSample" Relationship="Bimfm_MinSheng_MISModel.FK_DrawPathSample_DrawPathSample" FromRole="PathSample" ToRole="DrawPathSample" />
@@ -1936,7 +1928,7 @@
           <End Type="Bimfm_MinSheng_MISModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
           <End Type="Bimfm_MinSheng_MISModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -2176,8 +2168,6 @@
               <MappingFragment StoreEntitySet="InspectionPlanPath">
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="PathTitle" ColumnName="PathTitle" />
-                <ScalarProperty Name="Floor" ColumnName="Floor" />
-                <ScalarProperty Name="Area" ColumnName="Area" />
                 <ScalarProperty Name="IPSN" ColumnName="IPSN" />
                 <ScalarProperty Name="PSN" ColumnName="PSN" />
               </MappingFragment>
@@ -2278,8 +2268,6 @@
               <MappingFragment StoreEntitySet="PathSample">
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="PathTitle" ColumnName="PathTitle" />
-                <ScalarProperty Name="Floor" ColumnName="Floor" />
-                <ScalarProperty Name="Area" ColumnName="Area" />
                 <ScalarProperty Name="PSSN" ColumnName="PSSN" />
               </MappingFragment>
             </EntityTypeMapping>
