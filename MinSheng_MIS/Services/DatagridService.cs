@@ -123,7 +123,7 @@ namespace MinSheng_MIS.Services
             //var atable_ESN_list = db.EquipmentInfo.Where(x => x.Area == Area).Select(x=>x.ESN).ToList();
             //var atable_SearchTable = db.EquipmentReportForm.Where(x=> atable_ESN_list.Contains(x.ESN));
             #endregion
-            var resulttable = SourceTable.OrderBy(x => x.Date).AsQueryable();
+            var resulttable = SourceTable.OrderByDescending(x => x.Date).AsQueryable();
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
