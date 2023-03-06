@@ -23,8 +23,6 @@ namespace MinSheng_MIS.Models
     
         public string PSN { get; set; }
         public string IPSN { get; set; }
-        public string Area { get; set; }
-        public string Floor { get; set; }
         public string PathTitle { get; set; }
         public string FSN { get; set; }
     

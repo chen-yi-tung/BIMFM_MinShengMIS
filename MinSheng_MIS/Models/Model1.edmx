@@ -233,8 +233,6 @@
           </Key>
           <Property Name="PSN" Type="nchar" MaxLength="12" Nullable="false" />
           <Property Name="IPSN" Type="nchar" MaxLength="9" Nullable="false" />
-          <Property Name="Area" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Floor" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="PathTitle" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
         </EntityType>
@@ -325,8 +323,6 @@
             <PropertyRef Name="PSSN" />
           </Key>
           <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
-          <Property Name="Area" Type="nchar" MaxLength="20" Nullable="false" />
-          <Property Name="Floor" Type="nchar" MaxLength="20" Nullable="false" />
           <Property Name="PathTitle" Type="nchar" MaxLength="20" Nullable="false" />
           <Property Name="FSN" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
@@ -1375,8 +1371,6 @@
           </Key>
           <Property Name="PSN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="true" />
           <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
-          <Property Name="Area" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Floor" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawInspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_DrawInspectionPlanPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="DrawInspectionPlanPath" />
@@ -1485,8 +1479,6 @@
             <PropertyRef Name="PSSN" />
           </Key>
           <Property Name="PSSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
-          <Property Name="Area" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
-          <Property Name="Floor" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
           <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawPathSample" Relationship="Bimfm_MinSheng_MISModel.FK_DrawPathSample_DrawPathSample" FromRole="PathSample" ToRole="DrawPathSample" />
@@ -2176,8 +2168,6 @@
               <MappingFragment StoreEntitySet="InspectionPlanPath">
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="PathTitle" ColumnName="PathTitle" />
-                <ScalarProperty Name="Floor" ColumnName="Floor" />
-                <ScalarProperty Name="Area" ColumnName="Area" />
                 <ScalarProperty Name="IPSN" ColumnName="IPSN" />
                 <ScalarProperty Name="PSN" ColumnName="PSN" />
               </MappingFragment>
@@ -2278,8 +2268,6 @@
               <MappingFragment StoreEntitySet="PathSample">
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="PathTitle" ColumnName="PathTitle" />
-                <ScalarProperty Name="Floor" ColumnName="Floor" />
-                <ScalarProperty Name="Area" ColumnName="Area" />
                 <ScalarProperty Name="PSSN" ColumnName="PSSN" />
               </MappingFragment>
             </EntityTypeMapping>
