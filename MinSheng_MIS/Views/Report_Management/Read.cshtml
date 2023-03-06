@@ -128,7 +128,8 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
 
-    const apiUrl = null;
+    const RSN = '@ViewBag.id';
+    const apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
 
     const SerializedName = [
         { text: "報修單號", value: "RSN" },
@@ -296,8 +297,7 @@
         url == null ? onSuccess(fakeData) :
             $.ajax({
                 url: url,
-                body: JSON.stringify(jsonData),
-                type: "POST",
+                type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
@@ -323,6 +323,7 @@
     }
 
     window.onload = function () {
+        
         readData(apiUrl);
     }
 
