@@ -287,24 +287,28 @@
             //sortOrder: 'desc',
             fit: true,
             frozenColumns: [[
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_edit', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
-                    }
-                },
-                {
-                    field: '_delete', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDelete(${index})">刪除</button>`;
-                    }
-                }
+                { field: '_detail', title: '詳情', align: 'center', width: 70, formatter: (value, row, index) => { return generateFunctionButton(row.MISN, 'detail', '詳情') } },
+                { field: '_edit', title: '編輯', align: 'center', width: 70, formatter: (value, row, index) => { return generateFunctionButton(row.MISN, 'edit', '編輯') } },
+                { field: '_delete', title: '刪除', align: 'center', width: 70, formatter: (value, row, index) => { return generateFunctionButton(row.MISN, 'delete', '刪除') } },
+
+                //{
+                //    field: '_detail', align: 'center',
+                //    formatter: (value, row, index) => {
+                //        return `<button class="btn btn-datagrid" onclick="onDetail(${index, row.MISN, value})">詳情</button>`;
+                //    }
+                //},
+            //    {
+            //        field: '_edit', align: 'center',
+            //        formatter: (value, row, index) => {
+            //            return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
+            //        }
+            //    },
+            //    {
+            //        field: '_delete', align: 'center',
+            //        formatter: (value, row, index) => {
+            //            return `<button class="btn btn-datagrid" onclick="onDelete(${index})">刪除</button>`;
+            //        }
+            //    }
             ]],
             columns: [[
                 { field: 'MISN', title: '保養項目編號', align: 'center', width: 150, sortable: true },
@@ -344,10 +348,36 @@
 
     }
 
-    // datagrid onClick Function
-    function onDetail(index) {
+    function generateFunctionButton(id, type, text) {
+        console.log(id);
+        let btn = $(`<button class="btn btn-datagrid" onclick="goToPage(${id}, '${type}')">${text}</button>`)
+        return btn.prop('outerHTML');
+    }
+
+    function goToPage(id, type) {
+        let url;
+        switch (type) {
+            case 'detail':
+                url = baseUrl + 'Read?MISN=' + id;
+                console.log(`goToPage url: ${url}`);
+                break;
+            case 'edit':
+                url = baseUrl + 'Edit?MISN=' + id;
+                console.log(`goToPage url: ${url}`);
+                break;
+            case 'delete':
+                url = baseUrl + 'Delete?MISN=' + id;
+                console.log(`goToPage url: ${url}`);
+                break;
+        }
+        window.open(url, "_blank");
+    }
+
+    // datagrid onClick Function <-引數無法引入
+    function onDetail(index, id, value) {
+        console.log(index,id, value);
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read';
+        let url = baseUrl + 'Read?MISN=';
         window.open(url, "_blank");
     }
 
@@ -413,7 +443,7 @@
             let url = baseUrl + 'Create';
             window.open(url, "_self");
         });
-    }   
+    }
 
 
 </script>

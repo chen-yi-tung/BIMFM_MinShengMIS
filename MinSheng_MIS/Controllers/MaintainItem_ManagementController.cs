@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using Newtonsoft.Json;
@@ -282,6 +283,7 @@ namespace MinSheng_MIS.Controllers
 
                 for (int i = 0; i < itemCount; i++)
                 {
+                    #region 將保養項目新增至 table Maintain Item
                     Models.MaintainItem newItems = new Models.MaintainItem();
                     newItems.System = inputItems.System;
                     newItems.SubSystem = inputItems.SubSystem;
@@ -297,6 +299,33 @@ namespace MinSheng_MIS.Controllers
                     newItems.MaintainItemIsEnable = inputItems.MaintainItem[i].MaintainItemIsEnable;
 
                     db.MaintainItem.AddOrUpdate(newItems);
+                    #endregion
+
+                    #region 將目前相關設備(同系統別、子系統別與設備名稱)都加上該新增的保養項目 table Equipment Maintain Item
+
+                    var eqList = db.EquipmentInfo
+                        .Where(e => e.System == inputItems.System)
+                        .Where(e => e.SubSystem == inputItems.SubSystem)
+                        .Where(e => e.EName == inputItems.EName)
+                        .ToList();
+
+                    int eqNum = eqList.Count();
+                    for (int j = 0; j < eqNum; j++)
+                    {
+                        Models.EquipmentMaintainItem equipmentMaintainItem = new Models.EquipmentMaintainItem();
+                        equipmentMaintainItem.MISN = newMISN;
+                        equipmentMaintainItem.ESN = eqList[j].ESN;
+                        equipmentMaintainItem.EMISN = eqList[j].ESN + "_" + newMISN;
+                        equipmentMaintainItem.Unit = inputItems.MaintainItem[i].Unit;
+                        equipmentMaintainItem.Period = inputItems.MaintainItem[i].Period;
+                        equipmentMaintainItem.IsEnable = "1";
+                        equipmentMaintainItem.IsCreate = false;
+
+                        db.EquipmentMaintainItem.AddOrUpdate(equipmentMaintainItem);
+                    }
+
+                    #endregion
+
                     await db.SaveChangesAsync();
 
                 }
@@ -314,21 +343,63 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 查詢保養項目 (詳情)
-        public ActionResult Read()
+        [HttpGet]
+        public ActionResult Read(string MISN)
         {
-            return View();
+            MISN = MISN.PadLeft(6, '0');
+            ReadEqMaintainItemViewModel viewModel = new ReadEqMaintainItemViewModel();
+
+            //設備名稱
+            var mItem = db.MaintainItem.Where(m => m.MISN == MISN).FirstOrDefault();
+
+            if (mItem == null)
+            {
+                return HttpNotFound();
+            }
+            viewModel.System = mItem.System;
+            viewModel.SubSystem = mItem.SubSystem;
+            viewModel.EName = mItem.EName;
+            viewModel.MIName = mItem.MIName;
+            viewModel.Unit = mItem.Unit;
+            viewModel.Period = mItem.Period;
+
+            var eqList = db.EquipmentMaintainItem
+                .Where(x => x.MISN == MISN)
+                .ToList();
+
+            if (eqList == null)
+            {
+                return HttpNotFound();
+            }
+
+            int Count = eqList.Count;
+            if (Count > 0)
+            {
+                viewModel.EquipmentMaintainItem = new List<EquipmentMaintainItemInfo>();
+                foreach (var item in eqList)
+                {
+                    viewModel.EquipmentMaintainItem.Add(new EquipmentMaintainItemInfo { ESN = item.ESN, Unit = item.Unit, Period = item.Period });
+                }
+            }
+
+            var JsonStr = JsonConvert.SerializeObject(viewModel, Formatting.Indented);
+            viewModel.JsonStr = JsonStr;
+
+            return View(viewModel);
         }
         #endregion
 
         #region 編輯保養項目
-        public ActionResult Edit()
+        [HttpGet]
+        public ActionResult Edit(string MISN)
         {
             return View();
         }
         #endregion
 
         #region 刪除保養項目
-        public ActionResult Delete()
+        [HttpGet]
+        public ActionResult Delete(string MISN)
         {
             return View();
         }
