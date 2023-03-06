@@ -148,10 +148,10 @@ namespace MinSheng_MIS.Controllers
 
         #region 子系統
         [System.Web.Http.HttpGet]
-        public ActionResult SubSystem()
+        public ActionResult SubSystem(string System)
         {
             List<JObject> list = new List<JObject>();
-            var abc = db.EquipmentInfo.Select(x => x.SubSystem).Distinct().ToList();
+            var abc = db.EquipmentInfo.Where(x=>x.System == System).Select(x => x.SubSystem).Distinct().ToList();
             foreach (var item in abc)
             {
                 JObject jo = new JObject();

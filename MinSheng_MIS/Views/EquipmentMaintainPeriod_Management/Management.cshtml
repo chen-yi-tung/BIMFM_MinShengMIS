@@ -245,11 +245,18 @@
             $('#Floor').val('');
         }
     });
+    var Systems = document.getElementById('System')
+    Systems.addEventListener("change", function () {
+        let url = '@Url.Action("SubSystem", "DropDownList")';
+        let system = $('#System').val();
+        url = url + `?System=${system}`;
+        pushSelect("SubSystem", url);
+    });
     $(async function () {
         let getGridJSON = '';
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         await pushSelect("System", '@Url.Action("System", "DropDownList")');
-        await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+        //await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
         addSaveClickEvent();
