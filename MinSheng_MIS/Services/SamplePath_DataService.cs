@@ -30,17 +30,16 @@ namespace MinSheng_MIS.Services
             string order = "asc";
 
             //塞來自formdata的資料
+
             //棟別編號
             string ASN = form["Area"]?.ToString();
             //樓層編號
             string FSN = form["Floor"]?.ToString();
-
             //巡檢路線標題
             string PathTitle = form["PathTitle"]?.ToString();
 
 
             #region 依據查詢字串檢索資料表
-
             var SourceTable = from x1 in db.PathSample
                               join x2 in db.Floor_Info on x1.FSN equals x2.FSN
                               join x3 in db.AreaInfo on x2.ASN equals x3.ASN
