@@ -347,7 +347,7 @@
     // datagrid onClick Function
     function onEdit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit';
+        let url = baseUrl + 'Edit' +`/${row.EMISN}`;
         window.open(url, "_self");
     }
 
