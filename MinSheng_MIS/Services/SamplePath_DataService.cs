@@ -47,8 +47,13 @@ namespace MinSheng_MIS.Services
 
             if (!string.IsNullOrEmpty(ASN)) //查詢棟別編號
             {
-                int IntAsn = Convert.ToInt32(ASN);
-                SourceTable = SourceTable.Where(x => x.ASN == IntAsn);
+                int IntASN = 0;
+                bool conversionSuccessful = int.TryParse(ASN, out IntASN);
+                //int IntAsn = Convert.ToInt32(ASN);
+                if (conversionSuccessful)
+                {
+                    SourceTable = SourceTable.Where(x => x.ASN == IntASN);
+                }
             }
             if (!string.IsNullOrEmpty(FSN)) //查詢樓層編號
             {
