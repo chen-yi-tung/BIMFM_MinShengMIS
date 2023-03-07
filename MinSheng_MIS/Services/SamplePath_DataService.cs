@@ -54,7 +54,7 @@ namespace MinSheng_MIS.Services
             {
                 SourceTable = SourceTable.Where(x => x.FSN == FSN);
             }
-            if (!string.IsNullOrEmpty(PathTitle)) //查詢路徑標題
+            if (!string.IsNullOrEmpty(PathTitle)) //查詢路徑標題模糊查詢
             {
                 SourceTable = SourceTable.Where(x => x.PathTitle.Contains(PathTitle));
             }
@@ -80,7 +80,7 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("PathTitle", a.PathTitle);//路線標題
                 }
                 if (itemObjects["Area"] == null)
-                    itemObjects.Add("Area", a.Area);//棟別                           
+                    itemObjects.Add("Area", a.Area);//棟別                  
 
                 if (itemObjects["Floor"] == null)
                     itemObjects.Add("Floor", a.FloorName);//樓層
