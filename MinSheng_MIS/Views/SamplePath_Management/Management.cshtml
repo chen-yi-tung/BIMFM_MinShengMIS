@@ -68,8 +68,6 @@
 
     $(async function () {
         await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
-
-        //let getGridJSON = '';
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });
@@ -167,7 +165,6 @@
         });
 
         $("#search").click(function () {
-            //console.log("onclick search");
             Initialize_DataGrid(getGridJSON)
         });
 
