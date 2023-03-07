@@ -387,13 +387,13 @@
     function onEdit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
         let url = baseUrl + 'Edit?MISN=' + row.MISN;
-        window.open(url, "_blank"); //_self
+        window.open(url, "_self");
     }
 
     function onDelete(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
         let url = baseUrl + 'Delete?MISN=' + row.MISN;
-        window.open(url, "_blank"); //_self
+        window.open(url, "_self");
     }
 
     //search area onClick Function
@@ -401,6 +401,8 @@
         $(".btn-clear").click(function () {
             document.getElementById("Searchform").reset();
 
+            ClearOptions("SubSystemOption");
+            $("#SubSystemOption").append(`<option value=""> -- 請選擇 -- </option>`);
         });
 
         //檢索按鍵
