@@ -398,8 +398,17 @@
 
         function onSuccess(res) {
             console.log(res);
-            alert(res.ResponseMessage);
-            history.back();
+
+            if (res.ResponseCode == 0) {
+                alert(res.ResponseMessage);
+                var url = '@Url.Action("Management", "MaintainItem_Management")';
+                window.location.href = url;
+            }
+            else {
+                alert(res.ResponseMessage);
+            }
+            //alert(res.ResponseMessage);
+            //history.back();
         }
         function onError(res) {
             console.log(res);

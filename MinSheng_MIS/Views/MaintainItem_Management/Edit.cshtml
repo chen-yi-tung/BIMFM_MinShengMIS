@@ -1,4 +1,4 @@
-﻿@model  MinSheng_MIS.Models.ViewModels.ReadEqMaintainItemViewModel
+﻿@model  MinSheng_MIS.Models.ViewModels.ReviewEqMaintainItemViewModel
 
 @{
     ViewBag.Title = "保養項目編輯";
@@ -40,7 +40,7 @@
     var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
     eqList = eqList.replace("\r", "").replace("\n", "");
     var equipmentList = JSON.parse(eqList);
-    console.log(equipmentList);
+    //console.log(equipmentList);
 
     const apiUrl = null;
 
@@ -145,7 +145,6 @@
 
         function onSuccess(res) {
             console.log(res);
-
             $("#MISN").val(res.MISN);
 
             $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
@@ -215,14 +214,14 @@
         if (!isValidity) return;
 
         let jsonData = {
-            System: $("#MaintainItemInfo").find("#d-System").val(),
-            SubSystem: $("#MaintainItemInfo").find("#d-SubSystem").val(),
-            EName: $("#MaintainItemInfo").find("#d-EName").val(),
-            MIName: $("#MaintainItemInfo").find("#d-MIName").val(),
+            System: document.getElementById("d-System").innerHTML,
+            SubSystem: document.getElementById("d-SubSystem").innerHTML,//$("#MaintainItemInfo").find("#SubSystem").val(),
+            EName: document.getElementById("d-EName").innerHTML,        //$("#MaintainItemInfo").find("#EName").val(),
+            MIName: document.getElementById("d-MIName").innerHTML,      //$("#MaintainItemInfo").find("#MIName").val(),
 
             MISN: $("#MISN").val(),
-            Unit: $("#MaintainItemInfo").find("#d-Unit").val(),
-            Period: $("#MaintainItemInfo").find("#d-Period").val(),
+            Unit: $("#MaintainItemInfo").find("#Unit").val(),
+            Period: $("#MaintainItemInfo").find("#Period").val(),
             EquipmentMaintainItem: calcEquipmentMaintainItem()
         }
 
@@ -253,6 +252,16 @@
 
         function onSuccess(res) {
             console.log(res);
+
+            if (res.ResponseCode == 0) {
+                alert(res.ResponseMessage);
+                var url = '@Url.Action("Management", "MaintainItem_Management")';
+                window.location.href = url;
+                /*history.back();*/
+            }
+            else {
+                alert(res.ResponseMessage);
+            }
         }
         function onError(res) {
             console.log(res);

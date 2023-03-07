@@ -1,4 +1,6 @@
-﻿@{
+﻿@model  MinSheng_MIS.Models.ViewModels.ReviewEqMaintainItemViewModel
+
+@{
     ViewBag.Title = "保養項目刪除";
 }
 
@@ -26,6 +28,9 @@
 
 <script src="/Scripts/datatable.js"></script>
 <script>
+    var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
+    eqList = eqList.replace("\r", "").replace("\n", "");
+    var equipmentList = JSON.parse(eqList);
 
     const apiUrl = null;
 
@@ -81,7 +86,7 @@
 
     function readData(url = null) {
 
-        url == null ? onSuccess(fakeData) :
+        url == null ? onSuccess(equipmentList) :
             $.ajax({
                 url: url,
                 body: JSON.stringify(jsonData),
@@ -137,29 +142,32 @@
             })
 
             modal.find("#delete-2").click(function () {
-                let jsonData = $("#MISN").val();
-                console.log(jsonData);
+                let misn = $("#MISN").val();
+                console.log(misn);
                 let spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
                 modal.find("#delete").append(spinner);
 
-                setTimeout(onSuccess,1000);
+                setTimeout(onSuccess, 1000);
 
-                /* $.ajax({
-                url: "",
-                body: JSON.stringify(jsonData),
+                $.ajax({
+                url: '@Url.Action("DeleteMaintainItem", "MaintainItem_Management")?MISN=' + misn,
+                body: JSON.stringify(misn),
                 type: "POST",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
-                }) */
+                })
 
             });
 
             function onSuccess(res) {
+                console.log("Success");
                 console.log(res);
-                myModal.hide();
-                let modal_success = $(`
+
+                if (res.ResponseCode == 0) {
+                    myModal.hide();
+                    let modal_success = $(`
                     <div class="modal fade modal-delete" id="DeleteModal-success" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
@@ -173,15 +181,20 @@
                         </div>
                     </div>
                     `);
-                $(document.body).append(modal_success);
-                let myModal_success = bootstrap.Modal.getOrCreateInstance(modal_success[0]);
-                myModal_success.show();
-                modal_success[0].addEventListener("hidden.bs.modal", () => {
-                    myModal_success.dispose();
-                    history.back();
-                })
+                    $(document.body).append(modal_success);
+                    let myModal_success = bootstrap.Modal.getOrCreateInstance(modal_success[0]);
+                    myModal_success.show();
+                    modal_success[0].addEventListener("hidden.bs.modal", () => {
+                        myModal_success.dispose();
+                        console.log("刪除囉")
+                        var url = '@Url.Action("Management", "MaintainItem_Management")';
+                        window.location.href = url;
+                        //history.back();
+                    })
+                }
             }
             function onError(res) {
+                console.log("error");
                 console.log(res);
                 let modal_error = $(`
                     <div class="modal fade modal-delete" id="DeleteModal-error" tabindex="-1">
