@@ -627,7 +627,7 @@ namespace MinSheng_MIS.Controllers
 
                 foreach (var item in EM)
                 {
-                    item.IsEnable = "0";
+                    item.IsEnable = "2";
 
                     db.EquipmentMaintainItem.AddOrUpdate(item);
                 }
