@@ -119,21 +119,22 @@
         }
 
         console.log("jsonData:", jsonData);
-
+        console.log("A", JSON.stringify(jsonData))
         if (!isValidity) return;
 
-        /* $.ajax({
-            url: "",
-            body: JSON.stringify(jsonData),
-            type: "POST",
+         $.ajax({
+            url: '@Url.Action("EditBodySave", "EquipmentMaintainPeriod_Management")',
+            data: JSON.stringify(jsonData),
+            type: "post",
             dataType: "json",
-            contentType: "application/json;charset=utf-8",
+            contentType: "application/json; charset=utf-8",
             success: onSuccess,
             error: onError
-        }) */
-
+        })
+        console.log('哭阿')
         function onSuccess(res) {
             console.log(res);
+            window.open('@Url.Action("Management", "EquipmentMaintainPeriod_Management")',"_self")
         }
         function onError(res) {
             console.log(res);
