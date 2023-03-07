@@ -27,5 +27,14 @@ namespace MinSheng_MIS.Controllers
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
+        [HttpPost]
+        public ActionResult EquipmentMaintainPeriod_Management(FormCollection form)
+        {
+            JObject jo = new JObject();
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_EquipmentMaintainPeriod_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
     }
 }

@@ -252,8 +252,9 @@
         url = url + `?System=${system}`;
         pushSelect("SubSystem", url);
     });
+
+    var getGridJSON = '@Url.Action("EquipmentMaintainPeriod_Management", "Datagrid")';
     $(async function () {
-        let getGridJSON = '';
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         await pushSelect("System", '@Url.Action("System", "DropDownList")');
         //await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
@@ -264,14 +265,18 @@
 
     function Initialize_DataGrid(getGridJSON) {
 
+        const searchParams = $("form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
+        console.log(searchParams)
+        let queryParams = searchParams.reduce((total, c) => {
+            total[c] = $(`#${c}`).val()
+            return total;
+        }, {})
         $('#DataGrid').datagrid({
 
-            // url: getGridJSON,
-            // method: 'POST',
-            data: fakeData,
-            queryParams: {
-                Query: ''
-            },
+            url: getGridJSON,
+            method: 'POST',
+            //data: fakeData,
+            queryParams: queryParams,
             rownumbers: true,
             idField: 'EMISN',
             sortName: 'EMISN',
@@ -359,6 +364,7 @@
         });
 
         $("#search").click(function () {
+            Initialize_DataGrid(getGridJSON);
             console.log("onclick search");
         });
     }
