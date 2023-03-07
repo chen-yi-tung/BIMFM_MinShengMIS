@@ -23,6 +23,7 @@ namespace MinSheng_MIS.Models
         public System.DateTime Date { get; set; }
         public int Heartbeat { get; set; }
         public int StepNum { get; set; }
+        public string FSN { get; set; }
     
         public virtual InspectionPlanMember InspectionPlanMember { get; set; }
     }

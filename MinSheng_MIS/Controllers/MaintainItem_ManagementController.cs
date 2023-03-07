@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Antlr.Runtime.Misc;
 using Microsoft.Ajax.Utilities;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
@@ -274,6 +276,58 @@ namespace MinSheng_MIS.Controllers
             try
             {
                 int itemCount = inputItems.MaintainItem.Count();
+
+                #region 檢查待新增保養項目名稱之間是否重複
+                List<string> tempList = new List<string>();
+
+                foreach(var item in inputItems.MaintainItem)
+                {
+                    bool isRepeat = false;
+                    string miName = item.MIName;
+                    int tempListLength = tempList.Count();
+                    for (var i = 0; i < tempListLength; i++)
+                    {
+                        if (miName == tempList[i])
+                        {
+                            isRepeat = true;
+                            model.ResponseCode = 3;
+                            model.ResponseMessage = $"保養項目:{item.MIName} 已重複，請重新命名保養項目";
+                            return Json(model);
+                        }
+                    }
+
+                    if (!isRepeat)
+                    {
+                        tempList.Add(item.MIName);
+                    }
+                }
+
+                #endregion
+
+                #region 檢查保養項目名稱是否已存在資料庫內
+                bool isItemExist = false;
+
+                foreach (var item in inputItems.MaintainItem)
+                {
+                    var aaa = db.MaintainItem
+                        .Where(m => m.System == inputItems.System)
+                        .Where(m => m.SubSystem == inputItems.SubSystem)
+                        .Where(m => m.EName == inputItems.EName)
+                        .Where(m => m.MIName == item.MIName)
+                        .Take(1)
+                        .FirstOrDefault();
+
+                    if (aaa != null)
+                    {
+                        isItemExist = true;
+                        model.ResponseCode = 2;
+                        model.ResponseMessage = $"曾新增過 保養項目:{item.MIName} ，請重新命名保養項目名稱";
+                        return Json(model);
+                    }
+                }
+                #endregion
+
+
                 var lastItem = db.MaintainItem
                 .OrderByDescending(m => m.MISN)
                 .Take(1)
@@ -331,14 +385,14 @@ namespace MinSheng_MIS.Controllers
                 }
                 model.ResponseCode = 0;
                 model.ResponseMessage = "已新增完成";
+                return Json(model);
             }
             catch (Exception ex)
             {
                 model.ResponseCode = 1;
                 model.ResponseMessage = $"新增失敗\r\n{ex.Message}";
-
+                return Json(model);
             }
-            return Json(model);
         }
         #endregion
 
@@ -347,7 +401,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Read(string MISN)
         {
             MISN = MISN.PadLeft(6, '0');
-            ReadEqMaintainItemViewModel viewModel = new ReadEqMaintainItemViewModel();
+            ReviewEqMaintainItemViewModel viewModel = new ReviewEqMaintainItemViewModel();
 
             //設備名稱
             var mItem = db.MaintainItem.Where(m => m.MISN == MISN).FirstOrDefault();
@@ -394,8 +448,8 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Edit(string MISN)
         {
             MISN = MISN.PadLeft(6, '0');
-            ReadEqMaintainItemViewModel viewModel = new ReadEqMaintainItemViewModel();
-
+            ReviewEqMaintainItemViewModel viewModel = new ReviewEqMaintainItemViewModel();
+            viewModel.MISN = MISN;
             //設備名稱
             var mItem = db.MaintainItem.Where(m => m.MISN == MISN).FirstOrDefault();
 
@@ -436,13 +490,48 @@ namespace MinSheng_MIS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UpdateMaintainItem(ReadEqMaintainItemViewModel inputItems)
+        public async Task<ActionResult> UpdateMaintainItem(UpdateEqMaintainItemViewModel inputItems)
         {
             JsonResponseViewModel model = new JsonResponseViewModel();
             try
             {
+                #region 更新保養項目的單位和週期 in table MaintainItem
+                var MI = db.MaintainItem.Where(x => x.MISN == inputItems.MISN).FirstOrDefault();
+                if (MI == null)
+                {
+                    return HttpNotFound();
+                }
 
+                MI.Unit = inputItems.Unit;
+                MI.Period = inputItems.Period;
 
+                db.MaintainItem.AddOrUpdate(MI);
+                #endregion
+
+                #region 更新各設備項目的保養單位和週期 in table EquipmentMaintainItem
+
+                int Count = inputItems.EquipmentMaintainItem.Count();
+                for (int i = 0; i < Count; i++)
+                {
+                    var eqItem = db.EquipmentMaintainItem
+                        .Where(em => em.MISN == inputItems.MISN)
+                        .Where(em => em.ESN == inputItems.EquipmentMaintainItem[i].ESN)
+                        .Take(1)
+                        .FirstOrDefault();
+
+                    if (eqItem == null)
+                    {
+                        return HttpNotFound();
+                    }
+
+                    eqItem.Unit = inputItems.EquipmentMaintainItem[i].Unit;
+                    eqItem.Period = inputItems.EquipmentMaintainItem[i].Period;
+
+                    db.EquipmentMaintainItem.AddOrUpdate(eqItem);
+                }
+
+                await db.SaveChangesAsync();
+                #endregion
             }
             catch (Exception ex)
             {

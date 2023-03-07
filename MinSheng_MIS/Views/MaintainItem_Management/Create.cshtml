@@ -398,8 +398,16 @@
 
         function onSuccess(res) {
             console.log(res);
-            alert(res.ResponseMessage);
-            history.back();
+
+            if (res.ResponseCode == 0) {
+                alert(res.ResponseMessage);
+                history.back();
+            }
+            else {
+                alert(res.ResponseMessage);
+            }            
+            //alert(res.ResponseMessage);
+            //history.back();
         }
         function onError(res) {
             console.log(res);

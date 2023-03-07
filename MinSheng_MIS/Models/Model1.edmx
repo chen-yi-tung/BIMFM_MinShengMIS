@@ -262,6 +262,7 @@
           <Property Name="Date" Type="datetime" Nullable="false" />
           <Property Name="Heartbeat" Type="int" Nullable="false" />
           <Property Name="StepNum" Type="int" Nullable="false" />
+          <Property Name="FSN" Type="nvarchar" MaxLength="5" />
         </EntityType>
         <EntityType Name="MaintainAuditImage">
           <Key>
@@ -1408,6 +1409,7 @@
           <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Heartbeat" Type="Int32" Nullable="false" />
           <Property Name="StepNum" Type="Int32" Nullable="false" />
+          <Property Name="FSN" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="InspectionPlanMember" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionTrack_InspectionPlanMember" FromRole="InspectionTrack" ToRole="InspectionPlanMember" />
         </EntityType>
         <EntityType Name="MaintainAuditImage">
@@ -2190,6 +2192,7 @@
           <EntitySetMapping Name="InspectionTrack">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionTrack">
               <MappingFragment StoreEntitySet="InspectionTrack">
+                <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="StepNum" ColumnName="StepNum" />
                 <ScalarProperty Name="Heartbeat" ColumnName="Heartbeat" />
                 <ScalarProperty Name="Date" ColumnName="Date" />
