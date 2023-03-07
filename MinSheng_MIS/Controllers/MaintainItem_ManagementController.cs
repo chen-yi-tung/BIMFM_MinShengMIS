@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -160,7 +161,7 @@ namespace MinSheng_MIS.Controllers
                 table = table.Where(t => t.SubSystem == Target.SubSystem);
             if (!string.IsNullOrEmpty(Target.EName) && Target.EName != "none")
                 table = table.Where(t => t.EName == Target.EName);
-            if(!string.IsNullOrEmpty(Target.MIName))
+            if (!string.IsNullOrEmpty(Target.MIName))
                 table = table.Where(t => t.MIName.Contains(Target.MIName));
             if (!string.IsNullOrEmpty(Target.Unit))
                 table = table.Where(t => t.Unit == Target.Unit);
@@ -169,7 +170,7 @@ namespace MinSheng_MIS.Controllers
                 int period = Convert.ToInt16(Target.Period);
                 table = table.Where(t => t.Period == period);
             }
-
+            table = table.Where(t => t.MaintainItemIsEnable == "1");  //當 Enable 為2時表示"永久停用"，DataGrid僅顯示啟用的項目
             #endregion
 
             //回傳JSON陣列
@@ -182,7 +183,7 @@ namespace MinSheng_MIS.Controllers
             table = table.Skip((page - 1) * pageSize).Take(pageSize);
 
             if (table != null && TotalNum > 0)
-            {                
+            {
                 foreach (var item in table)
                 {
                     var itemObjects = new JObject();
@@ -211,6 +212,7 @@ namespace MinSheng_MIS.Controllers
                         itemObjects.Add("MaintainItemIsEnable", item.MaintainItemIsEnable);    //保養項目停啟用狀態
 
                     ja.Add(itemObjects);
+
                 }
             }
             return ja;
@@ -549,10 +551,99 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 刪除保養項目
+
         [HttpGet]
         public ActionResult Delete(string MISN)
         {
-            return View();
+            MISN = MISN.PadLeft(6, '0');
+            ReviewEqMaintainItemViewModel viewModel = new ReviewEqMaintainItemViewModel();
+            viewModel.MISN = MISN;
+            //設備名稱
+            var mItem = db.MaintainItem.Where(m => m.MISN == MISN).FirstOrDefault();
+
+            if (mItem == null)
+            {
+                return HttpNotFound();
+            }
+            viewModel.System = mItem.System;
+            viewModel.SubSystem = mItem.SubSystem;
+            viewModel.EName = mItem.EName;
+            viewModel.MIName = mItem.MIName;
+            viewModel.Unit = mItem.Unit;
+            viewModel.Period = mItem.Period;
+
+            var eqList = db.EquipmentMaintainItem
+                .Where(x => x.MISN == MISN)
+                .ToList();
+
+            if (eqList == null)
+            {
+                return HttpNotFound();
+            }
+
+            int Count = eqList.Count;
+            if (Count > 0)
+            {
+                viewModel.EquipmentMaintainItem = new List<EquipmentMaintainItemInfo>();
+                foreach (var item in eqList)
+                {
+                    viewModel.EquipmentMaintainItem.Add(new EquipmentMaintainItemInfo { ESN = item.ESN, Unit = item.Unit, Period = item.Period });
+                }
+            }
+
+            var JsonStr = JsonConvert.SerializeObject(viewModel, Formatting.Indented);
+            viewModel.JsonStr = JsonStr;
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> DeleteMaintainItem(string MISN)
+        {
+            JsonResponseViewModel model = new JsonResponseViewModel();
+
+            try
+            {
+                #region 刪除保養項目 in table MaintainItem
+                var MI = db.MaintainItem
+                    .Where(mi => mi.MISN == MISN)
+                    .SingleOrDefault();
+
+                if (MI == null)
+                    return HttpNotFound();
+
+                MI.MaintainItemIsEnable = "2";
+
+                db.MaintainItem.AddOrUpdate(MI);
+                #endregion
+
+                #region 刪除各保養設備下的保養項目 in table EquipmentMaintainItem
+                var EM = db.EquipmentMaintainItem
+                    .Where(em => em.MISN == MISN)
+                    .ToList();
+
+                if (EM == null)
+                    return HttpNotFound();
+
+                foreach (var item in EM)
+                {
+                    item.IsEnable = "0";
+
+                    db.EquipmentMaintainItem.AddOrUpdate(item);
+                }
+                await db.SaveChangesAsync();
+                #endregion
+
+                model.ResponseCode = 0;
+                model.ResponseMessage = "刪除成功";
+                return Json(model);
+            }
+            catch (Exception ex)
+            {
+                model.ResponseCode = 1;
+                model.ResponseMessage = $"刪除失敗\r\n{ex.Message}";
+                return Json(model);
+            }
         }
         #endregion
     }
