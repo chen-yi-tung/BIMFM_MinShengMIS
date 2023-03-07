@@ -86,6 +86,7 @@ namespace MinSheng_MIS.Controllers
                 if (row.LastTime != null)
                 {
                     int period = int.Parse(Period);
+                    row.Period = period;
                     if (Unit == "日")
                         row.NextTime = row.LastTime?.AddDays(period);
                     else if (Unit == "月")
@@ -93,6 +94,7 @@ namespace MinSheng_MIS.Controllers
                     else if (Unit == "年")
                         row.NextTime = row.LastTime?.AddYears(period);
                 }
+                row.Unit = Unit;
                 row.IsEnable = IsEnable;
 
                 db.EquipmentMaintainItem.AddOrUpdate(row);
