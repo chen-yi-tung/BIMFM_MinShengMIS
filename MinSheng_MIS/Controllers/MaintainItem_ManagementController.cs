@@ -155,12 +155,12 @@ namespace MinSheng_MIS.Controllers
 
             #region 依據查詢字串檢索資料表
             var table = db.MaintainItem.AsQueryable();
-            if (!string.IsNullOrEmpty(Target.System) && Target.System != "none")
+            if (!string.IsNullOrEmpty(Target.System))
                 table = table.Where(t => t.System == Target.System);
-            if (!string.IsNullOrEmpty(Target.SubSystem) && Target.SubSystem != "none")
+            if (!string.IsNullOrEmpty(Target.SubSystem))
                 table = table.Where(t => t.SubSystem == Target.SubSystem);
-            if (!string.IsNullOrEmpty(Target.EName) && Target.EName != "none")
-                table = table.Where(t => t.EName == Target.EName);
+            if (!string.IsNullOrEmpty(Target.EName))
+                table = table.Where(t => t.EName.Contains(Target.EName));
             if (!string.IsNullOrEmpty(Target.MIName))
                 table = table.Where(t => t.MIName.Contains(Target.MIName));
             if (!string.IsNullOrEmpty(Target.Unit))

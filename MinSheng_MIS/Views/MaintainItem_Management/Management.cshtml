@@ -40,9 +40,11 @@
 
         <div class="form-group">
             <label for="EName">設備名稱</label>
-            <select class="form-select" name="EName" id="ENameOption">
+            <input class="form-control" name="EName" id="EName" type="text" />
+
+            @*<select class="form-select" name="EName" id="ENameOption">
                 <option value=""> -- 請選擇 -- </option>
-            </select>
+            </select>*@
         </div>
 
         <div class="form-group">
@@ -76,9 +78,8 @@
     var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.EquipmentInfoList));
     eqList = eqList.replace("\r", "").replace("\n", "");
     var equipmentList = JSON.parse(eqList);
-    //console.log(`所有設備清單`);
-    //console.log(equipmentList);
-    CreateAllENameOptions(equipmentList.EquipmentInfo);
+
+    //CreateAllENameOptions(equipmentList.EquipmentInfo); //(已停用，改用輸入框)
 
     //#region Searchform - Auto generate the select options
 
@@ -93,7 +94,7 @@
             ClearOptions("SubSystemOption");
             $("#SubSystemOption").append(`<option value=""> -- 請選擇 -- </option>`);
 
-            CreateAllENameOptions(equipmentList.EquipmentInfo);
+            //CreateAllENameOptions(equipmentList.EquipmentInfo); //(已停用，改用輸入框)
             //ClearOptions("ENameOption");
             //$("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
         }
@@ -103,32 +104,34 @@
             $("#SubSystemOption").append(`<option value=""> -- 請選擇 -- </option>`);
             CreateSubSystemOptions(chooseSystem, equipmentList.EquipmentInfo);
 
-            ClearOptions("ENameOption");
-            $("#ENameOption").append(`<option value=""> -- 請選擇 -- </option>`);
-            CreateENameOptionsWithSystem(chooseSystem, equipmentList.EquipmentInfo);
+        //    ClearOptions("ENameOption"); //(已停用，改用輸入框)
+        //    $("#ENameOption").append(`<option value=""> -- 請選擇 -- </option>`); //(已停用，改用輸入框)
+        //    CreateENameOptionsWithSystem(chooseSystem, equipmentList.EquipmentInfo); //(已停用，改用輸入框)
         }
     });
 
-    const selectSubSystemElement = document.querySelector('#SubSystemOption');
-    selectSubSystemElement.addEventListener('change', (event) => {
-        var chooseSystem = document.getElementById('SystemOption').value;
-        var chooseSubSystem = document.getElementById('SubSystemOption').value;
-        console.log(`Choose SubSystem: ${event.target.value}`);
+    //# region 下拉選項 SubSystemOption 的事件 (已停用，改用輸入框)
+    //const selectSubSystemElement = document.querySelector('#SubSystemOption');
+    //selectSubSystemElement.addEventListener('change', (event) => {
+    //    var chooseSystem = document.getElementById('SystemOption').value;
+    //    var chooseSubSystem = document.getElementById('SubSystemOption').value;
+    //    console.log(`Choose SubSystem: ${event.target.value}`);
 
-        //When user didn't choose subsystem option
-        if (chooseSystem == "none") {
-            ClearOptions("ENameOption");
-            CreateAllENameOptions(equipmentList.EquipmentInfo);
-        //    ClearOptions("ENameOption");
-        //    $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
-        }
-        //When user choose subsystem option
-        else {
-            ClearOptions("ENameOption");
-            $("#ENameOption").append(`<option value=""> -- 請選擇 -- </option>`);
-            CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
-        }
-    });
+    //    //When user didn't choose subsystem option
+    //    if (chooseSystem == "none") {
+    //        ClearOptions("ENameOption");
+    //        CreateAllENameOptions(equipmentList.EquipmentInfo);
+    //    //    ClearOptions("ENameOption");
+    //    //    $("#ENameOption").append(`<option value="none"> -- 請選擇 -- </option>`);
+    //    }
+    //    //When user choose subsystem option
+    //    else {
+    //        ClearOptions("ENameOption");
+    //        $("#ENameOption").append(`<option value=""> -- 請選擇 -- </option>`);
+    //        CreateENameOptions(chooseSystem,chooseSubSystem, equipmentList.EquipmentInfo);
+    //    }
+    //});
+    //#endregion
 
     //Clear all options in select
     function ClearOptions(id) {
@@ -407,7 +410,8 @@
             //將欄位append到FormData內
             formData.append('System', $("#SystemOption").val());
             formData.append('SubSystem', $("#SubSystemOption").val());
-            formData.append('EName', $("#ENameOption").val());
+            //formData.append('EName', $("#ENameOption").val()); //(已停用，改用輸入框)
+            formData.append('EName', $("#EName").val());
             formData.append('MIName', $("#MINameOption").val());
             formData.append('Unit', $("#UnitOption").val());
             formData.append('Period', $("#PeriodOption").val());
