@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using Antlr.Runtime.Misc;
 using Microsoft.Ajax.Utilities;
 using MinSheng_MIS.Models;
@@ -173,7 +175,6 @@ namespace MinSheng_MIS.Controllers
             //回傳JSON陣列
             JArray ja = new JArray();
 
-            //注意:"{0} {1}"中間必須為一個空格，以讓系統識別此二參數，注意:必須使用OrderBy，不可使用 OrderByDescent
             table = table.OrderBy(x => x.MISN).AsQueryable();
             TotalNum = table.Count();
 
@@ -513,11 +514,12 @@ namespace MinSheng_MIS.Controllers
                 int Count = inputItems.EquipmentMaintainItem.Count();
                 for (int i = 0; i < Count; i++)
                 {
+                    string ESN = inputItems.EquipmentMaintainItem[i].ESN;
                     var eqItem = db.EquipmentMaintainItem
-                        .Where(em => em.MISN == inputItems.MISN)
-                        .Where(em => em.ESN == inputItems.EquipmentMaintainItem[i].ESN)
-                        .Take(1)
-                        .FirstOrDefault();
+                    .Where(em => em.MISN == inputItems.MISN)
+                    .Where(em => em.ESN == ESN)
+                    .Take(1)
+                    .SingleOrDefault();
 
                     if (eqItem == null)
                     {
@@ -526,19 +528,23 @@ namespace MinSheng_MIS.Controllers
 
                     eqItem.Unit = inputItems.EquipmentMaintainItem[i].Unit;
                     eqItem.Period = inputItems.EquipmentMaintainItem[i].Period;
-
                     db.EquipmentMaintainItem.AddOrUpdate(eqItem);
                 }
 
                 await db.SaveChangesAsync();
+
+                model.ResponseCode = 0;
+                model.ResponseMessage = "更新成功";
+                return Json(model);
                 #endregion
             }
             catch (Exception ex)
             {
                 model.ResponseCode = 1;
                 model.ResponseMessage = $"新增失敗\r\n{ex.Message}";
+                return Json(model);
             }
-            return Json(model);
+            
         }
         #endregion
 

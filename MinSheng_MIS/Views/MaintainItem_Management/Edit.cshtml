@@ -252,6 +252,16 @@
 
         function onSuccess(res) {
             console.log(res);
+
+            if (res.ResponseCode == 0) {
+                alert(res.ResponseMessage);
+                var url = '@Url.Action("Management", "MaintainItem_Management")';
+                window.location.href = url;
+                /*history.back();*/
+            }
+            else {
+                alert(res.ResponseMessage);
+            }
         }
         function onError(res) {
             console.log(res);
