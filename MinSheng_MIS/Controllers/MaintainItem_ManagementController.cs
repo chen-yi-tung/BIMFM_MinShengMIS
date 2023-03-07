@@ -378,6 +378,10 @@ namespace MinSheng_MIS.Controllers
                         equipmentMaintainItem.IsEnable = "1";
                         equipmentMaintainItem.IsCreate = false;
 
+                        string today = DateTime.Now.ToString("yyyy'-'MM'-'dd");
+                        equipmentMaintainItem.LastTime = Convert.ToDateTime(today);
+                        equipmentMaintainItem.NextTime = Convert.ToDateTime(today);
+
                         db.EquipmentMaintainItem.AddOrUpdate(equipmentMaintainItem);
                     }
 
