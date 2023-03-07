@@ -124,7 +124,8 @@ namespace MinSheng_MIS.Models.ViewModels
                     inspectionplan.PlanDate = inspectionplantable.PlanDate.ToString("yyyy/M/d");
                     var PSdics = Surface.InspectionPlanState();
                     inspectionplan.PlanState = PSdics[inspectionplantable.PlanState];
-                    inspectionplan.Shift = inspectionplantable.Shift;
+                    var Shiftdics = Surface.Shift();
+                    inspectionplan.Shift = Shiftdics[inspectionplantable.Shift];
                     var IPUserudlist = db.InspectionPlanMember.Where(x => x.IPSN == IPSN).Select(x => x.UserID).ToList();
                     var INSPNameList = "";
                     int a = 0;
