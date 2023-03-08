@@ -1,7 +1,306 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "巡檢維修紀錄管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
 
+<h2>@ViewBag.Title</h2>
+
+<div class="search-area">
+    <form class="form" method="post" action="" id="ReportManagementForm">
+
+        <div class="form-group">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="IPSN">巡檢計畫編號</label>
+            <input class="form-control" id="IPSN" name="IPSN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="IPName">巡檢計畫名稱</label>
+            <input class="form-control" id="IPName" name="IPName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="RepairState">維修單狀態</label>
+            <select class="form-select" name="RepairState" id="RepairState">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ReportLevel">報修等級</label>
+            <select class="form-select" name="ReportLevel" id="ReportLevel">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="RSN">報修單號</label>
+            <input class="form-control" id="RSN" name="RSN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <input class="form-control" id="EName" name="EName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="PropertyCode">國有財產編碼</label>
+            <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ReportContent">報修說明</label>
+            <input class="form-control" id="ReportContent" name="ReportContent" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="InformantUserID">報修人員</label>
+            <select class="form-select" name="InformantUserID" id="InformantUserID">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="RepairUserID">施工人員</label>
+            <select class="form-select" name="RepairUserID" id="RepairUserID">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="AuditUserID">審核人員</label>
+            <select class="form-select" name="AuditUserID" id="AuditUserID">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="DateFrom">日期(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateTo">日期(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+        </div>
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+            <button type="button" class="btn btn-export" id="export">匯出</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="../../Scripts/tool.js"></script>
+<script>
+    var baseUrl = "/RepairRecord_Management/";
+    var areas = document.getElementById("ASN");
+    areas.addEventListener("change", function () {
+        let url = '@Url.Action("Floor", "DropDownList")';
+        if (areas.value != "") {
+            $('#Area').val($("#ASN option:selected").text());
+        }
+        else {
+            $('#Area').val('');
+        }
+        url = url + `?ASN=${areas.value}`;
+        pushSelect("FSN", url);
+        $('#Floor').val('');
+    });
+    var FSNs = document.getElementById("FSN");
+    FSNs.addEventListener("change", function () {
+        if (FSNs.value != "") {
+            $('#Floor').val($("#FSN option:selected").text());
+        }
+        else {
+            $('#Floor').val('');
+        }
+    });
+    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
+    //const fakeData = [
+    //    {
+    //        ReportState: "已派工",
+    //        ReportLevel: "最速件",
+    //        Area: "A棟",
+    //        Floor: "1F",
+    //        ReportSource: "APP",
+    //        RSN: "R23010601",
+    //        Date: "2023/1/6 15:00:02",
+    //        PropertyCode: "無",
+    //        ESN: "E00001",
+    //        EName: "日光燈",
+    //        ReportContent: "故障",
+    //        MyName: "王大明",
+    //    }
+    //]
+
+    $(async function () {
+        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
+        //document.getElementById('Area').value = '1'
+        await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
+        await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+        //$("#Area option[value=1]").attr('selected', 'selected');
+    });
+    function Initialize_DataGrid(getGridJSON) {
+
+        const searchParams = $("form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
+        console.log(searchParams)
+        let queryParams = searchParams.reduce((total, c) => {
+            total[c] = $(`#${c}`).val()
+            return total;
+        }, {})
+        console.log(queryParams)
+
+        $('#DataGrid').datagrid({
+
+            url: getGridJSON,
+            method: 'POST',
+            queryParams: queryParams,
+            rownumbers: true,
+            idField: 'Date',
+            sortName: 'Date',
+            remoteSort: false,
+            sortOrder: 'desc',
+            fit: true,
+            frozenColumns: [[
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
+                    }
+                },
+                {
+                    field: '_check', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onCheck(${index})">審核</button>`;
+                    }
+                },
+                {
+                    field: '_patch', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onPatch(${index})">補件</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                    }
+                },
+            ]],
+            columns: [[
+                { field: 'IPSN', title: '計畫編號', align: 'center', width: 120, sortable: true },
+                { field: 'IPName', title: '計畫名稱', align: 'center', width: 120, sortable: true },
+                { field: 'PlanDate', title: '計畫日期', align: 'center', width: 180, sortable: true },
+                { field: 'RepairState', title: '維修單狀態', align: 'center', width: 120, sortable: true },
+                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 106, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
+                { field: 'RSN', title: '報修單號', align: 'center', width: 120, sortable: true },
+                { field: 'Date', title: '報修時間', align: 'center', width: 180, sortable: true },
+                { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
+                { field: 'ESN', title: '設備編號', align: 'center', width: 110, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 110, sortable: true },
+                { field: 'ReportContent', title: '報修內容', align: 'center', width: 110, sortable: true },
+                { field: 'InformantUserID', title: '報修人員', align: 'center', width: 110, sortable: true },
+                { field: 'RepairUserID', title: '施工人員', align: 'center', width: 110, sortable: true },
+                { field: 'AuditUserID', title: '審核人員', align: 'center', width: 110, sortable: true },
+                { field: 'AuditDate', title: '審核日期', align: 'center', width: 180, sortable: true },
+            ]],
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+
+            pagination: true,
+            pagePosition: 'bottom',
+            pageSize: 10
+        });
+        //------------Pager --------------------------------------------------
+        var pager = $('#DataGrid').datagrid('getPager');
+        $(pager).pagination({
+            pageSize: 10,
+            showPageList: true,
+            pageList: [10, 20, 50],
+            beforePageText: '第',
+            afterPageText: '頁，共 {pages} 頁',
+            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+        });
+    }
+
+    // datagrid onClick Function
+    function onDetail(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Read' + `/${row.RSN}`;
+        window.open(url, "_blank");
+    }
+
+    function onCheck(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Check';
+        window.open(url, "_self");
+    }
+
+    function onPatch(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Patch';
+        window.open(url, "_self");
+    }
+
+    function onLocate(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Locate';
+        window.open(url, "_self");
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+        });
+
+        $("#search").click(function () {
+            Initialize_DataGrid(getGridJSON)
+        });
+
+        $("#export").click(function () {
+            let url = baseUrl + 'Export';
+            window.open(url, "_self");
+        });
+    }
+</script>
