@@ -91,6 +91,15 @@
         </div>
 
         <div class="form-group">
+            <label for="DateSelect">日期項目選擇</label>
+            <select class="form-select" name="DateSelect" id="DateSelect">
+                <option value="計畫日期">計畫日期</option>
+                <option value="報修時間">報修時間</option>
+                <option value="審核日期">審核日期</option>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label for="DateFrom">日期(起)</label>
             <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
         </div>
@@ -99,7 +108,7 @@
             <label for="DateTo">日期(迄)</label>
             <input class="form-control" id="DateTo" name="DateTo" type="date" />
         </div>
-        
+
         <div class="button-group">
             <button type="button" class="btn btn-search" id="search">查詢</button>
             <button type="button" class="btn btn-clear" id="clear">清除</button>
@@ -189,21 +198,27 @@
                 },
             ]],
             columns: [[
+                { field: 'IPMSN', hidden: true },
                 { field: 'IPSN', title: '計畫編號', align: 'center', width: 120, sortable: true },
-                { field: 'IPName', title: '計畫名稱', align: 'center', width: 120, sortable: true },
+                { field: 'IPName', title: '計畫名稱', align: 'center', width: 200, sortable: true },
                 { field: 'PlanDate', title: '計畫日期', align: 'center', width: 180, sortable: true },
-                { field: 'RepairState', title: '維修單狀態', align: 'center', width: 120, sortable: true },
-                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 106, sortable: true },
+                { field: 'MaintainState', title: '保養單狀態', align: 'center', width: 120, sortable: true },
                 { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
                 { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
-                { field: 'RSN', title: '報修單號', align: 'center', width: 120, sortable: true },
-                { field: 'Date', title: '報修時間', align: 'center', width: 180, sortable: true },
                 { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
                 { field: 'ESN', title: '設備編號', align: 'center', width: 110, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 110, sortable: true },
-                { field: 'ReportContent', title: '報修內容', align: 'center', width: 110, sortable: true },
-                { field: 'InformantUserID', title: '報修人員', align: 'center', width: 110, sortable: true },
-                { field: 'RepairUserID', title: '施工人員', align: 'center', width: 110, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 200, sortable: true },
+
+                { field: 'EMFISN', title: '保養項目編號', align: 'center', width: 150, sortable: true },
+                { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
+                { field: 'Unit', title: '保養週期單位', align: 'center', width: 150, sortable: true },
+                { field: 'Period', title: '保養週期', align: 'center', width: 110, sortable: true },
+
+                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 180, sortable: true },
+                { field: 'Date', title: '本次保養日期', align: 'center', width: 180, sortable: true },
+                { field: 'NextTime', title: '下次保養日期', align: 'center', width: 180, sortable: true },
+
+                { field: 'MaintainUserID', title: '保養人員', align: 'center', width: 110, sortable: true },
                 { field: 'AuditUserID', title: '審核人員', align: 'center', width: 110, sortable: true },
                 { field: 'AuditDate', title: '審核日期', align: 'center', width: 180, sortable: true },
             ]],
