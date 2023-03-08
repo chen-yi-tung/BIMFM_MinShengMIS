@@ -19,17 +19,23 @@
         </div>
 
         <div class="form-group">
-            <label for="Area">棟別</label>
-            <select class="form-select" name="Area" id="Area">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN">
                 <option value="">請選擇</option>
             </select>
         </div>
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
 
         <div class="form-group">
-            <label for="Floor">樓層</label>
-            <select class="form-select" name="Floor" id="Floor">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN">
                 <option value="">請選擇</option>
             </select>
+        </div>
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
         </div>
 
         <div class="button-group">
@@ -49,12 +55,27 @@
     var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
 
     var baseUrl = "/SamplePath_Management/";
-    var areas = document.getElementById("Area");
-
+    var areas = document.getElementById("ASN");
     areas.addEventListener("change", function () {
         let url = '@Url.Action("Floor", "DropDownList")';
+        if (areas.value != "") {
+            $('#Area').val($("#ASN option:selected").text());
+        }
+        else {
+            $('#Area').val('');
+        }
         url = url + `?ASN=${areas.value}`;
-        pushSelect("Floor", url);
+        pushSelect("FSN", url);
+        $('#Floor').val('');
+    });
+    var FSNs = document.getElementById("FSN");
+    FSNs.addEventListener("change", function () {
+        if (FSNs.value != "") {
+            $('#Floor').val($("#FSN option:selected").text());
+        }
+        else {
+            $('#Floor').val('');
+        }
     });
 
     const fakeData = [
@@ -67,7 +88,7 @@
     ]
 
     $(async function () {
-        await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });

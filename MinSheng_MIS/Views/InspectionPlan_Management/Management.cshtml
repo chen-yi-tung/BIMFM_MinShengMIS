@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "巡檢計畫管理";
 }
 
@@ -10,3 +9,191 @@
 
 <h2>@ViewBag.Title</h2>
 
+<button class="btn btn-create" id="create">新增計畫</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="PlanState">巡檢狀態</label>
+            <select class="form-select" name="PlanState" id="PlanState">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="IPSN">計畫編號</label>
+            <input class="form-control" id="IPSN" name="IPSN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="IPName">巡檢計畫名稱</label>
+            <input class="form-control" id="IPName" name="IPName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Shift">巡檢班別</label>
+            <select class="form-select" name="Shift" id="Shift">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="UserID">巡檢人員</label>
+            <select class="form-select" name="UserID" id="UserID">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <input class="form-control" id="EName" name="EName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateFrom">日期(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateTo">日期(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="../../Scripts/tool.js"></script>
+<script>
+
+    var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
+
+    var baseUrl = "/InspectionPlan_Management/";
+
+    const fakedata = [{
+        PlanState: "已派工",
+        IPSN: "P23010401",
+        IPName: "A區巡檢計畫",
+        PlanDate: "2023/01/04",
+        Shift: "早班",
+        MyName: "王大明、李泰順",
+        RepairAmount: "2",
+        MaintainAmount: "1",
+    }]
+
+    $(async function () {
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+
+        $('#DataGrid').datagrid({
+
+            //url: getGridJSON,
+            data: fakedata,
+            method: 'POST',
+            queryParams: getQueryParams(),
+            rownumbers: true,
+            idField: 'IPSN',
+            //sortName: 'IPSN',
+            remoteSort: false,
+            sortOrder: 'asc',
+            fit: true,
+            frozenColumns: [[
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
+                    }
+                },
+                {
+                    field: '_edit', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
+                    }
+                },
+                {
+                    field: '_record', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onRecord(${index})">紀錄</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'PlanState', title: '巡檢路線模板名稱', align: 'center', width: 300, sortable: true },
+                { field: 'IPSN', title: '計畫編號', align: 'center', width: 110, sortable: true },
+                { field: 'IPName', title: '計畫名稱', align: 'center', width: 200, sortable: true },
+                { field: 'PlanDate', title: '計畫日期', align: 'center', width: 180, sortable: true },
+                { field: 'Shift', title: '巡檢班別', align: 'center', width: 106, sortable: true },
+                { field: 'MyName', title: '巡檢人員', align: 'center', width: 110, sortable: true },
+                { field: 'RepairAmount', title: '維修數量', align: 'center', width: 106, sortable: true },
+                { field: 'MaintainAmount', title: '定期保養數量', align: 'center', width: 146, sortable: true },
+            ]],
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+
+            pagination: true,
+            pagePosition: 'bottom',
+            pageSize: 10
+        });
+        //------------Pager --------------------------------------------------
+        var pager = $('#DataGrid').datagrid('getPager');
+        $(pager).pagination({
+            pageSize: 10,
+            showPageList: true,
+            pageList: [10, 20, 50],
+            beforePageText: '第',
+            afterPageText: '頁，共 {pages} 頁',
+            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+        });
+    }
+
+    // datagrid onClick Function
+    function onDetail(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Read';
+        window.open(url, "_blank");
+    }
+
+    function onEdit(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Edit';
+        window.open(url, "_self");
+    }
+
+    function onRecord(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Record';
+        window.open(url, "_self");
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+        });
+
+        $("#search").click(function () {
+            Initialize_DataGrid(getGridJSON)
+        });
+
+        $("#create").click(function () {
+            let url = baseUrl + 'Create';
+            window.open(url, "_self");
+        });
+    }
+</script>
