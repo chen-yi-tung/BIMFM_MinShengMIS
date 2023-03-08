@@ -97,7 +97,7 @@ function createTable(tableId, data, setting) {
         let html = `
                     <tr>
                         <th scope='row'>${td[i]}</th>
-                        <td id="${pid}" name="${pid}">${d?d:""}</td>
+                        <td id="${pid}" name="${pid}">${d ? d : ""}</td>
                     </tr>
                     `;
         $("#" + tableId + " tbody").append(html);
@@ -128,4 +128,15 @@ function itemId(name, i) {
 
 function filterIt(arr, objKey, searchKey) {
     return arr.filter(obj => obj[objKey] == searchKey);
+}
+
+function getQueryParams() {
+    const searchParams = $("form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
+    console.log(searchParams)
+    let queryParams = searchParams.reduce((total, c) => {
+        total[c] = $(`#${c}`).val()
+        return total;
+    }, {})
+    console.log(queryParams)
+    return queryParams;
 }

@@ -149,22 +149,6 @@
         }
     });
     var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
-    //const fakeData = [
-    //    {
-    //        ReportState: "已派工",
-    //        ReportLevel: "最速件",
-    //        Area: "A棟",
-    //        Floor: "1F",
-    //        ReportSource: "APP",
-    //        RSN: "R23010601",
-    //        Date: "2023/1/6 15:00:02",
-    //        PropertyCode: "無",
-    //        ESN: "E00001",
-    //        EName: "日光燈",
-    //        ReportContent: "故障",
-    //        MyName: "王大明",
-    //    }
-    //]
 
     $(async function () {
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
@@ -178,19 +162,11 @@
     });
     function Initialize_DataGrid(getGridJSON) {
 
-        const searchParams = $("form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
-        console.log(searchParams)
-        let queryParams = searchParams.reduce((total, c) => {
-            total[c] = $(`#${c}`).val()
-            return total;
-        }, {})
-        console.log(queryParams)
-
         $('#DataGrid').datagrid({
 
             url: getGridJSON,
             method: 'POST',
-            queryParams: queryParams,
+            queryParams: getQueryParams(),
             rownumbers: true,
             idField: 'Date',
             sortName: 'Date',
@@ -205,15 +181,15 @@
                     }
                 },
                 {
-                    field: '_check', align: 'center',
+                    field: '_audit', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onCheck(${index})">審核</button>`;
+                        return `<button class="btn btn-datagrid" onclick="onAudit(${index})">審核</button>`;
                     }
                 },
                 {
-                    field: '_patch', align: 'center',
+                    field: '_supplement', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onPatch(${index})">補件</button>`;
+                        return `<button class="btn btn-datagrid" onclick="onSupplement(${index})">補件</button>`;
                     }
                 },
                 {
@@ -269,15 +245,15 @@
         window.open(url, "_blank");
     }
 
-    function onCheck(index) {
+    function onAudit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Check';
+        let url = baseUrl + 'Audit';
         window.open(url, "_self");
     }
 
-    function onPatch(index) {
+    function onSupplement(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Patch';
+        let url = baseUrl + 'Supplement';
         window.open(url, "_self");
     }
 
