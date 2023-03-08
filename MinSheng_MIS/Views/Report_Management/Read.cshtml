@@ -377,12 +377,15 @@
         function onSuccess(res) {
             console.log(res);
             $("#ReportDetail").append(createTableInner(res, SerializedName));
-            if (res.InspectionPlanList) {
+            if (res.InspectionPlanList.length != 0) {
                 let accordion = $("#accordion-InspectionPlan");
                 res.InspectionPlanList.forEach((d, i) => {
                     accordion.append(putData_InspectionPlan(d, null, i));
                 })
                 $("#InspectionPlan_List").removeClass("d-none");
+            }
+            else {
+                $("#accordion-InspectionPlan").parents(".datatable").remove();
             }
 
             ImageDisplay(".datatable-img-item>img");
@@ -393,7 +396,7 @@
     }
 
     window.onload = function () {
-        
+
         readData(apiUrl);
     }
 

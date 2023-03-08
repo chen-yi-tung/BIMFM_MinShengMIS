@@ -1,4 +1,4 @@
-﻿@model  MinSheng_MIS.Models.ViewModels.ReviewEqMaintainItemViewModel
+﻿@model MinSheng_MIS.Models.ViewModels.ReviewEqMaintainItemViewModel
 
 @{
     ViewBag.Title = "保養項目編輯";
@@ -148,7 +148,13 @@
             $("#MISN").val(res.MISN);
 
             $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
-            $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
+            
+            if (res.EquipmentMaintainItem) {
+                $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
+            }
+            else {
+                $("#EquipmentMaintainItem").parents(".datatable").remove();
+            }
 
             let container = $("#EquipmentMaintainItem");
             let checkbox_all = container.find("#checkbox-all");
@@ -227,7 +233,7 @@
 
         console.log("jsonData:", jsonData);
 
-         $.ajax({
+        $.ajax({
             url: '@Url.Action("UpdateMaintainItem", "MaintainItem_Management")',
             //body: JSON.stringify(jsonData),
             data: JSON.stringify(jsonData),

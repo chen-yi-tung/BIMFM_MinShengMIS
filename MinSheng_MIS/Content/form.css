@@ -1,4 +1,7 @@
-﻿
+﻿.form-control:user-invalid,
+.form-select:user-invalid {
+    outline: hsla(0, 66%, 64%, 0.8) solid 2px !important;
+}
 
 /* management */
 .search-area {

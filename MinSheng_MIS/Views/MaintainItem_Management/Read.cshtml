@@ -93,7 +93,12 @@
         function onSuccess(res) {
             console.log(res);
             $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
-            $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
+            if (res.EquipmentMaintainItem) {
+                $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
+            }
+            else {
+                $("#EquipmentMaintainItem").parents(".datatable").remove();
+            }
         }
         function onError(res) {
             console.log(res);
