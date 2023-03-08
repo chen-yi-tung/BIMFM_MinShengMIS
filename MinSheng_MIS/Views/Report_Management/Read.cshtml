@@ -128,8 +128,8 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
 
-    const apiUrl = null;
-
+    const RSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
     const SerializedName = [
         { text: "報修單號", value: "RSN" },
         { text: "報修時間", value: "Date" },
@@ -144,7 +144,78 @@
         { text: "報修說明", value: "ReportContent" },
         { text: "報修照片", value: "ImgPath" },
     ]
-
+    const fakeData2 = {
+        "RSN": "R23022001",
+        "Date": "2023/2/20 09:00:00",
+        "ReportLevel": "施工中",
+        "MyName": "賈皓麟",
+        "ReportState": "審核未過",
+        "Area": "前處理機房",
+        "Floor": "B1F",
+        "PropertyCode": "35435",
+        "ESN": "E00003",
+        "EName": "粗攔物除物皮帶輸送機",
+        "ReportContent": "壞透透",
+        "ImgPath": [
+            "C:/Users/User/Pictures/安妮雅.jfif"
+        ],
+        "InspectionPlanList": [
+            {
+                "InspectionPlan": {
+                    "IPSN": "P23022203",
+                    "IPName": "維修設備E00003",
+                    "PlanDate": "2023/2/22",
+                    "PlanState": "巡檢完成",
+                    "Shift": "2",
+                    "MyName": "賈皓麟、羅紹齊"
+                },
+                "InspectionPlanRepair": {
+                    "RepairState": "審核未過",
+                    "RepairContent": "好了",
+                    "MyName": "賈皓麟",
+                    "RepairDate": "2023/2/22",
+                    "ImgPath": []
+                },
+                "RepairSupplementaryInfo": [],
+                "RepairAuditInfo": [
+                    {
+                        "MyName": "陳進國",
+                        "AuditDate": "2023/2/22",
+                        "AuditResult": "審核未過",
+                        "AuditMemo": "沒修好",
+                        "ImgPath": []
+                    }
+                ]
+            },
+            {
+                "InspectionPlan": {
+                    "IPSN": "P23022301",
+                    "IPName": "再次維修設備E00003",
+                    "PlanDate": "2023/2/23",
+                    "PlanState": "巡檢完成",
+                    "Shift": "2",
+                    "MyName": "賈皓麟、羅紹齊"
+                },
+                "InspectionPlanRepair": {
+                    "RepairState": "審核未過",
+                    "RepairContent": "好了",
+                    "MyName": "賈皓麟",
+                    "RepairDate": "2023/2/23",
+                    "ImgPath": []
+                },
+                "RepairSupplementaryInfo": [],
+                "RepairAuditInfo": [
+                    {
+                        "MyName": "陳進國",
+                        "AuditDate": "2023/2/23",
+                        "AuditResult": "審核未過",
+                        "AuditMemo": "還是沒修好",
+                        "ImgPath": []
+                    }
+                ]
+            }
+        ]
+    }
     const fakeData = {
         RSN: "R23010601",
         Date: "2023/1/6 15:00:02",
@@ -293,11 +364,10 @@
 
     function readData(url = null) {
 
-        url == null ? onSuccess(fakeData) :
+        url == null ? onSuccess(fakeData2) :
             $.ajax({
                 url: url,
-                body: JSON.stringify(jsonData),
-                type: "POST",
+                type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
@@ -307,9 +377,9 @@
         function onSuccess(res) {
             console.log(res);
             $("#ReportDetail").append(createTableInner(res, SerializedName));
-            if (fakeData.InspectionPlanList) {
+            if (res.InspectionPlanList) {
                 let accordion = $("#accordion-InspectionPlan");
-                fakeData.InspectionPlanList.forEach((d, i) => {
+                res.InspectionPlanList.forEach((d, i) => {
                     accordion.append(putData_InspectionPlan(d, null, i));
                 })
                 $("#InspectionPlan_List").removeClass("d-none");
@@ -323,6 +393,7 @@
     }
 
     window.onload = function () {
+        
         readData(apiUrl);
     }
 

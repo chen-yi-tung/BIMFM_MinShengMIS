@@ -14,18 +14,22 @@
 
         <div class="form-group">
             <label for="Area">棟別</label>
-            <select class="form-select" name="Area" id="Area">
+            <select class="form-select" name="ASN" id="ASN">
                 <option value="">請選擇</option>
             </select>
         </div>
-
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
         <div class="form-group">
             <label for="Floor">樓層</label>
-            <select class="form-select" name="Floor" id="Floor">
+            <select class="form-select" name="FSN" id="FSN">
                 <option value="">請選擇</option>
             </select>
         </div>
-
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
         <div class="form-group">
             <label for="System">系統別</label>
             <select class="form-select" name="System" id="System">
@@ -84,7 +88,7 @@
 <div class="d-flex justify-content-center mt-3" style="gap:1rem">
     <button type="button" class="btn btn-search" id="save">儲存變更</button>
 </div>
-
+<script src="../../Scripts/tool.js"></script>
 <script>
 
     var baseUrl = "/EquipmentMaintainPeriod_Management/";
@@ -219,9 +223,41 @@
             NextTime: "2023/01/01",
         },
     ]
+    var areas = document.getElementById("ASN");
+    areas.addEventListener("change", function () {
+        let url = '@Url.Action("Floor", "DropDownList")';
+        if (areas.value != "") {
+            $('#Area').val($("#ASN option:selected").text());
+        }
+        else {
+            $('#Area').val('');
+        }
+        url = url + `?ASN=${areas.value}`;
+        pushSelect("FSN", url);
+        $('#Floor').val('');
+    });
+    var FSNs = document.getElementById("FSN");
+    FSNs.addEventListener("change", function () {
+        if (FSNs.value != "") {
+            $('#Floor').val($("#FSN option:selected").text());
+        }
+        else {
+            $('#Floor').val('');
+        }
+    });
+    var Systems = document.getElementById('System')
+    Systems.addEventListener("change", function () {
+        let url = '@Url.Action("SubSystem", "DropDownList")';
+        let system = $('#System').val();
+        url = url + `?System=${system}`;
+        pushSelect("SubSystem", url);
+    });
 
-    $(function () {
-        let getGridJSON = '';
+    var getGridJSON = '@Url.Action("EquipmentMaintainPeriod_Management", "Datagrid")';
+    $(async function () {
+        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        //await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
         addSaveClickEvent();
@@ -229,14 +265,18 @@
 
     function Initialize_DataGrid(getGridJSON) {
 
+        const searchParams = $("form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
+        console.log(searchParams)
+        let queryParams = searchParams.reduce((total, c) => {
+            total[c] = $(`#${c}`).val()
+            return total;
+        }, {})
         $('#DataGrid').datagrid({
 
-            // url: getGridJSON,
-            // method: 'POST',
-            data: fakeData,
-            queryParams: {
-                Query: ''
-            },
+            url: getGridJSON,
+            method: 'POST',
+            //data: fakeData,
+            queryParams: queryParams,
             rownumbers: true,
             idField: 'EMISN',
             sortName: 'EMISN',
@@ -307,7 +347,7 @@
     // datagrid onClick Function
     function onEdit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit';
+        let url = baseUrl + 'Edit' +`/${row.EMISN}`;
         window.open(url, "_self");
     }
 
@@ -321,9 +361,12 @@
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $("form")[0].reset();
+            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
         });
 
         $("#search").click(function () {
+            Initialize_DataGrid(getGridJSON);
             console.log("onclick search");
         });
     }

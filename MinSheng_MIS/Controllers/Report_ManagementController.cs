@@ -36,7 +36,7 @@ namespace MinSheng_MIS.Controllers
             ViewBag.id = id;
             return View();
         }
-        [HttpPost]
+        [HttpGet]
         public ActionResult ReadBody(string id) 
         {
             var reportManagementViewModel = new ReportManagementViewModel();

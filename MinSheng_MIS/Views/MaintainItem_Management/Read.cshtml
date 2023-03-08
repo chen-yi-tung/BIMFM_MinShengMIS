@@ -1,4 +1,6 @@
-﻿@{
+﻿@model  MinSheng_MIS.Models.ViewModels.ReviewEqMaintainItemViewModel
+
+@{
     ViewBag.Title = "保養項目詳情";
 }
 
@@ -19,6 +21,10 @@
 
 <script src="/Scripts/datatable.js"></script>
 <script>
+    var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
+    eqList = eqList.replace("\r", "").replace("\n", "");
+    var equipmentList = JSON.parse(eqList);
+    console.log(equipmentList);
 
     const apiUrl = null;
 
@@ -73,7 +79,7 @@
 
     function readData(url = null) {
 
-        url == null ? onSuccess(fakeData) :
+        url == null ? onSuccess(equipmentList) :   //fakeData
             $.ajax({
                 url: url,
                 body: JSON.stringify(jsonData),

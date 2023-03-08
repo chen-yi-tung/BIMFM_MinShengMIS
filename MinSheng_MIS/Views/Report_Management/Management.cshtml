@@ -121,7 +121,6 @@
 <script>
     var baseUrl = "/Report_Management/";
     var areas = document.getElementById("ASN");
-    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
     areas.addEventListener("change", function () {
         let url = '@Url.Action("Floor", "DropDownList")';
         if (areas.value != "") {
@@ -143,6 +142,7 @@
             $('#Floor').val('');
         }
     });
+    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
     //const fakeData = [
     //    {
     //        ReportState: "已派工",
@@ -254,7 +254,7 @@
     // datagrid onClick Function
     function onDetail(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read';
+        let url = baseUrl + 'Read' + `/${row.RSN}`;
         window.open(url, "_blank");
     }
 
@@ -280,7 +280,7 @@
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $("form")[0].reset();
-            pushSelect("Floor", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
         });
 
         $("#search").click(function () {

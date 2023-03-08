@@ -26,50 +26,54 @@ namespace MinSheng_MIS.Services
                 rows = short.Parse(form["rows"]?.ToString());
             }
             #endregion
-            string propertyName = "PSSN";
-            string order = "asc";
+            //string propertyName = "PSSN";
+            //string order = "asc";
 
             //塞來自formdata的資料
             //棟別編號
             string ASN = form["Area"]?.ToString();
             //樓層編號
             string FSN = form["Floor"]?.ToString();
-
             //巡檢路線標題
             string PathTitle = form["PathTitle"]?.ToString();
 
-
             #region 依據查詢字串檢索資料表
-
             var SourceTable = from x1 in db.PathSample
                               join x2 in db.Floor_Info on x1.FSN equals x2.FSN
                               join x3 in db.AreaInfo on x2.ASN equals x3.ASN
                               select new { x1.PSSN, x1.PathTitle, x1.FSN, x2.ASN, x2.FloorName, x3.Area};
+            //SourceTable = SourceTable.AsQueryable();
 
             if (!string.IsNullOrEmpty(ASN)) //查詢棟別編號
             {
-                int IntAsn = Convert.ToInt32(ASN);
-                SourceTable = SourceTable.Where(x => x.ASN == IntAsn);
+                int IntASN = 0;
+                bool conversionSuccessful = int.TryParse(ASN, out IntASN);
+                //int IntAsn = Convert.ToInt32(ASN);
+                if (conversionSuccessful)
+                {
+                    SourceTable = SourceTable.Where(x => x.ASN == IntASN);
+                }
             }
             if (!string.IsNullOrEmpty(FSN)) //查詢樓層編號
             {
                 SourceTable = SourceTable.Where(x => x.FSN == FSN);
             }
-            if (!string.IsNullOrEmpty(PathTitle)) //查詢路徑標題
+            if (!string.IsNullOrEmpty(PathTitle)) //查詢路徑標題模糊查詢
             {
                 SourceTable = SourceTable.Where(x => x.PathTitle.Contains(PathTitle));
             }
             #endregion
 
-            var resulttable = SourceTable.OrderBy(x => x.PSSN).AsQueryable();
+            SourceTable = SourceTable.OrderBy(x => x.PSSN);
+
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
-            int total = resulttable.Count();
+            int total = SourceTable.Count();
             //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-            resulttable = resulttable.Skip((page - 1) * rows).Take(rows);
+            SourceTable = SourceTable.Skip((page - 1) * rows).Take(rows);
 
-            foreach (var a in resulttable)
+            foreach (var a in SourceTable)
             {
                 var itemObjects = new JObject();
                 if (itemObjects["PSSN"] == null)
@@ -81,7 +85,7 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("PathTitle", a.PathTitle);//路線標題
                 }
                 if (itemObjects["Area"] == null)
-                    itemObjects.Add("Area", a.Area);//棟別                           
+                    itemObjects.Add("Area", a.Area);//棟別                  
 
                 if (itemObjects["Floor"] == null)
                     itemObjects.Add("Floor", a.FloorName);//樓層
