@@ -232,32 +232,32 @@ function putData_InspectionPlan(data = null, sn = null, i = 0) {
         `;
     }
 
-    function createAccordionItem(options, i) {
-        return `
-        <div class="accordion-item" id="${options.id}-${i}">
-            <h2 class="accordion-header" id="header-${options.id}-${i}">
-                <button class="accordion-button collapsed" type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#body-${options.id}-${i}" aria-expanded="false"
-                    aria-controls="body-${options.id}-${i}">
-                    ${options.data[i][options.itemTitleKey]}
-                </button>
-            </h2>
-            <div id="body-${options.id}-${i}" class="accordion-collapse collapse"
-                aria-labelledby="header-${options.id}-${i}">
-                <div class="accordion-body">
-                    <div class="datatable border-0 w-100">
-                        <div class="datatable-body">
-                            <table class="datatable-table">
-                                ${createTableInner(options.data[i], options.sn)}
-                            </table>
-                        </div>
+    
+}
+
+function createAccordionItem(options, i) {
+    return `
+    <div class="accordion-item" id="${options.id}-${i}">
+        <h2 class="accordion-header" id="header-${options.id}-${i}">
+            <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#body-${options.id}-${i}" aria-expanded="false"
+                aria-controls="body-${options.id}-${i}">
+                ${options.data[i][options.itemTitleKey]}
+            </button>
+        </h2>
+        <div id="body-${options.id}-${i}" class="accordion-collapse collapse"
+            aria-labelledby="header-${options.id}-${i}">
+            <div class="accordion-body">
+                <div class="datatable border-0 w-100">
+                    <div class="datatable-body">
+                        <table class="datatable-table">
+                            ${createTableInner(options.data[i], options.sn)}
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-        `
-    }
-
+    </div>
+    `
 }
-

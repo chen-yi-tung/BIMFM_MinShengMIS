@@ -1,7 +1,204 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "巡檢保養紀錄詳情";
 }
 
-<h2>Read</h2>
+<h2>@ViewBag.Title</h2>
 
+<div class="datatable mt-5">
+    <div class="datatable-header">保養項目資料</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="EquipmentMaintainFormItem"></table>
+    </div>
+</div>
+
+<div class="datatable mt-5">
+    <div class="datatable-header">計劃資訊</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="InspecitonPlan"></table>
+    </div>
+    <div class="datatable-header">保養填報</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="InspectionPlanMaintain"></table>
+    </div>
+    <div class="datatable-header">補件資料</div>
+    <div class="datatable-body">
+        <div class="accordion accordion-flush datatable-accordion" id="accordion-MaintainSupplementarInfo">
+        </div>
+    </div>
+    <div class="datatable-header">審核資料</div>
+    <div class="datatable-body">
+        <div class="accordion accordion-flush datatable-accordion" id="accordion-MaintainAuditInfo">
+        </div>
+    </div>
+</div>
+
+<div class="datatable datatable-secondary mt-5 d-none" id="InspectionPlan_List">
+    <div class="datatable-header">本報修單相關維修紀錄</div>
+    <div class="datatable-body">
+        <div class="accordion accordion-flush datatable-accordion" id="accordion-InspectionPlan">
+        </div>
+    </div>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/ImageDisplay.js"></script>
+<script>
+
+    const RSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
+    let apiUrl = null
+
+    const SerializedName = {
+        EquipmentMaintainFormItem: [
+            { text: "本項目保養狀態", value: "FormItemState" },
+            { text: "保養單項目編號", value: "EMFISN" },
+            { text: "保養項目", value: "MIName" },
+            { text: "保養週期單位", value: "Unit" },
+            { text: "保養週期", value: "Period" },
+            { text: "上次保養", value: "LastTime" },
+            { text: "最近應保養", value: "Date" },
+            {
+                text: "設備屬性", value: "ESN", formatter: (val) => {
+                    return `<a class="btn btn-search" src="val">設備資料</a>`
+                }
+            },
+        ],
+        InspecitonPlan: [
+            { text: "本項目保養狀態", value: "FormItemState" },
+        ],
+        InspectionPlanMaintain: [
+            { text: "本項目保養狀態", value: "FormItemState" },
+        ],
+        MaintainSupplementarInfo: [
+            { text: "本項目保養狀態", value: "FormItemState" },
+        ],
+        MaintainAuditInfo: [
+            { text: "本項目保養狀態", value: "FormItemState" },
+        ]
+    }
+
+    const fakeData = {
+        "RSN": "R23022001",
+        "Date": "2023/2/20 09:00:00",
+        "ReportLevel": "施工中",
+        "MyName": "賈皓麟",
+        "ReportState": "審核未過",
+        "Area": "前處理機房",
+        "Floor": "B1F",
+        "PropertyCode": "35435",
+        "ESN": "E00003",
+        "EName": "粗攔物除物皮帶輸送機",
+        "ReportContent": "壞透透",
+        "ImgPath": [
+            "C:/Users/User/Pictures/安妮雅.jfif"
+        ],
+        "InspectionPlanList": [
+            {
+                "InspectionPlan": {
+                    "IPSN": "P23022203",
+                    "IPName": "維修設備E00003",
+                    "PlanDate": "2023/2/22",
+                    "PlanState": "巡檢完成",
+                    "Shift": "2",
+                    "MyName": "賈皓麟、羅紹齊"
+                },
+                "InspectionPlanRepair": {
+                    "RepairState": "審核未過",
+                    "RepairContent": "好了",
+                    "MyName": "賈皓麟",
+                    "RepairDate": "2023/2/22",
+                    "ImgPath": []
+                },
+                "RepairSupplementaryInfo": [
+                    {
+                        "MyName": "王大明",
+                        "SupplementaryDate": "2023/1/15",
+                        "SupplementaryContent": "OOXX",
+                        "FilePath": ["/file/電燈故障.pdf"],
+                    }
+                ],
+                "RepairAuditInfo": [
+                    {
+                        "MyName": "陳進國",
+                        "AuditDate": "2023/2/22",
+                        "AuditResult": "審核未過",
+                        "AuditMemo": "沒修好",
+                        "ImgPath": []
+                    }
+                ]
+            }
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#EquipmentMaintainFormItem").append(createTableInner(res, SerializedName.EquipmentMaintainFormItem));
+
+            $("#InspecitonPlan").append(createTableInner(res, SerializedName.InspecitonPlan));
+            $("#InspectionPlanMaintain").append(createTableInner(res, SerializedName.InspectionPlanMaintain));
+
+            if (res.MaintainSupplementarInfo && res.MaintainSupplementarInfo.length != 0) {
+                let accordion = $("#accordion-MaintainSupplementarInfo");
+                res.MaintainSupplementarInfo.forEach((d, i, arr) => {
+                    //todo
+                    accordion.append(createAccordionItem({
+                        title: "補件資料",
+                        id: "MaintainSupplementarInfo",
+                        sn: SerializedName.MaintainSupplementarInfo,
+                        data: arr.MaintainSupplementarInfo,
+                        itemTitleKey: "SupplementaryDate"
+                    }, i));
+                })
+            }
+
+            if (res.MaintainAuditInfo && res.MaintainAuditInfo.length != 0) {
+                let accordion = $("#accordion-MaintainAuditInfo");
+                res.MaintainAuditInfo.forEach((d, i, arr) => {
+                    //todo
+                    accordion.append(putData_InspectionPlan({
+                        title: "審核資料",
+                        id: "MaintainAuditInfo",
+                        sn: SerializedName.MaintainAuditInfo,
+                        data: arr.MaintainAuditInfo,
+                        itemTitleKey: "AuditDate"
+                    }, i));
+                })
+            }
+
+
+            if (res.InspectionPlanList.length != 0) {
+                let accordion = $("#accordion-InspectionPlan");
+                res.InspectionPlanList.forEach((d, i) => {
+                    accordion.append(putData_InspectionPlan(d, null, i));
+                })
+                $("#InspectionPlan_List").removeClass("d-none");
+            }
+            else {
+                $("#accordion-InspectionPlan").parents(".datatable").remove();
+            }
+
+            ImageDisplay(".datatable-img-item>img");
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+
+        readData(apiUrl);
+    }
+
+</script>
