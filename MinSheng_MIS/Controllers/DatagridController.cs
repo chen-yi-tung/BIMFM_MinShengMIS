@@ -19,9 +19,6 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Report_Management(FormCollection form)
         {
-            string page = form["page"]?.ToString();
-            string rows = form["rows"]?.ToString();
-            JObject jo = new JObject();
             var service = new DatagridService();
             var a = service.GetJsonForGrid_Management(form);
             string result = JsonConvert.SerializeObject(a);
