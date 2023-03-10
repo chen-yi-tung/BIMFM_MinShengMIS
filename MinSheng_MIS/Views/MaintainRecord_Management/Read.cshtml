@@ -59,40 +59,88 @@
             { text: "最近應保養", value: "Date" },
             {
                 text: "設備屬性", value: "ESN", formatter: (val) => {
-                    return `<a class="btn btn-search" src="val">設備資料</a>`
+                    return val ? `<a class="btn btn-search" src="val">設備資料</a>` : "-"
                 }
             },
         ],
         InspecitonPlan: [
-            { text: "本項目保養狀態", value: "FormItemState" },
+            { text: "計畫編號", value: "IPSN" },
+            { text: "計畫名稱", value: "IPName" },
+            { text: "計畫日期", value: "PlanDate" },
+            { text: "計畫執行狀態", value: "PlanState" },
+            { text: "巡檢班別", value: "Shift" },
+            { text: "巡檢人員", value: "MyName" },
         ],
         InspectionPlanMaintain: [
-            { text: "本項目保養狀態", value: "FormItemState" },
+            { text: "本次保養狀態", value: "MaintainState" },
+            { text: "填報人員", value: "MyName" },
+            { text: "保養備註", value: "MaintainContent" },
+            { text: "填報時間", value: "MaintainDate" },
+            { text: "保養照片", value: "ImgPath" },
         ],
         MaintainSupplementarInfo: [
-            { text: "本項目保養狀態", value: "FormItemState" },
+            { text: "補件人", value: "MyName" },
+            { text: "補件日期", value: "SupplementaryDate" },
+            { text: "補件說明", value: "SupplementaryContent" },
+            { text: "補件檔案", value: "FilePath" },
         ],
         MaintainAuditInfo: [
-            { text: "本項目保養狀態", value: "FormItemState" },
+            { text: "審核者", value: "MyName" },
+            { text: "審核日期", value: "AuditDate" },
+            { text: "審核結果", value: "AuditResult" },
+            { text: "審核意見", value: "AuditMemo" },
+            { text: "審核照片", value: "ImgPath" },
         ]
     }
 
     const fakeData = {
-        "RSN": "R23022001",
-        "Date": "2023/2/20 09:00:00",
-        "ReportLevel": "施工中",
-        "MyName": "賈皓麟",
-        "ReportState": "審核未過",
-        "Area": "前處理機房",
-        "Floor": "B1F",
-        "PropertyCode": "35435",
-        "ESN": "E00003",
-        "EName": "粗攔物除物皮帶輸送機",
-        "ReportContent": "壞透透",
-        "ImgPath": [
-            "C:/Users/User/Pictures/安妮雅.jfif"
+        EquipmentMaintainFormItem: {
+            FormItemState: "完成",
+            EMFISN: "E00003_000001_230107",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            Date: "2022/01/01",
+            ESN: "E00003",
+        },
+        InspecitonPlan: {
+            IPSN: "P23010401",
+            IPName: "巡檢A區計畫",
+            PlanDate: "2023/01/08",
+            PlanState: "巡檢完成",
+            Shift: "早班",
+            MyName: "王大明、李泰順",
+        },
+        InspectionPlanMaintain: {
+            MaintainState: "完成",
+            MyName: "王大明",
+            MaintainContent: "修復完成",
+            MaintainDate: "2023/01/07 12:40:56",
+            ImgPath: [
+                "/Content/img/bg.png"
+            ],
+        },
+        MaintainSupplementarInfo: [
+            {
+                MyName: "王大明",
+                SupplementaryDate: "2023/01/10",
+                SupplementaryContent: "OOXX",
+                FilePath: ["/file/電燈故障.pdf"],
+            }
         ],
-        "InspectionPlanList": [
+        MaintainAuditInfo: [
+            {
+                MyName: "陳組長",
+                AuditDate: "2023/1/12",
+                AuditResult: "審核未過",
+                AuditMemo: "未處理完善",
+                ImgPath: [
+                    "/Content/img/bg.png"
+                ],
+            }
+        ],
+        InspectionPlanList: [
             {
                 "InspectionPlan": {
                     "IPSN": "P23022203",
@@ -114,7 +162,7 @@
                         "MyName": "王大明",
                         "SupplementaryDate": "2023/1/15",
                         "SupplementaryContent": "OOXX",
-                        "FilePath": ["/file/電燈故障.pdf"],
+                        "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
                     }
                 ],
                 "RepairAuditInfo": [
@@ -126,7 +174,7 @@
                         "ImgPath": []
                     }
                 ]
-            }
+            },
         ]
     }
 
@@ -144,10 +192,16 @@
 
         function onSuccess(res) {
             console.log(res);
-            $("#EquipmentMaintainFormItem").append(createTableInner(res, SerializedName.EquipmentMaintainFormItem));
+            $("#EquipmentMaintainFormItem").append(
+                createTableInner(res.EquipmentMaintainFormItem, SerializedName.EquipmentMaintainFormItem)
+            );
 
-            $("#InspecitonPlan").append(createTableInner(res, SerializedName.InspecitonPlan));
-            $("#InspectionPlanMaintain").append(createTableInner(res, SerializedName.InspectionPlanMaintain));
+            $("#InspecitonPlan").append(
+                createTableInner(res.InspecitonPlan, SerializedName.InspecitonPlan)
+            );
+            $("#InspectionPlanMaintain").append(
+                createTableInner(res.InspectionPlanMaintain, SerializedName.InspectionPlanMaintain)
+            );
 
             if (res.MaintainSupplementarInfo && res.MaintainSupplementarInfo.length != 0) {
                 let accordion = $("#accordion-MaintainSupplementarInfo");
@@ -157,7 +211,7 @@
                         title: "補件資料",
                         id: "MaintainSupplementarInfo",
                         sn: SerializedName.MaintainSupplementarInfo,
-                        data: arr.MaintainSupplementarInfo,
+                        data: arr,
                         itemTitleKey: "SupplementaryDate"
                     }, i));
                 })
@@ -167,11 +221,11 @@
                 let accordion = $("#accordion-MaintainAuditInfo");
                 res.MaintainAuditInfo.forEach((d, i, arr) => {
                     //todo
-                    accordion.append(putData_InspectionPlan({
+                    accordion.append(createAccordionItem({
                         title: "審核資料",
                         id: "MaintainAuditInfo",
                         sn: SerializedName.MaintainAuditInfo,
-                        data: arr.MaintainAuditInfo,
+                        data: arr,
                         itemTitleKey: "AuditDate"
                     }, i));
                 })

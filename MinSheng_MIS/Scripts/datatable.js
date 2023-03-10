@@ -1,4 +1,5 @@
 ﻿function createTableInner(data, sn) {
+    const nullString = "-";
     return sn.map((e) => {
         let html;
         switch (e.value) {
@@ -6,36 +7,30 @@
                 html = `
                     <tr>
                         <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td" id="d-${e.value}">${putImage(data[e.value])}</td>
-                    </tr>
-                `;
+                        <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putImage(data[e.value]) : nullString}</td>
+                    </tr>`;
                 break;
             case "FilePath":
                 html = `
                     <tr>
                         <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td" id="d-${e.value}">${putFile(data[e.value])}</td>
-                    </tr>
-                `;
+                        <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putFile(data[e.value]) : nullString}</td>
+                    </tr>`;
                 break;
             default:
                 if (e.formatter) {
                     html = `
-                    <tr>
-                        <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td" id="d-${e.value}">
-                            ${e.formatter(data[e.value])}
-                        </td>
-                    </tr>
-                    `;
+                        <tr>
+                            <td class="datatable-table-th">${e.text}</td>
+                            <td class="datatable-table-td" id="d-${e.value}">${e.formatter(data[e.value])}</td>
+                        </tr>`;
                 }
                 else {
                     html = `
-                    <tr>
-                        <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td" id="d-${e.value}">${data[e.value]}</td>
-                    </tr>
-                    `;
+                        <tr>
+                            <td class="datatable-table-th">${e.text}</td>
+                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] ?? nullString}</td>
+                        </tr>`;
                 }
                 break;
         }
@@ -57,6 +52,7 @@
 }
 
 function createTableGrid(data, options) {
+    const nullString = "-";
     console.log(options)
     let columns = options.columns;
     let thead = options.thead == true ? `<thead><tr>${createThs(columns)}</tr></thead>` : "";
@@ -87,7 +83,7 @@ function createTableGrid(data, options) {
                 </td>`;
             }
             else {
-                td = `<td id="d-${o.id}">${d[o.id]}</td>`;
+                td = `<td id="d-${o.id}">${d[o.id] ?? nullString}</td>`;
             }
             return td;
         }).join("");
@@ -185,20 +181,20 @@ function putData_InspectionPlan(data = null, sn = null, i = 0) {
             <div class="accordion-body">
                 ${createItem("計劃資訊", "InspectionPlan", createTableInner(data.InspectionPlan, sn.InspectionPlan))}
                 ${createItem("維修資料", "InspectionPlanRepair", createTableInner(data.InspectionPlanRepair, sn.InspectionPlanRepair))}
-                ${createAccordion({
+                ${data.RepairSupplementaryInfo.length !== 0 ? createAccordion({
         title: "補件資料",
         id: "RepairSupplementaryInfo",
         sn: sn.RepairSupplementaryInfo,
         data: data.RepairSupplementaryInfo,
         itemTitleKey: "SupplementaryDate"
-    })}
-                ${createAccordion({
+    }) : ""}
+                ${data.RepairAuditInfo.length !== 0 ? createAccordion({
         title: "審核資料",
         id: "RepairAuditInfo",
         sn: sn.RepairAuditInfo,
         data: data.RepairAuditInfo,
         itemTitleKey: "AuditDate"
-    })}
+    }) : ""}
             </div>
         </div>
     </div>
@@ -232,7 +228,7 @@ function putData_InspectionPlan(data = null, sn = null, i = 0) {
         `;
     }
 
-    
+
 }
 
 function createAccordionItem(options, i) {
