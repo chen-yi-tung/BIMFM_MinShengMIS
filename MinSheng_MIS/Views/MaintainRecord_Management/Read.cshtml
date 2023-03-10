@@ -33,11 +33,16 @@
 </div>
 
 <div class="datatable datatable-secondary mt-5 d-none" id="InspectionPlan_List">
-    <div class="datatable-header">本報修單相關維修紀錄</div>
+    <div class="datatable-header">本保養單相關保養紀錄</div>
     <div class="datatable-body">
         <div class="accordion accordion-flush datatable-accordion" id="accordion-InspectionPlan">
         </div>
     </div>
+</div>
+
+<div class="edit-button-area mb-5">
+    <button class="btn btn-search" id="OtherMaintainRecord">本設備其他定期保養紀錄</button>
+    <button class="btn btn-back" id="RepairRecord">本設備維修紀錄</button>
 </div>
 
 <script src="/Scripts/datatable.js"></script>
@@ -47,51 +52,6 @@
     const RSN = '@ViewBag.id';
     //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
     let apiUrl = null
-
-    const SerializedName = {
-        EquipmentMaintainFormItem: [
-            { text: "本項目保養狀態", value: "FormItemState" },
-            { text: "保養單項目編號", value: "EMFISN" },
-            { text: "保養項目", value: "MIName" },
-            { text: "保養週期單位", value: "Unit" },
-            { text: "保養週期", value: "Period" },
-            { text: "上次保養", value: "LastTime" },
-            { text: "最近應保養", value: "Date" },
-            {
-                text: "設備屬性", value: "ESN", formatter: (val) => {
-                    return val ? `<a class="btn btn-search" src="val">設備資料</a>` : "-"
-                }
-            },
-        ],
-        InspecitonPlan: [
-            { text: "計畫編號", value: "IPSN" },
-            { text: "計畫名稱", value: "IPName" },
-            { text: "計畫日期", value: "PlanDate" },
-            { text: "計畫執行狀態", value: "PlanState" },
-            { text: "巡檢班別", value: "Shift" },
-            { text: "巡檢人員", value: "MyName" },
-        ],
-        InspectionPlanMaintain: [
-            { text: "本次保養狀態", value: "MaintainState" },
-            { text: "填報人員", value: "MyName" },
-            { text: "保養備註", value: "MaintainContent" },
-            { text: "填報時間", value: "MaintainDate" },
-            { text: "保養照片", value: "ImgPath" },
-        ],
-        MaintainSupplementarInfo: [
-            { text: "補件人", value: "MyName" },
-            { text: "補件日期", value: "SupplementaryDate" },
-            { text: "補件說明", value: "SupplementaryContent" },
-            { text: "補件檔案", value: "FilePath" },
-        ],
-        MaintainAuditInfo: [
-            { text: "審核者", value: "MyName" },
-            { text: "審核日期", value: "AuditDate" },
-            { text: "審核結果", value: "AuditResult" },
-            { text: "審核意見", value: "AuditMemo" },
-            { text: "審核照片", value: "ImgPath" },
-        ]
-    }
 
     const fakeData = {
         EquipmentMaintainFormItem: {
@@ -192,56 +152,7 @@
 
         function onSuccess(res) {
             console.log(res);
-            $("#EquipmentMaintainFormItem").append(
-                createTableInner(res.EquipmentMaintainFormItem, SerializedName.EquipmentMaintainFormItem)
-            );
-
-            $("#InspecitonPlan").append(
-                createTableInner(res.InspecitonPlan, SerializedName.InspecitonPlan)
-            );
-            $("#InspectionPlanMaintain").append(
-                createTableInner(res.InspectionPlanMaintain, SerializedName.InspectionPlanMaintain)
-            );
-
-            if (res.MaintainSupplementarInfo && res.MaintainSupplementarInfo.length != 0) {
-                let accordion = $("#accordion-MaintainSupplementarInfo");
-                res.MaintainSupplementarInfo.forEach((d, i, arr) => {
-                    //todo
-                    accordion.append(createAccordionItem({
-                        title: "補件資料",
-                        id: "MaintainSupplementarInfo",
-                        sn: SerializedName.MaintainSupplementarInfo,
-                        data: arr,
-                        itemTitleKey: "SupplementaryDate"
-                    }, i));
-                })
-            }
-
-            if (res.MaintainAuditInfo && res.MaintainAuditInfo.length != 0) {
-                let accordion = $("#accordion-MaintainAuditInfo");
-                res.MaintainAuditInfo.forEach((d, i, arr) => {
-                    //todo
-                    accordion.append(createAccordionItem({
-                        title: "審核資料",
-                        id: "MaintainAuditInfo",
-                        sn: SerializedName.MaintainAuditInfo,
-                        data: arr,
-                        itemTitleKey: "AuditDate"
-                    }, i));
-                })
-            }
-
-
-            if (res.InspectionPlanList.length != 0) {
-                let accordion = $("#accordion-InspectionPlan");
-                res.InspectionPlanList.forEach((d, i) => {
-                    accordion.append(putData_InspectionPlan(d, null, i));
-                })
-                $("#InspectionPlan_List").removeClass("d-none");
-            }
-            else {
-                $("#accordion-InspectionPlan").parents(".datatable").remove();
-            }
+            putData_MaintainRecord(res);
 
             ImageDisplay(".datatable-img-item>img");
         }
@@ -250,9 +161,20 @@
         }
     }
 
-    window.onload = function () {
+    function addButtonEvent() {
+        $("#OtherMaintainRecord").click(function () {
+            let url = baseUrl + 'Read' + `/${RSN}`;
+            window.open(url, "_blank");
+        });
+        $("#RepairRecord").click(function () {
+            let url = baseUrl + 'Read' + `/${RSN}`;
+            window.open(url, "_blank");
+        });
+    }
 
+    window.onload = function () {
         readData(apiUrl);
+        addButtonEvent();
     }
 
 </script>

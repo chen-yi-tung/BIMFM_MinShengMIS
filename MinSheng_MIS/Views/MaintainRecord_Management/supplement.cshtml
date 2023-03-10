@@ -1,7 +1,191 @@
-﻿
-@{
-    ViewBag.Title = "Supplement";
+﻿@{
+    ViewBag.Title = "巡檢保養紀錄補件";
 }
 
-<h2>supplement</h2>
+<h2>@ViewBag.Title</h2>
 
+<div class="datatable mt-5">
+    <div class="datatable-header">保養項目資料</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="EquipmentMaintainFormItem"></table>
+    </div>
+</div>
+
+<div class="datatable mt-5">
+    <div class="datatable-header">計劃資訊</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="InspecitonPlan"></table>
+    </div>
+    <div class="datatable-header">保養填報</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="InspectionPlanMaintain"></table>
+    </div>
+    <div class="datatable-header">補件資料</div>
+    <div class="datatable-body">
+        <div class="accordion accordion-flush datatable-accordion" id="accordion-MaintainSupplementarInfo">
+        </div>
+    </div>
+    <div class="datatable-header">審核資料</div>
+    <div class="datatable-body">
+        <div class="accordion accordion-flush datatable-accordion" id="accordion-MaintainAuditInfo">
+        </div>
+    </div>
+</div>
+
+<div class="datatable datatable-secondary mt-5 d-none" id="InspectionPlan_List">
+    <div class="datatable-header">本保養單相關保養紀錄</div>
+    <div class="datatable-body">
+        <div class="accordion accordion-flush datatable-accordion" id="accordion-InspectionPlan">
+        </div>
+    </div>
+</div>
+
+<div class="edit-button-area mb-5">
+    <button class="btn btn-search" onclick="OtherMaintainRecord()">本設備其他定期保養紀錄</button>
+    <button class="btn btn-back" onclick="RepairRecord()">本設備維修紀錄</button>
+</div>
+
+<hr class="hr-dashed">
+
+<div class="edit-area edit-area-middle">
+    <form class="form" action="">
+        
+    </form>
+</div>
+
+<div class="edit-button-area mb-5">
+    <button class="btn btn-back" onclick="history.back()">返回</button>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/ImageDisplay.js"></script>
+<script>
+
+    const RSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
+    let apiUrl = null
+
+    const fakeData = {
+        EquipmentMaintainFormItem: {
+            FormItemState: "完成",
+            EMFISN: "E00003_000001_230107",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            Date: "2022/01/01",
+            ESN: "E00003",
+        },
+        InspecitonPlan: {
+            IPSN: "P23010401",
+            IPName: "巡檢A區計畫",
+            PlanDate: "2023/01/08",
+            PlanState: "巡檢完成",
+            Shift: "早班",
+            MyName: "王大明、李泰順",
+        },
+        InspectionPlanMaintain: {
+            MaintainState: "完成",
+            MyName: "王大明",
+            MaintainContent: "修復完成",
+            MaintainDate: "2023/01/07 12:40:56",
+            ImgPath: [
+                "/Content/img/bg.png"
+            ],
+        },
+        MaintainSupplementarInfo: [
+            {
+                MyName: "王大明",
+                SupplementaryDate: "2023/01/10",
+                SupplementaryContent: "OOXX",
+                FilePath: ["/file/電燈故障.pdf"],
+            }
+        ],
+        MaintainAuditInfo: [
+            {
+                MyName: "陳組長",
+                AuditDate: "2023/1/12",
+                AuditResult: "審核未過",
+                AuditMemo: "未處理完善",
+                ImgPath: [
+                    "/Content/img/bg.png"
+                ],
+            }
+        ],
+        InspectionPlanList: [
+            {
+                "InspectionPlan": {
+                    "IPSN": "P23022203",
+                    "IPName": "維修設備E00003",
+                    "PlanDate": "2023/2/22",
+                    "PlanState": "巡檢完成",
+                    "Shift": "2",
+                    "MyName": "賈皓麟、羅紹齊"
+                },
+                "InspectionPlanRepair": {
+                    "RepairState": "審核未過",
+                    "RepairContent": "好了",
+                    "MyName": "賈皓麟",
+                    "RepairDate": "2023/2/22",
+                    "ImgPath": []
+                },
+                "RepairSupplementaryInfo": [
+                    {
+                        "MyName": "王大明",
+                        "SupplementaryDate": "2023/1/15",
+                        "SupplementaryContent": "OOXX",
+                        "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
+                    }
+                ],
+                "RepairAuditInfo": [
+                    {
+                        "MyName": "陳進國",
+                        "AuditDate": "2023/2/22",
+                        "AuditResult": "審核未過",
+                        "AuditMemo": "沒修好",
+                        "ImgPath": []
+                    }
+                ]
+            },
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            putData_MaintainRecord(res);
+
+            ImageDisplay(".datatable-img-item>img");
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function OtherMaintainRecord() {
+        let url = baseUrl + 'Read' + `/${RSN}`;
+        window.open(url, "_blank");
+    }
+
+    function RepairRecord() {
+        let url = baseUrl + 'Read' + `/${RSN}`;
+        window.open(url, "_blank");
+    }
+
+    window.onload = function () {
+
+        readData(apiUrl);
+    }
+
+</script>
