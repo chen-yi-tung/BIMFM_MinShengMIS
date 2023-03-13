@@ -17,7 +17,6 @@ namespace MinSheng_MIS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public InspectionPlanRepair()
         {
-            this.RepairAuditInfo = new HashSet<RepairAuditInfo>();
             this.RepairCompletionImage = new HashSet<RepairCompletionImage>();
             this.RepairSupplementaryInfo = new HashSet<RepairSupplementaryInfo>();
         }
@@ -33,8 +32,6 @@ namespace MinSheng_MIS.Models
     
         public virtual EquipmentReportForm EquipmentReportForm { get; set; }
         public virtual InspectionPlan InspectionPlan { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RepairAuditInfo> RepairAuditInfo { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RepairCompletionImage> RepairCompletionImage { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

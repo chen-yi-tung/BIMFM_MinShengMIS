@@ -26,8 +26,8 @@ namespace MinSheng_MIS.Models
         public System.DateTime AuditDate { get; set; }
         public string AuditMemo { get; set; }
         public string AuditResult { get; set; }
+        public bool IsBuffer { get; set; }
     
-        public virtual InspectionPlanRepair InspectionPlanRepair { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RepairAuditImage> RepairAuditImage { get; set; }
     }
