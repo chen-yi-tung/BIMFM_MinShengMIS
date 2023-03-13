@@ -13,30 +13,17 @@ namespace MinSheng_MIS.Controllers
 {
     public class DatagridController : Controller
     {
-        MaintainRecordManagementModel MRMM = new MaintainRecordManagementModel();
-
         // GET: Datagrid
         [HttpGet]
         public ActionResult Index()
         {
-            //ViewModel傳前端下拉選項
-            MaintainRecordManagementViewModel.Management management = new MaintainRecordManagementViewModel.Management()
-            { 
-                AreaList = MRMM.GetAreaList(),
-                FloorList= MRMM.GetFloorList(),
-                MaintainStateList= MRMM.GetMaintainStateList(),
-                ESNList = MRMM.GetESNList(),
-                ENameList= MRMM.GetENameList(),
-                MaintainUserIDList= MRMM.GetMaintainUserList(),
-                AuditUserIDList= MRMM.GetAuditUserList()
-            };
-            return View(management);
+            return View();
         }
         [HttpPost]
-        public ActionResult Report_Management(FormCollection form)
+        public ActionResult MaintainRecord_Management(FormCollection form)
         {
             var service = new DatagridService();
-            var a = service.GetJsonForGrid_Management(form);
+            var a = service.GetJsonForGrid_MaintainRecord_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
