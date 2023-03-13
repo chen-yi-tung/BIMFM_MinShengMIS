@@ -57,8 +57,8 @@
                     readonly>
             </div>
             <div class="form-group d-lg-contents">
-                <label for="AuditMemo">審核意見</label>
-                <input class="form-control" type="text" id="AuditMemo" name="AuditMemo">
+                <label for="AuditMemo" class="align-self-start">審核意見</label>
+                <textarea class="form-control" name="AuditMemo" id="AuditMemo"></textarea>
             </div>
             <div class="form-group d-lg-contents">
                 <label for="ImgPath">審核照片</label>
@@ -109,7 +109,7 @@
     //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
     let apiUrl = null
 
-    let imgFiles = {};
+    let imgFiles = [];
 
     const fakeData = {
         EquipmentMaintainFormItem: {
@@ -236,14 +236,9 @@
 
             function createIamges(data) {
                 for (let i = 0; i < data.length; i++) {
+                    imgFiles.push(data[i]);
                     const reader = new FileReader();
-                    const readerBase64 = new FileReader();
                     reader.onload = function (e) {
-                        console.log("ArrayBuffer", e.target.result);
-                        imgFiles[data[i].name] = e.target.result;
-                        readerBase64.readAsDataURL(data[i]);
-                    }
-                    readerBase64.onload = function (e) {
                         let query = $(`
                         <div class="edit-img-item">
                             <img src="${e.target.result}">
@@ -252,14 +247,30 @@
                         $(".edit-img-area").append(query);
                         ImageDisplay(query.children("img"));
                         query.children("button").click(function () {
-                            delete imgFiles[data[i].name];
+                            let index = imgFiles.findIndex(data[i]);
+                            imgFiles.splice(index, 1);
                             $(this).parent().remove();
                         })
                     };
-                    reader.readAsArrayBuffer(data[i]);
+                    reader.readAsDataURL(data[i]);
                 }
             }
         });
+    }
+
+    function createFormData() {
+        let flieList = new DataTransfer();
+        imgFiles.forEach((item) => {
+            flieList.items.add(item);
+        })
+
+        console.log(flieList);
+
+        let fd = new FormData();
+        fd.append('AuditUserID', $("#AuditUserID").val());
+        fd.append('AuditMemo', $("#AuditMemo").val());
+        fd.append('ImgPath', flieList.files);
+        fd.append('AuditResult', $('input[name="AuditResult"]:checked').val() ?? 0);
     }
 
 
