@@ -281,6 +281,7 @@
           <Property Name="AuditDate" Type="datetime" Nullable="false" />
           <Property Name="AuditMemo" Type="nvarchar" MaxLength="200" />
           <Property Name="AuditResult" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="IsBuffer" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="MaintainCompletionImage">
           <Key>
@@ -318,6 +319,7 @@
           <Property Name="SupplementaryUserID" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="SupplementaryDate" Type="datetime" Nullable="false" />
           <Property Name="SupplementaryContent" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="IsBuffer" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="PathSample">
           <Key>
@@ -350,8 +352,9 @@
           <Property Name="IPRSN" Type="nchar" MaxLength="13" Nullable="false" />
           <Property Name="AuditUserID" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="AuditDate" Type="datetime" Nullable="false" />
-          <Property Name="AuditMemo" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="AuditMemo" Type="nvarchar" MaxLength="200" />
           <Property Name="AuditResult" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="IsBuffer" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="RepairCompletionImage">
           <Key>
@@ -376,6 +379,7 @@
           <Property Name="SupplementaryUserID" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="SupplementaryDate" Type="datetime" Nullable="false" />
           <Property Name="SupplementaryContent" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="IsBuffer" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="ReportImage">
           <Key>
@@ -726,18 +730,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RepairAuditInfo_InspectionPlanRepair">
-          <End Role="InspectionPlanRepair" Type="Self.InspectionPlanRepair" Multiplicity="1" />
-          <End Role="RepairAuditInfo" Type="Self.RepairAuditInfo" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="InspectionPlanRepair">
-              <PropertyRef Name="IPRSN" />
-            </Principal>
-            <Dependent Role="RepairAuditInfo">
-              <PropertyRef Name="IPRSN" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RepairCompletionImage_InspectionPlanRepair">
           <End Role="InspectionPlanRepair" Type="Self.InspectionPlanRepair" Multiplicity="1" />
           <End Role="RepairCompletionImage" Type="Self.RepairCompletionImage" Multiplicity="*" />
@@ -932,10 +924,6 @@
             <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
             <End Role="RepairAuditImage" EntitySet="RepairAuditImage" />
           </AssociationSet>
-          <AssociationSet Name="FK_RepairAuditInfo_InspectionPlanRepair" Association="Self.FK_RepairAuditInfo_InspectionPlanRepair">
-            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
-            <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
-          </AssociationSet>
           <AssociationSet Name="FK_RepairCompletionImage_InspectionPlanRepair" Association="Self.FK_RepairCompletionImage_InspectionPlanRepair">
             <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
             <End Role="RepairCompletionImage" EntitySet="RepairCompletionImage" />
@@ -1077,10 +1065,6 @@
           <AssociationSet Name="FK_InspectionTrack_InspectionPlanMember" Association="Bimfm_MinSheng_MISModel.FK_InspectionTrack_InspectionPlanMember">
             <End Role="InspectionPlanMember" EntitySet="InspectionPlanMember" />
             <End Role="InspectionTrack" EntitySet="InspectionTrack" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RepairAuditInfo_InspectionPlanRepair" Association="Bimfm_MinSheng_MISModel.FK_RepairAuditInfo_InspectionPlanRepair">
-            <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
-            <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
           </AssociationSet>
           <AssociationSet Name="FK_RepairCompletionImage_InspectionPlanRepair" Association="Bimfm_MinSheng_MISModel.FK_RepairCompletionImage_InspectionPlanRepair">
             <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
@@ -1392,7 +1376,6 @@
           <Property Name="RepairStateOfFilling" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <NavigationProperty Name="EquipmentReportForm" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="EquipmentReportForm" />
           <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlan" FromRole="InspectionPlanRepair" ToRole="InspectionPlan" />
-          <NavigationProperty Name="RepairAuditInfo" Relationship="Bimfm_MinSheng_MISModel.FK_RepairAuditInfo_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="RepairAuditInfo" />
           <NavigationProperty Name="RepairCompletionImage" Relationship="Bimfm_MinSheng_MISModel.FK_RepairCompletionImage_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="RepairCompletionImage" />
           <NavigationProperty Name="RepairSupplementaryInfo" Relationship="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryInfo_InspectionPlanRepair" FromRole="InspectionPlanRepair" ToRole="RepairSupplementaryInfo" />
         </EntityType>
@@ -1430,6 +1413,7 @@
           <Property Name="AuditDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="AuditMemo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="AuditResult" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="IsBuffer" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainAuditInfo_InspectionPlanMaintain" FromRole="MaintainAuditInfo" ToRole="InspectionPlanMaintain" />
           <NavigationProperty Name="MaintainAuditImage" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainAuditImage_MaintainAuditInfo" FromRole="MaintainAuditInfo" ToRole="MaintainAuditImage" />
         </EntityType>
@@ -1471,6 +1455,7 @@
           <Property Name="SupplementaryUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="SupplementaryDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="SupplementaryContent" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="IsBuffer" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_InspectionPlanMaintain" FromRole="MaintainSupplementaryInfo" ToRole="InspectionPlanMaintain" />
           <NavigationProperty Name="MaintainSupplementaryFile" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryFile" />
           <NavigationProperty Name="MaintainSupplementaryInfo1" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryInfo1" />
@@ -1511,9 +1496,9 @@
           <Property Name="IPRSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
           <Property Name="AuditUserID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="AuditDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="AuditMemo" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="AuditMemo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="AuditResult" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
-          <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_RepairAuditInfo_InspectionPlanRepair" FromRole="RepairAuditInfo" ToRole="InspectionPlanRepair" />
+          <Property Name="IsBuffer" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="RepairAuditImage" Relationship="Bimfm_MinSheng_MISModel.FK_RepairAuditImage_RepairAuditInfo" FromRole="RepairAuditInfo" ToRole="RepairAuditImage" />
         </EntityType>
         <EntityType Name="RepairCompletionImage">
@@ -1541,6 +1526,7 @@
           <Property Name="SupplementaryUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="SupplementaryDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="SupplementaryContent" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="IsBuffer" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryInfo_InspectionPlanRepair" FromRole="RepairSupplementaryInfo" ToRole="InspectionPlanRepair" />
           <NavigationProperty Name="RepairSupplementaryFile" Relationship="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryFile_RepairSupplementaryInfo" FromRole="RepairSupplementaryInfo" ToRole="RepairSupplementaryFile" />
         </EntityType>
@@ -1815,18 +1801,6 @@
             </Principal>
             <Dependent Role="InspectionTrack">
               <PropertyRef Name="PMSN" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RepairAuditInfo_InspectionPlanRepair">
-          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanRepair" Role="InspectionPlanRepair" Multiplicity="1" />
-          <End Type="Bimfm_MinSheng_MISModel.RepairAuditInfo" Role="RepairAuditInfo" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="InspectionPlanRepair">
-              <PropertyRef Name="IPRSN" />
-            </Principal>
-            <Dependent Role="RepairAuditInfo">
-              <PropertyRef Name="IPRSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2216,6 +2190,7 @@
           <EntitySetMapping Name="MaintainAuditInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MaintainAuditInfo">
               <MappingFragment StoreEntitySet="MaintainAuditInfo">
+                <ScalarProperty Name="IsBuffer" ColumnName="IsBuffer" />
                 <ScalarProperty Name="AuditResult" ColumnName="AuditResult" />
                 <ScalarProperty Name="AuditMemo" ColumnName="AuditMemo" />
                 <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
@@ -2258,6 +2233,7 @@
           <EntitySetMapping Name="MaintainSupplementaryInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo">
               <MappingFragment StoreEntitySet="MaintainSupplementaryInfo">
+                <ScalarProperty Name="IsBuffer" ColumnName="IsBuffer" />
                 <ScalarProperty Name="SupplementaryContent" ColumnName="SupplementaryContent" />
                 <ScalarProperty Name="SupplementaryDate" ColumnName="SupplementaryDate" />
                 <ScalarProperty Name="SupplementaryUserID" ColumnName="SupplementaryUserID" />
@@ -2295,6 +2271,7 @@
           <EntitySetMapping Name="RepairAuditInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairAuditInfo">
               <MappingFragment StoreEntitySet="RepairAuditInfo">
+                <ScalarProperty Name="IsBuffer" ColumnName="IsBuffer" />
                 <ScalarProperty Name="AuditResult" ColumnName="AuditResult" />
                 <ScalarProperty Name="AuditMemo" ColumnName="AuditMemo" />
                 <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
@@ -2323,6 +2300,7 @@
           <EntitySetMapping Name="RepairSupplementaryInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairSupplementaryInfo">
               <MappingFragment StoreEntitySet="RepairSupplementaryInfo">
+                <ScalarProperty Name="IsBuffer" ColumnName="IsBuffer" />
                 <ScalarProperty Name="SupplementaryContent" ColumnName="SupplementaryContent" />
                 <ScalarProperty Name="SupplementaryDate" ColumnName="SupplementaryDate" />
                 <ScalarProperty Name="SupplementaryUserID" ColumnName="SupplementaryUserID" />
