@@ -1,7 +1,275 @@
-﻿
-@{
-    ViewBag.Title = "Supplement";
+﻿@{
+    ViewBag.Title = "巡檢維修紀錄補件";
 }
 
-<h2>supplement</h2>
+<h2>@ViewBag.Title</h2>
+<section>
+    <section id="RepairRecord"></section>
 
+    <section id="InspectionPlanRepairList"></section>
+
+    <div class="edit-button-area mb-5">
+        <button class="btn btn-search" id="OtherReportRecord">本設備其他維修紀錄</button>
+        <button class="btn btn-back" id="MaintainRecord">本設備定期保養紀錄</button>
+    </div>
+</section>
+
+<hr class="hr-dashed">
+
+<section>
+    <div class="edit-area edit-area-middle">
+        <form class="form form-w-100" enctype="multipart/form-data">
+            <div class="form-group d-lg-contents">
+                <label for="RepairState">本次維修狀態</label>
+                <div>
+                    <input class="form-control readonly w-lg-auto d-lg-inline-block" type="text" id="RepairState"
+                        name="RepairState" value="完成" readonly>
+                    <div class="form-group d-lg-contents mt-lg-0" style="margin-top: 24px;">
+                        <label for="MyName" class="mx-lg-3  w-lg-auto d-lg-inline-block">填報人員</label>
+                        <input class="form-control readonly  w-lg-auto d-lg-inline-block" type="text" id="MyName"
+                            name="MyName" value="王大明" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group d-lg-contents">
+                <label for="RepairDate">填報時間</label>
+                <input class="form-control readonly" type="text" id="RepairDate" name="RepairDate" readonly>
+            </div>
+            <div class="form-group d-lg-contents">
+                <label for="RepairContent" class="align-self-start">維修備註</label>
+                <textarea class="form-control" name="RepairContent" id="RepairContent" required></textarea>
+            </div>
+
+            <div class="form-group d-lg-contents">
+                <label for="ImgPath">維修照片</label>
+                <div>
+                    <label class="btn btn-search" for="ImgPath">選擇照片</label>
+                    <input type="file" multiple accept="image/*" id="ImgPath" name="ImgPath"
+                        style="visibility: hidden; width: 0;">
+                </div>
+            </div>
+            <div class="d-lg-contents">
+                <div></div>
+                <div class="edit-img-area">
+
+                </div>
+            </div>
+
+            <hr class="hr-dashed" style="grid-column: span 2;">
+
+            <div class="form-group d-lg-contents">
+                <label for="SupplementaryUserID">補件人員</label>
+                <input class="form-control readonly" type="text" id="SupplementaryUserID" name="SupplementaryUserID"
+                    value="王大明" readonly>
+            </div>
+            <div class="form-group d-lg-contents">
+                <label for="SupplementaryContent" class="align-self-start">補件說明</label>
+                <textarea class="form-control" name="SupplementaryContent" id="SupplementaryContent"
+                    required></textarea>
+            </div>
+
+            <div class="form-group d-lg-contents">
+                <label for="FilePath">補件檔案</label>
+                <div>
+                    <label class="btn btn-search" for="FilePath">選擇檔案</label>
+                    <input type="file" id="FilePath" name="FilePath" style="visibility: hidden; width: 0;">
+                    <span class="d-inline-block text-white align-bottom text-break my-2 ms-lg-2">未選擇任何檔案</span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="edit-button-area mb-5">
+        <button class="btn btn-back" onclick="history.back()">返回</button>
+        <button class="btn btn-search">暫存草稿</button>
+        <button class="btn btn-export">送出</button>
+    </div>
+</section>
+
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/dataTable/InspectionPlanRepair.js"></script>
+<script src="/Scripts/dataTable/RepairRecord.js"></script>
+<script src="/Scripts/ImageDisplay.js"></script>
+<script>
+
+    const RSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
+    let apiUrl = null
+
+    let imgFiles = [];
+
+    const fakeData = {
+        EquipmentReportItem: {
+            ReportState: "已完工",
+            RSN: "R23010401",
+            Date: "2023/02/04 14:27:52",
+            ReportLevel: "最速件",
+            MyName: "李泰順",
+            Area: "A區",
+            Floor: "2F",
+            PorpertyCode: "",
+            ESN: "E00001",
+            EName: "日光燈36Wx2",
+            ESN_Button: "E00001",
+            ReportContent: "電燈故障",
+            ImgPath: ["/Content/img/bg.png"],
+        },
+        InspectionPlan: {
+            IPSN: "P23010401",
+            IPName: "巡檢A區計畫",
+            PlanDate: "2023/01/08",
+            PlanState: "巡檢完成",
+            Shift: "早班",
+            MyName: "王大明、李泰順",
+        },
+        InspectionPlanRepair: {
+            RepairState: "完成",
+            MyName: "王大明",
+            RepairContent: "修復完成",
+            RepairDate: "2023/01/07 12:40:56",
+            ImgPath: [
+                "/Content/img/bg.png"
+            ],
+        },
+        RepairSupplementaryInfo: [
+            {
+                MyName: "王大明",
+                SupplementaryDate: "2023/01/10",
+                SupplementaryContent: "OOXX",
+                FilePath: ["/file/電燈故障.pdf"],
+            }
+        ],
+        RepairAuditInfo: [
+            {
+                MyName: "陳組長",
+                AuditDate: "2023/1/12",
+                AuditResult: "審核未過",
+                AuditMemo: "未處理完善",
+                ImgPath: [
+                    "/Content/img/bg.png"
+                ],
+            }
+        ],
+        InspectionPlanList: [
+            {
+                "InspectionPlan": {
+                    "IPSN": "P23022203",
+                    "IPName": "維修設備E00003",
+                    "PlanDate": "2023/2/22",
+                    "PlanState": "巡檢完成",
+                    "Shift": "2",
+                    "MyName": "賈皓麟、羅紹齊"
+                },
+                "InspectionPlanRepair": {
+                    "RepairState": "審核未過",
+                    "RepairContent": "好了",
+                    "MyName": "賈皓麟",
+                    "RepairDate": "2023/2/22",
+                    "ImgPath": []
+                },
+                "RepairSupplementaryInfo": [
+                    {
+                        "MyName": "王大明",
+                        "SupplementaryDate": "2023/1/15",
+                        "SupplementaryContent": "OOXX",
+                        "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
+                    }
+                ],
+                "RepairAuditInfo": [
+                    {
+                        "MyName": "陳進國",
+                        "AuditDate": "2023/2/22",
+                        "AuditResult": "審核未過",
+                        "AuditMemo": "沒修好",
+                        "ImgPath": []
+                    }
+                ]
+            },
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            RepairRecord("#RepairRecord", res);
+            InspectionPlanRepair("#InspectionPlanRepairList", res.InspectionPlanList);
+
+            ImageDisplay(".datatable-img-item>img");
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function addButtonEvent() {
+        $("#OtherMaintainRecord").click(function () {
+            let url = baseUrl + 'Read' + `/${RSN}`;
+            window.open(url, "_blank");
+        });
+        $("#MaintainRecord").click(function () {
+            let url = baseUrl + 'Read' + `/${RSN}`;
+            window.open(url, "_blank");
+        });
+        $("#ImgPath").change(function (e) {
+            console.log(this.files);
+            if (this.files && this.files.length !== 0) {
+                createIamges(this.files);
+            }
+
+            function createIamges(data) {
+                for (let i = 0; i < data.length; i++) {
+                    imgFiles.push(data[i]);
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        let query = $(`
+                        <div class="edit-img-item">
+                            <img src="${e.target.result}">
+                            <button class="btn-delete-item"></button>
+                        </div>`);
+                        $(".edit-img-area").append(query);
+                        ImageDisplay(query.children("img"));
+                        query.children("button").click(function (event) {
+                            event.preventDefault();
+                            let index = imgFiles.findIndex((e) => e == data[i]);
+                            imgFiles.splice(index, 1);
+                            $(this).parent().remove();
+                        })
+                    };
+                    reader.readAsDataURL(data[i]);
+                }
+            }
+        });
+    }
+
+    function createFormData() {
+        let flieList = new DataTransfer();
+        imgFiles.forEach((item) => {
+            flieList.items.add(item);
+        })
+
+        console.log(flieList);
+
+        let fd = new FormData();
+        fd.append('AuditUserID', $("#AuditUserID").val());
+        fd.append('AuditMemo', $("#AuditMemo").val());
+        fd.append('ImgPath', flieList.files);
+        fd.append('AuditResult', $('input[name="AuditResult"]:checked').val() ?? 0);
+    }
+    
+    window.onload = function () {
+        readData(apiUrl);
+        addButtonEvent();
+    }
+
+</script>

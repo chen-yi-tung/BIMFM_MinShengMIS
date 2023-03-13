@@ -11,15 +11,10 @@
     </div>
 </div>
 
-<div class="datatable datatable-secondary mt-5 d-none" id="InspectionPlan_List">
-    <div class="datatable-header">本報修單相關維修紀錄</div>
-    <div class="datatable-body">
-        <div class="accordion accordion-flush datatable-accordion" id="accordion-InspectionPlan">
-        </div>
-    </div>
-</div>
+<section id="InspectionPlanMaintainList"></section>
 
 <script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/dataTable/InspectionPlanMaintain.js"></script>
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
     const RSN = '@ViewBag.id';
@@ -50,7 +45,42 @@
         LastTime: "2022/12/01",
         Date: "2022/01/01",
         ESN:"E00003",
-        InspectionPlanList: [{}]
+        InspectionPlanList: [
+            {
+                "InspectionPlan": {
+                    "IPSN": "P23022203",
+                    "IPName": "維修設備E00003",
+                    "PlanDate": "2023/2/22",
+                    "PlanState": "巡檢完成",
+                    "Shift": "2",
+                    "MyName": "賈皓麟、羅紹齊"
+                },
+                "InspectionPlanMaintain": {
+                    "MaintainState": "審核未過",
+                    "MaintainContent": "好了",
+                    "MyName": "賈皓麟",
+                    "MaintainDate": "2023/2/22",
+                    "ImgPath": []
+                },
+                "RepairSupplementaryInfo": [
+                    {
+                        "MyName": "王大明",
+                        "SupplementaryDate": "2023/1/15",
+                        "SupplementaryContent": "OOXX",
+                        "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
+                    }
+                ],
+                "RepairAuditInfo": [
+                    {
+                        "MyName": "陳進國",
+                        "AuditDate": "2023/2/22",
+                        "AuditResult": "審核未過",
+                        "AuditMemo": "沒修好",
+                        "ImgPath": []
+                    }
+                ]
+            },
+        ]
     }
 
     function readData(url = null) {
@@ -68,16 +98,7 @@
         function onSuccess(res) {
             console.log(res);
             $("#FormDetail").append(createTableInner(res, SerializedName));
-            if (res.InspectionPlanList.length != 0) {
-                let accordion = $("#accordion-InspectionPlan");
-                res.InspectionPlanList.forEach((d, i) => {
-                    accordion.append(putData_InspectionPlan(d, null, i));
-                })
-                $("#InspectionPlan_List").removeClass("d-none");
-            }
-            else {
-                $("#accordion-InspectionPlan").parents(".datatable").remove();
-            }
+            InspectionPlanMaintain("#InspectionPlanMaintainList", res.InspectionPlanList);
 
             ImageDisplay(".datatable-img-item>img");
         }
