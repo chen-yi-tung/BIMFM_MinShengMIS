@@ -265,6 +265,7 @@
     <Compile Include="Models\InspectionTrack.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MaintainRecordManagementModel.cs" />
     <Compile Include="Models\ViewModels\JsonResponseViewModel.cs" />
     <Compile Include="Models\MaintainAuditImage.cs">
       <DependentUpon>Model1.tt</DependentUpon>
@@ -329,6 +330,7 @@
     <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\MaintainRecordManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\ReportManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\NewMaintainItems.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemViewModel.cs" />
