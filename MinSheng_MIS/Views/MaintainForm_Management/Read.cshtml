@@ -1,7 +1,93 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "定期保養單詳情";
 }
 
-<h2>Read</h2>
+<h2>@ViewBag.Title</h2>
 
+<div class="datatable mt-5">
+    <div class="datatable-header">保養項目資料</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="FormDetail"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-secondary mt-5 d-none" id="InspectionPlan_List">
+    <div class="datatable-header">本報修單相關維修紀錄</div>
+    <div class="datatable-body">
+        <div class="accordion accordion-flush datatable-accordion" id="accordion-InspectionPlan">
+        </div>
+    </div>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/ImageDisplay.js"></script>
+<script>
+    const RSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
+    let apiUrl = null;
+
+    const SerializedName = [
+        { text: "本保養單項目狀態", value: "FormItemState" },
+        { text: "保養單項目編號", value: "EMFISN" },
+        { text: "保養項目", value: "MIName" },
+        { text: "保養週期單位", value: "Unit" },
+        { text: "週期單位", value: "Period" },
+        { text: "上次保養", value: "LastTime" },
+        { text: "最近應保養", value: "Date" },
+        {
+            text: "設備屬性", value: "ESN", formatter: (val) => {
+                return val ? `<a class="btn btn-search" href="${val}" target="_blank">設備資料</a>` : "-"
+            }
+        },
+    ]
+
+    const fakeData = {
+        FormItemState: "完成",
+        EMFISN: "E00003_000001_230107",
+        MIName: "軸承潤滑",
+        Unit: "月",
+        Period: "1",
+        LastTime: "2022/12/01",
+        Date: "2022/01/01",
+        ESN:"E00003",
+        InspectionPlanList: [{}]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#FormDetail").append(createTableInner(res, SerializedName));
+            if (res.InspectionPlanList.length != 0) {
+                let accordion = $("#accordion-InspectionPlan");
+                res.InspectionPlanList.forEach((d, i) => {
+                    accordion.append(putData_InspectionPlan(d, null, i));
+                })
+                $("#InspectionPlan_List").removeClass("d-none");
+            }
+            else {
+                $("#accordion-InspectionPlan").parents(".datatable").remove();
+            }
+
+            ImageDisplay(".datatable-img-item>img");
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+
+        readData(apiUrl);
+    }
+</script>
