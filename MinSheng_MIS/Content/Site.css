@@ -117,6 +117,10 @@ h2 {
         display: contents !important;
     }
 
+    .w-lg-auto {
+        width: auto !important;
+    }
+
     .container.render-body {
         max-width: 960px;
     }
