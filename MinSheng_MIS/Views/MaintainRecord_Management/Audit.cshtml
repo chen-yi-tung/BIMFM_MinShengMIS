@@ -246,8 +246,9 @@
                         </div>`);
                         $(".edit-img-area").append(query);
                         ImageDisplay(query.children("img"));
-                        query.children("button").click(function () {
-                            let index = imgFiles.findIndex(data[i]);
+                        query.children("button").click(function (event) {
+                            event.preventDefault();
+                            let index = imgFiles.findIndex((e) => e == data[i]);
                             imgFiles.splice(index, 1);
                             $(this).parent().remove();
                         })
