@@ -10,7 +10,6 @@ namespace MinSheng_MIS.Controllers
 {
     public class MaintainRecord_ManagementController : Controller
     {
-        MaintainRecordManagementModel MRMM = new MaintainRecordManagementModel();
 
         #region 巡檢保養紀錄管理
         public ActionResult Management()

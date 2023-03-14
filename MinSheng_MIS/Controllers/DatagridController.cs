@@ -20,10 +20,18 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult MaintainRecord_Management(FormCollection form)
+        public ActionResult MaintainRecord_Management(FormCollection form) //巡檢保養紀錄管理
         {
             var service = new DatagridService();
             var a = service.GetJsonForGrid_MaintainRecord_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
+        [HttpPost]
+        public ActionResult RepairRecord_Management(FormCollection form) //巡檢維修紀錄管理
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_RepairRecord_Management(form); 
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
