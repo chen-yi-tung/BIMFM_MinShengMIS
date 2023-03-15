@@ -20,7 +20,7 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Report_Management(FormCollection form)
+        public ActionResult Report_Management(FormCollection form) //報修管理
         {
             string page = form["page"]?.ToString();
             string rows = form["rows"]?.ToString();

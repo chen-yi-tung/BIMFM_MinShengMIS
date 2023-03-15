@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MinSheng_MIS.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -16,9 +17,18 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 查詢巡檢維修紀錄 (詳情)
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult ReadBody(string id)
+        {
+            var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
+
+            string result = repairRecord_Management_ReadViewModel.GetJsonForRead(id);
+            return Content(result, "application/json");
         }
         #endregion
 
