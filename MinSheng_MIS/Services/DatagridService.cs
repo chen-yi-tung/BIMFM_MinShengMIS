@@ -647,7 +647,7 @@ namespace MinSheng_MIS.Services
             }
 
             /////////  where 剩下的條件
-            DataSource = DataSource.Where(x => RSNlist.Contains(x.RSN)).Where(x => IPSNlist.Contains(x.IPSN)).Where(x => IPRSNlist.Contains(x.IPRSN));
+            DataSource = DataSource.Where(x => RSNlist.Contains(x.RSN)).Where(x => IPSNlist.Contains(x.IPSN)).Where(x => IPRSNlist.Contains(x.IPRSN)).Where(x => x.RepairState != "1");
 
             if (!string.IsNullOrEmpty(IPSN)) //巡檢計畫編號
             {
