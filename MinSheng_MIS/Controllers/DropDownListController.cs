@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Web;
 using System.Web.Mvc;
 
@@ -46,6 +47,29 @@ namespace MinSheng_MIS.Controllers
                     list.Add(jo);
                 }
             }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region ReportFormState相關 保養單狀態
+        [HttpGet]
+        public ActionResult MaintainRecord_MaintainState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.InspectionPlanMaintainState();
+
+            foreach (var a in Dics)
+            {
+                if (a.Key == "1" || a.Key == "2") { continue; } //巡檢保養紀錄 不用1. 2
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }

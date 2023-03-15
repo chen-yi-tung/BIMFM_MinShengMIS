@@ -93,9 +93,11 @@
         <div class="form-group">
             <label for="DateSelect">日期項目選擇</label>
             <select class="form-select" name="DateSelect" id="DateSelect">
-                <option value="計畫日期">計畫日期</option>
-                <option value="報修時間">報修時間</option>
-                <option value="審核日期">審核日期</option>
+                <option value="1">計畫日期</option>
+                <option value="2">上次保養日期</option>
+                <option value="3">本次保養日期</option>
+                <option value="4">下次保養日期</option>
+                <option value="5">審核日期</option>
             </select>
         </div>
 
@@ -146,14 +148,14 @@
             $('#Floor').val('');
         }
     });
-    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
+    var getGridJSON = '@Url.Action("MaintainRecord_Management", "Datagrid")';
 
     $(async function () {
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-        await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
+        await pushSelect("MaintainState", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
         //document.getElementById('Area').value = '1'
-        await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
-        await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
+        await pushSelect("MaintainUserID", '@Url.Action("InformantUserID", "DropDownList")');
+        await pushSelect("AuditUserID", '@Url.Action("InformantUserID", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
         //$("#Area option[value=1]").attr('selected', 'selected');
@@ -218,8 +220,8 @@
                 { field: 'Date', title: '本次保養日期', align: 'center', width: 180, sortable: true },
                 { field: 'NextTime', title: '下次保養日期', align: 'center', width: 180, sortable: true },
 
-                { field: 'MaintainUserID', title: '保養人員', align: 'center', width: 110, sortable: true },
-                { field: 'AuditUserID', title: '審核人員', align: 'center', width: 110, sortable: true },
+                { field: 'MaintainUserName', title: '保養人員', align: 'center', width: 110, sortable: true },
+                { field: 'AuditUserName', title: '審核人員', align: 'center', width: 110, sortable: true },
                 { field: 'AuditDate', title: '審核日期', align: 'center', width: 180, sortable: true },
             ]],
             singleSelect: true,

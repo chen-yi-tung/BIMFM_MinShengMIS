@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,6 +10,7 @@ namespace MinSheng_MIS.Controllers
 {
     public class MaintainRecord_ManagementController : Controller
     {
+
         #region 巡檢保養紀錄管理
         public ActionResult Management()
         {

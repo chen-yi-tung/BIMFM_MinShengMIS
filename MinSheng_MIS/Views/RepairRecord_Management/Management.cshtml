@@ -105,9 +105,9 @@
         <div class="form-group">
             <label for="DateSelect">日期項目選擇</label>
             <select class="form-select" name="DateSelect" id="DateSelect">
-                <option value="計畫日期">計畫日期</option>
-                <option value="報修時間">報修時間</option>
-                <option value="審核日期">審核日期</option>
+                <option value="1">計畫日期</option>
+                <option value="2">報修日期</option>
+                <option value="3">審核日期</option>
             </select>
         </div>
 
@@ -157,13 +157,15 @@
             $('#Floor').val('');
         }
     });
-    
-    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
+
+    var getGridJSON = '@Url.Action("RepairRecord_Management", "Datagrid")';
 
     $(async function () {
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-        await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
+        await pushSelect("RepairState", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
         await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
+        await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
+        await pushSelect("RepairUserID", '@Url.Action("InformantUserID", "DropDownList")');
         await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
