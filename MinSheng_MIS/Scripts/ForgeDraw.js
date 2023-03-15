@@ -217,10 +217,12 @@ var ForgeDraw = (function (e) {
     }
 
     function getControl(name) {
+        if (!name) { return Object.entries(control).find(e => e[1])[0]; }
         return control[name];
     }
 
     function setControl(name, value) {
+        Object.entries(control).forEach(e => { control[e[0]] = false });
         control[name] = value;
     }
 
@@ -699,22 +701,29 @@ var ForgeDraw = (function (e) {
                 let pos = this.parent.toLocal(event.global, null);
 
                 console.log(`${self.name} => onDownEvent`, pos);
-                movingPoint = new Point(pos, { interactive: false });
-                if (lineData.length == 0) {
-                    movingPoint.color = Colors.Start;
-                }
-                else {
-                    movingLine = new Line(lineData.at(-1).position, pos, { interactive: false });
-                    movingPoint.color = Colors.End;
-                }
+                switch (getControl()) {
+                    case "isUseDraw":
+                        movingPoint = new Point(pos, { interactive: false });
+                        if (lineData.length == 0) {
+                            movingPoint.color = Colors.Start;
+                        }
+                        else {
+                            movingLine = new Line(lineData.at(-1).position, pos, { interactive: false });
+                            movingPoint.color = Colors.End;
+                        }
 
-                if (lineData.length >= 2) {
-                    points.at(-1).graphics.alpha = 0;
-                    points.at(-1).color = Colors.Middle;
-                }
+                        if (lineData.length >= 2) {
+                            points.at(-1).graphics.alpha = 0;
+                            points.at(-1).color = Colors.Middle;
+                        }
 
-                self.on("pointermove", self.onMoveEvent);
-                self.on("pointerup", self.onUpEvent);
+                        self.on("pointermove", self.onMoveEvent);
+                        self.on("pointerup", self.onUpEvent);
+                        break;
+                    case "isUseEquip":
+                        //todo
+                        break;
+                }
             }
 
             this.onMoveEvent = function (event) {
@@ -747,8 +756,9 @@ var ForgeDraw = (function (e) {
 
             }
 
-            this.onRightDownEvent = function (){
+            this.onRightDownEvent = function () {
                 console.log(`${self.name} => onRightDownEvent`);
+                console.log(getControl())
             }
 
             this.on("pointerdown", this.onDownEvent);
@@ -807,8 +817,8 @@ var ForgeDraw = (function (e) {
         "init": init,
         "removeAllData": removeAllData,
         "getRoute": getRoute,
-        "getControl":getControl,
-        "setControl":setControl,
+        "getControl": getControl,
+        "setControl": setControl,
         "drawSetting": drawSetting,
         "layer": layer,
         "lineData": lineData,

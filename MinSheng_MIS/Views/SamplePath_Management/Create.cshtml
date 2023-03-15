@@ -55,11 +55,11 @@
         </div>
         <div class="sample-path-draw-area d-none">
             <div class="sample-path-toolbar">
-                <button class="path-icon" id="path-draw" data-bs-toggle="tooltip" data-bs-placement="right"
+                <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip" data-bs-placement="right"
                     title="規劃路徑">
                     <i class="icon-pen"></i>
                 </button>
-                <button class="path-icon" id="path-eraser" data-bs-toggle="tooltip" data-bs-placement="right"
+                <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip" data-bs-placement="right"
                     title="清除路徑">
                     <i class="icon-eraser"></i>
                 </button>
@@ -338,27 +338,13 @@
             $path.append(pathPoint);
         })
     }
-    function useDrawToggle(bool = undefined) {
-        let btn = $("#path-draw");
-        if (bool != undefined) {
-            ForgeDraw.setControl("isUseDraw", bool);
-            btn.toggleClass("active", bool);
-            return;
-        }
-        bool = ForgeDraw.getControl("isUseDraw");
-        ForgeDraw.setControl("isUseDraw", !bool);
-        btn.toggleClass("active", !bool);
-    }
-    function useEraserToggle(bool = undefined) {
-        let btn = $("#path-eraser");
-        if (bool != undefined) {
-            ForgeDraw.setControl("isUseEraser", bool);
-            btn.toggleClass("active", bool);
-            return;
-        }
-        bool = ForgeDraw.getControl("isUseEraser");
-        ForgeDraw.setControl("isUseEraser", !bool);
-        btn.toggleClass("active", !bool);
+    function controlToggle(id, name, bool = undefined) {
+        let btn = $("#" + id);
+        bool = bool ?? !ForgeDraw.getControl(name);
+        ForgeDraw.setControl(name, bool);
+
+        $(".path-icon-radio").removeClass("active");
+        btn.toggleClass("active", bool);
     }
     function removeRoute() {
         $list.empty();
@@ -430,8 +416,7 @@
 <script>
     $(function () {
         addButtonEvent();
-        useDrawToggle(ForgeDraw.getControl("isUseDraw"));
-        useEraserToggle(ForgeDraw.getControl("isUseEraser"));
+        controlToggle("path-draw", "isUseDraw", true);
         AutoRouteToggle(autoCalcRoute);
         //TEST
         $("#path-create").click();
@@ -456,11 +441,11 @@
         })
         $("#path-draw").click(function () {
             $(this).blur();
-            useDrawToggle();
+            controlToggle("path-draw", "isUseDraw");
         })
         $("#path-eraser").click(function () {
             $(this).blur();
-            useEraserToggle();
+            controlToggle("path-eraser", "isUseEraser");
         })
         $("#path-reload").click(function () {
             $(this).blur();
