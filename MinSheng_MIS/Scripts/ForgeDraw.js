@@ -748,11 +748,11 @@ var ForgeDraw = (function (e) {
             }
 
             this.onRightDownEvent = function (){
-
+                console.log(`${self.name} => onRightDownEvent`);
             }
 
             this.on("pointerdown", this.onDownEvent);
-            this.on("pointerdown", this.onRightDownEvent);
+            this.on("rightdown", this.onRightDownEvent);
         }
         redraw() {
             this.container.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height);
