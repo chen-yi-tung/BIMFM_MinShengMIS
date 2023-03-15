@@ -25,7 +25,6 @@ namespace MinSheng_MIS.Models
         public string SupplementaryUserID { get; set; }
         public System.DateTime SupplementaryDate { get; set; }
         public string SupplementaryContent { get; set; }
-        public bool IsBuffer { get; set; }
     
         public virtual InspectionPlanRepair InspectionPlanRepair { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

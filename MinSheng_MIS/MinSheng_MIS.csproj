@@ -1457,6 +1457,10 @@
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datatable.js" />
+    <Content Include="Scripts\dataTable\InspectionPlanMaintain.js" />
+    <Content Include="Scripts\dataTable\InspectionPlanRepair.js" />
+    <Content Include="Scripts\dataTable\MaintainRecord.js" />
+    <Content Include="Scripts\dataTable\RepairRecord.js" />
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
     <Content Include="Scripts\ForgeDraw.js" />
     <Content Include="Scripts\ImageDisplay.js" />

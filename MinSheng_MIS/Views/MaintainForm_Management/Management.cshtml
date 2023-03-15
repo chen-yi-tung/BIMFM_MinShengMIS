@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "定期保養管理";
 }
 
@@ -10,3 +9,233 @@
 
 <h2>@ViewBag.Title</h2>
 
+<div class="search-area">
+    <form class="form" method="post" action="" id="ReportManagementForm">
+
+        <div class="form-group">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="FormItemState">保養項目狀態</label>
+            <select class="form-select" name="FormItemState" id="FormItemState">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="PropertyCode">國有財產編碼</label>
+            <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <input class="form-control" id="EName" name="EName" type="text" />
+        </div>
+
+
+
+        <div class="form-group">
+            <label for="EMFISN">保養項目編號</label>
+            <input class="form-control" id="EMFISN" name="EMFISN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="MIName">保養項目</label>
+            <input class="form-control" id="MIName" name="MIName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateSelect">日期項目選擇</label>
+            <select class="form-select" name="DateSelect" id="DateSelect">
+                <option value="上次保養日期">上次保養日期</option>
+                <option value="最近應保養日期">最近應保養日期</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="DateFrom">日期(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateTo">日期(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+            <button type="button" class="btn btn-export" id="export">匯出</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="../../Scripts/tool.js"></script>
+<script>
+    var baseUrl = "/MaintainForm_Management/";
+    var areas = document.getElementById("ASN");
+    areas.addEventListener("change", function () {
+        let url = '@Url.Action("Floor", "DropDownList")';
+        if (areas.value != "") {
+            $('#Area').val($("#ASN option:selected").text());
+        }
+        else {
+            $('#Area').val('');
+        }
+        url = url + `?ASN=${areas.value}`;
+        pushSelect("FSN", url);
+        $('#Floor').val('');
+    });
+    var FSNs = document.getElementById("FSN");
+    FSNs.addEventListener("change", function () {
+        if (FSNs.value != "") {
+            $('#Floor').val($("#FSN option:selected").text());
+        }
+        else {
+            $('#Floor').val('');
+        }
+    });
+    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
+
+    $(async function () {
+        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
+        //document.getElementById('Area').value = '1'
+        await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
+        await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+        //$("#Area option[value=1]").attr('selected', 'selected');
+    });
+    function Initialize_DataGrid(getGridJSON) {
+
+        $('#DataGrid').datagrid({
+
+            url: getGridJSON,
+            method: 'POST',
+            queryParams: getQueryParams(),
+            rownumbers: true,
+            idField: 'Date',
+            sortName: 'Date',
+            remoteSort: false,
+            sortOrder: 'desc',
+            fit: true,
+            frozenColumns: [[
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                    }
+                },
+                {
+                    field: '_cancel', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
+                    }
+                },
+            ]],
+            columns: [[
+                { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 136, sortable: true },
+
+                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
+                { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 200, sortable: true },
+
+                { field: 'EMFISN', title: '保養單項目編號', align: 'center', width: 150, sortable: true },
+
+                { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
+                { field: 'Unit', title: '保養週期單位', align: 'center', width: 150, sortable: true },
+                { field: 'Period', title: '保養週期', align: 'center', width: 110, sortable: true },
+
+                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 180, sortable: true },
+                { field: 'Date', title: '最近應保養日期', align: 'center', width: 180, sortable: true },
+            ]],
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+
+            pagination: true,
+            pagePosition: 'bottom',
+            pageSize: 10
+        });
+        //------------Pager --------------------------------------------------
+        var pager = $('#DataGrid').datagrid('getPager');
+        $(pager).pagination({
+            pageSize: 10,
+            showPageList: true,
+            pageList: [10, 20, 50],
+            beforePageText: '第',
+            afterPageText: '頁，共 {pages} 頁',
+            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+        });
+    }
+
+    // datagrid onClick Function
+    function onDetail(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Read' + `/${row.RSN}`;
+        window.open(url, "_blank");
+    }
+
+    function onLocate(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Locate';
+        window.open(url, "_self");
+    }
+
+    function onCancel(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Cancel';
+        window.open(url, "_self");
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+        });
+
+        $("#search").click(function () {
+            Initialize_DataGrid(getGridJSON)
+        });
+
+        $("#export").click(function () {
+            let url = baseUrl + 'Export';
+            window.open(url, "_self");
+        });
+    }
+</script>
