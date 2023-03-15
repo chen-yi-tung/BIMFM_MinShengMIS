@@ -357,7 +357,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("IPName", InspectionPlan_.IPName);
                 itemObjects.Add("PlanDate", InspectionPlan_.PlanDate.ToString("yyyy/M/d"));
 
-                var dic = Surface.EquipmentReportFormState();
+                var dic = Surface.InspectionPlanMaintainState();
                 itemObjects.Add("MaintainState", dic[a.MaintainState.Trim()]); //這個要再用 Surface 做中文轉譯!!
 
                 itemObjects.Add("Area", EquipmentInfo_.Area);
