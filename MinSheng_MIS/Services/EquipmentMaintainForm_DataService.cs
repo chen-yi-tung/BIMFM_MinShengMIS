@@ -60,8 +60,7 @@ namespace MinSheng_MIS.Services
                               join x4 in db.MaintainItem on x2.MISN equals x4.MISN
                               join x5 in db.Floor_Info on x3.FSN equals x5.FSN
                               join x6 in db.AreaInfo on x5.ASN equals x6.ASN
-                              select new {  };
-            
+                              select new {  x1.FormItemState, x6.Area, x5.FloorName, x3.PropertyCode, x3.EName, x1.EMFISN, x4.MIName, x1.Unit, x1.Period, x1.LastTime, x1.Date};
             #endregion
 
             //回傳JSON陣列
