@@ -124,6 +124,7 @@
     var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
 
     $(async function () {
+        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         await pushSelect("FormItemState", '@Url.Action("FormItemState", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
@@ -222,6 +223,7 @@
         $("#clear").click(function () {
             $("form")[0].reset();
             pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("FormItemState", '@Url.Action("FormItemState", "DropDownList")');
         });
 
         $("#search").click(function () {
