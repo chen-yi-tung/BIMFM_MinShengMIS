@@ -22,6 +22,7 @@ var ForgeDraw = (function (e) {
     var control = {
         isUseDraw: true,
         isUseEraser: false,
+        isUseEquip: false,
     }
 
     /* event */
@@ -746,7 +747,12 @@ var ForgeDraw = (function (e) {
 
             }
 
+            this.onRightDownEvent = function (){
+
+            }
+
             this.on("pointerdown", this.onDownEvent);
+            this.on("pointerdown", this.onRightDownEvent);
         }
         redraw() {
             this.container.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height);
