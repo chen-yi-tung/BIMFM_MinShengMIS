@@ -265,6 +265,12 @@
     <Compile Include="Models\InspectionTrack.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SubSystemManagement.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SystemManagement.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ViewModels\JsonResponseViewModel.cs" />
     <Compile Include="Models\MaintainAuditImage.cs">
       <DependentUpon>Model1.tt</DependentUpon>

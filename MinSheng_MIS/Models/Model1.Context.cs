@@ -60,6 +60,8 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<RepairSupplementaryFile> RepairSupplementaryFile { get; set; }
         public virtual DbSet<RepairSupplementaryInfo> RepairSupplementaryInfo { get; set; }
         public virtual DbSet<ReportImage> ReportImage { get; set; }
+        public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
+        public virtual DbSet<SystemManagement> SystemManagement { get; set; }
     }
 }
