@@ -52,7 +52,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region ReportFormState相關 保養單狀態
+        #region MaintainState相關 保養單狀態
         [HttpGet]
         public ActionResult MaintainRecord_MaintainState()
         {
@@ -183,6 +183,28 @@ namespace MinSheng_MIS.Controllers
                 jo.Add("Value", item); // SubSystem
                 list.Add(jo);
             }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region FormItemState 保養項目狀態
+        [HttpGet]
+        public ActionResult FormItemState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.EquipmentMaintainFormItemState();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }
