@@ -342,14 +342,14 @@ namespace MinSheng_MIS.Services
             //建Json格式資料表回傳給前端
             foreach (var a in DataSource)
             {
-                var InspectionPlan_ = db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault();
-                var EquipmentMaintainFormItem_ = db.EquipmentMaintainFormItem.Where(x => x.EMFISN == a.EMFISN).FirstOrDefault();
-                var EquipmentMaintainItem_ = db.EquipmentMaintainItem.Where(x => x.EMISN == EquipmentMaintainFormItem_.EMISN).FirstOrDefault();
-                var MaintainItem_ = db.MaintainItem.Where(x => x.MISN == EquipmentMaintainItem_.MISN).FirstOrDefault();
-                var EquipmentInfo_ = db.EquipmentInfo.Where(x => x.ESN == EquipmentMaintainItem_.ESN).FirstOrDefault();
-                var AspNetUsers_MaintainID_ = db.AspNetUsers.Where(x => x.UserName == a.MaintainUserID).FirstOrDefault();
-                var MaintainAuditInfo_ = db.MaintainAuditInfo.Where(x => x.IPMSN == a.IPMSN).FirstOrDefault();
-                var AspNetUsers_AuditID_ = db.AspNetUsers.Where(x => x.UserName == MaintainAuditInfo_.AuditUserID).FirstOrDefault();
+                var InspectionPlan_ = db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault() == null ? new InspectionPlan() : db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault();
+                var EquipmentMaintainFormItem_ = db.EquipmentMaintainFormItem.Where(x => x.EMFISN == a.EMFISN).FirstOrDefault() == null ? new EquipmentMaintainFormItem() : db.EquipmentMaintainFormItem.Where(x => x.EMFISN == a.EMFISN).FirstOrDefault();
+                var EquipmentMaintainItem_ = db.EquipmentMaintainItem.Where(x => x.EMISN == EquipmentMaintainFormItem_.EMISN).FirstOrDefault() == null ? new EquipmentMaintainItem() : db.EquipmentMaintainItem.Where(x => x.EMISN == EquipmentMaintainFormItem_.EMISN).FirstOrDefault();
+                var MaintainItem_ = db.MaintainItem.Where(x => x.MISN == EquipmentMaintainItem_.MISN).FirstOrDefault() == null ? new MaintainItem() : db.MaintainItem.Where(x => x.MISN == EquipmentMaintainItem_.MISN).FirstOrDefault();
+                var EquipmentInfo_ = db.EquipmentInfo.Where(x => x.ESN == EquipmentMaintainItem_.ESN).FirstOrDefault() == null ? new EquipmentInfo() : db.EquipmentInfo.Where(x => x.ESN == EquipmentMaintainItem_.ESN).FirstOrDefault();
+                var AspNetUsers_MaintainID_ = db.AspNetUsers.Where(x => x.UserName == a.MaintainUserID).FirstOrDefault() == null ? new AspNetUsers() : db.AspNetUsers.Where(x => x.UserName == a.MaintainUserID).FirstOrDefault();
+                var MaintainAuditInfo_ = db.MaintainAuditInfo.Where(x => x.IPMSN == a.IPMSN).FirstOrDefault() == null ? new MaintainAuditInfo() : db.MaintainAuditInfo.Where(x => x.IPMSN == a.IPMSN).FirstOrDefault();
+                var AspNetUsers_AuditID_ = db.AspNetUsers.Where(x => x.UserName == MaintainAuditInfo_.AuditUserID).FirstOrDefault() == null ? new AspNetUsers() : db.AspNetUsers.Where(x => x.UserName == MaintainAuditInfo_.AuditUserID).FirstOrDefault();
 
                 var itemObjects = new JObject();
                 itemObjects.Add("IPMSN", a.IPMSN);
@@ -691,14 +691,14 @@ namespace MinSheng_MIS.Services
             //建Json格式資料表回傳給前端
             foreach (var a in DataSource)
             {
-                var InspectionPlan_ = db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault();
-                var EquipmentReportForm_ = db.EquipmentReportForm.Where(x => x.RSN == a.RSN).FirstOrDefault();
-                var EquipmentInfo_ = db.EquipmentInfo.Where(x => x.ESN == EquipmentReportForm_.ESN).FirstOrDefault();
-                var AspNetUsers_Informant = db.AspNetUsers.Where(x => x.UserName == EquipmentReportForm_.InformatUserID).FirstOrDefault();
-                var AspNetUsers_Repair = db.AspNetUsers.Where(x => x.UserName == a.RepairUserID).FirstOrDefault();
-                var RepairAuditInfo_ = db.RepairAuditInfo.Where(x => x.IPRSN == a.IPRSN).FirstOrDefault();
+                var InspectionPlan_ = db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault() == null ? new InspectionPlan() : db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault();
+                var EquipmentReportForm_ = db.EquipmentReportForm.Where(x => x.RSN == a.RSN).FirstOrDefault() == null ? new EquipmentReportForm() : db.EquipmentReportForm.Where(x => x.RSN == a.RSN).FirstOrDefault();
+                var EquipmentInfo_ = db.EquipmentInfo.Where(x => x.ESN == EquipmentReportForm_.ESN).FirstOrDefault() == null ? new EquipmentInfo() : db.EquipmentInfo.Where(x => x.ESN == EquipmentReportForm_.ESN).FirstOrDefault();
+                var AspNetUsers_Informant = db.AspNetUsers.Where(x => x.UserName == EquipmentReportForm_.InformatUserID).FirstOrDefault() == null ? new AspNetUsers(): db.AspNetUsers.Where(x => x.UserName == EquipmentReportForm_.InformatUserID).FirstOrDefault();
+                var AspNetUsers_Repair = db.AspNetUsers.Where(x => x.UserName == a.RepairUserID).FirstOrDefault() == null? new AspNetUsers(): db.AspNetUsers.Where(x => x.UserName == a.RepairUserID).FirstOrDefault();
+                var RepairAuditInfo_ = db.RepairAuditInfo.Where(x => x.IPRSN == a.IPRSN).FirstOrDefault() == null? new RepairAuditInfo(): db.RepairAuditInfo.Where(x => x.IPRSN == a.IPRSN).FirstOrDefault();
                 string id = RepairAuditInfo_.AuditUserID;
-                var AspNetUsers_Audit = db.AspNetUsers.Where(x => x.UserName == id).FirstOrDefault();
+                var AspNetUsers_Audit = db.AspNetUsers.Where(x => x.UserName == id).FirstOrDefault() == null? new AspNetUsers(): db.AspNetUsers.Where(x => x.UserName == id).FirstOrDefault();
 
                 var itemObjects = new JObject();
                 itemObjects.Add("IPRSN", a.IPRSN);
