@@ -55,14 +55,19 @@
         </div>
         <div class="sample-path-draw-area d-none">
             <div class="sample-path-toolbar">
-                <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip" data-bs-placement="right"
-                    title="規劃路徑">
+                <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
+                    data-bs-placement="right" title="規劃路徑">
                     <i class="icon-pen"></i>
                 </button>
-                <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip" data-bs-placement="right"
-                    title="清除路徑">
+                <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip"
+                    data-bs-placement="right" title="清除路徑">
                     <i class="icon-eraser"></i>
                 </button>
+                <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
+                    data-bs-placement="right" title="新增設備">
+                    <i class="icon-tools"></i>
+                </button>
+                <hr class="m-0">
                 <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
                     title="重新規劃路徑">
                     <i class="icon-reload"></i>
@@ -97,6 +102,25 @@
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-back" data-bs-dismiss="modal">取消</button>
                 <button type="button" class="btn btn-export" onclick="SaveRoute()">儲存變更</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade sort-list-modal" tabindex="-1" id="createDeviceModal">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增自訂設備</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="deviceType">設備類別</label><input class="form-control" type="text" id="deviceType">
+                <label for="deviceName">設備名稱</label><input class="form-control" type="text" id="deviceName">
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-back" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-export" onclick="SaveCreateDevice()">新增設備</button>
             </div>
         </div>
     </div>
@@ -249,6 +273,10 @@
                 console.log("view => fd.linedata.removeall");
                 removeRoute();
             });
+            view.addEventListener("fd.devicepoint.usercreate", function (event) {
+                console.log("view => fd.devicepoint.usercreate");
+                createDevice(event.detail);
+            });
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
                 calcRoute();
@@ -258,7 +286,7 @@
                 let btSprite = PIXI.Sprite.from(btUrl);
                 btSprite.scale.set(0.6);
                 btSprite.anchor.set(0.5);
-                let dp = new ForgeDraw.DevicePoint(e, btSprite);
+                let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
             });
 
             addTooltip();
@@ -338,13 +366,12 @@
             $path.append(pathPoint);
         })
     }
-    function controlToggle(id, name, bool = undefined) {
+    function controlToggle(id, control) {
         let btn = $("#" + id);
-        bool = bool ?? !ForgeDraw.getControl(name);
-        ForgeDraw.setControl(name, bool);
+        ForgeDraw.setControl(control);
 
         $(".path-icon-radio").removeClass("active");
-        btn.toggleClass("active", bool);
+        btn.toggleClass("active", true);
     }
     function removeRoute() {
         $list.empty();
@@ -353,6 +380,24 @@
             <li class="breadcrumb-item">起點</li>
             <li class="breadcrumb-item">終點</li>
             `);
+    }
+
+    //新增自訂設備
+    const createDeviceModal = new bootstrap.Modal(document.getElementById('createDeviceModal'));
+    let deviceData = undefined;
+    function createDevice(data) {
+        createDeviceModal.show();
+        deviceData = data;
+    }
+    function SaveCreateDevice() {
+        //todo
+        let Modal = $("#createDeviceModal");
+        deviceData.deviceType = Modal.find("#deviceType").val();
+        deviceData.deviceName = Modal.find("#deviceName").val();
+        let dp = new ForgeDraw.DevicePoint(deviceData, {
+            color: 0xff00ff,
+        });
+        createDeviceModal.hide();
     }
 </script>
 
@@ -416,7 +461,7 @@
 <script>
     $(function () {
         addButtonEvent();
-        controlToggle("path-draw", "isUseDraw", true);
+        controlToggle("path-draw", ForgeDraw.Control.DRAW);
         AutoRouteToggle(autoCalcRoute);
         //TEST
         $("#path-create").click();
@@ -441,11 +486,15 @@
         })
         $("#path-draw").click(function () {
             $(this).blur();
-            controlToggle("path-draw", "isUseDraw");
+            controlToggle("path-draw", ForgeDraw.Control.DRAW);
         })
         $("#path-eraser").click(function () {
             $(this).blur();
-            controlToggle("path-eraser", "isUseEraser");
+            controlToggle("path-eraser", ForgeDraw.Control.ERASER);
+        })
+        $("#path-device").click(function () {
+            $(this).blur();
+            controlToggle("path-device", ForgeDraw.Control.DEVICE);
         })
         $("#path-reload").click(function () {
             $(this).blur();

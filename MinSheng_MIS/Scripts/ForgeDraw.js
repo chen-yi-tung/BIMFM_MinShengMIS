@@ -19,11 +19,13 @@ var ForgeDraw = (function (e) {
     }
 
     /* control */
-    var control = {
-        isUseDraw: true,
-        isUseEraser: false,
-        isUseEquip: false,
-    }
+    const Control = Object.freeze({
+        NONE: 0,
+        DRAW: 1,
+        ERASER: 2,
+        DEVICE: 3,
+    })
+    var currentControl = Control.DRAW;
 
     /* event */
     class LineDataChangeEvent {
@@ -39,6 +41,11 @@ var ForgeDraw = (function (e) {
     class LineDataRemoveAllEvent {
         constructor(detail) {
             return new CustomEvent('fd.linedata.removeall', { 'detail': detail })
+        }
+    }
+    class DevicePointUserCreateEvent {
+        constructor(detail) {
+            return new CustomEvent('fd.devicepoint.usercreate', { 'detail': detail })
         }
     }
     class DevicePointIgnoreEvent {
@@ -92,6 +99,7 @@ var ForgeDraw = (function (e) {
             color: Colors.BlueTooth,
             interactive: true,
             nearestLine: false,
+            label: true,
             contextMenu: {
                 html: `<div class="contextMenu"><ul></ul></div>`,
                 button: [
@@ -168,10 +176,12 @@ var ForgeDraw = (function (e) {
         lineData.forEach((e, i, arr) => {
             if (i == 0) {
                 points[i].color = Colors.Start;
+                points[i].graphics.alpha = 1;
                 lines[i].redraw(e.position, arr[i + 1].position);
             }
             else if (i == arr.length - 1) {
                 points[i].color = Colors.End;
+                points[i].graphics.alpha = 1;
             }
             else {
                 points[i].color = Colors.Middle;
@@ -216,14 +226,12 @@ var ForgeDraw = (function (e) {
             });
     }
 
-    function getControl(name) {
-        if (!name) { return Object.entries(control).find(e => e[1])[0]; }
-        return control[name];
+    function getControl() {
+        return Object.values(Control).find(e => e == currentControl);
     }
 
-    function setControl(name, value) {
-        Object.entries(control).forEach(e => { control[e[0]] = false });
-        control[name] = value;
+    function setControl(control) {
+        currentControl = control;
     }
 
     /* class */
@@ -421,9 +429,16 @@ var ForgeDraw = (function (e) {
             }
             this.onDownEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onDownEvent`);
-                self.off("pointerout", self.onOutEvent);
-                self.on("pointerup", self.onUpEvent);
-                self.on("pointerout", self.onDownOutEvent);
+                switch (getControl()) {
+                    case Control.ERASER:
+                        self.remove();
+                        break;
+                    default:
+                        self.off("pointerout", self.onOutEvent);
+                        self.on("pointerup", self.onUpEvent);
+                        self.on("pointerout", self.onDownOutEvent);
+                        break;
+                }
             }
             this.onDownOutEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onDownOutEvent`);
@@ -499,26 +514,37 @@ var ForgeDraw = (function (e) {
     }
 
     class DevicePoint extends drawObject {
-        constructor(data, sprite = undefined, options = {}) {
+        constructor(data, options = {}) {
             super();
             this.options = Object.assign({}, drawSetting.devicePoint, options);
             this.name = data.deviceName;
             this.dbId = data.dbId;
             this.type = data.deviceType;
-            this.sprite = sprite;
-            this.position;
+            this.sprite = this.options.sprite;
+            this.position = data.position ?? new PIXI.Point(0, 0);
             this.isUpdate = true;
             this.result = undefined;
             this.create();
         }
+
+        /**
+         * @param {Boolean} b
+         */
+        set interactive(b) {
+            this.options.interactive = b;
+            this.graphics.interactive = this.options.interactive;
+        }
+        get interactive() { return this.graphics.interactive }
+
         get index() { return devices.indexOf(this); }
+
         setPiovtCenter(c) {
             c.pivot.x = c.width / 2;
             c.pivot.y = c.height / 2;
         }
-        drawText(text) {
+        drawText(text = this.name) {
             let padding = 4;
-            let c = new PIXI.Container();
+            this.text = new PIXI.Container();
             let t = new PIXI.Text(text, new PIXI.TextStyle({
                 fontSize: 16,
                 fill: "#ffffff",
@@ -530,14 +556,22 @@ var ForgeDraw = (function (e) {
                 .beginFill(this.options.color, 0.8)
                 .drawRect(-padding, -padding, t.width + (padding * 2), t.height + (padding * 2))
                 .endFill();
-            c.addChild(b, t);
-            this.setPiovtCenter(c);
-            return c;
+            this.text.addChild(b, t);
+            this.setPiovtCenter(this.text);
+
+            this.text.position = this.position;
+            this.text.position.x += (this.options.strokeWeight + this.options.width) / 2;
+            this.text.position.y += 32;
+
+            this.text.visible = this.options.label;
+            this.container.addChild(this.text);
         }
         create() {
             const self = this;
-            forgeViewer.select(this.dbId);
-            this.position = forgeViewer.worldToClient(selectPos[this.dbId]);
+            if (this.dbId) {
+                forgeViewer.select(this.dbId);
+                this.position = forgeViewer.worldToClient(selectPos[this.dbId]);
+            }
             console.log(`${this.name} => create`, this.position);
 
             if (this.sprite !== undefined) {
@@ -550,18 +584,17 @@ var ForgeDraw = (function (e) {
                     .drawCircle(0, 0, this.options.width)
                     .endFill();
             }
-            this.line = new PIXI.Graphics();
-
-            this.text = this.drawText(this.name);
 
             this.graphics.position = this.position;
-            this.text.position = this.position;
-            this.text.position.x += (this.options.strokeWeight + this.options.width) / 2;
-            this.text.position.y += 32;
 
+            this.line = new PIXI.Graphics();
             this.graphics.interactive = this.options.interactive;
+            this.container.addChild(this.line, this.graphics);
 
-            this.container.addChild(this.line, this.graphics, this.text);
+            if (this.options.label && this.name) {
+                this.drawText();
+            }
+
             layer.device.addChild(this.container);
 
             devices.push(this);
@@ -605,7 +638,7 @@ var ForgeDraw = (function (e) {
 
         }
         update() {
-            this.text.visible = this.isUpdate;
+            this.text && (this.text.visible = this.isUpdate);
             this.graphics.alpha = this.isUpdate ? 1 : 0.5;
             if (!this.isUpdate) {
                 this.result = undefined;
@@ -702,7 +735,7 @@ var ForgeDraw = (function (e) {
 
                 console.log(`${self.name} => onDownEvent`, pos);
                 switch (getControl()) {
-                    case "isUseDraw":
+                    case Control.DRAW:
                         movingPoint = new Point(pos, { interactive: false });
                         if (lineData.length == 0) {
                             movingPoint.color = Colors.Start;
@@ -720,8 +753,15 @@ var ForgeDraw = (function (e) {
                         self.on("pointermove", self.onMoveEvent);
                         self.on("pointerup", self.onUpEvent);
                         break;
-                    case "isUseEquip":
+                    case Control.DEVICE:
                         //todo
+                        movingPoint = new Point(pos, {
+                            color: 0xff0008,
+                            interactive: false,
+                            label: false,
+                        });
+                        self.on("pointermove", self.onDeviceMoveEvent);
+                        self.on("pointerup", self.onDeviceUpEvent);
                         break;
                 }
             }
@@ -735,10 +775,15 @@ var ForgeDraw = (function (e) {
                 }
             }
 
+            this.onDeviceMoveEvent = function (event) {
+                let pos = this.parent.toLocal(event.global, null);
+                console.log(`${self.name} => onDeviceMoveEvent`, pos);
+                movingPoint.position = pos;
+            }
+
             this.onUpEvent = function (event) {
                 console.log(`${self.name} => onUpEvent`);
                 let data = {
-                    isBool: false,
                     position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y)
                 }
                 lineData.push(data);
@@ -756,13 +801,19 @@ var ForgeDraw = (function (e) {
 
             }
 
-            this.onRightDownEvent = function () {
-                console.log(`${self.name} => onRightDownEvent`);
-                console.log(getControl())
+            this.onDeviceUpEvent = function (event) {
+                console.log(`${self.name} => onDeviceUpEvent`);
+                let data = {
+                    position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y)
+                }
+                view.dispatchEvent(new DevicePointUserCreateEvent(data));
+                layer.point.removeChild(movingPoint.container);
+
+                self.off("pointermove", self.onDeviceMoveEvent);
+                self.off("pointerup", self.onDeviceUpEvent);
             }
 
             this.on("pointerdown", this.onDownEvent);
-            this.on("rightdown", this.onRightDownEvent);
         }
         redraw() {
             this.container.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height);
@@ -819,6 +870,7 @@ var ForgeDraw = (function (e) {
         "getRoute": getRoute,
         "getControl": getControl,
         "setControl": setControl,
+        "Control": Control,
         "drawSetting": drawSetting,
         "layer": layer,
         "lineData": lineData,
