@@ -21,7 +21,8 @@ namespace MinSheng_MIS.Controllers
         {
             List<JObject> list = new List<JObject>();
             var abc = db.AreaInfo.ToList();
-            foreach (var item in abc) {
+            foreach (var item in abc)
+            {
                 JObject jo = new JObject();
                 jo.Add("Text", item.Area);//Area Name
                 jo.Add("Value", item.ASN); // ASN 
@@ -37,7 +38,8 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Floor(int? ASN)
         {
             List<JObject> list = new List<JObject>();
-            if (ASN != null) {
+            if (ASN != null)
+            {
                 var abc = db.Floor_Info.Where(x => x.ASN == ASN).ToList();
                 foreach (var item in abc)
                 {
@@ -52,7 +54,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region ReportFormState相關 保養單狀態
+        #region MaintainState相關 保養單狀態
         [HttpGet]
         public ActionResult MaintainRecord_MaintainState()
         {
@@ -82,7 +84,8 @@ namespace MinSheng_MIS.Controllers
             List<JObject> list = new List<JObject>();
             var Dics = ReportState(url);
 
-            foreach (var a in Dics) {
+            foreach (var a in Dics)
+            {
                 JObject jo = new JObject
                 {
                     { "Text", a.Value },
@@ -90,19 +93,20 @@ namespace MinSheng_MIS.Controllers
                 };
                 list.Add(jo);
             }
-            
+
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }
 
 
         //根據不同當下路由決定不同的下拉式選單
-        private static Dictionary<string,string> ReportState(string url="")
+        private static Dictionary<string, string> ReportState(string url = "")
         {
             //預設空字串回傳全部 key為
             var abc = Surface.EquipmentReportFormState();
-            var result = new Dictionary<string,string>();
-            if (url == "") {
+            var result = new Dictionary<string, string>();
+            if (url == "")
+            {
                 foreach (var a in abc)
                 {
                     result.Add(a.Key, a.Value);
@@ -152,12 +156,107 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region MaintainUser保養人員
+        [HttpGet]
+        public ActionResult MaintainUser() //保養人員
+        {
+            List<JObject> list = new List<JObject> { };
+            var data = db.InspectionPlanMaintain.Select(x => x.MaintainUserID).ToList();
+            var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
+            foreach (var item in mynamedatalist)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region
+        [HttpGet]
+        public ActionResult AuditUser_Maintain() //審核人員_保養
+        {
+            List<JObject> list = new List<JObject> { };
+            var data = db.MaintainAuditInfo.Select(x => x.AuditUserID).ToList();
+            var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
+            foreach (var item in mynamedatalist)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region ReportUser報修人員
+        [HttpGet]
+        public ActionResult ReportUser() //報修人員
+        {
+            List<JObject> list = new List<JObject> { };
+            var data = db.EquipmentReportForm.Select(x => x.InformatUserID).ToList();
+            var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
+            foreach (var item in mynamedatalist)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region RepairUser施工人員
+        [HttpGet]
+        public ActionResult RepairUser()
+        {
+            List<JObject> list = new List<JObject> { };
+            var data = db.InspectionPlanRepair.Select(x => x.RepairUserID).ToList();
+            var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
+            foreach (var item in mynamedatalist)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region AuditUser_Repair審核人員_維修
+        [HttpGet]
+        public ActionResult AuditUser_Repair()
+        {
+            List<JObject> list = new List<JObject> { };
+            var data = db.RepairAuditInfo.Select(x => x.AuditUserID).ToList();
+            var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
+            foreach (var item in mynamedatalist)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
         #region 主系統
         [System.Web.Http.HttpGet]
         public ActionResult System()
         {
             List<JObject> list = new List<JObject>();
-            var abc = db.EquipmentInfo.Select(x=>x.System).Distinct().ToList();
+            var abc = db.EquipmentInfo.Select(x => x.System).Distinct().ToList();
             foreach (var item in abc)
             {
                 JObject jo = new JObject();
@@ -175,7 +274,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult SubSystem(string System)
         {
             List<JObject> list = new List<JObject>();
-            var abc = db.EquipmentInfo.Where(x=>x.System == System).Select(x => x.SubSystem).Distinct().ToList();
+            var abc = db.EquipmentInfo.Where(x => x.System == System).Select(x => x.SubSystem).Distinct().ToList();
             foreach (var item in abc)
             {
                 JObject jo = new JObject();
@@ -183,6 +282,28 @@ namespace MinSheng_MIS.Controllers
                 jo.Add("Value", item); // SubSystem
                 list.Add(jo);
             }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region FormItemState 保養項目狀態
+        [HttpGet]
+        public ActionResult FormItemState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.EquipmentMaintainFormItemState();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }

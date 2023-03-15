@@ -386,6 +386,15 @@
           <Property Name="ImgPath" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="RSN" Type="nchar" MaxLength="9" Nullable="false" />
         </EntityType>
+        <EntityType Name="SubSystemManagement">
+          <Key>
+            <PropertyRef Name="SubSystemID" />
+          </Key>
+          <Property Name="SubSystemID" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="SystemID" Type="int" Nullable="false" />
+          <Property Name="SubSystem" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SubSystemIsEnable" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
@@ -395,6 +404,14 @@
           <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="version" Type="int" />
           <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <EntityType Name="SystemManagement">
+          <Key>
+            <PropertyRef Name="SystemID" />
+          </Key>
+          <Property Name="SystemID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="System" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SystemIsEnable" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompletionReportImage_InspectionPlan">
           <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
@@ -776,6 +793,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SubSystemManagement_SystemManagement">
+          <End Role="SystemManagement" Type="Self.SystemManagement" Multiplicity="1" />
+          <End Role="SubSystemManagement" Type="Self.SubSystemManagement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SystemManagement">
+              <PropertyRef Name="SystemID" />
+            </Principal>
+            <Dependent Role="SubSystemManagement">
+              <PropertyRef Name="SystemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Bimfm_MinSheng_MISModelStoreContainer">
           <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AreaInfo" EntityType="Self.AreaInfo" Schema="dbo" store:Type="Tables" />
@@ -813,7 +842,9 @@
           <EntitySet Name="RepairSupplementaryFile" EntityType="Self.RepairSupplementaryFile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairSupplementaryInfo" EntityType="Self.RepairSupplementaryInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ReportImage" EntityType="Self.ReportImage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SubSystemManagement" EntityType="Self.SubSystemManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SystemManagement" EntityType="Self.SystemManagement" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_CompletionReportImage_InspectionPlan" Association="Self.FK_CompletionReportImage_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
             <End Role="CompletionReportImage" EntitySet="CompletionReportImage" />
@@ -938,6 +969,10 @@
             <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
             <End Role="ReportImage" EntitySet="ReportImage" />
           </AssociationSet>
+          <AssociationSet Name="FK_SubSystemManagement_SystemManagement" Association="Self.FK_SubSystemManagement_SystemManagement">
+            <End Role="SystemManagement" EntitySet="SystemManagement" />
+            <End Role="SubSystemManagement" EntitySet="SubSystemManagement" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -979,7 +1014,9 @@
           <EntitySet Name="RepairSupplementaryFile" EntityType="Bimfm_MinSheng_MISModel.RepairSupplementaryFile" />
           <EntitySet Name="RepairSupplementaryInfo" EntityType="Bimfm_MinSheng_MISModel.RepairSupplementaryInfo" />
           <EntitySet Name="ReportImage" EntityType="Bimfm_MinSheng_MISModel.ReportImage" />
+          <EntitySet Name="SubSystemManagement" EntityType="Bimfm_MinSheng_MISModel.SubSystemManagement" />
           <EntitySet Name="sysdiagrams" EntityType="Bimfm_MinSheng_MISModel.sysdiagrams" />
+          <EntitySet Name="SystemManagement" EntityType="Bimfm_MinSheng_MISModel.SystemManagement" />
           <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo">
             <End Role="AreaInfo" EntitySet="AreaInfo" />
             <End Role="Floor_Info" EntitySet="Floor_Info" />
@@ -1095,6 +1132,10 @@
           <AssociationSet Name="FK_RepairSupplementaryFile_RepairSupplementaryInfo" Association="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryFile_RepairSupplementaryInfo">
             <End Role="RepairSupplementaryInfo" EntitySet="RepairSupplementaryInfo" />
             <End Role="RepairSupplementaryFile" EntitySet="RepairSupplementaryFile" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubSystemManagement_SystemManagement" Association="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement">
+            <End Role="SystemManagement" EntitySet="SystemManagement" />
+            <End Role="SubSystemManagement" EntitySet="SubSystemManagement" />
           </AssociationSet>
           <AssociationSet Name="AspNetUserRoles" Association="Bimfm_MinSheng_MISModel.AspNetUserRoles">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
@@ -1534,6 +1575,16 @@
           <Property Name="RSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
           <NavigationProperty Name="EquipmentReportForm" Relationship="Bimfm_MinSheng_MISModel.FK_ReportImage_EquipmentReportForm" FromRole="ReportImage" ToRole="EquipmentReportForm" />
         </EntityType>
+        <EntityType Name="SubSystemManagement">
+          <Key>
+            <PropertyRef Name="SubSystemID" />
+          </Key>
+          <Property Name="SubSystemID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="SystemID" Type="Int32" Nullable="false" />
+          <Property Name="SubSystem" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SubSystemIsEnable" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="SystemManagement" Relationship="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement" FromRole="SubSystemManagement" ToRole="SystemManagement" />
+        </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
@@ -1543,6 +1594,15 @@
           <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="SystemManagement">
+          <Key>
+            <PropertyRef Name="SystemID" />
+          </Key>
+          <Property Name="SystemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="System" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SystemIsEnable" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="SubSystemManagement" Relationship="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement" FromRole="SystemManagement" ToRole="SubSystemManagement" />
         </EntityType>
         <Association Name="FK_Floor_Info_AreaInfo">
           <End Type="Bimfm_MinSheng_MISModel.AreaInfo" Role="AreaInfo" Multiplicity="1" />
@@ -1893,6 +1953,18 @@
             </Principal>
             <Dependent Role="RepairSupplementaryFile">
               <PropertyRef Name="PRSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SubSystemManagement_SystemManagement">
+          <End Type="Bimfm_MinSheng_MISModel.SystemManagement" Role="SystemManagement" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.SubSystemManagement" Role="SubSystemManagement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SystemManagement">
+              <PropertyRef Name="SystemID" />
+            </Principal>
+            <Dependent Role="SubSystemManagement">
+              <PropertyRef Name="SystemID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2311,6 +2383,16 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="SubSystemManagement">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.SubSystemManagement">
+              <MappingFragment StoreEntitySet="SubSystemManagement">
+                <ScalarProperty Name="SubSystemIsEnable" ColumnName="SubSystemIsEnable" />
+                <ScalarProperty Name="SubSystem" ColumnName="SubSystem" />
+                <ScalarProperty Name="SystemID" ColumnName="SystemID" />
+                <ScalarProperty Name="SubSystemID" ColumnName="SubSystemID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
@@ -2319,6 +2401,15 @@
                 <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
                 <ScalarProperty Name="principal_id" ColumnName="principal_id" />
                 <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SystemManagement">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.SystemManagement">
+              <MappingFragment StoreEntitySet="SystemManagement">
+                <ScalarProperty Name="SystemIsEnable" ColumnName="SystemIsEnable" />
+                <ScalarProperty Name="System" ColumnName="System" />
+                <ScalarProperty Name="SystemID" ColumnName="SystemID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
