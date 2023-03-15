@@ -159,7 +159,7 @@
     });
 
     var getGridJSON = '@Url.Action("RepairRecord_Management", "Datagrid")';
-
+    
     $(async function () {
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         await pushSelect("RepairState", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
@@ -167,6 +167,7 @@
         await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
         await pushSelect("RepairUserID", '@Url.Action("InformantUserID", "DropDownList")');
         await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
+        await pushSelect("AuditUserID", '@Url.Action("InformantUserID", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });

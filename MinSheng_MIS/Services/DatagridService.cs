@@ -487,17 +487,6 @@ namespace MinSheng_MIS.Services
                 }
                 IPSNlist = templist;
             }
-            if (!string.IsNullOrEmpty(RepairState)) //維修單狀態
-            {
-                var rSNlist = db.EquipmentReportForm.Where(x => x.ReportState == RepairState).Select(x => x.RSN).ToList();
-                var templist = new List<string>();
-                foreach (var item in RSNlist)
-                {
-                    if (rSNlist.Contains(item))
-                        templist.Add(item);
-                }
-                RSNlist = templist;
-            }
             if (!string.IsNullOrEmpty(ReportLevel)) //報修等級
             {
                 var rSNlist = db.EquipmentReportForm.Where(x => x.ReportLevel == ReportLevel).Select(x => x.RSN).ToList();
@@ -546,7 +535,7 @@ namespace MinSheng_MIS.Services
             }
             if (!string.IsNullOrEmpty(ReportContent)) //報修說明
             {
-                var rSNlist = db.EquipmentReportForm.Where(x => x.ESN.Contains(ReportContent)).Select(x => x.RSN).ToList();
+                var rSNlist = db.EquipmentReportForm.Where(x => x.ReportContent.Contains(ReportContent)).Select(x => x.RSN).ToList();
                 var templist = new List<string>();
                 foreach (var item in RSNlist)
                 {
@@ -557,7 +546,7 @@ namespace MinSheng_MIS.Services
             }
             if (!string.IsNullOrEmpty(InformantUserID)) //報修人員
             {
-                var rSNlist = db.EquipmentReportForm.Where(x => x.ESN == ESN).Select(x => x.RSN).ToList();
+                var rSNlist = db.EquipmentReportForm.Where(x => x.InformatUserID == InformantUserID).Select(x => x.RSN).ToList();
                 var templist = new List<string>();
                 foreach (var item in RSNlist)
                 {
@@ -706,10 +695,11 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("IPName", InspectionPlan_.IPName);
                 itemObjects.Add("PlanDate", InspectionPlan_.PlanDate.ToString("yyyy/M/d"));
 
-                var dic = Surface.EquipmentReportFormState();
+                var dic = Surface.InspectionPlanRepairState();
                 itemObjects.Add("RepairState", dic[a.RepairState.Trim()]); //這個要再用 Surface 做中文轉譯!!
 
-                itemObjects.Add("ReportLevel", EquipmentReportForm_.ReportLevel);
+                var dicLevel = Surface.ReportLevel();
+                itemObjects.Add("ReportLevel", dicLevel[EquipmentReportForm_.ReportLevel.Trim()]);
                 itemObjects.Add("Area", EquipmentInfo_.Area);
                 itemObjects.Add("Floor", EquipmentInfo_.Floor);
                 itemObjects.Add("RSN", a.RSN);
@@ -721,7 +711,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("InformantUserID", AspNetUsers_Informant.MyName);
                 itemObjects.Add("RepairUserID", AspNetUsers_Repair.MyName);
                 itemObjects.Add("AuditUserID", AspNetUsers_Audit.MyName);
-                itemObjects.Add("AuditDate", RepairAuditInfo_.AuditDate.ToString("yyyy/M/d"));
+                itemObjects.Add("AuditDate", RepairAuditInfo_.AuditDate.ToString("yyyy/M/d") == "0001/1/1"? "": RepairAuditInfo_.AuditDate.ToString("yyyy/M/d"));
 
                 ja.Add(itemObjects);
             }
