@@ -319,7 +319,6 @@
           <Property Name="SupplementaryUserID" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="SupplementaryDate" Type="datetime" Nullable="false" />
           <Property Name="SupplementaryContent" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="IsBuffer" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="PathSample">
           <Key>
@@ -379,7 +378,6 @@
           <Property Name="SupplementaryUserID" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="SupplementaryDate" Type="datetime" Nullable="false" />
           <Property Name="SupplementaryContent" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="IsBuffer" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="ReportImage">
           <Key>
@@ -1455,7 +1453,6 @@
           <Property Name="SupplementaryUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="SupplementaryDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="SupplementaryContent" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="IsBuffer" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_InspectionPlanMaintain" FromRole="MaintainSupplementaryInfo" ToRole="InspectionPlanMaintain" />
           <NavigationProperty Name="MaintainSupplementaryFile" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryFile" />
           <NavigationProperty Name="MaintainSupplementaryInfo1" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryInfo1" />
@@ -1526,7 +1523,6 @@
           <Property Name="SupplementaryUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="SupplementaryDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="SupplementaryContent" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="IsBuffer" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryInfo_InspectionPlanRepair" FromRole="RepairSupplementaryInfo" ToRole="InspectionPlanRepair" />
           <NavigationProperty Name="RepairSupplementaryFile" Relationship="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryFile_RepairSupplementaryInfo" FromRole="RepairSupplementaryInfo" ToRole="RepairSupplementaryFile" />
         </EntityType>
@@ -2233,7 +2229,6 @@
           <EntitySetMapping Name="MaintainSupplementaryInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo">
               <MappingFragment StoreEntitySet="MaintainSupplementaryInfo">
-                <ScalarProperty Name="IsBuffer" ColumnName="IsBuffer" />
                 <ScalarProperty Name="SupplementaryContent" ColumnName="SupplementaryContent" />
                 <ScalarProperty Name="SupplementaryDate" ColumnName="SupplementaryDate" />
                 <ScalarProperty Name="SupplementaryUserID" ColumnName="SupplementaryUserID" />
@@ -2300,7 +2295,6 @@
           <EntitySetMapping Name="RepairSupplementaryInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairSupplementaryInfo">
               <MappingFragment StoreEntitySet="RepairSupplementaryInfo">
-                <ScalarProperty Name="IsBuffer" ColumnName="IsBuffer" />
                 <ScalarProperty Name="SupplementaryContent" ColumnName="SupplementaryContent" />
                 <ScalarProperty Name="SupplementaryDate" ColumnName="SupplementaryDate" />
                 <ScalarProperty Name="SupplementaryUserID" ColumnName="SupplementaryUserID" />
