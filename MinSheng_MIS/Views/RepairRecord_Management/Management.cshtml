@@ -210,6 +210,7 @@
                 },
             ]],
             columns: [[
+                { field: 'IPRSN', hidden: true },
                 { field: 'IPSN', title: '計畫編號', align: 'center', width: 120, sortable: true },
                 { field: 'IPName', title: '計畫名稱', align: 'center', width: 200, sortable: true },
                 { field: 'PlanDate', title: '計畫日期', align: 'center', width: 180, sortable: true },
@@ -251,7 +252,7 @@
     // datagrid onClick Function
     function onDetail(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + `/${row.RSN}`;
+        let url = baseUrl + 'Read' + `/${row.IPRSN}`;
         window.open(url, "_blank");
     }
 

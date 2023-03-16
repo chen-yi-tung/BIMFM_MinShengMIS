@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using MinSheng_MIS.Models;
+using MinSheng_MIS.Services;
 
 namespace MinSheng_MIS
 {
@@ -63,6 +64,20 @@ namespace MinSheng_MIS
             //    ClientId = "",
             //    ClientSecret = ""
             //});
+
+            #region 檢查是否需產生設備保養單項目
+            Check_EquipmentFormItem c = new Check_EquipmentFormItem();
+            c.CheckEquipmentFormItem();
+            System.Timers.Timer Wtimer = new System.Timers.Timer(1800000);//執行任務的週期 //小時3600000 1000
+            Wtimer.Elapsed += new System.Timers.ElapsedEventHandler(Wtimer_Elapsed);
+            Wtimer.Enabled = true;
+            Wtimer.AutoReset = true;
+            #endregion
+        }
+        async void Wtimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Check_EquipmentFormItem c = new Check_EquipmentFormItem();
+            c.CheckEquipmentFormItem();
         }
     }
 }
