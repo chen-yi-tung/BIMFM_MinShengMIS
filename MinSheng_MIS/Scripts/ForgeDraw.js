@@ -430,16 +430,9 @@ var ForgeDraw = (function (e) {
             }
             this.onDownEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onDownEvent`);
-                switch (getControl()) {
-                    case Control.ERASER:
-                        self.remove();
-                        break;
-                    default:
-                        self.off("pointerout", self.onOutEvent);
-                        self.on("pointerup", self.onUpEvent);
-                        self.on("pointerout", self.onDownOutEvent);
-                        break;
-                }
+                self.off("pointerout", self.onOutEvent);
+                self.on("pointerup", self.onUpEvent);
+                self.on("pointerout", self.onDownOutEvent);
             }
             this.onDownOutEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onDownOutEvent`);
@@ -475,9 +468,16 @@ var ForgeDraw = (function (e) {
             }
             this.onUpEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onUpEvent`);
-                self.off("pointerout", self.onDownOutEvent);
-                self.off("pointerup", self.onUpEvent);
-                self.on("pointerout", self.onOutEvent);
+                switch (getControl()) {
+                    case Control.ERASER:
+                        self.remove();
+                        break;
+                    default:
+                        self.off("pointerout", self.onDownOutEvent);
+                        self.off("pointerup", self.onUpEvent);
+                        self.on("pointerout", self.onOutEvent);
+                        break;
+                }
             }
 
             this.on("pointerdown", this.onDownEvent);
