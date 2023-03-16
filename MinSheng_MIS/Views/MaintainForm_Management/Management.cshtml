@@ -58,7 +58,7 @@
 
         <div class="form-group">
             <label for="EMFISN">保養項目編號</label>
-            <input class="form-control" id="EMFISN" name="EMFISN" type="text" />
+            <input class="form-control" id="MISN" name="MISN" type="text" />
         </div>
 
         <div class="form-group">
@@ -121,9 +121,11 @@
             $('#Floor').val('');
         }
     });
-    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
+
+    var getGridJSON = '@Url.Action("MaintainForm_Management", "MaintainForm_Management")';
 
     $(async function () {
+        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         await pushSelect("FormItemState", '@Url.Action("FormItemState", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
@@ -222,6 +224,7 @@
         $("#clear").click(function () {
             $("form")[0].reset();
             pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("FormItemState", '@Url.Action("FormItemState", "DropDownList")');
         });
 
         $("#search").click(function () {
