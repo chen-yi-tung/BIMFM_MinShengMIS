@@ -432,13 +432,14 @@
             function createRouteItems() {
                 sortlist.empty();
                 let devicelist = ForgeDraw.getRoute();
-                let pathList = $(".breadcrumb-item:not(:first-child):not(:last-child)")
+                let pathList = $(".breadcrumb-item:not(:first-child):not(:last-child)");
 
                 console.log(devicelist);
                 console.log(pathList);
                 sortlist.append(`<li class="disable">起點</li>`);
 
-                devicelist.forEach((e, i, arr) => {
+                //TODO: 根據pathList排序 用devicelist內容轉成sortlist li
+                pathList.forEach((e, i, arr) => {
                     let li = `<li class="item ${e.type}">${e.name}</li>`;
                     sortlist.append(li);
                 })
