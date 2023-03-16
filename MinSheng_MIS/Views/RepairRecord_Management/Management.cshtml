@@ -259,13 +259,13 @@
 
     function onAudit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Audit';
+        let url = baseUrl + 'Audit' + `/${row.IPRSN}`;
         window.open(url, "_self");
     }
 
     function onSupplement(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Supplement';
+        let url = baseUrl + 'Supplement' + `/${row.IPRSN}`;
         window.open(url, "_self");
     }
 
