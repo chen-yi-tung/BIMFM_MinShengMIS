@@ -20,9 +20,6 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult MaintainForm_Management(FormCollection form)
         {
-            string page = form["page"]?.ToString();
-            string rows = form["rows"]?.ToString();
-            JObject jo = new JObject();
             var service = new DatagridService();
             var a = EMF_ds.GetJsonForGrid_Management(form);
             string result = JsonConvert.SerializeObject(a);

@@ -1,4 +1,5 @@
 ﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -30,9 +31,9 @@ namespace MinSheng_MIS.Services
 
             //塞來自formdata的資料
             //棟別編號
-            string ASN = form["Area"]?.ToString();
+            string ASN = form["ASN"]?.ToString();
             //樓層編號
-            string FSN = form["Floor"]?.ToString();
+            string FSN = form["FSN"]?.ToString();
             //保養項目狀態
             string FormItemState = form["FormItemState"]?.ToString();
             //國有財產編碼
@@ -42,7 +43,7 @@ namespace MinSheng_MIS.Services
             //設備名稱
             string EName = form["EName"]?.ToString();
             //保養項目編號
-            string ENaEMFISNme = form["EMFISN"]?.ToString();
+            string MISN = form["MISN"]?.ToString();
             //保養項目
             string MIName = form["MIName"]?.ToString();
             //日期項目選擇
@@ -60,16 +61,154 @@ namespace MinSheng_MIS.Services
                               join x4 in db.MaintainItem on x2.MISN equals x4.MISN
                               join x5 in db.Floor_Info on x3.FSN equals x5.FSN
                               join x6 in db.AreaInfo on x5.ASN equals x6.ASN
-                              select new {  x1.FormItemState, x6.Area, x5.FloorName, x3.PropertyCode, x3.EName, x1.EMFISN, x4.MIName, x1.Unit, x1.Period, x1.LastTime, x1.Date};
-            
-            //
+                              select new {  x1.FormItemState, x6.Area, x5.FloorName, x3.PropertyCode, x3.EName, x1.EMFISN, x4.MIName, x1.Unit, x1.Period, x1.LastTime, x1.Date, x5.ASN, x3.FSN, x2.ESN, x2.MISN};
+
+            //查詢棟別
+            if (!string.IsNullOrEmpty(ASN))
+            {
+                int IntASN = Convert.ToInt32(ASN);
+                SourceTable = SourceTable.Where(x => x.ASN == IntASN);
+            }
+            //查詢樓層
+            if(!string.IsNullOrEmpty(FSN))
+            {
+                SourceTable = SourceTable.Where(x => x.FSN == FSN);
+            }
+            //查詢保養項目狀態
+            if(!string.IsNullOrEmpty(FormItemState))
+            {
+                SourceTable = SourceTable.Where(x => x.FormItemState == FormItemState);
+            }
+            //查詢國有財產編碼
+            if (!string.IsNullOrEmpty(PropertyCode))
+            {
+                SourceTable = SourceTable.Where(x => x.PropertyCode == PropertyCode);
+            }
+            //查詢設備編號
+            if(!string.IsNullOrEmpty(ESN))
+            {
+                SourceTable = SourceTable.Where(x => x.ESN == ESN);
+            }
+            //查詢設備名稱 模糊查詢
+            if (!string.IsNullOrEmpty(EName))
+            {
+                SourceTable = SourceTable.Where(x => x.EName.Contains(EName));
+            }
+            //查詢保養項目編號
+            if(!string.IsNullOrEmpty(MISN))
+            {
+                SourceTable = SourceTable.Where(x => x.MISN == MISN);
+            }
+            //查詢保養項目 模糊查詢
+            if(!string.IsNullOrEmpty(MIName))
+            {
+                SourceTable = SourceTable.Where(x => x.MIName.Contains(MIName));
+            }
+            //查詢日期
+            if (!string.IsNullOrEmpty(DateSelect))
+            {
+                if (!string.IsNullOrEmpty(DateFrom))
+                {
+                    var datefrom = DateTime.Parse(DateFrom);
+                    if(DateSelect == "上次保養日期")
+                    {
+                        SourceTable = SourceTable.Where(x => x.LastTime >= datefrom);
+                    }
+                    else if(DateSelect == "最近應保養日期")
+                    {
+                        SourceTable = SourceTable.Where(x => x.Date >= datefrom);
+                    }
+                }
+                if (!string.IsNullOrEmpty(DateTo))
+                {
+                    var dateto = DateTime.Parse(DateTo).AddDays(1);
+                    if (DateSelect == "上次保養日期")
+                    {
+                        SourceTable = SourceTable.Where(x => x.LastTime < dateto);
+                    }
+                    else if (DateSelect == "最近應保養日期")
+                    {
+                        SourceTable = SourceTable.Where(x => x.Date < dateto);
+                    }
+                }
+            }
             #endregion
+
+            SourceTable = SourceTable.OrderByDescending(x => x.Date);
 
             //回傳JSON陣列
             JArray ja = new JArray();
+            //記住總筆數
+            int total = SourceTable.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            SourceTable = SourceTable.Skip((page - 1) * rows).Take(rows);
+
+            foreach(var item in SourceTable)
+            {
+                var itemObjects = new JObject();
+                //保養項目狀態
+                if (!string.IsNullOrEmpty(item.FormItemState))
+                {
+                    string formitemstate = item.FormItemState.Trim();
+                    var dic = Surface.EquipmentMaintainFormItemState();
+                    itemObjects.Add("FormItemState", dic[formitemstate]);
+                }
+                //棟別
+                if (!string.IsNullOrEmpty(item.Area))
+                {
+                    itemObjects.Add("Area", item.Area);
+                }
+                //樓層
+                if (!string.IsNullOrEmpty(item.FloorName))
+                {
+                    itemObjects.Add("Floor", item.FloorName);
+                }
+                //國有財產編碼
+                if (!string.IsNullOrEmpty(item.PropertyCode))
+                {
+                    itemObjects.Add("PropertyCode", item.PropertyCode);
+                }
+                //設備名稱
+                if (!string.IsNullOrEmpty(item.EName))
+                {
+                    itemObjects.Add("EName", item.EName);
+                }
+                //保養單項目編號
+                if (!string.IsNullOrEmpty(item.EMFISN))
+                {
+                    itemObjects.Add("EMFISN", item.EMFISN);
+                }
+                //保養項目
+                if (!string.IsNullOrEmpty(item.MIName))
+                {
+                    itemObjects.Add("MIName", item.MIName);
+                }
+                //保養週期單位
+                if (!string.IsNullOrEmpty(item.Unit))
+                {
+                    itemObjects.Add("Unit", item.Unit);
+                }
+                //保養週期
+                if (!string.IsNullOrEmpty(item.Period.ToString()))
+                {
+                    itemObjects.Add("Period", item.Period.ToString());
+                }
+                //上次保養日期
+                if(item.LastTime != DateTime.MinValue && item.LastTime != null)
+                {
+                    itemObjects.Add("LastTime", item.LastTime.ToString("yyyy/M/d"));
+                }
+                //最近應保養日期
+                if (item.Date != DateTime.MinValue && item.Date != null)
+                {
+                    itemObjects.Add("Date", item.Date.ToString("yyyy/M/d"));
+                }
+                ja.Add(itemObjects);
+            }
 
             JObject jo = new JObject();
             jo.Add("rows", ja);
+            jo.Add("total", total);
             return jo;
         }
     }
