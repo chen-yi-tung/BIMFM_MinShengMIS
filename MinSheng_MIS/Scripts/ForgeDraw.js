@@ -61,7 +61,8 @@ var ForgeDraw = (function (e) {
         Bool: 0x00f5d4,
         End: 0xFF9559,
         Line: 0xFCC7C7,
-        BlueTooth: 0x2750B9
+        BlueTooth: 0x2750B9,
+        DefaultDevice: 0x3ac0ff,
     };
 
     const drawSetting = {
@@ -177,7 +178,7 @@ var ForgeDraw = (function (e) {
             if (i == 0) {
                 points[i].color = Colors.Start;
                 points[i].graphics.alpha = 1;
-                lines[i].redraw(e.position, arr[i + 1].position);
+                lines[i] && lines[i].redraw(e.position, arr[i + 1].position);
             }
             else if (i == arr.length - 1) {
                 points[i].color = Colors.End;
@@ -605,11 +606,11 @@ var ForgeDraw = (function (e) {
 
             this.onOverEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onOverEvent`);
-                !self.isUpdate && (self.text.visible = true);
+                !self.isUpdate && self.text && (self.text.visible = true);
             }
             this.onOutEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onOutEvent`);
-                !self.isUpdate && (self.text.visible = false);
+                !self.isUpdate && self.text && (self.text.visible = false);
             }
             this.onRightDownEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onRightDownEvent`);
@@ -674,6 +675,18 @@ var ForgeDraw = (function (e) {
                 this.result = undefined;
                 this.line.clear();
             }
+        }
+        remove() {
+            let i = this.index;
+
+            layer.device.removeChildAt(i);
+            devices.splice(i, 1);
+
+            view.dispatchEvent(new LineDataChangeEvent(null));
+
+            this.contextMenu.remove();
+
+            delete this;
         }
         /**
          * find the point nearest p on line by a and b
@@ -756,7 +769,7 @@ var ForgeDraw = (function (e) {
                     case Control.DEVICE:
                         //todo
                         movingPoint = new Point(pos, {
-                            color: 0xff0008,
+                            color: Colors.DefaultDevice,
                             interactive: false,
                             label: false,
                         });
@@ -804,11 +817,10 @@ var ForgeDraw = (function (e) {
             this.onDeviceUpEvent = function (event) {
                 console.log(`${self.name} => onDeviceUpEvent`);
                 let data = {
-                    position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y)
+                    position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y),
+                    callback: () => { layer.point.removeChild(movingPoint.container); }
                 }
                 view.dispatchEvent(new DevicePointUserCreateEvent(data));
-                layer.point.removeChild(movingPoint.container);
-
                 self.off("pointermove", self.onDeviceMoveEvent);
                 self.off("pointerup", self.onDeviceUpEvent);
             }
