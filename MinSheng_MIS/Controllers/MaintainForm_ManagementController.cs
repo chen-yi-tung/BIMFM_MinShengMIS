@@ -15,6 +15,10 @@ namespace MinSheng_MIS.Controllers
         #region 定期保養管理
         public ActionResult Management()
         {
+            //檢查該產單的設備保養項目是否產單 沒有的話 就產單
+            Check_EquipmentFormItem c = new Check_EquipmentFormItem();
+            c.CheckEquipmentFormItem();
+
             return View();
         }
         [HttpPost]
