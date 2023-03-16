@@ -2,8 +2,10 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Web;
+using System.Xml.Linq;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
@@ -80,13 +82,18 @@ namespace MinSheng_MIS.Models.ViewModels
             public List<RepairAuditInfo> RepairAuditInfo { get; set; }
             public List<InspectionPlanList> InspectionPlanList { get; set; }
         }
-        public string GetJsonForRead(string RSN) {
+
+        public string GetJsonForRead(string IPRSN) //巡檢維修紀錄-詳情
+        {
 
             Root root = new Root();
 
             #region 處理報修資料 EquipmentReportItem
+            
             EquipmentReportItem equipmentReportItem = new EquipmentReportItem();
-            var table1 = db.EquipmentReportForm.Where(x=>x.RSN == RSN).ToList();
+            
+            var InsepecPlanRe = db.InspectionPlanRepair.Where(x => x.IPRSN == IPRSN).FirstOrDefault();
+            var table1 = db.EquipmentReportForm.Where(x=>x.RSN == InsepecPlanRe.RSN).ToList();
             foreach (var item in table1)
             {
                 var ReportStatedics = Surface.EquipmentReportFormState();
@@ -114,81 +121,192 @@ namespace MinSheng_MIS.Models.ViewModels
             }
             #endregion
 
+            #region 計劃資訊InspectionPlan
             
+            InspectionPlan inspectionPlan = new InspectionPlan();
+
+            var InspecPlan = db.InspectionPlan.Where(x => x.IPSN == InsepecPlanRe.IPSN).FirstOrDefault();
             
-           
-            var IPSNlist = db.InspectionPlanRepair.Where(x => x.RSN == RSN).OrderBy(x => x.IPSN).Select(x => x.IPSN).ToList();
-            foreach (var IPSN in IPSNlist)
+            inspectionPlan.IPSN = InspecPlan.IPSN;
+            inspectionPlan.IPName = InspecPlan.IPName;
+            inspectionPlan.PlanDate = InspecPlan.PlanDate.ToString("yyyy/M/d");
+            var PSdics = Surface.InspectionPlanState();
+            inspectionPlan.PlanState = PSdics[InspecPlan.PlanState];
+            var Shiftdics = Surface.Shift();
+            inspectionPlan.Shift = Shiftdics[InspecPlan.Shift];
+            var IPUserudlist = db.InspectionPlanMember.Where(x => x.IPSN == InspecPlan.IPSN).Select(x => x.UserID).ToList();
+            var INSPNameList = "";
+            int a = 0;
+            foreach (var id in IPUserudlist)
             {
-                #region 計劃資訊InspectionPlan
-                InspectionPlanList inspectionPlan = new InspectionPlanList();
-                var inspectionplantable = db.InspectionPlan.Find(IPSN);
-                var IP = new InspectionPlan();
-                IP.IPSN = inspectionplantable.IPSN;
-                IP.IPName = inspectionplantable.IPName;
-                IP.PlanDate = inspectionplantable.PlanDate.ToString("yyyy/M/d");
-                var PSdics = Surface.InspectionPlanState();
-                IP.PlanState = PSdics[inspectionplantable.PlanState];
-                var Shiftdics = Surface.Shift();
-                IP.Shift = Shiftdics[inspectionplantable.Shift];
-                var IPUserudlist = db.InspectionPlanMember.Where(x => x.IPSN == IPSN).Select(x => x.UserID).ToList();
-                var INSPNameList = "";
-                int a = 0;
-                foreach (var id in IPUserudlist)
+                var myname = db.AspNetUsers.Where(x => x.UserName == id).Select(x => x.MyName).FirstOrDefault();
+                if (myname != null)
                 {
-                    var myname = db.AspNetUsers.Where(x => x.UserName == id).Select(x => x.MyName).FirstOrDefault();
-                    if (myname != null)
-                    {
-                        if (a == 0)
-                            INSPNameList += myname;
-                        else
-                            INSPNameList += $"、{myname}";
-                    }
-                    a++;
+                    if (a == 0)
+                        INSPNameList += myname;
+                    else
+                        INSPNameList += $"、{myname}";
                 }
-                a = 0;
-                IP.MyName = INSPNameList;
-
-                inspectionPlan.InspectionPlan = IP;
-                #endregion
-
-                #region 維修資料
-                var inspectionPR = new InspectionPlanRepair();
-                var inspectionPlanRepairtable = db.InspectionPlanRepair.Where(x => x.IPSN == IPSN && x.RSN == RSN).FirstOrDefault();
-
-                var IPRdics = Surface.InspectionPlanRepairState();
-                inspectionPR.RepairState = IPRdics[inspectionPlanRepairtable.RepairState];
-                inspectionPR.RepairContent = inspectionPlanRepairtable.RepairContent;
-
-                var IPRname = db.AspNetUsers.Where(x => x.UserName == inspectionPlanRepairtable.RepairUserID).Select(x => x.MyName).FirstOrDefault() as string;
-                inspectionPR.MyName = IPRname;
-                inspectionPR.RepairDate = inspectionPlanRepairtable.RepairDate?.ToString("yyyy/M/d");
-
-                var RPImgPathlist = db.RepairCompletionImage.Where(x => x.IPRSN == inspectionPlanRepairtable.IPRSN).Select(x => x.ImgPath).ToList();
-                inspectionPR.ImgPath = RPImgPathlist;
-
-                inspectionPlan.InspectionPlanRepair = inspectionPR;
-                #endregion
+                a++;
             }
-            
+            a = 0;
+            inspectionPlan.MyName = INSPNameList;
+            #endregion
 
+            #region 維修資料
+            
             InspectionPlanRepair inspectionPlanRepair = new InspectionPlanRepair();
 
+            var IPRdics = Surface.InspectionPlanRepairState();
+            inspectionPlanRepair.RepairState = IPRdics[InsepecPlanRe.RepairState];
+            inspectionPlanRepair.RepairContent = InsepecPlanRe.RepairContent;
 
-            var  repairSupplementaryInfolist = new List<RepairSupplementaryInfo>();
+            var IPRname = db.AspNetUsers.Where(x => x.UserName == InsepecPlanRe.RepairUserID).Select(x => x.MyName).FirstOrDefault() as string;
+            inspectionPlanRepair.MyName = IPRname;
+            inspectionPlanRepair.RepairDate = InsepecPlanRe.RepairDate?.ToString("yyyy/M/d");
 
+            var RPImgPathlist = db.RepairCompletionImage.Where(x => x.IPRSN == InsepecPlanRe.IPRSN).Select(x => x.ImgPath).ToList();
+            inspectionPlanRepair.ImgPath = RPImgPathlist;
+            #endregion
 
-            var RepairAuditInfolist = new List<RepairAuditInfo>();
+            #region RepairSupplementaryInfo補件資料
 
+            var repairSupplementaryInfolist = new List<RepairSupplementaryInfo>(); //補件資料List
 
+            var RSInfoData = db.RepairSupplementaryInfo.Where(x => x.IPRSN == IPRSN).ToList();
+            foreach (var Data in RSInfoData)
+            {
+                RepairSupplementaryInfo RSInfo = new RepairSupplementaryInfo(); //補件資料
+
+                var Name = db.AspNetUsers.Where(x => x.UserName == Data.SupplementaryUserID).FirstOrDefault();
+                RSInfo.MyName = Name.MyName;
+                RSInfo.SupplementaryDate = Data.SupplementaryDate.ToString("yyyy/M/d");
+                RSInfo.SupplementaryContent = Data.SupplementaryContent;
+                var FileP = db.RepairSupplementaryFile.Where(x => x.PRSN == Data.PRSN).Select(x => x.FilePath).ToList();
+                RSInfo.FilePath = FileP;
+                repairSupplementaryInfolist.Add(RSInfo);    
+            }
+            #endregion
+
+            #region RepairAuditInfo審核資料
+
+            var RepairAuditInfolist = new List<RepairAuditInfo>(); //審核資料List
+
+            var RepairAuIn = db.RepairAuditInfo.Where(x => x.IPRSN == IPRSN).ToList();
+            foreach (var RAI in RepairAuIn)
+            {
+                RepairAuditInfo RAInfo = new RepairAuditInfo(); //審核資料
+
+                var AName = db.AspNetUsers.Where(x => x.UserName == RAI.AuditUserID).Select(x => x.MyName).FirstOrDefault();
+                RAInfo.MyName = AName;
+                RAInfo.AuditDate = RAI.AuditDate.ToString("yyyy/M/d");
+                RAInfo.AuditResult = RAI.AuditResult;
+                RAInfo.AuditMemo = RAI.AuditMemo;
+                var ImgP = db.RepairAuditImage.Where(x => x.PRASN == RAI.PRASN).Select(x => x.ImgPath).ToList();
+                RAInfo.ImgPath = ImgP;
+                RepairAuditInfolist.Add(RAInfo);
+            }
+            #endregion
+
+            #region InspectionPlanList報修單相關維修紀錄
             var InspectionPlanList = new List<InspectionPlanList>();
 
+            var restRSNinInspPlanRe = db.InspectionPlanRepair.Where(x => x.RSN.Contains(InsepecPlanRe.RSN)).Where(x => x.IPRSN != IPRSN).ToList();
+            foreach (var item in restRSNinInspPlanRe)
+            {
+                InspectionPlanList inspectionPlans = new InspectionPlanList();
+
+                InspectionPlan inspection = new InspectionPlan(); //計劃資訊
+                var InsPlan = db.InspectionPlan.Where(x => x.IPSN == item.IPSN).FirstOrDefault();
+                inspection.IPSN = InsPlan.IPSN;
+                inspection.IPName = InsPlan.IPName;
+                inspection.PlanDate = InsPlan.PlanDate.ToString("yyyy/M/d");
+
+                inspection.PlanState = PSdics[InsPlan.PlanState];
+                inspection.Shift = Shiftdics[InsPlan.Shift];
+                var UID = db.InspectionPlanMember.Where(x => x.IPSN == InsPlan.IPSN).Select(x => x.UserID).ToList();
+                var INSPNlist = "";
+                int aa = 0;
+                foreach (var id in UID)
+                {
+                    var myname1 = db.AspNetUsers.Where(x => x.UserName == id).Select(x => x.MyName).FirstOrDefault();
+                    if (myname1 != null)
+                    {
+                        if (aa == 0)
+                            INSPNlist += myname1;
+                        else
+                            INSPNlist += $"、{myname1}";
+                    }
+                    aa++;
+                }
+                aa = 0;
+                inspection.MyName = INSPNlist;
+                inspectionPlans.InspectionPlan = inspection;
 
 
 
-            root.EquipmentReportItem= equipmentReportItem;
-            //root.InspectionPlan = inspectionplan;
-            root.InspectionPlanRepair = inspectionPlanRepair;
+
+                InspectionPlanRepair planRepair = new InspectionPlanRepair(); //維修資訊
+                planRepair.RepairState = item.RepairState;
+                planRepair.RepairContent = item.RepairContent;
+                
+                var Name2 = db.AspNetUsers.Where(x => x.UserName == item.RepairUserID).Select(x => x.MyName).FirstOrDefault();
+                planRepair.MyName = Name2;
+                planRepair.RepairDate = item.RepairDate?.ToString("yyyy/M/d HH:mm:ss");
+
+                var RPImg2 = db.RepairCompletionImage.Where(x => x.IPRSN == item.IPRSN).Select(x => x.ImgPath).ToList();
+                planRepair.ImgPath = RPImg2;
+                inspectionPlans.InspectionPlanRepair= planRepair;
+
+
+
+
+
+                List<RepairSupplementaryInfo> ListRSI = new List<RepairSupplementaryInfo>(); //補件資料
+                var RSInfoData2 = db.RepairSupplementaryInfo.Where(x => x.IPRSN == IPRSN).ToList();
+                foreach (var item2 in RSInfoData2)
+                {
+                    RepairSupplementaryInfo RSI = new RepairSupplementaryInfo();
+
+                    var Name3 = db.AspNetUsers.Where(x => x.UserName == item2.SupplementaryUserID).FirstOrDefault();
+                    RSI.MyName = Name3.MyName;
+                    RSI.SupplementaryDate = item2.SupplementaryDate.ToString("yyyy/M/d");
+                    RSI.SupplementaryContent = item2.SupplementaryContent;
+                    var FileP2 = db.RepairSupplementaryFile.Where(x => x.PRSN == item2.PRSN).Select(x => x.FilePath).ToList();
+                    RSI.FilePath = FileP2;
+                    ListRSI.Add(RSI);
+                }
+                inspectionPlans.RepairSupplementaryInfo = ListRSI;
+
+                
+                
+                
+                List<RepairAuditInfo> ListRAI = new List<RepairAuditInfo>(); //審核資料
+
+                var RepairAuIn2 = db.RepairAuditInfo.Where(x => x.IPRSN == item.IPRSN).ToList();
+                foreach (var item3 in RepairAuIn2)
+                {
+                    RepairAuditInfo RAI = new RepairAuditInfo(); //審核資料
+
+                    var AName2 = db.AspNetUsers.Where(x => x.UserName == item3.AuditUserID).Select(x => x.MyName).FirstOrDefault();
+                    RAI.MyName = AName2;
+                    RAI.AuditDate = item3.AuditDate.ToString("yyyy/M/d");
+                    RAI.AuditResult = item3.AuditResult;
+                    RAI.AuditMemo = item3.AuditMemo;
+                    var ImgP2 = db.RepairAuditImage.Where(x => x.PRASN == item3.PRASN).Select(x => x.ImgPath).ToList();
+                    RAI.ImgPath = ImgP2;
+                    ListRAI.Add(RAI);
+                }
+                inspectionPlans.RepairAuditInfo = ListRAI;
+
+
+                InspectionPlanList.Add(inspectionPlans);
+            }
+            #endregion
+
+            root.EquipmentReportItem= equipmentReportItem; 
+            root.InspectionPlan = inspectionPlan; 
+            root.InspectionPlanRepair = inspectionPlanRepair; 
             root.RepairSupplementaryInfo= repairSupplementaryInfolist;
             root.RepairAuditInfo = RepairAuditInfolist;
             root.InspectionPlanList= InspectionPlanList;
