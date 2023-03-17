@@ -26,8 +26,6 @@ namespace MinSheng_MIS.Services
                 rows = short.Parse(form["rows"]?.ToString());
             }
             #endregion
-            //string propertyName = "PSSN";
-            //string order = "asc";
 
             //塞來自formdata的資料
             //棟別編號
@@ -42,13 +40,11 @@ namespace MinSheng_MIS.Services
                               join x2 in db.Floor_Info on x1.FSN equals x2.FSN
                               join x3 in db.AreaInfo on x2.ASN equals x3.ASN
                               select new { x1.PSSN, x1.PathTitle, x1.FSN, x2.ASN, x2.FloorName, x3.Area};
-            //SourceTable = SourceTable.AsQueryable();
 
             if (!string.IsNullOrEmpty(ASN)) //查詢棟別編號
             {
                 int IntASN = 0;
                 bool conversionSuccessful = int.TryParse(ASN, out IntASN);
-                //int IntAsn = Convert.ToInt32(ASN);
                 if (conversionSuccessful)
                 {
                     SourceTable = SourceTable.Where(x => x.ASN == IntASN);
