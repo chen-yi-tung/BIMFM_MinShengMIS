@@ -89,44 +89,44 @@ namespace MinSheng_MIS.Models.ViewModels
             Root root = new Root();
 
             #region 處理報修資料 EquipmentReportItem
-            
+
             EquipmentReportItem equipmentReportItem = new EquipmentReportItem();
-            
+
             var InsepecPlanRe = db.InspectionPlanRepair.Where(x => x.IPRSN == IPRSN).FirstOrDefault();
-            var table1 = db.EquipmentReportForm.Where(x=>x.RSN == InsepecPlanRe.RSN).ToList();
+            var table1 = db.EquipmentReportForm.Where(x => x.RSN == InsepecPlanRe.RSN).ToList();
             foreach (var item in table1)
             {
                 var ReportStatedics = Surface.EquipmentReportFormState();
                 equipmentReportItem.ReportState = ReportStatedics[item.ReportState.Trim()];
-                equipmentReportItem.RSN= item.RSN.Trim();
+                equipmentReportItem.RSN = item.RSN.Trim();
                 equipmentReportItem.Date = item.Date?.ToString("yyyy/M/d HH:mm:ss");
 
                 var ReportLeveldics = Surface.ReportLevel();
-                equipmentReportItem.ReportLevel= ReportLeveldics[item.ReportLevel.Trim()];
+                equipmentReportItem.ReportLevel = ReportLeveldics[item.ReportLevel.Trim()];
 
-                var myname = db.AspNetUsers.Where(x=>x.UserName == item.InformatUserID).Select(x=>x.MyName).FirstOrDefault();
+                var myname = db.AspNetUsers.Where(x => x.UserName == item.InformatUserID).Select(x => x.MyName).FirstOrDefault();
                 equipmentReportItem.MyName = myname;
-                
+
                 var EquipInfoRow = db.EquipmentInfo.Where(x => x.ESN == item.ESN).FirstOrDefault();
                 equipmentReportItem.Area = EquipInfoRow.Area;
-                equipmentReportItem.Floor= EquipInfoRow.Floor;
+                equipmentReportItem.Floor = EquipInfoRow.Floor;
                 equipmentReportItem.PorpertyCode = EquipInfoRow.PropertyCode;
-                
+
                 equipmentReportItem.ESN = item.ESN;
                 equipmentReportItem.EName = EquipInfoRow.EName;
                 equipmentReportItem.ReportContent = item.ReportContent;
-                var ImagePathList = db.ReportImage.Where(x => x.RSN == item.RSN).Select(x=>x.ImgPath).ToList();
+                var ImagePathList = db.ReportImage.Where(x => x.RSN == item.RSN).Select(x => x.ImgPath).ToList();
                 equipmentReportItem.ImgPath = ImagePathList;
                 break;
             }
             #endregion
 
             #region 計劃資訊InspectionPlan
-            
+
             InspectionPlan inspectionPlan = new InspectionPlan();
 
             var InspecPlan = db.InspectionPlan.Where(x => x.IPSN == InsepecPlanRe.IPSN).FirstOrDefault();
-            
+
             inspectionPlan.IPSN = InspecPlan.IPSN;
             inspectionPlan.IPName = InspecPlan.IPName;
             inspectionPlan.PlanDate = InspecPlan.PlanDate.ToString("yyyy/M/d");
@@ -154,7 +154,7 @@ namespace MinSheng_MIS.Models.ViewModels
             #endregion
 
             #region 維修資料
-            
+
             InspectionPlanRepair inspectionPlanRepair = new InspectionPlanRepair();
 
             var IPRdics = Surface.InspectionPlanRepairState();
@@ -184,7 +184,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 RSInfo.SupplementaryContent = Data.SupplementaryContent;
                 var FileP = db.RepairSupplementaryFile.Where(x => x.PRSN == Data.PRSN).Select(x => x.FilePath).ToList();
                 RSInfo.FilePath = FileP;
-                repairSupplementaryInfolist.Add(RSInfo);    
+                repairSupplementaryInfolist.Add(RSInfo);
             }
             #endregion
 
@@ -192,7 +192,7 @@ namespace MinSheng_MIS.Models.ViewModels
 
             var RepairAuditInfolist = new List<RepairAuditInfo>(); //審核資料List
 
-            var RepairAuIn = db.RepairAuditInfo.Where(x => x.IPRSN == IPRSN).ToList();
+            var RepairAuIn = db.RepairAuditInfo.Where(x => x.IPRSN == IPRSN).Where(x => x.IsBuffer == false).ToList();
             foreach (var RAI in RepairAuIn)
             {
                 RepairAuditInfo RAInfo = new RepairAuditInfo(); //審核資料
@@ -249,14 +249,14 @@ namespace MinSheng_MIS.Models.ViewModels
                 InspectionPlanRepair planRepair = new InspectionPlanRepair(); //維修資訊
                 planRepair.RepairState = item.RepairState;
                 planRepair.RepairContent = item.RepairContent;
-                
+
                 var Name2 = db.AspNetUsers.Where(x => x.UserName == item.RepairUserID).Select(x => x.MyName).FirstOrDefault();
                 planRepair.MyName = Name2;
                 planRepair.RepairDate = item.RepairDate?.ToString("yyyy/M/d HH:mm:ss");
 
                 var RPImg2 = db.RepairCompletionImage.Where(x => x.IPRSN == item.IPRSN).Select(x => x.ImgPath).ToList();
                 planRepair.ImgPath = RPImg2;
-                inspectionPlans.InspectionPlanRepair= planRepair;
+                inspectionPlans.InspectionPlanRepair = planRepair;
 
 
 
@@ -278,12 +278,12 @@ namespace MinSheng_MIS.Models.ViewModels
                 }
                 inspectionPlans.RepairSupplementaryInfo = ListRSI;
 
-                
-                
-                
+
+
+
                 List<RepairAuditInfo> ListRAI = new List<RepairAuditInfo>(); //審核資料
 
-                var RepairAuIn2 = db.RepairAuditInfo.Where(x => x.IPRSN == item.IPRSN).ToList();
+                var RepairAuIn2 = db.RepairAuditInfo.Where(x => x.IPRSN == item.IPRSN).Where(x => x.IsBuffer == false).ToList();
                 foreach (var item3 in RepairAuIn2)
                 {
                     RepairAuditInfo RAI = new RepairAuditInfo(); //審核資料
@@ -304,15 +304,60 @@ namespace MinSheng_MIS.Models.ViewModels
             }
             #endregion
 
-            root.EquipmentReportItem= equipmentReportItem; 
-            root.InspectionPlan = inspectionPlan; 
-            root.InspectionPlanRepair = inspectionPlanRepair; 
-            root.RepairSupplementaryInfo= repairSupplementaryInfolist;
+            root.EquipmentReportItem = equipmentReportItem;
+            root.InspectionPlan = inspectionPlan;
+            root.InspectionPlanRepair = inspectionPlanRepair;
+            root.RepairSupplementaryInfo = repairSupplementaryInfolist;
             root.RepairAuditInfo = RepairAuditInfolist;
-            root.InspectionPlanList= InspectionPlanList;
+            root.InspectionPlanList = InspectionPlanList;
 
             string result = JsonConvert.SerializeObject(root);
             return result;
+        }
+
+        public class AllRepairAudit
+        {
+            public string AuditUserID { get; set; }
+            public string AuditMemo { get; set; }
+            public string ImgPath { get; set; }
+            public string AuditResult { get; set; }
+            public string PRASN { get; set; }
+            public string IPRSN { get; set; }
+            public string AuditDate { get; set; }
+            
+        }
+
+        /// <summary>
+        /// 檢查有沒有草稿(IsBuffer = 1)，有的話就帶回資料，沒有的話就不帶
+        /// </summary>
+        /// <returns></returns>
+        public string AuditCheckBuffer(string IPRSN)
+        { 
+            var RepairAuIn = db.RepairAuditInfo.Where(x => x.IPRSN == IPRSN).Where(x => x.IsBuffer == true).FirstOrDefault();
+            if (RepairAuIn != null)
+            {
+                //有草稿要回傳
+                //要在確認回傳格式
+                AllRepairAudit ReAu = new AllRepairAudit()
+                { 
+                    
+                };
+                return "";
+            }
+            else
+            {
+                //沒有草稿
+                return "";
+            }
+        }
+
+        public string GetSupplementEditData(string IPRSN) //取得"補件"下方編輯區資料，提供給前端做顯示
+        {
+            var AUID = db.RepairAuditInfo.Where(x => x.IPRSN == IPRSN).FirstOrDefault();
+            var AUName = db.AspNetUsers.Where(x => x.UserName == AUID.AuditUserID).Select(x => x.MyName).FirstOrDefault();
+            
+            
+            return "";
         }
     }
 }

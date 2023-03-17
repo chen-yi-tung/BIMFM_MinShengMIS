@@ -38,9 +38,7 @@ namespace MinSheng_MIS.Controllers
             ViewBag.id = id;
             return View();
         }
-        #endregion
 
-        #region 
         public ActionResult AuditBody(string id) //上面表格部分和詳情的資料都相同，只差下面編輯的部分要做
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
@@ -50,12 +48,18 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        //[補件]的顯示資料與[詳情]都相同除了沒有[維修資料]
-
         #region 巡檢維修紀錄補件
         public ActionResult Supplement()
         {
             return View();
+        }
+
+        public ActionResult SupplementBody(string id) //[補件]的顯示資料與[詳情]都相同除了沒有[維修資料]
+        {
+            var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
+
+            string result = repairRecord_Management_ReadViewModel.GetJsonForRead(id);
+            return Content(result, "application/json");
         }
         #endregion
 
@@ -72,6 +76,5 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         #endregion
-
     }
 }
