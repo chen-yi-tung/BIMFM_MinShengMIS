@@ -227,6 +227,11 @@ var ForgeDraw = (function (e) {
             });
     }
 
+    function getForgeLineData(){
+        lineData
+        return;
+    }
+
     function getControl() {
         return Object.values(Control).find(e => e == currentControl);
     }
