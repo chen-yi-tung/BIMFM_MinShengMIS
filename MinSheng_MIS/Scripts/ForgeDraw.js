@@ -19,11 +19,13 @@ var ForgeDraw = (function (e) {
     }
 
     /* control */
-    var control = {
-        isUseDraw: true,
-        isUseEraser: false,
-        isUseEquip: false,
-    }
+    const Control = Object.freeze({
+        NONE: 0,
+        DRAW: 1,
+        ERASER: 2,
+        DEVICE: 3,
+    })
+    var currentControl = Control.DRAW;
 
     /* event */
     class LineDataChangeEvent {
@@ -41,6 +43,11 @@ var ForgeDraw = (function (e) {
             return new CustomEvent('fd.linedata.removeall', { 'detail': detail })
         }
     }
+    class DevicePointUserCreateEvent {
+        constructor(detail) {
+            return new CustomEvent('fd.devicepoint.usercreate', { 'detail': detail })
+        }
+    }
     class DevicePointIgnoreEvent {
         constructor(detail) {
             return new CustomEvent('fd.devicepoint.ignore', { 'detail': detail })
@@ -54,7 +61,8 @@ var ForgeDraw = (function (e) {
         Bool: 0x00f5d4,
         End: 0xFF9559,
         Line: 0xFCC7C7,
-        BlueTooth: 0x2750B9
+        BlueTooth: 0x2750B9,
+        DefaultDevice: 0x3ac0ff,
     };
 
     const drawSetting = {
@@ -92,6 +100,7 @@ var ForgeDraw = (function (e) {
             color: Colors.BlueTooth,
             interactive: true,
             nearestLine: false,
+            label: true,
             contextMenu: {
                 html: `<div class="contextMenu"><ul></ul></div>`,
                 button: [
@@ -160,6 +169,10 @@ var ForgeDraw = (function (e) {
         }
     }
 
+    function destroy() {
+        app.destroy(false, true);
+    }
+
     function preventDefaultEvent(event) {
         event.preventDefault();
     }
@@ -168,10 +181,12 @@ var ForgeDraw = (function (e) {
         lineData.forEach((e, i, arr) => {
             if (i == 0) {
                 points[i].color = Colors.Start;
-                lines[i].redraw(e.position, arr[i + 1].position);
+                points[i].graphics.alpha = 1;
+                lines[i] && lines[i].redraw(e.position, arr[i + 1].position);
             }
             else if (i == arr.length - 1) {
                 points[i].color = Colors.End;
+                points[i].graphics.alpha = 1;
             }
             else {
                 points[i].color = Colors.Middle;
@@ -216,12 +231,16 @@ var ForgeDraw = (function (e) {
             });
     }
 
-    function getControl(name) {
-        return control[name];
+    function getForgeLineData() {
+        return lineData.map(e => { return forgeViewer.clientToWorld(e.position.x, e.position.y).point; });
     }
 
-    function setControl(name, value) {
-        control[name] = value;
+    function getControl() {
+        return Object.values(Control).find(e => e == currentControl);
+    }
+
+    function setControl(control) {
+        currentControl = control;
     }
 
     /* class */
@@ -457,9 +476,16 @@ var ForgeDraw = (function (e) {
             }
             this.onUpEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onUpEvent`);
-                self.off("pointerout", self.onDownOutEvent);
-                self.off("pointerup", self.onUpEvent);
-                self.on("pointerout", self.onOutEvent);
+                switch (getControl()) {
+                    case Control.ERASER:
+                        self.remove();
+                        break;
+                    default:
+                        self.off("pointerout", self.onDownOutEvent);
+                        self.off("pointerup", self.onUpEvent);
+                        self.on("pointerout", self.onOutEvent);
+                        break;
+                }
             }
 
             this.on("pointerdown", this.onDownEvent);
@@ -497,26 +523,37 @@ var ForgeDraw = (function (e) {
     }
 
     class DevicePoint extends drawObject {
-        constructor(data, sprite = undefined, options = {}) {
+        constructor(data, options = {}) {
             super();
             this.options = Object.assign({}, drawSetting.devicePoint, options);
             this.name = data.deviceName;
             this.dbId = data.dbId;
             this.type = data.deviceType;
-            this.sprite = sprite;
-            this.position;
+            this.sprite = this.options.sprite;
+            this.position = data.position ?? new PIXI.Point(0, 0);
             this.isUpdate = true;
             this.result = undefined;
             this.create();
         }
+
+        /**
+         * @param {Boolean} b
+         */
+        set interactive(b) {
+            this.options.interactive = b;
+            this.graphics.interactive = this.options.interactive;
+        }
+        get interactive() { return this.graphics.interactive }
+
         get index() { return devices.indexOf(this); }
+
         setPiovtCenter(c) {
             c.pivot.x = c.width / 2;
             c.pivot.y = c.height / 2;
         }
-        drawText(text) {
+        drawText(text = this.name) {
             let padding = 4;
-            let c = new PIXI.Container();
+            this.text = new PIXI.Container();
             let t = new PIXI.Text(text, new PIXI.TextStyle({
                 fontSize: 16,
                 fill: "#ffffff",
@@ -528,14 +565,22 @@ var ForgeDraw = (function (e) {
                 .beginFill(this.options.color, 0.8)
                 .drawRect(-padding, -padding, t.width + (padding * 2), t.height + (padding * 2))
                 .endFill();
-            c.addChild(b, t);
-            this.setPiovtCenter(c);
-            return c;
+            this.text.addChild(b, t);
+            this.setPiovtCenter(this.text);
+
+            this.text.position = this.position;
+            this.text.position.x += (this.options.strokeWeight + this.options.width) / 2;
+            this.text.position.y += 32;
+
+            this.text.visible = this.options.label;
+            this.container.addChild(this.text);
         }
         create() {
             const self = this;
-            forgeViewer.select(this.dbId);
-            this.position = forgeViewer.worldToClient(selectPos[this.dbId]);
+            if (this.dbId) {
+                forgeViewer.select(this.dbId);
+                this.position = forgeViewer.worldToClient(selectPos[this.dbId]);
+            }
             console.log(`${this.name} => create`, this.position);
 
             if (this.sprite !== undefined) {
@@ -548,18 +593,17 @@ var ForgeDraw = (function (e) {
                     .drawCircle(0, 0, this.options.width)
                     .endFill();
             }
-            this.line = new PIXI.Graphics();
-
-            this.text = this.drawText(this.name);
 
             this.graphics.position = this.position;
-            this.text.position = this.position;
-            this.text.position.x += (this.options.strokeWeight + this.options.width) / 2;
-            this.text.position.y += 32;
 
+            this.line = new PIXI.Graphics();
             this.graphics.interactive = this.options.interactive;
+            this.container.addChild(this.line, this.graphics);
 
-            this.container.addChild(this.line, this.graphics, this.text);
+            if (this.options.label && this.name) {
+                this.drawText();
+            }
+
             layer.device.addChild(this.container);
 
             devices.push(this);
@@ -570,11 +614,11 @@ var ForgeDraw = (function (e) {
 
             this.onOverEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onOverEvent`);
-                !self.isUpdate && (self.text.visible = true);
+                !self.isUpdate && self.text && (self.text.visible = true);
             }
             this.onOutEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onOutEvent`);
-                !self.isUpdate && (self.text.visible = false);
+                !self.isUpdate && self.text && (self.text.visible = false);
             }
             this.onRightDownEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onRightDownEvent`);
@@ -603,7 +647,7 @@ var ForgeDraw = (function (e) {
 
         }
         update() {
-            this.text.visible = this.isUpdate;
+            this.text && (this.text.visible = this.isUpdate);
             this.graphics.alpha = this.isUpdate ? 1 : 0.5;
             if (!this.isUpdate) {
                 this.result = undefined;
@@ -639,6 +683,18 @@ var ForgeDraw = (function (e) {
                 this.result = undefined;
                 this.line.clear();
             }
+        }
+        remove() {
+            let i = this.index;
+
+            layer.device.removeChildAt(i);
+            devices.splice(i, 1);
+
+            view.dispatchEvent(new LineDataChangeEvent(null));
+
+            this.contextMenu.remove();
+
+            delete this;
         }
         /**
          * find the point nearest p on line by a and b
@@ -699,22 +755,36 @@ var ForgeDraw = (function (e) {
                 let pos = this.parent.toLocal(event.global, null);
 
                 console.log(`${self.name} => onDownEvent`, pos);
-                movingPoint = new Point(pos, { interactive: false });
-                if (lineData.length == 0) {
-                    movingPoint.color = Colors.Start;
-                }
-                else {
-                    movingLine = new Line(lineData.at(-1).position, pos, { interactive: false });
-                    movingPoint.color = Colors.End;
-                }
+                switch (getControl()) {
+                    case Control.DRAW:
+                        movingPoint = new Point(pos, { interactive: false });
+                        if (lineData.length == 0) {
+                            movingPoint.color = Colors.Start;
+                        }
+                        else {
+                            movingLine = new Line(lineData.at(-1).position, pos, { interactive: false });
+                            movingPoint.color = Colors.End;
+                        }
 
-                if (lineData.length >= 2) {
-                    points.at(-1).graphics.alpha = 0;
-                    points.at(-1).color = Colors.Middle;
-                }
+                        if (lineData.length >= 2) {
+                            points.at(-1).graphics.alpha = 0;
+                            points.at(-1).color = Colors.Middle;
+                        }
 
-                self.on("pointermove", self.onMoveEvent);
-                self.on("pointerup", self.onUpEvent);
+                        self.on("pointermove", self.onMoveEvent);
+                        self.on("pointerup", self.onUpEvent);
+                        break;
+                    case Control.DEVICE:
+                        //todo
+                        movingPoint = new Point(pos, {
+                            color: Colors.DefaultDevice,
+                            interactive: false,
+                            label: false,
+                        });
+                        self.on("pointermove", self.onDeviceMoveEvent);
+                        self.on("pointerup", self.onDeviceUpEvent);
+                        break;
+                }
             }
 
             this.onMoveEvent = function (event) {
@@ -726,10 +796,15 @@ var ForgeDraw = (function (e) {
                 }
             }
 
+            this.onDeviceMoveEvent = function (event) {
+                let pos = this.parent.toLocal(event.global, null);
+                console.log(`${self.name} => onDeviceMoveEvent`, pos);
+                movingPoint.position = pos;
+            }
+
             this.onUpEvent = function (event) {
                 console.log(`${self.name} => onUpEvent`);
                 let data = {
-                    isBool: false,
                     position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y)
                 }
                 lineData.push(data);
@@ -747,12 +822,18 @@ var ForgeDraw = (function (e) {
 
             }
 
-            this.onRightDownEvent = function (){
-
+            this.onDeviceUpEvent = function (event) {
+                console.log(`${self.name} => onDeviceUpEvent`);
+                let data = {
+                    position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y),
+                    callback: () => { layer.point.removeChild(movingPoint.container); }
+                }
+                view.dispatchEvent(new DevicePointUserCreateEvent(data));
+                self.off("pointermove", self.onDeviceMoveEvent);
+                self.off("pointerup", self.onDeviceUpEvent);
             }
 
             this.on("pointerdown", this.onDownEvent);
-            this.on("pointerdown", this.onRightDownEvent);
         }
         redraw() {
             this.container.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height);
@@ -805,10 +886,13 @@ var ForgeDraw = (function (e) {
         "DevicePoint": DevicePoint,
         "Stage": Stage,
         "init": init,
+        "destroy": destroy,
         "removeAllData": removeAllData,
         "getRoute": getRoute,
-        "getControl":getControl,
-        "setControl":setControl,
+        "getForgeLineData": getForgeLineData,
+        "getControl": getControl,
+        "setControl": setControl,
+        "Control": Control,
         "drawSetting": drawSetting,
         "layer": layer,
         "lineData": lineData,

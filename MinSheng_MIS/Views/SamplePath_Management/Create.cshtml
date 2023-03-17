@@ -8,24 +8,22 @@
 <div class="search-area bg-transparent">
     <form class="form">
         <div class="form-group required">
-            <label for="Area">棟別</label>
-            <select class="form-select" name="Area" id="Area" required>
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN" required>
                 <option value="">請選擇</option>
-                <!--TEST-->
-                <option value="1" selected>1</option>
             </select>
         </div>
+        <input type="text" id="Area" name="Area" hidden>
         <div class="form-group required">
-            <label for="Floor">樓層</label>
-            <select class="form-select" name="Floor" id="Floor" required>
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN" required>
                 <option value="">請選擇</option>
-                <!--TEST-->
-                <option value="1" selected>1</option>
             </select>
         </div>
+        <input type="text" id="Floor" name="Floor" hidden>
         <div class="form-group required">
             <label for="PathTitle">巡檢路線模板</label>
-            <input type="text" class="form-control" name="PathTitle" id="PathTitle" value="PathTitle標題"><!--TEST-->
+            <input type="text" class="form-control" name="PathTitle" id="PathTitle">
         </div>
         <div class="button-group justify-content-start">
             <button class="btn btn-search" id="path-create">確認</button>
@@ -55,14 +53,19 @@
         </div>
         <div class="sample-path-draw-area d-none">
             <div class="sample-path-toolbar">
-                <button class="path-icon" id="path-draw" data-bs-toggle="tooltip" data-bs-placement="right"
-                    title="規劃路徑">
+                <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
+                    data-bs-placement="right" title="規劃路徑">
                     <i class="icon-pen"></i>
                 </button>
-                <button class="path-icon" id="path-eraser" data-bs-toggle="tooltip" data-bs-placement="right"
-                    title="清除路徑">
+                <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip"
+                    data-bs-placement="right" title="清除路徑">
                     <i class="icon-eraser"></i>
                 </button>
+                @* <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
+                data-bs-placement="right" title="新增設備">
+                <i class="icon-tools"></i>
+                </button> *@
+                <hr class="m-0">
                 <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
                     title="重新規劃路徑">
                     <i class="icon-reload"></i>
@@ -96,7 +99,28 @@
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-back" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-export" onclick="SaveRoute()">儲存變更</button>
+                <button type="button" class="btn btn-export" onclick="sortRouteModal.save()">儲存變更</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade sort-list-modal" tabindex="-1" id="createDeviceModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增自訂設備</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="deviceType" class="mb-2">設備類別</label>
+                <input class="form-control" type="text" id="deviceType">
+                <label for="deviceName" class="mb-2 mt-3">設備名稱</label>
+                <input class="form-control" type="text" id="deviceName">
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-back" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-export" onclick="createDeviceModal.save()">新增設備</button>
             </div>
         </div>
     </div>
@@ -111,6 +135,7 @@
 <!-- Autodesk Forge -->
 <script>
     var viewer;
+    var viewerUrl = "../BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf"; //svf檔路徑
     var myProfileSettings_up = {
         name: "mySettings_up",
         description: "My personal settings.",
@@ -136,7 +161,7 @@
         viewer = new Autodesk.Viewing.GuiViewer3D(myViewerDiv, { profileSettings: myProfileSettings_up });
         var options = {
             'env': "Local",
-            'document': "../BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf" //svf檔路徑
+            'document': viewerUrl //svf檔路徑
         };
         Autodesk.Viewing.Initializer(options, function () {
             viewer.start(options.document, options, onSuccessCallback, onErrorCallback);
@@ -203,11 +228,9 @@
 <script src="https://pixijs.download/release/pixi.js"></script>
 <script src="/Scripts/ForgeDraw.js"></script>
 <script>
+    var view = document.querySelector("#PathCanvas");
     var app;
-
     var stage;
-
-    var autoCalcRoute = true;
 
     const deviceDbId = [
         {
@@ -229,25 +252,24 @@
 
     let btUrl = "/Content/img/bluetooth.svg";
 
-    let $list = $("#point-list").find("tbody");
-    let $detail = $("#point-detail").find("tbody");
-    let $route = $("#path-display");
-
     function initializeDrawer() {
-        let view = document.querySelector("#PathCanvas");
         app = ForgeDraw.init(view, viewer, function () {
             view.addEventListener("fd.linedata.change", function (event) {
                 console.log("view => fd.linedata.change");
-                updateChange();
+                //updateChange();
                 calcRoute();
             });
             view.addEventListener("fd.linedata.detail", function (event) {
                 console.log("view => fd.linedata.detail", event.detail);
-                showDetail(event.detail);
+                //showDetail(event.detail);
             });
             view.addEventListener("fd.linedata.removeall", function (event) {
                 console.log("view => fd.linedata.removeall");
-                removeRoute();
+                updatePathDisplay();
+            });
+            view.addEventListener("fd.devicepoint.usercreate", function (event) {
+                console.log("view => fd.devicepoint.usercreate");
+                createDeviceModal.create(event.detail);
             });
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
@@ -258,36 +280,11 @@
                 let btSprite = PIXI.Sprite.from(btUrl);
                 btSprite.scale.set(0.6);
                 btSprite.anchor.set(0.5);
-                let dp = new ForgeDraw.DevicePoint(e, btSprite);
+                let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
             });
 
             addTooltip();
         });
-
-        $("#point-detail").find("button").on("click", hideDetail);
-
-        function updateChange() {
-            let html = "";
-
-            ForgeDraw.lineData.forEach((e, i, arr) => {
-
-                let p = viewer.clientToWorld(
-                    e.position.x,
-                    e.position.y,
-                );
-
-                html += `
-                    <tr id="lineData_${i}">
-                        <td>${i}</td>
-                        <td>${p ? +(Math.floor(p.point.x + "e+2") + "e-2") : "null"}</td>
-                        <td>${p ? +(Math.floor(p.point.y + "e+2") + "e-2") : "null"}</td>
-                        <td>${e.isBool}</td>
-                    </tr>
-                    `;
-            })
-            $list.empty();
-            $list.append(html);
-        }
 
         function calcRoute() {
 
@@ -297,7 +294,7 @@
                 })
             }
 
-            if (!autoCalcRoute) {
+            if (!sortRouteModal.autoCalcRoute) {
                 return;
             }
 
@@ -311,131 +308,225 @@
             //顯示在網頁上
             updatePathDisplay(route);
         }
-
-        function showDetail(data) {
-            let html = `
-                <tr><td>dbId</td><td>${data.dbId}</td></tr>
-                <tr><td>名稱</td><td>${data.name}</td></tr>
-                <tr><td>是否忽略</td><td>${!data.isUpdate}</td></tr>
-                `;
-            $detail.empty();
-            $detail.append(html);
-
-            $("#point-detail").removeClass("d-none");
-        }
-
-        function hideDetail() {
-            $("#point-detail").addClass("d-none");
-        }
     }
 
     //更新網頁顯示的路徑
-    function updatePathDisplay(path) {
+    function updatePathDisplay(path = undefined) {
         let $path = $("#path-display");
+
+        if (!path) {
+            $path.empty();
+            $path.append(`
+            <li class="breadcrumb-item">起點</li>
+            <li class="breadcrumb-item">終點</li>
+            `);
+            return;
+        }
+
         $path.empty();
         path.forEach(r => {
             let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
             $path.append(pathPoint);
         })
     }
-    function useDrawToggle(bool = undefined) {
-        let btn = $("#path-draw");
-        if (bool != undefined) {
-            ForgeDraw.setControl("isUseDraw", bool);
-            btn.toggleClass("active", bool);
-            return;
+
+    //切換操作
+    function controlToggle(id, control) {
+        let btn = $("#" + id);
+        ForgeDraw.setControl(control);
+
+        $(".path-icon-radio").removeClass("active");
+        btn.toggleClass("active", true);
+    }
+
+    //新增自訂設備
+    const createDeviceModal = new CreateDeviceModal();
+    function CreateDeviceModal() {
+        const self = this;
+        this.ModalJQ = $("#createDeviceModal");
+        this.ModalBs = new bootstrap.Modal(this.ModalJQ[0]);
+
+        this.detail = undefined;
+
+        this.devicePointOptions = {
+            color: 0x3ac0ff,
+            contextMenu: {
+                html: `<div class="contextMenu"><ul></ul></div>`,
+                button: [
+                    {
+                        name: "詳細",
+                        onClick: function (event, point) {
+                            console.log(`devicePoint ${point.dbId} => 詳細`);
+                            view.dispatchEvent(new CustomEvent('fd.linedata.detail', { 'detail': point }));
+                        }
+                    },
+                    {
+                        name: "忽略",
+                        onClick: function (event, point) {
+                            console.log(`devicePoint ${point.dbId} => 忽略`);
+                            point.isUpdate = !point.isUpdate;
+                            event.target.innerHTML = point.isUpdate ? "忽略" : "取消忽略";
+                            point.update();
+                            view.dispatchEvent(new CustomEvent('fd.devicepoint.ignore', { 'detail': point }));
+                        }
+                    },
+                    {
+                        name: "刪除",
+                        onClick: function (event, point) {
+                            console.log(`point ${point.index} => 刪除`);
+                            point.remove();
+                        }
+                    },
+                ]
+            }
         }
-        bool = ForgeDraw.getControl("isUseDraw");
-        ForgeDraw.setControl("isUseDraw", !bool);
-        btn.toggleClass("active", !bool);
-    }
-    function useEraserToggle(bool = undefined) {
-        let btn = $("#path-eraser");
-        if (bool != undefined) {
-            ForgeDraw.setControl("isUseEraser", bool);
-            btn.toggleClass("active", bool);
-            return;
+
+        this.create = function (detail) {
+            this.ModalBs.show();
+            this.detail = detail;
         }
-        bool = ForgeDraw.getControl("isUseEraser");
-        ForgeDraw.setControl("isUseEraser", !bool);
-        btn.toggleClass("active", !bool);
+
+        this.save = function () {
+            let data = {
+                position: this.detail.position,
+                deviceType: this.ModalJQ.find("#deviceType").val(),
+                deviceName: this.ModalJQ.find("#deviceName").val()
+            }
+            let dp = new ForgeDraw.DevicePoint(data, this.devicePointOptions);
+            this.ModalBs.hide();
+        }
+
+        this.ModalJQ.on("hide.bs.modal", function () {
+            self.detail && self.detail.callback();
+        })
+
+        return this;
     }
-    function removeRoute() {
-        $list.empty();
-        $route.empty();
-        $route.append(`
-            <li class="breadcrumb-item">起點</li>
-            <li class="breadcrumb-item">終點</li>
-            `);
-    }
+
 </script>
 
 
 <!-- Drag and Drop -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
-    var sortRouteModal = new bootstrap.Modal(document.getElementById('sortRouteModal'));
-    let sortlist = $(`<ul class="sortlist" id="sortlist"></ul>`);
-    function DragRoute() {
-        let $area = $(".sort-list-area");
-        createRouteItems();
-        let sortable = Sortable.create(sortlist[0], {
-            swapThreshold: 0.45,
-            animation: 150,
-            ghostClass: "ghost",
-            dragClass: "drag",
-            direction: 'horizontal',
-            filter: '.disable',
-            draggable: ".item"
-        });
-        $area.empty();
-        $area.append(sortlist);
-        sortRouteModal.show();
-        function createRouteItems() {
-            sortlist.empty();
-            let list = ForgeDraw.getRoute();
-            console.log(list);
-            sortlist.append(`<li class="disable">起點</li>`);
-            list.forEach((e, i, arr) => {
-                let li = `<li class="item ${e.type}">${e.name}</li>`;
-                sortlist.append(li);
+    const sortRouteModal = new SortRouteModal();
+    function SortRouteModal() {
+        this.autoCalcRoute = true;
+        this.ModalJQ = $("#sortRouteModal");
+        this.ModalBs = new bootstrap.Modal(this.ModalJQ[0]);
+
+        let sortlist = $(`<ul class="sortlist" id="sortlist"></ul>`);
+        this.create = function () {
+            let $area = $(".sort-list-area");
+            createRouteItems();
+            let sortable = Sortable.create(sortlist[0], {
+                swapThreshold: 0.45,
+                animation: 150,
+                ghostClass: "ghost",
+                dragClass: "drag",
+                direction: 'horizontal',
+                filter: '.disable',
+                draggable: ".item"
+            });
+            $area.empty();
+            $area.append(sortlist);
+            this.ModalBs.show();
+
+            function createRouteItems() {
+                sortlist.empty();
+                let devicelist = ForgeDraw.getRoute();
+                let pathList = $(".breadcrumb-item:not(:first-child):not(:last-child)");
+
+                console.log(devicelist);
+                console.log(pathList);
+                sortlist.append(`<li class="disable">起點</li>`);
+
+                pathList.each((i, e) => {
+                    let type = devicelist.find(dp => dp.name == e.innerHTML).type;
+                    let li = `<li class="item ${type}">${e.innerHTML}</li>`;
+                    sortlist.append(li);
+                })
+                sortlist.append(`<li class="disable">終點</li>`);
+            }
+        }
+        this.save = function () {
+            this.autoRouteToggle(false);
+
+            let route = sortlist.find("li").toArray().map((e) => {
+                return $(e).text();
             })
-            sortlist.append(`<li class="disable">終點</li>`);
+
+            updatePathDisplay(route);
+
+            this.ModalBs.hide();
         }
-    }
-    function SaveRoute() {
-        AutoRouteToggle(false);
-
-        let route = sortlist.find("li").toArray().map((e) => {
-            return $(e).text();
-        })
-
-        updatePathDisplay(route);
-
-        sortRouteModal.hide();
-    }
-    function AutoRouteToggle(bool = undefined) {
-        let btn = $("#path-auto");
-        if (bool != undefined) {
-            autoCalcRoute = bool;
-            btn.toggleClass("active", bool);
-            return;
+        this.autoRouteToggle = function (bool = undefined) {
+            let btn = $("#path-auto");
+            if (bool != undefined) {
+                this.autoCalcRoute = bool;
+                btn.toggleClass("active", bool);
+                return;
+            }
+            this.autoCalcRoute = !this.autoCalcRoute;
+            btn.toggleClass("active", this.autoCalcRoute);
         }
-        autoCalcRoute = !autoCalcRoute;
-        btn.toggleClass("active", autoCalcRoute);
     }
 </script>
 
 <!-- EVENT -->
+<script src="../../Scripts/tool.js"></script>
 <script>
-    $(function () {
+    let currentASN;
+    let currentFSN;
+
+    $(async function () {
+        addAreaFloorEvent();
         addButtonEvent();
-        useDrawToggle(ForgeDraw.getControl("isUseDraw"));
-        useEraserToggle(ForgeDraw.getControl("isUseEraser"));
-        AutoRouteToggle(autoCalcRoute);
-        //TEST
-        $("#path-create").click();
+        controlToggle("path-draw", ForgeDraw.Control.DRAW);
+        sortRouteModal.autoRouteToggle(true);
+
+        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+
+        if (window.location.search) {
+            let params = new URL(document.location).searchParams;
+            await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${params.get("ASN")}`);
+
+            for (const [k, v] of params.entries()) {
+                $("#" + k).val(v).change();
+            }
+            currentASN = params.get("ASN");
+            currentFSN = params.get("FSN");
+            $("#path-create").click();
+        }
     });
+
+    function addAreaFloorEvent() {
+        var areas = document.getElementById("ASN");
+        areas.addEventListener("change", async function () {
+            console.log("areas change")
+            let url = '@Url.Action("Floor", "DropDownList")';
+            if (areas.value != "") {
+                $('#Area').val($("#ASN option:selected").text());
+            }
+            else {
+                $('#Area').val('');
+            }
+            url = url + `?ASN=${areas.value}`;
+
+            await pushSelect("FSN", url);
+
+            $('#Floor').val('');
+        });
+        var FSNs = document.getElementById("FSN");
+        FSNs.addEventListener("change", function () {
+            if (FSNs.value != "") {
+                $('#Floor').val($("#FSN option:selected").text());
+            }
+            else {
+                $('#Floor').val('');
+            }
+        });
+    }
 
     function addButtonEvent() {
         $("#back").click(function () {
@@ -445,31 +536,56 @@
             e.preventDefault();
             console.log("onclick path-create");
             if ($("form")[0].checkValidity()) {
-                $("#sample-path-name").text($("#PathTitle").val());
+
+                let asn = $("#ASN").val();
+                let fsn = $("#FSN").val();
+                let pt = $("#PathTitle").val();
+
+                $("#sample-path-name").text(pt);
                 $(".sample-path-draw-area").removeClass("d-none");
                 $("#path-display").removeClass("d-none");
-                initializeViewer(initializeDrawer);
+
+
+                //若非第一次初始化
+                if (viewer) {
+                    //若有改變過asn OR fsn 則重新開始這一頁
+                    if (currentASN != asn || currentFSN != fsn) {
+                        window.location.href = `/SamplePath_Management/Create?ASN=${asn}&FSN=${fsn}&PathTitle=${pt}`;
+                    }
+                }
+                else {
+                    //紀錄目前的asn & fsn
+                    currentASN = asn;
+                    currentFSN = fsn;
+                    //viewerUrl = `../BimModels/${asn}/${fsn}.svf`;
+                    initializeViewer(initializeDrawer);
+                }
+
             }
         })
         $("#path-edit").click(function () {
-            DragRoute();
+            sortRouteModal.create();
         })
         $("#path-draw").click(function () {
             $(this).blur();
-            useDrawToggle();
+            controlToggle("path-draw", ForgeDraw.Control.DRAW);
         })
         $("#path-eraser").click(function () {
             $(this).blur();
-            useEraserToggle();
+            controlToggle("path-eraser", ForgeDraw.Control.ERASER);
         })
+        /* $("#path-device").click(function () {
+                $(this).blur();
+                controlToggle("path-device", ForgeDraw.Control.DEVICE);
+            }) */
         $("#path-reload").click(function () {
             $(this).blur();
-            //removeRoute();
             ForgeDraw.removeAllData();
+            sortRouteModal.autoRouteToggle(true);
         })
         $("#path-auto").click(function () {
             $(this).blur();
-            AutoRouteToggle();
+            sortRouteModal.autoRouteToggle();
         })
         $("#submit").click(function () {
             console.log("onclick submit")
@@ -492,6 +608,98 @@
     }
 
     function save() {
+        let PathSampleOrder = $(".breadcrumb-item:not(:first-child):not(:last-child)").toArray().map(e => e.innerHTML);
+        let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
+            return { LocationX: e.x, LocationY: e.y };
+        })
 
+        let data = {
+            PathSample: {
+                ASN: $("#ASN").val(),
+                FSN: $("#FSN").val(),
+                PathTitle: $("#PathTitle").val()
+            },
+            PathSampleOrder: PathSampleOrder,
+            PathSampleRecord: PathSampleRecord
+        }
+
+        console.log(data);
+
+            @* $.ajax({
+            url: '@Url.Action("aaa", "bbb")',
+            body: JSON.stringify(data),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+            }) *@
+
+            function onSuccess(res) {
+                console.log("Success");
+                console.log(res);
+
+                if (res.ResponseCode == 0) {
+                    myModal.hide();
+                    let modal_success = $(`
+                    <div class="modal fade modal-delete" id="DeleteModal-success" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    新增成功！
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-delete" data-bs-dismiss="modal">確定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `);
+                    $(document.body).append(modal_success);
+                    let myModal_success = bootstrap.Modal.getOrCreateInstance(modal_success[0]);
+                    myModal_success.show();
+                    modal_success[0].addEventListener("hidden.bs.modal", () => {
+                        myModal_success.dispose();
+                        var url = '@Url.Action("Management", "SamplePath_Management")';
+                        window.location.href = url;
+                    })
+                }
+            }
+        function onError(res) {
+            console.log("error");
+            console.log(res);
+            let errtext;
+
+            switch (res) {
+                case "duplicate title":
+                    errtext = "巡檢路線模板名稱重複！";
+                    break;
+                default:
+                    errtext = "";
+                    break;
+            }
+
+            let modal_error = $(`
+                    <div class="modal fade modal-delete" id="DeleteModal-error" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    新增失敗！${errtext}
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-delete" data-bs-dismiss="modal">確定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `);
+            $(document.body).append(modal_error);
+            let myModal_error = bootstrap.Modal.getOrCreateInstance(modal_error[0]);
+            myModal_error.show();
+            modal_error[0].addEventListener("hidden.bs.modal", () => {
+                myModal_error.dispose();
+                modal_error.remove();
+            })
+        }
     }
 </script>
