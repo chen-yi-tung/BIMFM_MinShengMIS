@@ -169,6 +169,10 @@ var ForgeDraw = (function (e) {
         }
     }
 
+    function destroy() {
+        app.destroy(false, true);
+    }
+
     function preventDefaultEvent(event) {
         event.preventDefault();
     }
@@ -882,6 +886,7 @@ var ForgeDraw = (function (e) {
         "DevicePoint": DevicePoint,
         "Stage": Stage,
         "init": init,
+        "destroy": destroy,
         "removeAllData": removeAllData,
         "getRoute": getRoute,
         "getForgeLineData": getForgeLineData,
