@@ -227,9 +227,8 @@ var ForgeDraw = (function (e) {
             });
     }
 
-    function getForgeLineData(){
-        lineData
-        return;
+    function getForgeLineData() {
+        return lineData.map(e => { return forgeViewer.clientToWorld(e.position.x, e.position.y).point; });
     }
 
     function getControl() {
@@ -885,6 +884,7 @@ var ForgeDraw = (function (e) {
         "init": init,
         "removeAllData": removeAllData,
         "getRoute": getRoute,
+        "getForgeLineData": getForgeLineData,
         "getControl": getControl,
         "setControl": setControl,
         "Control": Control,

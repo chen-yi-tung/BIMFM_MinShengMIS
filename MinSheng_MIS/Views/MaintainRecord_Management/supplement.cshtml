@@ -23,11 +23,11 @@
                 <label for="MaintainState">本次保養狀態</label>
                 <div>
                     <input class="form-control readonly w-lg-auto d-lg-inline-block" type="text" id="MaintainState"
-                        name="MaintainState" value="待審核" readonly>
+                        name="MaintainState" readonly>
                     <div class="form-group d-lg-contents mt-lg-0" style="margin-top: 24px;">
                         <label for="MyName" class="mx-lg-3  w-lg-auto d-lg-inline-block">填報人員</label>
                         <input class="form-control readonly  w-lg-auto d-lg-inline-block" type="text" id="MyName"
-                            name="MyName" value="王大明" readonly>
+                            name="MyName" readonly>
                     </div>
                 </div>
             </div>
@@ -199,8 +199,6 @@
             console.log(res);
             MaintainRecord("#MaintainRecord", res);
             InspectionPlanMaintain("#InspectionPlanMaintainList", res.InspectionPlanList);
-
-            $("#MaintainDate").val(moment().format('YYYY/MM/DD HH:mm:ss'));
 
             ImageDisplay(".datatable-img-item>img");
         }
