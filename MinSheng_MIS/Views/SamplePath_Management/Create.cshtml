@@ -343,6 +343,7 @@
     //新增自訂設備
     const createDeviceModal = new CreateDeviceModal();
     function CreateDeviceModal() {
+        const self = this;
         this.ModalJQ = $("#createDeviceModal");
         this.ModalBs = new bootstrap.Modal(this.ModalJQ[0]);
 
@@ -392,10 +393,13 @@
                 deviceType: this.ModalJQ.find("#deviceType").val(),
                 deviceName: this.ModalJQ.find("#deviceName").val()
             }
-            this.detail.callback();
             let dp = new ForgeDraw.DevicePoint(data, this.devicePointOptions);
             this.ModalBs.hide();
         }
+
+        this.ModalJQ.on("hide.bs.modal", function () {
+            self.detail && self.detail.callback();
+        })
 
         return this;
     }
@@ -438,9 +442,9 @@
                 console.log(pathList);
                 sortlist.append(`<li class="disable">起點</li>`);
 
-                //TODO: 根據pathList排序 用devicelist內容轉成sortlist li
-                pathList.forEach((e, i, arr) => {
-                    let li = `<li class="item ${e.type}">${e.name}</li>`;
+                pathList.each((i, e) => {
+                    let type = devicelist.find(dp => dp.name == e.innerHTML).type;
+                    let li = `<li class="item ${type}">${e.innerHTML}</li>`;
                     sortlist.append(li);
                 })
                 sortlist.append(`<li class="disable">終點</li>`);
@@ -475,7 +479,7 @@
     $(function () {
         addButtonEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        sortRouteModal.autoRouteToggle(sortRouteModal.autoCalcRoute);
+        sortRouteModal.autoRouteToggle(true);
         //TEST
         $("#path-create").click();
     });
@@ -512,6 +516,7 @@
         $("#path-reload").click(function () {
             $(this).blur();
             ForgeDraw.removeAllData();
+            sortRouteModal.autoRouteToggle(true);
         })
         $("#path-auto").click(function () {
             $(this).blur();
