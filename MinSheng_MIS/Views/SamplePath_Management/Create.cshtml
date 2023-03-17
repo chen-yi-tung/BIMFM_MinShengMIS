@@ -398,7 +398,7 @@
         }
 
         this.ModalJQ.on("hide.bs.modal", function () {
-            self.detail.callback();
+            self.detail && self.detail.callback();
         })
 
         return this;
