@@ -2,8 +2,9 @@
  * @typedef {object} SerializedName
  * @property {string} text - use to th
  * @property {string} value - use to td
- * @property {function(value:string):string} formatter - use to formatter td data
+ * @property {function (value):string} formatter - use to formatter td data
  */
+
 
 /**
  * @typedef {object} TableOuterOptions
@@ -87,6 +88,21 @@ function createTableInner(data, sn) {
 }
 
 
+/**
+ * @typedef {object} TableGridColumnsOptions
+ * @property {string} id - use to html id and the key to find value from data
+ * @property {string} title - use to th
+ * @property {string} width - ex: "30%"
+ * @property {function (value):string} formatter - use to formatter td data
+ * 
+ * @typedef {object} TableGridOptions
+ * @property {TableGridColumnsOptions} columns - use to datatable-header
+ * @property {boolean} thead - if true that have th
+ * 
+ * @param {*[]} data - the data need show
+ * @param {TableGridOptions} options 
+ * @returns {string} TableGrid
+ */
 function createTableGrid(data, options) {
     const nullString = "-";
     console.log(options)
@@ -126,7 +142,16 @@ function createTableGrid(data, options) {
     }
 }
 
-
+/**
+ * @typedef {object} AccordionOuterOptions
+ * @property {string} className - use to datatable custom class
+ * @property {string} title - use to datatable-header
+ * @property {string} id - use to set datatable-table id
+ * @property {string} inner - TableInner from createAccordion
+ * 
+ * @param {AccordionOuterOptions} options 
+ * @returns {string} AccordionOuter
+ */
 function createAccordionOuter(options) {
     return `
     <div class="datatable ${options.className ?? ""}" id="${options.id}">
@@ -140,7 +165,18 @@ function createAccordionOuter(options) {
     `;
 }
 
-
+/**
+ * @typedef {object} AccordionOptions
+ * @property {string} className - use to datatable custom class
+ * @property {string} title - use to datatable-header
+ * @property {string} id - use to set accordion id
+ * @property {*[]} data
+ * @property {SerializedName[]} sn
+ * @property {string} itemTitleKey - use to accordion-header title from data[itemTitleKey]
+ * 
+ * @param {AccordionOptions} options 
+ * @returns {string} Accordion
+ */
 function createAccordion(options) {
     if (options.data.length === 0) {
         return "";
@@ -160,13 +196,7 @@ function createAccordion(options) {
 }
 
 /**
- * @typedef {object} AccordionItemOptions
- * @property {*[]} data - use to datatable custom class
- * @property {SerializedName[]} sn - use to datatable-header
- * @property {string} id - use to set accordion-item id
- * @property {string} itemTitleKey - use to accordion-header title from data[itemTitleKey]
- * 
- * @param {AccordionItemOptions} options 
+ * @param {AccordionOptions} options 
  * @param {number} i Accordion Item index
  * @returns {string} TableOuter
  */
