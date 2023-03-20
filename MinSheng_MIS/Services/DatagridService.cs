@@ -166,7 +166,7 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("RSN", a.RSN);  //RSN
 
                 if (itemObjects["Date"] == null)
-                    itemObjects.Add("Date", a.Date?.ToString("yyyy/M/d HH:mm:ss"));                                //保養週期
+                    itemObjects.Add("Date", a.Date?.ToString("yyyy/MM/dd HH:mm:ss"));                                //保養週期
 
                 if (itemObjects["PropertyCode"] == null)
                     itemObjects.Add("PropertyCode", a.PropertyCode);    //國有財產編碼
@@ -863,7 +863,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("IPRSN", a.IPRSN);
                 itemObjects.Add("IPSN", a.IPSN);
                 itemObjects.Add("IPName", InspectionPlan_.IPName);
-                itemObjects.Add("PlanDate", InspectionPlan_.PlanDate.ToString("yyyy/M/d"));
+                itemObjects.Add("PlanDate", InspectionPlan_.PlanDate.ToString("yyyy/MM/dd"));
 
                 var dic = Surface.InspectionPlanRepairState();
                 itemObjects.Add("RepairState", dic[a.RepairState.Trim()]); //這個要再用 Surface 做中文轉譯!!
@@ -873,7 +873,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("Area", EquipmentInfo_.Area);
                 itemObjects.Add("Floor", EquipmentInfo_.Floor);
                 itemObjects.Add("RSN", a.RSN);
-                itemObjects.Add("Date", EquipmentReportForm_.Date?.ToString("yyyy/M/d"));
+                itemObjects.Add("Date", EquipmentReportForm_.Date?.ToString("yyyy/MM/dd"));
                 itemObjects.Add("PropertyCode", EquipmentInfo_.PropertyCode);
                 itemObjects.Add("ESN", EquipmentReportForm_.ESN);
                 itemObjects.Add("EName", EquipmentInfo_.EName);
