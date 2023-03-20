@@ -49,4 +49,11 @@ namespace MinSheng_MIS.Models.ViewModels
         public int Period { get; set; }
 
     }
+
+    public class EQMaintainEditInfo
+    {
+        public string EMISN { get; set; }
+        public bool IsEnable { get; set; }
+    }
+
 }

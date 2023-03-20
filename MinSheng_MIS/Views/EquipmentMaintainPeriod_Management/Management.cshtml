@@ -261,7 +261,7 @@
             $(".check-item").prop("checked", checked);
         })
 
-        $("#save").click(function (e) {
+        $("#save").click(function (e) { //儲存本頁變更
             let cbs = $(".check-item");
             let data = $('#DataGrid').datagrid('getRows').map((e, i) => {
                 return { EMISN: e.EMISN, IsEnable: cbs[i].checked };
@@ -269,21 +269,23 @@
 
             console.log("onclick save:", data);
 
-    @* $.ajax({
-                url: "",
+            $.ajax({
+                url: '@Url.Action("IsEnableEdit", "EquipmentMaintainPeriod_Management")',
                 data: JSON.stringify(data),
-                type: "POST",
+                method: "POST",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
-                }) *@
+                }) 
 
-                function onSuccess(res) {
-                    console.log(res);
-                }
+            function onSuccess(res) {
+                alert("儲存本頁變更完成");
+                console.log(res);
+            }
 
             function onError(res) {
+                alert("儲存本頁變更失敗");
                 console.log(res);
             }
         })

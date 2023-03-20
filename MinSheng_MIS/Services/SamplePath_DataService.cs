@@ -29,9 +29,9 @@ namespace MinSheng_MIS.Services
 
             //塞來自formdata的資料
             //棟別編號
-            string ASN = form["Area"]?.ToString();
+            string ASN = form["ASN"]?.ToString();
             //樓層編號
-            string FSN = form["Floor"]?.ToString();
+            string FSN = form["FSN"]?.ToString();
             //巡檢路線標題
             string PathTitle = form["PathTitle"]?.ToString();
 
