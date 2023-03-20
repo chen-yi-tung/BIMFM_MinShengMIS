@@ -51,7 +51,7 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             public string MyName { get; set; }//補件人
             public string SupplementaryDate { get; set; }//補件日期
-            public string SupplementContent { get; set; }//補件說明
+            public string SupplementaryContent { get; set; }//補件說明
             public List<string> FilePath { get; set; }//補件檔案
         }
         private class MaintainAuditInfo
@@ -160,7 +160,7 @@ namespace MinSheng_MIS.Models.ViewModels
                     //補件日期
                     maintainSupplementaryInfo.SupplementaryDate = MSI.SupplementaryDate.ToString("yyyy/MM/dd HH:mm:ss");
                     //補件說明
-                    maintainSupplementaryInfo.SupplementContent = MSI.SupplementaryContent;
+                    maintainSupplementaryInfo.SupplementaryContent = MSI.SupplementaryContent;
                     //補件檔案
                     var filepathlist = db.MaintainSupplementaryFile.Where(x => x.PMSN == MSI.PMSN).Select(x => x.FilePath).ToList();
                     maintainSupplementaryInfo.FilePath = filepathlist;

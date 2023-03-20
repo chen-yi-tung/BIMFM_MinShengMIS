@@ -32,7 +32,7 @@
         { text: "最近應保養", value: "Date" },
         {
             text: "設備屬性", value: "ESN", formatter: (val) => {
-                return val ? `<button class="btn btn-search" onclick="DataDetailModal('${val}')">設備資料</button>` : "-"
+                return val ? `<button class="btn btn-search" onclick="DataDetailModal('@Url.Action("ReadBody", "EquipmentInfo_Management")'+'/${val}')">設備資料</button>` : "-"
             }
         },
     ]
@@ -107,6 +107,7 @@
             console.log(res);
         }
     }
+
 
     window.onload = function () {
 

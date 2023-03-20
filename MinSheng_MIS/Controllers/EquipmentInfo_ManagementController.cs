@@ -1,5 +1,6 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace MinSheng_MIS.Controllers
         public ActionResult ReadBody(string id)
         {
             var EquipmentInfo = db.EquipmentInfo.Find(id);
+            var dic = Surface.EState();
+            EquipmentInfo.EState = dic[EquipmentInfo.EState];
             string result = JsonConvert.SerializeObject(EquipmentInfo);
             return Content(result, "application/json");
         }

@@ -5,19 +5,12 @@ function DataDetailModal(url) {
     const sn = [
         { text: "系統別", value: "System" },
         { text: "子系統別", value: "SubSystem" },
-        { text: "子系統別編號", value: "SubSystemID" },
         { text: "設備名稱", value: "EName" },
         { text: "區域", value: "Area" },
         { text: "樓層", value: "Floor" },
-        { text: "樓層編號", value: "FSN" },
-        { text: "空間別", value: "Room" },
         { text: "空間名稱", value: "RoomName" },
-        { text: "來源空間", value: "SourceSpace" },
-        { text: "來源物件", value: "SourceObject" },
         { text: "國有財產編碼", value: "PropertyCode" },
         { text: "廠牌", value: "Brand" },
-        { text: "設備安裝日期", value: "InstallDate" },
-        { text: "設備保固期限", value: "GuaranteeDeadline" },
         { text: "DBID", value: "DBID" },
         { text: "RFID", value: "RFID" },
         { text: "設備狀態", value: "EState" },
@@ -27,10 +20,10 @@ function DataDetailModal(url) {
         bootstrap.Modal.getInstance($(".data-detail-modal")[0]).show();
     }
     else {
-        //$.getJSON(url, readData);
-        readData({
-            EName: "AAA"
-        })
+        $.getJSON(url, readData);
+        //readData({
+        //    EName: "AAA"
+        //})
     }
     function readData(data) {
         console.log("data-detail-modal readData: ",data);
