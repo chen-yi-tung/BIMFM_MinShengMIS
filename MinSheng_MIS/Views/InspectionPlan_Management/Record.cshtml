@@ -1,7 +1,267 @@
-﻿
-@{
-    ViewBag.Title = "Record";
+﻿@{
+    ViewBag.Title = "巡檢紀錄";
 }
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
 
-<h2>Record</h2>
+<style>
+    .datatable-light .datatable-header {
+        background-color: #C6E1FF;
+        color: inherit;
+        font-weight: inherit;
+    }
+</style>
+<h2>@ViewBag.Title</h2>
 
+<section id="InspectionPlanInfo"></section>
+
+<div class="datatable datatable-fill mt-5">
+    <div class="datatable-header">設備保養紀錄</div>
+    <div class="datatable-body datatable-easyui">
+        <table id="DataGrid-Maintain"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-fill mt-5">
+    <div class="datatable-header">設備維修紀錄</div>
+    <div class="datatable-body datatable-easyui">
+        <table id="DataGrid-Repair"></table>
+    </div>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/ImageDisplay.js"></script>
+<script>
+
+    const RSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
+    let apiUrl = null;
+    let apiUrl_Maintain = '@Url.Action("MaintainRecord_Management", "Datagrid")';
+    let apiUrl_Repair = '@Url.Action("RepairRecord_Management", "Datagrid")';
+
+    const sn = {
+        InspectionPlan: [
+            { text: "計畫編號", value: "IPSN" },
+            { text: "計畫名稱", value: "IPName" },
+            { text: "計畫日期", value: "PlanDate" },
+            { text: "計畫執行狀態", value: "PlanState" },
+            { text: "巡檢班別", value: "Shift" },
+            { text: "巡檢人員", value: "MyName" },
+        ],
+        InspectionPlanRecord: [
+            { text: "巡檢狀態", value: "PlanState" },
+            { text: "填報人", value: "MyName" },
+            { text: "填報時間", value: "DateOfFilling" },
+            { text: "填報備註", value: "InspectionRecord" },
+            { text: "照片", value: "ImgPath" },
+        ],
+    }
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "MyName", title: "巡檢人員" },
+            { id: "WatchID", title: "手環編號" },
+            {
+                id: "PMSN", title: "詳情", formatter: (val) => {
+                    return val ? `<a class="btn btn-search" href="${val}" target="_blank">詳情</a>` : "-";
+                }
+            },
+        ]
+    }
+
+    const fakeData = {
+        InspectionPlan: {
+            IPSN: "IPSN",
+            IPName: "IPName",
+            PlanDate: "PlanDate",
+            PlanState: "PlanState",
+            Shift: "Shift",
+            MyName: "MyName",
+        },
+        InspectionPlanRecord: {
+            PlanState: "PlanState",
+            MyName: "MyName",
+            DateOfFilling: "DateOfFilling",
+            InspectionRecord: "InspectionRecord",
+            ImgPath: [""],
+        },
+        InspectionPlanMember: [
+            {
+                MyName: "王大明",
+                WatchID: "11",
+                PMSN: "PMSN",
+            },
+            {
+                MyName: "王大明",
+                WatchID: "11",
+                PMSN: "PMSN",
+            },
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#InspectionPlanInfo").append(
+                createTableOuter({
+                    title: "巡檢計劃資訊",
+                    id: "InspectionPlan",
+                    className: "mt-5",
+                    inner: createTableInner(res.InspectionPlan, sn.InspectionPlan),
+                }),
+                createTableOuter({
+                    title: "巡檢完工填報",
+                    id: "InspectionPlanRecord",
+                    //className: "mt-5",
+                    inner: createTableInner(res.InspectionPlanRecord, sn.InspectionPlanRecord),
+                }),
+                createTableOuter({
+                    id: "InspectionPlanMember",
+                    className: "datatable-light",
+                    inner: createTableGrid(res.InspectionPlanMember, GridOptions),
+                })
+            );
+            ImageDisplay(".datatable-img-item>img");
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function initDatagrid_Maintain(url) {
+        $('#DataGrid-Maintain').datagrid({
+            url: url,
+            frozenColumns: [[
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onMaintainDetail(${index})">填報內容</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onMaintainLocate(${index})">定位</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'MaintainState', title: '保養單狀態', align: 'center', width: 120 },
+                { field: 'Area', title: '棟別', align: 'center', width: 66 },
+                { field: 'Floor', title: '樓層', align: 'center', width: 66 },
+                //{ field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150 },
+                { field: 'ESN', title: '設備編號', align: 'center', width: 110 },
+                { field: 'EState', title: '設備狀態', align: 'center', width: 200 },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 200 },
+
+                { field: 'EMFISN', title: '保養項目編號', align: 'center', width: 150 },
+                { field: 'MIName', title: '保養項目', align: 'center', width: 200 },
+                { field: 'Unit', title: '保養週期單位', align: 'center', width: 150 },
+                { field: 'Period', title: '保養週期', align: 'center', width: 110 },
+
+                { field: 'LastTime', title: '上次保養', align: 'center', width: 180 },
+                { field: 'NextTime', title: '下次預計保養', align: 'center', width: 180 },
+            ]],
+            //rownumbers: true,
+            idField: 'EMFISN',
+            //sortName: 'EMFISN',
+            remoteSort: false,
+            sortOrder: 'asc',
+            //fit: true,
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+        })
+    }
+
+    function initDatagrid_Repair(url) {
+        $('#DataGrid-Repair').datagrid({
+            url: url,
+            frozenColumns: [[
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onRepairDetail(${index})">填報內容</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onRepairLocate(${index})">定位</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'RepairState', title: '維修單狀態', align: 'center', width: 120 },
+                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 106 },
+                { field: 'Area', title: '棟別', align: 'center', width: 66 },
+                { field: 'Floor', title: '樓層', align: 'center', width: 66 },
+                { field: 'RSN', title: '報修單號', align: 'center', width: 120 },
+                { field: 'Date', title: '報修時間', align: 'center', width: 180 },
+                //{ field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150 },
+                { field: 'ESN', title: '設備編號', align: 'center', width: 110 },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 200 },
+                { field: 'InformantUserID', title: '報修人員', align: 'center', width: 110 },
+                { field: 'ReportContent', title: '報修內容', align: 'center', width: 110 },
+            ]],
+            //rownumbers: true,
+            idField: 'RSN',
+            //sortName: 'RSN',
+            remoteSort: false,
+            sortOrder: 'asc',
+            //fit: true,
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+        })
+    }
+
+    // datagrid onClick Function
+    function onMaintainDetail(index) {
+        let row = $('#DataGrid-Maintain').datagrid('getRows')[index];
+        let url = baseUrl + 'Read';
+        window.open(url, "_blank");
+    }
+
+    function onRepairDetail(index) {
+        let row = $('#DataGrid-Repair').datagrid('getRows')[index];
+        let url = baseUrl + 'Read';
+        window.open(url, "_blank");
+    }
+
+    function onMaintainLocate(index) {
+        let row = $('#DataGrid-Maintain').datagrid('getRows')[index];
+        let url = baseUrl + 'Edit';
+        window.open(url, "_self");
+    }
+
+    function onRepairLocate(index) {
+        let row = $('#DataGrid-Repair').datagrid('getRows')[index];
+        let url = baseUrl + 'Edit';
+        window.open(url, "_self");
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+        initDatagrid_Maintain(apiUrl_Maintain);
+        initDatagrid_Repair(apiUrl_Repair);
+    }
+
+    window.onresize = function(){
+        $('#DataGrid-Maintain').datagrid('resize');
+        $('#DataGrid-Repair').datagrid('resize');
+    }
+</script>
