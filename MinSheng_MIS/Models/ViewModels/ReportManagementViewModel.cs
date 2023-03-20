@@ -79,7 +79,7 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 root.RSN = RSN;
 
-                root.Date = table[0].Date?.ToString("yyyy/M/d HH:mm:ss");
+                root.Date = table[0].Date?.ToString("yyyy/MM/dd HH:mm:ss");
 
                 var levelDic = Surface.EquipmentReportFormState();
                 root.ReportLevel = levelDic[table[0].ReportLevel];
@@ -121,7 +121,7 @@ namespace MinSheng_MIS.Models.ViewModels
                     var inspectionplan = new InspectionPlan();
                     inspectionplan.IPSN = inspectionplantable.IPSN;
                     inspectionplan.IPName = inspectionplantable.IPName;
-                    inspectionplan.PlanDate = inspectionplantable.PlanDate.ToString("yyyy/M/d");
+                    inspectionplan.PlanDate = inspectionplantable.PlanDate.ToString("yyyy/MM/dd");
                     var PSdics = Surface.InspectionPlanState();
                     inspectionplan.PlanState = PSdics[inspectionplantable.PlanState];
                     var Shiftdics = Surface.Shift();
@@ -156,7 +156,7 @@ namespace MinSheng_MIS.Models.ViewModels
 
                     var IPRname = db.AspNetUsers.Where(x => x.UserName == inspectionPlanRepairtable.RepairUserID).Select(x => x.MyName).FirstOrDefault() as string;
                     inspectionPlanRepair.MyName = IPRname;
-                    inspectionPlanRepair.RepairDate = inspectionPlanRepairtable.RepairDate?.ToString("yyyy/M/d");
+                    inspectionPlanRepair.RepairDate = inspectionPlanRepairtable.RepairDate?.ToString("yyyy/MM/dd");
 
                     var RPImgPathlist = db.RepairCompletionImage.Where(x => x.IPRSN == inspectionPlanRepairtable.IPRSN).Select(x => x.ImgPath).ToList();
                     inspectionPlanRepair.ImgPath = RPImgPathlist;
@@ -178,7 +178,7 @@ namespace MinSheng_MIS.Models.ViewModels
                         var RSIname = db.AspNetUsers.Where(x => x.UserName == item.SupplementaryUserID).Select(x => x.MyName).FirstOrDefault() as string;
 
                         RSInfo.MyName = RSIname;
-                        RSInfo.SupplementaryDate = item.SupplementaryDate.ToString("yyyy/M/d");
+                        RSInfo.SupplementaryDate = item.SupplementaryDate.ToString("yyyy/MM/dd");
                         RSInfo.SupplementaryContent = item.SupplementaryContent;
 
                         var filepathlist = db.RepairSupplementaryFile.Where(x => x.PRSN == item.PRSN).Select(x => x.FilePath).ToList();
@@ -202,7 +202,7 @@ namespace MinSheng_MIS.Models.ViewModels
                         var RAInfo = new RepairAuditInfo();
                         var RAIname = db.AspNetUsers.Where(x => x.UserName == item.AuditUserID).Select(x => x.MyName).FirstOrDefault() as string;
                         RAInfo.MyName = RAIname;
-                        RAInfo.AuditDate = item.AuditDate.ToString("yyyy/M/d");
+                        RAInfo.AuditDate = item.AuditDate.ToString("yyyy/MM/dd");
                         var RAdics = Surface.AuditResult();
                         RAInfo.AuditResult = RAdics[item.AuditResult];
                         RAInfo.AuditMemo = item.AuditMemo.ToString();
