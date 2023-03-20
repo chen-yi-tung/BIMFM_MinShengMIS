@@ -259,4 +259,9 @@
         initDatagrid_Maintain(apiUrl_Maintain);
         initDatagrid_Repair(apiUrl_Repair);
     }
+
+    window.onresize = function(){
+        $('#DataGrid-Maintain').datagrid('resize');
+        $('#DataGrid-Repair').datagrid('resize');
+    }
 </script>
