@@ -196,12 +196,12 @@ namespace MinSheng_MIS.Services
                 //上次保養日期
                 if(item.LastTime != DateTime.MinValue && item.LastTime != null)
                 {
-                    itemObjects.Add("LastTime", item.LastTime.ToString("yyyy/M/d"));
+                    itemObjects.Add("LastTime", item.LastTime.ToString("yyyy/MM/dd"));
                 }
                 //最近應保養日期
                 if (item.Date != DateTime.MinValue && item.Date != null)
                 {
-                    itemObjects.Add("Date", item.Date.ToString("yyyy/M/d"));
+                    itemObjects.Add("Date", item.Date.ToString("yyyy/MM/dd"));
                 }
                 ja.Add(itemObjects);
             }

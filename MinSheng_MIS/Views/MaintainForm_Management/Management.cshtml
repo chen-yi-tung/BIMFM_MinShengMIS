@@ -188,6 +188,10 @@
             pagePosition: 'bottom',
             pageSize: 10
         });
+        $('#DataGrid').datagrid('sort', {
+            sortName: 'Date',
+            sortOrder: 'desc'
+        });
         //------------Pager --------------------------------------------------
         var pager = $('#DataGrid').datagrid('getPager');
         $(pager).pagination({
