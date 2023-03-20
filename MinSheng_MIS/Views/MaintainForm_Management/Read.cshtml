@@ -16,7 +16,7 @@
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/dataTable/InspectionPlanMaintain.js"></script>
 <script src="/Scripts/ImageDisplay.js"></script>
-<script src="/Scripts/DataDetailModal.js"></script>
+<script src="/Scripts/dataTable/EquipmentInfoModal.js"></script>
 <script>
     const EMFISN = '@ViewBag.EMFISN';
     let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;
@@ -32,7 +32,7 @@
         { text: "最近應保養", value: "Date" },
         {
             text: "設備屬性", value: "ESN", formatter: (val) => {
-                return val ? `<button class="btn btn-search" onclick="DataDetailModal('@Url.Action("ReadBody", "EquipmentInfo_Management")'+'/${val}')">設備資料</button>` : "-"
+                return val ? `<button class="btn btn-search" onclick="EquipmentInfoModal('@Url.Action("ReadBody", "EquipmentInfo_Management")'+'/${val}')">設備資料</button>` : "-"
             }
         },
     ]

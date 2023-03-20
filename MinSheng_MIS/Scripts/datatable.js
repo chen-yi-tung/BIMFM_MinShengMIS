@@ -226,3 +226,39 @@ function createAccordionItem(options, i) {
     </div>
     `;
 }
+
+function createDataDetailModal(options) {
+    let ModalJQ, ModalBs, inner;
+    readData(options.data);
+    function readData(data) {
+        inner = createTableInner(data, options.sn);
+        const html = `
+        <div class="modal fade data-detail-modal" tabindex="-1" id="${options.id}">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${options.title}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="datatable-table">${inner}</table>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <a type="button" class="btn btn-search" href="" target="_blank">定位</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        ModalJQ = $(html);
+        $(document.body).append(ModalJQ);
+        ModalBs = new bootstrap.Modal(ModalJQ[0]);
+
+        ModalBs.show();
+
+        ModalJQ[0].addEventListener("hidden.bs.modal",function(){
+            ModalBs.dispose();
+            ModalJQ.remove();
+        })
+    }
+}
