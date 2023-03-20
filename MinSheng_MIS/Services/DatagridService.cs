@@ -1027,9 +1027,9 @@ namespace MinSheng_MIS.Services
                 if (itemObjects["Period"] == null)
                     itemObjects.Add("Period", a.Period);    //保養週期
                 if (itemObjects["LastTime"] == null)
-                    itemObjects.Add("LastTime", a.LastTime?.ToString("yyyy/M/d"));    //上次保養日期
+                    itemObjects.Add("LastTime", a.LastTime?.ToString("yyyy/MM/dd"));    //上次保養日期
                 if (itemObjects["NextTime"] == null)
-                    itemObjects.Add("NextTime", a.NextTime?.ToString("yyyy/M/d"));    //最近應保養日期
+                    itemObjects.Add("NextTime", a.NextTime?.ToString("yyyy/MM/dd"));    //最近應保養日期
                 ja.Add(itemObjects);
             }
 
