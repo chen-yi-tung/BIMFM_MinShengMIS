@@ -27,12 +27,12 @@
         { text: "保養單項目編號", value: "EMFISN" },
         { text: "保養項目", value: "MIName" },
         { text: "保養週期單位", value: "Unit" },
-        { text: "週期單位", value: "Period" },
+        { text: "保養週期", value: "Period" },
         { text: "上次保養", value: "LastTime" },
         { text: "最近應保養", value: "Date" },
         {
             text: "設備屬性", value: "ESN", formatter: (val) => {
-                return val ? `<button class="btn btn-search" onclick="DataDetailModal('${val}')">設備資料</button>` : "-"
+                return val ? `<button class="btn btn-search" onclick="DataDetailModal('@Url.Action("ReadBody", "EquipmentInfo_Management")'+'/${val}')">設備資料</button>` : "-"
             }
         },
     ]
@@ -107,6 +107,7 @@
             console.log(res);
         }
     }
+
 
     window.onload = function () {
 

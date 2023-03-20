@@ -187,6 +187,7 @@
     <Compile Include="Controllers\BigScreenController.cs" />
     <Compile Include="Controllers\DatagridController.cs" />
     <Compile Include="Controllers\DropDownListController.cs" />
+    <Compile Include="Controllers\EquipmentInfo_ManagementController.cs" />
     <Compile Include="Controllers\EquipmentMaintainPeriod_ManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
@@ -1561,6 +1562,7 @@
     <Folder Include="Views\BigScreen\" />
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
+    <Folder Include="Views\EquipmentInfo_Management\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
