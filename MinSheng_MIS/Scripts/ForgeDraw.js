@@ -232,7 +232,10 @@ var ForgeDraw = (function (e) {
     }
 
     function getForgeLineData() {
-        return lineData.map(e => { return forgeViewer.clientToWorld(e.position.x, e.position.y).point; });
+        return lineData.map(e => {
+            let w = forgeViewer.clientToWorld(e.position.x, e.position.y)
+            return w ? w.point : undefined;
+        });
     }
 
     function getControl() {
@@ -458,6 +461,8 @@ var ForgeDraw = (function (e) {
                 self.position = pos;
 
                 lineData[self.index].position = pos;
+                let w = forgeViewer.clientToWorld(pos.x, pos.y);
+                lineData[self.index].ForgePos = w? w.point : undefined;
 
                 view.dispatchEvent(new LineDataChangeEvent(lineData[self.index]));
 
@@ -804,8 +809,10 @@ var ForgeDraw = (function (e) {
 
             this.onUpEvent = function (event) {
                 console.log(`${self.name} => onUpEvent`);
+                let w = forgeViewer.clientToWorld(movingPoint.position.x, movingPoint.position.y);
                 let data = {
-                    position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y)
+                    position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y),
+                    ForgePos: w? w.point : undefined
                 }
                 lineData.push(data);
                 view.dispatchEvent(new LineDataChangeEvent(data));
