@@ -251,7 +251,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 主系統
+        #region 主系統 //要換掉
         [System.Web.Http.HttpGet]
         public ActionResult System()
         {
@@ -269,7 +269,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 子系統
+        #region 子系統 //要換掉
         [System.Web.Http.HttpGet]
         public ActionResult SubSystem(string System)
         {
@@ -280,6 +280,42 @@ namespace MinSheng_MIS.Controllers
                 JObject jo = new JObject();
                 jo.Add("Text", item);//SubSystem
                 jo.Add("Value", item); // SubSystem
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 主系統/主系統
+        [System.Web.Http.HttpGet]
+        public ActionResult SystemName()
+        {
+            List<JObject> list = new List<JObject>();
+            var abc = db.SystemManagement.Where(x => x.SystemIsEnable == true).ToList();
+            foreach (var item in abc)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.System);//System
+                jo.Add("Value", item.System); // System
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 子系統/子系統
+        [System.Web.Http.HttpGet]
+        public ActionResult SubSystemName()
+        {
+            List<JObject> list = new List<JObject>();
+            var abc = db.SubSystemManagement.Where(x => x.SubSystemIsEnable == true).ToList();
+            foreach (var item in abc)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.SubSystem);//SubSystem
+                jo.Add("Value", item.SubSystem); //SubSystem
                 list.Add(jo);
             }
             string text = JsonConvert.SerializeObject(list);

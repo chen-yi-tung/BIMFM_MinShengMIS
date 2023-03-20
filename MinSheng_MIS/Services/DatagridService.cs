@@ -936,7 +936,7 @@ namespace MinSheng_MIS.Services
             var SourceTable = from x1 in db.EquipmentMaintainItem
                               join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
                               join x3 in db.MaintainItem on x1.MISN equals x3.MISN
-                              select new { x1.EMISN, x1.IsEnable, x2.Area, x2.Floor, x2.System, x2.SubSystem, x1.ESN, x2.EName, x1.MISN, x3.MIName, x1.Unit, x1.Period, x1.LastTime, x1.NextTime };
+                              select new { x1.EMISN, x1.IsEnable, x2.Area, x2.Floor, x2.System, x2.SubSystem, x1.ESN, x2.EName, x1.MISN, x3.MIName, x1.Unit, x1.Period, x1.LastTime, x1.NextTime, x2.EState };
 
             //Area查詢table方式 以Area至表[設備資訊]查詢出ESN，再以ESN至表[設備報修單]查詢出相關報修單。
             if (!string.IsNullOrEmpty(Area))
@@ -1011,6 +1011,11 @@ namespace MinSheng_MIS.Services
                 }
                 if (itemObjects["ESN"] == null)
                     itemObjects.Add("ESN", a.ESN);    //設備編號
+                if (itemObjects["EState"] == null)
+                {
+                    var dic = Surface.EState();
+                    itemObjects.Add("EState", dic[a.EState]);    //設備狀態
+                }
                 if (itemObjects["EName"] == null)
                     itemObjects.Add("EName", a.EName);    //設備名稱
                 if (itemObjects["MISN"] == null)
