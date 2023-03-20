@@ -19,7 +19,7 @@
 function createTableOuter(options) {
     return `
     <div class="datatable ${options.className ?? ""}">
-        <div class="datatable-header">${options.title}</div>
+        ${options.title ? `<div class="datatable-header">${options.title}</div>` : ""}
         <div class="datatable-body">
             <table class="datatable-table" id="${options.id}">
                 ${options.inner}
@@ -113,7 +113,7 @@ function createTableGrid(data, options) {
     function createThs(op) {
         return op.map(o => {
             let w = typeof o.width == "string" ? o.width : o.width + "px";
-            let th = `<th class="datatable-header" style="width:${w}">${o.title}</th>`;
+            let th = `<th class="datatable-header" style="${o.width ? `width:${w}` : ''}">${o.title}</th>`;
             return th;
         }).join("");
     }

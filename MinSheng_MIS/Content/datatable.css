@@ -196,12 +196,27 @@ th.datatable-header+th.datatable-header {
 .data-detail-modal .modal-footer{
     padding: 0.4em;
 }
+/* easyui */
+
+.datatable-easyui .datagrid {
+    --theme-datagrid-thead-bg: #C6E1FF;
+    --theme-datagrid-thead-hover-bg: #adc6e2;
+    --theme-datagrid-thead-color: #3d3d3d;
+}
+
+.datatable-easyui .datagrid-wrap {
+    height: inherit !important;
+}
 
 /* RWD */
 
 @media (min-width: 992px) {
     .datatable {
         width: 914px;
+    }
+
+    .datatable-fill {
+        width: 100%;
     }
 
     .datatable-small {
