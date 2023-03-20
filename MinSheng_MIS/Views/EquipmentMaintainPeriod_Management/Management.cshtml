@@ -262,13 +262,14 @@
         })
 
         $("#save").click(function (e) {
-            let data = $('#DataGrid').datagrid('getRows').map(e => {
-                return { EMISN: e.EMISN, IsEnable: e.IsEnable };
+            let cbs = $(".check-item");
+            let data = $('#DataGrid').datagrid('getRows').map((e, i) => {
+                return { EMISN: e.EMISN, IsEnable: cbs[i].checked };
             });
 
             console.log("onclick save:", data);
 
-            @* $.ajax({
+    @* $.ajax({
                 url: "",
                 data: JSON.stringify(data),
                 type: "POST",
@@ -276,11 +277,11 @@
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
-            }) *@
+                }) *@
 
-            function onSuccess(res) {
-                console.log(res);
-            }
+                function onSuccess(res) {
+                    console.log(res);
+                }
 
             function onError(res) {
                 console.log(res);
