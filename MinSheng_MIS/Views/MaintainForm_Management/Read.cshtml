@@ -16,6 +16,7 @@
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/dataTable/InspectionPlanMaintain.js"></script>
 <script src="/Scripts/ImageDisplay.js"></script>
+<script src="/Scripts/DataDetailModal.js"></script>
 <script>
     const RSN = '@ViewBag.id';
     //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
@@ -31,7 +32,7 @@
         { text: "最近應保養", value: "Date" },
         {
             text: "設備屬性", value: "ESN", formatter: (val) => {
-                return val ? `<a class="btn btn-search" href="${val}" target="_blank">設備資料</a>` : "-"
+                return val ? `<button class="btn btn-search" onclick="DataDetailModal('${val}')">設備資料</button>` : "-"
             }
         },
     ]
