@@ -335,6 +335,7 @@
     <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\ReadEqMaintainItemFormViewModel.cs" />
     <Compile Include="Models\ViewModels\ReportManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\NewMaintainItems.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemViewModel.cs" />

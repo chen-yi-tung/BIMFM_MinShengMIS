@@ -208,7 +208,7 @@
     // datagrid onClick Function
     function onDetail(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + `/${row.RSN}`;
+        let url = baseUrl + 'Read' + `/${row.EMFISN}`;
         window.open(url, "_blank");
     }
 

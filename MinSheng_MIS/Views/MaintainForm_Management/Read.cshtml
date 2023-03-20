@@ -18,9 +18,9 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script src="/Scripts/DataDetailModal.js"></script>
 <script>
-    const RSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null;
+    const EMFISN = '@ViewBag.EMFISN';
+    let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;
+    //let apiUrl = null;
 
     const SerializedName = [
         { text: "本保養單項目狀態", value: "FormItemState" },

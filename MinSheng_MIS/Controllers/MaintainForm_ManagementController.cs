@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MinSheng_MIS.Models.ViewModels;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -32,9 +33,18 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 定期保養詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.EMFISN = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult ReadBody(string id)
+        {
+            var readEqMaintainItemFormViewModel = new ReadEqMaintainItemFormViewModel();
+
+            string result = readEqMaintainItemFormViewModel.GetJsonForRead(id);
+            return Content(result, "application/json");
         }
         #endregion
     }
