@@ -48,8 +48,8 @@ namespace MinSheng_MIS.Controllers
                 jo.Add("ESN", resultrow.ESN);
                 jo.Add("EName", resultrow.EName);
                 jo.Add("MIName", resultrow.MIName);
-                jo.Add("LastTime", resultrow.LastTime?.ToString("yyyy/M/d"));
-                jo.Add("Date", resultrow.NextTime?.ToString("yyyy/M/d"));
+                jo.Add("LastTime", resultrow.LastTime?.ToString("yyyy/MM/dd"));
+                jo.Add("Date", resultrow.NextTime?.ToString("yyyy/MM/dd"));
                 jo.Add("Unit", resultrow.Unit);
                 jo.Add("Period", resultrow.Period);
                 jo.Add("IsEnable", Int16.Parse(resultrow.IsEnable));
