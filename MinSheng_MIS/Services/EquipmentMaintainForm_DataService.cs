@@ -61,7 +61,7 @@ namespace MinSheng_MIS.Services
                               join x4 in db.MaintainItem on x2.MISN equals x4.MISN
                               join x5 in db.Floor_Info on x3.FSN equals x5.FSN
                               join x6 in db.AreaInfo on x5.ASN equals x6.ASN
-                              select new {  x1.FormItemState, x6.Area, x5.FloorName, x3.PropertyCode, x3.EName, x1.EMFISN, x4.MIName, x1.Unit, x1.Period, x1.LastTime, x1.Date, x5.ASN, x3.FSN, x2.ESN, x2.MISN};
+                              select new {  x1.FormItemState, x6.Area, x5.FloorName, x3.PropertyCode, x3.EName, x1.EMFISN, x4.MIName, x1.Unit, x1.Period, x1.LastTime, x1.Date, x5.ASN, x3.FSN, x2.ESN, x2.MISN, x3.EState};
 
             //查詢棟別
             if (!string.IsNullOrEmpty(ASN))
@@ -152,6 +152,12 @@ namespace MinSheng_MIS.Services
                     string formitemstate = item.FormItemState.Trim();
                     var dic = Surface.EquipmentMaintainFormItemState();
                     itemObjects.Add("FormItemState", dic[formitemstate]);
+                }
+                //設備狀態
+                if (!string.IsNullOrEmpty(item.EState))
+                {
+                    var dic = Surface.EState();
+                    itemObjects.Add("EState", dic[item.EState]);
                 }
                 //棟別
                 if (!string.IsNullOrEmpty(item.Area))
