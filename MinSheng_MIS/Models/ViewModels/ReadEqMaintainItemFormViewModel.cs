@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web;
 
 namespace MinSheng_MIS.Models.ViewModels
@@ -67,7 +68,6 @@ namespace MinSheng_MIS.Models.ViewModels
 
             #region 保養項目資料
             var EMFITable = db.EquipmentMaintainFormItem.Where(x => x.EMFISN == EMFISN).ToList();
-
             foreach(var item in EMFITable)
             {
                 //本保養單項目狀態
@@ -90,7 +90,110 @@ namespace MinSheng_MIS.Models.ViewModels
                 eqMaintainItemFormInfo.ESN = db.EquipmentMaintainItem.Find(item.EMISN).ESN;
             }
             #endregion
+            List<InspectionPlanList> inspectionPlanLists = new List<InspectionPlanList>();
 
+            #region 本保養單相關保養紀錄
+            var IPSNList = db.InspectionPlanMaintain.Where(x => x.EMFISN == EMFISN).ToList();
+            foreach(var item in IPSNList)
+            {
+                InspectionPlanList inspectionPlanList = new InspectionPlanList();
+                #region 計劃資訊
+                InspectionPlan inspectionPlan = new InspectionPlan();
+                var IPTable = db.InspectionPlan.Find(item.IPSN);
+                //計畫編號
+                inspectionPlan.IPSN = item.IPSN;
+                //計畫名稱
+                inspectionPlan.IPName = IPTable.IPName;
+                //計畫日期
+                inspectionPlan.PlanDate = IPTable.PlanDate.ToString("yyyy/MM/dd");
+                //計畫執行狀態
+                var planstatedic = Surface.InspectionPlanState();
+                inspectionPlan.PlanState = planstatedic[IPTable.PlanState];
+                //巡檢班別
+                var shiftdic = Surface.Shift();
+                inspectionPlan.Shift = shiftdic[IPTable.Shift];
+                //巡檢人員
+                var IPUseridlist = db.InspectionPlanMember.Where(x => x.IPSN == item.IPSN).Select(x => x.UserID).ToList();
+                var INSPNameList = "";
+                int a = 0;
+                foreach (var id in IPUseridlist)
+                {
+                    var myname = db.AspNetUsers.Where(x => x.UserName == id).Select(x => x.MyName).FirstOrDefault();
+                    if (myname != null)
+                    {
+                        if (a == 0)
+                            INSPNameList += myname;
+                        else
+                            INSPNameList += $"、{myname}";
+                    }
+                    a++;
+                }
+                a = 0;
+                inspectionPlan.MyName = INSPNameList;
+                inspectionPlanList.InspectionPlan = inspectionPlan;
+                #endregion
+                #region 保養填報
+                InspectionPlanMaintain inspectionPlanMaintain = new InspectionPlanMaintain();
+                //本次保養狀態
+                var maintainstatedic = Surface.InspectionPlanMaintainState();
+                inspectionPlanMaintain.MaintainState = maintainstatedic[item.MaintainState];
+                //填報人員
+                inspectionPlanMaintain.MyName = db.AspNetUsers.Where(x => x.UserName == item.MaintainUserID).FirstOrDefault().MyName;
+                //保養備註
+                inspectionPlanMaintain.MaintainContent = item.MaintainContent;
+                //填報時間
+                inspectionPlanMaintain.MaintainDate = item.MaintainDate.ToString("yyyy/MM/dd HH:mm:ss");
+                //保養照片
+                var imgpathlist = db.MaintainCompletionImage.Where(x => x.IPMSN == item.IPMSN).Select(x => x.ImgPath).ToList();
+                inspectionPlanMaintain.ImgPath = imgpathlist;
+
+                inspectionPlanList.InspectionPlanMaintain = inspectionPlanMaintain;
+                #endregion
+                #region 補件資料
+                List<MaintainSupplementaryInfo> MaintainSupplementaryInfos = new List<MaintainSupplementaryInfo>();
+                var MSITable = db.MaintainSupplementaryInfo.Where(x => x.IPMSN == item.IPMSN).ToList();
+                foreach(var MSI in MSITable)
+                {
+                    MaintainSupplementaryInfo maintainSupplementaryInfo = new MaintainSupplementaryInfo();
+                    //補件人
+                    maintainSupplementaryInfo.MyName = db.AspNetUsers.Where(x => x.UserName == MSI.SupplementaryUserID).FirstOrDefault().MyName;
+                    //補件日期
+                    maintainSupplementaryInfo.SupplementaryDate = MSI.SupplementaryDate.ToString("yyyy/MM/dd HH:mm:ss");
+                    //補件說明
+                    maintainSupplementaryInfo.SupplementContent = MSI.SupplementaryContent;
+                    //補件檔案
+                    var filepathlist = db.MaintainSupplementaryFile.Where(x => x.PMSN == MSI.PMSN).Select(x => x.FilePath).ToList();
+                    maintainSupplementaryInfo.FilePath = filepathlist;
+                    MaintainSupplementaryInfos.Add(maintainSupplementaryInfo);
+                }
+                inspectionPlanList.MaintainSupplementaryInfo = MaintainSupplementaryInfos;
+                #endregion
+                #region 審核資料
+                List <MaintainAuditInfo> MaintainAuditInfos = new List<MaintainAuditInfo>();
+                var MAITable = db.MaintainAuditInfo.Where(x => x.IPMSN == item.IPMSN && x.IsBuffer == false).ToList();
+                foreach(var MAI in MAITable)
+                {
+                    MaintainAuditInfo maintainAuditInfo = new MaintainAuditInfo();
+                    //審核者
+                    maintainAuditInfo.MyName = db.AspNetUsers.Where(x => x.UserName == MAI.AuditUserID).Select(x => x.MyName).FirstOrDefault();
+                    //審核日期
+                    maintainAuditInfo.AuditDate = MAI.AuditDate.ToString("yyyy/MM/dd");
+                    //審核結果
+                    var auditresultdic = Surface.AuditResult();
+                    maintainAuditInfo.AuditResult = auditresultdic[MAI.AuditResult];
+                    //審核意見
+                    maintainAuditInfo.AuditMemo = MAI.AuditMemo;
+                    //審核照片
+                    var auditimgpathlist = db.MaintainAuditImage.Where(x => x.PMASN == MAI.PMASN).Select(x => x.ImgPath).ToList();
+                    maintainAuditInfo.ImgPath = auditimgpathlist;
+                    MaintainAuditInfos.Add(maintainAuditInfo);
+                }
+                inspectionPlanList.MaintainAuditInfo = MaintainAuditInfos;
+                #endregion
+                inspectionPlanLists.Add(inspectionPlanList);
+            }
+            #endregion
+            eqMaintainItemFormInfo.InspectionPlanList = inspectionPlanLists;
             string result = JsonConvert.SerializeObject(eqMaintainItemFormInfo);
             return result;
         }
