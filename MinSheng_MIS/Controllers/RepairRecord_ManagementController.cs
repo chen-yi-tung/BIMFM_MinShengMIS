@@ -39,11 +39,30 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
 
-        public ActionResult AuditBody(string id) //上面表格部分和詳情的資料都相同，只差下面編輯的部分要做
+        [HttpGet]
+        public ActionResult AuditBody(string id) //上方資料顯示
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
 
             string result = repairRecord_Management_ReadViewModel.GetJsonForRead(id);
+            return Content(result, "application/json");
+        }
+
+        [HttpGet]
+        public ActionResult GetBufferData(string id) //檢查下方審核資料有沒有草稿(isBuffer = 1)，有就帶資料，沒有就空字串
+        {
+            var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
+
+            string result = repairRecord_Management_ReadViewModel.AuditCheckBuffer(id);
+            return Content(result, "application/json");
+        }
+
+        [HttpGet]
+        public ActionResult CreateDataAudit(FormCollection formCollection) //新增審核資料，看是要暫存還是直接新增
+        {
+            var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
+
+            string result = repairRecord_Management_ReadViewModel.CreateAuditData(formCollection,Server);
             return Content(result, "application/json");
         }
         #endregion

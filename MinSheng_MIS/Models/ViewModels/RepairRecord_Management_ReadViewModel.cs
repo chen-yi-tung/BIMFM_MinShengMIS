@@ -1,4 +1,6 @@
-﻿using MinSheng_MIS.Surfaces;
+﻿using Microsoft.Ajax.Utilities;
+using Microsoft.Owin;
+using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -6,6 +8,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Web;
 using System.Xml.Linq;
+using System.Web.Mvc;
+using System.Data.Entity.Migrations;
+using System.IO;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
@@ -317,7 +322,7 @@ namespace MinSheng_MIS.Models.ViewModels
 
         public class AllRepairAudit
         {
-            public string AuditUserID { get; set; }
+            public string AuditUserName { get; set; }
             public string AuditMemo { get; set; }
             public string ImgPath { get; set; }
             public string AuditResult { get; set; }
@@ -338,17 +343,157 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 //有草稿要回傳
                 //要在確認回傳格式
+                var Name = db.AspNetUsers.Where(x => x.UserName == RepairAuIn.AuditUserID).Select(x => x.MyName).FirstOrDefault();
+                var Pic = db.RepairAuditImage.Where(x => x.PRASN == RepairAuIn.PRASN).Select(x => x.ImgPath); //可能會有很多張圖
+                string PicResult = "";  
+                foreach (var item in Pic)
+                {
+                    PicResult += item + ",";
+                }
+                PicResult.Remove(PicResult.Length-1); //移除最後一個'，'
+                
                 AllRepairAudit ReAu = new AllRepairAudit()
-                { 
-                    
+                {
+                    AuditUserName = Name,
+                    AuditMemo = RepairAuIn.AuditMemo,
+                    ImgPath = PicResult,  //如果多張圖片的話， 用'，'分開
+                    AuditResult = RepairAuIn.AuditResult,
+                    PRASN = RepairAuIn.PRASN,
+                    IPRSN = IPRSN,
+                    AuditDate = RepairAuIn.AuditDate.ToString("yyyy/MM/dd HH:mm:ss")
                 };
-                return "";
+                string result = JsonConvert.SerializeObject(ReAu);
+                return result;
             }
             else
             {
                 //沒有草稿
                 return "";
             }
+        }
+        /// <summary>
+        /// 上傳照片，並回傳Server端儲存路徑
+        /// </summary>
+        /// <param name="Path"> client端的圖片路徑 </param>
+        /// <returns></returns>
+        public string UploadImg(HttpPostedFileBase file, HttpServerUtilityBase Sev) 
+        {
+            try
+            {
+                string fileSavedPath = "~/DownFile/";
+                if (!Directory.Exists(Sev.MapPath(fileSavedPath)))
+                {
+                    Directory.CreateDirectory(Sev.MapPath(fileSavedPath));
+                }
+                
+                string newFileName = string.Concat(
+                DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss"),
+                Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
+
+                string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
+                file.SaveAs(fullFilePath);
+                return fullFilePath;
+            }
+            catch (Exception) 
+            {
+                return "儲存過程出錯!";
+            }
+        }
+
+        public string CreateAuditData(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev)
+        {
+            string RepairState_IPR = ""; //InspectionPlanRepair
+            string RepairState_ERF = ""; //EquipReportForm
+
+            switch (formCollection["AuditResult"].ToString()) //判斷審核結果
+            {
+                case "1":
+                    RepairState_IPR = "6";
+                    RepairState_ERF = "7";
+                    break;
+                case "2":
+                    RepairState_IPR = "7";
+                    RepairState_ERF = "8";
+                    break; 
+                case "3":
+                    RepairState_IPR = "5";
+                    RepairState_ERF = "6";
+                    break;
+            }
+
+            if (formCollection["isBuffer"] == "0") //先判斷是按哪一個按鈕，新增
+            {
+                var RAI = new Models.RepairAuditInfo()
+                {
+                    PRASN = formCollection["PRASN"].ToString(), //不確定前面會不會給
+                    IPRSN = formCollection["IPRSN"].ToString(), //不確定前面會不會給
+                    AuditUserID = formCollection["AuditUserID"].ToString(),
+                    AuditDate = DateTime.Now,
+                    AuditMemo = formCollection["AuditMemo"].ToString(),
+                    AuditResult = formCollection["AuditResult"].ToString(),
+                    IsBuffer = false
+                };
+                db.RepairAuditInfo.AddOrUpdate(RAI);
+            }
+            else //暫存
+            {
+                var RAI = new Models.RepairAuditInfo()
+                {
+                    PRASN = formCollection["PRASN"].ToString(), //不確定前面會不會給
+                    IPRSN = formCollection["IPRSN"].ToString(), //不確定前面會不會給
+                    AuditUserID = formCollection["AuditUserID"].ToString(),
+                    AuditDate = DateTime.Now,
+                    AuditMemo = formCollection["AuditMemo"].ToString(),
+                    AuditResult = formCollection["AuditResult"].ToString(),
+                    IsBuffer = true
+                };
+                db.RepairAuditInfo.AddOrUpdate(RAI);
+            }
+
+            var IPR = new Models.InspectionPlanRepair()
+            {
+                RepairState = RepairState_IPR
+            };
+            db.InspectionPlanRepair.AddOrUpdate(IPR);
+
+            var ERF = new Models.EquipmentReportForm()
+            {
+                ReportState = RepairState_ERF
+            };
+            db.EquipmentReportForm.AddOrUpdate(ERF);
+
+            db.SaveChanges();
+
+            //以下處理圖片
+            string[] ImagePath_Client = formCollection["ImgPath"].ToString().Split(',');
+            List<string> ImagePath_Server = new List<string>();
+
+            foreach (var item in ImagePath_Client)
+            {
+                //上傳照片 都傳完之後才做新增
+                string result = UploadImg(item, Sev); //做上傳動作，並回傳儲存路徑
+                if (result != "")
+                {
+                    ImagePath_Server.Add(result);
+                }
+                else
+                {
+                    return ""; //新增出錯!!
+                }
+            }
+
+            foreach (var item in ImagePath_Server)
+            {
+                var Image = new Models.RepairAuditImage()
+                {
+                    ImgPath = item, //圖片路徑
+                    PRASN = formCollection["PRASN"].ToString()
+                };
+                db.RepairAuditImage.Add(Image);
+                db.SaveChanges();
+            }
+
+            return "成功!";
         }
 
         public string GetSupplementEditData(string IPRSN) //取得"補件"下方編輯區資料，提供給前端做顯示
