@@ -159,7 +159,7 @@
     function onDelete(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
         let url = baseUrl + 'Delete' + `/${row.UserName}`;
-        window.open(url, "_blank");
+        window.open(url, "_self");
     }
 
     //search area onClick Function
