@@ -351,7 +351,10 @@ namespace MinSheng_MIS.Models.ViewModels
                 {
                     PicResult += item + ",";
                 }
-                PicResult.Remove(PicResult.Length-1); //移除最後一個'，'
+                if (PicResult.Length > 0)
+                {
+                    PicResult.Remove(PicResult.Length - 1); //移除最後一個'，'
+                }
 
                 var dic = Surface.AuditResult();
                 AllRepairAudit ReAu = new AllRepairAudit()
@@ -388,13 +391,13 @@ namespace MinSheng_MIS.Models.ViewModels
                     Directory.CreateDirectory(Sev.MapPath(fileSavedPath));
                 }
                 
-                string newFileName = string.Concat(prasn +
-                DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-ff"),
+                string newFileName = string.Concat(
+                DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss-ff"),
                 Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
 
                 string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
                 file.SaveAs(fullFilePath);
-                return fullFilePath;
+                return fileSavedPath + newFileName;
             }
             catch (Exception) 
             {
