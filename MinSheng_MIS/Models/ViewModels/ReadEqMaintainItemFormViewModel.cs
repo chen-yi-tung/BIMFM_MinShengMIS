@@ -158,7 +158,7 @@ namespace MinSheng_MIS.Models.ViewModels
                     //補件人
                     maintainSupplementaryInfo.MyName = db.AspNetUsers.Where(x => x.UserName == MSI.SupplementaryUserID).FirstOrDefault().MyName;
                     //補件日期
-                    maintainSupplementaryInfo.SupplementaryDate = MSI.SupplementaryDate.ToString("yyyy/MM/dd HH:mm:ss");
+                    maintainSupplementaryInfo.SupplementaryDate = MSI.SupplementaryDate.ToString("yyyy/MM/dd");
                     //補件說明
                     maintainSupplementaryInfo.SupplementaryContent = MSI.SupplementaryContent;
                     //補件檔案
