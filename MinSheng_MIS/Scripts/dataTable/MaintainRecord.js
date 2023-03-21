@@ -10,7 +10,7 @@
             { text: "最近應保養", value: "Date" },
             {
                 text: "設備屬性", value: "ESN", formatter: (val) => {
-                    return val ? `<a class="btn btn-search" href="${val}" target="_blank">設備資料</a>` : "-"
+                    return val ? `<button class="btn btn-search" onclick="EquipmentInfoModal('/EquipmentInfo_Management/ReadBody/${val}')">設備資料</button>` : "-"
                 }
             },
         ],
