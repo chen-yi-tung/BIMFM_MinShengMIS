@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="9841522ba04145c49dc72aa4ffcb7349" Name="Diagram1" ZoomLevel="45">
+      <Diagram DiagramId="9841522ba04145c49dc72aa4ffcb7349" Name="Diagram1" ZoomLevel="98">
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.C__MigrationHistory" Width="1.5" PointX="3.75" PointY="5.75" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.AreaInfo" Width="1.5" PointX="15.75" PointY="7" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.AspNetRoles" Width="1.5" PointX="7.75" PointY="4.625" />
