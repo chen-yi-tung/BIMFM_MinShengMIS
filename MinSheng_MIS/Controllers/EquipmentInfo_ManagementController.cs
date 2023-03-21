@@ -4,6 +4,7 @@ using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -23,10 +24,12 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult ReadBody(string id)
         {
-            var EquipmentInfo = db.EquipmentInfo.Find(id);
+            var equipmentInfo = db.EquipmentInfo.Find(id);
             var dic = Surface.EState();
-            EquipmentInfo.EState = dic[EquipmentInfo.EState];
-            string result = JsonConvert.SerializeObject(EquipmentInfo);
+            equipmentInfo.EState = dic[equipmentInfo.EState];
+
+            JsonSerializerSettings settings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+            string result = JsonConvert.SerializeObject(equipmentInfo, settings);
             return Content(result, "application/json");
         }
         #endregion
