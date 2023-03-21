@@ -62,3 +62,18 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-submit" id="submit">新增</button>
 </div>
+
+<script>
+    window.onload = function () {
+        addButtonEvent();
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+        /*$("#submit").click(function () {
+            console.log("onclick submit")
+        })*/
+    }
+</script>
