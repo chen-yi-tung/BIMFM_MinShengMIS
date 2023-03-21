@@ -54,6 +54,11 @@ var ForgeDraw = (function (e) {
             return new CustomEvent('fd.devicepoint.ignore', { 'detail': detail })
         }
     }
+    class DevicePointRemoveAllEvent {
+        constructor(detail) {
+            return new CustomEvent('fd.devicepoint.removeall', { 'detail': detail })
+        }
+    }
 
     /* setting */
     const Colors = {
@@ -246,6 +251,12 @@ var ForgeDraw = (function (e) {
         view.dispatchEvent(new LineDataRemoveAllEvent());
     }
 
+    function removeAllDevice() {
+        devices.length = 0;
+        layer.device.removeChildren();
+        view.dispatchEvent(new DevicePointRemoveAllEvent());
+    }
+
     function getRoute() {
         return devices
             .filter(e => e.result != undefined)
@@ -273,7 +284,7 @@ var ForgeDraw = (function (e) {
     }
 
     function getDrawSetting(target) {
-        if (!target){
+        if (!target) {
             return drawSetting;
         }
         let tl = target.split('.');
@@ -301,6 +312,10 @@ var ForgeDraw = (function (e) {
                 break;
         }
 
+    }
+
+    function setForgeViewer(forgeGuiViewer3D) {
+        forgeViewer = forgeGuiViewer3D;
     }
 
     /* class */
@@ -972,12 +987,14 @@ var ForgeDraw = (function (e) {
         "destroy": destroy,
         "readLineData": readLineData,
         "removeAllData": removeAllData,
+        "removeAllDevice": removeAllDevice,
         "getRoute": getRoute,
         "getForgeLineData": getForgeLineData,
         "getControl": getControl,
         "setControl": setControl,
         "getDrawSetting": getDrawSetting,
         "setDrawSetting": setDrawSetting,
+        "setForgeViewer": setForgeViewer,
         "Control": Control,
         "layer": layer,
         "lineData": lineData,

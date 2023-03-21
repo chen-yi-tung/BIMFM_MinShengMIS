@@ -131,7 +131,7 @@
     flex: 1 0 0;
 }
 
-.sample-path-group .form-control .path-edit {
+.sample-path-group .path-btn {
     flex: 0 0 auto;
     width: 1.6em;
     height: 100%;
@@ -144,7 +144,7 @@
     transition: all .3s;
 }
 
-.sample-path-group .form-control .path-edit:hover {
+.sample-path-group .path-btn:hover {
     background: rgba(68, 188, 194, 1);
 }
 
