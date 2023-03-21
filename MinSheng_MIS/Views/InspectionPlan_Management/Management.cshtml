@@ -165,19 +165,19 @@
     // datagrid onClick Function
     function onDetail(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read';
+        let url = baseUrl + 'Read' + `/${row.IPSN}`;
         window.open(url, "_blank");
     }
 
     function onEdit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit';
+        let url = baseUrl + 'Edit' + `/${row.IPSN}`;
         window.open(url, "_self");
     }
 
     function onRecord(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Record';
+        let url = baseUrl + 'Record' + `/${row.IPSN}`;
         window.open(url, "_blank");
     }
 

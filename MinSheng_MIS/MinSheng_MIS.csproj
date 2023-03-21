@@ -1466,9 +1466,9 @@
     <Content Include="BimModels\Site01\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\Site01\viewable.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
-    <Content Include="Scripts\DataDetailModal.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datatable.js" />
+    <Content Include="Scripts\dataTable\EquipmentInfoModal.js" />
     <Content Include="Scripts\dataTable\InspectionPlanMaintain.js" />
     <Content Include="Scripts\dataTable\InspectionPlanRepair.js" />
     <Content Include="Scripts\dataTable\MaintainRecord.js" />

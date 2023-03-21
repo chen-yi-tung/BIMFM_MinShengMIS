@@ -205,20 +205,23 @@
                 {
                     field: '_cancel', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
+                        if (row.ReportState == "保留中(待派工)" || row.ReportState == "保留中(未完成)" || row.ReportState == "保留中(審核未過)") {
+                            return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
+                        }
+                        //return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
                     }
                 },
             ]],
             columns: [[
-                { field: 'ReportState', title: '報修單狀態', align: 'center', width: 126, sortable: true },
-                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 106, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
+                { field: 'ReportState', title: '報修單狀態', align: 'center', width: 145, sortable: true },
+                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 95, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 115, sortable: true },
                 { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
-                { field: 'ReportSource', title: '報修來源', align: 'center', width: 110, sortable: true },
-                { field: 'RSN', title: '報修單號', align: 'center', width: 120, sortable: true },
-                { field: 'Date', title: '報修時間', align: 'center', width: 180, sortable: true },
+                { field: 'ReportSource', title: '報修來源', align: 'center', width: 100, sortable: true },
+                { field: 'RSN', title: '報修單號', align: 'center', width: 110, sortable: true },
+                { field: 'Date', title: '報修時間', align: 'center', width: 175, sortable: true },
                 { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
-                { field: 'ESN', title: '設備編號', align: 'center', width: 110, sortable: true },
+                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
                 { field: 'EName', title: '設備名稱', align: 'center', width: 110, sortable: true },
                 { field: 'ReportContent', title: '報修內容', align: 'center', width: 110, sortable: true },
                 { field: 'MyName', title: '報修人員', align: 'center', width: 110, sortable: true },
@@ -264,8 +267,23 @@
 
     function onCancel(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Cancel';
-        window.open(url, "_self");
+        let url = baseUrl + 'Cancel' + `/${row.RSN}`;
+        $.ajax({
+            url: url,
+            method: "Post",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            alert("取消保留完成");
+            window.location.reload();
+        }
+
+        function onError(res) {
+            alert("取消保留失敗");
+        }
     }
 
     //search area onClick Function

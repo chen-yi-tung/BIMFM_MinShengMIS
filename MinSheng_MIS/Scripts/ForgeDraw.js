@@ -380,6 +380,7 @@ var ForgeDraw = (function (e) {
         constructor(pos, options = {}) {
             super();
             this.name = "Point";
+            this.type = "Point";
             this.options = Object.assign({}, drawSetting.point, options);
             this.position = new PIXI.Point(pos.x, pos.y);
             this.graphics;

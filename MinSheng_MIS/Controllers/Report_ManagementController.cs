@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Web;
 using System.Web.Http.Results;
@@ -13,6 +14,8 @@ namespace MinSheng_MIS.Controllers
 {
     public class Report_ManagementController : Controller
     {
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+
         #region 報修管理
         public ActionResult Management()
         {
@@ -30,6 +33,7 @@ namespace MinSheng_MIS.Controllers
         //}
 
         #endregion
+
         #region 報修管理詳情
         public ActionResult Read(string id)
         {
@@ -42,6 +46,34 @@ namespace MinSheng_MIS.Controllers
             var reportManagementViewModel = new ReportManagementViewModel();
             
             string result = reportManagementViewModel.GetJsonForRead(id);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 報修單取消保留
+        [HttpPost]
+        public ActionResult Cancel(string id)
+        {
+            //取消保留
+            var ReportForm = db.EquipmentReportForm.Find(id);
+            switch (ReportForm.ReportState)
+            {
+                case "9":
+                    ReportForm.ReportState = "1";
+                    break;
+                case "10":
+                    ReportForm.ReportState = "5";
+                    break;
+                case "11":
+                    ReportForm.ReportState = "8";
+                    break;
+            }
+            db.EquipmentReportForm.AddOrUpdate(ReportForm);
+            db.SaveChanges();
+
+            JObject jo = new JObject();
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
             return Content(result, "application/json");
         }
         #endregion

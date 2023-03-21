@@ -2,14 +2,14 @@
  * @typedef {object} SerializedName
  * @property {string} text - use to th
  * @property {string} value - use to td
- * @property {function (value):string} formatter - use to formatter td data
+ * @property {function (value):string?} formatter - use to formatter td data
  */
 
 
 /**
  * @typedef {object} TableOuterOptions
- * @property {string} className - use to datatable custom class
- * @property {string} title - use to datatable-header
+ * @property {string?} className - use to datatable custom class
+ * @property {string?} title - use to datatable-header
  * @property {string} id - use to set datatable-table id
  * @property {string} inner - TableInner from createTableInner
  * 
@@ -21,8 +21,8 @@ function createTableOuter(options) {
     <div class="datatable ${options.className ?? ""}">
         ${options.title ? `<div class="datatable-header">${options.title}</div>` : ""}
         <div class="datatable-body">
-            <table class="datatable-table" id="${options.id}">
-                ${options.inner}
+            <table class="datatable-table" id="${options.id ?? ''}">
+                ${options.inner ?? ''}
             </table>
         </div>
     </div>
@@ -92,12 +92,12 @@ function createTableInner(data, sn) {
  * @typedef {object} TableGridColumnsOptions
  * @property {string} id - use to html id and the key to find value from data
  * @property {string} title - use to th
- * @property {string} width - ex: "30%"
- * @property {function (value):string} formatter - use to formatter td data
+ * @property {string?} width - ex: "30%"
+ * @property {function (value):string?} formatter - use to formatter td data
  * 
  * @typedef {object} TableGridOptions
  * @property {TableGridColumnsOptions} columns - use to datatable-header
- * @property {boolean} thead - if true that have th
+ * @property {boolean?} thead - if true that have th
  * 
  * @param {*[]} data - the data need show
  * @param {TableGridOptions} options 
@@ -144,7 +144,7 @@ function createTableGrid(data, options) {
 
 /**
  * @typedef {object} AccordionOuterOptions
- * @property {string} className - use to datatable custom class
+ * @property {string?} className - use to datatable custom class
  * @property {string} title - use to datatable-header
  * @property {string} id - use to set datatable-table id
  * @property {string} inner - TableInner from createAccordion
@@ -154,11 +154,11 @@ function createTableGrid(data, options) {
  */
 function createAccordionOuter(options) {
     return `
-    <div class="datatable ${options.className ?? ""}" id="${options.id}">
-        <div class="datatable-header">${options.title}</div>
+    <div class="datatable ${options.className ?? ""}" id="${options.id ?? ''}">
+        <div class="datatable-header">${options.title ?? ''}</div>
         <div class="datatable-body">
-            <div class="accordion accordion-flush datatable-accordion" id="accordion-${options.id}">
-            ${options.inner}
+            <div class="accordion accordion-flush datatable-accordion" id="accordion-${options.id ?? ''}">
+            ${options.inner ?? ''}
             </div>
         </div>
     </div>
@@ -167,10 +167,10 @@ function createAccordionOuter(options) {
 
 /**
  * @typedef {object} AccordionOptions
- * @property {string} className - use to datatable custom class
+ * @property {string?} className - use to datatable custom class
  * @property {string} title - use to datatable-header
  * @property {string} id - use to set accordion id
- * @property {*[]} data
+ * @property {*[]} data - if data.length === 0 will return empty string
  * @property {SerializedName[]} sn
  * @property {string} itemTitleKey - use to accordion-header title from data[itemTitleKey]
  * 
@@ -183,9 +183,9 @@ function createAccordion(options) {
     }
     return `
     <div class="datatable ${options.className ?? ""}">
-        <div class="datatable-header">${options.title}</div>
+        <div class="datatable-header">${options.title ?? ''}</div>
         <div class="datatable-body">
-            <div class="accordion accordion-flush datatable-accordion" id="accordion-${options.id}">
+            <div class="accordion accordion-flush datatable-accordion" id="accordion-${options.id ?? ''}">
                 ${options.data.map((d, i) => {
         return createAccordionItem(options, i)
     }).join("")}
@@ -227,17 +227,27 @@ function createAccordionItem(options, i) {
     `;
 }
 
+/**
+ * @typedef {object} DataDetailModalOptions
+ * @property {string?} className - use to DataDetailModal custom class
+ * @property {string} title - use to modal-title
+ * @property {string} id - use to set modal id
+ * @property {*[]} data
+ * @property {SerializedName[]} sn
+ * 
+ * @param {DataDetailModalOptions} options 
+ */
 function createDataDetailModal(options) {
     let ModalJQ, ModalBs, inner;
     readData(options.data);
     function readData(data) {
         inner = createTableInner(data, options.sn);
         const html = `
-        <div class="modal fade data-detail-modal" tabindex="-1" id="${options.id}">
+        <div class="modal fade data-detail-modal ${options.className ?? ''}" tabindex="-1" id="${options.id ?? ''}">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">${options.title}</h5>
+                        <h5 class="modal-title">${options.title ?? ''}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -256,9 +266,81 @@ function createDataDetailModal(options) {
 
         ModalBs.show();
 
-        ModalJQ[0].addEventListener("hidden.bs.modal",function(){
+        ModalJQ[0].addEventListener("hidden.bs.modal", function () {
             ModalBs.dispose();
             ModalJQ.remove();
         })
+    }
+}
+
+/**
+ * 
+ * @typedef {object} DialogModalButtonOptions
+ * @property {string?} className - use to custom class, default is 'btn btn-search'
+ * @property {boolean?} cancel - if true add 'data-bs-dismiss="modal"'
+ * @property {string} text - use to show button inner text
+ * @property {function?} onClick - use to add click event
+ * 
+ * @typedef {object} DialogModalOptions
+ * @property {string?} className - use to custom class
+ * @property {string?} title - use to modal-header
+ * @property {string} id - use to set accordion id
+ * @property {string} inner - use to modal-body context
+ * @property {DialogModalButtonOptions[]} button - use to button in modal-footer
+ * @property {function?} onShow - when "show.bs.modal" event trigger
+ * @property {function?} onShown - when "shown.bs.modal" event trigger
+ * @property {function?} onHide - when "hide.bs.modal" event trigger
+ * @property {function?} onHidden - when "hidden.bs.modal" event trigger
+ * 
+ * @param {DialogModalOptions} options 
+ */
+function createDialogModal(options) {
+
+    let modal = $(`
+        <div class="modal fade modal-delete ${options.className ?? ''}" id="${options.id ?? ''}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    ${options.title ? `
+                    <div class="modal-header">
+                        <h5 class="modal-title">${options.title}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    `: ''}
+                    <div class="modal-body text-center">
+                        ${options.inner ?? ''}
+                    </div>
+                    <div class="modal-footer justify-content-center"></div>
+                </div>
+            </div>
+        </div>
+        `);
+        
+    options.button && options.button.forEach((b) => {
+        modal.find(".modal-footer").append(createButton(b));
+    })
+
+    let myModal = bootstrap.Modal.getOrCreateInstance(modal[0]);
+    myModal.show();
+
+    options.onShow && modal[0].addEventListener("show.bs.modal", options.onShow);
+
+    options.onShown && modal[0].addEventListener("shown.bs.modal", options.onShown);
+
+    options.onHide && modal[0].addEventListener("hide.bs.modal", options.onHide);
+
+    modal[0].addEventListener("hidden.bs.modal", () => {
+        options.onHidden && options.onHidden();
+        myModal.dispose();
+        modal.remove();
+    })
+
+    return myModal;
+
+    function createButton(options) {
+        let btn = $(`<button type="button"
+            class="${options.className ?? 'btn btn-search'}"
+            ${options.cancel ? 'data-bs-dismiss="modal"' : ''}>${options.text}</button>`);
+        options.onClick ? btn.click(options.onClick) : 0;
+        return btn;
     }
 }
