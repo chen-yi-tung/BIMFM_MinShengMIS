@@ -227,13 +227,23 @@ function createAccordionItem(options, i) {
     `;
 }
 
+/**
+ * @typedef {object} DataDetailModalOptions
+ * @property {string} className - use to DataDetailModal custom class
+ * @property {string} title - use to modal-title
+ * @property {string} id - use to set modal id
+ * @property {*[]} data
+ * @property {SerializedName[]} sn
+ * 
+ * @param {DataDetailModalOptions} options 
+ */
 function createDataDetailModal(options) {
     let ModalJQ, ModalBs, inner;
     readData(options.data);
     function readData(data) {
         inner = createTableInner(data, options.sn);
         const html = `
-        <div class="modal fade data-detail-modal" tabindex="-1" id="${options.id}">
+        <div class="modal fade data-detail-modal ${options.className ?? ''}" tabindex="-1" id="${options.id}">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -256,9 +266,42 @@ function createDataDetailModal(options) {
 
         ModalBs.show();
 
-        ModalJQ[0].addEventListener("hidden.bs.modal",function(){
+        ModalJQ[0].addEventListener("hidden.bs.modal", function () {
             ModalBs.dispose();
             ModalJQ.remove();
         })
     }
+}
+
+/**
+ * @typedef {object} DataDetailModalOptions
+ * @property {string} className - use to datatable custom class
+ * @property {string} title - use to datatable-header
+ * @property {string} id - use to set accordion id
+ * @property {string} inner - use to modal-body context
+ * 
+ * @param {DataDetailModalOptions} options 
+ */
+function createDialogModal(options) {
+    let modal = $(`
+        <div class="modal fade modal-delete" id="${options.id}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        ${options.inner}
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-delete" id="delete-2">確定刪除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `);
+    let myModal = bootstrap.Modal.getOrCreateInstance(modal[0]);
+    myModal.show();
+    modal[0].addEventListener("hidden.bs.modal", () => {
+        myModal.dispose();
+        modal.remove();
+    })
 }
