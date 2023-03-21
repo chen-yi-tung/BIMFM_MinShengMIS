@@ -36,5 +36,12 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         #endregion
+
+        #region 變更密碼
+        public ActionResult ChangePassword()
+        {
+            return View();
+        }
+        #endregion
     }
 }

@@ -1562,6 +1562,7 @@
     <Content Include="Views\Account_Management\Create.cshtml" />
     <Content Include="Views\Account_Management\Edit.cshtml" />
     <Content Include="Views\Account_Management\Delete.cshtml" />
+    <Content Include="Views\Account_Management\ChangePassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
