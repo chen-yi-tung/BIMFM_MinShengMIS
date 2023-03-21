@@ -182,7 +182,7 @@
             columns: [[
                 { field: 'EMISN', title: 'EMISN', hidden: true },
                 {
-                    field: 'IsEnable', title: '啟用狀態', align: 'center', width: 120, sortable: true,
+                    field: 'IsEnable', title: '啟用狀態', align: 'center', width: 95, sortable: true,
                     formatter: function (val, row, index) {
                         return `<input type="checkbox" class="form-check-input check-item" data-index="${index}" ${!!val ? "checked" : ""}/>`;
                     }
@@ -202,9 +202,9 @@
                 { field: 'MIName', title: '項目名稱', align: 'center', width: 150, sortable: true },
 
                 { field: 'Unit', title: '保養週期單位', align: 'center', width: 130, sortable: true },
-                { field: 'Period', title: '保養週期', align: 'center', width: 100, sortable: true },
+                { field: 'Period', title: '保養週期', align: 'center', width: 95, sortable: true },
 
-                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 140, sortable: true },
+                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 130, sortable: true },
                 { field: 'NextTime', title: '最近應保養日期', align: 'center', width: 150, sortable: true },
             ]],
             singleSelect: true,
