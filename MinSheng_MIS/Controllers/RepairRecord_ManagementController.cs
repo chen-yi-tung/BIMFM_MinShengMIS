@@ -57,12 +57,16 @@ namespace MinSheng_MIS.Controllers
             return Content(result, "application/json");
         }
 
-        [HttpGet]
+        [HttpPost]
         public ActionResult CreateDataAudit(FormCollection formCollection) //新增審核資料，看是要暫存還是直接新增
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
-
-            string result = repairRecord_Management_ReadViewModel.CreateAuditData(formCollection,Server);
+            List<HttpPostedFileBase> fileList = new List<HttpPostedFileBase>();
+            foreach (string item in Request.Files)
+            {
+                fileList.Add(Request.Files[item] as HttpPostedFileBase);
+            }
+            string result = repairRecord_Management_ReadViewModel.CreateAuditData(formCollection,Server, fileList);
             return Content(result, "application/json");
         }
         #endregion

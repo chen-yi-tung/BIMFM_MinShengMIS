@@ -205,7 +205,8 @@ namespace MinSheng_MIS.Models.ViewModels
                 var AName = db.AspNetUsers.Where(x => x.UserName == RAI.AuditUserID).Select(x => x.MyName).FirstOrDefault();
                 RAInfo.MyName = AName;
                 RAInfo.AuditDate = RAI.AuditDate.ToString("yyyy/M/d");
-                RAInfo.AuditResult = RAI.AuditResult;
+                var dic = Surface.AuditResult();
+                RAInfo.AuditResult = dic[RAI.AuditResult];
                 RAInfo.AuditMemo = RAI.AuditMemo;
                 var ImgP = db.RepairAuditImage.Where(x => x.PRASN == RAI.PRASN).Select(x => x.ImgPath).ToList();
                 RAInfo.ImgPath = ImgP;
@@ -351,13 +352,14 @@ namespace MinSheng_MIS.Models.ViewModels
                     PicResult += item + ",";
                 }
                 PicResult.Remove(PicResult.Length-1); //移除最後一個'，'
-                
+
+                var dic = Surface.AuditResult();
                 AllRepairAudit ReAu = new AllRepairAudit()
                 {
                     AuditUserName = Name,
                     AuditMemo = RepairAuIn.AuditMemo,
                     ImgPath = PicResult,  //如果多張圖片的話， 用'，'分開
-                    AuditResult = RepairAuIn.AuditResult,
+                    AuditResult = dic[RepairAuIn.AuditResult],
                     PRASN = RepairAuIn.PRASN,
                     IPRSN = IPRSN,
                     AuditDate = RepairAuIn.AuditDate.ToString("yyyy/MM/dd HH:mm:ss")
@@ -376,7 +378,7 @@ namespace MinSheng_MIS.Models.ViewModels
         /// </summary>
         /// <param name="Path"> client端的圖片路徑 </param>
         /// <returns></returns>
-        public string UploadImg(HttpPostedFileBase file, HttpServerUtilityBase Sev) 
+        public string UploadImg(HttpPostedFileBase file, HttpServerUtilityBase Sev,string prasn) 
         {
             try
             {
@@ -386,8 +388,8 @@ namespace MinSheng_MIS.Models.ViewModels
                     Directory.CreateDirectory(Sev.MapPath(fileSavedPath));
                 }
                 
-                string newFileName = string.Concat(
-                DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss"),
+                string newFileName = string.Concat(prasn +
+                DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-ff"),
                 Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
 
                 string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
@@ -396,12 +398,14 @@ namespace MinSheng_MIS.Models.ViewModels
             }
             catch (Exception) 
             {
-                return "儲存過程出錯!";
+                return "";
             }
         }
 
-        public string CreateAuditData(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev)
+        public string CreateAuditData(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev, List<HttpPostedFileBase> fileList)
         {
+            string iprsn = formCollection["IPRSN"].ToString();
+            string prasn = formCollection["prasn"].ToString();
             string RepairState_IPR = ""; //InspectionPlanRepair
             string RepairState_ERF = ""; //EquipReportForm
 
@@ -425,8 +429,8 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 var RAI = new Models.RepairAuditInfo()
                 {
-                    PRASN = formCollection["PRASN"].ToString(), //不確定前面會不會給
-                    IPRSN = formCollection["IPRSN"].ToString(), //不確定前面會不會給
+                    PRASN = prasn, 
+                    IPRSN = iprsn, 
                     AuditUserID = formCollection["AuditUserID"].ToString(),
                     AuditDate = DateTime.Now,
                     AuditMemo = formCollection["AuditMemo"].ToString(),
@@ -439,8 +443,8 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 var RAI = new Models.RepairAuditInfo()
                 {
-                    PRASN = formCollection["PRASN"].ToString(), //不確定前面會不會給
-                    IPRSN = formCollection["IPRSN"].ToString(), //不確定前面會不會給
+                    PRASN = prasn, 
+                    IPRSN = iprsn, 
                     AuditUserID = formCollection["AuditUserID"].ToString(),
                     AuditDate = DateTime.Now,
                     AuditMemo = formCollection["AuditMemo"].ToString(),
@@ -449,36 +453,33 @@ namespace MinSheng_MIS.Models.ViewModels
                 };
                 db.RepairAuditInfo.AddOrUpdate(RAI);
             }
+            db.SaveChanges();
 
-            var IPR = new Models.InspectionPlanRepair()
-            {
-                RepairState = RepairState_IPR
-            };
-            db.InspectionPlanRepair.AddOrUpdate(IPR);
+            var InsPlanRe = db.InspectionPlanRepair.Find(iprsn);
+            InsPlanRe.RepairState = RepairState_IPR;
+            db.InspectionPlanRepair.AddOrUpdate(InsPlanRe);
+            db.SaveChanges();
 
-            var ERF = new Models.EquipmentReportForm()
-            {
-                ReportState = RepairState_ERF
-            };
-            db.EquipmentReportForm.AddOrUpdate(ERF);
-
+            var IPRepair = db.InspectionPlanRepair.Where(x => x.IPRSN == iprsn).FirstOrDefault();
+            var EquipReport = db.EquipmentReportForm.Find(IPRepair.RSN);
+            EquipReport.ReportState = RepairState_ERF;
+            db.EquipmentReportForm.AddOrUpdate(EquipReport);
             db.SaveChanges();
 
             //以下處理圖片
-            string[] ImagePath_Client = formCollection["ImgPath"].ToString().Split(',');
             List<string> ImagePath_Server = new List<string>();
 
-            foreach (var item in ImagePath_Client)
+            foreach (var item in fileList)
             {
                 //上傳照片 都傳完之後才做新增
-                string result = UploadImg(item, Sev); //做上傳動作，並回傳儲存路徑
+                string result = UploadImg(item, Sev, prasn); //做上傳動作，並回傳儲存路徑
                 if (result != "")
                 {
                     ImagePath_Server.Add(result);
                 }
                 else
                 {
-                    return ""; //新增出錯!!
+                    return "上傳過程出錯!"; //新增出錯!!
                 }
             }
 
@@ -487,7 +488,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 var Image = new Models.RepairAuditImage()
                 {
                     ImgPath = item, //圖片路徑
-                    PRASN = formCollection["PRASN"].ToString()
+                    PRASN = prasn
                 };
                 db.RepairAuditImage.Add(Image);
                 db.SaveChanges();
