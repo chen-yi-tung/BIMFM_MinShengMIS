@@ -247,19 +247,19 @@
     // datagrid onClick Function
     function onDetail(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + `/${row.RSN}`;
+        let url = baseUrl + 'Read' + `/${row.IPMSN}`;
         window.open(url, "_blank");
     }
 
     function onAudit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Audit';
+        let url = baseUrl + 'Audit' + `/${row.IPMSN}`;
         window.open(url, "_self");
     }
 
     function onSupplement(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Supplement';
+        let url = baseUrl + 'Supplement' + `/${row.IPMSN}`;
         window.open(url, "_self");
     }
 
