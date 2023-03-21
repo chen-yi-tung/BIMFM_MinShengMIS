@@ -205,7 +205,10 @@
                 {
                     field: '_cancel', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
+                        if (row.ReportState == "保留中(待派工)" || row.ReportState == "保留中(未完成)" || row.ReportState == "保留中(審核未過)") {
+                            return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
+                        }
+                        //return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
                     }
                 },
             ]],
@@ -264,8 +267,23 @@
 
     function onCancel(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Cancel';
-        window.open(url, "_self");
+        let url = baseUrl + 'Cancel' + `/${row.RSN}`;
+        $.ajax({
+            url: url,
+            method: "Post",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            alert("取消保留完成");
+            window.location.reload();
+        }
+
+        function onError(res) {
+            alert("取消保留失敗");
+        }
     }
 
     //search area onClick Function
