@@ -873,7 +873,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("Area", EquipmentInfo_.Area);
                 itemObjects.Add("Floor", EquipmentInfo_.Floor);
                 itemObjects.Add("RSN", a.RSN);
-                itemObjects.Add("Date", EquipmentReportForm_.Date?.ToString("yyyy/MM/dd"));
+                itemObjects.Add("Date", EquipmentReportForm_.Date?.ToString("yyyy/MM/dd HH:mm:ss"));
                 itemObjects.Add("PropertyCode", EquipmentInfo_.PropertyCode);
                 itemObjects.Add("ESN", EquipmentReportForm_.ESN);
                 itemObjects.Add("EName", EquipmentInfo_.EName);

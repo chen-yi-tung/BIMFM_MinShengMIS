@@ -19,9 +19,9 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
 
-    const RSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null;
+    const IPRSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${IPRSN}`;
+    //let apiUrl = null;
 
     const fakeData = {
         EquipmentReportItem: {
