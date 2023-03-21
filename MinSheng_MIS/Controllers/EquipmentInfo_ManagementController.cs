@@ -25,6 +25,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult ReadBody(string id)
         {
             var equipmentInfo = db.EquipmentInfo.Find(id);
+            //設備狀態 編碼對照顯示文字
             var dic = Surface.EState();
             equipmentInfo.EState = dic[equipmentInfo.EState];
 
