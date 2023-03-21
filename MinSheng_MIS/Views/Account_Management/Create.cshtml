@@ -1,7 +1,64 @@
-﻿
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = "新增帳號";
 }
 
-<h2>Create</h2>
+<h2>@ViewBag.Title</h2>
 
+<div class="edit-area edit-area-small">
+    <form class="form" action="">
+        <div class="form-group d-lg-contents required">
+            <label for="UserName">帳號</label>
+            <input class="form-control" type="text" name="UserName" id="UserName" required>
+        </div>
+
+        <div class="form-group d-lg-contents required">
+            <label for="UserPassword">密碼</label>
+            <input class="form-control" type="password" name="UserPassword" id="UserPassword" required>
+        </div>
+
+        <div class="form-group d-lg-contents required">
+            <label for="UserPWR">再次輸入密碼</label>
+            <input class="form-control" type="password" name="UserPWR" id="UserPWR" required>
+        </div>
+
+        <div class="form-group d-lg-contents required">
+            <label for="MyName">姓名</label>
+            <input class="form-control" type="text" name="MyName" id="MyName" required>
+        </div>
+
+        <div class="form-group d-lg-contents required">
+            <label for="Authority">權限</label>
+            <select class="form-select" name="Authority" id="Authority" required>
+                <option value="">請選擇</option>
+                <option value="管理人員">管理人員</option>
+                <option value="操作人員">操作人員</option>
+                <option value="一般人員">一般人員</option>
+            </select>
+        </div>
+
+        <div class="form-group d-lg-contents required">
+            <label for="Email">信箱</label>
+            <input class="form-control" type="email" name="Email" id="Email" required>
+        </div>
+
+        <div class="form-group d-lg-contents">
+            <label for="PhoneNumber">電話</label>
+            <input class="form-control" type="text" name="PhoneNumber" id="PhoneNumber">
+        </div>
+
+        <div class="form-group d-lg-contents">
+            <label for="Apartment">單位</label>
+            <input class="form-control" type="text" name="Apartment" id="Apartment">
+        </div>
+        <div class="form-group d-lg-contents">
+            <label for="Title">職稱</label>
+            <input class="form-control" type="text" name="Title" id="Title">
+        </div>
+
+    </form>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">新增</button>
+</div>
