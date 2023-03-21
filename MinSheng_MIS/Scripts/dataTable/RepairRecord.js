@@ -12,8 +12,8 @@
             { text: "設備編號", value: "ESN" },
             { text: "設備名稱", value: "EName" },
             {
-                text: "設備屬性資料", value: "ESN_Button", formatter: (val) => {
-                    return val ? `<a class="btn btn-search" href="${val}" target="_blank">設備資料</a>` : "-"
+                text: "設備屬性", value: "ESN_Button", formatter: (val) => {
+                    return val ? `<button class="btn btn-search" onclick="EquipmentInfoModal('/EquipmentInfo_Management/ReadBody/${val}')">設備資料</button>` : "-"
                 }
             },
             { text: "設備名稱", value: "ReportContent" },

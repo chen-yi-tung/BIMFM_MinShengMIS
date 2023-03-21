@@ -73,7 +73,7 @@
 
     const fakeData = {
         InspectionPlan: {
-            IPSN: "IPSN",
+            IPSN: "P23010401",
             IPName: "IPName",
             PlanDate: "PlanDate",
             PlanState: "PlanState",
@@ -144,6 +144,9 @@
     function initDatagrid_Maintain(url) {
         $('#DataGrid-Maintain').datagrid({
             url: url,
+            queryParams: {
+                IPSN: $("#d-IPSN").text()
+            },
             frozenColumns: [[
                 {
                     field: '_detail', align: 'center',
@@ -159,12 +162,12 @@
                 }
             ]],
             columns: [[
+                { field: 'IPMSN', hidden: true },
+                { field: 'IPSN', hidden: true },
                 { field: 'MaintainState', title: '保養單狀態', align: 'center', width: 120 },
                 { field: 'Area', title: '棟別', align: 'center', width: 66 },
                 { field: 'Floor', title: '樓層', align: 'center', width: 66 },
-                //{ field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150 },
                 { field: 'ESN', title: '設備編號', align: 'center', width: 110 },
-                { field: 'EState', title: '設備狀態', align: 'center', width: 200 },
                 { field: 'EName', title: '設備名稱', align: 'center', width: 200 },
 
                 { field: 'EMFISN', title: '保養項目編號', align: 'center', width: 150 },
@@ -176,8 +179,8 @@
                 { field: 'NextTime', title: '下次預計保養', align: 'center', width: 180 },
             ]],
             //rownumbers: true,
-            idField: 'EMFISN',
-            //sortName: 'EMFISN',
+            idField: 'IPMSN',
+            //sortName: 'IPMSN',
             remoteSort: false,
             sortOrder: 'asc',
             //fit: true,
@@ -190,6 +193,9 @@
     function initDatagrid_Repair(url) {
         $('#DataGrid-Repair').datagrid({
             url: url,
+            queryParams: {
+                IPSN: $("#d-IPSN").text()
+            },
             frozenColumns: [[
                 {
                     field: '_detail', align: 'center',
@@ -205,21 +211,22 @@
                 }
             ]],
             columns: [[
+                { field: 'IPRSN', hidden: true },
+                { field: 'IPSN', hidden: true },
                 { field: 'RepairState', title: '維修單狀態', align: 'center', width: 120 },
                 { field: 'ReportLevel', title: '報修等級', align: 'center', width: 106 },
                 { field: 'Area', title: '棟別', align: 'center', width: 66 },
                 { field: 'Floor', title: '樓層', align: 'center', width: 66 },
                 { field: 'RSN', title: '報修單號', align: 'center', width: 120 },
                 { field: 'Date', title: '報修時間', align: 'center', width: 180 },
-                //{ field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150 },
                 { field: 'ESN', title: '設備編號', align: 'center', width: 110 },
                 { field: 'EName', title: '設備名稱', align: 'center', width: 200 },
                 { field: 'InformantUserID', title: '報修人員', align: 'center', width: 110 },
                 { field: 'ReportContent', title: '報修內容', align: 'center', width: 110 },
             ]],
             //rownumbers: true,
-            idField: 'RSN',
-            //sortName: 'RSN',
+            idField: 'IPRSN',
+            //sortName: 'IPRSN',
             remoteSort: false,
             sortOrder: 'asc',
             //fit: true,
@@ -232,25 +239,25 @@
     // datagrid onClick Function
     function onMaintainDetail(index) {
         let row = $('#DataGrid-Maintain').datagrid('getRows')[index];
-        let url = baseUrl + 'Read';
+        let url = '@Url.Action("Read","MaintainRecord_Management")/' + row.IPMSN;
         window.open(url, "_blank");
     }
 
     function onRepairDetail(index) {
         let row = $('#DataGrid-Repair').datagrid('getRows')[index];
-        let url = baseUrl + 'Read';
+        let url = '@Url.Action("Read","RepairRecord_Management")/' + row.IPRSN;
         window.open(url, "_blank");
     }
 
     function onMaintainLocate(index) {
         let row = $('#DataGrid-Maintain').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit';
+        let url = baseUrl + 'Locate';
         window.open(url, "_self");
     }
 
     function onRepairLocate(index) {
         let row = $('#DataGrid-Repair').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit';
+        let url = baseUrl + 'Locate';
         window.open(url, "_self");
     }
 
@@ -260,7 +267,7 @@
         initDatagrid_Repair(apiUrl_Repair);
     }
 
-    window.onresize = function(){
+    window.onresize = function () {
         $('#DataGrid-Maintain').datagrid('resize');
         $('#DataGrid-Repair').datagrid('resize');
     }
