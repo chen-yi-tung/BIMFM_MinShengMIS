@@ -138,6 +138,7 @@
 <!-- PIXI Draw -->
 <script src="https://pixijs.download/release/pixi.js"></script>
 <script src="/Scripts/ForgeDraw.js"></script>
+<script src="/Scripts/datatable.js"></script>
 <script>
     var view = document.querySelector("#PathCanvas");
     var app;
@@ -167,13 +168,41 @@
         ForgeDraw.setDrawSetting("point.contextMenu.button", [{
             name: "詳細",
             onClick: function (event, point) {
-                console.log(`point ${point.index} => 詳細`);
+                console.log(`point ${point.index} => 詳細`, point);
+                let index = point.index;
+                let pointData = ForgeDraw.lineData[index].forgePos;
+                createDataDetailModal({
+                    title: "座標資訊",
+                    id: "",
+                    sn: [
+                        { text: "座標X", value: "x" },
+                        { text: "座標Y", value: "y" },
+                    ],
+                    data: { x: pointData ? pointData.x : undefined, y: pointData ? pointData.y : undefined }
+                });
             }
         }]);
         ForgeDraw.setDrawSetting("devicePoint.contextMenu.button", [{
             name: "詳細",
             onClick: function (event, point) {
-                console.log(`point ${point.index} => 詳細`);
+                console.log(`point ${point.index} => 詳細`, point);
+                let index = point.index;
+                createDataDetailModal({
+                    title: "設備資訊",
+                    id: "",
+                    sn: [
+                        { text: "名稱", value: "name" },
+                        { text: "DBID", value: "dbid" },
+                        { text: "座標X", value: "x" },
+                        { text: "座標Y", value: "y" },
+                    ],
+                    data: {
+                        name: point.name,
+                        dbid: point.dbId,
+                        x: point.forgePos.x,
+                        y: point.forgePos.y
+                    }
+                });
             }
         }]);
 
@@ -257,7 +286,6 @@
 </script>
 
 <!-- EVENT -->
-<script src="/Scripts/datatable.js"></script>
 <script src="../../Scripts/tool.js"></script>
 <script>
 

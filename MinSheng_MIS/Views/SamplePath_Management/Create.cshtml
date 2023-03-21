@@ -26,7 +26,7 @@
             <input type="text" class="form-control" name="PathTitle" id="PathTitle">
         </div>
         <div class="button-group justify-content-start">
-            <button class="btn btn-search" id="path-create">確認</button>
+            <button class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
         </div>
     </form>
 </div>
@@ -61,10 +61,12 @@
                     data-bs-placement="right" title="清除路徑">
                     <i class="icon-eraser"></i>
                 </button>
-                @* <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
-                data-bs-placement="right" title="新增設備">
-                <i class="icon-tools"></i>
-                </button> *@
+                <!--
+                <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
+                    data-bs-placement="right" title="新增設備">
+                    <i class="icon-tools"></i>
+                </button>
+                 -->
                 <hr class="m-0">
                 <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
                     title="重新規劃路徑">
@@ -105,6 +107,7 @@
     </div>
 </div>
 
+<!--
 <div class="modal fade sort-list-modal" tabindex="-1" id="createDeviceModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -125,6 +128,7 @@
         </div>
     </div>
 </div>
+-->
 
 <!-- CDN -->
 <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
@@ -227,6 +231,7 @@
 <!-- PIXI Draw -->
 <script src="https://pixijs.download/release/pixi.js"></script>
 <script src="/Scripts/ForgeDraw.js"></script>
+<script src="/Scripts/datatable.js"></script>
 <script>
     var view = document.querySelector("#PathCanvas");
     var app;
@@ -256,21 +261,50 @@
         app = ForgeDraw.init(view, viewer, function () {
             view.addEventListener("fd.linedata.change", function (event) {
                 console.log("view => fd.linedata.change");
-                //updateChange();
                 calcRoute();
             });
             view.addEventListener("fd.linedata.detail", function (event) {
                 console.log("view => fd.linedata.detail", event.detail);
-                //showDetail(event.detail);
+                if (event.detail instanceof ForgeDraw.DevicePoint) {
+                    createDataDetailModal({
+                        title: "設備資訊",
+                        id: "",
+                        sn: [
+                            { text: "名稱", value: "name" },
+                            { text: "DBID", value: "dbid" },
+                            { text: "座標X", value: "x" },
+                            { text: "座標Y", value: "y" },
+                        ],
+                        data: {
+                            name: event.detail.name,
+                            dbid: event.detail.dbId,
+                            x: event.detail.forgePos.x,
+                            y: event.detail.forgePos.y
+                        }
+                    });
+                }
+                else {
+                    createDataDetailModal({
+                        title: "座標資訊",
+                        id: "",
+                        sn: [
+                            { text: "座標X", value: "x" },
+                            { text: "座標Y", value: "y" },
+                        ],
+                        data: { x: event.detail.forgePos.x, y: event.detail.forgePos.y }
+                    });
+                }
             });
             view.addEventListener("fd.linedata.removeall", function (event) {
                 console.log("view => fd.linedata.removeall");
                 updatePathDisplay();
             });
+            /*
             view.addEventListener("fd.devicepoint.usercreate", function (event) {
                 console.log("view => fd.devicepoint.usercreate");
                 createDeviceModal.create(event.detail);
             });
+            */
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
                 calcRoute();
@@ -344,6 +378,7 @@
     }
 
     //新增自訂設備
+    /*
     const createDeviceModal = new CreateDeviceModal();
     function CreateDeviceModal() {
         const self = this;
@@ -406,6 +441,7 @@
 
         return this;
     }
+    */
 
 </script>
 
@@ -578,10 +614,12 @@
             $(this).blur();
             controlToggle("path-eraser", ForgeDraw.Control.ERASER);
         })
-        /* $("#path-device").click(function () {
-                $(this).blur();
-                controlToggle("path-device", ForgeDraw.Control.DEVICE);
-            }) */
+        /* 
+        $("#path-device").click(function () {
+            $(this).blur();
+            controlToggle("path-device", ForgeDraw.Control.DEVICE);
+        })
+        */
         $("#path-reload").click(function () {
             $(this).blur();
             ForgeDraw.removeAllData();
@@ -629,7 +667,7 @@
 
         console.log(data);
 
-            @* $.ajax({
+    @* $.ajax({
             url: '@Url.Action("aaa", "bbb")',
             data: JSON.stringify(data),
             type: "POST",

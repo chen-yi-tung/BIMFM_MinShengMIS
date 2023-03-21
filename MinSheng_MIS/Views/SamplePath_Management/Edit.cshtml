@@ -27,7 +27,7 @@
             <input type="text" class="form-control" name="PathTitle" id="PathTitle">
         </div>
         <div class="button-group justify-content-start">
-            <button class="btn btn-search" id="path-create">確認</button>
+            <button class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
         </div>
 
     </form>
@@ -107,26 +107,6 @@
     </div>
 </div>
 
-<div class="modal fade sort-list-modal" tabindex="-1" id="createDeviceModal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">新增自訂設備</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <label for="deviceType" class="mb-2">設備類別</label>
-                <input class="form-control" type="text" id="deviceType">
-                <label for="deviceName" class="mb-2 mt-3">設備名稱</label>
-                <input class="form-control" type="text" id="deviceName">
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-back" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-export" onclick="createDeviceModal.save()">新增設備</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- CDN -->
 <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
@@ -229,6 +209,7 @@
 <!-- PIXI Draw -->
 <script src="https://pixijs.download/release/pixi.js"></script>
 <script src="/Scripts/ForgeDraw.js"></script>
+<script src="/Scripts/datatable.js"></script>
 <script>
     var view = document.querySelector("#PathCanvas");
     var app;
@@ -258,20 +239,44 @@
         app = ForgeDraw.init(view, viewer, function () {
             view.addEventListener("fd.linedata.change", function (event) {
                 console.log("view => fd.linedata.change");
-                //updateChange();
                 calcRoute();
             });
+
             view.addEventListener("fd.linedata.detail", function (event) {
                 console.log("view => fd.linedata.detail", event.detail);
-                //showDetail(event.detail);
+                if (event.detail instanceof ForgeDraw.DevicePoint) {
+                    createDataDetailModal({
+                        title: "設備資訊",
+                        id: "",
+                        sn: [
+                            { text: "名稱", value: "name" },
+                            { text: "DBID", value: "dbid" },
+                            { text: "座標X", value: "x" },
+                            { text: "座標Y", value: "y" },
+                        ],
+                        data: {
+                            name: event.detail.name,
+                            dbid: event.detail.dbId,
+                            x: event.detail.forgePos.x,
+                            y: event.detail.forgePos.y
+                        }
+                    });
+                }
+                else {
+                    createDataDetailModal({
+                        title: "座標資訊",
+                        id: "",
+                        sn: [
+                            { text: "座標X", value: "x" },
+                            { text: "座標Y", value: "y" },
+                        ],
+                        data: { x: event.detail.forgePos.x, y: event.detail.forgePos.y }
+                    });
+                }
             });
             view.addEventListener("fd.linedata.removeall", function (event) {
                 console.log("view => fd.linedata.removeall");
                 updatePathDisplay();
-            });
-            view.addEventListener("fd.devicepoint.usercreate", function (event) {
-                console.log("view => fd.devicepoint.usercreate");
-                createDeviceModal.create(event.detail);
             });
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
@@ -362,72 +367,6 @@
 
         $(".path-icon-radio").removeClass("active");
         btn.toggleClass("active", true);
-    }
-
-    //新增自訂設備
-    const createDeviceModal = new CreateDeviceModal();
-    function CreateDeviceModal() {
-        const self = this;
-        this.ModalJQ = $("#createDeviceModal");
-        this.ModalBs = new bootstrap.Modal(this.ModalJQ[0]);
-
-        this.detail = undefined;
-
-        this.devicePointOptions = {
-            color: 0x3ac0ff,
-            contextMenu: {
-                html: `<div class="contextMenu"><ul></ul></div>`,
-                button: [
-                    {
-                        name: "詳細",
-                        onClick: function (event, point) {
-                            console.log(`devicePoint ${point.dbId} => 詳細`);
-                            view.dispatchEvent(new CustomEvent('fd.linedata.detail', { 'detail': point }));
-                        }
-                    },
-                    {
-                        name: "忽略",
-                        onClick: function (event, point) {
-                            console.log(`devicePoint ${point.dbId} => 忽略`);
-                            point.isUpdate = !point.isUpdate;
-                            event.target.innerHTML = point.isUpdate ? "忽略" : "取消忽略";
-                            point.update();
-                            view.dispatchEvent(new CustomEvent('fd.devicepoint.ignore', { 'detail': point }));
-                        }
-                    },
-                    {
-                        name: "刪除",
-                        onClick: function (event, point) {
-                            console.log(`point ${point.index} => 刪除`);
-                            point.remove();
-                        }
-                    },
-                ]
-            }
-        }
-
-        this.create = function (detail) {
-            this.ModalBs.show();
-            this.detail = detail;
-        }
-
-        this.save = function () {
-            let w = viewer.clientToWorld(this.detail.position.x, this.detail.position.y);
-            let data = {
-                position: this.detail.position,
-                forgePos: w ? w.point : undefined,
-                deviceType: this.ModalJQ.find("#deviceType").val(),
-                deviceName: this.ModalJQ.find("#deviceName").val()
-            }
-            let dp = new ForgeDraw.DevicePoint(data, this.devicePointOptions);
-            this.ModalBs.hide();
-        }
-
-        this.ModalJQ.on("hide.bs.modal", function () {
-            self.detail && self.detail.callback();
-        })
-
-        return this;
     }
 
 </script>
@@ -652,10 +591,6 @@
             $(this).blur();
             controlToggle("path-eraser", ForgeDraw.Control.ERASER);
         })
-        /* $("#path-device").click(function () {
-                $(this).blur();
-                controlToggle("path-device", ForgeDraw.Control.DEVICE);
-            }) */
         $("#path-reload").click(function () {
             $(this).blur();
             ForgeDraw.removeAllData();
