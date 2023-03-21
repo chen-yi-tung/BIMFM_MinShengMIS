@@ -168,11 +168,56 @@ th.datatable-header+th.datatable-header {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
 }
 
+/* data-detail-modal */
+.data-detail-modal{
+    --bs-modal-bg: #D9EFFD;
+    --bs-modal-header-padding: 0.6em 1em;
+    --bs-modal-padding: 0;
+    --bs-modal-border-radius: 0;
+}
+.data-detail-modal .datatable-table{
+    border-color: #8A9BA5;
+    border-width: 1px 0;
+    border-style: solid;
+}
+
+.data-detail-modal .datatable-table-th{
+    width: 9em;
+    padding-right: 1em;
+    text-align: end;
+    background-color: #E1EDF5;
+}
+.data-detail-modal .datatable-table-td{
+    padding-left: 1em;
+    text-align: start;
+    background-color: #FFFFFF;
+}
+
+.data-detail-modal .modal-footer{
+    padding: 0.4em;
+}
+
+/* easyui */
+
+.datatable-easyui .datagrid {
+    --theme-datagrid-thead-bg: #C6E1FF;
+    --theme-datagrid-thead-hover-bg: #adc6e2;
+    --theme-datagrid-thead-color: #3d3d3d;
+}
+
+.datatable-easyui .datagrid-wrap {
+    height: inherit !important;
+}
+
 /* RWD */
 
 @media (min-width: 992px) {
     .datatable {
         width: 914px;
+    }
+
+    .datatable-fill {
+        width: 100%;
     }
 
     .datatable-small {

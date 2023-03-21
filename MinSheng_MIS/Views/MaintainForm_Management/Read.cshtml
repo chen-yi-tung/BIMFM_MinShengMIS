@@ -16,22 +16,23 @@
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/dataTable/InspectionPlanMaintain.js"></script>
 <script src="/Scripts/ImageDisplay.js"></script>
+<script src="/Scripts/dataTable/EquipmentInfoModal.js"></script>
 <script>
-    const RSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null;
+    const EMFISN = '@ViewBag.EMFISN';
+    let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;
+    //let apiUrl = null;
 
     const SerializedName = [
         { text: "本保養單項目狀態", value: "FormItemState" },
         { text: "保養單項目編號", value: "EMFISN" },
         { text: "保養項目", value: "MIName" },
         { text: "保養週期單位", value: "Unit" },
-        { text: "週期單位", value: "Period" },
+        { text: "保養週期", value: "Period" },
         { text: "上次保養", value: "LastTime" },
         { text: "最近應保養", value: "Date" },
         {
             text: "設備屬性", value: "ESN", formatter: (val) => {
-                return val ? `<a class="btn btn-search" href="${val}" target="_blank">設備資料</a>` : "-"
+                return val ? `<button class="btn btn-search" onclick="EquipmentInfoModal('@Url.Action("ReadBody", "EquipmentInfo_Management")'+'/${val}')">設備資料</button>` : "-"
             }
         },
     ]
@@ -106,6 +107,7 @@
             console.log(res);
         }
     }
+
 
     window.onload = function () {
 

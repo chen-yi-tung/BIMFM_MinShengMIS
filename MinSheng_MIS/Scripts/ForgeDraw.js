@@ -24,6 +24,7 @@ var ForgeDraw = (function (e) {
         DRAW: 1,
         ERASER: 2,
         DEVICE: 3,
+        READONLY: 4
     })
     var currentControl = Control.DRAW;
 
@@ -137,6 +138,7 @@ var ForgeDraw = (function (e) {
         let rect = view.getBoundingClientRect();
         app = new PIXI.Application({
             view: view,
+            resizeTo: view,
             width: rect.width,
             height: rect.height,
             backgroundAlpha: 0,
@@ -169,8 +171,36 @@ var ForgeDraw = (function (e) {
         }
     }
 
+    function resize() {
+        lineData.forEach((d) => {
+            let w = forgeViewer.worldToClient(d.forgePos)
+            d.position = new PIXI.Point(w.x, w.y);
+        });
+        devices.forEach((dp) => {
+            dp.resize();
+        });
+
+        updatePoints();
+    }
+
+    function destroy() {
+        app.destroy(false, true);
+    }
+
     function preventDefaultEvent(event) {
         event.preventDefault();
+    }
+
+    function readLineData(data) {
+        data.forEach(d => {
+            lineData.push(d);
+            points.push(new Point(d.position));
+            if (lineData.length !== 1) {
+                lines.push(new Line(lineData.at(-1).position, d.position));
+            }
+        })
+
+        updatePoints();
     }
 
     function updatePoints() {
@@ -227,9 +257,11 @@ var ForgeDraw = (function (e) {
             });
     }
 
-    function getForgeLineData(){
-        lineData
-        return;
+    function getForgeLineData() {
+        return lineData.map(e => {
+            let w = forgeViewer.clientToWorld(e.position.x, e.position.y)
+            return w ? w.point : undefined;
+        });
     }
 
     function getControl() {
@@ -238,6 +270,37 @@ var ForgeDraw = (function (e) {
 
     function setControl(control) {
         currentControl = control;
+    }
+
+    function getDrawSetting(target) {
+        if (!target){
+            return drawSetting;
+        }
+        let tl = target.split('.');
+        switch (tl.length) {
+            case 1:
+                return drawSetting[tl[0]];
+            case 2:
+                return drawSetting[tl[0]][tl[1]];
+            case 3:
+                return drawSetting[tl[0]][tl[1]][tl[2]];
+        }
+    }
+
+    function setDrawSetting(target, setting) {
+        let tl = target.split('.');
+        switch (tl.length) {
+            case 1:
+                drawSetting[tl[0]] = setting;
+                break;
+            case 2:
+                drawSetting[tl[0]][tl[1]] = setting;
+                break;
+            case 3:
+                drawSetting[tl[0]][tl[1]][tl[2]] = setting;
+                break;
+        }
+
     }
 
     /* class */
@@ -390,7 +453,7 @@ var ForgeDraw = (function (e) {
             //this.container.hitArea = this.calcHitArea();
             this.container.position = this.position;
             this.container.addChild(this.graphics, this.over, this.hitAreaRect);
-            this.over.visible = true;
+            this.over.visible = false;
             this.hitAreaRect.visible = this.hitAreaVisible;
 
             layer.point.addChild(this.container);
@@ -435,9 +498,15 @@ var ForgeDraw = (function (e) {
             }
             this.onDownEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onDownEvent`);
-                self.off("pointerout", self.onOutEvent);
-                self.on("pointerup", self.onUpEvent);
-                self.on("pointerout", self.onDownOutEvent);
+                switch (getControl()) {
+                    case Control.READONLY:
+                        return;
+                    default:
+                        self.off("pointerout", self.onOutEvent);
+                        self.on("pointerup", self.onUpEvent);
+                        self.on("pointerout", self.onDownOutEvent);
+                        break;
+                }
             }
             this.onDownOutEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onDownOutEvent`);
@@ -455,6 +524,8 @@ var ForgeDraw = (function (e) {
                 self.position = pos;
 
                 lineData[self.index].position = pos;
+                let w = forgeViewer.clientToWorld(pos.x, pos.y);
+                lineData[self.index].ForgePos = w ? w.point : undefined;
 
                 view.dispatchEvent(new LineDataChangeEvent(lineData[self.index]));
 
@@ -528,6 +599,7 @@ var ForgeDraw = (function (e) {
             this.type = data.deviceType;
             this.sprite = this.options.sprite;
             this.position = data.position ?? new PIXI.Point(0, 0);
+            this.forgePos = data.forgePos ?? new THREE.Vector3(0, 0, 0);
             this.isUpdate = true;
             this.result = undefined;
             this.create();
@@ -576,7 +648,8 @@ var ForgeDraw = (function (e) {
             const self = this;
             if (this.dbId) {
                 forgeViewer.select(this.dbId);
-                this.position = forgeViewer.worldToClient(selectPos[this.dbId]);
+                this.forgePos = selectPos[this.dbId];
+                this.position = forgeViewer.worldToClient(this.forgePos);
             }
             console.log(`${this.name} => create`, this.position);
 
@@ -679,6 +752,15 @@ var ForgeDraw = (function (e) {
             else {
                 this.result = undefined;
                 this.line.clear();
+            }
+        }
+        resize() {
+            this.position = forgeViewer.worldToClient(this.forgePos);
+            this.graphics.position = this.position;
+            if (this.text) {
+                this.text.position = this.position;
+                this.text.position.x += (this.options.strokeWeight + this.options.width) / 2;
+                this.text.position.y += 32;
             }
         }
         remove() {
@@ -801,8 +883,10 @@ var ForgeDraw = (function (e) {
 
             this.onUpEvent = function (event) {
                 console.log(`${self.name} => onUpEvent`);
+                let w = forgeViewer.clientToWorld(movingPoint.position.x, movingPoint.position.y);
                 let data = {
-                    position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y)
+                    position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y),
+                    forgePos: w ? w.point : undefined
                 }
                 lineData.push(data);
                 view.dispatchEvent(new LineDataChangeEvent(data));
@@ -883,12 +967,17 @@ var ForgeDraw = (function (e) {
         "DevicePoint": DevicePoint,
         "Stage": Stage,
         "init": init,
+        "resize": resize,
+        "destroy": destroy,
+        "readLineData": readLineData,
         "removeAllData": removeAllData,
         "getRoute": getRoute,
+        "getForgeLineData": getForgeLineData,
         "getControl": getControl,
         "setControl": setControl,
+        "getDrawSetting": getDrawSetting,
+        "setDrawSetting": setDrawSetting,
         "Control": Control,
-        "drawSetting": drawSetting,
         "layer": layer,
         "lineData": lineData,
         "points": points,

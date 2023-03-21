@@ -6,11 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Models;
+using System.Data.Entity.Migrations;
 
 namespace MinSheng_MIS.Controllers
 {
     public class MaintainForm_ManagementController : Controller
     {
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         EquipmentMaintainForm_DataService EMF_ds = new EquipmentMaintainForm_DataService();
         #region 定期保養管理
         public ActionResult Management()
@@ -32,9 +36,46 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 定期保養詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.EMFISN = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult ReadBody(string id)
+        {
+            var readEqMaintainItemFormViewModel = new ReadEqMaintainItemFormViewModel();
+
+            string result = readEqMaintainItemFormViewModel.GetJsonForRead(id);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 定期保養取消保留
+        [HttpPost]
+        public ActionResult Cancel(string id)
+        {
+            //取消保留
+            var MaintainFormItem = db.EquipmentMaintainFormItem.Find(id);
+            switch (MaintainFormItem.FormItemState)
+            {
+                case "9":
+                    MaintainFormItem.FormItemState = "1";
+                    break;
+                case "10":
+                    MaintainFormItem.FormItemState = "5";
+                    break;
+                case "11":
+                    MaintainFormItem.FormItemState = "8";
+                    break;
+            }
+            db.EquipmentMaintainFormItem.AddOrUpdate(MaintainFormItem);
+            db.SaveChanges();
+
+            JObject jo = new JObject();
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
         }
         #endregion
     }

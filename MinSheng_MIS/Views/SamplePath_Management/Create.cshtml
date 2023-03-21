@@ -8,24 +8,22 @@
 <div class="search-area bg-transparent">
     <form class="form">
         <div class="form-group required">
-            <label for="Area">棟別</label>
-            <select class="form-select" name="Area" id="Area" required>
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN" required>
                 <option value="">請選擇</option>
-                <!--TEST-->
-                <option value="1" selected>1</option>
             </select>
         </div>
+        <input type="text" id="Area" name="Area" hidden>
         <div class="form-group required">
-            <label for="Floor">樓層</label>
-            <select class="form-select" name="Floor" id="Floor" required>
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN" required>
                 <option value="">請選擇</option>
-                <!--TEST-->
-                <option value="1" selected>1</option>
             </select>
         </div>
+        <input type="text" id="Floor" name="Floor" hidden>
         <div class="form-group required">
             <label for="PathTitle">巡檢路線模板</label>
-            <input type="text" class="form-control" name="PathTitle" id="PathTitle" value="PathTitle標題"><!--TEST-->
+            <input type="text" class="form-control" name="PathTitle" id="PathTitle">
         </div>
         <div class="button-group justify-content-start">
             <button class="btn btn-search" id="path-create">確認</button>
@@ -63,10 +61,10 @@
                     data-bs-placement="right" title="清除路徑">
                     <i class="icon-eraser"></i>
                 </button>
-                <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
-                    data-bs-placement="right" title="新增設備">
-                    <i class="icon-tools"></i>
-                </button>
+                @* <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
+                data-bs-placement="right" title="新增設備">
+                <i class="icon-tools"></i>
+                </button> *@
                 <hr class="m-0">
                 <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
                     title="重新規劃路徑">
@@ -137,6 +135,7 @@
 <!-- Autodesk Forge -->
 <script>
     var viewer;
+    var viewerUrl = "../BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf"; //svf檔路徑
     var myProfileSettings_up = {
         name: "mySettings_up",
         description: "My personal settings.",
@@ -162,7 +161,7 @@
         viewer = new Autodesk.Viewing.GuiViewer3D(myViewerDiv, { profileSettings: myProfileSettings_up });
         var options = {
             'env': "Local",
-            'document': "../BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf" //svf檔路徑
+            'document': viewerUrl //svf檔路徑
         };
         Autodesk.Viewing.Initializer(options, function () {
             viewer.start(options.document, options, onSuccessCallback, onErrorCallback);
@@ -286,6 +285,10 @@
 
             addTooltip();
         });
+
+        window.onresize = function () {
+            ForgeDraw.resize();
+        }
 
         function calcRoute() {
 
@@ -475,14 +478,59 @@
 </script>
 
 <!-- EVENT -->
+<script src="../../Scripts/tool.js"></script>
 <script>
-    $(function () {
+    let currentASN;
+    let currentFSN;
+
+    $(async function () {
+        addAreaFloorEvent();
         addButtonEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
         sortRouteModal.autoRouteToggle(true);
-        //TEST
-        $("#path-create").click();
+
+        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+
+        if (window.location.search) {
+            let params = new URL(document.location).searchParams;
+            await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${params.get("ASN")}`);
+
+            for (const [k, v] of params.entries()) {
+                $("#" + k).val(v).change();
+            }
+            currentASN = params.get("ASN");
+            currentFSN = params.get("FSN");
+            $("#path-create").click();
+        }
     });
+
+    function addAreaFloorEvent() {
+        var areas = document.getElementById("ASN");
+        areas.addEventListener("change", async function () {
+            console.log("areas change")
+            let url = '@Url.Action("Floor", "DropDownList")';
+            if (areas.value != "") {
+                $('#Area').val($("#ASN option:selected").text());
+            }
+            else {
+                $('#Area').val('');
+            }
+            url = url + `?ASN=${areas.value}`;
+
+            await pushSelect("FSN", url);
+
+            $('#Floor').val('');
+        });
+        var FSNs = document.getElementById("FSN");
+        FSNs.addEventListener("change", function () {
+            if (FSNs.value != "") {
+                $('#Floor').val($("#FSN option:selected").text());
+            }
+            else {
+                $('#Floor').val('');
+            }
+        });
+    }
 
     function addButtonEvent() {
         $("#back").click(function () {
@@ -492,10 +540,31 @@
             e.preventDefault();
             console.log("onclick path-create");
             if ($("form")[0].checkValidity()) {
-                $("#sample-path-name").text($("#PathTitle").val());
+
+                let asn = $("#ASN").val();
+                let fsn = $("#FSN").val();
+                let pt = $("#PathTitle").val();
+
+                $("#sample-path-name").text(pt);
                 $(".sample-path-draw-area").removeClass("d-none");
                 $("#path-display").removeClass("d-none");
-                initializeViewer(initializeDrawer);
+
+
+                //若非第一次初始化
+                if (viewer) {
+                    //若有改變過asn OR fsn 則重新開始這一頁
+                    if (currentASN != asn || currentFSN != fsn) {
+                        window.location.href = `/SamplePath_Management/Create?ASN=${asn}&FSN=${fsn}&PathTitle=${pt}`;
+                    }
+                }
+                else {
+                    //紀錄目前的asn & fsn
+                    currentASN = asn;
+                    currentFSN = fsn;
+                    //viewerUrl = `../BimModels/${asn}/${fsn}.svf`;
+                    initializeViewer(initializeDrawer);
+                }
+
             }
         })
         $("#path-edit").click(function () {
@@ -509,10 +578,10 @@
             $(this).blur();
             controlToggle("path-eraser", ForgeDraw.Control.ERASER);
         })
-        $("#path-device").click(function () {
-            $(this).blur();
-            controlToggle("path-device", ForgeDraw.Control.DEVICE);
-        })
+        /* $("#path-device").click(function () {
+                $(this).blur();
+                controlToggle("path-device", ForgeDraw.Control.DEVICE);
+            }) */
         $("#path-reload").click(function () {
             $(this).blur();
             ForgeDraw.removeAllData();
@@ -543,6 +612,98 @@
     }
 
     function save() {
+        let PathSampleOrder = $(".breadcrumb-item:not(:first-child):not(:last-child)").toArray().map(e => e.innerHTML);
+        let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
+            return { LocationX: e.x, LocationY: e.y };
+        })
 
+        let data = {
+            PathSample: {
+                ASN: $("#ASN").val(),
+                FSN: $("#FSN").val(),
+                PathTitle: $("#PathTitle").val()
+            },
+            PathSampleOrder: PathSampleOrder,
+            PathSampleRecord: PathSampleRecord
+        }
+
+        console.log(data);
+
+            @* $.ajax({
+            url: '@Url.Action("aaa", "bbb")',
+            data: JSON.stringify(data),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+            }) *@
+
+            function onSuccess(res) {
+                console.log("Success");
+                console.log(res);
+
+                if (res.ResponseCode == 0) {
+                    myModal.hide();
+                    let modal_success = $(`
+                    <div class="modal fade modal-delete" id="DeleteModal-success" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    新增成功！
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-delete" data-bs-dismiss="modal">確定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `);
+                    $(document.body).append(modal_success);
+                    let myModal_success = bootstrap.Modal.getOrCreateInstance(modal_success[0]);
+                    myModal_success.show();
+                    modal_success[0].addEventListener("hidden.bs.modal", () => {
+                        myModal_success.dispose();
+                        var url = '@Url.Action("Management", "SamplePath_Management")';
+                        window.location.href = url;
+                    })
+                }
+            }
+        function onError(res) {
+            console.log("error");
+            console.log(res);
+            let errtext;
+
+            switch (res) {
+                case "duplicate title":
+                    errtext = "巡檢路線模板名稱重複！";
+                    break;
+                default:
+                    errtext = "";
+                    break;
+            }
+
+            let modal_error = $(`
+                    <div class="modal fade modal-delete" id="DeleteModal-error" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body text-center">
+                                    新增失敗！${errtext}
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-delete" data-bs-dismiss="modal">確定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `);
+            $(document.body).append(modal_error);
+            let myModal_error = bootstrap.Modal.getOrCreateInstance(modal_error[0]);
+            myModal_error.show();
+            modal_error[0].addEventListener("hidden.bs.modal", () => {
+                myModal_error.dispose();
+                modal_error.remove();
+            })
+        }
     }
 </script>

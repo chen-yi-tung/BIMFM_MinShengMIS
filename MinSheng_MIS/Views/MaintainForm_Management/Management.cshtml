@@ -159,26 +159,29 @@
                 {
                     field: '_cancel', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
+                        if (row.FormItemState == "保留中(待派工)" || row.FormItemState == "保留中(未完成)" || row.FormItemState == "保留中(審核未過)") {
+                            return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
+                        }
                     }
                 },
             ]],
             columns: [[
-                { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 136, sortable: true },
-
-                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
+                { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 150, sortable: true },
+                { field: 'EState', title: '設備狀態', align: 'center', width: 100, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
+                
+                { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
                 { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 200, sortable: true },
 
-                { field: 'EMFISN', title: '保養單項目編號', align: 'center', width: 150, sortable: true },
+                { field: 'EMFISN', title: '保養單項目編號', align: 'center', width: 220, sortable: true },
 
                 { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
-                { field: 'Unit', title: '保養週期單位', align: 'center', width: 150, sortable: true },
-                { field: 'Period', title: '保養週期', align: 'center', width: 110, sortable: true },
+                { field: 'Unit', title: '保養週期單位', align: 'center', width: 130, sortable: true },
+                { field: 'Period', title: '保養週期', align: 'center', width: 100, sortable: true },
 
-                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 180, sortable: true },
-                { field: 'Date', title: '最近應保養日期', align: 'center', width: 180, sortable: true },
+                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 140, sortable: true },
+                { field: 'Date', title: '最近應保養日期', align: 'center', width: 150, sortable: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,
@@ -187,6 +190,10 @@
             pagination: true,
             pagePosition: 'bottom',
             pageSize: 10
+        });
+        $('#DataGrid').datagrid('sort', {
+            sortName: 'Date',
+            sortOrder: 'desc'
         });
         //------------Pager --------------------------------------------------
         var pager = $('#DataGrid').datagrid('getPager');
@@ -203,7 +210,7 @@
     // datagrid onClick Function
     function onDetail(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + `/${row.RSN}`;
+        let url = baseUrl + 'Read' + `/${row.EMFISN}`;
         window.open(url, "_blank");
     }
 
@@ -215,8 +222,23 @@
 
     function onCancel(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Cancel';
-        window.open(url, "_self");
+        let url = baseUrl + 'Cancel' + `/${row.EMFISN}`;
+        $.ajax({
+            url: url,
+            method: "Post",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            alert("取消保留完成");
+            window.location.reload();
+        }
+
+        function onError(res) {
+            alert("取消保留失敗");
+        }
     }
 
     //search area onClick Function

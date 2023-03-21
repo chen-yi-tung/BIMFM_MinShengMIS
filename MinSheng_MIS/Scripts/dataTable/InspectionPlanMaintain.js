@@ -16,13 +16,13 @@
             { text: "填報時間", value: "MaintainDate" },
             { text: "保養照片", value: "ImgPath" },
         ],
-        RepairSupplementaryInfo: [
+        MaintainSupplementaryInfo: [
             { text: "補件人", value: "MyName" },
             { text: "補件日期", value: "SupplementaryDate" },
             { text: "補件說明", value: "SupplementaryContent" },
             { text: "補件檔案", value: "FilePath" },
         ],
-        RepairAuditInfo: [
+        MaintainAuditInfo: [
             { text: "審核者", value: "MyName" },
             { text: "審核日期", value: "AuditDate" },
             { text: "審核結果", value: "AuditResult" },
@@ -38,12 +38,12 @@
     $(selector).append(
         createAccordionOuter({
             title: "本保養單相關保養紀錄",
-            id: "InspectionPlanRepair",
+            id: "InspectionPlanMaintain",
             className: "datatable-secondary mt-5",
             inner: data.map((d, i) => createInner(d, i)).join("")
         })
     );
-    
+
     function createInner(data, i) {
         let title = `${data.InspectionPlan.IPSN} ${data.InspectionPlan.IPName}`;
         return `
@@ -68,20 +68,20 @@
             className: "border-0 w-100",
             inner: createTableInner(data.InspectionPlanMaintain, sn.InspectionPlanMaintain),
         })}
-                    ${data.RepairSupplementaryInfo && createAccordion({
+                    ${data.MaintainSupplementaryInfo && createAccordion({
             title: "補件資料",
-            id: `OtherRepairSupplementaryInfo-${i}`,
+            id: `OtherMaintainSupplementaryInfo-${i}`,
             className: "border-0 w-100",
-            sn: sn.RepairSupplementaryInfo,
-            data: data.RepairSupplementaryInfo,
+            sn: sn.MaintainSupplementaryInfo,
+            data: data.MaintainSupplementaryInfo,
             itemTitleKey: "SupplementaryDate"
         })}
-                    ${data.RepairAuditInfo && createAccordion({
+                    ${data.MaintainAuditInfo && createAccordion({
             title: "審核資料",
-            id: `OtherRepairAuditInfo-${i}`,
+            id: `OtherMaintainAuditInfo-${i}`,
             className: "border-0 w-100",
-            sn: sn.RepairAuditInfo,
-            data: data.RepairAuditInfo,
+            sn: sn.MaintainAuditInfo,
+            data: data.MaintainAuditInfo,
             itemTitleKey: "AuditDate"
         })}
                 </div>

@@ -1,7 +1,25 @@
-﻿function createTableOuter(options) {
+﻿/**
+ * @typedef {object} SerializedName
+ * @property {string} text - use to th
+ * @property {string} value - use to td
+ * @property {function (value):string} formatter - use to formatter td data
+ */
+
+
+/**
+ * @typedef {object} TableOuterOptions
+ * @property {string} className - use to datatable custom class
+ * @property {string} title - use to datatable-header
+ * @property {string} id - use to set datatable-table id
+ * @property {string} inner - TableInner from createTableInner
+ * 
+ * @param {TableOuterOptions} options 
+ * @returns {string} TableOuter
+ */
+function createTableOuter(options) {
     return `
     <div class="datatable ${options.className ?? ""}">
-        <div class="datatable-header">${options.title}</div>
+        ${options.title ? `<div class="datatable-header">${options.title}</div>` : ""}
         <div class="datatable-body">
             <table class="datatable-table" id="${options.id}">
                 ${options.inner}
@@ -11,6 +29,11 @@
     `;
 }
 
+/**
+ * @param {*[]} data - the data need show
+ * @param {SerializedName[]} sn 
+ * @returns {string} TableInner
+ */
 function createTableInner(data, sn) {
     const nullString = "-";
     return sn.map((e) => {
@@ -64,6 +87,22 @@ function createTableInner(data, sn) {
     }
 }
 
+
+/**
+ * @typedef {object} TableGridColumnsOptions
+ * @property {string} id - use to html id and the key to find value from data
+ * @property {string} title - use to th
+ * @property {string} width - ex: "30%"
+ * @property {function (value):string} formatter - use to formatter td data
+ * 
+ * @typedef {object} TableGridOptions
+ * @property {TableGridColumnsOptions} columns - use to datatable-header
+ * @property {boolean} thead - if true that have th
+ * 
+ * @param {*[]} data - the data need show
+ * @param {TableGridOptions} options 
+ * @returns {string} TableGrid
+ */
 function createTableGrid(data, options) {
     const nullString = "-";
     console.log(options)
@@ -74,7 +113,7 @@ function createTableGrid(data, options) {
     function createThs(op) {
         return op.map(o => {
             let w = typeof o.width == "string" ? o.width : o.width + "px";
-            let th = `<th class="datatable-header" style="width:${w}">${o.title}</th>`;
+            let th = `<th class="datatable-header" style="${o.width ? `width:${w}` : ''}">${o.title}</th>`;
             return th;
         }).join("");
     }
@@ -103,7 +142,17 @@ function createTableGrid(data, options) {
     }
 }
 
-function createAccordionOuter(options){
+/**
+ * @typedef {object} AccordionOuterOptions
+ * @property {string} className - use to datatable custom class
+ * @property {string} title - use to datatable-header
+ * @property {string} id - use to set datatable-table id
+ * @property {string} inner - TableInner from createAccordion
+ * 
+ * @param {AccordionOuterOptions} options 
+ * @returns {string} AccordionOuter
+ */
+function createAccordionOuter(options) {
     return `
     <div class="datatable ${options.className ?? ""}" id="${options.id}">
         <div class="datatable-header">${options.title}</div>
@@ -116,6 +165,18 @@ function createAccordionOuter(options){
     `;
 }
 
+/**
+ * @typedef {object} AccordionOptions
+ * @property {string} className - use to datatable custom class
+ * @property {string} title - use to datatable-header
+ * @property {string} id - use to set accordion id
+ * @property {*[]} data
+ * @property {SerializedName[]} sn
+ * @property {string} itemTitleKey - use to accordion-header title from data[itemTitleKey]
+ * 
+ * @param {AccordionOptions} options 
+ * @returns {string} Accordion
+ */
 function createAccordion(options) {
     if (options.data.length === 0) {
         return "";
@@ -134,6 +195,11 @@ function createAccordion(options) {
     `;
 }
 
+/**
+ * @param {AccordionOptions} options 
+ * @param {number} i Accordion Item index
+ * @returns {string} TableOuter
+ */
 function createAccordionItem(options, i) {
     return `
     <div class="accordion-item" id="${options.id}-${i}">
@@ -159,4 +225,40 @@ function createAccordionItem(options, i) {
         </div>
     </div>
     `;
+}
+
+function createDataDetailModal(options) {
+    let ModalJQ, ModalBs, inner;
+    readData(options.data);
+    function readData(data) {
+        inner = createTableInner(data, options.sn);
+        const html = `
+        <div class="modal fade data-detail-modal" tabindex="-1" id="${options.id}">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${options.title}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="datatable-table">${inner}</table>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <a type="button" class="btn btn-search" href="" target="_blank">定位</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        ModalJQ = $(html);
+        $(document.body).append(ModalJQ);
+        ModalBs = new bootstrap.Modal(ModalJQ[0]);
+
+        ModalBs.show();
+
+        ModalJQ[0].addEventListener("hidden.bs.modal",function(){
+            ModalBs.dispose();
+            ModalJQ.remove();
+        })
+    }
 }

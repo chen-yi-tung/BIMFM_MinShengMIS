@@ -1,4 +1,5 @@
 ﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -8,16 +9,43 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
 {
     public class EquipmentMaintainPeriod_ManagementController : Controller
     {
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         #region 設備保養週期管理
         public ActionResult Management()
         {
             return View();
+        }
+        #endregion
+
+        #region 設備保養週期啟用狀態編輯
+        [System.Web.Http.HttpPost]
+        public ActionResult IsEnableEdit(List<EQMaintainEditInfo> EMIIsEnable)
+        {
+            foreach(var item in EMIIsEnable)
+            {
+                EquipmentMaintainItem EMI = db.EquipmentMaintainItem.Find(item.EMISN);
+                if (item.IsEnable)
+                {
+                    EMI.IsEnable = "1";
+                }
+                else if(!item.IsEnable)
+                {
+                    EMI.IsEnable = "0";
+                }
+                db.EquipmentMaintainItem.AddOrUpdate(EMI);
+                db.SaveChanges();
+            }
+            JObject jo = new JObject();
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
         }
         #endregion
 
@@ -48,8 +76,8 @@ namespace MinSheng_MIS.Controllers
                 jo.Add("ESN", resultrow.ESN);
                 jo.Add("EName", resultrow.EName);
                 jo.Add("MIName", resultrow.MIName);
-                jo.Add("LastTime", resultrow.LastTime?.ToString("yyyy/M/d"));
-                jo.Add("Date", resultrow.NextTime?.ToString("yyyy/M/d"));
+                jo.Add("LastTime", resultrow.LastTime?.ToString("yyyy/MM/dd"));
+                jo.Add("Date", resultrow.NextTime?.ToString("yyyy/MM/dd"));
                 jo.Add("Unit", resultrow.Unit);
                 jo.Add("Period", resultrow.Period);
                 jo.Add("IsEnable", Int16.Parse(resultrow.IsEnable));

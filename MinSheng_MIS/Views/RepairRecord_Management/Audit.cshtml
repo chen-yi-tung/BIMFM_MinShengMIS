@@ -21,8 +21,7 @@
         <form class="form form-w-100" enctype="multipart/form-data">
             <div class="form-group d-lg-contents">
                 <label for="AuditUserID">審核人員</label>
-                <input class="form-control readonly" type="text" id="AuditUserID" name="AuditUserID" value="王曉明"
-                    readonly>
+                <input class="form-control readonly" type="text" id="AuditUserID" name="AuditUserID" readonly>
             </div>
             <div class="form-group d-lg-contents">
                 <label for="AuditMemo" class="align-self-start">審核意見</label>
@@ -188,6 +187,8 @@
             RepairRecord("#RepairRecord", res);
             InspectionPlanRepair("#InspectionPlanRepairList", res.InspectionPlanList);
 
+            $("#AuditUserID").val($("#NavbarUserName").text());
+
             ImageDisplay(".datatable-img-item>img");
         }
         function onError(res) {
@@ -249,7 +250,7 @@
         fd.append('ImgPath', flieList.files);
         fd.append('AuditResult', $('input[name="AuditResult"]:checked').val() ?? 0);
     }
-    
+
     window.onload = function () {
         readData(apiUrl);
         addButtonEvent();

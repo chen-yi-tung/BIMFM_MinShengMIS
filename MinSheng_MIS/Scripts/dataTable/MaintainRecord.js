@@ -71,7 +71,7 @@
         }),
         data.MaintainAuditInfo &&
         createAccordion({
-            title: "補件資料",
+            title: "審核資料",
             id: `MaintainAuditInfo`,
             sn: sn.MaintainAuditInfo,
             data: data.MaintainAuditInfo,

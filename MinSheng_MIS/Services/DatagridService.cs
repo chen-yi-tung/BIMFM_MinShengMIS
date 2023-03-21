@@ -166,7 +166,7 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("RSN", a.RSN);  //RSN
 
                 if (itemObjects["Date"] == null)
-                    itemObjects.Add("Date", a.Date?.ToString("yyyy/M/d HH:mm:ss"));                                //保養週期
+                    itemObjects.Add("Date", a.Date?.ToString("yyyy/MM/dd HH:mm:ss"));                                //保養週期
 
                 if (itemObjects["PropertyCode"] == null)
                     itemObjects.Add("PropertyCode", a.PropertyCode);    //國有財產編碼
@@ -863,7 +863,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("IPRSN", a.IPRSN);
                 itemObjects.Add("IPSN", a.IPSN);
                 itemObjects.Add("IPName", InspectionPlan_.IPName);
-                itemObjects.Add("PlanDate", InspectionPlan_.PlanDate.ToString("yyyy/M/d"));
+                itemObjects.Add("PlanDate", InspectionPlan_.PlanDate.ToString("yyyy/MM/dd"));
 
                 var dic = Surface.InspectionPlanRepairState();
                 itemObjects.Add("RepairState", dic[a.RepairState.Trim()]); //這個要再用 Surface 做中文轉譯!!
@@ -873,7 +873,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("Area", EquipmentInfo_.Area);
                 itemObjects.Add("Floor", EquipmentInfo_.Floor);
                 itemObjects.Add("RSN", a.RSN);
-                itemObjects.Add("Date", EquipmentReportForm_.Date?.ToString("yyyy/M/d"));
+                itemObjects.Add("Date", EquipmentReportForm_.Date?.ToString("yyyy/MM/dd"));
                 itemObjects.Add("PropertyCode", EquipmentInfo_.PropertyCode);
                 itemObjects.Add("ESN", EquipmentReportForm_.ESN);
                 itemObjects.Add("EName", EquipmentInfo_.EName);
@@ -936,7 +936,7 @@ namespace MinSheng_MIS.Services
             var SourceTable = from x1 in db.EquipmentMaintainItem
                               join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
                               join x3 in db.MaintainItem on x1.MISN equals x3.MISN
-                              select new { x1.EMISN, x1.IsEnable, x2.Area, x2.Floor, x2.System, x2.SubSystem, x1.ESN, x2.EName, x1.MISN, x3.MIName, x1.Unit, x1.Period, x1.LastTime, x1.NextTime };
+                              select new { x1.EMISN, x1.IsEnable, x2.Area, x2.Floor, x2.System, x2.SubSystem, x1.ESN, x2.EName, x1.MISN, x3.MIName, x1.Unit, x1.Period, x1.LastTime, x1.NextTime, x2.EState };
 
             //Area查詢table方式 以Area至表[設備資訊]查詢出ESN，再以ESN至表[設備報修單]查詢出相關報修單。
             if (!string.IsNullOrEmpty(Area))
@@ -1011,6 +1011,11 @@ namespace MinSheng_MIS.Services
                 }
                 if (itemObjects["ESN"] == null)
                     itemObjects.Add("ESN", a.ESN);    //設備編號
+                if (itemObjects["EState"] == null)
+                {
+                    var dic = Surface.EState();
+                    itemObjects.Add("EState", dic[a.EState]);    //設備狀態
+                }
                 if (itemObjects["EName"] == null)
                     itemObjects.Add("EName", a.EName);    //設備名稱
                 if (itemObjects["MISN"] == null)
@@ -1022,9 +1027,9 @@ namespace MinSheng_MIS.Services
                 if (itemObjects["Period"] == null)
                     itemObjects.Add("Period", a.Period);    //保養週期
                 if (itemObjects["LastTime"] == null)
-                    itemObjects.Add("LastTime", a.LastTime?.ToString("yyyy/M/d"));    //上次保養日期
+                    itemObjects.Add("LastTime", a.LastTime?.ToString("yyyy/MM/dd"));    //上次保養日期
                 if (itemObjects["NextTime"] == null)
-                    itemObjects.Add("NextTime", a.NextTime?.ToString("yyyy/M/d"));    //最近應保養日期
+                    itemObjects.Add("NextTime", a.NextTime?.ToString("yyyy/MM/dd"));    //最近應保養日期
                 ja.Add(itemObjects);
             }
 

@@ -48,7 +48,7 @@
             <label for="ESN">設備編號</label>
             <input class="form-control" id="ESN" name="ESN" type="text" />
             @*<select class="form-select" name="ESN" id="ESN">
-                <option value="">請選擇</option>
+            <option value="">請選擇</option>
             </select>*@
         </div>
 
@@ -56,7 +56,7 @@
             <label for="EName">設備名稱</label>
             <input class="form-control" id="EName" name="EName" type="text" />
             @*<select class="form-select" name="EName" id="EName">
-                <option value="">請選擇</option>
+            <option value="">請選擇</option>
             </select>*@
         </div>
 
@@ -188,23 +188,24 @@
                     }
                 },
 
-                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
 
                 { field: 'System', title: '系統別', align: 'center', width: 100, sortable: true },
-                { field: 'SubSystem', title: '子系統別', align: 'center', width: 110, sortable: true },
+                { field: 'SubSystem', title: '子系統別', align: 'center', width: 120, sortable: true },
 
-                { field: 'ESN', title: '設備編號', align: 'center', width: 150, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 160, sortable: true },
+                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
+                { field: 'EState', title: '設備狀態', align: 'center', width: 100, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 180, sortable: true },
 
-                { field: 'MISN', title: '保養項目編號', align: 'center', width: 160, sortable: true },
+                { field: 'MISN', title: '保養項目編號', align: 'center', width: 130, sortable: true },
                 { field: 'MIName', title: '項目名稱', align: 'center', width: 150, sortable: true },
 
-                { field: 'Unit', title: '保養週期單位', align: 'center', width: 150, sortable: true },
-                { field: 'Period', title: '保養週期', align: 'center', width: 110, sortable: true },
+                { field: 'Unit', title: '保養週期單位', align: 'center', width: 130, sortable: true },
+                { field: 'Period', title: '保養週期', align: 'center', width: 100, sortable: true },
 
-                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 180, sortable: true },
-                { field: 'NextTime', title: '最近應保養日期', align: 'center', width: 180, sortable: true },
+                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 140, sortable: true },
+                { field: 'NextTime', title: '最近應保養日期', align: 'center', width: 150, sortable: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,
@@ -229,7 +230,7 @@
     // datagrid onClick Function
     function onEdit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit' +`/${row.EMISN}`;
+        let url = baseUrl + 'Edit' + `/${row.EMISN}`;
         window.open(url, "_self");
     }
 
@@ -254,14 +255,39 @@
     }
 
     //save onClick Function
-    function addSaveClickEvent(){
+    function addSaveClickEvent() {
         $("#checkall").change(function (e) {
             let checked = e.target.checked;
             $(".check-item").prop("checked", checked);
         })
 
-        $("#save").click(function (e) {
-            console.log("onclick save");
+        $("#save").click(function (e) { //儲存本頁變更
+            let cbs = $(".check-item");
+            let data = $('#DataGrid').datagrid('getRows').map((e, i) => {
+                return { EMISN: e.EMISN, IsEnable: cbs[i].checked };
+            });
+
+            console.log("onclick save:", data);
+
+            $.ajax({
+                url: '@Url.Action("IsEnableEdit", "EquipmentMaintainPeriod_Management")',
+                data: JSON.stringify(data),
+                method: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+                }) 
+
+            function onSuccess(res) {
+                alert("儲存本頁變更完成");
+                console.log(res);
+            }
+
+            function onError(res) {
+                alert("儲存本頁變更失敗");
+                console.log(res);
+            }
         })
     }
 </script>
