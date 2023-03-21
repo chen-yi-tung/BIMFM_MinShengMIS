@@ -152,7 +152,7 @@
                 let spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
                 modal.find("#delete").append(spinner);
 
-                setTimeout(onSuccess, 1000);
+                //setTimeout(onSuccess, 1000);
 
                 $.ajax({
                 url: '@Url.Action("DeleteMaintainItem", "MaintainItem_Management")?MISN=' + misn,
