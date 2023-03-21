@@ -184,6 +184,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\Account_ManagementController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
     <Compile Include="Controllers\DatagridController.cs" />
     <Compile Include="Controllers\DropDownListController.cs" />
@@ -1556,6 +1557,10 @@
     <Content Include="Views\InspectionPlan_Management\ReadMaintainForm.cshtml" />
     <Content Include="Views\InspectionPlan_Management\ReadReportForm.cshtml" />
     <Content Include="Views\SamplePath_Management\Edit.cshtml" />
+    <Content Include="Views\Account_Management\Management.cshtml" />
+    <Content Include="Views\Account_Management\Create.cshtml" />
+    <Content Include="Views\Account_Management\Edit.cshtml" />
+    <Content Include="Views\Account_Management\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
