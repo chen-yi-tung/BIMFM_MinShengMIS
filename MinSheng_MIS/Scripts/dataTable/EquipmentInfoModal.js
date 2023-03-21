@@ -1,7 +1,6 @@
 ﻿//import "datatable.js"
 
-function DataDetailModal(url) {
-    let ModalJQ, ModalBs;
+function EquipmentInfoModal(url) {
     const sn = [
         { text: "系統別", value: "System" },
         { text: "子系統別", value: "SubSystem" },
@@ -15,6 +14,8 @@ function DataDetailModal(url) {
         { text: "RFID", value: "RFID" },
         { text: "設備狀態", value: "EState" },
     ]
+    
+    let ModalJQ, ModalBs;
     if ($(".data-detail-modal")[0]) {
         console.log("show data-detail-modal")
         bootstrap.Modal.getInstance($(".data-detail-modal")[0]).show();

@@ -86,7 +86,7 @@
 </div>
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-export" id="submit">新增</button>
+    <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
 <div class="modal fade sort-list-modal" tabindex="-1" id="sortRouteModal">
@@ -285,8 +285,31 @@
                 let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
             });
 
+            //讀取路線資料
+            let reslineData = fakeData.PathSampleRecord.map((d) => {
+                let forgePos = new THREE.Vector3(d.LocationX, d.LocationY, 0);
+                let pos = viewer.worldToClient(forgePos);
+                let position = new PIXI.Point(pos.x, pos.y);
+                return {
+                    position: position,
+                    forgePos: forgePos
+                };
+            });
+            console.log(reslineData);
+            ForgeDraw.readLineData(reslineData);
+
+            //讀取路徑
+            let route = [...fakeData.PathSampleOrder];
+            route.unshift("起點");
+            route.push("終點");
+            updatePathDisplay(route);
+
             addTooltip();
         });
+
+        window.onresize = function () {
+            ForgeDraw.resize();
+        }
 
         function calcRoute() {
 
@@ -389,8 +412,10 @@
         }
 
         this.save = function () {
+            let w = viewer.clientToWorld(this.detail.position.x, this.detail.position.y);
             let data = {
                 position: this.detail.position,
+                forgePos: w ? w.point : undefined,
                 deviceType: this.ModalJQ.find("#deviceType").val(),
                 deviceName: this.ModalJQ.find("#deviceName").val()
             }
@@ -486,6 +511,8 @@
     let fakeData = {
         "PathSample": {
             "PSSN": "000001",
+            "Area": "Area1",
+            "Floor": "Floor1_1",
             "ASN": "1",
             "FSN": "1_1",
             "PathTitle": "123"
@@ -553,10 +580,10 @@
 
     $(async function () {
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-    
+
         addButtonEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        sortRouteModal.autoRouteToggle(true);
+        sortRouteModal.autoRouteToggle(false);
 
         readData(apiUrl);
     });
@@ -575,6 +602,7 @@
 
         async function onSuccess(res) {
             console.log(res);
+            fakeData = res;
             let ps = res.PathSample;
 
             await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ps.ASN}`);
@@ -676,7 +704,7 @@
 
         console.log(data);
 
-            @* $.ajax({
+    @* $.ajax({
             url: '@Url.Action("aaa", "bbb")',
             data: JSON.stringify(data),
             type: "POST",

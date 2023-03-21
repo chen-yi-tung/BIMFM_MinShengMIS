@@ -286,6 +286,10 @@
             addTooltip();
         });
 
+        window.onresize = function () {
+            ForgeDraw.resize();
+        }
+
         function calcRoute() {
 
             if (ForgeDraw.lineData.length > 1) {
