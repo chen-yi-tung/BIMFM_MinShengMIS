@@ -1476,6 +1476,8 @@
     <Content Include="Scripts\dataTable\RepairRecord.js" />
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
     <Content Include="Scripts\ForgeDraw.js" />
+    <Content Include="Scripts\Forge\SortRouteModal.js" />
+    <Content Include="Scripts\Forge\UpViewer.js" />
     <Content Include="Scripts\ImageDisplay.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

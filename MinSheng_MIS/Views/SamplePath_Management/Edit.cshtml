@@ -89,122 +89,12 @@
     <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
-<div class="modal fade sort-list-modal" tabindex="-1" id="sortRouteModal">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">修改路徑</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="sort-list-area"></div>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-back" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-export" onclick="sortRouteModal.save()">儲存變更</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- CDN -->
+<!-- Autodesk Forge -->
 <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
     type="text/css">
 <script language="JavaScript"
     src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
-
-<!-- Autodesk Forge -->
-<script>
-    var viewer;
-    var viewerUrl = "../../BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf"; //svf檔路徑
-    var myProfileSettings_up = {
-        name: "mySettings_up",
-        description: "My personal settings.",
-        settings: {
-            viewType: 1, //orthographic
-        },
-        persistent: [],
-        extensions: {
-            load: [],
-            unload: [
-                //減少toolbar物件
-                "Autodesk.Section",
-                "Autodesk.Measure",
-                "Autodesk.Explode",
-                "Autodesk.BimWalk",
-                "Autodesk.Viewing.FusionOrbit"
-            ]
-        }
-    }
-    async function initializeViewer(callback) {
-        Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
-        var myViewerDiv = document.getElementById('viewer3d');
-        viewer = new Autodesk.Viewing.GuiViewer3D(myViewerDiv, { profileSettings: myProfileSettings_up });
-        var options = {
-            'env': "Local",
-            'document': viewerUrl //svf檔路徑
-        };
-        Autodesk.Viewing.Initializer(options, function () {
-            viewer.start(options.document, options, onSuccessCallback, onErrorCallback);
-            async function onSuccessCallback() {
-                console.log("onSuccessCallback");
-                viewer.setBackgroundOpacity(0);
-                viewer.setBackgroundColor();
-                viewer.setLightPreset(16);
-
-                viewer.toolbar.removeControl("navTools");
-                viewer.toolbar.removeControl("settingsTools");
-
-                viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function (e) {
-                    console.log("GEOMETRY_LOADED_EVENT");
-                    viewer.addEventListener(
-                        Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT,
-                        loadWireFrame);
-
-                    function loadWireFrame() {
-                        console.log("FINAL_FRAME_RENDERED_CHANGED_EVENT");
-                        if (!viewer.isExtensionLoaded('Autodesk.Viewing.Wireframes')) {
-                            viewer.loadExtension('Autodesk.Viewing.Wireframes').then(callback);
-                            viewer.removeEventListener(
-                                Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT,
-                                loadWireFrame);
-                        }
-                    }
-                });
-                viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, function (e) {
-                    console.log("EXTENSION_LOADED_EVENT = " + e.extensionId);
-                    switch (e.extensionId) {
-                        case "Autodesk.ViewCubeUi":
-                            const ViewCubeExt = viewer.getExtension("Autodesk.ViewCubeUi");
-                            ViewCubeExt.setVisible(false);
-
-                            //上視圖視角設定
-                            let pos = new THREE.Vector3(0, 0, 160);
-                            let target = new THREE.Vector3(0, 0, 0);
-                            viewer.navigation.setView(pos, target);
-                            viewer.navigation.setCameraUpVector(new THREE.Vector3(-1, 0, 0));
-                            break;
-                        case 'Autodesk.Viewing.Wireframes':
-                            const wfExt = viewer.getExtension('Autodesk.Viewing.Wireframes');
-                            wfExt.activate(); //開啟
-                            wfExt.showSolidMaterial(false); //取消固體材質
-                            let lineMaterial = new THREE.LineBasicMaterial({
-                                color: 0x000000,
-                                linewidth: 0.2
-                            });
-                            wfExt.setLinesMaterial(lineMaterial);
-                            wfExt.setLightPreset(16); //開啟邊線時燈光會自動換到大頭貼燈光，所以要設定回自訂燈光
-                            console.log("wfExt run end");
-                            break;
-                    }
-                })
-            }
-            function onErrorCallback() { console.log("onErrorCallback"); }
-        });
-    }
-
-</script>
+<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
 
 <!-- PIXI Draw -->
 <script src="https://pixijs.download/release/pixi.js"></script>
@@ -214,24 +104,6 @@
     var view = document.querySelector("#PathCanvas");
     var app;
     var stage;
-
-    const deviceDbId = [
-        {
-            dbId: 3078,
-            deviceType: "bluetooth",
-            deviceName: "BT-11014",
-        },
-        {
-            dbId: 3239,
-            deviceType: "bluetooth",
-            deviceName: "BT-11015",
-        },
-        {
-            dbId: 3162,
-            deviceType: "bluetooth",
-            deviceName: "BT-11016",
-        }
-    ];
 
     let btUrl = "/Content/img/bluetooth.svg";
 
@@ -283,25 +155,7 @@
                 calcRoute();
             });
 
-            deviceDbId.forEach((e) => {
-                let btSprite = PIXI.Sprite.from(btUrl);
-                btSprite.scale.set(0.6);
-                btSprite.anchor.set(0.5);
-                let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
-            });
-
-            //讀取路線資料
-            let reslineData = fakeData.PathSampleRecord.map((d) => {
-                let forgePos = new THREE.Vector3(d.LocationX, d.LocationY, 0);
-                let pos = viewer.worldToClient(forgePos);
-                let position = new PIXI.Point(pos.x, pos.y);
-                return {
-                    position: position,
-                    forgePos: forgePos
-                };
-            });
-            console.log(reslineData);
-            ForgeDraw.readLineData(reslineData);
+            readDeviceAndLineData(fakeData)
 
             //讀取路徑
             let route = [...fakeData.PathSampleOrder];
@@ -340,6 +194,31 @@
         }
     }
 
+    //讀取設備和路線資料並繪製
+    function readDeviceAndLineData(data) {
+        data.PathSample.BIMDevices.forEach((e) => {
+            let btSprite = PIXI.Sprite.from(btUrl);
+            btSprite.scale.set(0.6);
+            btSprite.anchor.set(0.5);
+            let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
+        });
+
+        //讀取路線資料
+        let reslineData = data.PathSampleRecord.map((d) => {
+            let forgePos = new THREE.Vector3(d.LocationX, d.LocationY, 0);
+            let pos = viewer.worldToClient(forgePos);
+            let position = new PIXI.Point(pos.x, pos.y);
+            return {
+                position: position,
+                forgePos: forgePos
+            };
+        });
+
+
+        console.log(reslineData);
+        ForgeDraw.readLineData(reslineData);
+    }
+
     //更新網頁顯示的路徑
     function updatePathDisplay(path = undefined) {
         let $path = $("#path-display");
@@ -374,69 +253,11 @@
 
 <!-- Drag and Drop -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="/Scripts/Forge/SortRouteModal.js"></script>
 <script>
-    const sortRouteModal = new SortRouteModal();
-    function SortRouteModal() {
-        this.autoCalcRoute = true;
-        this.ModalJQ = $("#sortRouteModal");
-        this.ModalBs = new bootstrap.Modal(this.ModalJQ[0]);
-
-        let sortlist = $(`<ul class="sortlist" id="sortlist"></ul>`);
-        this.create = function () {
-            let $area = $(".sort-list-area");
-            createRouteItems();
-            let sortable = Sortable.create(sortlist[0], {
-                swapThreshold: 0.45,
-                animation: 150,
-                ghostClass: "ghost",
-                dragClass: "drag",
-                direction: 'horizontal',
-                filter: '.disable',
-                draggable: ".item"
-            });
-            $area.empty();
-            $area.append(sortlist);
-            this.ModalBs.show();
-
-            function createRouteItems() {
-                sortlist.empty();
-                let devicelist = ForgeDraw.getRoute();
-                let pathList = $(".breadcrumb-item:not(:first-child):not(:last-child)");
-
-                console.log(devicelist);
-                console.log(pathList);
-                sortlist.append(`<li class="disable">起點</li>`);
-
-                pathList.each((i, e) => {
-                    let type = devicelist.find(dp => dp.name == e.innerHTML).type;
-                    let li = `<li class="item ${type}">${e.innerHTML}</li>`;
-                    sortlist.append(li);
-                })
-                sortlist.append(`<li class="disable">終點</li>`);
-            }
-        }
-        this.save = function () {
-            this.autoRouteToggle(false);
-
-            let route = sortlist.find("li").toArray().map((e) => {
-                return $(e).text();
-            })
-
-            updatePathDisplay(route);
-
-            this.ModalBs.hide();
-        }
-        this.autoRouteToggle = function (bool = undefined) {
-            let btn = $("#path-auto");
-            if (bool != undefined) {
-                this.autoCalcRoute = bool;
-                btn.toggleClass("active", bool);
-                return;
-            }
-            this.autoCalcRoute = !this.autoCalcRoute;
-            btn.toggleClass("active", this.autoCalcRoute);
-        }
-    }
+    const sortRouteModal = new SortRouteModal({
+        onSave: updatePathDisplay
+    });
 </script>
 
 <!-- EVENT -->
@@ -454,7 +275,25 @@
             "Floor": "Floor1_1",
             "ASN": "1",
             "FSN": "1_1",
-            "PathTitle": "123"
+            "PathTitle": "123",
+            "BIMPath": "BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+            "BIMDevices": [
+                {
+                    dbId: 3078,
+                    deviceType: "bluetooth",
+                    deviceName: "BT-11014",
+                },
+                {
+                    dbId: 3239,
+                    deviceType: "bluetooth",
+                    deviceName: "BT-11015",
+                },
+                {
+                    dbId: 3162,
+                    deviceType: "bluetooth",
+                    deviceName: "BT-11016",
+                }
+            ]
         },
         "PathSampleOrder": [
             "BT-11014",
@@ -575,6 +414,7 @@
                 $("#path-display").removeClass("d-none");
 
                 if (!viewer) {
+                    viewerUrl = "../../" + fakeData.PathSample.BIMPath;
                     initializeViewer(initializeDrawer);
                 }
 
@@ -639,7 +479,7 @@
 
         console.log(data);
 
-    @* $.ajax({
+            /* $.ajax({
             url: '@Url.Action("aaa", "bbb")',
             data: JSON.stringify(data),
             type: "POST",
@@ -647,36 +487,28 @@
             contentType: "application/json;charset=utf-8",
             success: onSuccess,
             error: onError
-            }) *@
+            }) */
 
             function onSuccess(res) {
                 console.log("Success");
                 console.log(res);
 
                 if (res.ResponseCode == 0) {
-                    myModal.hide();
-                    let modal_success = $(`
-                    <div class="modal fade modal-delete" id="DeleteModal-success" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-body text-center">
-                                    新增成功！
-                                </div>
-                                <div class="modal-footer justify-content-center">
-                                    <button type="button" class="btn btn-delete" data-bs-dismiss="modal">確定</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    `);
-                    $(document.body).append(modal_success);
-                    let myModal_success = bootstrap.Modal.getOrCreateInstance(modal_success[0]);
-                    myModal_success.show();
-                    modal_success[0].addEventListener("hidden.bs.modal", () => {
-                        myModal_success.dispose();
-                        var url = '@Url.Action("Management", "SamplePath_Management")';
-                        window.location.href = url;
-                    })
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "編輯成功！",
+                        button: [
+                            {
+                                className: "btn btn-delete",
+                                cancel: true,
+                                text: "確定"
+                            },
+                        ],
+                        onHide: () => {
+                            let url = '@Url.Action("Management", "SamplePath_Management")';
+                            window.location.href = url;
+                        }
+                    });
                 }
             }
         function onError(res) {
@@ -693,26 +525,16 @@
                     break;
             }
 
-            let modal_error = $(`
-                    <div class="modal fade modal-delete" id="DeleteModal-error" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-body text-center">
-                                    新增失敗！${errtext}
-                                </div>
-                                <div class="modal-footer justify-content-center">
-                                    <button type="button" class="btn btn-delete" data-bs-dismiss="modal">確定</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    `);
-            $(document.body).append(modal_error);
-            let myModal_error = bootstrap.Modal.getOrCreateInstance(modal_error[0]);
-            myModal_error.show();
-            modal_error[0].addEventListener("hidden.bs.modal", () => {
-                myModal_error.dispose();
-                modal_error.remove();
+            createDialogModal({
+                id: "DialogModal-Error",
+                inner: `編輯失敗！${errtext}`,
+                button: [
+                    {
+                        className: "btn btn-delete",
+                        cancel: true,
+                        text: "確定"
+                    },
+                ]
             })
         }
     }
