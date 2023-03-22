@@ -35,7 +35,7 @@
 <h2>@ViewBag.Title</h2>
 
 <section>
-    @* <div class="search-area bg-transparent">
+     @* <div class="search-area bg-transparent">
         <form class="form">
             <div class="form-group required">
                 <label for="IPName">巡檢計畫名稱</label>
@@ -53,8 +53,8 @@
             </div>
 
             <div class="form-group required">
-                <label for="UserID">巡檢人員</label>
-                <select type="text" class="form-select" name="UserID" id="UserID" style="width:100%"></select>
+                <label for="UserID1">巡檢人員</label>
+                <select type="text" class="form-select" name="UserID1" id="UserID1"></select>
             </div>
 
             <div class="form-group required">
@@ -71,7 +71,7 @@
                 </select>
             </div>
         </form>
-    </div> *@
+    </div> *@ 
     <div class="edit-area edit-area-small">
         <form class="form" action="">
 
@@ -93,14 +93,14 @@
                 </select>
             </div>
 
-            <div class="form-group d-lg-contents required">
+            <div class="form-group d-lg-contents">
                 <label for="MaintainUserID">定期保養審核人員</label>
                 <select type="text" class="form-select" name="MaintainUserID" id="MaintainUserID">
                     <option value="">請選擇</option>
                 </select>
             </div>
 
-            <div class="form-group d-lg-contents required">
+            <div class="form-group d-lg-contents">
                 <label for="RepairUserID">設備維修審核人員</label>
                 <select type="text" class="form-select" name="RepairUserID" id="RepairUserID">
                     <option value="">請選擇</option>
@@ -144,7 +144,7 @@
                     <select type="text" class="form-select w-lg-250px" name="SamplePath" id="SamplePath">
                         <option value="" disabled selected hidden>選擇模板</option>
                     </select>
-                    <button type="button" class="btn btn-search flex-shrink-0" id="path-create">新增</button>
+                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto" id="path-create">新增</button>
                 </div>
             </div>
 
@@ -159,7 +159,7 @@
                             <option value="" disabled selected hidden>樓層</option>
                         </select>
                     </div>
-                    <button type="button" class="btn btn-search flex-shrink-0" id="path-create">新增</button>
+                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto" id="path-create">新增</button>
                 </div>
             </div>
 
@@ -442,7 +442,7 @@
             valueField: 'value',
             textField: 'text',
             data: [
-                { text: '王大明', value: '1' },
+                { text: '4107王大明', value: '4107' },
                 { text: '李泰順', value: '2' },
                 { text: '紅美玲', value: '3' },
                 { text: '黃橙紅', value: '4' },
@@ -452,6 +452,7 @@
                 { text: '888888', value: '8' },
                 { text: '9999999', value: '9' },
                 { text: '10', value: '10' },
+                { text: '4108王大明', value: '4108' },
             ]
         });
     });
