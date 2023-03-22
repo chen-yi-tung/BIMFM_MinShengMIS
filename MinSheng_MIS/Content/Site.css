@@ -87,7 +87,6 @@ h2 {
     border-top: 0;
 }
 
-
 @media (min-width: 576px) {
     .d-sm-contents {
         display: contents !important;
@@ -115,6 +114,22 @@ h2 {
 
     .d-lg-contents {
         display: contents !important;
+    }
+
+    .w-lg-25 {
+        width: 25% !important;
+    }
+
+    .w-lg-50 {
+        width: 50% !important;
+    }
+
+    .w-lg-75 {
+        width: 75% !important;
+    }
+
+    .w-lg-100 {
+        width: 100% !important;
     }
 
     .w-lg-auto {

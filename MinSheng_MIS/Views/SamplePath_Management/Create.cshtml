@@ -26,7 +26,7 @@
             <input type="text" class="form-control" name="PathTitle" id="PathTitle">
         </div>
         <div class="button-group justify-content-start">
-            <button class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
+            <button type="button" class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
         </div>
     </form>
 </div>
@@ -45,7 +45,7 @@
                             <li class="breadcrumb-item">終點</li>
                         </ol>
                     </nav>
-                    <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="手動修改路徑">
+                    <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="手動修改路線">
                         <i class="icon-edit"></i>
                     </button>
                 </div>
@@ -54,26 +54,20 @@
         <div class="sample-path-draw-area d-none">
             <div class="sample-path-toolbar">
                 <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
-                    data-bs-placement="right" title="規劃路徑">
+                    data-bs-placement="right" title="規劃路線">
                     <i class="icon-pen"></i>
                 </button>
                 <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip"
-                    data-bs-placement="right" title="清除路徑">
+                    data-bs-placement="right" title="清除路線">
                     <i class="icon-eraser"></i>
                 </button>
-                <!--
-                <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
-                    data-bs-placement="right" title="新增設備">
-                    <i class="icon-tools"></i>
-                </button>
-                 -->
                 <hr class="m-0">
                 <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
-                    title="重新規劃路徑">
+                    title="重新規劃路線">
                     <i class="icon-reload"></i>
                 </button>
                 <button class="path-icon" id="path-auto" data-bs-toggle="tooltip" data-bs-placement="right"
-                    title="自動計算路徑">
+                    title="自動計算路線">
                     <i class="icon-auto"></i>
                 </button>
             </div>
@@ -89,28 +83,6 @@
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
-<!--
-<div class="modal fade sort-list-modal" tabindex="-1" id="createDeviceModal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">新增自訂設備</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <label for="deviceType" class="mb-2">設備類別</label>
-                <input class="form-control" type="text" id="deviceType">
-                <label for="deviceName" class="mb-2 mt-3">設備名稱</label>
-                <input class="form-control" type="text" id="deviceName">
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-back" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-export" onclick="createDeviceModal.save()">新增設備</button>
-            </div>
-        </div>
-    </div>
-</div>
--->
 
 <!-- Autodesk Forge -->
 <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
@@ -274,72 +246,6 @@
             let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
         });
     }
-
-    //新增自訂設備
-    /*
-    const createDeviceModal = new CreateDeviceModal();
-    function CreateDeviceModal() {
-        const self = this;
-        this.ModalJQ = $("#createDeviceModal");
-        this.ModalBs = new bootstrap.Modal(this.ModalJQ[0]);
-
-        this.detail = undefined;
-
-        this.devicePointOptions = {
-            color: 0x3ac0ff,
-            contextMenu: {
-                html: `<div class="contextMenu"><ul></ul></div>`,
-                button: [
-                    {
-                        name: "詳細",
-                        onClick: function (event, point) {
-                            console.log(`devicePoint ${point.dbId} => 詳細`);
-                            view.dispatchEvent(new CustomEvent('fd.linedata.detail', { 'detail': point }));
-                        }
-                    },
-                    {
-                        name: "忽略",
-                        onClick: function (event, point) {
-                            console.log(`devicePoint ${point.dbId} => 忽略`);
-                            point.isUpdate = !point.isUpdate;
-                            event.target.innerHTML = point.isUpdate ? "忽略" : "取消忽略";
-                            point.update();
-                            view.dispatchEvent(new CustomEvent('fd.devicepoint.ignore', { 'detail': point }));
-                        }
-                    },
-                    {
-                        name: "刪除",
-                        onClick: function (event, point) {
-                            console.log(`point ${point.index} => 刪除`);
-                            point.remove();
-                        }
-                    },
-                ]
-            }
-        }
-
-        this.create = function (detail) {
-            this.ModalBs.show();
-            this.detail = detail;
-        }
-
-        this.save = function () {
-            let data = {
-                position: this.detail.position,
-                deviceType: this.ModalJQ.find("#deviceType").val(),
-                deviceName: this.ModalJQ.find("#deviceName").val()
-            }
-            let dp = new ForgeDraw.DevicePoint(data, this.devicePointOptions);
-            this.ModalBs.hide();
-        }
-
-        this.ModalJQ.on("hide.bs.modal", function () {
-            self.detail && self.detail.callback();
-        })
-
-        return this;
-    }
-    */
 
 </script>
 

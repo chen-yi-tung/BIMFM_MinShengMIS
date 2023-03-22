@@ -391,28 +391,6 @@
             fakeData.InspectionPlanPathList.forEach(createPathGroups)
         });
 
-        //生成路徑群組
-        function createPathGroups(PathData, i) {
-            let pathArea = $(".sample-path-group-area");
-            let item = $(`
-                    <div class="input-group sample-path-group" id="PathOrder-${i}">
-                        <div class="input-group-text">
-                            <button class="path-btn me-2" id="path-search" onclick="replaceModelAndPath(${i})">
-                                <i class="icon-search"></i>
-                            </button>
-                            <span id="sample-path-name"></span>
-                        </div>
-                        <div type="text" class="form-control">
-                            <nav><ol class="breadcrumb" id="path-display"></ol></nav>
-                        </div>
-                    </div>
-                `)
-            item.find("#sample-path-name").text(PathData.InspectionPlanPath.PathTitle);
-            pathArea.append(item);
-            let route = ["起點", ...PathData.InspectionPlanPathOrder, "終點"];
-            updatePathDisplay(route, `#PathOrder-${i}`);
-        }
-
         function calcRoute() {
 
             if (ForgeDraw.lineData.length > 1) {
@@ -435,6 +413,28 @@
             //顯示在網頁上
             updatePathDisplay(route);
         }
+    }
+
+    //生成路徑群組
+    function createPathGroups(PathData, i) {
+        let pathArea = $(".sample-path-group-area");
+        let item = $(`
+            <div class="input-group sample-path-group" id="PathOrder-${i}">
+                <div class="input-group-text">
+                    <button class="path-btn me-2" id="path-search" data-bs-toggle="tooltip" title="查看路線" onclick="replaceModelAndPath(${i})">
+                        <i class="icon-search"></i>
+                    </button>
+                    <span id="sample-path-name"></span>
+                </div>
+                <div type="text" class="form-control">
+                    <nav><ol class="breadcrumb" id="path-display"></ol></nav>
+                </div>
+            </div>
+        `)
+        item.find("#sample-path-name").text(PathData.InspectionPlanPath.PathTitle);
+        pathArea.append(item);
+        let route = ["起點", ...PathData.InspectionPlanPathOrder, "終點"];
+        updatePathDisplay(route, `#PathOrder-${i}`);
     }
 
     //讀取設備和路線資料並繪製
