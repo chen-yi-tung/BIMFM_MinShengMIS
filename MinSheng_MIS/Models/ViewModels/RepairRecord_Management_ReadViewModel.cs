@@ -324,6 +324,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public class AllRepairAudit
         {
             public string AuditUserName { get; set; }
+            public string AuditUserID { get; set; }
             public string AuditMemo { get; set; }
             public string ImgPath { get; set; }
             public string AuditResult { get; set; }
@@ -360,6 +361,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 AllRepairAudit ReAu = new AllRepairAudit()
                 {
                     AuditUserName = Name,
+                    AuditUserID = RepairAuIn.AuditUserID,
                     AuditMemo = RepairAuIn.AuditMemo,
                     ImgPath = PicResult,  //如果多張圖片的話， 用'，'分開
                     AuditResult = dic[RepairAuIn.AuditResult],

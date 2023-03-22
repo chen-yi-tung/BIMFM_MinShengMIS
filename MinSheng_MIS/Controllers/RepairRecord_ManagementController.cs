@@ -84,6 +84,23 @@ namespace MinSheng_MIS.Controllers
             string result = repairRecord_Management_ReadViewModel.GetJsonForRead(id);
             return Content(result, "application/json");
         }
+
+        public ActionResult Supplement_GetData(string id) //取得下方補件資料
+        {
+            var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
+
+            string result = repairRecord_Management_ReadViewModel.GetJsonForRead(id);
+            return Content(result, "application/json");
+        }
+
+        public ActionResult Supplement_Submit(FormCollection formCollection) //下方補件資料提交
+        {
+            var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
+            string dd = ""; //隨便塞的
+
+            string result = repairRecord_Management_ReadViewModel.GetJsonForRead(dd);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region 定期保養單詳情
