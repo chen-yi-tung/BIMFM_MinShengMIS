@@ -172,8 +172,17 @@ namespace MinSheng_MIS.Controllers
                 {
                     result.Add(a.Key, a.Value);
                 }
+            }else if(url == "CanAddToPlanReportState") //新增巡檢計畫->新增報修單 DataGrid 報修單狀態
+            {
+                foreach (var a in abc)
+                {
+                    if(a.Key == "1" || a.Key == "5" || a.Key == "8")
+                    {
+                        result.Add(a.Key, a.Value);
+                    }
+                }
             }
-            return abc;
+            return result;
         }
 
         #endregion
@@ -406,7 +415,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 新增定期保養單 保養狀態下拉式選單
+        #region 新增巡檢計畫->新增定期保養單DataGrid 保養狀態下拉式選單
         [HttpGet]
         public ActionResult AddFormItemState()
         {
