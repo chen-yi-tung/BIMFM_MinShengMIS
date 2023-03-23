@@ -43,7 +43,7 @@
             inner: data.map((d, i) => createInner(d, i)).join("")
         })
     );
-    
+
     function createInner(data, i) {
         let title = `${data.InspectionPlan.IPSN} ${data.InspectionPlan.IPName}`;
         return `
@@ -68,22 +68,22 @@
             className: "border-0 w-100",
             inner: createTableInner(data.InspectionPlanRepair, sn.InspectionPlanRepair),
         })}
-                    ${data.RepairSupplementaryInfo && createAccordion({
+                    ${data.RepairSupplementaryInfo ? createAccordion({
             title: "補件資料",
             id: `OtherRepairSupplementaryInfo-${i}`,
             className: "border-0 w-100",
             sn: sn.RepairSupplementaryInfo,
             data: data.RepairSupplementaryInfo,
             itemTitleKey: "SupplementaryDate"
-        })}
-                    ${data.RepairAuditInfo && createAccordion({
+        }) : ""}
+                    ${data.RepairAuditInfo ? createAccordion({
             title: "審核資料",
             id: `OtherRepairAuditInfo-${i}`,
             className: "border-0 w-100",
             sn: sn.RepairAuditInfo,
             data: data.RepairAuditInfo,
             itemTitleKey: "AuditDate"
-        })}
+        }) : ""}
                 </div>
             </div>
         </div>

@@ -434,15 +434,13 @@
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
         sortRouteModal.autoRouteToggle(true);
 
-        await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
-
         $('#UserID').tagbox({
             hasDownArrow: true,
             limitToList: true,
             valueField: 'value',
             textField: 'text',
             data: [
-                { text: '4107王大明', value: '4107' },
+                { text: '王大明', value: '4107' },
                 { text: '李泰順', value: '2' },
                 { text: '紅美玲', value: '3' },
                 { text: '黃橙紅', value: '4' },
@@ -452,9 +450,11 @@
                 { text: '888888', value: '8' },
                 { text: '9999999', value: '9' },
                 { text: '10', value: '10' },
-                { text: '4108王大明', value: '4108' },
+                { text: '王大明', value: '4108' },
             ]
         });
+
+        await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
     });
 
     function addButtonEvent() {
