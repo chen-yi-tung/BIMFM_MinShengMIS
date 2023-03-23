@@ -176,7 +176,7 @@ namespace MinSheng_MIS.Controllers
             {
                 foreach (var a in abc)
                 {
-                    if(a.Key == "1" || a.Key == "5" || a.Key == "8")
+                    if(a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
                     {
                         result.Add(a.Key, a.Value);
                     }
@@ -424,7 +424,7 @@ namespace MinSheng_MIS.Controllers
 
             foreach (var a in Dics)
             {
-                if(a.Key == "1" || a.Key == "5" || a.Key == "8")
+                if(a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
                 {
                     JObject jo = new JObject
                     {
