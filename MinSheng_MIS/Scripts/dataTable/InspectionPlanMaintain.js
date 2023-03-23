@@ -68,22 +68,22 @@
             className: "border-0 w-100",
             inner: createTableInner(data.InspectionPlanMaintain, sn.InspectionPlanMaintain),
         })}
-                    ${data.MaintainSupplementaryInfo && createAccordion({
+                    ${data.MaintainSupplementaryInfo ? createAccordion({
             title: "補件資料",
             id: `OtherMaintainSupplementaryInfo-${i}`,
             className: "border-0 w-100",
             sn: sn.MaintainSupplementaryInfo,
             data: data.MaintainSupplementaryInfo,
             itemTitleKey: "SupplementaryDate"
-        })}
-                    ${data.MaintainAuditInfo && createAccordion({
+        }) : ""}
+                    ${data.MaintainAuditInfo ? createAccordion({
             title: "審核資料",
             id: `OtherMaintainAuditInfo-${i}`,
             className: "border-0 w-100",
             sn: sn.MaintainAuditInfo,
             data: data.MaintainAuditInfo,
             itemTitleKey: "AuditDate"
-        })}
+        }) : ""}
                 </div>
             </div>
         </div>

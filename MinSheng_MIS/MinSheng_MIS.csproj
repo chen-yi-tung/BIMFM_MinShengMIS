@@ -184,6 +184,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\Account_ManagementController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
     <Compile Include="Controllers\DatagridController.cs" />
     <Compile Include="Controllers\DropDownListController.cs" />
@@ -1372,6 +1373,7 @@
     <Content Include="Content\login.css" />
     <Content Include="Content\navbar.css" />
     <Content Include="Content\samplepath.css" />
+    <Content Include="Content\tagbox.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -1475,6 +1477,9 @@
     <Content Include="Scripts\dataTable\RepairRecord.js" />
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
     <Content Include="Scripts\ForgeDraw.js" />
+    <Content Include="Scripts\Forge\CreateDeviceModal.js" />
+    <Content Include="Scripts\Forge\SortRouteModal.js" />
+    <Content Include="Scripts\Forge\UpViewer.js" />
     <Content Include="Scripts\ImageDisplay.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -1557,6 +1562,11 @@
     <Content Include="Views\InspectionPlan_Management\ReadMaintainForm.cshtml" />
     <Content Include="Views\InspectionPlan_Management\ReadReportForm.cshtml" />
     <Content Include="Views\SamplePath_Management\Edit.cshtml" />
+    <Content Include="Views\Account_Management\Management.cshtml" />
+    <Content Include="Views\Account_Management\Create.cshtml" />
+    <Content Include="Views\Account_Management\Edit.cshtml" />
+    <Content Include="Views\Account_Management\Delete.cshtml" />
+    <Content Include="Views\Account_Management\ChangePassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

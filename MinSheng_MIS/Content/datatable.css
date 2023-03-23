@@ -208,6 +208,15 @@ th.datatable-header+th.datatable-header {
 .datatable-easyui .datagrid-wrap {
     height: inherit !important;
 }
+.datatable-easyui .datagrid-sort-icon{
+    opacity: 0.8;
+    filter: brightness(200%);
+}
+.datatable-easyui .datagrid-sort-asc .datagrid-sort-icon,
+.datatable-easyui .datagrid-sort-desc .datagrid-sort-icon{
+    opacity: 0.8;
+    filter: brightness(90%);
+}
 
 /* RWD */
 

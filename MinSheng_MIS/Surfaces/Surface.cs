@@ -168,5 +168,16 @@ namespace MinSheng_MIS.Surfaces
             return ValueOption;
         }
         #endregion
+
+        //庫存狀態
+        #region StockState 庫存狀態
+        public static Dictionary<string, string> StockState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("0", "無");
+            ValueOption.Add("1", "有");
+            return ValueOption;
+        }
+        #endregion
     }
 }

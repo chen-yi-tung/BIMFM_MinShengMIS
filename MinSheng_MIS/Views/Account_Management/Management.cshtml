@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "巡檢路線模板管理";
+    ViewBag.Title = "帳號管理";
 }
 
 @Styles.Render("~/Content/easyui/themes/default/easyui.css")
@@ -9,33 +9,43 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create" id="create">新增模板</button>
+<button class="btn btn-create" id="create">新增帳號</button>
 <div class="search-area">
     <form class="form" method="post" action="">
 
         <div class="form-group">
-            <label for="PathTitle">巡檢路線模板名稱</label>
-            <input class="form-control" id="PathTitle" name="PathTitle" type="text" />
+            <label for="UserName">帳號</label>
+            <input class="form-control" id="UserName" name="UserName" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="MyName">姓名</label>
+            <input class="form-control" id="MyName" name="MyName" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="Authority">權限</label>
+            <select class="form-select" name="Authority" id="Authority">
+                <option value="">請選擇</option>
+                <option value="1">管理人員</option>
+                <option value="2">操作人員</option>
+                <option value="3">一般人員</option>
+            </select>
         </div>
 
         <div class="form-group">
-            <label for="ASN">棟別</label>
-            <select class="form-select" name="ASN" id="ASN">
-                <option value="">請選擇</option>
-            </select>
+            <label for="Email">信箱</label>
+            <input class="form-control" id="Email" name="Email" type="text" />
         </div>
-        <div>
-            <input class="form-control" id="Area" name="Area" type="text" hidden />
-        </div>
-
         <div class="form-group">
-            <label for="FSN">樓層</label>
-            <select class="form-select" name="FSN" id="FSN">
-                <option value="">請選擇</option>
-            </select>
+            <label for="PhoneNumber">電話</label>
+            <input class="form-control" id="PhoneNumber" name="PhoneNumber" type="text" />
         </div>
-        <div>
-            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        <div class="form-group">
+            <label for="Apartment">單位</label>
+            <input class="form-control" id="Apartment" name="Apartment" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="Title">職稱</label>
+            <input class="form-control" id="Title" name="Title" type="text">
         </div>
 
         <div class="button-group">
@@ -52,43 +62,32 @@
 <script src="../../Scripts/tool.js"></script>
 <script>
 
-    var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
+    var getGridJSON = '@Url.Action("Account_Management", "DataGird")';
 
-    var baseUrl = "/SamplePath_Management/";
-    var areas = document.getElementById("ASN");
-    areas.addEventListener("change", function () {
-        let url = '@Url.Action("Floor", "DropDownList")';
-        if (areas.value != "") {
-            $('#Area').val($("#ASN option:selected").text());
-        }
-        else {
-            $('#Area').val('');
-        }
-        url = url + `?ASN=${areas.value}`;
-        pushSelect("FSN", url);
-        $('#Floor').val('');
-    });
-    var FSNs = document.getElementById("FSN");
-    FSNs.addEventListener("change", function () {
-        if (FSNs.value != "") {
-            $('#Floor').val($("#FSN option:selected").text());
-        }
-        else {
-            $('#Floor').val('');
-        }
-    });
+    var baseUrl = "/Account_Management/";
 
-    const fakeData = [
+    const fakedata = [
         {
-            PSSN: "000001",
-            PathTitle: "A棟1F路線",
-            Area: "A棟",
-            Floor: "1F",
-        }
+            UserName: "Admin",
+            MyName: "Admin",
+            Authority: "管理人員",
+            Email: "Admin123@gmail.com",
+            PhoneNumber: "0900123123",
+            Apartment: "Admin",
+            Title: "Admin",
+        },
+        {
+            UserName: "DDD",
+            MyName: "DDD",
+            Authority: "管理人員",
+            Email: "DDD456@gmail.com",
+            PhoneNumber: "0900456456",
+            Apartment: "DDD",
+            Title: "DDD",
+        },
     ]
 
     $(async function () {
-        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });
@@ -97,40 +96,38 @@
 
         $('#DataGrid').datagrid({
 
-            url: getGridJSON,
+            //url: getGridJSON,
+            data: fakedata,
             method: 'POST',
             queryParams: getQueryParams(),
             rownumbers: true,
-            idField: 'PSSN',
-            sortName: 'PSSN',
+            idField: 'UserName',
+            //sortName: 'UserName',
             remoteSort: false,
             sortOrder: 'asc',
             fit: true,
             frozenColumns: [[
                 {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_dispatch', align: 'center',
+                    field: '_edit', align: 'center',
                     formatter: (val, row, index) => {
                         return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
                     }
                 },
                 {
-                    field: '_locate', align: 'center',
+                    field: '_delete', align: 'center',
                     formatter: (val, row, index) => {
                         return `<button class="btn btn-datagrid" onclick="onDelete(${index})">刪除</button>`;
                     }
                 }
             ]],
             columns: [[
-                { field: 'PSSN', title: 'PSSN', hidden: true },
-                { field: 'PathTitle', title: '巡檢路線模板名稱', align: 'center', width: 500, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 350, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 200, sortable: true },
+                { field: 'UserName', title: '帳號', align: 'center', width: 200, sortable: true },
+                { field: 'MyName', title: '姓名', align: 'center', width: 180, sortable: true },
+                { field: 'Authority', title: '權限', align: 'center', width: 150, sortable: true },
+                { field: 'Email', title: '信箱', align: 'center', width: 300, sortable: true },
+                { field: 'PhoneNumber', title: '電話', align: 'center', width: 180, sortable: true },
+                { field: 'Apartment', title: '單位', align: 'center', width: 180, sortable: true },
+                { field: 'Title', title: '職稱', align: 'center', width: 180, sortable: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,
@@ -153,21 +150,15 @@
     }
 
     // datagrid onClick Function
-    function onDetail(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + '/' + row.PSSN;
-        window.open(url, "_blank");
-    }
-
     function onEdit(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit' + '/' + row.PSSN;
+        let url = baseUrl + 'Edit' + `/${row.UserName}`;
         window.open(url, "_self");
     }
 
     function onDelete(index) {
         let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Delete' + '/' + row.PSSN;
+        let url = baseUrl + 'Delete' + `/${row.UserName}`;
         window.open(url, "_self");
     }
 
@@ -175,7 +166,6 @@
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $("form")[0].reset();
-            pushSelect("Floor", '@Url.Action("Floor", "DropDownList")');
         });
 
         $("#search").click(function () {

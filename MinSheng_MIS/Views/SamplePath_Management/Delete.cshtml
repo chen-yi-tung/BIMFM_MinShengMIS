@@ -44,130 +44,21 @@
     <button class="btn btn-delete" id="delete">刪除</button>
 </div>
 
-<!-- CDN -->
+<!-- Autodesk Forge -->
 <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
     type="text/css">
 <script language="JavaScript"
     src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
-
-<!-- Autodesk Forge -->
-<script>
-    var viewer;
-    var viewerUrl = "../../BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf"; //svf檔路徑
-    var myProfileSettings_up = {
-        name: "mySettings_up",
-        description: "My personal settings.",
-        settings: {
-            viewType: 1, //orthographic
-        },
-        persistent: [],
-        extensions: {
-            load: [],
-            unload: [
-                //減少toolbar物件
-                "Autodesk.Section",
-                "Autodesk.Measure",
-                "Autodesk.Explode",
-                "Autodesk.BimWalk",
-                "Autodesk.Viewing.FusionOrbit"
-            ]
-        }
-    }
-    async function initializeViewer(callback) {
-        Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
-        var myViewerDiv = document.getElementById('viewer3d');
-        viewer = new Autodesk.Viewing.GuiViewer3D(myViewerDiv, { profileSettings: myProfileSettings_up });
-        var options = {
-            'env': "Local",
-            'document': viewerUrl //svf檔路徑
-        };
-        Autodesk.Viewing.Initializer(options, function () {
-            viewer.start(options.document, options, onSuccessCallback, onErrorCallback);
-            async function onSuccessCallback() {
-                console.log("onSuccessCallback");
-                viewer.setBackgroundOpacity(0);
-                viewer.setBackgroundColor();
-                viewer.setLightPreset(16);
-
-                viewer.toolbar.removeControl("navTools");
-                viewer.toolbar.removeControl("settingsTools");
-
-                viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function (e) {
-                    console.log("GEOMETRY_LOADED_EVENT");
-                    viewer.addEventListener(
-                        Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT,
-                        loadWireFrame);
-
-                    function loadWireFrame() {
-                        console.log("FINAL_FRAME_RENDERED_CHANGED_EVENT");
-                        if (!viewer.isExtensionLoaded('Autodesk.Viewing.Wireframes')) {
-                            viewer.loadExtension('Autodesk.Viewing.Wireframes').then(callback);
-                            viewer.removeEventListener(
-                                Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT,
-                                loadWireFrame);
-                        }
-                    }
-                });
-                viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, function (e) {
-                    console.log("EXTENSION_LOADED_EVENT = " + e.extensionId);
-                    switch (e.extensionId) {
-                        case "Autodesk.ViewCubeUi":
-                            const ViewCubeExt = viewer.getExtension("Autodesk.ViewCubeUi");
-                            ViewCubeExt.setVisible(false);
-
-                            //上視圖視角設定
-                            let pos = new THREE.Vector3(0, 0, 160);
-                            let target = new THREE.Vector3(0, 0, 0);
-                            viewer.navigation.setView(pos, target);
-                            viewer.navigation.setCameraUpVector(new THREE.Vector3(-1, 0, 0));
-                            break;
-                        case 'Autodesk.Viewing.Wireframes':
-                            const wfExt = viewer.getExtension('Autodesk.Viewing.Wireframes');
-                            wfExt.activate(); //開啟
-                            wfExt.showSolidMaterial(false); //取消固體材質
-                            let lineMaterial = new THREE.LineBasicMaterial({
-                                color: 0x000000,
-                                linewidth: 0.2
-                            });
-                            wfExt.setLinesMaterial(lineMaterial);
-                            wfExt.setLightPreset(16); //開啟邊線時燈光會自動換到大頭貼燈光，所以要設定回自訂燈光
-                            console.log("wfExt run end");
-                            break;
-                    }
-                })
-            }
-            function onErrorCallback() { console.log("onErrorCallback"); }
-        });
-    }
-
-</script>
+<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
 
 <!-- PIXI Draw -->
-<script src="https://pixijs.download/release/pixi.js"></script>
+<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
 <script src="/Scripts/ForgeDraw.js"></script>
 <script src="/Scripts/datatable.js"></script>
 <script>
     var view = document.querySelector("#PathCanvas");
     var app;
     var stage;
-
-    const deviceDbId = [
-        {
-            dbId: 3078,
-            deviceType: "bluetooth",
-            deviceName: "BT-11014",
-        },
-        {
-            dbId: 3239,
-            deviceType: "bluetooth",
-            deviceName: "BT-11015",
-        },
-        {
-            dbId: 3162,
-            deviceType: "bluetooth",
-            deviceName: "BT-11016",
-        }
-    ];
 
     let btUrl = "/Content/img/bluetooth.svg";
 
@@ -216,25 +107,7 @@
         app = ForgeDraw.init(view, viewer, function () {
             ForgeDraw.setControl(ForgeDraw.Control.READONLY);
 
-            deviceDbId.forEach((e) => {
-                let btSprite = PIXI.Sprite.from(btUrl);
-                btSprite.scale.set(0.6);
-                btSprite.anchor.set(0.5);
-                let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
-            });
-
-            //讀取路線資料
-            let reslineData = fakeData.PathSampleRecord.map((d) => {
-                let forgePos = new THREE.Vector3(d.LocationX, d.LocationY, 0);
-                let pos = viewer.worldToClient(forgePos);
-                let position = new PIXI.Point(pos.x, pos.y);
-                return {
-                    position: position,
-                    forgePos: forgePos
-                };
-            });
-            console.log(reslineData);
-            ForgeDraw.readLineData(reslineData);
+            readDeviceAndLineData(fakeData);
 
             //讀取路徑
             let route = [...fakeData.PathSampleOrder];
@@ -269,6 +142,29 @@
             //顯示在網頁上
             updatePathDisplay(route);
         }
+    }
+
+    //讀取設備和路線資料並繪製
+    function readDeviceAndLineData(data) {
+        data.PathSample.BIMDevices.forEach((e) => {
+            let btSprite = PIXI.Sprite.from(btUrl);
+            btSprite.scale.set(0.6);
+            btSprite.anchor.set(0.5);
+            let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
+        });
+
+        //讀取路線資料
+        let reslineData = data.PathSampleRecord.map((d) => {
+            let forgePos = new THREE.Vector3(d.LocationX, d.LocationY, 0);
+            let pos = viewer.worldToClient(forgePos);
+            let position = new PIXI.Point(pos.x, pos.y);
+            return {
+                position: position,
+                forgePos: forgePos
+            };
+        });
+        console.log(reslineData);
+        ForgeDraw.readLineData(reslineData);
     }
 
     //更新網頁顯示的路徑
@@ -307,7 +203,25 @@
             "Floor": "Floor1_1",
             "ASN": "1",
             "FSN": "1_1",
-            "PathTitle": "123"
+            "PathTitle": "123",
+            "BIMPath": "BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+            "BIMDevices": [
+                {
+                    dbId: 3078,
+                    deviceType: "bluetooth",
+                    deviceName: "BT-11014",
+                },
+                {
+                    dbId: 3239,
+                    deviceType: "bluetooth",
+                    deviceName: "BT-11015",
+                },
+                {
+                    dbId: 3162,
+                    deviceType: "bluetooth",
+                    deviceName: "BT-11016",
+                }
+            ]
         },
         "PathSampleOrder": [
             "BT-11014",
@@ -406,6 +320,7 @@
 
             $("#sample-path-name").text(ps.PathTitle);
 
+            viewerUrl = "../../" + ps.BIMPath;
             initializeViewer(initializeDrawer);
         }
         function onError(res) {
@@ -469,21 +384,21 @@
 
                     //if (res.ResponseCode == 0) {
 
-                        createDialogModal({
-                            id: "DialogModal-Success",
-                            inner: "刪除成功！",
-                            button: [
-                                {
-                                    className: "btn btn-delete",
-                                    cancel: true,
-                                    text: "確定"
-                                },
-                            ],
-                            onHide: () => {
-                                let url = '@Url.Action("Management", "SamplePath_Management")';
-                                window.location.href = url;
-                            }
-                        })
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "刪除成功！",
+                        button: [
+                            {
+                                className: "btn btn-delete",
+                                cancel: true,
+                                text: "確定"
+                            },
+                        ],
+                        onHide: () => {
+                            let url = '@Url.Action("Management", "SamplePath_Management")';
+                            window.location.href = url;
+                        }
+                    })
                     //}
                 }
 

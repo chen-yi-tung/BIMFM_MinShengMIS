@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "刪除帳號";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="AccountInfo"></table>
+    </div>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+    const apiUrl = null;
+
+    const SerializedName = [
+        { text: "帳號", value: "UserName" },
+        { text: "姓名", value: "MyName" },
+        { text: "權限", value: "Authority" },
+        { text: "信箱", value: "Email" },
+        { text: "電話", value: "PhoneNumber" },
+        { text: "單位", value: "Apartment" },
+        { text: "職稱", value: "Title" },
+    ]
+
+    const fakeData = {
+        UserName: "Admin",
+        MyName: "Admin",
+        Authority: "管理人員",
+        Email: "Admin123@gmail.com",
+        PhoneNumber: "0900123123",
+        Apartment: "Admin",
+        Title: "Admin",
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+        addButtonEvent();
+    }
+
+    function readData(url) {
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                body: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+        function onSuccess(res) {
+            console.log(res);
+            $("#AccountInfo").append(createTableInner(res, SerializedName));
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+        $("#delete").click(function () {
+            let modal = createDialogModal({
+                id: "DialogModal-Delete",
+                inner: `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                        class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                    </svg>
+                    確認是否刪除？
+                `,
+                button: [
+                    {
+                        className: "btn btn-cancel",
+                        cancel: true,
+                        text: "取消",
+                    },
+                    {
+                        className: "btn btn-delete",
+                        text: "確定刪除",
+                        onClick: onDelete
+                    },
+                ]
+            })
+
+            function onDelete(e) {
+                let UserName = $("#d-UserName").val();
+                console.log(UserName);
+                let spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+                $(this).append(spinner);
+
+                setTimeout(onSuccess, 1000);
+
+                /*
+                $.ajax({
+                    url: '@Url.Action("Delete", "Account_Management")?UserName=' + UserName,
+                    body: JSON.stringify(UserName),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+                */
+
+                function onSuccess(res) {
+                    console.log("Success");
+                    console.log(res);
+                    modal.hide();
+
+                    //if (res.ResponseCode == 0) {
+
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "刪除成功！",
+                        button: [
+                            {
+                                className: "btn btn-delete",
+                                cancel: true,
+                                text: "確定"
+                            },
+                        ],
+                        onHide: () => {
+                            let url = '@Url.Action("Management", "Account_Management")';
+                            window.location.href = url;
+                        }
+                    })
+                    //}
+                }
+
+                function onError(res) {
+                    console.log("error");
+                    console.log(res);
+                    modal.hide();
+
+                    createDialogModal({
+                        id: "DialogModal-Error",
+                        inner: "刪除失敗！",
+                        button: [
+                            {
+                                className: "btn btn-delete",
+                                cancel: true,
+                                text: "確定"
+                            },
+                        ]
+                    })
+                }
+            }
+        });
+    }
+
+</script>

@@ -1,7 +1,671 @@
-﻿
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = "新增巡檢計畫";
 }
 
-<h2>Create</h2>
+<style>
+    @@media (min-width: 992px) {
+        .w-lg-60 {
+            width: 60% !important;
+        }
+
+        .w-lg-40 {
+            width: 40% !important;
+        }
+
+        .w-lg-108px {
+            width: 108px !important;
+        }
+
+        .w-lg-229px {
+            width: 229px !important;
+        }
+
+        .w-lg-250px {
+            width: 250px !important;
+        }
+    }
+</style>
+
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<link rel="stylesheet" href="/Content/samplepath.css">
+<link rel="stylesheet" href="/Content/tagbox.css">
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    @* <div class="search-area bg-transparent">
+    <form class="form">
+    <div class="form-group required">
+    <label for="IPName">巡檢計畫名稱</label>
+    <input type="text" class="form-control" name="IPName" id="IPName">
+    </div>
+
+    <div class="form-group required">
+    <label for="PlanDate">巡檢日期</label>
+    <input type="date" class="form-control" name="PlanDate" id="PlanDate">
+    </div>
+
+    <div class="form-group required">
+    <label for="Shift">巡檢班別</label>
+    <input type="text" class="form-control" name="Shift" id="Shift">
+    </div>
+
+    <div class="form-group required">
+    <label for="UserID1">巡檢人員</label>
+    <select type="text" class="form-select" name="UserID1" id="UserID1"></select>
+    </div>
+
+    <div class="form-group required">
+    <label for="MaintainUserID">定期保養審核人員</label>
+    <select type="text" class="form-select" name="MaintainUserID" id="MaintainUserID">
+    <option value="">請選擇</option>
+    </select>
+    </div>
+
+    <div class="form-group required">
+    <label for="RepairUserID">設備維修審核人員</label>
+    <select type="text" class="form-select" name="RepairUserID" id="RepairUserID">
+    <option value="">請選擇</option>
+    </select>
+    </div>
+    </form>
+    </div> *@
+    <div class="edit-area edit-area-small">
+        <form class="form" action="">
+
+            <div class="form-group d-lg-contents required">
+                <label for="IPName">巡檢計畫名稱</label>
+                <input type="text" class="form-control" name="IPName" id="IPName" required>
+            </div>
+            <div class="form-group d-lg-contents required">
+                <label for="SubSystem">巡檢日期</label>
+                <input type="date" class="form-control" name="PlanDate" id="PlanDate" required>
+            </div>
+            <div class="form-group d-lg-contents required">
+                <label for="Shift">巡檢班別</label>
+                <input type="text" class="form-control" name="Shift" id="Shift" required>
+            </div>
+            <div class="form-group d-lg-contents required">
+                <label for="UserID" class="align-self-start">巡檢人員</label>
+                <select type="text" class="form-select w-lg-250px" name="UserID" id="UserID" style="width:100%">
+                </select>
+            </div>
+
+            <div class="form-group d-lg-contents">
+                <label for="MaintainUserID">定期保養審核人員</label>
+                <select type="text" class="form-select" name="MaintainUserID" id="MaintainUserID">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+
+            <div class="form-group d-lg-contents">
+                <label for="RepairUserID">設備維修審核人員</label>
+                <select type="text" class="form-select" name="RepairUserID" id="RepairUserID">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <div class="sample-path-area">
+        <h3 class="sample-path-title">定期保養設備</h3>
+        <div class="edit-area">
+            <button class="btn btn-search" id="create-Maintain">新增定期保養設備</button>
+        </div>
+    </div>
+
+    <div class="sample-path-area">
+        <h3 class="sample-path-title">維修設備</h3>
+        <div class="edit-area">
+            <button class="btn btn-search" id="create-Report">新增維修設備</button>
+        </div>
+    </div>
+</section>
+
+<hr class="hr-dashed">
+
+<section>
+
+    <div class="search-area bg-transparent">
+        <div class="form d-flex flex-column flex-lg-row align-items-stretch align-items-lg-end">
+
+            <form class="form-group w-auto w-lg-60" id="sample-path-form">
+                <label>選取巡檢路線模板</label>
+                <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
+                    <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
+                        <select type="text" class="form-select w-lg-229px" name="Area" id="Area" required>
+                            <option value="" disabled selected hidden>區域</option>
+                        </select>
+                        <select type="text" class="form-select w-lg-108px" name="Floor" id="Floor" required>
+                            <option value="" disabled selected hidden>樓層</option>
+                        </select>
+                    </div>
+                    <select type="text" class="form-select w-lg-250px" name="SamplePath" id="SamplePath" required>
+                        <option value="" disabled selected hidden>選擇模板</option>
+                    </select>
+                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto"
+                        id="sample-path-create">新增</button>
+                </div>
+            </form>
+
+            <form class="form-group w-auto w-lg-40" id="path-form">
+                <label>新增其他巡檢路線</label>
+                <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
+                    <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
+                        <select type="text" class="form-select w-lg-229px" name="Area" id="Area" required>
+                            <option value="" disabled selected hidden>區域</option>
+                        </select>
+                        <select type="text" class="form-select w-lg-108px" name="Floor" id="Floor" required>
+                            <option value="" disabled selected hidden>樓層</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto"
+                        id="path-create">新增</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="sample-path-area">
+        <h3 class="sample-path-title">巡檢路線規劃</h3>
+
+        <div class="edit-area">
+            <div class="sample-path-group-area">
+                <div class="input-group sample-path-group">
+                    <div class="input-group-text">
+                        <button class="path-btn me-2" id="path-edit" data-bs-toggle="tooltip" title="拖曳順序">
+                            <i class="icon-handle"></i>
+                        </button>
+                        <span id="sample-path-name">123</span>
+                    </div>
+                    <div type="text" class="form-control">
+                        <nav>
+                            <ol class="breadcrumb d-none" id="path-display">
+                                <li class="breadcrumb-item">起點</li>
+                                <li class="breadcrumb-item">終點</li>
+                            </ol>
+                        </nav>
+                        <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="手動修改路線">
+                            <i class="icon-edit"></i>
+                        </button>
+                    </div>
+                    <button class="btn-delete-item" data-bs-toggle="tooltip" title="刪除路線" onclick=""></button>
+                </div>
+            </div>
+            <div class="sample-path-draw-area d-none">
+                <div class="sample-path-toolbar">
+                    <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="規劃路線">
+                        <i class="icon-pen"></i>
+                    </button>
+                    <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="清除路線">
+                        <i class="icon-eraser"></i>
+                    </button>
+                    <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="新增設備">
+                        <i class="icon-tools"></i>
+                    </button>
+
+                    <hr class="m-0">
+
+                    <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
+                        title="重新規劃路線">
+                        <i class="icon-reload"></i>
+                    </button>
+                    <button class="path-icon" id="path-auto" data-bs-toggle="tooltip" data-bs-placement="right"
+                        title="自動計算路線">
+                        <i class="icon-auto"></i>
+                    </button>
+                </div>
+                <div class="viewer3Dcontainer">
+                    <div id="viewer3d" style="margin:0;"></div>
+                    <canvas id="PathCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增計畫</button>
+</div>
+
+<!-- Autodesk Forge -->
+<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
+    type="text/css">
+<script language="JavaScript"
+    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
+<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
+
+<!-- PIXI Draw -->
+<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
+<script src="/Scripts/ForgeDraw.js"></script>
+<script src="/Scripts/datatable.js"></script>
+<script>
+    var view = document.querySelector("#PathCanvas");
+    var app;
+    var stage;
+    let btUrl = "/Content/img/bluetooth.svg";
+
+    function initializeDrawer() {
+        app = ForgeDraw.init(view, viewer, function () {
+            view.addEventListener("fd.linedata.change", function (event) {
+                console.log("view => fd.linedata.change");
+                calcRoute();
+            });
+            view.addEventListener("fd.linedata.detail", function (event) {
+                console.log("view => fd.linedata.detail", event.detail);
+                if (event.detail instanceof ForgeDraw.DevicePoint) {
+                    createDataDetailModal({
+                        title: "設備資訊",
+                        id: "",
+                        sn: [
+                            { text: "名稱", value: "name" },
+                            { text: "DBID", value: "dbid" },
+                            { text: "座標X", value: "x" },
+                            { text: "座標Y", value: "y" },
+                        ],
+                        data: {
+                            name: event.detail.name,
+                            dbid: event.detail.dbId,
+                            x: event.detail.forgePos.x,
+                            y: event.detail.forgePos.y
+                        }
+                    });
+                }
+                else {
+                    createDataDetailModal({
+                        title: "座標資訊",
+                        id: "",
+                        sn: [
+                            { text: "座標X", value: "x" },
+                            { text: "座標Y", value: "y" },
+                        ],
+                        data: { x: event.detail.forgePos.x, y: event.detail.forgePos.y }
+                    });
+                }
+            });
+            view.addEventListener("fd.linedata.removeall", function (event) {
+                console.log("view => fd.linedata.removeall");
+                updatePathDisplay();
+            });
+
+            view.addEventListener("fd.devicepoint.usercreate", function (event) {
+                console.log("view => fd.devicepoint.usercreate");
+                //createDeviceModal.create(event.detail);
+            });
+
+            view.addEventListener("fd.devicepoint.ignore", function (event) {
+                console.log("view => fd.devicepoint.ignore");
+                calcRoute();
+            });
+
+            readDeviceData(fakeData.BIMDevices);
+
+            addTooltip();
+        });
+
+        window.onresize = function () {
+            ForgeDraw.resize();
+        }
+
+        function calcRoute() {
+
+            if (ForgeDraw.lineData.length > 1) {
+                ForgeDraw.devices.forEach((dp) => {
+                    dp.update();
+                })
+            }
+
+            if (!sortRouteModal.autoCalcRoute) {
+                return;
+            }
+
+            //開始計算路徑
+            let route = ForgeDraw.getRoute().map(e => e.name);
+            console.log(ForgeDraw.devices.map(e => e.result));
+
+            route.unshift("起點");
+            route.push("終點");
+
+            //顯示在網頁上
+            updatePathDisplay(route);
+        }
+    }
+
+    //更新網頁顯示的路徑
+    function updatePathDisplay(path = undefined) {
+        let $path = $("#path-display");
+
+        if (!path) {
+            $path.empty();
+            $path.append(`
+            <li class="breadcrumb-item">起點</li>
+            <li class="breadcrumb-item">終點</li>
+            `);
+            return;
+        }
+
+        $path.empty();
+        path.forEach(r => {
+            let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
+            $path.append(pathPoint);
+        })
+    }
+
+    //切換操作
+    function controlToggle(id, control) {
+        let btn = $("#" + id);
+        ForgeDraw.setControl(control);
+
+        $(".path-icon-radio").removeClass("active");
+        btn.toggleClass("active", true);
+    }
+
+    //更換模型和設備
+    function loadModel() {
+        ForgeDraw.removeAllDevice();
+        ForgeDraw.removeAllData();
+
+        viewerUrl = "../" + fakeData.BIMPath;
+        viewer.loadModel(
+            viewerUrl,
+            { keepCurrentModels: false },
+            onSuccess,
+            onError
+        );
+        function onSuccess(res) {
+            //console.log(res);
+            readDeviceData(fakeData.BIMDevices);
+        }
+        function onError(err) {
+            console.log(err);
+        }
+    }
+
+    //讀取設備資料並繪製
+    function readDeviceData(data) {
+        data.forEach((e) => {
+            let btSprite = PIXI.Sprite.from(btUrl);
+            btSprite.scale.set(0.6);
+            btSprite.anchor.set(0.5);
+            let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
+        });
+    }
+</script>
+
+<!-- Drag and Drop -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="/Scripts/Forge/SortRouteModal.js"></script>
+<script>
+    const sortRouteModal = new SortRouteModal({
+        onSave: updatePathDisplay
+    });
+</script>
+
+<!-- EVENT -->
+<script src="../../Scripts/tool.js"></script>
+<script>
+    let fakeData = {
+        BIMPath: "BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+        BIMDevices: [
+            {
+                dbId: 3078,
+                deviceType: "bluetooth",
+                deviceName: "BT-11014",
+            },
+            {
+                dbId: 3239,
+                deviceType: "bluetooth",
+                deviceName: "BT-11015",
+            },
+            {
+                dbId: 3162,
+                deviceType: "bluetooth",
+                deviceName: "BT-11016",
+            }
+        ]
+    }
+
+    $(async function () {
+        addAreaFloorEvent();
+        addButtonEvent();
+        controlToggle("path-draw", ForgeDraw.Control.DRAW);
+        sortRouteModal.autoRouteToggle(true);
+
+        $('#UserID').tagbox({
+            hasDownArrow: true,
+            limitToList: true,
+            valueField: 'value',
+            textField: 'text',
+            data: [
+                { text: '王大明', value: '4107' },
+                { text: '李泰順', value: '2' },
+                { text: '紅美玲', value: '3' },
+                { text: '黃橙紅', value: '4' },
+                { text: '555', value: '5' },
+                { text: '6666', value: '6' },
+                { text: '77777', value: '7' },
+                { text: '888888', value: '8' },
+                { text: '9999999', value: '9' },
+                { text: '10', value: '10' },
+                { text: '王大明', value: '4108' },
+            ]
+        });
+
+        await pushSelect("path-form #Area", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("sample-path-form #Area", '@Url.Action("Area", "DropDownList")');
+    });
+
+    function addAreaFloorEvent() {
+        let PArea = $("#path-form #Area");
+        PArea.on("change", async function () {
+            await pushSelect("path-form #Floor", '@Url.Action("Floor", "DropDownList")' + `?ASN=${PArea.val()}`);
+            $('#path-form #Floor').val('');
+        });
+
+        let SPArea = $("#sample-path-form #Area");
+        SPArea.on("change", async function () {
+            await pushSelect("sample-path-form #Floor", '@Url.Action("Floor", "DropDownList")' + `?ASN=${SPArea.val()}`);
+            $('#sample-path-form #Floor').val('');
+        });
+
+        let SPFloor = $("#sample-path-form #Floor");
+        SPFloor.on("change", async function () {
+            await pushSelect("sample-path-form #PathTilte", '@Url.Action("PathTilte", "DropDownList")' + `?FSN=${SPFloor.val()}`);
+            $('#path-form #PathTilte').val('');
+        });
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+        let titleIndex = 1;
+        $("#path-create").click(function (e) {
+            e.preventDefault();
+            console.log("onclick path-create");
+            let form = $("#path-form");
+            if (form[0].checkValidity()) {
+                let asn = form.find("#Area").val();
+                let fsn = form.find("#Floor").val();
+                let pt = form.find("#Area option:selected").text() + form.find("#Floor option:selected").text() + titleIndex.toString().padStart(2, "0");
+                titleIndex++;
+                console.log(pt)
+
+                $("#sample-path-name").text(pt);
+                $(".sample-path-draw-area").removeClass("d-none");
+                $("#path-display").removeClass("d-none");
+
+                //$.getJSON('@Url.Action("action","Controller")', function (data) {
+                //fakeData = data;
+                //若非第一次初始化
+                if (viewer) {
+                    viewerUrl = "../" + fakeData.BIMPath;
+                    loadModel();
+                }
+                else {
+                    viewerUrl = "../" + fakeData.BIMPath;
+                    initializeViewer(initializeDrawer);
+                }
+                //})
+            }
+        })
+        $("#sample-path-create").click(function (e) {
+            e.preventDefault();
+            console.log("onclick sample-path-create");
+            let form = $("#sample-path-form");
+            if (form[0].checkValidity()) {
+
+                let asn = form.find("#Area").val();
+                let fsn = form.find("#Floor").val();
+                let pt = form.find("#PathTitle").val();
+
+                $("#sample-path-name").text(pt);
+                $(".sample-path-draw-area").removeClass("d-none");
+                $("#path-display").removeClass("d-none");
+
+                //$.getJSON('@Url.Action("action","Controller")', function (data) {
+                //fakeData = data;
+                //若非第一次初始化
+                if (viewer) {
+                    viewerUrl = "../" + fakeData.BIMPath;
+                    loadModel();
+                }
+                else {
+                    viewerUrl = "../" + fakeData.BIMPath;
+                    initializeViewer(initializeDrawer);
+                }
+                //})
+            }
+        })
+        $("#path-edit").click(function () {
+            sortRouteModal.create();
+        })
+        $("#path-draw").click(function () {
+            $(this).blur();
+            controlToggle("path-draw", ForgeDraw.Control.DRAW);
+        })
+        $("#path-eraser").click(function () {
+            $(this).blur();
+            controlToggle("path-eraser", ForgeDraw.Control.ERASER);
+        })
+        $("#path-device").click(function () {
+            $(this).blur();
+            controlToggle("path-device", ForgeDraw.Control.DEVICE);
+        })
+        $("#path-reload").click(function () {
+            $(this).blur();
+            ForgeDraw.removeAllData();
+            sortRouteModal.autoRouteToggle(true);
+        })
+        $("#path-auto").click(function () {
+            $(this).blur();
+            sortRouteModal.autoRouteToggle();
+        })
+        $("#submit").click(function () {
+            console.log("onclick submit")
+            save();
+        })
+    }
+
+    function addTooltip() {
+        let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                customClass: "sample-path-tooltip",
+            })
+        })
+        tooltipList.forEach(e => e.show())
+        setTimeout(() => {
+            tooltipList.forEach(e => e.hide())
+        }, 2000)
+    }
+
+    function save() {
+        let PathSampleOrder = $(".breadcrumb-item:not(:first-child):not(:last-child)").toArray().map(e => e.innerHTML);
+        let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
+            return { LocationX: e.x, LocationY: e.y };
+        })
+
+        let data = {
+            PathSample: {
+                ASN: $("#ASN").val(),
+                FSN: $("#FSN").val(),
+                PathTitle: $("#PathTitle").val()
+            },
+            PathSampleOrder: PathSampleOrder,
+            PathSampleRecord: PathSampleRecord
+        }
+
+        console.log(data);
+
+        /* $.ajax({
+            url: '@Url.Action("aaa", "bbb")',
+            data: JSON.stringify(data),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        }) */
+
+        function onSuccess(res) {
+            console.log("Success");
+            console.log(res);
+
+            if (res.ResponseCode == 0) {
+                createDialogModal({
+                    id: "DialogModal-Success",
+                    inner: "新增成功！",
+                    button: [
+                        {
+                            className: "btn btn-delete",
+                            cancel: true,
+                            text: "確定"
+                        },
+                    ],
+                    onHide: () => {
+                        let url = '@Url.Action("Management", "SamplePath_Management")';
+                        window.location.href = url;
+                    }
+                });
+            }
+        }
+        function onError(res) {
+            console.log("error");
+            console.log(res);
+            let errtext;
+
+            switch (res) {
+                case "duplicate title":
+                    errtext = "巡檢路線模板名稱重複！";
+                    break;
+                default:
+                    errtext = "";
+                    break;
+            }
+
+            createDialogModal({
+                id: "DialogModal-Error",
+                inner: `新增失敗！${errtext}`,
+                button: [
+                    {
+                        className: "btn btn-delete",
+                        cancel: true,
+                        text: "確定"
+                    },
+                ]
+            })
+        }
+    }
+</script>
+
+
+
 

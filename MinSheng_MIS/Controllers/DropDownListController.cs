@@ -15,7 +15,7 @@ namespace MinSheng_MIS.Controllers
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         // GET: DropDownList
-        #region 樓層
+        #region 棟別
         [System.Web.Http.HttpGet]
         public ActionResult Area()
         {
@@ -33,7 +33,68 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 根據樓層查詢棟別
+        #region 根據樓層查詢模版路徑名稱
+        [System.Web.Http.HttpGet]
+        public ActionResult PathTitle(string FSN)
+        {
+            List<JObject> list = new List<JObject>();
+            if (FSN != null)
+            {
+                var abc = db.PathSample.Where(x => x.FSN == FSN).ToList();
+                foreach (var item in abc)
+                {
+                    JObject jo = new JObject();
+                    jo.Add("Text", item.PathTitle);// PathTitle
+                    jo.Add("Value", item.PSSN); // PSSN
+                    list.Add(jo);
+                }
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 全部人
+        [System.Web.Http.HttpGet]
+        public ActionResult AllMyName()
+        {
+            List<JObject> list = new List<JObject>();
+            var abc = db.AspNetUsers.ToList();
+            foreach (var item in abc)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);// MyName
+                jo.Add("Value", item.UserName); // UserName
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 巡檢班別
+        [HttpGet]
+        public ActionResult Shift()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.Shift();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 根據棟別查詢樓層
         [System.Web.Http.HttpGet]
         public ActionResult Floor(int? ASN)
         {
@@ -111,8 +172,17 @@ namespace MinSheng_MIS.Controllers
                 {
                     result.Add(a.Key, a.Value);
                 }
+            }else if(url == "CanAddToPlanReportState") //新增巡檢計畫->新增報修單 DataGrid 報修單狀態
+            {
+                foreach (var a in abc)
+                {
+                    if(a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
+                    {
+                        result.Add(a.Key, a.Value);
+                    }
+                }
             }
-            return abc;
+            return result;
         }
 
         #endregion
@@ -175,7 +245,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region
+        # region 審核人員_保養
         [HttpGet]
         public ActionResult AuditUser_Maintain() //審核人員_保養
         {
@@ -192,7 +262,7 @@ namespace MinSheng_MIS.Controllers
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }
-        #endregion
+        #endregion 
 
         #region ReportUser報修人員
         [HttpGet]
@@ -211,7 +281,7 @@ namespace MinSheng_MIS.Controllers
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }
-        #endregion
+        #endregion 
 
         #region RepairUser施工人員
         [HttpGet]
@@ -329,6 +399,75 @@ namespace MinSheng_MIS.Controllers
         {
             List<JObject> list = new List<JObject>();
             var Dics = Surface.EquipmentMaintainFormItemState();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 新增巡檢計畫->新增定期保養單DataGrid 保養狀態下拉式選單
+        [HttpGet]
+        public ActionResult AddFormItemState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.EquipmentMaintainFormItemState();
+
+            foreach (var a in Dics)
+            {
+                if(a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
+                {
+                    JObject jo = new JObject
+                    {
+                        { "Text", a.Value },
+                        { "Value", a.Key }
+                    };
+                    list.Add(jo);
+                }
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 設備狀態 下拉式選單
+        [HttpGet]
+        public ActionResult EState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.EState();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 庫存狀態 下拉式選單
+        [HttpGet]
+        public ActionResult StockState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.StockState();
 
             foreach (var a in Dics)
             {

@@ -1,7 +1,504 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "巡檢計畫詳情";
 }
 
-<h2>Read</h2>
+<link rel="stylesheet" href="/Content/samplepath.css">
 
+<h2>@ViewBag.Title</h2>
+
+<section id="InspectionPlanInfo"></section>
+
+<div class="datatable datatable-fill mt-5">
+    <div class="datatable-header">定期保養設備</div>
+    <div class="datatable-body datatable-easyui">
+        <table id="DataGrid-Maintain"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-fill mt-5">
+    <div class="datatable-header">維修設備</div>
+    <div class="datatable-body datatable-easyui">
+        <table id="DataGrid-Repair"></table>
+    </div>
+</div>
+
+<div class="sample-path-area px-0 mt-5">
+    <h3 class="sample-path-title">巡檢路線規劃</h3>
+
+    <div class="edit-area">
+        <div class="sample-path-group-area"></div>
+        <div class="sample-path-draw-area">
+            <div class="viewer3Dcontainer">
+                <div id="viewer3d" style="margin:0;"></div>
+                <canvas id="PathCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+    const RSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
+    let apiUrl = null;
+    let apiUrl_Maintain = '@Url.Action("MaintainForm_Management", "MaintainForm_Management")';
+    let apiUrl_Repair = '@Url.Action("Report_Management", "Datagrid")';
+
+    const sn = {
+        InspectionPlan: [
+            { text: "巡檢計畫編號", value: "IPSN" },
+            { text: "巡檢計畫名稱", value: "IPName" },
+            { text: "巡檢日期", value: "PlanDate" },
+            { text: "計畫執行狀態", value: "PlanState" },
+            { text: "巡檢班別", value: "Shift" },
+            { text: "巡檢人員", value: "MyName" },
+        ]
+    }
+
+    let fakeData = {
+        InspectionPlan: {
+            IPSN: "P23010401",
+            IPName: "IPName",
+            PlanDate: "PlanDate",
+            PlanState: "PlanState",
+            Shift: "Shift",
+            MyName: "MyName",
+        },
+        InspectionPlanPathList: [
+            {
+                InspectionPlanPath: {
+                    PathTitle: "A區3F路線",
+                    PSN: "PSN",
+                    BIMPath: "BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+                    BIMDevices: [
+                        {
+                            dbId: 3078,
+                            deviceType: "bluetooth",
+                            deviceName: "BT-11014",
+                        },
+                        {
+                            dbId: 3239,
+                            deviceType: "bluetooth",
+                            deviceName: "BT-11015",
+                        },
+                        {
+                            dbId: 3162,
+                            deviceType: "bluetooth",
+                            deviceName: "BT-11016",
+                        }
+                    ]
+                },
+                InspectionPlanPathOrder: [
+                    "BT-11014",
+                    "BT-11015",
+                    "BT-11016"
+                ],
+                InspectionPlanPathRecord: [
+                    {
+                        "LocationX": 3.281535257805018,
+                        "LocationY": -70.78609689705826
+                    },
+                    {
+                        "LocationX": 17.614257498023093,
+                        "LocationY": -17.842776490580817
+                    },
+                    {
+                        "LocationX": 7.961607826039497,
+                        "LocationY": -14.332722098991141
+                    },
+                    {
+                        "LocationX": -0.8135282394001422,
+                        "LocationY": -32.175498589571944
+                    },
+                    {
+                        "LocationX": -9.881168840354427,
+                        "LocationY": -28.080435132717326
+                    },
+                    {
+                        "LocationX": -10.758682446898383,
+                        "LocationY": 2.3400362610597796
+                    },
+                    {
+                        "LocationX": -4.616087201090643,
+                        "LocationY": 2.6325407936922716
+                    },
+                    {
+                        "LocationX": -4.616087201090643,
+                        "LocationY": 9.94515410950406
+                    },
+                    {
+                        "LocationX": -21.28884572542593,
+                        "LocationY": 10.530163174769001
+                    },
+                    {
+                        "LocationX": -20.99634118991129,
+                        "LocationY": -31.59048952430699
+                    },
+                    {
+                        "LocationX": -31.526504468438844,
+                        "LocationY": -32.76050765483687
+                    },
+                    {
+                        "LocationX": -33.574036217041424,
+                        "LocationY": -45.63070709066565
+                    },
+                    {
+                        "LocationX": -22.16635933196992,
+                        "LocationY": -75.46616941917782
+                    }
+                ]
+            }
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            fakeData = res;
+            $("#InspectionPlanInfo").append(
+                createTableOuter({
+                    title: "巡檢計劃資訊",
+                    id: "InspectionPlan",
+                    className: "mt-5",
+                    inner: createTableInner(res.InspectionPlan, sn.InspectionPlan),
+                })
+            );
+            viewerUrl = "../../" + res.InspectionPlanPathList[0].InspectionPlanPath.BIMPath;
+            initializeViewer(initializeDrawer);
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function initDatagrid_Maintain(url) {
+        $('#DataGrid-Maintain').datagrid({
+            url: url,
+            queryParams: {
+                IPSN: $("#d-IPSN").text()
+            },
+            frozenColumns: [[
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onMaintainDetail(${index})">詳情</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onMaintainLocate(${index})">定位</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'StockState', title: '庫存狀態', align: 'center', width: 150, sortable: true },
+                { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 150, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
+
+                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
+
+                { field: 'EMFISN', title: '保養單項目編號', align: 'center', width: 210, sortable: true },
+
+                { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
+                { field: 'Period', title: '週期', align: 'center', width: 100, sortable: true },
+                { field: 'Unit', title: '週期單位', align: 'center', width: 130, sortable: true },
+
+                { field: 'LastTime', title: '上次保養', align: 'center', width: 140, sortable: true },
+                { field: 'Date', title: '最近應保養', align: 'center', width: 150, sortable: true },
+            ]],
+            //rownumbers: true,
+            idField: 'EMFISN',
+            //sortName: 'EMFISN',
+            remoteSort: false,
+            sortOrder: 'asc',
+            //fit: true,
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+        })
+    }
+
+    function initDatagrid_Repair(url) {
+        $('#DataGrid-Repair').datagrid({
+            url: url,
+            queryParams: {
+                IPSN: $("#d-IPSN").text()
+            },
+            frozenColumns: [[
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onRepairDetail(${index})">詳情</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onRepairLocate(${index})">定位</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'StockState', title: '庫存狀態', align: 'center', width: 150, sortable: true },
+                { field: 'ReportState', title: '報修單狀態', align: 'center', width: 145, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
+
+                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
+
+                { field: 'RSN', title: '報修單號', align: 'center', width: 110, sortable: true },
+                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 95, sortable: true },
+                { field: 'Date', title: '報修時間', align: 'center', width: 175, sortable: true },
+                { field: 'MyName', title: '報修人員', align: 'center', width: 110, sortable: true },
+                { field: 'ReportContent', title: '報修內容', align: 'center', width: 110, sortable: true },
+            ]],
+            //rownumbers: true,
+            idField: 'ESN',
+            //sortName: 'ESN',
+            remoteSort: false,
+            sortOrder: 'asc',
+            //fit: true,
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+        })
+    }
+
+    // datagrid onClick Function
+    function onMaintainDetail(index) {
+        let row = $('#DataGrid-Maintain').datagrid('getRows')[index];
+        let url = '@Url.Action("Read","MaintainForm_Management")/' + row.EMFISN;
+        window.open(url, "_blank");
+    }
+
+    function onRepairDetail(index) {
+        let row = $('#DataGrid-Repair').datagrid('getRows')[index];
+        let url = '@Url.Action("Read","Report_Management")/' + row.RSN;
+        window.open(url, "_blank");
+    }
+
+    function onMaintainLocate(index) {
+        let row = $('#DataGrid-Maintain').datagrid('getRows')[index];
+        let url = baseUrl + 'Locate';
+        window.open(url, "_self");
+    }
+
+    function onRepairLocate(index) {
+        let row = $('#DataGrid-Repair').datagrid('getRows')[index];
+        let url = baseUrl + 'Locate';
+        window.open(url, "_self");
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+        initDatagrid_Maintain(apiUrl_Maintain);
+        initDatagrid_Repair(apiUrl_Repair);
+    }
+
+    window.onresize = function () {
+        $('#DataGrid-Maintain').datagrid('resize');
+        $('#DataGrid-Repair').datagrid('resize');
+        ForgeDraw.resize();
+    }
+</script>
+
+<!-- Autodesk Forge -->
+<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
+    type="text/css">
+<script language="JavaScript"
+    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
+<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
+
+<!-- PIXI Draw -->
+<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
+<script src="/Scripts/ForgeDraw.js"></script>
+<script>
+    var view = document.querySelector("#PathCanvas");
+    var app;
+    var stage;
+
+    let btUrl = "/Content/img/bluetooth.svg";
+
+    function initializeDrawer() {
+        ForgeDraw.setDrawSetting("point.contextMenu.button", [{
+            name: "詳細",
+            onClick: function (event, point) {
+                console.log(`point ${point.index} => 詳細`, point);
+                let index = point.index;
+                let pointData = ForgeDraw.lineData[index].forgePos;
+                createDataDetailModal({
+                    title: "座標資訊",
+                    id: "",
+                    sn: [
+                        { text: "座標X", value: "x" },
+                        { text: "座標Y", value: "y" },
+                    ],
+                    data: { x: pointData ? pointData.x : undefined, y: pointData ? pointData.y : undefined }
+                });
+            }
+        }]);
+        ForgeDraw.setDrawSetting("devicePoint.contextMenu.button", [{
+            name: "詳細",
+            onClick: function (event, point) {
+                console.log(`point ${point.index} => 詳細`, point);
+                let index = point.index;
+                createDataDetailModal({
+                    title: "設備資訊",
+                    id: "",
+                    sn: [
+                        { text: "名稱", value: "name" },
+                        { text: "DBID", value: "dbid" },
+                        { text: "座標X", value: "x" },
+                        { text: "座標Y", value: "y" },
+                    ],
+                    data: {
+                        name: point.name,
+                        dbid: point.dbId,
+                        x: point.forgePos.x,
+                        y: point.forgePos.y
+                    }
+                });
+            }
+        }]);
+
+        app = ForgeDraw.init(view, viewer, function () {
+            ForgeDraw.setControl(ForgeDraw.Control.READONLY);
+
+            let firstPathData = fakeData.InspectionPlanPathList[0];
+
+            readDeviceAndLineData(firstPathData);
+
+            //讀取路徑
+            fakeData.InspectionPlanPathList.forEach(createPathGroups)
+        });
+
+        function calcRoute() {
+
+            if (ForgeDraw.lineData.length > 1) {
+                ForgeDraw.devices.forEach((dp) => {
+                    dp.update();
+                })
+            }
+
+            if (!sortRouteModal.autoCalcRoute) {
+                return;
+            }
+
+            //開始計算路徑
+            let route = ForgeDraw.getRoute().map(e => e.name);
+            console.log(ForgeDraw.devices.map(e => e.result));
+
+            route.unshift("起點");
+            route.push("終點");
+
+            //顯示在網頁上
+            updatePathDisplay(route);
+        }
+    }
+
+    //生成路徑群組
+    function createPathGroups(PathData, i) {
+        let pathArea = $(".sample-path-group-area");
+        let item = $(`
+            <div class="input-group sample-path-group" id="PathOrder-${i}">
+                <div class="input-group-text">
+                    <button class="path-btn me-2" id="path-search" data-bs-toggle="tooltip" title="查看路線" onclick="replaceModelAndPath(${i})">
+                        <i class="icon-search"></i>
+                    </button>
+                    <span id="sample-path-name"></span>
+                </div>
+                <div type="text" class="form-control">
+                    <nav><ol class="breadcrumb" id="path-display"></ol></nav>
+                </div>
+            </div>
+        `)
+        item.find("#sample-path-name").text(PathData.InspectionPlanPath.PathTitle);
+        pathArea.append(item);
+        let route = ["起點", ...PathData.InspectionPlanPathOrder, "終點"];
+        updatePathDisplay(route, `#PathOrder-${i}`);
+    }
+
+    //讀取設備和路線資料並繪製
+    function readDeviceAndLineData(data) {
+        data.InspectionPlanPath.BIMDevices.forEach((e) => {
+            let btSprite = PIXI.Sprite.from(btUrl);
+            btSprite.scale.set(0.6);
+            btSprite.anchor.set(0.5);
+            let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
+        });
+
+        //讀取路線資料
+        let reslineData = data.InspectionPlanPathRecord.map((d) => {
+            let forgePos = new THREE.Vector3(d.LocationX, d.LocationY, 0);
+            let pos = viewer.worldToClient(forgePos);
+            let position = new PIXI.Point(pos.x, pos.y);
+            return {
+                position: position,
+                forgePos: forgePos
+            };
+        });
+        console.log(reslineData);
+        ForgeDraw.readLineData(reslineData);
+    }
+
+    //更新網頁顯示的路徑
+    function updatePathDisplay(path = undefined, selector = undefined) {
+        let $path = selector ? $(`${selector} #path-display`) : $("#path-display");
+
+        if (!path) {
+            $path.empty();
+            $path.append(`
+            <li class="breadcrumb-item">起點</li>
+            <li class="breadcrumb-item">終點</li>
+            `);
+            return;
+        }
+
+        $path.empty();
+        path.forEach(r => {
+            let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
+            $path.append(pathPoint);
+        })
+    }
+
+    //更換模型和路徑
+    function replaceModelAndPath(i) {
+        ForgeDraw.removeAllDevice();
+        ForgeDraw.removeAllData();
+
+        let PathData = fakeData.InspectionPlanPathList[i];
+        viewerUrl = "../../" + PathData.InspectionPlanPath.BIMPath;
+        viewer.loadModel(
+            viewerUrl,
+            { keepCurrentModels: false },
+            onSuccess,
+            onError
+        );
+        function onSuccess(res) {
+            //console.log(res);
+            readDeviceAndLineData(PathData);
+        }
+        function onError(err) {
+            console.log(err);
+        }
+    }
+</script>
