@@ -34,7 +34,7 @@ namespace MinSheng_MIS.Models
         public string Brand { get; set; }
         public Nullable<System.DateTime> InstallDate { get; set; }
         public Nullable<System.DateTime> GuaranteeDeadline { get; set; }
-        public string DBID { get; set; }
+        public Nullable<int> DBID { get; set; }
         public string RFID { get; set; }
         public string EState { get; set; }
         public string FSN { get; set; }

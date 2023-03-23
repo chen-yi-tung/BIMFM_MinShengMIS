@@ -315,17 +315,37 @@
                 $(".sample-path-draw-area").removeClass("d-none");
                 $("#path-display").removeClass("d-none");
 
+                let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + fsn;
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+                function onSuccess(res) {
+                    console.log(res);
+                    fakeData = res;
+                    //若非第一次初始化
+                    if (viewer) {
+                        viewerUrl = "../" + fakeData.BIMPath;
+                        loadModel();
+                    }
+                    else {
+                        viewerUrl = "../" + fakeData.BIMPath;
+                        initializeViewer(initializeDrawer);
+                    }
+                }
+                function onError(res) {
+                    console.log(res);
+                }
+
                 //$.getJSON('@Url.Action("action","Controller")', function (data) {
                 //fakeData = data;
                 //若非第一次初始化
-                if (viewer) {
-                    viewerUrl = "../" + fakeData.BIMPath;
-                    loadModel();
-                }
-                else {
-                    viewerUrl = "../" + fakeData.BIMPath;
-                    initializeViewer(initializeDrawer);
-                }
+                
                 //})
             }
         })
@@ -340,7 +360,7 @@
             $(this).blur();
             controlToggle("path-eraser", ForgeDraw.Control.ERASER);
         })
-        /* 
+        /*
         $("#path-device").click(function () {
             $(this).blur();
             controlToggle("path-device", ForgeDraw.Control.DEVICE);
