@@ -33,7 +33,68 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 根據樓層查詢棟別
+        #region 根據樓層查詢模版路徑名稱
+        [System.Web.Http.HttpGet]
+        public ActionResult PathTitle(string FSN)
+        {
+            List<JObject> list = new List<JObject>();
+            if (FSN != null)
+            {
+                var abc = db.PathSample.Where(x => x.FSN == FSN).ToList();
+                foreach (var item in abc)
+                {
+                    JObject jo = new JObject();
+                    jo.Add("Text", item.PathTitle);// PathTitle
+                    jo.Add("Value", item.PSSN); // PSSN
+                    list.Add(jo);
+                }
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 全部人
+        [System.Web.Http.HttpGet]
+        public ActionResult AllMyName()
+        {
+            List<JObject> list = new List<JObject>();
+            var abc = db.AspNetUsers.ToList();
+            foreach (var item in abc)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);// MyName
+                jo.Add("Value", item.UserName); // UserName
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 巡檢班別
+        [HttpGet]
+        public ActionResult Shift()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.Shift();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 根據棟別查詢樓層
         [System.Web.Http.HttpGet]
         public ActionResult Floor(int? ASN)
         {
