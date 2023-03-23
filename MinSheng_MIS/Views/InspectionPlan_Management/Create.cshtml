@@ -35,43 +35,43 @@
 <h2>@ViewBag.Title</h2>
 
 <section>
-     @* <div class="search-area bg-transparent">
-        <form class="form">
-            <div class="form-group required">
-                <label for="IPName">巡檢計畫名稱</label>
-                <input type="text" class="form-control" name="IPName" id="IPName">
-            </div>
+    @* <div class="search-area bg-transparent">
+    <form class="form">
+    <div class="form-group required">
+    <label for="IPName">巡檢計畫名稱</label>
+    <input type="text" class="form-control" name="IPName" id="IPName">
+    </div>
 
-            <div class="form-group required">
-                <label for="PlanDate">巡檢日期</label>
-                <input type="date" class="form-control" name="PlanDate" id="PlanDate">
-            </div>
+    <div class="form-group required">
+    <label for="PlanDate">巡檢日期</label>
+    <input type="date" class="form-control" name="PlanDate" id="PlanDate">
+    </div>
 
-            <div class="form-group required">
-                <label for="Shift">巡檢班別</label>
-                <input type="text" class="form-control" name="Shift" id="Shift">
-            </div>
+    <div class="form-group required">
+    <label for="Shift">巡檢班別</label>
+    <input type="text" class="form-control" name="Shift" id="Shift">
+    </div>
 
-            <div class="form-group required">
-                <label for="UserID1">巡檢人員</label>
-                <select type="text" class="form-select" name="UserID1" id="UserID1"></select>
-            </div>
+    <div class="form-group required">
+    <label for="UserID1">巡檢人員</label>
+    <select type="text" class="form-select" name="UserID1" id="UserID1"></select>
+    </div>
 
-            <div class="form-group required">
-                <label for="MaintainUserID">定期保養審核人員</label>
-                <select type="text" class="form-select" name="MaintainUserID" id="MaintainUserID">
-                    <option value="">請選擇</option>
-                </select>
-            </div>
+    <div class="form-group required">
+    <label for="MaintainUserID">定期保養審核人員</label>
+    <select type="text" class="form-select" name="MaintainUserID" id="MaintainUserID">
+    <option value="">請選擇</option>
+    </select>
+    </div>
 
-            <div class="form-group required">
-                <label for="RepairUserID">設備維修審核人員</label>
-                <select type="text" class="form-select" name="RepairUserID" id="RepairUserID">
-                    <option value="">請選擇</option>
-                </select>
-            </div>
-        </form>
-    </div> *@ 
+    <div class="form-group required">
+    <label for="RepairUserID">設備維修審核人員</label>
+    <select type="text" class="form-select" name="RepairUserID" id="RepairUserID">
+    <option value="">請選擇</option>
+    </select>
+    </div>
+    </form>
+    </div> *@
     <div class="edit-area edit-area-small">
         <form class="form" action="">
 
@@ -129,41 +129,44 @@
 <section>
 
     <div class="search-area bg-transparent">
-        <form class="form d-flex flex-column flex-lg-row align-items-stretch align-items-lg-end">
-            <div class="form-group w-auto w-lg-60">
+        <div class="form d-flex flex-column flex-lg-row align-items-stretch align-items-lg-end">
+
+            <form class="form-group w-auto w-lg-60" id="sample-path-form">
                 <label>選取巡檢路線模板</label>
                 <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
                     <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
-                        <select type="text" class="form-select w-lg-229px" name="Area" id="Area">
+                        <select type="text" class="form-select w-lg-229px" name="Area" id="Area" required>
                             <option value="" disabled selected hidden>區域</option>
                         </select>
-                        <select type="text" class="form-select w-lg-108px" name="Floor" id="Floor">
+                        <select type="text" class="form-select w-lg-108px" name="Floor" id="Floor" required>
                             <option value="" disabled selected hidden>樓層</option>
                         </select>
                     </div>
-                    <select type="text" class="form-select w-lg-250px" name="SamplePath" id="SamplePath">
+                    <select type="text" class="form-select w-lg-250px" name="SamplePath" id="SamplePath" required>
                         <option value="" disabled selected hidden>選擇模板</option>
                     </select>
-                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto" id="path-create">新增</button>
+                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto"
+                        id="sample-path-create">新增</button>
                 </div>
-            </div>
+            </form>
 
-            <div class="form-group w-auto w-lg-40">
+            <form class="form-group w-auto w-lg-40" id="path-form">
                 <label>新增其他巡檢路線</label>
                 <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
                     <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
-                        <select type="text" class="form-select w-lg-229px" name="Area" id="Area">
+                        <select type="text" class="form-select w-lg-229px" name="Area" id="Area" required>
                             <option value="" disabled selected hidden>區域</option>
                         </select>
-                        <select type="text" class="form-select w-lg-108px" name="Floor" id="Floor">
+                        <select type="text" class="form-select w-lg-108px" name="Floor" id="Floor" required>
                             <option value="" disabled selected hidden>樓層</option>
                         </select>
                     </div>
-                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto" id="path-create">新增</button>
+                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto"
+                        id="path-create">新增</button>
                 </div>
-            </div>
+            </form>
 
-        </form>
+        </div>
     </div>
 
     <div class="sample-path-area">
@@ -430,6 +433,7 @@
     }
 
     $(async function () {
+        addAreaFloorEvent();
         addButtonEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
         sortRouteModal.autoRouteToggle(true);
@@ -454,21 +458,73 @@
             ]
         });
 
-        await pushSelect("Area", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("path-form #Area", '@Url.Action("Area", "DropDownList")');
+        await pushSelect("sample-path-form #Area", '@Url.Action("Area", "DropDownList")');
     });
+
+    function addAreaFloorEvent() {
+        let PArea = $("#path-form #Area");
+        PArea.on("change", async function () {
+            await pushSelect("path-form #Floor", '@Url.Action("Floor", "DropDownList")' + `?ASN=${PArea.val()}`);
+            $('#path-form #Floor').val('');
+        });
+
+        let SPArea = $("#sample-path-form #Area");
+        SPArea.on("change", async function () {
+            await pushSelect("sample-path-form #Floor", '@Url.Action("Floor", "DropDownList")' + `?ASN=${SPArea.val()}`);
+            $('#sample-path-form #Floor').val('');
+        });
+
+        let SPFloor = $("#sample-path-form #Floor");
+        SPFloor.on("change", async function () {
+            await pushSelect("sample-path-form #PathTilte", '@Url.Action("PathTilte", "DropDownList")' + `?FSN=${SPFloor.val()}`);
+            $('#path-form #PathTilte').val('');
+        });
+    }
 
     function addButtonEvent() {
         $("#back").click(function () {
             history.back();
         })
+        let titleIndex = 1;
         $("#path-create").click(function (e) {
             e.preventDefault();
             console.log("onclick path-create");
-            if ($("form")[0].checkValidity()) {
+            let form = $("#path-form");
+            if (form[0].checkValidity()) {
+                let asn = form.find("#Area").val();
+                let fsn = form.find("#Floor").val();
+                let pt = form.find("#Area option:selected").text() + form.find("#Floor option:selected").text() + titleIndex.toString().padStart(2, "0");
+                titleIndex++;
+                console.log(pt)
 
-                let asn = $("#ASN").val();
-                let fsn = $("#FSN").val();
-                let pt = $("#PathTitle").val();
+                $("#sample-path-name").text(pt);
+                $(".sample-path-draw-area").removeClass("d-none");
+                $("#path-display").removeClass("d-none");
+
+                //$.getJSON('@Url.Action("action","Controller")', function (data) {
+                //fakeData = data;
+                //若非第一次初始化
+                if (viewer) {
+                    viewerUrl = "../" + fakeData.BIMPath;
+                    loadModel();
+                }
+                else {
+                    viewerUrl = "../" + fakeData.BIMPath;
+                    initializeViewer(initializeDrawer);
+                }
+                //})
+            }
+        })
+        $("#sample-path-create").click(function (e) {
+            e.preventDefault();
+            console.log("onclick sample-path-create");
+            let form = $("#sample-path-form");
+            if (form[0].checkValidity()) {
+
+                let asn = form.find("#Area").val();
+                let fsn = form.find("#Floor").val();
+                let pt = form.find("#PathTitle").val();
 
                 $("#sample-path-name").text(pt);
                 $(".sample-path-draw-area").removeClass("d-none");
@@ -499,12 +555,10 @@
             $(this).blur();
             controlToggle("path-eraser", ForgeDraw.Control.ERASER);
         })
-
         $("#path-device").click(function () {
             $(this).blur();
             controlToggle("path-device", ForgeDraw.Control.DEVICE);
         })
-
         $("#path-reload").click(function () {
             $(this).blur();
             ForgeDraw.removeAllData();
@@ -552,14 +606,14 @@
         console.log(data);
 
         /* $.ajax({
-                url: '@Url.Action("aaa", "bbb")',
-                data: JSON.stringify(data),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-                }) */
+            url: '@Url.Action("aaa", "bbb")',
+            data: JSON.stringify(data),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        }) */
 
         function onSuccess(res) {
             console.log("Success");

@@ -13,14 +13,12 @@
                 <option value="">請選擇</option>
             </select>
         </div>
-        <input type="text" id="Area" name="Area" hidden>
         <div class="form-group required">
             <label for="FSN">樓層</label>
             <select class="form-select" name="FSN" id="FSN" required>
                 <option value="">請選擇</option>
             </select>
         </div>
-        <input type="text" id="Floor" name="Floor" hidden>
         <div class="form-group required">
             <label for="PathTitle">巡檢路線模板</label>
             <input type="text" class="form-control" name="PathTitle" id="PathTitle">
@@ -292,30 +290,11 @@
     });
 
     function addAreaFloorEvent() {
-        var areas = document.getElementById("ASN");
-        areas.addEventListener("change", async function () {
+        let ASN = document.getElementById("ASN");
+        ASN.addEventListener("change", async function () {
             console.log("areas change")
-            let url = '@Url.Action("Floor", "DropDownList")';
-            if (areas.value != "") {
-                $('#Area').val($("#ASN option:selected").text());
-            }
-            else {
-                $('#Area').val('');
-            }
-            url = url + `?ASN=${areas.value}`;
-
-            await pushSelect("FSN", url);
-
+            await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
             $('#Floor').val('');
-        });
-        var FSNs = document.getElementById("FSN");
-        FSNs.addEventListener("change", function () {
-            if (FSNs.value != "") {
-                $('#Floor').val($("#FSN option:selected").text());
-            }
-            else {
-                $('#Floor').val('');
-            }
         });
     }
 
