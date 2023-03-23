@@ -14,6 +14,7 @@ using System.Web.Http;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Ajax.Utilities;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -69,15 +70,58 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 新增巡檢路線模板api
+        
         [System.Web.Mvc.HttpPost]
         public ActionResult CreateSamplePath(PathSampleViewModel.PathSampleInfo model)
         {
+            //新增PathSample 巡檢路線模板基本資訊
+            PathSample ps = new PathSample();
+            var newestPSSN = db.PathSample.OrderByDescending(x => x.PSSN).Select(x => x.PSSN).FirstOrDefault();
+            if(newestPSSN != null)
+            {
+                var PSSN = Convert.ToInt32(newestPSSN) + 1;
+                ps.PSSN = PSSN.ToString().PadLeft(6, '0');
+            }
+            else
+            {
+                ps.PSSN = "000001";
+            }
+            ps.PathTitle = model.PathSample.PathTitle;
+            ps.FSN = model.PathSample.FSN;
+            db.PathSample.AddOrUpdate(ps);
+            db.SaveChanges();
+            //新增PathSampleOrder 巡檢路線模板順序
+            int count_pso = 1;
+            foreach (var item in model.PathSampleOrder)
+            {
+                PathSampleOrder po = new PathSampleOrder();
+                po.PSSN = ps.PSSN;
+                po.BeaconID = item;
+                po.FPSSN = ps.PSSN + "_" + count_pso.ToString().PadLeft(2, '0');
+
+                db.PathSampleOrder.Add(po);
+                db.SaveChanges();
+                count_pso++;
+            }
+            //新增DrawPathSample 巡檢路線模板繪製順序
+            int count_dps = 1;
+            foreach (var item in model.PathSampleRecord)
+            {
+                DrawPathSample dps = new DrawPathSample();
+                dps.PSSN = ps.PSSN;
+                dps.LocationX = Convert.ToDecimal(item.LocationX);
+                dps.LocationY = Convert.ToDecimal(item.LocationY);
+                dps.SISN = ps.PSSN + "_" + count_dps.ToString().PadLeft(2, '0');
+
+                db.DrawPathSample.Add(dps);
+                db.SaveChanges();
+                count_dps++;
+            }
 
             JObject jo = new JObject();
             jo.Add("ResponseCode", 0);
             string result = JsonConvert.SerializeObject(jo);
-            //return Content(result, "application/json");
-            return Content("");
+            return Content(result, "application/json");
         }
         #endregion
 
