@@ -1575,6 +1575,7 @@
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
     <Folder Include="Views\EquipmentInfo_Management\" />
+    <Folder Include="Views\SamplePath_Managements\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

@@ -9,7 +9,7 @@ using System.Web.Mvc;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Models;
 using System.Data.Entity.Migrations;
-using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
+//using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
 using System.Web.Http;
 using System.IO;
 using System.Text;
@@ -70,23 +70,14 @@ namespace MinSheng_MIS.Controllers
 
         #region 新增巡檢路線模板api
         [System.Web.Mvc.HttpPost]
-        public ActionResult CreateSamplePath() //[FromBody]PathSampleInfo pathsample
+        public ActionResult CreateSamplePath(PathSampleViewModel.PathSampleInfo model)
         {
-            
-            var c = Request.Headers;
-            var a = Request.Form;
-            var b = Request.ContentEncoding;
+
             JObject jo = new JObject();
             jo.Add("ResponseCode", 0);
             string result = JsonConvert.SerializeObject(jo);
             //return Content(result, "application/json");
             return Content("");
-        }
-        [System.Web.Http.HttpPost]
-        public async Task<string> InfoUpload([FromBody] PathSampleInfo pathsample)
-        {
-            string result = JsonConvert.SerializeObject(pathsample);
-            return result;
         }
         #endregion
 
