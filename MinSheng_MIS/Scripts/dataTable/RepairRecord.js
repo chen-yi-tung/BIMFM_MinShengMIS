@@ -66,21 +66,21 @@
             id: "InspectionPlanRepair",
             inner: createTableInner(data.InspectionPlanRepair, sn.InspectionPlanRepair),
         }),
-        data.RepairSupplementaryInfo &&
-        createAccordion({
-            title: "補件資料",
-            id: `RepairSupplementaryInfo`,
-            sn: sn.RepairSupplementaryInfo,
-            data: data.RepairSupplementaryInfo,
-            itemTitleKey: "SupplementaryDate"
-        }),
-        data.RepairAuditInfo &&
-        createAccordion({
-            title: "審核資料",
-            id: `RepairAuditInfo`,
-            sn: sn.RepairAuditInfo,
-            data: data.RepairAuditInfo,
-            itemTitleKey: "AuditDate"
-        }),
+        data.RepairSupplementaryInfo ?
+            createAccordion({
+                title: "補件資料",
+                id: `RepairSupplementaryInfo`,
+                sn: sn.RepairSupplementaryInfo,
+                data: data.RepairSupplementaryInfo,
+                itemTitleKey: "SupplementaryDate"
+            }) : "",
+        data.RepairAuditInfo ?
+            createAccordion({
+                title: "審核資料",
+                id: `RepairAuditInfo`,
+                sn: sn.RepairAuditInfo,
+                data: data.RepairAuditInfo,
+                itemTitleKey: "AuditDate"
+            }) : "",
     );
 }
