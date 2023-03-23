@@ -383,11 +383,11 @@ namespace MinSheng_MIS.Models.ViewModels
         /// </summary>
         /// <param name="Path"> client端的圖片路徑 </param>
         /// <returns></returns>
-        public string UploadImg(HttpPostedFileBase file, HttpServerUtilityBase Sev,string prasn) 
+        public string UploadImg(HttpPostedFileBase file, HttpServerUtilityBase Sev) 
         {
             try
             {
-                string fileSavedPath = "~/DownFile/";
+                string fileSavedPath = "~/AllImage/";
                 if (!Directory.Exists(Sev.MapPath(fileSavedPath)))
                 {
                     Directory.CreateDirectory(Sev.MapPath(fileSavedPath));
@@ -401,11 +401,41 @@ namespace MinSheng_MIS.Models.ViewModels
                 file.SaveAs(fullFilePath);
                 return fileSavedPath + newFileName;
             }
-            catch (Exception) 
+            catch (Exception ex)
             {
-                return "";
+                return ex.Message;
             }
         }
+
+        /// <summary>
+        /// 上傳檔案，並回傳Server端儲存路徑
+        /// </summary>
+        /// <param name="Path"> client端的檔案路徑 </param>
+        /// <returns></returns>
+        public string UploadFile(HttpPostedFileBase file, HttpServerUtilityBase Sev, string prasn)
+        {
+            try
+            {
+                string fileSavedPath = "~/AllFile/";
+                if (!Directory.Exists(Sev.MapPath(fileSavedPath)))
+                {
+                    Directory.CreateDirectory(Sev.MapPath(fileSavedPath));
+                }
+
+                string newFileName = string.Concat(
+                DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss-ff"),
+                Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
+
+                string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
+                file.SaveAs(fullFilePath);
+                return fileSavedPath + newFileName;
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
 
         public string CreateAuditData(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev, List<HttpPostedFileBase> fileList)
         {
@@ -477,7 +507,7 @@ namespace MinSheng_MIS.Models.ViewModels
             foreach (var item in fileList)
             {
                 //上傳照片 都傳完之後才做新增
-                string result = UploadImg(item, Sev, prasn); //做上傳動作，並回傳儲存路徑
+                string result = UploadImg(item, Sev); //做上傳動作，並回傳儲存路徑
                 if (result != "")
                 {
                     ImagePath_Server.Add(result);
@@ -530,10 +560,10 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 allPath.Remove(allPath.Length - 1); //移除最後一個'，'
             }
-
+            var dic = Surface.InspectionPlanRepairState();
             var SD = new SuppleData() //下面補件資料的所有資料
             {
-                RepairState = IPR.RepairState,
+                RepairState = dic[IPR.RepairState],
                 MyName = Name,
                 RepairDate = IPR.RepairDate?.ToString("yyyy/MM/dd HH:mm:ss"),
                 RepairContent = IPR.RepairContent,
@@ -545,7 +575,7 @@ namespace MinSheng_MIS.Models.ViewModels
             return result;
         }
 
-        public string UpdateSuppleData(System.Web.Mvc.FormCollection form) //提交補件資料，要更新和新建資料Repair Supplementary Info
+        public string UpdateSuppleData(System.Web.Mvc.FormCollection form, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList,List<HttpPostedFileBase> fileList) //提交補件資料，要更新和新建資料Repair Supplementary Info
         {
             try
             {
@@ -553,10 +583,32 @@ namespace MinSheng_MIS.Models.ViewModels
                 IPR.RepairState = "3";
                 IPR.RepairContent = form["RepairContent"].ToString();
                 db.InspectionPlanRepair.AddOrUpdate(IPR);
+                db.RepairCompletionImage.RemoveRange(db.RepairCompletionImage.Where(x => x.IPRSN == form["IPRSN"].ToString())); //先移除所有維修照片再新增
+                db.SaveChanges();
+                List<string> ImagePath_Server = new List<string>();
+                foreach (var item in imgList)
+                {
+                    string result = UploadImg(item, Sev); //做上傳動作，並回傳儲存路徑
+                    if (result != "")
+                    {
+                        ImagePath_Server.Add(result);
+                    }
+                    else
+                    {
+                        return "上傳過程出錯!"; //新增出錯!!
+                    }
+                }
+                foreach (var item in ImagePath_Server)
+                {
+                    //db存
+                }
                 var EP = db.EquipmentReportForm.Find(IPR.RSN);
                 EP.ReportState = "4";
                 db.EquipmentReportForm.AddOrUpdate(EP);
                 db.SaveChanges();
+
+                //補件檔案
+
 
                 var GetPRSN = db.RepairSupplementaryInfo.Where(x => x.PRSN.Contains(form["IPRSN"].ToString())).OrderByDescending(x => x.PRSN).Select(x => x.PRSN).FirstOrDefault();
                 //規則 :   PRSN = IPRSN + _序號

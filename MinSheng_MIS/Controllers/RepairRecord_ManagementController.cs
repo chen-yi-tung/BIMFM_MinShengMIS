@@ -98,8 +98,17 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Supplement_Submit(FormCollection formCollection) //下方補件資料'提交'
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
-
-            string result = repairRecord_Management_ReadViewModel.UpdateSuppleData(formCollection);
+            List<HttpPostedFileBase> imgList = new List<HttpPostedFileBase>();
+            foreach (string item in Request.Files)
+            {
+                imgList.Add(Request.Files[item] as HttpPostedFileBase);
+            }
+            List<HttpPostedFileBase> fileList = new List<HttpPostedFileBase>();
+            foreach (string item in Request.Files)
+            {
+                fileList.Add(Request.Files[item] as HttpPostedFileBase);
+            }
+            string result = repairRecord_Management_ReadViewModel.UpdateSuppleData(formCollection,Server, imgList, fileList);
             return Content(result, "application/json");
         }
         #endregion
