@@ -121,7 +121,7 @@
           <Property Name="Brand" Type="nvarchar" MaxLength="50" />
           <Property Name="InstallDate" Type="datetime" />
           <Property Name="GuaranteeDeadline" Type="datetime" />
-          <Property Name="DBID" Type="nvarchar(max)" />
+          <Property Name="DBID" Type="int" />
           <Property Name="RFID" Type="nvarchar(max)" />
           <Property Name="EState" Type="char" MaxLength="1" />
           <Property Name="FSN" Type="nvarchar" MaxLength="5" />
@@ -280,7 +280,7 @@
           <Property Name="AuditUserID" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="AuditDate" Type="datetime" Nullable="false" />
           <Property Name="AuditMemo" Type="nvarchar" MaxLength="200" />
-          <Property Name="AuditResult" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="AuditResult" Type="nchar" MaxLength="1" Nullable="false" />
           <Property Name="IsBuffer" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="MaintainCompletionImage">
@@ -1260,7 +1260,7 @@
           <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="InstallDate" Type="DateTime" Precision="3" />
           <Property Name="GuaranteeDeadline" Type="DateTime" Precision="3" />
-          <Property Name="DBID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DBID" Type="Int32" />
           <Property Name="RFID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="EState" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="FSN" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
@@ -1451,7 +1451,7 @@
           <Property Name="AuditUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="AuditDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="AuditMemo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="AuditResult" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="AuditResult" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="true" />
           <Property Name="IsBuffer" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="InspectionPlanMaintain" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainAuditInfo_InspectionPlanMaintain" FromRole="MaintainAuditInfo" ToRole="InspectionPlanMaintain" />
           <NavigationProperty Name="MaintainAuditImage" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainAuditImage_MaintainAuditInfo" FromRole="MaintainAuditInfo" ToRole="MaintainAuditImage" />

@@ -72,11 +72,12 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 巡檢維修紀錄補件
-        public ActionResult Supplement()
+        public ActionResult Supplement(string id)
         {
+            ViewBag.id = id;
             return View();
         }
-
+        [HttpGet]
         public ActionResult SupplementBody(string id) //[補件]的顯示資料與[詳情]都相同除了沒有[維修資料]
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
@@ -84,21 +85,21 @@ namespace MinSheng_MIS.Controllers
             string result = repairRecord_Management_ReadViewModel.GetJsonForRead(id);
             return Content(result, "application/json");
         }
-
+        [HttpGet]
         public ActionResult Supplement_GetData(string id) //取得下方補件資料
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
 
-            string result = repairRecord_Management_ReadViewModel.GetJsonForRead(id);
+            string result = repairRecord_Management_ReadViewModel.GetSupplementEditData(id);
             return Content(result, "application/json");
         }
 
-        public ActionResult Supplement_Submit(FormCollection formCollection) //下方補件資料提交
+        [HttpPost]
+        public ActionResult Supplement_Submit(FormCollection formCollection) //下方補件資料'提交'
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
-            string dd = ""; //隨便塞的
 
-            string result = repairRecord_Management_ReadViewModel.GetJsonForRead(dd);
+            string result = repairRecord_Management_ReadViewModel.UpdateSuppleData(formCollection);
             return Content(result, "application/json");
         }
         #endregion

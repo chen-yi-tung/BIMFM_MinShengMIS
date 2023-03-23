@@ -502,13 +502,97 @@ namespace MinSheng_MIS.Models.ViewModels
             return "成功!";
         }
 
+        public class SuppleData
+        { 
+            public string RepairState { get; set; }
+            public string MyName { get; set; }
+            public string RepairDate { get; set; }
+            public string RepairContent { get; set; }
+            public string ImgPath { get; set; }
+            //public string PRSN { get; set; }
+            public string IPRSN { get; set; }
+            //public string SupplementaryDate { get; set; }
+        }
+
         public string GetSupplementEditData(string IPRSN) //取得"補件"下方編輯區資料，提供給前端做顯示
         {
-            var AUID = db.RepairAuditInfo.Where(x => x.IPRSN == IPRSN).FirstOrDefault();
-            var AUName = db.AspNetUsers.Where(x => x.UserName == AUID.AuditUserID).Select(x => x.MyName).FirstOrDefault();
-            
-            
-            return "";
+            var IPR = db.InspectionPlanRepair.Find(IPRSN);
+            var Name = db.AspNetUsers.Where(x => x.UserName == IPR.RepairUserID).Select(x => x.MyName).FirstOrDefault();
+            var RSI = db.RepairSupplementaryInfo.Where(x => x.IPRSN == IPRSN).FirstOrDefault();
+            var RCI = db.RepairCompletionImage.Where(x => x.IPRSN == IPRSN).Select(x => x.ImgPath);
+
+            string allPath = "";
+            foreach (var path in RCI)
+            {
+                allPath += path + ",";
+            }
+            if (allPath.Length > 0)
+            {
+                allPath.Remove(allPath.Length - 1); //移除最後一個'，'
+            }
+
+            var SD = new SuppleData() //下面補件資料的所有資料
+            {
+                RepairState = IPR.RepairState,
+                MyName = Name,
+                RepairDate = IPR.RepairDate?.ToString("yyyy/MM/dd HH:mm:ss"),
+                RepairContent = IPR.RepairContent,
+                ImgPath = allPath,
+                IPRSN = IPRSN
+            };
+
+            string result = JsonConvert.SerializeObject(SD);
+            return result;
+        }
+
+        public string UpdateSuppleData(System.Web.Mvc.FormCollection form) //提交補件資料，要更新和新建資料Repair Supplementary Info
+        {
+            try
+            {
+                var IPR = db.InspectionPlanRepair.Find(form["IPRSN"].ToString());
+                IPR.RepairState = "3";
+                IPR.RepairContent = form["RepairContent"].ToString();
+                db.InspectionPlanRepair.AddOrUpdate(IPR);
+                var EP = db.EquipmentReportForm.Find(IPR.RSN);
+                EP.ReportState = "4";
+                db.EquipmentReportForm.AddOrUpdate(EP);
+                db.SaveChanges();
+
+                var GetPRSN = db.RepairSupplementaryInfo.Where(x => x.PRSN.Contains(form["IPRSN"].ToString())).OrderByDescending(x => x.PRSN).Select(x => x.PRSN).FirstOrDefault();
+                //規則 :   PRSN = IPRSN + _序號
+                //取出最新的一筆資料，算出下一筆要新增的序號
+                string NewPRSN = ""; //新增的序號
+                if (GetPRSN.Count() == 0) //如果沒有任何資料
+                {
+                    NewPRSN = form["IPRSN"].ToString() + "_01";
+                }
+                else //有資料
+                {
+                    int subIndex = form["IPRSN"].ToString().Length; //抓取IPRSN長度
+                    int Nowindex = Int32.Parse(GetPRSN.Substring(subIndex + 1)); //擷取現在最新資料後面數字部分
+                    Nowindex++;
+                    string Newindex = Nowindex.ToString();
+                    if (Newindex.Length == 1) //如果是個位數前面要補0
+                    {
+                        Newindex = "0" + Newindex;
+                    }
+                    NewPRSN = form["IPRSN"].ToString() + Newindex; //組起來新的PRSN
+                }
+                var RSI = new Models.RepairSupplementaryInfo()
+                {
+                    PRSN = NewPRSN,
+                    IPRSN = form["IPRSN"].ToString(),
+                    SupplementaryUserID = form["SupplementaryUserID"].ToString(),
+                    SupplementaryDate = DateTime.Now,
+                    SupplementaryContent = form["SupplementaryContent"].ToString()
+                };
+                db.RepairSupplementaryInfo.Add(RSI);
+                return "提交成功!";
+            }
+            catch (Exception ex) 
+            {
+                return ex.Message;
+            }
         }
     }
 }
