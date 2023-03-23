@@ -1,4 +1,4 @@
-﻿//import "https://pixijs.download/release/pixi.js";
+﻿//import "https://pixijs.download/v7.2.2/pixi.js";
 
 var ForgeDraw = (function (e) {
     var app;
@@ -29,6 +29,22 @@ var ForgeDraw = (function (e) {
     var currentControl = Control.DRAW;
 
     /* event */
+    /**
+     * @typedef EventMode
+     * @property {string} NONE none
+     * @property {string} PASSIVE passive
+     * @property {string} AUTO auto
+     * @property {string} STATIC static
+     * @property {string} DYNAMIC dynamic
+     */
+    const EventMode = Object.freeze({
+        NONE: "none",
+        PASSIVE: "passive",
+        AUTO: "auto",
+        STATIC: "static",
+        DYNAMIC: "dynamic"
+    })
+
     class LineDataChangeEvent {
         constructor(detail) {
             return new CustomEvent('fd.linedata.change', { 'detail': detail })
@@ -77,7 +93,7 @@ var ForgeDraw = (function (e) {
             hoverWidth: 8,
             strokeWeight: 2,
             color: Colors.Middle,
-            interactive: true,
+            eventMode: EventMode.STATIC,
             contextMenu: {
                 html: `<div class="contextMenu"><ul></ul></div>`,
                 button: [
@@ -104,7 +120,7 @@ var ForgeDraw = (function (e) {
             strokeWeight: 3,
             strokeColor: Colors.Line,
             color: Colors.BlueTooth,
-            interactive: true,
+            eventMode: EventMode.STATIC,
             nearestLine: false,
             label: true,
             contextMenu: {
@@ -133,7 +149,7 @@ var ForgeDraw = (function (e) {
         line: {
             strokeWeight: 6,
             color: Colors.Line,
-            interactive: true
+            eventMode: EventMode.STATIC
         }
     };
 
@@ -358,13 +374,13 @@ var ForgeDraw = (function (e) {
             this.create();
         }
         /**
-         * @param {Boolean} b
+         * @param {EventMode} b
          */
-        set interactive(b) {
-            this.options.interactive = b;
-            this.container.interactive = this.options.interactive;
+        set eventMode(b) {
+            this.options.eventMode = b;
+            this.container.eventMode = this.options.eventMode;
         }
-        get interactive() { return this.container.interactive }
+        get eventMode() { return this.container.eventMode }
 
         get index() { return lines.indexOf(this) }
 
@@ -375,7 +391,7 @@ var ForgeDraw = (function (e) {
                 .lineTo(this.end.x, this.end.y);
 
             this.container.addChild(this.graphics);
-            this.container.interactive = this.options.interactive;
+            this.container.eventMode = this.options.eventMode;
 
             layer.line.addChild(this.container);
         }
@@ -421,13 +437,13 @@ var ForgeDraw = (function (e) {
         get position() { return this.container.position }
 
         /**
-         * @param {Boolean} b
+         * @param {EventMode} b
          */
-        set interactive(b) {
-            this.options.interactive = b;
-            this.container.interactive = this.options.interactive;
+        set eventMode(b) {
+            this.options.eventMode = b;
+            this.container.eventMode = this.options.eventMode;
         }
-        get interactive() { return this.container.interactive }
+        get eventMode() { return this.container.eventMode }
 
         get index() { return points.indexOf(this); }
 
@@ -465,7 +481,7 @@ var ForgeDraw = (function (e) {
 
             this.graphics.tint = this.options.color;
 
-            this.container.interactive = this.options.interactive;
+            this.container.eventMode = this.options.eventMode;
             //this.container.hitArea = this.calcHitArea();
             this.container.position = this.position;
             this.container.addChild(this.graphics, this.over, this.hitAreaRect);
@@ -556,7 +572,7 @@ var ForgeDraw = (function (e) {
 
                 self.on("pointerout", self.onOutEvent);
 
-                self.interactive = true;
+                self.eventMode = EventMode.STATIC;
             }
             this.onUpEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onUpEvent`);
@@ -622,13 +638,13 @@ var ForgeDraw = (function (e) {
         }
 
         /**
-         * @param {Boolean} b
+         * @param {EventMode} b
          */
-        set interactive(b) {
-            this.options.interactive = b;
-            this.graphics.interactive = this.options.interactive;
+        set eventMode(b) {
+            this.options.eventMode = b;
+            this.graphics.eventMode = this.options.eventMode;
         }
-        get interactive() { return this.graphics.interactive }
+        get eventMode() { return this.graphics.eventMode }
 
         get index() { return devices.indexOf(this); }
 
@@ -683,7 +699,7 @@ var ForgeDraw = (function (e) {
             this.graphics.position = this.position;
 
             this.line = new PIXI.Graphics();
-            this.graphics.interactive = this.options.interactive;
+            this.graphics.eventMode = this.options.eventMode;
             this.container.addChild(this.line, this.graphics);
 
             if (this.options.label && this.name) {
@@ -841,7 +857,7 @@ var ForgeDraw = (function (e) {
                 .endFill();
             this.container.addChild(g);
 
-            this.container.interactive = true;
+            this.container.eventMode = EventMode.STATIC;
             this.container.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height);
             let movingPoint = undefined;
             let movingLine = undefined;
@@ -852,12 +868,12 @@ var ForgeDraw = (function (e) {
                 console.log(`${self.name} => onDownEvent`, pos);
                 switch (getControl()) {
                     case Control.DRAW:
-                        movingPoint = new Point(pos, { interactive: false });
+                        movingPoint = new Point(pos, { eventMode: EventMode.AUTO });
                         if (lineData.length == 0) {
                             movingPoint.color = Colors.Start;
                         }
                         else {
-                            movingLine = new Line(lineData.at(-1).position, pos, { interactive: false });
+                            movingLine = new Line(lineData.at(-1).position, pos, { eventMode: EventMode.AUTO });
                             movingPoint.color = Colors.End;
                         }
 
@@ -873,7 +889,7 @@ var ForgeDraw = (function (e) {
                         //todo
                         movingPoint = new Point(pos, {
                             color: Colors.DefaultDevice,
-                            interactive: false,
+                            eventMode: EventMode.AUTO,
                             label: false,
                         });
                         self.on("pointermove", self.onDeviceMoveEvent);
@@ -906,11 +922,11 @@ var ForgeDraw = (function (e) {
                 }
                 lineData.push(data);
                 view.dispatchEvent(new LineDataChangeEvent(data));
-                movingPoint.interactive = true;
+                movingPoint.eventMode = EventMode.STATIC;
                 points.push(movingPoint);
 
                 if (lineData.length !== 1) {
-                    movingLine.interactive = true;
+                    movingLine.eventMode = EventMode.STATIC;
                     lines.push(movingLine);
                 }
 
@@ -996,6 +1012,7 @@ var ForgeDraw = (function (e) {
         "setDrawSetting": setDrawSetting,
         "setForgeViewer": setForgeViewer,
         "Control": Control,
+        "EventMode":EventMode,
         "layer": layer,
         "lineData": lineData,
         "points": points,
