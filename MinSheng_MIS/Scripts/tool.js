@@ -130,8 +130,8 @@ function filterIt(arr, objKey, searchKey) {
     return arr.filter(obj => obj[objKey] == searchKey);
 }
 
-function getQueryParams() {
-    const searchParams = $("form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
+function getQueryParams(selector = null) {
+    const searchParams = $(selector ?? "form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
     console.log(searchParams)
     let queryParams = searchParams.reduce((total, c) => {
         total[c] = $(`#${c}`).val()

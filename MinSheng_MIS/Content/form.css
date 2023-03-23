@@ -102,7 +102,7 @@
     left: -10px;
 }
 
-.edit-area .form label {
+.edit-area label {
     position: relative;
     grid-column-start: 1;
     color: white;
@@ -110,14 +110,14 @@
     margin-bottom: 0.5rem;
 }
 
-.edit-area .form .form-control,
-.edit-area .form .form-select {
+.edit-area .form-control,
+.edit-area .form-select {
     grid-column-start: 2;
     border-radius: 0;
     color: #7E7E7E;
 }
 
-.edit-area .form .form-check-input[type=radio]:checked{
+.edit-area .form-check-input[type=radio]:checked{
     border-width: 2px;
     border-color: #fff;
 }
@@ -185,6 +185,9 @@
     .search-area .form-group {
         width: calc(100%);
     }
+    .search-area .form-group.f-3 {
+        width: 100%;
+    }
 
     .edit-img-area {
         gap: 2em;
@@ -199,6 +202,9 @@
     .search-area .form-group {
         width: calc(100% / 2);
     }
+    .search-area .form-group.f-3 {
+        width: 100%;
+    }
 
     .edit-img-area {
         gap: 3em;
@@ -208,6 +214,9 @@
 @media (min-width: 992px) {
     .search-area .form-group {
         width: calc(100% / 3);
+    }
+    .search-area .form-group.f-3 {
+        width: calc(100% / 3 * 3);
     }
 
     .edit-area.edit-area-small {
@@ -239,6 +248,9 @@
     .search-area .form-group {
         width: calc(100% / 4);
     }
+    .search-area .form-group.f-3 {
+        width: calc(100% / 4 * 3);
+    }
 
     .edit-area.edit-area-middle {
         width: 1060px;
@@ -255,16 +267,26 @@
     .search-area .form-group {
         width: calc(100% / 4);
     }
+    .search-area .form-group.f-3 {
+        width: calc(100% / 4 * 3);
+    }
 }
 
 @media (min-width: 1600px) {
     .search-area .form-group {
         width: calc(100% / 5);
     }
+    .search-area .form-group.f-3 {
+        width: calc(100% / 5 * 3);
+    }
 }
 
 @media (min-width: 1800px) {
     .search-area .form-group {
         width: calc(100% / 6);
+    }
+
+    .search-area .form-group.f-3 {
+        width: calc(100% / 6 * 3);
     }
 }

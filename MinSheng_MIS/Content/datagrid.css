@@ -33,6 +33,7 @@
 
 .datagrid-sort-icon {
     opacity: 0.5;
+    margin-left: 0.125rem;
 }
 
 .datagrid-sort-asc .datagrid-sort-icon,

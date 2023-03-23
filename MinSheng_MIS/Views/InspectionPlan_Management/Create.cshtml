@@ -24,6 +24,28 @@
             width: 250px !important;
         }
     }
+
+    @@media (min-width: 1200px) {
+        .w-xl-60 {
+            width: 60% !important;
+        }
+
+        .w-xl-40 {
+            width: 40% !important;
+        }
+
+        .w-xl-108px {
+            width: 108px !important;
+        }
+
+        .w-xl-229px {
+            width: 229px !important;
+        }
+
+        .w-xl-250px {
+            width: 250px !important;
+        }
+    }
 </style>
 
 @Styles.Render("~/Content/easyui/themes/default/easyui.css")
@@ -36,113 +58,78 @@
 <h2>@ViewBag.Title</h2>
 
 <section>
-    @* <div class="search-area bg-transparent">
-    <form class="form">
-    <div class="form-group required">
-    <label for="IPName">巡檢計畫名稱</label>
-    <input type="text" class="form-control" name="IPName" id="IPName">
-    </div>
-
-    <div class="form-group required">
-    <label for="PlanDate">巡檢日期</label>
-    <input type="date" class="form-control" name="PlanDate" id="PlanDate">
-    </div>
-
-    <div class="form-group required">
-    <label for="Shift">巡檢班別</label>
-    <select type="text" class="form-select" name="Shift" id="Shift" required>
-    <option value="">請選擇</option>
-    </select>
-    </div>
-
-    <div class="form-group required">
-    <label for="UserID1">巡檢人員</label>
-    <select type="text" class="form-select" name="UserID1" id="UserID1"></select>
-    </div>
-
-    <div class="form-group required">
-    <label for="MaintainUserID">定期保養審核人員</label>
-    <select type="text" class="form-select" name="MaintainUserID" id="MaintainUserID">
-    <option value="">請選擇</option>
-    </select>
-    </div>
-
-    <div class="form-group required">
-    <label for="RepairUserID">設備維修審核人員</label>
-    <select type="text" class="form-select" name="RepairUserID" id="RepairUserID">
-    <option value="">請選擇</option>
-    </select>
-    </div>
-    </form>
-    </div> *@
-    <div class="edit-area edit-area-small">
-        <form class="form" action="">
-
-            <div class="form-group d-lg-contents required">
+    <div class="search-area bg-transparent">
+        <form class="form">
+            <div class="form-group required">
                 <label for="IPName">巡檢計畫名稱</label>
-                <input type="text" class="form-control" name="IPName" id="IPName" required>
+                <input type="text" class="form-control" name="IPName" id="IPName">
             </div>
-            <div class="form-group d-lg-contents required">
-                <label for="SubSystem">巡檢日期</label>
-                <input type="date" class="form-control" name="PlanDate" id="PlanDate" required>
+
+            <div class="form-group required">
+                <label for="PlanDate">巡檢日期</label>
+                <input type="date" class="form-control" name="PlanDate" id="PlanDate">
             </div>
-            <div class="form-group d-lg-contents required">
+
+            <div class="form-group required">
                 <label for="Shift">巡檢班別</label>
                 <select type="text" class="form-select" name="Shift" id="Shift" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
-            <div class="form-group d-lg-contents required">
-                <label for="UserID" class="align-self-start">巡檢人員</label>
-                <select type="text" class="form-select w-lg-250px" name="UserID" id="UserID" style="width:100%">
-                </select>
-            </div>
 
-            <div class="form-group d-lg-contents">
-                <label for="MaintainUserID">定期保養審核人員</label>
-                <select type="text" class="form-select" name="MaintainUserID" id="MaintainUserID">
-                    <option value="">請選擇</option>
-                </select>
-            </div>
-
-            <div class="form-group d-lg-contents">
-                <label for="RepairUserID">設備維修審核人員</label>
-                <select type="text" class="form-select" name="RepairUserID" id="RepairUserID">
-                    <option value="">請選擇</option>
-                </select>
+            <div class="form-group required f-3">
+                <label for="UserID">巡檢人員</label>
+                <select type="text" class="form-select" name="UserID" id="UserID"></select>
             </div>
         </form>
     </div>
 
     <div class="sample-path-area">
         <h3 class="sample-path-title">定期保養設備</h3>
-        <div class="edit-area">
+        <div class="edit-area flex-lg-row justify-content-start" style="gap: 1em;">
+            <div class="form-group required d-flex flex-column flex-lg-row align-items-start align-items-lg-center px-4 w-lg-auto"
+                style="gap:0 1em; width:100%">
+                <label for="MaintainUserID" class="flex-shrink-0">審核人員</label>
+                <select type="text" class="form-select w-lg-250px" name="MaintainUserID" id="MaintainUserID"
+                    style="width: 100%;">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
             <table id="Maintain-datagrid"></table>
-            <div class="edit-button-area mt-0">
+            <div class="edit-button-area m-0 w-auto">
                 <button class="btn btn-search" id="Maintain-create" data-bs-toggle="modal"
-                    data-bs-target="#DatagridModal">新增定期保養設備</button>
+                    data-bs-target="#DatagridModal-Maintain">新增定期保養設備</button>
                 <button class="btn btn-delete d-none" id="Maintain-delete">刪除</button>
             </div>
         </div>
     </div>
-    <div class="sample-path-area">
+    <div class="sample-path-area mt-4">
         <h3 class="sample-path-title">維修設備</h3>
-        <div class="edit-area">
-            <table id="Report-datagrid"></table>
-            <div class="edit-button-area mt-0">
-                <button class="btn btn-search" id="Report-create">新增維修設備</button>
-                <button class="btn btn-delete d-none" id="Report-delete">刪除</button>
+        <div class="edit-area flex-lg-row justify-content-start" style="gap: 1em;">
+            <div class="form-group required d-flex flex-column flex-lg-row align-items-start align-items-lg-center px-4 w-lg-auto"
+                style="gap:0 1em; width:100%">
+                <label for="RepairUserID" class="flex-shrink-0">審核人員</label>
+                <select type="text" class="form-select w-lg-250px" name="RepairUserID" id="RepairUserID"
+                    style="width: 100%;">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+            <table id="Repair-datagrid"></table>
+            <div class="edit-button-area m-0 w-auto">
+                <button class="btn btn-search" id="Repair-create" data-bs-toggle="modal"
+                    data-bs-target="#DatagridModal-Repair">新增維修設備</button>
+                <button class="btn btn-delete d-none" id="Repair-delete">刪除</button>
             </div>
         </div>
     </div>
 </section>
 
-<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal">
-    <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal-Maintain">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
                 <h2>新增定期保養單</h2>
-                <div class="search-area">
+                <div class="search-area mb-3">
                     <form class="form" method="post" action="" id="ReportManagementForm">
 
                         <div class="form-group">
@@ -181,12 +168,16 @@
 
                         <div class="form-group">
                             <label for="EState">設備狀態</label>
-                            <input class="form-control" id="EState" name="EState" type="text" />
+                            <select class="form-select" name="EState" id="EState">
+                                <option value="">請選擇</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
                             <label for="StockState">庫存狀態</label>
-                            <input class="form-control" id="StockState" name="StockState" type="text" />
+                            <select class="form-select" name="StockState" id="StockState">
+                                <option value="">請選擇</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -209,7 +200,7 @@
 
                         <div class="button-group">
                             <button type="button" class="btn btn-search" id="search">查詢</button>
-                            <button type="button" class="btn btn-clear" id="clear">清除</button>
+                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
                         </div>
                     </form>
                 </div>
@@ -228,16 +219,16 @@
 <section>
 
     <div class="search-area bg-transparent">
-        <div class="form d-flex flex-column flex-lg-row align-items-stretch align-items-lg-end">
+        <div class="form d-flex flex-column flex-xl-row align-items-stretch align-items-xl-end">
 
-            <form class="form-group w-auto w-lg-60" id="sample-path-form">
+            <form class="form-group w-auto w-xl-60" id="sample-path-form">
                 <label>選取巡檢路線模板</label>
                 <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
                     <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
-                        <select type="text" class="form-select w-lg-229px" name="Area" id="Area" required>
+                        <select type="text" class="form-select w-lg-229px" name="ASN" id="ASN" required>
                             <option value="" disabled selected hidden>區域</option>
                         </select>
-                        <select type="text" class="form-select w-lg-108px" name="Floor" id="Floor" required>
+                        <select type="text" class="form-select w-lg-108px" name="FSN" id="FSN" required>
                             <option value="" disabled selected hidden>樓層</option>
                         </select>
                     </div>
@@ -249,14 +240,14 @@
                 </div>
             </form>
 
-            <form class="form-group w-auto w-lg-40" id="path-form">
+            <form class="form-group w-auto w-xl-40" id="path-form">
                 <label>新增其他巡檢路線</label>
                 <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
                     <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
-                        <select type="text" class="form-select w-lg-229px" name="Area" id="Area" required>
+                        <select type="text" class="form-select w-lg-229px" name="ASN" id="ASN" required>
                             <option value="" disabled selected hidden>區域</option>
                         </select>
-                        <select type="text" class="form-select w-lg-108px" name="Floor" id="Floor" required>
+                        <select type="text" class="form-select w-lg-108px" name="FSN" id="FSN" required>
                             <option value="" disabled selected hidden>樓層</option>
                         </select>
                     </div>
@@ -278,7 +269,7 @@
                         <button class="path-btn me-2" id="path-edit" data-bs-toggle="tooltip" title="拖曳順序">
                             <i class="icon-handle"></i>
                         </button>
-                        <span id="sample-path-name">123</span>
+                        <span id="sample-path-name"></span>
                     </div>
                     <div type="text" class="form-control">
                         <nav>
@@ -532,6 +523,7 @@
     }
 
     $(async function () {
+        addDropDownList();
         addButtonEvent();
         addAreaFloorEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
@@ -544,33 +536,55 @@
             hasDownArrow: true,
             limitToList: true,
         });
+    });
 
+    function addDropDownList() {
         pushSelect("Shift", '@Url.Action("Shift", "DropDownList")');
         pushSelect("MaintainUserID", '@Url.Action("AllMyName", "DropDownList")');
         pushSelect("RepairUserID", '@Url.Action("AllMyName", "DropDownList")');
 
-        pushSelect("path-form #Area", '@Url.Action("Area", "DropDownList")');
-        pushSelect("sample-path-form #Area", '@Url.Action("Area", "DropDownList")');
-    });
+
+        let DMM = 'DatagridModal-Maintain';
+        pushSelect(DMM + " #FormItemState", '@Url.Action("AddFormItemState", "DropDownList")');
+        pushSelect(DMM + " #EState", '@Url.Action("EState", "DropDownList")');
+        pushSelect(DMM + " #StockState", '@Url.Action("StockState", "DropDownList")');
+
+        @* let DMR = 'DatagridModal-Report';
+            pushSelect(DMR + " #ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
+            pushSelect(DMR + " #ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")?url=CanAddToPlanReportState');
+            pushSelect(DMR + " #UserID", '@Url.Action("ReportUser", "DropDownList")');
+            pushSelect(DMR + " #StockState", '@Url.Action("StockState", "DropDownList")'); *@
+    }
 
     function addAreaFloorEvent() {
-        let PArea = $("#path-form #Area");
-        PArea.on("change", async function () {
-            await pushSelect("path-form #Floor", '@Url.Action("Floor", "DropDownList")' + `?ASN=${PArea.val()}`);
-            $('#path-form #Floor').val('');
-        });
+        let areaList = ["path-form", "sample-path-form", "DatagridModal-Maintain"];
+        areaList.forEach((id) => {
+            pushSelect(`${id} #ASN`, '@Url.Action("Area", "DropDownList")');
+            let ASN = $(`#${id} #ASN`);
 
-        let SPArea = $("#sample-path-form #Area");
-        SPArea.on("change", async function () {
-            await pushSelect("sample-path-form #Floor", '@Url.Action("Floor", "DropDownList")' + `?ASN=${SPArea.val()}`);
-            $('#sample-path-form #Floor').val('');
-        });
+            ASN.on("change", async function () {
 
-        let SPFloor = $("#sample-path-form #Floor");
-        SPFloor.on("change", async function () {
-            await pushSelect("sample-path-form #PathTitle", '@Url.Action("PathTitle", "DropDownList")' + `?FSN=${SPFloor.val()}`);
-            $('#path-form #PathTitle').val('');
-        });
+                $(`#${id} #Area`).val(ASN.children("option:selected").text());
+
+                await pushSelect(`${id} #FSN`, '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.val()}`);
+                $(`#${id} #FSN`).val('');
+            });
+        })
+
+        let floorList = ["path-form", "sample-path-form", "DatagridModal-Maintain"];
+        floorList.forEach((id) => {
+            let FSN = $(`#${id} #FSN`);
+
+            FSN.on("change", async function () {
+
+                $(`#${id} #Floor`).val(FSN.children("option:selected").text());
+
+                if (id == "sample-path-form") {
+                    await pushSelect(`${id} #PathTitle`, '@Url.Action("PathTitle", "DropDownList")' + `?FSN=${FSN.val()}`);
+                    $(`#${id} #PathTitle`).val('');
+                }
+            });
+        })
     }
 
     function addButtonEvent() {
@@ -582,9 +596,9 @@
             console.log("onclick path-create");
             let form = $("#path-form");
             if (form[0].checkValidity()) {
-                let asn = form.find("#Area").val();
-                let fsn = form.find("#Floor").val();
-                let pt = form.find("#Area option:selected").text() + form.find("#Floor option:selected").text();
+                let asn = form.find("#ASN").val();
+                let fsn = form.find("#FSN").val();
+                let pt = form.find("#ASN option:selected").text() + form.find("#FSN option:selected").text();
 
                 $("#sample-path-name").text(pt);
                 $(".sample-path-draw-area").removeClass("d-none");
@@ -610,8 +624,8 @@
             let form = $("#sample-path-form");
             if (form[0].checkValidity()) {
 
-                let asn = form.find("#Area").val();
-                let fsn = form.find("#Floor").val();
+                let asn = form.find("#ASN").val();
+                let fsn = form.find("#FSN").val();
                 let pt = form.find("#PathTitle option:selected").text();
 
                 $("#sample-path-name").text(pt);
@@ -632,27 +646,32 @@
                 //})
             }
         })
-        $("#Maintain-create").click(function () {
-            if (!$(this).attr("data-once")) {
-                $(this).attr("data-once", '')
-                $("#Maintain-delete").removeClass("d-none");
-                $(this).parent().removeClass("mt-0");
-            }
-            let DatagridModal = $("#DatagridModal");
-            DatagridModal.on("shown.bs.modal", initDatagrid);
-            pushSelect("DatagridModal #ASN", '@Url.Action("Area", "DropDownList")');
-            pushSelect("DatagridModal #FSN", '@Url.Action("Floor", "DropDownList")');
-            pushSelect("DatagridModal #FormItemState", '@Url.Action("AddFormItemState", "DropDownList")');
-            pushSelect("DatagridModal #EState", '@Url.Action("EState", "DropDownList")');
-            pushSelect("DatagridModal #StockState", '@Url.Action("StockState", "DropDownList")');
+
+        function changeEditAreaCss() {
+            let selfJQ = $(this);
+            selfJQ.attr("data-once", '')
+            selfJQ.siblings().removeClass("d-none");
+            selfJQ.parent().removeClass("mt-0");
+            selfJQ.parent().siblings(".form-group").removeClass("w-lg-auto");
+            selfJQ.parent().parent().removeClass("flex-lg-row justify-content-start");
+        }
+        function loadDatagrid(id) {
+            let dg = $(`#${id} .modal-datagrid`);
+            dg.datagrid("load", getQueryParams(`#${id} form`));
+        }
+
+        $("#Maintain-create").one("click", function () {
+            changeEditAreaCss.call(this);
+            let DatagridModal = $("#DatagridModal-Maintain");
+            DatagridModal.one("shown.bs.modal", initDatagrid);
             function initDatagrid() {
-                DatagridModal.off("shown.bs.modal", initDatagrid);
                 let dg = DatagridModal.find(".modal-datagrid");
                 dg.datagrid({
                     url: '@Url.Action("MaintainForm_Management", "MaintainForm_Management")',
                     method: 'POST',
-                    queryParams: {},
+                    queryParams: getQueryParams(`#${DatagridModal[0].id} form`),
                     frozenColumns: [[
+                        { field: '_select', checkbox: true },
                         {
                             field: '_detail', align: 'center',
                             formatter: (val, row, index) => {
@@ -684,15 +703,15 @@
                         { field: 'LastTime', title: '上次保養', align: 'center', width: 140, sortable: true },
                         { field: 'Date', title: '最近應保養', align: 'center', width: 150, sortable: true },
                     ]],
-                    rownumbers: true,
+                    //rownumbers: true,
                     idField: 'EMFISN',
                     //sortName: 'EMFISN',
                     remoteSort: false,
                     sortOrder: 'asc',
                     fit: true,
-                    singleSelect: true,
+                    singleSelect: false,
                     selectOnCheck: true,
-                    checkOnSelect: false,
+                    checkOnSelect: true,
                     pagination: true,
                     pagePosition: 'bottom',
                     pageSize: 10
@@ -709,14 +728,13 @@
                 });
             }
         })
-        $("#Report-create").click(function () {
-            if (!$(this).attr("data-once")) {
-                $(this).attr("data-once", '')
-                $("#Report-delete").removeClass("d-none");
-                $(this).parent().removeClass("mt-0");
-            }
+        $("#DatagridModal-Maintain #search").click(() => { loadDatagrid("DatagridModal-Maintain") })
 
+        $("#Report-create").one("click", function () {
+            changeEditAreaCss.call(this);
+            let DatagridModal = $("#DatagridModal-Report");
         })
+        $("#DatagridModal-Report #search").click(() => { loadDatagrid("DatagridModal-Report") })
 
         /* 畫線功能 */
         $("#path-edit").click(function () {
