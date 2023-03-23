@@ -8,6 +8,12 @@ using System.Web;
 using System.Web.Mvc;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Models;
+using System.Data.Entity.Migrations;
+using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
+using System.Web.Http;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -21,7 +27,7 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-        [HttpPost]
+        [System.Web.Mvc.HttpPost]
         public ActionResult SamplePath_Management(FormCollection form)
         {
             var a = SP_ds.GetJsonForGrid_Management(form);
@@ -35,8 +41,8 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-        //選定棟別樓層 回傳.svf檔的路徑及所有藍芽點
-        [HttpGet]
+        #region 選定棟別樓層 回傳.svf檔的路徑及所有藍芽點
+        [System.Web.Mvc.HttpGet]
         public ActionResult ReadBimPathDevices(string id) //FSN
         {
             JObject obj = new JObject();
@@ -57,6 +63,49 @@ namespace MinSheng_MIS.Controllers
             }
             obj.Add("BIMDevices", ja);
 
+            string result = JsonConvert.SerializeObject(obj);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 新增巡檢路線模板api
+        [System.Web.Mvc.HttpPost]
+        public ActionResult CreateSamplePath() //[FromBody]PathSampleInfo pathsample
+        {
+            
+            var c = Request.Headers;
+            var a = Request.Form;
+            var b = Request.ContentEncoding;
+            JObject jo = new JObject();
+            jo.Add("ResponseCode", 0);
+            string result = JsonConvert.SerializeObject(jo);
+            //return Content(result, "application/json");
+            return Content("");
+        }
+        [System.Web.Http.HttpPost]
+        public async Task<string> InfoUpload([FromBody] PathSampleInfo pathsample)
+        {
+            string result = JsonConvert.SerializeObject(pathsample);
+            return result;
+        }
+        #endregion
+
+        #endregion
+
+        #region 判斷巡檢路線模板名稱是否重複
+        [System.Web.Mvc.HttpGet]
+        public ActionResult CheckPathTitleISvalid(string id) //PathTitle
+        {
+            JObject obj = new JObject();
+            var existPathTitle = db.PathSample.Where(x => x.PathTitle == id).FirstOrDefault();
+            if(existPathTitle != null)
+            {
+                obj.Add("IsVaild", false);
+            }
+            else
+            {
+                obj.Add("IsVaild", true);
+            }
             string result = JsonConvert.SerializeObject(obj);
             return Content(result, "application/json");
         }
