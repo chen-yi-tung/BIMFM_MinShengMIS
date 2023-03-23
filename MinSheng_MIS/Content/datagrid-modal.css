@@ -1,0 +1,6 @@
+﻿.datagrid-modal .modal-fullscreen {
+	width: initial;
+	max-width: none;
+	height: calc(100vh - 2em);
+	margin: 1em;
+}

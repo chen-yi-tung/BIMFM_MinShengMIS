@@ -31,6 +31,7 @@
 <script src="/Content/easyui/jquery.easyui.min.js"></script>
 <link rel="stylesheet" href="/Content/samplepath.css">
 <link rel="stylesheet" href="/Content/tagbox.css">
+<link rel="stylesheet" href="/Content/datagrid-modal.css">
 
 <h2>@ViewBag.Title</h2>
 
@@ -49,7 +50,9 @@
 
     <div class="form-group required">
     <label for="Shift">巡檢班別</label>
-    <input type="text" class="form-control" name="Shift" id="Shift">
+    <select type="text" class="form-select" name="Shift" id="Shift" required>
+    <option value="">請選擇</option>
+    </select>
     </div>
 
     <div class="form-group required">
@@ -85,7 +88,9 @@
             </div>
             <div class="form-group d-lg-contents required">
                 <label for="Shift">巡檢班別</label>
-                <input type="text" class="form-control" name="Shift" id="Shift" required>
+                <select type="text" class="form-select" name="Shift" id="Shift" required>
+                    <option value="">請選擇</option>
+                </select>
             </div>
             <div class="form-group d-lg-contents required">
                 <label for="UserID" class="align-self-start">巡檢人員</label>
@@ -112,17 +117,39 @@
     <div class="sample-path-area">
         <h3 class="sample-path-title">定期保養設備</h3>
         <div class="edit-area">
-            <button class="btn btn-search" id="create-Maintain">新增定期保養設備</button>
+            <table id="Maintain-datagrid"></table>
+            <div class="edit-button-area mt-0">
+                <button class="btn btn-search" id="Maintain-create" data-bs-toggle="modal"
+                    data-bs-target="#DatagridModal">新增定期保養設備</button>
+                <button class="btn btn-delete d-none" id="Maintain-delete">刪除</button>
+            </div>
         </div>
     </div>
-
     <div class="sample-path-area">
         <h3 class="sample-path-title">維修設備</h3>
         <div class="edit-area">
-            <button class="btn btn-search" id="create-Report">新增維修設備</button>
+            <table id="Report-datagrid"></table>
+            <div class="edit-button-area mt-0">
+                <button class="btn btn-search" id="Report-create">新增維修設備</button>
+                <button class="btn btn-delete d-none" id="Report-delete">刪除</button>
+            </div>
         </div>
     </div>
 </section>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal">
+    <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <table class="modal-datagrid"></table>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export">新增</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <hr class="hr-dashed">
 
@@ -142,7 +169,7 @@
                             <option value="" disabled selected hidden>樓層</option>
                         </select>
                     </div>
-                    <select type="text" class="form-select w-lg-250px" name="SamplePath" id="SamplePath" required>
+                    <select type="text" class="form-select w-lg-250px" name="PathTitle" id="PathTitle" required>
                         <option value="" disabled selected hidden>選擇模板</option>
                     </select>
                     <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto"
@@ -433,33 +460,25 @@
     }
 
     $(async function () {
-        addAreaFloorEvent();
         addButtonEvent();
+        addAreaFloorEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
         sortRouteModal.autoRouteToggle(true);
 
         $('#UserID').tagbox({
+            url: '@Url.Action("AllMyName", "DropDownList")',
+            textField: 'Text',
+            valueField: 'Value',
             hasDownArrow: true,
             limitToList: true,
-            valueField: 'value',
-            textField: 'text',
-            data: [
-                { text: '王大明', value: '4107' },
-                { text: '李泰順', value: '2' },
-                { text: '紅美玲', value: '3' },
-                { text: '黃橙紅', value: '4' },
-                { text: '555', value: '5' },
-                { text: '6666', value: '6' },
-                { text: '77777', value: '7' },
-                { text: '888888', value: '8' },
-                { text: '9999999', value: '9' },
-                { text: '10', value: '10' },
-                { text: '王大明', value: '4108' },
-            ]
         });
 
-        await pushSelect("path-form #Area", '@Url.Action("Area", "DropDownList")');
-        await pushSelect("sample-path-form #Area", '@Url.Action("Area", "DropDownList")');
+        pushSelect("Shift", '@Url.Action("Shift", "DropDownList")');
+        pushSelect("MaintainUserID", '@Url.Action("AllMyName", "DropDownList")');
+        pushSelect("RepairUserID", '@Url.Action("AllMyName", "DropDownList")');
+
+        pushSelect("path-form #Area", '@Url.Action("Area", "DropDownList")');
+        pushSelect("sample-path-form #Area", '@Url.Action("Area", "DropDownList")');
     });
 
     function addAreaFloorEvent() {
@@ -477,8 +496,8 @@
 
         let SPFloor = $("#sample-path-form #Floor");
         SPFloor.on("change", async function () {
-            await pushSelect("sample-path-form #PathTilte", '@Url.Action("PathTilte", "DropDownList")' + `?FSN=${SPFloor.val()}`);
-            $('#path-form #PathTilte').val('');
+            await pushSelect("sample-path-form #PathTitle", '@Url.Action("PathTitle", "DropDownList")' + `?FSN=${SPFloor.val()}`);
+            $('#path-form #PathTitle').val('');
         });
     }
 
@@ -486,7 +505,6 @@
         $("#back").click(function () {
             history.back();
         })
-        let titleIndex = 1;
         $("#path-create").click(function (e) {
             e.preventDefault();
             console.log("onclick path-create");
@@ -494,9 +512,7 @@
             if (form[0].checkValidity()) {
                 let asn = form.find("#Area").val();
                 let fsn = form.find("#Floor").val();
-                let pt = form.find("#Area option:selected").text() + form.find("#Floor option:selected").text() + titleIndex.toString().padStart(2, "0");
-                titleIndex++;
-                console.log(pt)
+                let pt = form.find("#Area option:selected").text() + form.find("#Floor option:selected").text();
 
                 $("#sample-path-name").text(pt);
                 $(".sample-path-draw-area").removeClass("d-none");
@@ -524,7 +540,7 @@
 
                 let asn = form.find("#Area").val();
                 let fsn = form.find("#Floor").val();
-                let pt = form.find("#PathTitle").val();
+                let pt = form.find("#PathTitle option:selected").text();
 
                 $("#sample-path-name").text(pt);
                 $(".sample-path-draw-area").removeClass("d-none");
@@ -544,6 +560,88 @@
                 //})
             }
         })
+        $("#Maintain-create").click(function () {
+            if (!$(this).attr("data-once")) {
+                $(this).attr("data-once", '')
+                $("#Maintain-delete").removeClass("d-none");
+                $(this).parent().removeClass("mt-0");
+            }
+            let DatagridModal = $("#DatagridModal");
+            DatagridModal.on("shown.bs.modal", initDatagrid);
+            function initDatagrid() {
+                DatagridModal.off("shown.bs.modal", initDatagrid);
+                let dg = DatagridModal.find(".modal-datagrid");
+                dg.datagrid({
+                    url: '@Url.Action("MaintainForm_Management", "MaintainForm_Management")',
+                    method: 'POST',
+                    queryParams: {},
+                    frozenColumns: [[
+                        {
+                            field: '_detail', align: 'center',
+                            formatter: (val, row, index) => {
+                                return `<button class="btn btn-datagrid" onclick="onMaintainDetail(${index})">詳情</button>`;
+                            }
+                        },
+                        {
+                            field: '_locate', align: 'center',
+                            formatter: (val, row, index) => {
+                                return `<button class="btn btn-datagrid" onclick="onMaintainLocate(${index})">定位</button>`;
+                            }
+                        }
+                    ]],
+                    columns: [[
+                        { field: 'StockState', title: '庫存狀態', align: 'center', width: 150, sortable: true },
+                        { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 150, sortable: true },
+                        { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
+                        { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
+
+                        { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
+                        { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
+
+                        { field: 'EMFISN', title: '保養單項目編號', align: 'center', width: 210, sortable: true },
+
+                        { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
+                        { field: 'Period', title: '週期', align: 'center', width: 100, sortable: true },
+                        { field: 'Unit', title: '週期單位', align: 'center', width: 130, sortable: true },
+
+                        { field: 'LastTime', title: '上次保養', align: 'center', width: 140, sortable: true },
+                        { field: 'Date', title: '最近應保養', align: 'center', width: 150, sortable: true },
+                    ]],
+                    rownumbers: true,
+                    idField: 'EMFISN',
+                    //sortName: 'EMFISN',
+                    remoteSort: false,
+                    sortOrder: 'asc',
+                    fit: true,
+                    singleSelect: true,
+                    selectOnCheck: true,
+                    checkOnSelect: false,
+                    pagination: true,
+                    pagePosition: 'bottom',
+                    pageSize: 10
+                })
+                //------------Pager --------------------------------------------------
+                let pager = dg.datagrid('getPager');
+                $(pager).pagination({
+                    pageSize: 10,
+                    showPageList: true,
+                    pageList: [10, 20, 50],
+                    beforePageText: '第',
+                    afterPageText: '頁，共 {pages} 頁',
+                    displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+                });
+            }
+        })
+        $("#Report-create").click(function () {
+            if (!$(this).attr("data-once")) {
+                $(this).attr("data-once", '')
+                $("#Report-delete").removeClass("d-none");
+                $(this).parent().removeClass("mt-0");
+            }
+
+        })
+
+        /* 畫線功能 */
         $("#path-edit").click(function () {
             sortRouteModal.create();
         })
@@ -568,6 +666,7 @@
             $(this).blur();
             sortRouteModal.autoRouteToggle();
         })
+
         $("#submit").click(function () {
             console.log("onclick submit")
             save();
