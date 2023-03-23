@@ -1,4 +1,24 @@
-﻿.datagrid-modal .modal-fullscreen {
+﻿.datagrid-modal {
+	--bs-modal-bg: linear-gradient(180deg, #E9F7FF 0%, #DCE6FF 100%);
+	--bs-modal-border-radius: 5px;
+	--bs-modal-border-color: transparent;
+	--bs-modal-footer-border-color: transparent;
+}
+
+.datagrid-modal .modal-content{
+	background: var(--bs-modal-bg);
+	border-radius: var(--bs-modal-border-radius);
+}
+
+.datagrid-modal .modal-body h2 {
+	color: #626F7E;
+}
+
+.datagrid-modal .datagrid{
+
+}
+
+.datagrid-modal .modal-fullscreen {
 	width: initial;
 	max-width: none;
 	height: calc(100vh - 2em);

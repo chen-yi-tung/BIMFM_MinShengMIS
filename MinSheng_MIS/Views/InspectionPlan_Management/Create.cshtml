@@ -141,6 +141,78 @@
     <div class="modal-dialog modal-fullscreen modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
+                <h2>新增定期保養單</h2>
+                <div class="search-area">
+                    <form class="form" method="post" action="" id="ReportManagementForm">
+
+                        <div class="form-group">
+                            <label for="ASN">棟別</label>
+                            <select class="form-select" name="ASN" id="ASN">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+                        <input class="form-control" id="Area" name="Area" type="text" hidden />
+
+
+                        <div class="form-group">
+                            <label for="FSN">樓層</label>
+                            <select class="form-select" name="FSN" id="FSN">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+                        <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+
+                        <div class="form-group">
+                            <label for="ESN">設備編號</label>
+                            <input class="form-control" id="ESN" name="ESN" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="EName">設備名稱</label>
+                            <input class="form-control" id="EName" name="EName" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="FormItemState">保養狀態</label>
+                            <select class="form-select" name="FormItemState" id="FormItemState">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="EState">設備狀態</label>
+                            <input class="form-control" id="EState" name="EState" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="StockState">庫存狀態</label>
+                            <input class="form-control" id="StockState" name="StockState" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateSelect">日期項目選擇</label>
+                            <select class="form-select" name="DateSelect" id="DateSelect">
+                                <option value="1">上次保養日期</option>
+                                <option value="2">最近應保養日期</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateFrom">日期(起)</label>
+                            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateTo">日期(迄)</label>
+                            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-search" id="search">查詢</button>
+                            <button type="button" class="btn btn-clear" id="clear">清除</button>
+                        </div>
+                    </form>
+                </div>
                 <table class="modal-datagrid"></table>
             </div>
             <div class="modal-footer justify-content-center">
@@ -568,6 +640,11 @@
             }
             let DatagridModal = $("#DatagridModal");
             DatagridModal.on("shown.bs.modal", initDatagrid);
+            pushSelect("DatagridModal #ASN", '@Url.Action("Area", "DropDownList")');
+            pushSelect("DatagridModal #FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("DatagridModal #FormItemState", '@Url.Action("AddFormItemState", "DropDownList")');
+            pushSelect("DatagridModal #EState", '@Url.Action("EState", "DropDownList")');
+            pushSelect("DatagridModal #StockState", '@Url.Action("StockState", "DropDownList")');
             function initDatagrid() {
                 DatagridModal.off("shown.bs.modal", initDatagrid);
                 let dg = DatagridModal.find(".modal-datagrid");
