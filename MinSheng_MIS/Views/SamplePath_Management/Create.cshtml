@@ -161,28 +161,29 @@
             ForgeDraw.resize();
         }
 
-        function calcRoute() {
+    }
 
-            if (ForgeDraw.lineData.length > 1) {
-                ForgeDraw.devices.forEach((dp) => {
-                    dp.update();
-                })
-            }
+    function calcRoute() {
 
-            if (!sortRouteModal.autoCalcRoute) {
-                return;
-            }
-
-            //開始計算路徑
-            let route = ForgeDraw.getRoute().map(e => e.name);
-            console.log(ForgeDraw.devices.map(e => e.result));
-
-            route.unshift("起點");
-            route.push("終點");
-
-            //顯示在網頁上
-            updatePathDisplay(route);
+        if (ForgeDraw.lineData.length > 1) {
+            ForgeDraw.devices.forEach((dp) => {
+                dp.update();
+            })
         }
+
+        if (!sortRouteModal.autoCalcRoute) {
+            return;
+        }
+
+        //開始計算路徑
+        let route = ForgeDraw.getRoute().map(e => e.name);
+        console.log(ForgeDraw.devices.map(e => e.result));
+
+        route.unshift("起點");
+        route.push("終點");
+
+        //顯示在網頁上
+        updatePathDisplay(route);
     }
 
     //更新網頁顯示的路徑
@@ -286,6 +287,10 @@
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
         sortRouteModal.autoRouteToggle(true);
 
+        $("#PathTitle").change(function () {
+            $("#sample-path-name").text($(this).val())
+        })
+
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
     });
 
@@ -345,7 +350,7 @@
                 //$.getJSON('@Url.Action("action","Controller")', function (data) {
                 //fakeData = data;
                 //若非第一次初始化
-                
+
                 //})
             }
         })
@@ -374,10 +379,40 @@
         $("#path-auto").click(function () {
             $(this).blur();
             sortRouteModal.autoRouteToggle();
+            calcRoute();
         })
         $("#submit").click(function () {
+            //!!棟別樓層巡檢路線模板巡檢路線規劃 需有資料才傳!!
+
             console.log("onclick submit")
-            save();
+            let pt = $("#PathTitle").val();
+            console.log(pt);
+            //先判斷巡檢路線模板是否有填值
+            if (pt == "") {
+                alert("巡檢路徑模板標題不可為空!")
+            } else {
+                //判斷巡檢路線模板名稱是否重複
+                let url = '@Url.Action("CheckPathTitleISvalid", "SamplePath_Management")' + "/" + pt;
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+                function onSuccess(res) {
+                    //console.log(res);
+                    if (res["IsVaild"]) {//巡檢路線模板名稱未重複
+                        save();
+                    } else {//巡檢路線模板名稱重複
+                        alert("巡檢路線模板標題重複，請重新命名!")
+                    }   
+                }
+                function onError(res) {
+                    console.log(res);
+                }
+            }
         })
     }
 
@@ -411,16 +446,16 @@
         }
 
         console.log(data);
-
-        /* $.ajax({
-                url: '@Url.Action("aaa", "bbb")',
-                data: JSON.stringify(data),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-                }) */
+        console.log(JSON.stringify(data));
+        $.ajax({
+            url: '@Url.Action("CreateSamplePath", "SamplePath_Management")',
+            data: JSON.stringify(data),
+            type: "post",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
 
         function onSuccess(res) {
             console.log("Success");

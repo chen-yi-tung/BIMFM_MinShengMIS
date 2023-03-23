@@ -337,6 +337,7 @@
     <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\PathSampleViewModel.cs" />
     <Compile Include="Models\ViewModels\RepairRecord_Management_ReadViewModel.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemFormViewModel.cs" />
     <Compile Include="Models\ViewModels\ReportManagementViewModel.cs" />
@@ -1575,6 +1576,7 @@
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
     <Folder Include="Views\EquipmentInfo_Management\" />
+    <Folder Include="Views\SamplePath_Managements\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

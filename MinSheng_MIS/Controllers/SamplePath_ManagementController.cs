@@ -8,6 +8,15 @@ using System.Web;
 using System.Web.Mvc;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Models;
+using System.Data.Entity.Migrations;
+//using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
+using System.Web.Http;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Ajax.Utilities;
+using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
+using PathSample = MinSheng_MIS.Models.PathSample;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -21,7 +30,7 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-        [HttpPost]
+        [System.Web.Mvc.HttpPost]
         public ActionResult SamplePath_Management(FormCollection form)
         {
             var a = SP_ds.GetJsonForGrid_Management(form);
@@ -35,8 +44,8 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-        //選定棟別樓層 回傳.svf檔的路徑及所有藍芽點
-        [HttpGet]
+        #region 選定棟別樓層 回傳.svf檔的路徑及所有藍芽點
+        [System.Web.Mvc.HttpGet]
         public ActionResult ReadBimPathDevices(string id) //FSN
         {
             JObject obj = new JObject();
@@ -62,10 +71,142 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 巡檢路線模板詳情
-        public ActionResult Read()
+        #region 新增巡檢路線模板api
+        
+        [System.Web.Mvc.HttpPost]
+        public ActionResult CreateSamplePath(PathSampleViewModel.PathSampleInfo model)
         {
+            //新增PathSample 巡檢路線模板基本資訊
+            PathSample ps = new PathSample();
+            var newestPSSN = db.PathSample.OrderByDescending(x => x.PSSN).Select(x => x.PSSN).FirstOrDefault();
+            if(newestPSSN != null)
+            {
+                var PSSN = Convert.ToInt32(newestPSSN) + 1;
+                ps.PSSN = PSSN.ToString().PadLeft(6, '0');
+            }
+            else
+            {
+                ps.PSSN = "000001";
+            }
+            ps.PathTitle = model.PathSample.PathTitle;
+            ps.FSN = model.PathSample.FSN;
+            db.PathSample.AddOrUpdate(ps);
+            db.SaveChanges();
+            //新增PathSampleOrder 巡檢路線模板順序
+            int count_pso = 1;
+            foreach (var item in model.PathSampleOrder)
+            {
+                PathSampleOrder po = new PathSampleOrder();
+                po.PSSN = ps.PSSN;
+                po.BeaconID = item;
+                po.FPSSN = ps.PSSN + "_" + count_pso.ToString().PadLeft(2, '0');
+
+                db.PathSampleOrder.Add(po);
+                db.SaveChanges();
+                count_pso++;
+            }
+            //新增DrawPathSample 巡檢路線模板繪製順序
+            int count_dps = 1;
+            foreach (var item in model.PathSampleRecord)
+            {
+                DrawPathSample dps = new DrawPathSample();
+                dps.PSSN = ps.PSSN;
+                dps.LocationX = Convert.ToDecimal(item.LocationX);
+                dps.LocationY = Convert.ToDecimal(item.LocationY);
+                dps.SISN = ps.PSSN + "_" + count_dps.ToString().PadLeft(2, '0');
+
+                db.DrawPathSample.Add(dps);
+                db.SaveChanges();
+                count_dps++;
+            }
+
+            JObject jo = new JObject();
+            jo.Add("ResponseCode", 0);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #endregion
+
+        #region 判斷巡檢路線模板名稱是否重複
+        [System.Web.Mvc.HttpGet]
+        public ActionResult CheckPathTitleISvalid(string id) //PathTitle
+        {
+            JObject obj = new JObject();
+            var existPathTitle = db.PathSample.Where(x => x.PathTitle == id).FirstOrDefault();
+            if(existPathTitle != null)
+            {
+                obj.Add("IsVaild", false);
+            }
+            else
+            {
+                obj.Add("IsVaild", true);
+            }
+            string result = JsonConvert.SerializeObject(obj);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 巡檢路線模板詳情
+        public ActionResult Read(string id)
+        {
+            ViewBag.PSSN = id;
             return View();
+        }
+        [System.Web.Mvc.HttpGet]
+        public ActionResult ReadBody(string id)
+        {
+            PathSampleViewModel.PathSampleInfo psi = new PathSampleViewModel.PathSampleInfo();
+            MinSheng_MIS.Models.PathSample ps = db.PathSample.Find(id);
+            PathSampleViewModel.PathSample psvm = new PathSampleViewModel.PathSample();
+            psvm.PSSN = id;
+            psvm.FSN = ps.FSN;
+            psvm.PathTitle = ps.PathTitle;
+            
+
+            Floor_Info fi = db.Floor_Info.Find(psvm.FSN);
+            psvm.Floor = fi.FloorName;
+            psvm.ASN = fi.ASN.ToString();
+            psvm.BIMPath = fi.BIMPath;
+
+            AreaInfo ai = db.AreaInfo.Find(Convert.ToInt32(psvm.ASN));
+            psvm.Area = ai.Area;
+
+            //找出該樓層所有藍芽點
+            var BeaconList = db.EquipmentInfo.Where(x => x.FSN == psvm.FSN && x.EName == "藍芽").ToList();
+            List<BIMDevices> bimds = new List<BIMDevices>();
+            foreach (var item in BeaconList)
+            {
+                BIMDevices bimd = new BIMDevices();
+                bimd.dbId = (int)item.DBID;
+                bimd.deviceType = item.EName;
+                bimd.deviceName = item.ESN;
+                bimds.Add(bimd);
+            }
+            psvm.BIMDevices = bimds;
+            psi.PathSample = psvm;
+            //找出來藍芽路徑
+            var BeaconOrder = db.PathSampleOrder.Where(x => x.PSSN == id).OrderBy(x => x.FPSSN).ToList();
+            List<string> psos = new List<string>();
+            foreach(var item in BeaconOrder)
+            {
+                psos.Add(item.BeaconID);
+            }
+            psi.PathSampleOrder = psos;
+            //找出繪製路徑
+            var DrawList = db.DrawPathSample.Where(x => x.PSSN == id).OrderBy(x => x.SISN).ToList();
+            List<PathSampleRecord> psrs = new List<PathSampleRecord>();
+            foreach(var item in DrawList)
+            {
+                PathSampleRecord psr = new PathSampleRecord();
+                psr.LocationX = item.LocationX;
+                psr.LocationY = item.LocationY;
+                psrs.Add(psr);
+            }
+            psi.PathSampleRecord = psrs;
+            string result = JsonConvert.SerializeObject(psi);
+            return Content(result, "application/json");
         }
         #endregion
 
