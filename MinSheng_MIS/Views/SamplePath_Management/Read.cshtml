@@ -185,9 +185,9 @@
 <script src="../../Scripts/tool.js"></script>
 <script>
 
-    const RSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null;
+    const PSSN = '@ViewBag.PSSN';
+    let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
+    //let apiUrl = null;
 
     let fakeData = {
         "PathSample": {

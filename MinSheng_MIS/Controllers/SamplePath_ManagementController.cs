@@ -15,6 +15,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Ajax.Utilities;
+using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
+using PathSample = MinSheng_MIS.Models.PathSample;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -147,9 +149,64 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 巡檢路線模板詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.PSSN = id;
             return View();
+        }
+        [System.Web.Mvc.HttpGet]
+        public ActionResult ReadBody(string id)
+        {
+            PathSampleViewModel.PathSampleInfo psi = new PathSampleViewModel.PathSampleInfo();
+            MinSheng_MIS.Models.PathSample ps = db.PathSample.Find(id);
+            PathSampleViewModel.PathSample psvm = new PathSampleViewModel.PathSample();
+            psvm.PSSN = id;
+            psvm.FSN = ps.FSN;
+            psvm.PathTitle = ps.PathTitle;
+            
+
+            Floor_Info fi = db.Floor_Info.Find(psvm.FSN);
+            psvm.Floor = fi.FloorName;
+            psvm.ASN = fi.ASN.ToString();
+            psvm.BIMPath = fi.BIMPath;
+
+            AreaInfo ai = db.AreaInfo.Find(Convert.ToInt32(psvm.ASN));
+            psvm.Area = ai.Area;
+
+            //找出該樓層所有藍芽點
+            var BeaconList = db.EquipmentInfo.Where(x => x.FSN == psvm.FSN && x.EName == "藍芽").ToList();
+            List<BIMDevices> bimds = new List<BIMDevices>();
+            foreach (var item in BeaconList)
+            {
+                BIMDevices bimd = new BIMDevices();
+                bimd.dbId = (int)item.DBID;
+                bimd.deviceType = item.EName;
+                bimd.deviceName = item.ESN;
+                bimds.Add(bimd);
+            }
+            psvm.BIMDevices = bimds;
+            psi.PathSample = psvm;
+            //找出來藍芽路徑
+            var BeaconOrder = db.PathSampleOrder.Where(x => x.PSSN == id).OrderBy(x => x.FPSSN).ToList();
+            List<string> psos = new List<string>();
+            foreach(var item in BeaconOrder)
+            {
+                psos.Add(item.BeaconID);
+            }
+            psi.PathSampleOrder = psos;
+            //找出繪製路徑
+            var DrawList = db.DrawPathSample.Where(x => x.PSSN == id).OrderBy(x => x.SISN).ToList();
+            List<PathSampleRecord> psrs = new List<PathSampleRecord>();
+            foreach(var item in DrawList)
+            {
+                PathSampleRecord psr = new PathSampleRecord();
+                psr.LocationX = item.LocationX;
+                psr.LocationY = item.LocationY;
+                psrs.Add(psr);
+            }
+            psi.PathSampleRecord = psrs;
+            string result = JsonConvert.SerializeObject(psi);
+            return Content(result, "application/json");
         }
         #endregion
 
