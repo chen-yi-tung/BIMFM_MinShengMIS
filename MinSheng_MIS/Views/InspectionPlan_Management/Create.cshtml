@@ -16,8 +16,8 @@
             width: 108px !important;
         }
 
-        .w-lg-229px {
-            width: 229px !important;
+        .w-lg-205px {
+            width: 205px !important;
         }
 
         .w-lg-250px {
@@ -38,8 +38,8 @@
             width: 108px !important;
         }
 
-        .w-xl-229px {
-            width: 229px !important;
+        .w-xl-205px {
+            width: 205px !important;
         }
 
         .w-xl-250px {
@@ -54,6 +54,12 @@
 <link rel="stylesheet" href="/Content/samplepath.css">
 <link rel="stylesheet" href="/Content/tagbox.css">
 <link rel="stylesheet" href="/Content/datagrid-modal.css">
+
+<div class="spinner-area">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
 <h2>@ViewBag.Title</h2>
 
@@ -95,7 +101,9 @@
                     <option value="">請選擇</option>
                 </select>
             </div>
-            <table id="Maintain-datagrid"></table>
+            <div class="datatable-easyui w-100 d-none">
+                <table id="Maintain-datagrid"></table>
+            </div>
             <div class="edit-button-area m-0 w-auto">
                 <button class="btn btn-search" id="Maintain-create" data-bs-toggle="modal"
                     data-bs-target="#DatagridModal-Maintain">新增定期保養設備</button>
@@ -114,7 +122,9 @@
                     <option value="">請選擇</option>
                 </select>
             </div>
-            <table id="Repair-datagrid"></table>
+            <div class="datatable-easyui w-100 d-none">
+                <table id="Repair-datagrid"></table>
+            </div>
             <div class="edit-button-area m-0 w-auto">
                 <button class="btn btn-search" id="Repair-create" data-bs-toggle="modal"
                     data-bs-target="#DatagridModal-Repair">新增維修設備</button>
@@ -130,7 +140,7 @@
             <div class="modal-body">
                 <h2>新增定期保養單</h2>
                 <div class="search-area mb-3">
-                    <form class="form" method="post" action="" id="ReportManagementForm">
+                    <form class="form">
 
                         <div class="form-group">
                             <label for="ASN">棟別</label>
@@ -208,7 +218,96 @@
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                <button type="button" class="btn btn-export">新增</button>
+                <button type="button" class="btn btn-export" id="add-row">新增</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal-Repair">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>新增設備維修單</h2>
+                <div class="search-area mb-3">
+                    <form class="form">
+
+                        <div class="form-group">
+                            <label for="ASN">棟別</label>
+                            <select class="form-select" name="ASN" id="ASN">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+                        <input class="form-control" id="Area" name="Area" type="text" hidden />
+
+
+                        <div class="form-group">
+                            <label for="FSN">樓層</label>
+                            <select class="form-select" name="FSN" id="FSN">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+                        <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+
+                        <div class="form-group">
+                            <label for="ReportLevel">報修等級</label>
+                            <select class="form-select" name="ReportLevel" id="ReportLevel">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ESN">設備編號</label>
+                            <input class="form-control" id="ESN" name="ESN" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="EName">設備名稱</label>
+                            <input class="form-control" id="EName" name="EName" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ReportState">報修單狀態</label>
+                            <select class="form-select" name="ReportState" id="ReportState">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="StockState">庫存狀態</label>
+                            <select class="form-select" name="StockState" id="StockState">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="UserID">報修人員</label>
+                            <select class="form-select" name="UserID" id="UserID">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateFrom">日期(起)</label>
+                            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateTo">日期(迄)</label>
+                            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-search" id="search">查詢</button>
+                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="modal-datagrid"></table>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="add-row">新增</button>
             </div>
         </div>
     </div>
@@ -225,7 +324,7 @@
                 <label>選取巡檢路線模板</label>
                 <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
                     <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
-                        <select type="text" class="form-select w-lg-229px" name="ASN" id="ASN" required>
+                        <select type="text" class="form-select w-lg-205px" name="ASN" id="ASN" required>
                             <option value="" disabled selected hidden>區域</option>
                         </select>
                         <select type="text" class="form-select w-lg-108px" name="FSN" id="FSN" required>
@@ -244,7 +343,7 @@
                 <label>新增其他巡檢路線</label>
                 <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
                     <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
-                        <select type="text" class="form-select w-lg-229px" name="ASN" id="ASN" required>
+                        <select type="text" class="form-select w-lg-205px" name="ASN" id="ASN" required>
                             <option value="" disabled selected hidden>區域</option>
                         </select>
                         <select type="text" class="form-select w-lg-108px" name="FSN" id="FSN" required>
@@ -522,42 +621,47 @@
         ]
     }
 
+    let DatagridEvent;
+
     $(async function () {
-        addDropDownList();
         addButtonEvent();
-        addAreaFloorEvent();
+        DatagridEvent = addDatagridEvent();
+        await addDropDownList();
+        await addAreaFloorEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
         sortRouteModal.autoRouteToggle(true);
 
-        $('#UserID').tagbox({
+        await $('#UserID').tagbox({
             url: '@Url.Action("AllMyName", "DropDownList")',
             textField: 'Text',
             valueField: 'Value',
             hasDownArrow: true,
             limitToList: true,
         });
+
+        $(".spinner-area").fadeOut(300, function () { $(this).remove(); });
     });
 
-    function addDropDownList() {
-        pushSelect("Shift", '@Url.Action("Shift", "DropDownList")');
-        pushSelect("MaintainUserID", '@Url.Action("AllMyName", "DropDownList")');
-        pushSelect("RepairUserID", '@Url.Action("AllMyName", "DropDownList")');
+    async function addDropDownList() {
+        await pushSelect("Shift", '@Url.Action("Shift", "DropDownList")');
+        await pushSelect("MaintainUserID", '@Url.Action("AllMyName", "DropDownList")');
+        await pushSelect("RepairUserID", '@Url.Action("AllMyName", "DropDownList")');
 
 
         let DMM = 'DatagridModal-Maintain';
-        pushSelect(DMM + " #FormItemState", '@Url.Action("AddFormItemState", "DropDownList")');
-        pushSelect(DMM + " #EState", '@Url.Action("EState", "DropDownList")');
-        pushSelect(DMM + " #StockState", '@Url.Action("StockState", "DropDownList")');
+        await pushSelect(DMM + " #FormItemState", '@Url.Action("AddFormItemState", "DropDownList")');
+        await pushSelect(DMM + " #EState", '@Url.Action("EState", "DropDownList")');
+        await pushSelect(DMM + " #StockState", '@Url.Action("StockState", "DropDownList")');
 
-        @* let DMR = 'DatagridModal-Report';
-            pushSelect(DMR + " #ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
-            pushSelect(DMR + " #ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")?url=CanAddToPlanReportState');
-            pushSelect(DMR + " #UserID", '@Url.Action("ReportUser", "DropDownList")');
-            pushSelect(DMR + " #StockState", '@Url.Action("StockState", "DropDownList")'); *@
+        let DMR = 'DatagridModal-Repair';
+        pushSelect(DMR + " #ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
+        pushSelect(DMR + " #ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")?url=CanAddToPlanReportState');
+        pushSelect(DMR + " #UserID", '@Url.Action("ReportUser", "DropDownList")');
+        pushSelect(DMR + " #StockState", '@Url.Action("StockState", "DropDownList")');
     }
 
-    function addAreaFloorEvent() {
-        let areaList = ["path-form", "sample-path-form", "DatagridModal-Maintain"];
+    async function addAreaFloorEvent() {
+        let areaList = ["path-form", "sample-path-form", "DatagridModal-Maintain", "DatagridModal-Repair"];
         areaList.forEach((id) => {
             pushSelect(`${id} #ASN`, '@Url.Action("Area", "DropDownList")');
             let ASN = $(`#${id} #ASN`);
@@ -571,7 +675,7 @@
             });
         })
 
-        let floorList = ["path-form", "sample-path-form", "DatagridModal-Maintain"];
+        let floorList = ["path-form", "sample-path-form", "DatagridModal-Maintain", "DatagridModal-Repair"];
         floorList.forEach((id) => {
             let FSN = $(`#${id} #FSN`);
 
@@ -647,95 +751,6 @@
             }
         })
 
-        function changeEditAreaCss() {
-            let selfJQ = $(this);
-            selfJQ.attr("data-once", '')
-            selfJQ.siblings().removeClass("d-none");
-            selfJQ.parent().removeClass("mt-0");
-            selfJQ.parent().siblings(".form-group").removeClass("w-lg-auto");
-            selfJQ.parent().parent().removeClass("flex-lg-row justify-content-start");
-        }
-        function loadDatagrid(id) {
-            let dg = $(`#${id} .modal-datagrid`);
-            dg.datagrid("load", getQueryParams(`#${id} form`));
-        }
-
-        $("#Maintain-create").one("click", function () {
-            changeEditAreaCss.call(this);
-            let DatagridModal = $("#DatagridModal-Maintain");
-            DatagridModal.one("shown.bs.modal", initDatagrid);
-            function initDatagrid() {
-                let dg = DatagridModal.find(".modal-datagrid");
-                dg.datagrid({
-                    url: '@Url.Action("MaintainForm_Management", "MaintainForm_Management")',
-                    method: 'POST',
-                    queryParams: getQueryParams(`#${DatagridModal[0].id} form`),
-                    frozenColumns: [[
-                        { field: '_select', checkbox: true },
-                        {
-                            field: '_detail', align: 'center',
-                            formatter: (val, row, index) => {
-                                return `<button class="btn btn-datagrid" onclick="onMaintainDetail(${index})">詳情</button>`;
-                            }
-                        },
-                        {
-                            field: '_locate', align: 'center',
-                            formatter: (val, row, index) => {
-                                return `<button class="btn btn-datagrid" onclick="onMaintainLocate(${index})">定位</button>`;
-                            }
-                        }
-                    ]],
-                    columns: [[
-                        { field: 'StockState', title: '庫存狀態', align: 'center', width: 150, sortable: true },
-                        { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 150, sortable: true },
-                        { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
-                        { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
-
-                        { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
-                        { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
-
-                        { field: 'EMFISN', title: '保養單項目編號', align: 'center', width: 210, sortable: true },
-
-                        { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
-                        { field: 'Period', title: '週期', align: 'center', width: 100, sortable: true },
-                        { field: 'Unit', title: '週期單位', align: 'center', width: 130, sortable: true },
-
-                        { field: 'LastTime', title: '上次保養', align: 'center', width: 140, sortable: true },
-                        { field: 'Date', title: '最近應保養', align: 'center', width: 150, sortable: true },
-                    ]],
-                    //rownumbers: true,
-                    idField: 'EMFISN',
-                    //sortName: 'EMFISN',
-                    remoteSort: false,
-                    sortOrder: 'asc',
-                    fit: true,
-                    singleSelect: false,
-                    selectOnCheck: true,
-                    checkOnSelect: true,
-                    pagination: true,
-                    pagePosition: 'bottom',
-                    pageSize: 10
-                })
-                //------------Pager --------------------------------------------------
-                let pager = dg.datagrid('getPager');
-                $(pager).pagination({
-                    pageSize: 10,
-                    showPageList: true,
-                    pageList: [10, 20, 50],
-                    beforePageText: '第',
-                    afterPageText: '頁，共 {pages} 頁',
-                    displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-                });
-            }
-        })
-        $("#DatagridModal-Maintain #search").click(() => { loadDatagrid("DatagridModal-Maintain") })
-
-        $("#Report-create").one("click", function () {
-            changeEditAreaCss.call(this);
-            let DatagridModal = $("#DatagridModal-Report");
-        })
-        $("#DatagridModal-Report #search").click(() => { loadDatagrid("DatagridModal-Report") })
-
         /* 畫線功能 */
         $("#path-edit").click(function () {
             sortRouteModal.create();
@@ -766,6 +781,246 @@
             console.log("onclick submit")
             save();
         })
+    }
+
+    function addDatagridEvent() {
+        const M_MDG = $('#DatagridModal-Maintain .modal-datagrid');
+        const E_MDG = $('#Maintain-datagrid');
+
+        const M_RDG = $('#DatagridModal-Repair .modal-datagrid');
+        const E_RDG = $('#Repair-datagrid');
+
+        let M_MSC = null;
+        let E_MSC = null;
+
+        let M_RSC = null;
+        let E_RSC = null;
+
+        const options = {
+            //rownumbers: true,
+            remoteSort: false,
+            sortOrder: 'asc',
+            fit: true,
+            singleSelect: false,
+            selectOnCheck: true,
+            checkOnSelect: true
+        };
+
+        const pageOptions = {
+            pageSize: 10,
+            showPageList: true,
+            pageList: [10, 20, 50],
+            beforePageText: '第',
+            afterPageText: '頁，共 {pages} 頁',
+            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+        };
+
+        const MaintainColumns = {
+            idField: 'EMFISN',
+            //sortName: 'EMFISN',
+            frozenColumns: [[
+                { field: '_select', checkbox: true },
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.Maintain.onDetail(${index})">詳情</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.Maintain.onLocate(${index})">定位</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'StockState', title: '庫存狀態', align: 'center', width: 150, sortable: true },
+                { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 150, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
+
+                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
+
+                { field: 'EMFISN', title: '保養單項目編號', align: 'center', width: 210, sortable: true },
+
+                { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
+                { field: 'Period', title: '週期', align: 'center', width: 100, sortable: true },
+                { field: 'Unit', title: '週期單位', align: 'center', width: 130, sortable: true },
+
+                { field: 'LastTime', title: '上次保養', align: 'center', width: 140, sortable: true },
+                { field: 'Date', title: '最近應保養', align: 'center', width: 150, sortable: true },
+            ]]
+        };
+
+        this.Maintain = {
+            onDetail: function (index) {
+                M_MSC = getChecked(M_MDG, index);
+                let row = M_MDG.datagrid('getRows')[index];
+                let url = '@Url.Action("Read","MaintainForm_Management")/' + `${row.EMFISN}`;
+                window.open(url, "_blank");
+            },
+            onLocate: function (index) {
+                M_MSC = getChecked(M_MDG, index);
+                let row = M_MDG.datagrid('getRows')[index];
+                let url = '@Url.Action("Read","MaintainForm_Management")/' + `${row.EMFISN}`;
+                window.open(url, "_blank");
+            }
+        }
+
+        const RepairOptions = {
+            idField: 'RSN',
+            //sortName: 'RSN',
+            frozenColumns: [[
+                { field: '_select', checkbox: true },
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.Repair.onDetail(${index})">詳情</button>`;
+                    }
+                },
+                {
+                    field: '_locate', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.Repair.onLocate(${index})">定位</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'StockState', title: '庫存狀態', align: 'center', width: 150, sortable: true },
+                { field: 'ReportState', title: '報修單狀態', align: 'center', width: 145, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
+
+                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
+
+                { field: 'RSN', title: '報修單號', align: 'center', width: 110, sortable: true },
+                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 95, sortable: true },
+                { field: 'Date', title: '報修時間', align: 'center', width: 175, sortable: true },
+                { field: 'MyName', title: '報修人員', align: 'center', width: 110, sortable: true },
+                { field: 'ReportContent', title: '報修內容', align: 'center', width: 110, sortable: true },
+            ]]
+        }
+
+        this.Repair = {
+            onDetail: function (index) {
+                M_RSC = getChecked(M_RDG, index);
+                let row = M_RDG.datagrid('getRows')[index];
+                let url = '@Url.Action("Read","Report_Management")/' + `${row.RSN}`;
+                window.open(url, "_blank");
+            },
+            onLocate: function (index) {
+                M_RSC = getChecked(M_RDG, index);
+                let row = M_RDG.datagrid('getRows')[index];
+                let url = '@Url.Action("Read","Report_Management")/' + `${row.RSN}`;
+                window.open(url, "_blank");
+            }
+        }
+
+        $("#Maintain-create").one("click", function () {
+            changeEditAreaCss.call(this);
+            let id = "DatagridModal-Maintain";
+            $("#" + id).one("shown.bs.modal", initDatagrid);
+            $(`#${id} #search`).click(() => { loadDatagrid(id) });
+            $(`#${id} #add-row`).click(() => {
+                //dg.getChecked (is all)
+                //foreach(data)
+                //dg.appendRow(data)
+            });
+            function initDatagrid() {
+                M_MDG.datagrid(
+                    Object.assign(
+                        {
+                            url: '@Url.Action("MaintainForm_Management", "MaintainForm_Management")',
+                            method: 'POST',
+                            queryParams: getQueryParams(`#${id} form`),
+                            pagination: true,
+                            pagePosition: 'bottom',
+                            pageSize: 10,
+                            onBeforeSelect: (index) => { return onSelectBtn(M_MDG, index, M_MSC) },
+                            onBeforeUnselect: (index) => { return onSelectBtn(M_MDG, index, M_MSC) },
+                        },
+                        options,
+                        MaintainColumns
+                    )
+                )
+                $(M_MDG.datagrid('getPager')).pagination(pageOptions);
+
+                E_MDG.datagrid(
+                    Object.assign(
+                        {
+                            onBeforeSelect: (index) => { return onSelectBtn(E_MDG, index, E_MSC) },
+                            onBeforeUnselect: (index) => { return onSelectBtn(E_MDG, index, E_MSC) }
+                        },
+                        options,
+                        MaintainColumns
+                    )
+                )
+            }
+        })
+
+        $("#Repair-create").one("click", function () {
+            changeEditAreaCss.call(this);
+            let id = "DatagridModal-Repair";
+            $("#" + id).one("shown.bs.modal", initDatagrid);
+            $(`#${id} #search`).click(() => { loadDatagrid(id) });
+            function initDatagrid() {
+                M_RDG.datagrid(
+                    Object.assign(
+                        {
+                            url: '@Url.Action("Report_Management", "Datagrid")',
+                            method: 'POST',
+                            queryParams: getQueryParams(`#${id} form`),
+                            pagination: true,
+                            pagePosition: 'bottom',
+                            pageSize: 10,
+                            onBeforeSelect: (index) => { return onSelectBtn(M_RDG, index, M_RSC) },
+                            onBeforeUnselect: (index) => { return onSelectBtn(M_RDG, index, M_RSC) },
+                        },
+                        options,
+                        RepairOptions
+                    )
+                )
+                $(M_RDG.datagrid('getPager')).pagination(pageOptions);
+
+                E_RDG.datagrid(
+                    Object.assign(
+                        {
+                            onBeforeSelect: (index) => { return onSelectBtn(E_RDG, index, E_RSC) },
+                            onBeforeUnselect: (index) => { return onSelectBtn(E_RDG, index, E_RSC) }
+                        },
+                        options,
+                        RepairOptions
+                    )
+                )
+            }
+        })
+
+        function changeEditAreaCss() {
+            let selfJQ = $(this);
+            selfJQ.attr("data-once", '')
+            selfJQ.siblings().removeClass("d-none");
+            selfJQ.parent().removeClass("mt-0");
+            selfJQ.parent().siblings(".datatable-easyui").removeClass("d-none");
+            selfJQ.parent().siblings(".form-group").removeClass("w-lg-auto");
+            selfJQ.parent().parent().removeClass("flex-lg-row justify-content-start");
+        }
+        function loadDatagrid(id) {
+            let dg = $(`#${id} .modal-datagrid`);
+            dg.datagrid("load", getQueryParams(`#${id} form`));
+        }
+        function getChecked(dg, index) {
+            return dg.datagrid('getPanel').find('.datagrid-cell-check input[type="checkbox"]')[index].checked;
+        }
+        function onSelectBtn(dg, index, sc) {
+            if (sc !== null && sc == getChecked(dg, index)) {
+                sc = null;
+                return false;
+            }
+            return true;
+        }
+        return this;
     }
 
     function addTooltip() {
