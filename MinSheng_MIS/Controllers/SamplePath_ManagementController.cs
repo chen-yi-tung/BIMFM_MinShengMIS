@@ -18,6 +18,7 @@ using Microsoft.Ajax.Utilities;
 using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
 using PathSample = MinSheng_MIS.Models.PathSample;
 using System.Web.Http.Results;
+using WebGrease.Css.Extensions;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -134,7 +135,6 @@ namespace MinSheng_MIS.Controllers
                 JObject jo = new JObject();
                 jo.Add("ResponseCode", 0);
                 string result = JsonConvert.SerializeObject(jo);
-                Response.StatusCode = 0;
                 return Content(result, "application/json");
             }
             catch(Exception e){
@@ -282,7 +282,6 @@ namespace MinSheng_MIS.Controllers
                 JObject jo = new JObject();
                 jo.Add("ResponseCode", 0);
                 string result = JsonConvert.SerializeObject(jo);
-                Response.StatusCode = 0;
                 return Content(result, "application/json");
             }
             catch (Exception e)
@@ -293,9 +292,45 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 刪除巡檢路線模板
-        public ActionResult Delete()
+        public ActionResult Delete(string id)
         {
+            ViewBag.PSSN = id;
             return View();
+        }
+        #endregion
+
+        #region 刪除巡檢路線模板api
+        [System.Web.Mvc.HttpPost]
+        public ActionResult DeleteSamplePath(string PSSN)
+        {
+            try
+            {
+                //刪掉PathSampleOrder
+                var pso = db.PathSampleOrder.Where(x => x.PSSN == PSSN);
+                db.PathSampleOrder.RemoveRange(pso);
+                db.SaveChanges();
+
+                //刪掉DrawPathSample
+                var dps = db.DrawPathSample.Where(x => x.PSSN == PSSN);
+                db.DrawPathSample.RemoveRange(dps);
+                db.SaveChanges();
+
+
+                //刪掉PathSample
+                var ps = db.PathSample.Find(PSSN);
+                db.PathSample.Remove(ps);
+                db.SaveChanges();
+
+                JObject jo = new JObject();
+                jo.Add("Success", true);
+                string result = JsonConvert.SerializeObject(jo);
+
+                return Content(result, "application/json");
+            }
+            catch (Exception e)
+            {
+                return Content(e.Message.ToString(), "application/json");
+            }
         }
         #endregion
     }

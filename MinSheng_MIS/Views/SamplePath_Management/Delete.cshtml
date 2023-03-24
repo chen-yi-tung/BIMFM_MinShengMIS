@@ -191,10 +191,11 @@
 <!-- EVENT -->
 <script src="../../Scripts/tool.js"></script>
 <script>
-
-    const RSN = '@ViewBag.id';
+    const PSSN = '@ViewBag.PSSN';
+    let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
+    //const RSN = '@ViewBag.id';
     //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null;
+    //let apiUrl = null;
 
     let fakeData = {
         "PathSample": {
@@ -363,11 +364,11 @@
                 let spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
                 $(this).append(spinner);
 
-                setTimeout(onSuccess, 1000);
+                //setTimeout(onSuccess, 1000);
 
-                /*
+                
                 $.ajax({
-                    url: '@Url.Action("Delete", "_Management")?PSSN=' + PSSN,
+                    url: '@Url.Action("DeleteSamplePath", "SamplePath_Management")?PSSN=' + PSSN,
                     body: JSON.stringify(PSSN),
                     type: "POST",
                     dataType: "json",
@@ -375,7 +376,7 @@
                     success: onSuccess,
                     error: onError
                 })
-                */
+                
 
                 function onSuccess(res) {
                     console.log("Success");
