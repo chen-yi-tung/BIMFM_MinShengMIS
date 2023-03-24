@@ -503,28 +503,29 @@
             ForgeDraw.resize();
         }
 
-        function calcRoute() {
+    }
 
-            if (ForgeDraw.lineData.length > 1) {
-                ForgeDraw.devices.forEach((dp) => {
-                    dp.update();
-                })
-            }
+    function calcRoute() {
 
-            if (!sortRouteModal.autoCalcRoute) {
-                return;
-            }
-
-            //開始計算路徑
-            let route = ForgeDraw.getRoute().map(e => e.name);
-            console.log(ForgeDraw.devices.map(e => e.result));
-
-            route.unshift("起點");
-            route.push("終點");
-
-            //顯示在網頁上
-            updatePathDisplay(route);
+        if (ForgeDraw.lineData.length > 1) {
+            ForgeDraw.devices.forEach((dp) => {
+                dp.update();
+            })
         }
+
+        if (!sortRouteModal.autoCalcRoute) {
+            return;
+        }
+
+        //開始計算路徑
+        let route = ForgeDraw.getRoute().map(e => e.name);
+        console.log(ForgeDraw.devices.map(e => e.result));
+
+        route.unshift("起點");
+        route.push("終點");
+
+        //顯示在網頁上
+        updatePathDisplay(route);
     }
 
     //更新網頁顯示的路徑
@@ -570,7 +571,13 @@
         );
         function onSuccess(res) {
             //console.log(res);
-            readDeviceData(fakeData.BIMDevices);
+            let eventName = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
+            let eventFunc = () => {
+                console.log("loadModel: FINAL_FRAME_RENDERED_CHANGED_EVENT")
+                readDeviceData(fakeData.BIMDevices);
+                viewer.removeEventListener(eventName,eventFunc);
+            };
+            viewer.addEventListener(eventName, eventFunc);
         }
         function onError(err) {
             console.log(err);
@@ -775,6 +782,7 @@
         $("#path-auto").click(function () {
             $(this).blur();
             sortRouteModal.autoRouteToggle();
+            calcRoute();
         })
 
         $("#submit").click(function () {

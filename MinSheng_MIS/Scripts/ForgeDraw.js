@@ -681,8 +681,6 @@ var ForgeDraw = (function (e) {
             if (this.dbId) {
                 forgeViewer.select(this.dbId);
                 this.forgePos = selectPos[this.dbId];
-                console.log("this.dbId type:",typeof this.dbId);
-                console.log(this.dbId, this.forgePos);
                 this.position = forgeViewer.worldToClient(this.forgePos);
             }
             console.log(`${this.name} => create`, this.position);
