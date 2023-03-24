@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -99,14 +100,17 @@ namespace MinSheng_MIS.Controllers
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
             List<HttpPostedFileBase> imgList = new List<HttpPostedFileBase>();
-            foreach (string item in Request.Files)
-            {
-                imgList.Add(Request.Files[item] as HttpPostedFileBase);
-            }
             List<HttpPostedFileBase> fileList = new List<HttpPostedFileBase>();
             foreach (string item in Request.Files)
             {
-                fileList.Add(Request.Files[item] as HttpPostedFileBase);
+                if (item.Contains("Img"))
+                {
+                    imgList.Add(Request.Files[item]);
+                }
+                if (item.Contains("File"))
+                {
+                    fileList.Add(Request.Files[item]);
+                }
             }
             string result = repairRecord_Management_ReadViewModel.UpdateSuppleData(formCollection,Server, imgList, fileList);
             return Content(result, "application/json");
