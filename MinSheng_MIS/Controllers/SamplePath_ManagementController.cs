@@ -105,31 +105,38 @@ namespace MinSheng_MIS.Controllers
                 db.PathSample.AddOrUpdate(ps);
                 db.SaveChanges();
                 //新增PathSampleOrder 巡檢路線模板順序
-                int count_pso = 1;
-                foreach (var item in model.PathSampleOrder)
+                if(model.PathSampleOrder != null)
                 {
-                    PathSampleOrder po = new PathSampleOrder();
-                    po.PSSN = ps.PSSN;
-                    po.BeaconID = item;
-                    po.FPSSN = ps.PSSN + "_" + count_pso.ToString().PadLeft(2, '0');
+                    int count_pso = 1;
+                    foreach (var item in model.PathSampleOrder)
+                    {
+                        PathSampleOrder po = new PathSampleOrder();
+                        po.PSSN = ps.PSSN;
+                        po.BeaconID = item;
+                        po.FPSSN = ps.PSSN + "_" + count_pso.ToString().PadLeft(2, '0');
 
-                    db.PathSampleOrder.Add(po);
-                    db.SaveChanges();
-                    count_pso++;
+                        db.PathSampleOrder.Add(po);
+                        db.SaveChanges();
+                        count_pso++;
+                    }
                 }
+                
                 //新增DrawPathSample 巡檢路線模板繪製順序
-                int count_dps = 1;
-                foreach (var item in model.PathSampleRecord)
+                if(model.PathSampleRecord != null)
                 {
-                    DrawPathSample dps = new DrawPathSample();
-                    dps.PSSN = ps.PSSN;
-                    dps.LocationX = Convert.ToDecimal(item.LocationX);
-                    dps.LocationY = Convert.ToDecimal(item.LocationY);
-                    dps.SISN = ps.PSSN + "_" + count_dps.ToString().PadLeft(2, '0');
+                    int count_dps = 1;
+                    foreach (var item in model.PathSampleRecord)
+                    {
+                        DrawPathSample dps = new DrawPathSample();
+                        dps.PSSN = ps.PSSN;
+                        dps.LocationX = Convert.ToDecimal(item.LocationX);
+                        dps.LocationY = Convert.ToDecimal(item.LocationY);
+                        dps.SISN = ps.PSSN + "_" + count_dps.ToString().PadLeft(2, '0');
 
-                    db.DrawPathSample.Add(dps);
-                    db.SaveChanges();
-                    count_dps++;
+                        db.DrawPathSample.Add(dps);
+                        db.SaveChanges();
+                        count_dps++;
+                    }
                 }
 
                 JObject jo = new JObject();
@@ -247,17 +254,20 @@ namespace MinSheng_MIS.Controllers
                 db.PathSampleOrder.RemoveRange(oldpso);
                 db.SaveChanges();
                 //--新增這次編輯的
-                int count_pso = 1;
-                foreach (var item in model.PathSampleOrder)
+                if(model.PathSampleOrder != null)
                 {
-                    PathSampleOrder po = new PathSampleOrder();
-                    po.PSSN = model.PathSample.PSSN;
-                    po.BeaconID = item;
-                    po.FPSSN = model.PathSample.PSSN + "_" + count_pso.ToString().PadLeft(2, '0');
+                    int count_pso = 1;
+                    foreach (var item in model.PathSampleOrder)
+                    {
+                        PathSampleOrder po = new PathSampleOrder();
+                        po.PSSN = model.PathSample.PSSN;
+                        po.BeaconID = item;
+                        po.FPSSN = model.PathSample.PSSN + "_" + count_pso.ToString().PadLeft(2, '0');
 
-                    db.PathSampleOrder.Add(po);
-                    db.SaveChanges();
-                    count_pso++;
+                        db.PathSampleOrder.Add(po);
+                        db.SaveChanges();
+                        count_pso++;
+                    }
                 }
                 //新增DrawPathSample 巡檢路線模板繪製順序
                 //--先刪掉舊的
@@ -265,20 +275,22 @@ namespace MinSheng_MIS.Controllers
                 db.DrawPathSample.RemoveRange(olddps);
                 db.SaveChanges();
                 //--新增這次編輯的
-                int count_dps = 1;
-                foreach (var item in model.PathSampleRecord)
+                if (model.PathSampleRecord != null)
                 {
-                    DrawPathSample dps = new DrawPathSample();
-                    dps.PSSN = model.PathSample.PSSN;
-                    dps.LocationX = Convert.ToDecimal(item.LocationX);
-                    dps.LocationY = Convert.ToDecimal(item.LocationY);
-                    dps.SISN = model.PathSample.PSSN + "_" + count_dps.ToString().PadLeft(2, '0');
+                    int count_dps = 1;
+                    foreach (var item in model.PathSampleRecord)
+                    {
+                        DrawPathSample dps = new DrawPathSample();
+                        dps.PSSN = model.PathSample.PSSN;
+                        dps.LocationX = Convert.ToDecimal(item.LocationX);
+                        dps.LocationY = Convert.ToDecimal(item.LocationY);
+                        dps.SISN = model.PathSample.PSSN + "_" + count_dps.ToString().PadLeft(2, '0');
 
-                    db.DrawPathSample.Add(dps);
-                    db.SaveChanges();
-                    count_dps++;
+                        db.DrawPathSample.Add(dps);
+                        db.SaveChanges();
+                        count_dps++;
+                    }
                 }
-
                 JObject jo = new JObject();
                 jo.Add("ResponseCode", 0);
                 string result = JsonConvert.SerializeObject(jo);
