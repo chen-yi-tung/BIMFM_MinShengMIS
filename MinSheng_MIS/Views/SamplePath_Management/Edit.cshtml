@@ -444,7 +444,27 @@
         })
         $("#submit").click(function () {
             console.log("onclick submit")
-            save();
+            //save();
+            let pt = $("#PathTitle").val();
+            //console.log(pt);
+            //先判斷巡檢路線模板是否有填值
+            if (pt == "") {
+                errtext = "巡檢路線模板名稱不可為空!";
+                createDialogModal({
+                    id: "DialogModal-Error",
+                    inner: `${errtext}`,
+                    button: [
+                        {
+                            className: "btn btn-delete",
+                            cancel: true,
+                            text: "確定"
+                        },
+                    ]
+                })
+            }
+            else {
+                save();
+            }
         })
     }
 
@@ -481,15 +501,15 @@
 
         console.log(data);
 
-            /* $.ajax({
-            url: '@Url.Action("aaa", "bbb")',
+            $.ajax({
+            url: '@Url.Action("EditSamplePath", "SamplePath_Management")',
             data: JSON.stringify(data),
             type: "POST",
             dataType: "json",
             contentType: "application/json;charset=utf-8",
             success: onSuccess,
             error: onError
-            }) */
+            })
 
             function onSuccess(res) {
                 console.log("Success");
@@ -518,7 +538,7 @@
             console.log(res);
             let errtext;
 
-            switch (res) {
+            switch (res.responseText) {
                 case "duplicate title":
                     errtext = "巡檢路線模板名稱重複！";
                     break;

@@ -215,6 +215,83 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 編輯巡檢路線模板api
+
+        [System.Web.Mvc.HttpPost]
+        public ActionResult EditSamplePath(PathSampleViewModel.PathSampleInfo model)
+        {
+            try
+            {
+                //檢查名稱是否重複
+                JObject obj = new JObject();
+                var existPathTitle = db.PathSample.Where(x => x.PathTitle == model.PathSample.PathTitle).FirstOrDefault();
+                if (existPathTitle != null)
+                {
+                    //可跟原本的重複
+                    if (existPathTitle.PSSN != model.PathSample.PSSN)
+                    {
+                        return Content("duplicate title", "application/json");
+                    }
+                }
+
+                //編輯PathSample 巡檢路線模板基本資訊
+                var newestPSSN = db.PathSample.Find(model.PathSample.PSSN);
+                newestPSSN.PathTitle = model.PathSample.PathTitle;
+
+                db.PathSample.AddOrUpdate(newestPSSN);
+                db.SaveChanges();
+
+                //編輯PathSampleOrder 巡檢路線模板順序
+                //--先刪掉舊的
+                var oldpso = db.PathSampleOrder.Where(x => x.PSSN == model.PathSample.PSSN);
+                db.PathSampleOrder.RemoveRange(oldpso);
+                db.SaveChanges();
+                //--新增這次編輯的
+                int count_pso = 1;
+                foreach (var item in model.PathSampleOrder)
+                {
+                    PathSampleOrder po = new PathSampleOrder();
+                    po.PSSN = model.PathSample.PSSN;
+                    po.BeaconID = item;
+                    po.FPSSN = model.PathSample.PSSN + "_" + count_pso.ToString().PadLeft(2, '0');
+
+                    db.PathSampleOrder.Add(po);
+                    db.SaveChanges();
+                    count_pso++;
+                }
+                //新增DrawPathSample 巡檢路線模板繪製順序
+                //--先刪掉舊的
+                var olddps = db.DrawPathSample.Where(x => x.PSSN == model.PathSample.PSSN);
+                db.DrawPathSample.RemoveRange(olddps);
+                db.SaveChanges();
+                //--新增這次編輯的
+                int count_dps = 1;
+                foreach (var item in model.PathSampleRecord)
+                {
+                    DrawPathSample dps = new DrawPathSample();
+                    dps.PSSN = model.PathSample.PSSN;
+                    dps.LocationX = Convert.ToDecimal(item.LocationX);
+                    dps.LocationY = Convert.ToDecimal(item.LocationY);
+                    dps.SISN = model.PathSample.PSSN + "_" + count_dps.ToString().PadLeft(2, '0');
+
+                    db.DrawPathSample.Add(dps);
+                    db.SaveChanges();
+                    count_dps++;
+                }
+
+                JObject jo = new JObject();
+                jo.Add("ResponseCode", 0);
+                string result = JsonConvert.SerializeObject(jo);
+                Response.StatusCode = 0;
+                return Content(result, "application/json");
+            }
+            catch (Exception e)
+            {
+                return Content(e.Message.ToString(), "application/json");
+            }
+        }
+        #endregion
+
         #region 刪除巡檢路線模板
         public ActionResult Delete()
         {

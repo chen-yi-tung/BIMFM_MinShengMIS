@@ -438,12 +438,12 @@
             PathSampleRecord: PathSampleRecord
         }
 
-        console.log(data);
-        console.log(JSON.stringify(data));
+        //console.log(data);
+        //console.log(JSON.stringify(data));
         $.ajax({
             url: '@Url.Action("CreateSamplePath", "SamplePath_Management")',
             data: JSON.stringify(data),
-            type: "post",
+            type: "POST",
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: onSuccess,
@@ -452,7 +452,7 @@
 
         function onSuccess(res) {
             console.log("Success");
-            console.log(res);
+            //console.log(res);
 
             if (res.ResponseCode == 0) {
                 createDialogModal({
@@ -474,7 +474,7 @@
         }
         function onError(res) {
             console.log("error");
-            console.log(res);
+            //console.log(res);
             let errtext;
 
             switch (res.responseText) {

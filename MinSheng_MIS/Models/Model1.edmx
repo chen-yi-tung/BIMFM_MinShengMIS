@@ -325,7 +325,7 @@
             <PropertyRef Name="PSSN" />
           </Key>
           <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
-          <Property Name="PathTitle" Type="nchar" MaxLength="20" Nullable="false" />
+          <Property Name="PathTitle" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="FSN" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="PathSampleOrder">
@@ -1504,7 +1504,7 @@
             <PropertyRef Name="PSSN" />
           </Key>
           <Property Name="PSSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
-          <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawPathSample" Relationship="Bimfm_MinSheng_MISModel.FK_DrawPathSample_DrawPathSample" FromRole="PathSample" ToRole="DrawPathSample" />
           <NavigationProperty Name="PathSampleOrder" Relationship="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" FromRole="PathSample" ToRole="PathSampleOrder" />
