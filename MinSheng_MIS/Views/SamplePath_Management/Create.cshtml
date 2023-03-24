@@ -229,7 +229,13 @@
         );
         function onSuccess(res) {
             //console.log(res);
-            readDeviceData(fakeData.BIMDevices);
+            let eventName = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
+            let eventFunc = () => {
+                console.log("loadModel: FINAL_FRAME_RENDERED_CHANGED_EVENT")
+                readDeviceData(fakeData.BIMDevices);
+                viewer.removeEventListener(eventName,eventFunc);
+            };
+            viewer.addEventListener(eventName, eventFunc);
         }
         function onError(err) {
             console.log(err);
@@ -239,6 +245,7 @@
     //讀取設備資料並繪製
     function readDeviceData(data) {
         data.forEach((e) => {
+            console.log("readDeviceData: ",e)
             let btSprite = PIXI.Sprite.from(btUrl);
             btSprite.scale.set(0.6);
             btSprite.anchor.set(0.5);
