@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.Ajax.Utilities;
 using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
 using PathSample = MinSheng_MIS.Models.PathSample;
+using System.Web.Http.Results;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -76,76 +77,72 @@ namespace MinSheng_MIS.Controllers
         [System.Web.Mvc.HttpPost]
         public ActionResult CreateSamplePath(PathSampleViewModel.PathSampleInfo model)
         {
-            //新增PathSample 巡檢路線模板基本資訊
-            PathSample ps = new PathSample();
-            var newestPSSN = db.PathSample.OrderByDescending(x => x.PSSN).Select(x => x.PSSN).FirstOrDefault();
-            if(newestPSSN != null)
+            try
             {
-                var PSSN = Convert.ToInt32(newestPSSN) + 1;
-                ps.PSSN = PSSN.ToString().PadLeft(6, '0');
-            }
-            else
-            {
-                ps.PSSN = "000001";
-            }
-            ps.PathTitle = model.PathSample.PathTitle;
-            ps.FSN = model.PathSample.FSN;
-            db.PathSample.AddOrUpdate(ps);
-            db.SaveChanges();
-            //新增PathSampleOrder 巡檢路線模板順序
-            int count_pso = 1;
-            foreach (var item in model.PathSampleOrder)
-            {
-                PathSampleOrder po = new PathSampleOrder();
-                po.PSSN = ps.PSSN;
-                po.BeaconID = item;
-                po.FPSSN = ps.PSSN + "_" + count_pso.ToString().PadLeft(2, '0');
+                //檢查名稱是否重複
+                JObject obj = new JObject();
+                var existPathTitle = db.PathSample.Where(x => x.PathTitle == model.PathSample.PathTitle).FirstOrDefault();
+                if (existPathTitle != null)
+                {
+                    return Content("duplicate title", "application/json");
+                }
 
-                db.PathSampleOrder.Add(po);
+                //新增PathSample 巡檢路線模板基本資訊
+                PathSample ps = new PathSample();
+                var newestPSSN = db.PathSample.OrderByDescending(x => x.PSSN).Select(x => x.PSSN).FirstOrDefault();
+                if (newestPSSN != null)
+                {
+                    var PSSN = Convert.ToInt32(newestPSSN) + 1;
+                    ps.PSSN = PSSN.ToString().PadLeft(6, '0');
+                }
+                else
+                {
+                    ps.PSSN = "000001";
+                }
+                ps.PathTitle = model.PathSample.PathTitle;
+                ps.FSN = model.PathSample.FSN;
+                db.PathSample.AddOrUpdate(ps);
                 db.SaveChanges();
-                count_pso++;
-            }
-            //新增DrawPathSample 巡檢路線模板繪製順序
-            int count_dps = 1;
-            foreach (var item in model.PathSampleRecord)
-            {
-                DrawPathSample dps = new DrawPathSample();
-                dps.PSSN = ps.PSSN;
-                dps.LocationX = Convert.ToDecimal(item.LocationX);
-                dps.LocationY = Convert.ToDecimal(item.LocationY);
-                dps.SISN = ps.PSSN + "_" + count_dps.ToString().PadLeft(2, '0');
+                //新增PathSampleOrder 巡檢路線模板順序
+                int count_pso = 1;
+                foreach (var item in model.PathSampleOrder)
+                {
+                    PathSampleOrder po = new PathSampleOrder();
+                    po.PSSN = ps.PSSN;
+                    po.BeaconID = item;
+                    po.FPSSN = ps.PSSN + "_" + count_pso.ToString().PadLeft(2, '0');
 
-                db.DrawPathSample.Add(dps);
-                db.SaveChanges();
-                count_dps++;
-            }
+                    db.PathSampleOrder.Add(po);
+                    db.SaveChanges();
+                    count_pso++;
+                }
+                //新增DrawPathSample 巡檢路線模板繪製順序
+                int count_dps = 1;
+                foreach (var item in model.PathSampleRecord)
+                {
+                    DrawPathSample dps = new DrawPathSample();
+                    dps.PSSN = ps.PSSN;
+                    dps.LocationX = Convert.ToDecimal(item.LocationX);
+                    dps.LocationY = Convert.ToDecimal(item.LocationY);
+                    dps.SISN = ps.PSSN + "_" + count_dps.ToString().PadLeft(2, '0');
 
-            JObject jo = new JObject();
-            jo.Add("ResponseCode", 0);
-            string result = JsonConvert.SerializeObject(jo);
-            return Content(result, "application/json");
+                    db.DrawPathSample.Add(dps);
+                    db.SaveChanges();
+                    count_dps++;
+                }
+
+                JObject jo = new JObject();
+                jo.Add("ResponseCode", 0);
+                string result = JsonConvert.SerializeObject(jo);
+                Response.StatusCode = 0;
+                return Content(result, "application/json");
+            }
+            catch(Exception e){
+                return Content(e.Message.ToString(), "application/json");
+            }
         }
         #endregion
 
-        #endregion
-
-        #region 判斷巡檢路線模板名稱是否重複
-        [System.Web.Mvc.HttpGet]
-        public ActionResult CheckPathTitleISvalid(string id) //PathTitle
-        {
-            JObject obj = new JObject();
-            var existPathTitle = db.PathSample.Where(x => x.PathTitle == id).FirstOrDefault();
-            if(existPathTitle != null)
-            {
-                obj.Add("IsVaild", false);
-            }
-            else
-            {
-                obj.Add("IsVaild", true);
-            }
-            string result = JsonConvert.SerializeObject(obj);
-            return Content(result, "application/json");
-        }
         #endregion
 
         #region 巡檢路線模板詳情
@@ -211,8 +208,9 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯巡檢路線模板
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.PSSN = id;
             return View();
         }
         #endregion

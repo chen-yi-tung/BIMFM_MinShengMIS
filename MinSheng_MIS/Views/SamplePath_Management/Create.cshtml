@@ -389,29 +389,22 @@
             console.log(pt);
             //先判斷巡檢路線模板是否有填值
             if (pt == "") {
-                alert("巡檢路徑模板標題不可為空!")
-            } else {
-                //判斷巡檢路線模板名稱是否重複
-                let url = '@Url.Action("CheckPathTitleISvalid", "SamplePath_Management")' + "/" + pt;
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
+                errtext = "巡檢路線模板名稱不可為空!";
+                createDialogModal({
+                    id: "DialogModal-Error",
+                    inner: `${errtext}`,
+                    button: [
+                        {
+                            className: "btn btn-delete",
+                            cancel: true,
+                            text: "確定"
+                        },
+                    ]
                 })
-                function onSuccess(res) {
-                    //console.log(res);
-                    if (res["IsVaild"]) {//巡檢路線模板名稱未重複
-                        save();
-                    } else {//巡檢路線模板名稱重複
-                        alert("巡檢路線模板標題重複，請重新命名!")
-                    }   
-                }
-                function onError(res) {
-                    console.log(res);
-                }
+                //alert("巡檢路徑模板標題不可為空!")
+            }
+            else {
+                save();
             }
         })
     }
@@ -484,7 +477,7 @@
             console.log(res);
             let errtext;
 
-            switch (res) {
+            switch (res.responseText) {
                 case "duplicate title":
                     errtext = "巡檢路線模板名稱重複！";
                     break;
