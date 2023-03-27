@@ -131,10 +131,13 @@ function filterIt(arr, objKey, searchKey) {
 }
 
 function getQueryParams(selector = null) {
-    const searchParams = $(selector ?? "form").find("input:not([type='button']):not([type='submit']):not([type='reset']), select").toArray().map(e => $(e).attr("name"));
+    const searchParams = $(selector ?? "form")
+        .find("input:not([type='button']):not([type='submit']):not([type='reset']), select")
+        .toArray()
+        .map(e => $(e).attr("name"));
     console.log(searchParams)
     let queryParams = searchParams.reduce((total, c) => {
-        total[c] = $(`#${c}`).val()
+        total[c] = $(selector ? `${selector} #${c}` : `#${c}`).val()
         return total;
     }, {})
     console.log(queryParams)

@@ -324,13 +324,14 @@ namespace MinSheng_MIS.Models.ViewModels
         public class AllRepairAudit
         {
             public string AuditUserName { get; set; }
+            public string AuditUserID { get; set; }
             public string AuditMemo { get; set; }
             public string ImgPath { get; set; }
             public string AuditResult { get; set; }
             public string PRASN { get; set; }
             public string IPRSN { get; set; }
             public string AuditDate { get; set; }
-            
+
         }
 
         /// <summary>
@@ -338,7 +339,7 @@ namespace MinSheng_MIS.Models.ViewModels
         /// </summary>
         /// <returns></returns>
         public string AuditCheckBuffer(string IPRSN)
-        { 
+        {
             var RepairAuIn = db.RepairAuditInfo.Where(x => x.IPRSN == IPRSN).Where(x => x.IsBuffer == true).FirstOrDefault();
             if (RepairAuIn != null)
             {
@@ -346,17 +347,21 @@ namespace MinSheng_MIS.Models.ViewModels
                 //要在確認回傳格式
                 var Name = db.AspNetUsers.Where(x => x.UserName == RepairAuIn.AuditUserID).Select(x => x.MyName).FirstOrDefault();
                 var Pic = db.RepairAuditImage.Where(x => x.PRASN == RepairAuIn.PRASN).Select(x => x.ImgPath); //可能會有很多張圖
-                string PicResult = "";  
+                string PicResult = "";
                 foreach (var item in Pic)
                 {
                     PicResult += item + ",";
                 }
-                PicResult.Remove(PicResult.Length-1); //移除最後一個'，'
+                if (PicResult.Length > 0)
+                {
+                    PicResult.Remove(PicResult.Length - 1); //移除最後一個'，'
+                }
 
                 var dic = Surface.AuditResult();
                 AllRepairAudit ReAu = new AllRepairAudit()
                 {
                     AuditUserName = Name,
+                    AuditUserID = RepairAuIn.AuditUserID,
                     AuditMemo = RepairAuIn.AuditMemo,
                     ImgPath = PicResult,  //如果多張圖片的話， 用'，'分開
                     AuditResult = dic[RepairAuIn.AuditResult],
@@ -378,29 +383,80 @@ namespace MinSheng_MIS.Models.ViewModels
         /// </summary>
         /// <param name="Path"> client端的圖片路徑 </param>
         /// <returns></returns>
-        public string UploadImg(HttpPostedFileBase file, HttpServerUtilityBase Sev,string prasn) 
+        public string UploadImg(HttpPostedFileBase file, HttpServerUtilityBase Sev)
         {
             try
             {
-                string fileSavedPath = "~/DownFile/";
+                string fileSavedPath = "/AllImage/";
                 if (!Directory.Exists(Sev.MapPath(fileSavedPath)))
                 {
                     Directory.CreateDirectory(Sev.MapPath(fileSavedPath));
                 }
-                
-                string newFileName = string.Concat(prasn +
-                DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-ff"),
+
+                string newFileName = string.Concat(
+                DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss_") + Path.GetFileNameWithoutExtension(file.FileName),
                 Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
 
                 string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
                 file.SaveAs(fullFilePath);
-                return fullFilePath;
+                return fileSavedPath + newFileName;
             }
-            catch (Exception) 
+            catch
             {
                 return "";
             }
         }
+
+        /// <summary>
+        /// 上傳檔案，並回傳Server端儲存路徑
+        /// </summary>
+        /// <param name="Path"> client端的檔案路徑 </param>
+        /// <returns></returns>
+        public string UploadFile(HttpPostedFileBase file, HttpServerUtilityBase Sev)
+        {
+            try
+            {
+                string fileSavedPath = "/AllFile/";
+                if (!Directory.Exists(Sev.MapPath(fileSavedPath)))
+                {
+                    Directory.CreateDirectory(Sev.MapPath(fileSavedPath));
+                }
+
+                string newFileName = string.Concat(
+                DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss_") + Path.GetFileNameWithoutExtension(file.FileName),
+                Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
+
+                string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
+                file.SaveAs(fullFilePath);
+                return fileSavedPath + newFileName;
+            }
+            catch
+            {
+                return "";
+            }
+        }
+        
+        /// <summary>
+        /// 在提交審核資料時:
+        /// 檢查設備EquipmentReportForm中有沒有其他未完成的項目，如果沒有的話則去EquipmentInfo把該設備(ESN)的Estate改為1
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckEquipState(string ESN)
+        {
+            try
+            {
+                var ERF = db.EquipmentReportForm.Where(x => x.ESN == ESN).Where(x => x.ReportState != "7");
+                if (ERF.Count() == 0)
+                {
+                    var EI = db.EquipmentInfo.Find(ESN);
+                    EI.EState = "1";
+                    db.EquipmentInfo.AddOrUpdate(EI);
+                }
+                return true;
+            }
+            catch { return false; }
+        }
+
 
         public string CreateAuditData(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev, List<HttpPostedFileBase> fileList)
         {
@@ -418,7 +474,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 case "2":
                     RepairState_IPR = "7";
                     RepairState_ERF = "8";
-                    break; 
+                    break;
                 case "3":
                     RepairState_IPR = "5";
                     RepairState_ERF = "6";
@@ -429,8 +485,8 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 var RAI = new Models.RepairAuditInfo()
                 {
-                    PRASN = prasn, 
-                    IPRSN = iprsn, 
+                    PRASN = prasn,
+                    IPRSN = iprsn,
                     AuditUserID = formCollection["AuditUserID"].ToString(),
                     AuditDate = DateTime.Now,
                     AuditMemo = formCollection["AuditMemo"].ToString(),
@@ -443,8 +499,8 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 var RAI = new Models.RepairAuditInfo()
                 {
-                    PRASN = prasn, 
-                    IPRSN = iprsn, 
+                    PRASN = prasn,
+                    IPRSN = iprsn,
                     AuditUserID = formCollection["AuditUserID"].ToString(),
                     AuditDate = DateTime.Now,
                     AuditMemo = formCollection["AuditMemo"].ToString(),
@@ -472,7 +528,7 @@ namespace MinSheng_MIS.Models.ViewModels
             foreach (var item in fileList)
             {
                 //上傳照片 都傳完之後才做新增
-                string result = UploadImg(item, Sev, prasn); //做上傳動作，並回傳儲存路徑
+                string result = UploadImg(item, Sev); //做上傳動作，並回傳儲存路徑
                 if (result != "")
                 {
                     ImagePath_Server.Add(result);
@@ -494,16 +550,162 @@ namespace MinSheng_MIS.Models.ViewModels
                 db.SaveChanges();
             }
 
+            if (formCollection["AuditResult"].ToString() == "1") //審核狀態為審核通過時，要檢查該設備，並做設備狀態調整
+            {
+                var rsn = db.InspectionPlanRepair.Find(iprsn);
+                if (!CheckEquipState(rsn.RSN))
+                {
+                    return "檢查設備狀態時出錯!";
+                }
+            }
+
             return "成功!";
+        }
+
+        public class SuppleData
+        {
+            public string RepairState { get; set; }
+            public string MyName { get; set; }
+            public string RepairDate { get; set; }
+            public string RepairContent { get; set; }
+            public string ImgPath { get; set; }
+            //public string PRSN { get; set; }
+            public string IPRSN { get; set; }
+            //public string SupplementaryDate { get; set; }
         }
 
         public string GetSupplementEditData(string IPRSN) //取得"補件"下方編輯區資料，提供給前端做顯示
         {
-            var AUID = db.RepairAuditInfo.Where(x => x.IPRSN == IPRSN).FirstOrDefault();
-            var AUName = db.AspNetUsers.Where(x => x.UserName == AUID.AuditUserID).Select(x => x.MyName).FirstOrDefault();
-            
-            
-            return "";
+            var IPR = db.InspectionPlanRepair.Find(IPRSN);
+            var Name = db.AspNetUsers.Where(x => x.UserName == IPR.RepairUserID).Select(x => x.MyName).FirstOrDefault();
+            var RSI = db.RepairSupplementaryInfo.Where(x => x.IPRSN == IPRSN).FirstOrDefault();
+            var RCI = db.RepairCompletionImage.Where(x => x.IPRSN == IPRSN).Select(x => x.ImgPath);
+
+            string allPath = "";
+            foreach (var path in RCI)
+            {
+                allPath += path + ",";
+            }
+            if (allPath.Length > 0)
+            {
+                allPath.Remove(allPath.Length - 1); //移除最後一個'，'
+            }
+            var dic = Surface.InspectionPlanRepairState();
+            var SD = new SuppleData() //下面補件資料的所有資料
+            {
+                RepairState = dic[IPR.RepairState],
+                MyName = Name,
+                RepairDate = IPR.RepairDate?.ToString("yyyy/MM/dd HH:mm:ss"),
+                RepairContent = IPR.RepairContent,
+                ImgPath = allPath,
+                IPRSN = IPRSN
+            };
+
+            string result = JsonConvert.SerializeObject(SD);
+            return result;
+        }
+
+        public string UpdateSuppleData(System.Web.Mvc.FormCollection form, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList, List<HttpPostedFileBase> fileList) //提交補件資料，要更新和新建資料Repair Supplementary Info
+        {
+            try
+            {
+                string iprsn = form["IPRSN"].ToString();
+                var IPR = db.InspectionPlanRepair.Find(iprsn);
+                IPR.RepairState = "3";
+                IPR.RepairContent = form["RepairContent"].ToString();
+                db.InspectionPlanRepair.AddOrUpdate(IPR);
+                db.RepairCompletionImage.RemoveRange(db.RepairCompletionImage.Where(x => x.IPRSN == iprsn)); //先移除所有維修照片再新增
+                db.SaveChanges();
+                List<string> ImagePath_Server = new List<string>();
+                foreach (var item in imgList)
+                {
+                    string result = UploadImg(item, Sev); //做上傳動作，並回傳儲存路徑
+                    if (result != "")
+                    {
+                        ImagePath_Server.Add(result);
+                    }
+                    else
+                    {
+                        return "圖片上傳過程出錯!"; //新增出錯!!
+                    }
+                }
+                foreach (var item in ImagePath_Server)
+                {
+                    //db存
+                    RepairCompletionImage RC = new RepairCompletionImage()
+                    {
+                        IPRSN = iprsn,
+                        ImgPath = item
+                    };
+                    db.RepairCompletionImage.Add(RC);
+                    db.SaveChanges();
+                }
+                var EP = db.EquipmentReportForm.Find(IPR.RSN);
+                EP.ReportState = "4";
+                db.EquipmentReportForm.AddOrUpdate(EP);
+                db.SaveChanges();
+
+                var GetPRSN = db.RepairSupplementaryInfo.Where(x => x.PRSN.Contains(iprsn)).OrderByDescending(x => x.PRSN).Select(x => x.PRSN).FirstOrDefault();
+                //規則 :   PRSN = IPRSN + _序號
+                //取出最新的一筆資料，算出下一筆要新增的序號
+                string NewPRSN = ""; //新增的序號
+                if (GetPRSN.Count() == 0) //如果沒有任何資料
+                {
+                    NewPRSN = iprsn + "_01";
+                }
+                else //有資料
+                {
+                    int subIndex = iprsn.Length; //抓取IPRSN長度
+                    int Nowindex = Int32.Parse(GetPRSN.Substring(subIndex + 1)); //擷取現在最新資料後面數字部分
+                    Nowindex++;
+                    string Newindex = Nowindex.ToString();
+                    if (Newindex.Length == 1) //如果是個位數前面要補0
+                    {
+                        Newindex = "0" + Newindex;
+                    }
+                    NewPRSN = iprsn + "_" + Newindex; //組起來新的PRSN
+                }
+                var RSI = new Models.RepairSupplementaryInfo()
+                {
+                    PRSN = NewPRSN,
+                    IPRSN = iprsn,
+                    SupplementaryUserID = form["SupplementaryUserID"].ToString(),
+                    SupplementaryDate = DateTime.Now,
+                    SupplementaryContent = form["SupplementaryContent"].ToString()
+                };
+                db.RepairSupplementaryInfo.Add(RSI);
+
+                //補件檔案
+                List<string> FilesPath = new List<string>(); 
+                foreach (var item in fileList)
+                {
+                    string result = UploadFile(item,Sev);
+                    if (result != "")
+                    {
+                        FilesPath.Add(result);
+                    }
+                    else
+                    {
+                        return "檔案上傳過程出錯!";
+                    }
+                }
+                foreach (var item in FilesPath)
+                {
+                    RepairSupplementaryFile RS = new RepairSupplementaryFile()
+                    {
+                        FilePath = item,
+                        PRSN = NewPRSN
+                    };
+                    db.RepairSupplementaryFile.Add(RS);
+                    db.SaveChanges();
+                }
+
+                return "提交成功!";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
     }
 }

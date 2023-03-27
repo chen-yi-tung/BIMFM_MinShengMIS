@@ -71,7 +71,18 @@
     text-decoration: none;
 }
 
-@media (max-width:1199.98px) {
+@media (max-width:575.98px) {
+    .navbar-brand img {
+        width: 35px;
+        object-fit: cover;
+        object-position: left;
+    }
+    .navbar-brand-title{
+        margin-left: 0.5em;
+    }
+}
+
+@media (max-width:1399.98px) {
     .offcanvas .navbar-brand-title {
         margin-left: 0px;
         margin-right: 0px;

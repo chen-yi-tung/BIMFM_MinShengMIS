@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -72,16 +73,46 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 巡檢維修紀錄補件
-        public ActionResult Supplement()
+        public ActionResult Supplement(string id)
         {
+            ViewBag.id = id;
             return View();
         }
-
+        [HttpGet]
         public ActionResult SupplementBody(string id) //[補件]的顯示資料與[詳情]都相同除了沒有[維修資料]
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
 
             string result = repairRecord_Management_ReadViewModel.GetJsonForRead(id);
+            return Content(result, "application/json");
+        }
+        [HttpGet]
+        public ActionResult Supplement_GetData(string id) //取得下方補件資料
+        {
+            var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
+
+            string result = repairRecord_Management_ReadViewModel.GetSupplementEditData(id);
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public ActionResult Supplement_Submit(FormCollection formCollection) //下方補件資料'提交'
+        {
+            var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
+            List<HttpPostedFileBase> imgList = new List<HttpPostedFileBase>();
+            List<HttpPostedFileBase> fileList = new List<HttpPostedFileBase>();
+            foreach (string item in Request.Files)
+            {
+                if (item.Contains("Img"))
+                {
+                    imgList.Add(Request.Files[item]);
+                }
+                if (item.Contains("File"))
+                {
+                    fileList.Add(Request.Files[item]);
+                }
+            }
+            string result = repairRecord_Management_ReadViewModel.UpdateSuppleData(formCollection,Server, imgList, fileList);
             return Content(result, "application/json");
         }
         #endregion

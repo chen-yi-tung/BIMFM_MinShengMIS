@@ -20,19 +20,21 @@
     <div class="edit-area edit-area-middle">
         <form class="form form-w-100" enctype="multipart/form-data">
             <div class="form-group d-lg-contents">
-                <label for="AuditUserID">審核人員</label>
-                <input class="form-control readonly" type="text" id="AuditUserID" name="AuditUserID" readonly>
+                <input type="hidden" name="AuditUserID" value="">
+                <label for="AuditUserName">審核人員</label>
+                <input class="form-control readonly" type="text" id="AuditUserName" name="AuditUserName" readonly>
             </div>
             <div class="form-group d-lg-contents">
                 <label for="AuditMemo" class="align-self-start">審核意見</label>
                 <textarea class="form-control" name="AuditMemo" id="AuditMemo"></textarea>
             </div>
+            <input type="hidden" name="PRASN" value="">
             <div class="form-group d-lg-contents">
                 <label for="ImgPath">審核照片</label>
                 <div>
                     <label class="btn btn-search" for="ImgPath">選擇照片</label>
                     <input type="file" multiple accept="image/*" id="ImgPath" name="ImgPath"
-                        style="visibility: hidden; width: 0;">
+                           style="visibility: hidden; width: 0;">
                 </div>
             </div>
             <div class="d-lg-contents">
@@ -63,8 +65,8 @@
 
     <div class="edit-button-area mb-5">
         <button class="btn btn-back" onclick="history.back()">返回</button>
-        <button class="btn btn-search">暫存草稿</button>
-        <button class="btn btn-export">送出</button>
+        <button class="btn btn-search" onclick="buttonsubmitEvent(1)">暫存草稿</button>
+        <button class="btn btn-export" onclick="buttonsubmitEvent(0)">送出</button>
     </div>
 </section>
 
@@ -75,8 +77,10 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
 
-    const RSN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("AuditBody", "RepairRecord_Management")' + `/${RSN}`;
+    const IPRSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("AuditBody", "RepairRecord_Management")' + `/${IPRSN}`; //這是上方顯示資訊
+    let AuditFormUrl = '@Url.Action("GetBufferData", "RepairRecord_Management")' + `/${IPRSN}`;  //這是最下面審核表單暫存資料，在載入此頁面時要先去抓有沒有暫存資料，沒有的話就只顯示審核人員
+    let AuditFormPostUrl = '@Url.Action("CreateDataAudit", "RepairRecord_Management")'; //這是最下面'暫存草稿'&&'送出'按鈕的API (Post)，除了要傳審核表單本身的資料之外，還要再給我IPRSN、PRASN、IsBuffer -> 0為{送出} 、 1為{暫存草稿}
     //let apiUrl = null
 
     let imgFiles = [];
@@ -196,6 +200,70 @@
             console.log(res);
         }
     }
+    function readData_audit(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log('789');
+            console.log(res);
+            //document.getElementById('AuditUserID').value = res.AuditUserID.value;
+            //document.getElementById('AuditUserName').value = res.AuditUserName;
+            //document.getElementById('AuditMemo').value = res.AuditMemo;
+            //document.getElementById('PRASN').value = res.PRASN;
+        }
+        function onError(res) {
+            console.log('987');
+            console.log(res);
+            document.getElementById('AuditUserName').value = '沒資料'
+        }
+    }
+    function buttonTestFileLengthEvent() {
+        let selectedFiles = document.getElementById("ImgPath").files;
+        console.log(selectedFiles);
+    }
+    function buttonsubmitEvent(IsBu) {
+        let auditResult = $('input[name="AuditResult"]:checked').val() ?? 0;
+        if (auditResult === 0) {
+            return alert('請選擇審核結果!')
+        }
+        let iprsn = IPRSN
+        let prasn = document.getElementById("PRASN").value
+        let auditID = document.getElementById("AuditUserID").value
+        let auditMemo = document.getElementById("AuditMemo").value
+        var form = new FormData();
+        form.append("IPRSN", iprsn);
+        form.append("PRASN", prasn);
+        form.append("isBuffer", IsBu);
+        form.append("AuditUserID", auditID);
+        form.append("AuditMemo", auditMemo);
+        form.append("AuditResult", auditResult);
+        for (let i = 0; i < imgFiles.length; i++) {
+            form.append(`Img${i}`, imgFiles[i], `擷取${i}.PNG`);
+        }
+        var settings = {
+            //"url": "https://localhost:44355/RepairRecord_Management/CreateDataAudit",
+            "url": AuditFormPostUrl,
+            "method": "POST",
+            "timeout": 0,
+            "processData": false,
+            "mimeType": "multipart/form-data",
+            "contentType": false,
+            "data": form
+        };
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+        });
+    }
 
     function addButtonEvent() {
         $("#OtherMaintainRecord").click(function () {
@@ -254,6 +322,7 @@
 
     window.onload = function () {
         readData(apiUrl);
+        readData_audit(AuditFormUrl);
         addButtonEvent();
     }
 

@@ -92,9 +92,11 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
 
-    const RSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null
+    const IPRSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("SupplementBody", "RepairRecord_Management")' + `/${IPRSN}`; //取得上方基本資料
+    let GetSubDataUrl = '@Url.Action("Supplement_GetData", "RepairRecord_Management")' + `/${IPRSN}`;   //取得下方補件資料
+    let SubmitUrl = '@Url.Action("Supplement_Submit", "RepairRecord_Management")';    //下方補件資料'提交' ，請以Post的方式提交FormData
+    //let apiUrl = null
 
     let imgFiles = [];
 
@@ -212,6 +214,27 @@
         }
     }
 
+    function GetSuppleData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            document.getElementById('RepairState').Value = res.RepairState;
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
     function addButtonEvent() {
         $("#OtherMaintainRecord").click(function () {
             let url = baseUrl + 'Read' + `/${RSN}`;
@@ -269,6 +292,7 @@
 
     window.onload = function () {
         readData(apiUrl);
+        GetSuppleData(GetSubDataUrl);
         addButtonEvent();
     }
 

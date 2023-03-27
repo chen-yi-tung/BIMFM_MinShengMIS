@@ -69,7 +69,6 @@ namespace MinSheng_MIS.Services
 
 
             #region 依據查詢字串檢索資料表
-
             var SourceTable = from x1 in db.EquipmentReportForm
                               join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
                               join x3 in db.AspNetUsers on x1.InformatUserID equals x3.UserName
@@ -213,6 +212,11 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("StockState", "無");
                 }
                 ja.Add(itemObjects);
+                if (!string.IsNullOrEmpty(a.EState))
+                {
+                    var dic = Surface.EState();
+                    itemObjects.Add("EState", dic[a.EState]);
+                }
             }
 
             JObject jo = new JObject();
