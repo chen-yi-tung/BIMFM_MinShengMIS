@@ -141,12 +141,6 @@
                 console.log("view => fd.linedata.removeall");
                 updatePathDisplay();
             });
-            /*
-            view.addEventListener("fd.devicepoint.usercreate", function (event) {
-                console.log("view => fd.devicepoint.usercreate");
-                createDeviceModal.create(event.detail);
-            });
-            */
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
                 calcRoute();

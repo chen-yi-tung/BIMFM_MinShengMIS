@@ -170,28 +170,29 @@
             ForgeDraw.resize();
         }
 
-        function calcRoute() {
+    }
 
-            if (ForgeDraw.lineData.length > 1) {
-                ForgeDraw.devices.forEach((dp) => {
-                    dp.update();
-                })
-            }
+    function calcRoute() {
 
-            if (!sortRouteModal.autoCalcRoute) {
-                return;
-            }
-
-            //開始計算路徑
-            let route = ForgeDraw.getRoute().map(e => e.name);
-            console.log(ForgeDraw.devices.map(e => e.result));
-
-            route.unshift("起點");
-            route.push("終點");
-
-            //顯示在網頁上
-            updatePathDisplay(route);
+        if (ForgeDraw.lineData.length > 1) {
+            ForgeDraw.devices.forEach((dp) => {
+                dp.update();
+            })
         }
+
+        if (!sortRouteModal.autoCalcRoute) {
+            return;
+        }
+
+        //開始計算路徑
+        let route = ForgeDraw.getRoute().map(e => e.name);
+        console.log(ForgeDraw.devices.map(e => e.result));
+
+        route.unshift("起點");
+        route.push("終點");
+
+        //顯示在網頁上
+        updatePathDisplay(route);
     }
 
     //讀取設備和路線資料並繪製
@@ -266,8 +267,6 @@
 
     const PSSN = '@ViewBag.PSSN';
     let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
-    //const RSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
     //let apiUrl = null;
 
     let fakeData = {
@@ -441,6 +440,7 @@
         $("#path-auto").click(function () {
             $(this).blur();
             sortRouteModal.autoRouteToggle();
+            calcRoute();
         })
         $("#submit").click(function () {
             console.log("onclick submit")
@@ -501,7 +501,7 @@
 
         console.log(data);
 
-            $.ajax({
+        $.ajax({
             url: '@Url.Action("EditSamplePath", "SamplePath_Management")',
             data: JSON.stringify(data),
             type: "POST",
@@ -509,30 +509,30 @@
             contentType: "application/json;charset=utf-8",
             success: onSuccess,
             error: onError
-            })
+        })
 
-            function onSuccess(res) {
-                console.log("Success");
-                console.log(res);
+        function onSuccess(res) {
+            console.log("Success");
+            console.log(res);
 
-                if (res.ResponseCode == 0) {
-                    createDialogModal({
-                        id: "DialogModal-Success",
-                        inner: "編輯成功！",
-                        button: [
-                            {
-                                className: "btn btn-delete",
-                                cancel: true,
-                                text: "確定"
-                            },
-                        ],
-                        onHide: () => {
-                            let url = '@Url.Action("Management", "SamplePath_Management")';
-                            window.location.href = url;
-                        }
-                    });
-                }
+            if (res.ResponseCode == 0) {
+                createDialogModal({
+                    id: "DialogModal-Success",
+                    inner: "編輯成功！",
+                    button: [
+                        {
+                            className: "btn btn-delete",
+                            cancel: true,
+                            text: "確定"
+                        },
+                    ],
+                    onHide: () => {
+                        let url = '@Url.Action("Management", "SamplePath_Management")';
+                        window.location.href = url;
+                    }
+                });
             }
+        }
         function onError(res) {
             console.log("error");
             console.log(res);

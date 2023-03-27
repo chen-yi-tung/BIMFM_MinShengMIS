@@ -391,30 +391,31 @@
             fakeData.InspectionPlanPathList.forEach(createPathGroups)
         });
 
-        function calcRoute() {
-
-            if (ForgeDraw.lineData.length > 1) {
-                ForgeDraw.devices.forEach((dp) => {
-                    dp.update();
-                })
-            }
-
-            if (!sortRouteModal.autoCalcRoute) {
-                return;
-            }
-
-            //開始計算路徑
-            let route = ForgeDraw.getRoute().map(e => e.name);
-            console.log(ForgeDraw.devices.map(e => e.result));
-
-            route.unshift("起點");
-            route.push("終點");
-
-            //顯示在網頁上
-            updatePathDisplay(route);
-        }
     }
 
+    function calcRoute() {
+
+        if (ForgeDraw.lineData.length > 1) {
+            ForgeDraw.devices.forEach((dp) => {
+                dp.update();
+            })
+        }
+
+        if (!sortRouteModal.autoCalcRoute) {
+            return;
+        }
+
+        //開始計算路徑
+        let route = ForgeDraw.getRoute().map(e => e.name);
+        console.log(ForgeDraw.devices.map(e => e.result));
+
+        route.unshift("起點");
+        route.push("終點");
+
+        //顯示在網頁上
+        updatePathDisplay(route);
+    }
+    
     //生成路徑群組
     function createPathGroups(PathData, i) {
         let pathArea = $(".sample-path-group-area");
@@ -495,7 +496,13 @@
         );
         function onSuccess(res) {
             //console.log(res);
-            readDeviceAndLineData(PathData);
+            let eventName = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
+            let eventFunc = () => {
+                console.log("loadModel: FINAL_FRAME_RENDERED_CHANGED_EVENT")
+                readDeviceAndLineData(PathData);
+                viewer.removeEventListener(eventName,eventFunc);
+            };
+            viewer.addEventListener(eventName, eventFunc);
         }
         function onError(err) {
             console.log(err);

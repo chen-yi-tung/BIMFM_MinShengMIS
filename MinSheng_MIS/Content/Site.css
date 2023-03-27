@@ -29,6 +29,23 @@ h2 {
     font-size: 46px;
 }
 
+.spinner-area {
+    position: absolute;
+    inset: 0;
+    z-index: 1020;
+    background-color: hsl(0, 0%, 100%, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner-area .spinner-border{
+    width: 8rem;
+    height: 8rem;
+    border-width: 1rem;
+    color: #0457D1;
+}
+
 .img-display {
     z-index: 1040;
     position: fixed;
