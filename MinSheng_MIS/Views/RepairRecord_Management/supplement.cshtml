@@ -81,7 +81,7 @@
 
     <div class="edit-button-area mb-5">
         <button class="btn btn-back" onclick="history.back()">返回</button>
-        <button class="btn btn-export">送出</button>
+        <button class="btn btn-export" onclick="save()">送出</button>
     </div>
 </section>
 
@@ -228,7 +228,34 @@
 
         function onSuccess(res) {
             console.log(res);
-            document.getElementById('RepairState').Value = res.RepairState;
+            for (const [k, v] of Object.entries(res)) {
+                switch (k) {
+                    case 'ImgPath':
+                        ImgPath(v);
+                        break;
+                    default:
+                        $("#" + k).val(v);
+                        break;
+                }
+            }
+            function ImgPath(v) {
+                v.length !== 0 && v.forEach((url) => {
+                    imgFiles.push(url);
+                    let query = $(`
+                            <div class="edit-img-item">
+                                <img src="${url}">
+                                <button class="btn-delete-item"></button>
+                            </div>`);
+                    $(".edit-img-area").append(query);
+                    ImageDisplay(query.children("img"));
+                    query.children("button").click(function (event) {
+                        event.preventDefault();
+                        let index = imgFiles.findIndex((e) => e == url);
+                        imgFiles.splice(index, 1);
+                        $(this).parent().remove();
+                    })
+                })
+            }
         }
         function onError(res) {
             console.log(res);
@@ -273,21 +300,45 @@
                 }
             }
         });
+        $("#FilePath").change(function (e) {
+            console.log(this.files);
+            if (this.files && this.files.length !== 0) {
+                $(this).next().text(this.files[0].name);
+            }
+        });
     }
 
-    function createFormData() {
-        let flieList = new DataTransfer();
-        imgFiles.forEach((item) => {
-            flieList.items.add(item);
-        })
+    function save() {
+        const form = new FormData();
+        form.append("IPRSN", IPRSN);
+        form.append("RepairContent", $("#RepairContent").val());
+        for (let i = 0; i < imgFiles.length; i++) {
+            form.append(`Img${i}`, imgFiles[i], `擷取${i}.PNG`);
+        }
 
-        console.log(flieList);
+        form.append("SupplementaryUserID", $("#NavbarUserID").val());
+        form.append("SupplementaryContent", $("#SupplementaryContent").val());
+        form.append("FilePath", $("#FilePath").val());
 
-        let fd = new FormData();
-        fd.append('AuditUserID', $("#AuditUserID").val());
-        fd.append('AuditMemo', $("#AuditMemo").val());
-        fd.append('ImgPath', flieList.files);
-        fd.append('AuditResult', $('input[name="AuditResult"]:checked').val() ?? 0);
+        $.ajax({
+            "url": SubmitUrl,
+            "method": "POST",
+            "timeout": 0,
+            "processData": false,
+            "mimeType": "multipart/form-data",
+            "contentType": false,
+            "data": form
+        }).done(function (response) {
+            console.log(response);
+            createDialogModal({
+                id: "DialogModal-Success",
+                inner: "送出成功！",
+                button: [{ className: "btn btn-delete", cancel: true, text: "確定" }],
+                onHide: () => {
+                    window.location.href = '@Url.Action("Management", "RepairRecord_Management")';
+                }
+            })
+        });
     }
 
     window.onload = function () {
