@@ -370,7 +370,7 @@
 
                 $.ajax({
                     url: '@Url.Action("DeleteSamplePath", "SamplePath_Management")?PSSN=' + PSSN,
-                    body: JSON.stringify(PSSN),
+                    data: JSON.stringify(PSSN),
                     type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
