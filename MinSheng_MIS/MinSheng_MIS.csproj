@@ -1573,6 +1573,7 @@
     <Content Include="Views\EquipmentInfo_Management\Read.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\Edit.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\Disable.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\CreateEquipment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

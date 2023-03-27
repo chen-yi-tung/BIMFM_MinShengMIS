@@ -43,6 +43,13 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 新增設備
+        public ActionResult CreateEquipment()
+        {
+            return View();
+        }
+        #endregion
+
         #region 設備屬性
         [HttpGet]
         public ActionResult ReadBody(string id)
