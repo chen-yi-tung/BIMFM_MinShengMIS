@@ -64,10 +64,11 @@ namespace MinSheng_MIS.Services
             string DateTo = form["DateTo"]?.ToString();
             //判斷是從哪裡來的請求DataGrid
             string SourceReport = form["SourceReport"]?.ToString();
+            //庫存狀態
+            string StockState = form["StockState"]?.ToString();
 
 
             #region 依據查詢字串檢索資料表
-
             var SourceTable = from x1 in db.EquipmentReportForm
                               join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
                               join x3 in db.AspNetUsers on x1.InformatUserID equals x3.UserName
@@ -133,6 +134,19 @@ namespace MinSheng_MIS.Services
                 var dateto = DateTime.Parse(DateTo).AddDays(1);
                 SourceTable = SourceTable.Where(x => x.Date <= dateto);
             }
+            if (!string.IsNullOrEmpty(StockState))
+            {
+                switch (StockState)
+                {
+                    case "0":
+                        SourceTable = SourceTable.Where(x => x.StockState == false);
+                        break;
+                    case "1":
+                        SourceTable = SourceTable.Where(x => x.StockState == true);
+                        break;
+                }   
+            }
+
             //var atable_ESN_list = db.EquipmentInfo.Where(x => x.Area == Area).Select(x=>x.ESN).ToList();
             //var atable_SearchTable = db.EquipmentReportForm.Where(x=> atable_ESN_list.Contains(x.ESN));
             #endregion
@@ -191,13 +205,18 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("MyName", a.MyName);    //報修人員
                 if(a.StockState) //庫存狀態
                 {
-                    itemObjects.Add("StockState", "是");
+                    itemObjects.Add("StockState", "有");
                 }
                 else
                 {
                     itemObjects.Add("StockState", "無");
                 }
                 ja.Add(itemObjects);
+                if (!string.IsNullOrEmpty(a.EState))
+                {
+                    var dic = Surface.EState();
+                    itemObjects.Add("EState", dic[a.EState]);
+                }
             }
 
             JObject jo = new JObject();
