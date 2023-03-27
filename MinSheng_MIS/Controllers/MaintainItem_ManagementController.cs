@@ -482,6 +482,8 @@ namespace MinSheng_MIS.Controllers
 
             var eqList = db.EquipmentMaintainItem
                 .Where(x => x.MISN == MISN)
+                .Join(db.EquipmentInfo, x1 => x1.ESN, x2 => x2.ESN, (x1, x2) => new { ESN = x1.ESN, Unit = x1.Unit, Period = x1.Period, EState = x2.EState })
+                .Where(x => x.EState != "3")
                 .ToList();
 
             if (eqList == null)
@@ -587,6 +589,8 @@ namespace MinSheng_MIS.Controllers
 
             var eqList = db.EquipmentMaintainItem
                 .Where(x => x.MISN == MISN)
+                .Join(db.EquipmentInfo, x1 => x1.ESN, x2 => x2.ESN, (x1, x2) => new { ESN = x1.ESN, Unit = x1.Unit, Period = x1.Period, EState = x2.EState })
+                .Where(x => x.EState != "3")
                 .ToList();
 
             if (eqList == null)
