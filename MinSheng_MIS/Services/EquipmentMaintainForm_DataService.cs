@@ -53,7 +53,7 @@ namespace MinSheng_MIS.Services
             //日期(迄)
             string DateTo = form["DateTo"]?.ToString();
             //判斷是從哪裡來的請求DataGrid
-            string Source = form["Source"]?.ToString();
+            string SourceMaintain = form["SourceMaintain"]?.ToString();
 
 
             #region 依據查詢字串檢索資料表
@@ -66,9 +66,12 @@ namespace MinSheng_MIS.Services
                               select new {  x1.FormItemState, x6.Area, x5.FloorName, x3.PropertyCode, x3.EName, x1.EMFISN, x4.MIName, x1.Unit, x1.Period, x1.LastTime, x1.Date, x5.ASN, x3.FSN, x2.ESN, x2.MISN, x3.EState, x1.StockState};
 
             //若是用於新增巡檢計畫 的 新增保養單項目需增加狀態判斷
-            if (Source == "AddMaintainForm")
+            if (SourceMaintain == "AddMaintainForm")
             {
+                //增加狀態判斷
                 SourceTable = SourceTable.Where(x => x.FormItemState == "1" || x.FormItemState == "5" || x.FormItemState == "8" || x.FormItemState == "9" || x.FormItemState == "10" || x.FormItemState == "11");
+                //設備若停用則不能加入巡檢計畫中
+                SourceTable = SourceTable.Where(x => x.EState != "3");
             }
 
             //查詢棟別
