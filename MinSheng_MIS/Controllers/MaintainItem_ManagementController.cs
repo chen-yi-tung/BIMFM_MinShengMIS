@@ -13,6 +13,7 @@ using Antlr.Runtime.Misc;
 using Microsoft.Ajax.Utilities;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -390,6 +391,11 @@ namespace MinSheng_MIS.Controllers
                     await db.SaveChangesAsync();
 
                 }
+
+                //檢查該產單的設備保養項目是否產單 沒有的話 就產單
+                Check_EquipmentFormItem c = new Check_EquipmentFormItem();
+                c.CheckEquipmentFormItem();
+
                 model.ResponseCode = 0;
                 model.ResponseMessage = "已新增完成";
                 return Json(model);
