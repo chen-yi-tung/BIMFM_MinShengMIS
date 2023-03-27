@@ -16,8 +16,8 @@
                     return val ? `<button class="btn btn-search" onclick="EquipmentInfoModal('/EquipmentInfo_Management/ReadBody/${val}')">設備資料</button>` : "-"
                 }
             },
-            { text: "設備名稱", value: "ReportContent" },
-            { text: "設備名稱", value: "ImgPath" },
+            { text: "報修說明", value: "ReportContent" },
+            { text: "報修照片", value: "ImgPath" },
         ],
         InspectionPlan: [
             { text: "計畫編號", value: "IPSN" },

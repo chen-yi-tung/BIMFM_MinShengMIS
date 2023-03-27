@@ -19,8 +19,11 @@
 <section>
     <div class="edit-area edit-area-middle">
         <form class="form form-w-100" enctype="multipart/form-data">
+
+            <input type="hidden" name="AuditUserID">
+            <input type="hidden" name="PRASN">
+
             <div class="form-group d-lg-contents">
-                <input type="hidden" name="AuditUserID" value="">
                 <label for="AuditUserName">審核人員</label>
                 <input class="form-control readonly" type="text" id="AuditUserName" name="AuditUserName" readonly>
             </div>
@@ -28,13 +31,12 @@
                 <label for="AuditMemo" class="align-self-start">審核意見</label>
                 <textarea class="form-control" name="AuditMemo" id="AuditMemo"></textarea>
             </div>
-            <input type="hidden" name="PRASN" value="">
             <div class="form-group d-lg-contents">
                 <label for="ImgPath">審核照片</label>
                 <div>
                     <label class="btn btn-search" for="ImgPath">選擇照片</label>
                     <input type="file" multiple accept="image/*" id="ImgPath" name="ImgPath"
-                           style="visibility: hidden; width: 0;">
+                        style="visibility: hidden; width: 0;">
                 </div>
             </div>
             <div class="d-lg-contents">
@@ -192,14 +194,13 @@
             RepairRecord("#RepairRecord", res);
             InspectionPlanRepair("#InspectionPlanRepairList", res.InspectionPlanList);
 
-            $("#AuditUserID").val($("#NavbarUserName").text());
-
             ImageDisplay(".datatable-img-item>img");
         }
         function onError(res) {
             console.log(res);
         }
     }
+
     function readData_audit(url = null) {
 
         url == null ? onSuccess(fakeData) :
@@ -213,31 +214,71 @@
             })
 
         function onSuccess(res) {
-            console.log('789');
             console.log(res);
-            //document.getElementById('AuditUserID').value = res.AuditUserID.value;
-            //document.getElementById('AuditUserName').value = res.AuditUserName;
-            //document.getElementById('AuditMemo').value = res.AuditMemo;
-            //document.getElementById('PRASN').value = res.PRASN;
+            for (const [k, v] of Object.entries(res)) {
+                switch (k) {
+                    case 'AuditResult':
+                        AuditResult(v)
+                        break;
+                    case 'ImgPath':
+                        ImgPath(v);
+                        break;
+                    default:
+                        $("#" + k).val(v);
+                        break;
+                }
+            }
+            function ImgPath(v) {
+                v.length !== 0 && v.forEach((url) => {
+                    imgFiles.push(url);
+                    let query = $(`
+                            <div class="edit-img-item">
+                                <img src="${url}">
+                                <button class="btn-delete-item"></button>
+                            </div>`);
+                    $(".edit-img-area").append(query);
+                    ImageDisplay(query.children("img"));
+                    query.children("button").click(function (event) {
+                        event.preventDefault();
+                        let index = imgFiles.findIndex((e) => e == url);
+                        imgFiles.splice(index, 1);
+                        $(this).parent().remove();
+                    })
+                })
+            }
+            function AuditResult(v) {
+                switch (v) {
+                    case '審核未過':
+                        $('#AuditResult_1').prop('checked', true);
+                        break;
+                    case '待補件':
+                        $('#AuditResult_2').prop('checked', true);
+                        break;
+                    case '審核通過':
+                        $('#AuditResult_3').prop('checked', true);
+                        break;
+                }
+            }
         }
         function onError(res) {
-            console.log('987');
             console.log(res);
-            document.getElementById('AuditUserName').value = '沒資料'
+            $("#AuditUserID").val($("#NavbarUserName").text());
         }
     }
-    function buttonTestFileLengthEvent() {
-        let selectedFiles = document.getElementById("ImgPath").files;
-        console.log(selectedFiles);
-    }
+
     function buttonsubmitEvent(IsBu) {
         let auditResult = $('input[name="AuditResult"]:checked').val() ?? 0;
         if (auditResult === 0) {
-            return alert('請選擇審核結果!')
+            createDialogModal({
+                id: "DialogModal-Error",
+                inner: "請選擇審核結果！",
+                button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
+            })
+            return;
         }
         let iprsn = IPRSN
         let prasn = document.getElementById("PRASN").value
-        let auditID = document.getElementById("AuditUserID").value
+        let auditID = document.getElementById("NavbarUserID").value
         let auditMemo = document.getElementById("AuditMemo").value
         var form = new FormData();
         form.append("IPRSN", iprsn);
@@ -250,7 +291,6 @@
             form.append(`Img${i}`, imgFiles[i], `擷取${i}.PNG`);
         }
         var settings = {
-            //"url": "https://localhost:44355/RepairRecord_Management/CreateDataAudit",
             "url": AuditFormPostUrl,
             "method": "POST",
             "timeout": 0,
@@ -262,6 +302,14 @@
 
         $.ajax(settings).done(function (response) {
             console.log(response);
+            createDialogModal({
+                id: "DialogModal-Success",
+                inner: "送出成功！",
+                button: [{ className: "btn btn-delete", cancel: true, text: "確定" }],
+                onHide: () => {
+                    window.location.href = '@Url.Action("Management", "RepairRecord_Management")';
+                }
+            })
         });
     }
 
@@ -303,21 +351,6 @@
                 }
             }
         });
-    }
-
-    function createFormData() {
-        let flieList = new DataTransfer();
-        imgFiles.forEach((item) => {
-            flieList.items.add(item);
-        })
-
-        console.log(flieList);
-
-        let fd = new FormData();
-        fd.append('AuditUserID', $("#AuditUserID").val());
-        fd.append('AuditMemo', $("#AuditMemo").val());
-        fd.append('ImgPath', flieList.files);
-        fd.append('AuditResult', $('input[name="AuditResult"]:checked').val() ?? 0);
     }
 
     window.onload = function () {

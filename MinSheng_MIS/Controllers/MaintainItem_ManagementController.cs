@@ -13,6 +13,7 @@ using Antlr.Runtime.Misc;
 using Microsoft.Ajax.Utilities;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -359,11 +360,12 @@ namespace MinSheng_MIS.Controllers
                     #endregion
 
                     #region 將目前相關設備(同系統別、子系統別與設備名稱)都加上該新增的保養項目 table Equipment Maintain Item
-
+                    //若設備狀態為3停用則不新增
                     var eqList = db.EquipmentInfo
                         .Where(e => e.System == inputItems.System)
                         .Where(e => e.SubSystem == inputItems.SubSystem)
                         .Where(e => e.EName == inputItems.EName)
+                        .Where(e => e.EState != "3")
                         .ToList();
 
                     int eqNum = eqList.Count();
@@ -390,6 +392,11 @@ namespace MinSheng_MIS.Controllers
                     await db.SaveChangesAsync();
 
                 }
+
+                //檢查該產單的設備保養項目是否產單 沒有的話 就產單
+                Check_EquipmentFormItem c = new Check_EquipmentFormItem();
+                c.CheckEquipmentFormItem();
+
                 model.ResponseCode = 0;
                 model.ResponseMessage = "已新增完成";
                 return Json(model);
@@ -426,6 +433,8 @@ namespace MinSheng_MIS.Controllers
 
             var eqList = db.EquipmentMaintainItem
                 .Where(x => x.MISN == MISN)
+                .Join(db.EquipmentInfo, x1 => x1.ESN, x2 => x2.ESN, (x1, x2) => new { ESN = x1.ESN, Unit = x1.Unit, Period = x1.Period, EState = x2.EState})
+                .Where(x => x.EState != "3")
                 .ToList();
 
             if (eqList == null)
@@ -473,6 +482,8 @@ namespace MinSheng_MIS.Controllers
 
             var eqList = db.EquipmentMaintainItem
                 .Where(x => x.MISN == MISN)
+                .Join(db.EquipmentInfo, x1 => x1.ESN, x2 => x2.ESN, (x1, x2) => new { ESN = x1.ESN, Unit = x1.Unit, Period = x1.Period, EState = x2.EState })
+                .Where(x => x.EState != "3")
                 .ToList();
 
             if (eqList == null)
@@ -578,6 +589,8 @@ namespace MinSheng_MIS.Controllers
 
             var eqList = db.EquipmentMaintainItem
                 .Where(x => x.MISN == MISN)
+                .Join(db.EquipmentInfo, x1 => x1.ESN, x2 => x2.ESN, (x1, x2) => new { ESN = x1.ESN, Unit = x1.Unit, Period = x1.Period, EState = x2.EState })
+                .Where(x => x.EState != "3")
                 .ToList();
 
             if (eqList == null)

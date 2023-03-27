@@ -142,7 +142,8 @@
                 <div class="search-area mb-3">
                     <form class="form">
 
-                        <input class="form-control" id="SourceMaintain" name="SourceMaintain" type="text" value="AddMaintainForm" hidden />
+                        <input class="form-control" id="SourceMaintain" name="SourceMaintain" type="text"
+                            value="AddMaintainForm" hidden />
 
                         <div class="form-group">
                             <label for="ASN">棟別</label>
@@ -234,7 +235,8 @@
                 <div class="search-area mb-3">
                     <form class="form">
 
-                        <input class="form-control" id="SourceReport" name="SourceReport" type="text" value="AddReportForm" hidden />
+                        <input class="form-control" id="SourceReport" name="SourceReport" type="text"
+                            value="AddReportForm" hidden />
 
                         <div class="form-group">
                             <label for="ASN">棟別</label>
@@ -579,7 +581,7 @@
             let eventFunc = () => {
                 console.log("loadModel: FINAL_FRAME_RENDERED_CHANGED_EVENT")
                 readDeviceData(fakeData.BIMDevices);
-                viewer.removeEventListener(eventName,eventFunc);
+                viewer.removeEventListener(eventName, eventFunc);
             };
             viewer.addEventListener(eventName, eventFunc);
         }
@@ -679,7 +681,12 @@
 
             ASN.on("change", async function () {
 
-                $(`#${id} #Area`).val(ASN.children("option:selected").text());
+                if (ASN.val()) {
+                    $(`#${id} #Area`).val(ASN.children("option:selected").text());
+                }
+                else {
+                    $(`#${id} #Area`).val('');
+                }
 
                 await pushSelect(`${id} #FSN`, '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.val()}`);
                 $(`#${id} #FSN`).val('');
@@ -692,7 +699,12 @@
 
             FSN.on("change", async function () {
 
-                $(`#${id} #Floor`).val(FSN.children("option:selected").text());
+                if (FSN.val()) {
+                    $(`#${id} #Floor`).val(FSN.children("option:selected").text());
+                }
+                else {
+                    $(`#${id} #Floor`).val('');
+                }
 
                 if (id == "sample-path-form") {
                     await pushSelect(`${id} #PathTitle`, '@Url.Action("PathTitle", "DropDownList")' + `?FSN=${FSN.val()}`);
@@ -803,16 +815,13 @@
         const E_RDG = $('#Repair-datagrid');
 
         let M_MSC = null;
-        let E_MSC = null;
 
         let M_RSC = null;
-        let E_RSC = null;
 
         const options = {
             //rownumbers: true,
             remoteSort: false,
             sortOrder: 'asc',
-            fit: true,
             singleSelect: false,
             selectOnCheck: true,
             checkOnSelect: true
@@ -830,23 +839,8 @@
         const MaintainColumns = {
             idField: 'EMFISN',
             //sortName: 'EMFISN',
-            frozenColumns: [[
-                { field: '_select', checkbox: true },
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.Maintain.onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_locate', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.Maintain.onLocate(${index})">定位</button>`;
-                    }
-                }
-            ]],
             columns: [[
-                { field: 'FormItemStatenum', title: '保養項目狀態編號', align: 'center', width: 210, sortable: true },
+                { field: 'FormItemStatenum', hidden: true },
                 { field: 'StockState', title: '庫存狀態', align: 'center', width: 120, sortable: true },
                 { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 150, sortable: true },
                 { field: 'EState', title: '設備狀態', align: 'center', width: 120, sortable: true },
@@ -867,7 +861,7 @@
             ]]
         };
 
-        this.Maintain = {
+        this.mdg = {
             onDetail: function (index) {
                 M_MSC = getChecked(M_MDG, index);
                 let row = M_MDG.datagrid('getRows')[index];
@@ -882,24 +876,24 @@
             }
         }
 
-        const RepairOptions = {
+        this.emdg = {
+            onDetail: function (index) {
+                M_MSC = getChecked(E_MDG, index);
+                let row = E_MDG.datagrid('getRows')[index];
+                let url = '@Url.Action("Read","MaintainForm_Management")/' + `${row.EMFISN}`;
+                window.open(url, "_blank");
+            },
+            onLocate: function (index) {
+                M_MSC = getChecked(E_MDG, index);
+                let row = E_MDG.datagrid('getRows')[index];
+                let url = '@Url.Action("Read","MaintainForm_Management")/' + `${row.EMFISN}`;
+                window.open(url, "_blank");
+            }
+        }
+
+        const RepairColumns = {
             idField: 'RSN',
             //sortName: 'RSN',
-            frozenColumns: [[
-                { field: '_select', checkbox: true },
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.Repair.onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_locate', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.Repair.onLocate(${index})">定位</button>`;
-                    }
-                }
-            ]],
             columns: [[
                 { field: 'StockState', title: '庫存狀態', align: 'center', width: 150, sortable: true },
                 { field: 'ReportState', title: '報修單狀態', align: 'center', width: 145, sortable: true },
@@ -918,7 +912,7 @@
             ]]
         }
 
-        this.Repair = {
+        this.rdg = {
             onDetail: function (index) {
                 M_RSC = getChecked(M_RDG, index);
                 let row = M_RDG.datagrid('getRows')[index];
@@ -933,102 +927,427 @@
             }
         }
 
+        this.erdg = {
+            onDetail: function (index) {
+                M_RSC = getChecked(E_RDG, index);
+                let row = E_RDG.datagrid('getRows')[index];
+                let url = '@Url.Action("Read","Report_Management")/' + `${row.RSN}`;
+                window.open(url, "_blank");
+            },
+            onLocate: function (index) {
+                M_RSC = getChecked(E_RDG, index);
+                let row = E_RDG.datagrid('getRows')[index];
+                let url = '@Url.Action("Read","Report_Management")/' + `${row.RSN}`;
+                window.open(url, "_blank");
+            }
+        }
+
+
         $("#Maintain-create").one("click", function () {
-            changeEditAreaCss.call(this);
             let id = "DatagridModal-Maintain";
-            $("#" + id).one("shown.bs.modal", initDatagrid);
-            $(`#${id} #search`).click(() => { loadDatagrid(id) });
-            $(`#${id} #add-row`).click(() => {
-                //dg.getChecked (is all)
-                //foreach(data)
-                //dg.appendRow(data)
+            let modal = $("#" + id);
+            modal.one("shown.bs.modal", () => {
+                initDatagrid();
+                modal.on("shown.bs.modal", () => { M_MDG.datagrid("load") });
+                modal.on("hidden.bs.modal", () => { $(`#${id} form`)[0].reset(); M_MDG.datagrid("clearChecked"); });
             });
+
+            $(`#${id} #search`).click(() => { loadDatagrid(id) });
+
+            $(`#${id} #add-row`).on("click", addRowEvent);
+
             function initDatagrid() {
-                M_MDG.datagrid(
+                const dg = M_MDG;
+                dg.datagrid(
                     Object.assign(
                         {
                             url: '@Url.Action("MaintainForm_Management", "MaintainForm_Management")',
                             method: 'POST',
                             queryParams: getQueryParams(`#${id} form`),
+                            fit: true,
                             pagination: true,
                             pagePosition: 'bottom',
                             pageSize: 10,
-                            onBeforeSelect: (index) => { return onSelectBtn(M_MDG, index, M_MSC) },
-                            onBeforeUnselect: (index) => { return onSelectBtn(M_MDG, index, M_MSC) },
+                            frozenColumns: [[
+                                { field: '_select', checkbox: true, },
+                                {
+                                    field: '_detail', align: 'center', width: 71,
+                                    formatter: (val, row, index) => {
+                                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.mdg.onDetail(${index})">詳情</button>`;
+                                    }
+                                },
+                                {
+                                    field: '_locate', align: 'center', width: 71,
+                                    formatter: (val, row, index) => {
+                                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.mdg.onLocate(${index})">定位</button>`;
+                                    }
+                                }
+                            ]],
+                            onBeforeSelect: (index) => onBeforeSelect(dg, index, M_MSC, false),
+                            onBeforeUnselect: (index) => onBeforeSelect(dg, index, M_MSC, true),
+                            onLoadSuccess: (data) => {
+                                data.rows.forEach((row, index, arr) => {
+                                    switch (row.FormItemStatenum) {
+                                        case '9':
+                                        case '10':
+                                        case '11':
+                                            dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].innerHTML = ""
+                                            break;
+                                    }
+                                })
+                                dg.datagrid('getPanel').find('.datagrid-header-check')[0].innerHTML = ""
+                            }
                         },
                         options,
                         MaintainColumns
                     )
                 )
-                $(M_MDG.datagrid('getPager')).pagination(pageOptions);
-
-                E_MDG.datagrid(
+                $(dg.datagrid('getPager')).pagination(pageOptions);
+            }
+            function initResultDatagrid() {
+                const dg = E_MDG;
+                dg.datagrid(
                     Object.assign(
                         {
-                            onBeforeSelect: (index) => { return onSelectBtn(E_MDG, index, E_MSC) },
-                            onBeforeUnselect: (index) => { return onSelectBtn(E_MDG, index, E_MSC) }
+                            frozenColumns: [[
+                                { field: '_select', checkbox: true, },
+                                {
+                                    field: '_detail', align: 'center', width: 71,
+                                    formatter: (val, row, index) => {
+                                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.emdg.onDetail(${index})">詳情</button>`;
+                                    }
+                                },
+                                {
+                                    field: '_locate', align: 'center', width: 71,
+                                    formatter: (val, row, index) => {
+                                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.emdg.onLocate(${index})">定位</button>`;
+                                    }
+                                }
+                            ]],
+                            onBeforeSelect: (index) => onSelectBtn(dg, index, M_MSC),
+                            onBeforeUnselect: (index) => onSelectBtn(dg, index, M_MSC),
                         },
                         options,
                         MaintainColumns
                     )
                 )
             }
+            function addRowEvent() {
+                if (M_MDG.datagrid("getChecked").length !== 0) {
+                    $(`#${id} #add-row`).off("click", addRowEvent);
+
+                    $(`#${id} #add-row`).on("click", function () {
+                        if (M_MDG.datagrid("getChecked").length !== 0) {
+                            appendData.call(this);
+                        }
+                    });
+                    $("#Maintain-delete").on("click", function () {
+                        if (E_MDG.datagrid("getChecked").length !== 0) {
+                            removeData.call(this);
+                        }
+                    });
+
+                    changeEditAreaCss.call($("#Maintain-create")[0]);
+                    initResultDatagrid();
+                    $(`#${id} #add-row`).click();
+                }
+            }
+            function appendData() {
+                let data = M_MDG.datagrid("getChecked").map((d) => { return d.EMFISN });
+                console.log(data);
+                let btn = $(this);
+                btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
+
+                /* TEST */ setTimeout(onSuccess, 1000);
+
+                /*$.ajax({
+                    url: '',
+                    data: JSON.stringify(data),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })*/
+
+                function onSuccess(res) {
+                    btn.children(".spinner-border").remove();
+                    bootstrap.Modal.getInstance(modal[0]).hide();
+
+                    /* TEST */ M_MDG.datagrid("getChecked").forEach((d) => { E_MDG.datagrid("appendRow", d) })
+
+                    //res.forEach((d) => { E_MDG.datagrid("appendRow", d) })
+                }
+                function onError(err) {
+                    btn.children(".spinner-border").remove();
+                    createDialogModal({
+                        id: "DialogModal-Error",
+                        inner: "新增失敗！",
+                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
+                    })
+                }
+            }
+            function removeData() {
+                let data = E_MDG.datagrid("getChecked").map((d) => { return d.EMFISN });
+                console.log(data);
+                let btn = $(this);
+                btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
+
+                /* TEST */ setTimeout(onSuccess, 1000);
+
+                /*$.ajax({
+                    url: '',
+                    data: JSON.stringify(data),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })*/
+
+
+
+                function onSuccess(res) {
+                    btn.children(".spinner-border").remove();
+                    bootstrap.Modal.getInstance(modal[0]).hide();
+
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "刪除成功！",
+                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
+                    })
+
+                    /* TEST */ data.forEach((d) => { E_MDG.datagrid("deleteRow", E_MDG.datagrid("getRowIndex", d)) })
+
+                    //res.forEach((d) => { E_MDG.datagrid("deleteRow", E_MDG.datagrid("getRowIndex", d)) })
+
+                    E_MDG.datagrid("clearChecked");
+                }
+                function onError(err) {
+                    btn.children(".spinner-border").remove();
+                    createDialogModal({
+                        id: "DialogModal-Error",
+                        inner: "刪除失敗！",
+                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
+                    })
+                    E_MDG.datagrid("clearChecked");
+                }
+            }
         })
 
         $("#Repair-create").one("click", function () {
-            changeEditAreaCss.call(this);
             let id = "DatagridModal-Repair";
-            $("#" + id).one("shown.bs.modal", initDatagrid);
+            let modal = $("#" + id);
+            modal.one("shown.bs.modal", () => {
+                initDatagrid();
+                modal.on("shown.bs.modal", () => { M_RDG.datagrid("load") });
+                modal.on("hidden.bs.modal", () => { $(`#${id} form`)[0].reset(); M_RDG.datagrid("clearChecked"); });
+            });
             $(`#${id} #search`).click(() => { loadDatagrid(id) });
+
+            $(`#${id} #add-row`).on("click", addRowEvent);
+
             function initDatagrid() {
-                M_RDG.datagrid(
+                const dg = M_RDG;
+                dg.datagrid(
                     Object.assign(
                         {
                             url: '@Url.Action("Report_Management", "Datagrid")',
                             method: 'POST',
                             queryParams: getQueryParams(`#${id} form`),
+                            fit: true,
                             pagination: true,
                             pagePosition: 'bottom',
                             pageSize: 10,
-                            onBeforeSelect: (index) => { return onSelectBtn(M_RDG, index, M_RSC) },
-                            onBeforeUnselect: (index) => { return onSelectBtn(M_RDG, index, M_RSC) },
+                            frozenColumns: [[
+                                { field: '_select', checkbox: true },
+                                {
+                                    field: '_detail', align: 'center', width: 71,
+                                    formatter: (val, row, index) => {
+                                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.rdg.onDetail(${index})">詳情</button>`;
+                                    }
+                                },
+                                {
+                                    field: '_locate', align: 'center', width: 71,
+                                    formatter: (val, row, index) => {
+                                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.rdg.onLocate(${index})">定位</button>`;
+                                    }
+                                }
+                            ]],
+                            onBeforeSelect: (index) => onBeforeSelect(dg, index, M_RSC, false),
+                            onBeforeUnselect: (index) => onBeforeSelect(dg, index, M_RSC, true),
+                            onLoadSuccess: (data) => {
+                                data.rows.forEach((row, index, arr) => {
+                                    switch (row.FormItemStatenum) {
+                                        case '9':
+                                        case '10':
+                                        case '11':
+                                            dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].innerHTML = ""
+                                            break;
+                                    }
+                                })
+                                dg.datagrid('getPanel').find('.datagrid-header-check')[0].innerHTML = ""
+                            }
                         },
                         options,
-                        RepairOptions
+                        RepairColumns
                     )
                 )
-                $(M_RDG.datagrid('getPager')).pagination(pageOptions);
-
-                E_RDG.datagrid(
+                $(dg.datagrid('getPager')).pagination(pageOptions);
+            }
+            function initResultDatagrid() {
+                const dg = E_RDG;
+                dg.datagrid(
                     Object.assign(
                         {
-                            onBeforeSelect: (index) => { return onSelectBtn(E_RDG, index, E_RSC) },
-                            onBeforeUnselect: (index) => { return onSelectBtn(E_RDG, index, E_RSC) }
+                            frozenColumns: [[
+                                { field: '_select', checkbox: true },
+                                {
+                                    field: '_detail', align: 'center', width: 71,
+                                    formatter: (val, row, index) => {
+                                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.erdg.onDetail(${index})">詳情</button>`;
+                                    }
+                                },
+                                {
+                                    field: '_locate', align: 'center', width: 71,
+                                    formatter: (val, row, index) => {
+                                        return `<button class="btn btn-datagrid" onclick="DatagridEvent.erdg.onLocate(${index})">定位</button>`;
+                                    }
+                                }
+                            ]],
+                            onBeforeSelect: (index) => onSelectBtn(dg, index, M_RSC),
+                            onBeforeUnselect: (index) => onSelectBtn(dg, index, M_RSC),
                         },
                         options,
-                        RepairOptions
+                        RepairColumns
                     )
                 )
+            }
+            function addRowEvent() {
+                if (M_RDG.datagrid("getChecked").length !== 0) {
+                    $(`#${id} #add-row`).off("click", addRowEvent);
+
+                    $(`#${id} #add-row`).on("click", function () {
+                        if (M_RDG.datagrid("getChecked").length !== 0) {
+                            appendData.call(this);
+                        }
+                    });
+                    $("#Repair-delete").on("click", function () {
+                        if (E_RDG.datagrid("getChecked").length !== 0) {
+                            removeData.call(this);
+                        }
+                    });
+
+                    changeEditAreaCss.call($("#Repair-create")[0]);
+                    initResultDatagrid();
+                    $(`#${id} #add-row`).click();
+                }
+            }
+            function appendData() {
+                let data = M_RDG.datagrid("getChecked").map((d) => { return d.RSN });
+                console.log(data);
+                let btn = $(this);
+                btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
+
+                /* TEST */ setTimeout(onSuccess, 1000);
+
+                /*$.ajax({
+                    url: '',
+                    data: JSON.stringify(data),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })*/
+
+                function onSuccess(res) {
+                    btn.children(".spinner-border").remove();
+                    bootstrap.Modal.getInstance(modal[0]).hide();
+
+                    /* TEST */ M_RDG.datagrid("getChecked").forEach((d) => { E_RDG.datagrid("appendRow", d) })
+
+                    //res.forEach((d) => { E_RDG.datagrid("appendRow", d) })
+                }
+                function onError(err) {
+                    btn.children(".spinner-border").remove();
+                    createDialogModal({
+                        id: "DialogModal-Error",
+                        inner: "新增失敗！",
+                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
+                    })
+                }
+            }
+            function removeData() {
+                let data = E_RDG.datagrid("getChecked").map((d) => { return d.RSN });
+                console.log(data);
+                let btn = $(this);
+                btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
+
+                /* TEST */ setTimeout(onSuccess, 1000);
+
+                /*$.ajax({
+                    url: '',
+                    data: JSON.stringify(data),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })*/
+
+
+
+                function onSuccess(res) {
+                    btn.children(".spinner-border").remove();
+                    bootstrap.Modal.getInstance(modal[0]).hide();
+
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "刪除成功！",
+                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
+                    })
+
+                    /* TEST */ data.forEach((d) => { E_RDG.datagrid("deleteRow", E_RDG.datagrid("getRowIndex", d)) })
+
+                    //res.forEach((d) => { E_RDG.datagrid("deleteRow", E_RDG.datagrid("getRowIndex", d)) })
+
+                    E_RDG.datagrid("clearChecked");
+                }
+                function onError(err) {
+                    btn.children(".spinner-border").remove();
+                    createDialogModal({
+                        id: "DialogModal-Error",
+                        inner: "刪除失敗！",
+                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
+                    })
+                    E_RDG.datagrid("clearChecked");
+                }
             }
         })
 
         function changeEditAreaCss() {
             let selfJQ = $(this);
+            let parent = selfJQ.parent();
             selfJQ.attr("data-once", '')
             selfJQ.siblings().removeClass("d-none");
-            selfJQ.parent().removeClass("mt-0");
-            selfJQ.parent().siblings(".datatable-easyui").removeClass("d-none");
-            selfJQ.parent().siblings(".form-group").removeClass("w-lg-auto");
-            selfJQ.parent().siblings(".form-group").addClass("required");
-            selfJQ.parent().siblings(".form-group").children("select").attr("required", '');
-            selfJQ.parent().parent().removeClass("flex-lg-row justify-content-start");
+            parent.removeClass("mt-0");
+            parent.siblings(".datatable-easyui").removeClass("d-none");
+            parent.siblings(".form-group").removeClass("w-lg-auto");
+            parent.siblings(".form-group").addClass("required");
+            parent.siblings(".form-group").children("select").attr("required", '');
+            parent.parent().removeClass("flex-lg-row justify-content-start");
         }
         function loadDatagrid(id) {
             let dg = $(`#${id} .modal-datagrid`);
             dg.datagrid("load", getQueryParams(`#${id} form`));
         }
+        function getCheckbox(dg, index) {
+            return dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].querySelector(".datagrid-cell-check");
+        }
         function getChecked(dg, index) {
-            return dg.datagrid('getPanel').find('.datagrid-cell-check input[type="checkbox"]')[index].checked;
+            let dom = getCheckbox(dg, index);
+            return dom ? dom.checked : null;
         }
         function onSelectBtn(dg, index, sc) {
             if (sc !== null && sc == getChecked(dg, index)) {
@@ -1036,6 +1355,10 @@
                 return false;
             }
             return true;
+        }
+        function onBeforeSelect(dg, index, sc, bool) {
+            if (getCheckbox(dg, index) == null) return bool;
+            return onSelectBtn(dg, index, sc);
         }
         return this;
     }

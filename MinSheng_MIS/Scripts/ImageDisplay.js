@@ -1,10 +1,6 @@
 ﻿function ImageDisplay(selector) {
-    $(document.body).on("click", ".img-display .btn-close", function () {
-        $(".img-display").remove();
-    })
-    $(document.body).on("click", ".img-display", function () {
-        $(".img-display").remove();
-    })
+    $(document.body).on("click", ".img-display .btn-close", displayRemove)
+    $(document.body).on("click", ".img-display", displayRemove)
     $(selector).click(function () {
         let img = this.src;
         $(document.body).append(`
@@ -16,4 +12,7 @@
             </div>
             `);
     })
+    function displayRemove(){
+        $(".img-display").remove();
+    }
 }

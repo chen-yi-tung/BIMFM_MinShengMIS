@@ -1,5 +1,6 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -42,6 +43,11 @@ namespace MinSheng_MIS.Controllers
                 db.EquipmentMaintainItem.AddOrUpdate(EMI);
                 db.SaveChanges();
             }
+
+            //檢查該產單的設備保養項目是否產單 沒有的話 就產單
+            Check_EquipmentFormItem c = new Check_EquipmentFormItem();
+            c.CheckEquipmentFormItem();
+
             JObject jo = new JObject();
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);
