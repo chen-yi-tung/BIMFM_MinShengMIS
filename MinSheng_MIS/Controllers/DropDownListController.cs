@@ -115,6 +115,31 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region PlanState 巡檢計畫狀態
+        [HttpGet]
+        public ActionResult PlanState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.InspectionPlanState();
+
+            foreach (var a in Dics)
+            {
+                if(a.Key != "5")
+                {
+                    JObject jo = new JObject
+                    {
+                        { "Text", a.Value },
+                        { "Value", a.Key }
+                    };
+                    list.Add(jo);
+                }
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
         #region MaintainState相關 保養單狀態
         [HttpGet]
         public ActionResult MaintainRecord_MaintainState()
@@ -479,6 +504,25 @@ namespace MinSheng_MIS.Controllers
                 list.Add(jo);
             }
 
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region InspectionUser巡檢人員
+        [HttpGet]
+        public ActionResult InspectionUser()
+        {
+            List<JObject> list = new List<JObject> { };
+            var data = db.InspectionPlanMember.Select(x => x.UserID).Distinct().ToList();
+            var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
+            foreach (var item in mynamedatalist)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }

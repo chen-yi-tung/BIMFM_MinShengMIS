@@ -78,7 +78,7 @@
 <script src="../../Scripts/tool.js"></script>
 <script>
 
-    var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
+    var getGridJSON = '@Url.Action("InspectionPlan_Management", "InspectionPlan_Management")';
 
     var baseUrl = "/InspectionPlan_Management/";
 
@@ -94,6 +94,9 @@
     }]
 
     $(async function () {
+        await pushSelect("PlanState", '@Url.Action("PlanState", "DropDownList")');
+        await pushSelect("Shift", '@Url.Action("Shift", "DropDownList")');
+        await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });
@@ -102,8 +105,8 @@
 
         $('#DataGrid').datagrid({
 
-            //url: getGridJSON,
-            data: fakedata,
+            url: getGridJSON,
+            //data: fakedata,
             method: 'POST',
             queryParams: getQueryParams(),
             rownumbers: true,
@@ -133,12 +136,12 @@
                 }
             ]],
             columns: [[
-                { field: 'PlanState', title: '巡檢路線模板名稱', align: 'center', width: 300, sortable: true },
+                { field: 'PlanState', title: '巡檢計畫狀態', align: 'center', width: 150, sortable: true },
                 { field: 'IPSN', title: '計畫編號', align: 'center', width: 110, sortable: true },
-                { field: 'IPName', title: '計畫名稱', align: 'center', width: 200, sortable: true },
+                { field: 'IPName', title: '計畫名稱', align: 'center', width: 250, sortable: true },
                 { field: 'PlanDate', title: '計畫日期', align: 'center', width: 180, sortable: true },
                 { field: 'Shift', title: '巡檢班別', align: 'center', width: 106, sortable: true },
-                { field: 'MyName', title: '巡檢人員', align: 'center', width: 110, sortable: true },
+                { field: 'MyName', title: '巡檢人員', align: 'center', width: 350, sortable: true },
                 { field: 'RepairAmount', title: '維修數量', align: 'center', width: 106, sortable: true },
                 { field: 'MaintainAmount', title: '定期保養數量', align: 'center', width: 146, sortable: true },
             ]],

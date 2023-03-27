@@ -12,10 +12,19 @@ namespace MinSheng_MIS.Controllers
     public class InspectionPlan_ManagementController : Controller
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+        InspectionPlan_DataService IP_ds = new InspectionPlan_DataService();
         #region 巡檢計畫管理
         public ActionResult Management()
         {
             return View();
+        }
+        [HttpPost]
+        public ActionResult InspectionPlan_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = IP_ds.GetJsonForGrid_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
         }
         #endregion
 
