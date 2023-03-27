@@ -681,7 +681,12 @@
 
             ASN.on("change", async function () {
 
-                $(`#${id} #Area`).val(ASN.children("option:selected").text());
+                if (ASN.val()) {
+                    $(`#${id} #Area`).val(ASN.children("option:selected").text());
+                }
+                else {
+                    $(`#${id} #Area`).val('');
+                }
 
                 await pushSelect(`${id} #FSN`, '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.val()}`);
                 $(`#${id} #FSN`).val('');
@@ -694,7 +699,12 @@
 
             FSN.on("change", async function () {
 
-                $(`#${id} #Floor`).val(FSN.children("option:selected").text());
+                if (FSN.val()) {
+                    $(`#${id} #Floor`).val(FSN.children("option:selected").text());
+                }
+                else {
+                    $(`#${id} #Floor`).val('');
+                }
 
                 if (id == "sample-path-form") {
                     await pushSelect(`${id} #PathTitle`, '@Url.Action("PathTitle", "DropDownList")' + `?FSN=${FSN.val()}`);
