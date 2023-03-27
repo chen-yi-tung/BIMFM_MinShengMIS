@@ -387,16 +387,16 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             try
             {
-                string fileSavedPath = "~/AllImage/";
+                string fileSavedPath = "/AllImage/";
                 if (!Directory.Exists(Sev.MapPath(fileSavedPath)))
                 {
                     Directory.CreateDirectory(Sev.MapPath(fileSavedPath));
                 }
 
                 string newFileName = string.Concat(
-                DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss-ff"),
+                DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss_") + Path.GetFileNameWithoutExtension(file.FileName),
                 Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
-
+                
                 string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
                 file.SaveAs(fullFilePath);
                 return fileSavedPath + newFileName;
@@ -416,14 +416,14 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             try
             {
-                string fileSavedPath = "~/AllFile/";
+                string fileSavedPath = "/AllFile/";
                 if (!Directory.Exists(Sev.MapPath(fileSavedPath)))
                 {
                     Directory.CreateDirectory(Sev.MapPath(fileSavedPath));
                 }
 
                 string newFileName = string.Concat(
-                DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss-ff"),
+                DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss_") + Path.GetFileNameWithoutExtension(file.FileName),
                 Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
 
                 string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
@@ -579,11 +579,12 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             try
             {
-                var IPR = db.InspectionPlanRepair.Find(form["IPRSN"].ToString());
+                string iprsn = form["IPRSN"].ToString();
+                var IPR = db.InspectionPlanRepair.Find(iprsn);
                 IPR.RepairState = "3";
                 IPR.RepairContent = form["RepairContent"].ToString();
                 db.InspectionPlanRepair.AddOrUpdate(IPR);
-                db.RepairCompletionImage.RemoveRange(db.RepairCompletionImage.Where(x => x.IPRSN == form["IPRSN"].ToString())); //先移除所有維修照片再新增
+                db.RepairCompletionImage.RemoveRange(db.RepairCompletionImage.Where(x => x.IPRSN == iprsn)); //先移除所有維修照片再新增
                 db.SaveChanges();
                 List<string> ImagePath_Server = new List<string>();
                 foreach (var item in imgList)
@@ -603,7 +604,7 @@ namespace MinSheng_MIS.Models.ViewModels
                     //db存
                     RepairCompletionImage RC = new RepairCompletionImage()
                     {
-                        IPRSN = form["IPRSN"].ToString(),
+                        IPRSN = iprsn,
                         ImgPath = item
                     };
                     db.RepairCompletionImage.Add(RC);
@@ -614,17 +615,17 @@ namespace MinSheng_MIS.Models.ViewModels
                 db.EquipmentReportForm.AddOrUpdate(EP);
                 db.SaveChanges();
 
-                var GetPRSN = db.RepairSupplementaryInfo.Where(x => x.PRSN.Contains(form["IPRSN"].ToString())).OrderByDescending(x => x.PRSN).Select(x => x.PRSN).FirstOrDefault();
+                var GetPRSN = db.RepairSupplementaryInfo.Where(x => x.PRSN.Contains(iprsn)).OrderByDescending(x => x.PRSN).Select(x => x.PRSN).FirstOrDefault();
                 //規則 :   PRSN = IPRSN + _序號
                 //取出最新的一筆資料，算出下一筆要新增的序號
                 string NewPRSN = ""; //新增的序號
                 if (GetPRSN.Count() == 0) //如果沒有任何資料
                 {
-                    NewPRSN = form["IPRSN"].ToString() + "_01";
+                    NewPRSN = iprsn + "_01";
                 }
                 else //有資料
                 {
-                    int subIndex = form["IPRSN"].ToString().Length; //抓取IPRSN長度
+                    int subIndex = iprsn.Length; //抓取IPRSN長度
                     int Nowindex = Int32.Parse(GetPRSN.Substring(subIndex + 1)); //擷取現在最新資料後面數字部分
                     Nowindex++;
                     string Newindex = Nowindex.ToString();
@@ -632,12 +633,12 @@ namespace MinSheng_MIS.Models.ViewModels
                     {
                         Newindex = "0" + Newindex;
                     }
-                    NewPRSN = form["IPRSN"].ToString() + Newindex; //組起來新的PRSN
+                    NewPRSN = iprsn + "_" + Newindex; //組起來新的PRSN
                 }
                 var RSI = new Models.RepairSupplementaryInfo()
                 {
                     PRSN = NewPRSN,
-                    IPRSN = form["IPRSN"].ToString(),
+                    IPRSN = iprsn,
                     SupplementaryUserID = form["SupplementaryUserID"].ToString(),
                     SupplementaryDate = DateTime.Now,
                     SupplementaryContent = form["SupplementaryContent"].ToString()
