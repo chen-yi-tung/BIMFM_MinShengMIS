@@ -68,7 +68,7 @@ namespace MinSheng_MIS
             #region 檢查是否需產生設備保養單項目
             Check_EquipmentFormItem c = new Check_EquipmentFormItem();
             c.CheckEquipmentFormItem();
-            System.Timers.Timer Wtimer = new System.Timers.Timer(1800000);//執行任務的週期 //小時3600000 1000
+            System.Timers.Timer Wtimer = new System.Timers.Timer(3600000);//執行任務的週期 //小時3600000 1000
             Wtimer.Elapsed += new System.Timers.ElapsedEventHandler(Wtimer_Elapsed);
             Wtimer.Enabled = true;
             Wtimer.AutoReset = true;

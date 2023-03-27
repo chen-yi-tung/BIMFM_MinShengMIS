@@ -120,28 +120,29 @@
             ForgeDraw.resize();
         }
 
-        function calcRoute() {
+    }
+    
+    function calcRoute() {
 
-            if (ForgeDraw.lineData.length > 1) {
-                ForgeDraw.devices.forEach((dp) => {
-                    dp.update();
-                })
-            }
-
-            if (!sortRouteModal.autoCalcRoute) {
-                return;
-            }
-
-            //開始計算路徑
-            let route = ForgeDraw.getRoute().map(e => e.name);
-            console.log(ForgeDraw.devices.map(e => e.result));
-
-            route.unshift("起點");
-            route.push("終點");
-
-            //顯示在網頁上
-            updatePathDisplay(route);
+        if (ForgeDraw.lineData.length > 1) {
+            ForgeDraw.devices.forEach((dp) => {
+                dp.update();
+            })
         }
+
+        if (!sortRouteModal.autoCalcRoute) {
+            return;
+        }
+
+        //開始計算路徑
+        let route = ForgeDraw.getRoute().map(e => e.name);
+        console.log(ForgeDraw.devices.map(e => e.result));
+
+        route.unshift("起點");
+        route.push("終點");
+
+        //顯示在網頁上
+        updatePathDisplay(route);
     }
 
     //讀取設備和路線資料並繪製
@@ -191,10 +192,11 @@
 <!-- EVENT -->
 <script src="../../Scripts/tool.js"></script>
 <script>
-
-    const RSN = '@ViewBag.id';
+    const PSSN = '@ViewBag.PSSN';
+    let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
+    //const RSN = '@ViewBag.id';
     //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null;
+    //let apiUrl = null;
 
     let fakeData = {
         "PathSample": {
@@ -363,11 +365,11 @@
                 let spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
                 $(this).append(spinner);
 
-                setTimeout(onSuccess, 1000);
+                //setTimeout(onSuccess, 1000);
 
-                /*
+
                 $.ajax({
-                    url: '@Url.Action("Delete", "_Management")?PSSN=' + PSSN,
+                    url: '@Url.Action("DeleteSamplePath", "SamplePath_Management")?PSSN=' + PSSN,
                     body: JSON.stringify(PSSN),
                     type: "POST",
                     dataType: "json",
@@ -375,7 +377,7 @@
                     success: onSuccess,
                     error: onError
                 })
-                */
+
 
                 function onSuccess(res) {
                     console.log("Success");

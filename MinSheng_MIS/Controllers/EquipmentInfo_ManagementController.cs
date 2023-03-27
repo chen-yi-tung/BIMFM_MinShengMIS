@@ -15,10 +15,40 @@ namespace MinSheng_MIS.Controllers
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         // GET: EquipmentInfo_Management
-        public ActionResult Index()
+        #region 資產管理
+        public ActionResult Management()
         {
             return View();
         }
+        #endregion
+
+        #region 詳情
+        public ActionResult Read()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 編輯
+        public ActionResult Edit()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 停用
+        public ActionResult Disable()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 新增設備
+        public ActionResult CreateEquipment()
+        {
+            return View();
+        }
+        #endregion
 
         #region 設備屬性
         [HttpGet]

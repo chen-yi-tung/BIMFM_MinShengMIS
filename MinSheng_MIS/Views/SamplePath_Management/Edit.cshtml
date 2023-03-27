@@ -24,7 +24,7 @@
 
         <div class="form-group required">
             <label for="PathTitle">巡檢路線模板</label>
-            <input type="text" class="form-control" name="PathTitle" id="PathTitle">
+            <input type="text" class="form-control" name="PathTitle" id="PathTitle" maxlength="30">
         </div>
         <div class="button-group justify-content-start">
             <button class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
@@ -170,28 +170,29 @@
             ForgeDraw.resize();
         }
 
-        function calcRoute() {
+    }
 
-            if (ForgeDraw.lineData.length > 1) {
-                ForgeDraw.devices.forEach((dp) => {
-                    dp.update();
-                })
-            }
+    function calcRoute() {
 
-            if (!sortRouteModal.autoCalcRoute) {
-                return;
-            }
-
-            //開始計算路徑
-            let route = ForgeDraw.getRoute().map(e => e.name);
-            console.log(ForgeDraw.devices.map(e => e.result));
-
-            route.unshift("起點");
-            route.push("終點");
-
-            //顯示在網頁上
-            updatePathDisplay(route);
+        if (ForgeDraw.lineData.length > 1) {
+            ForgeDraw.devices.forEach((dp) => {
+                dp.update();
+            })
         }
+
+        if (!sortRouteModal.autoCalcRoute) {
+            return;
+        }
+
+        //開始計算路徑
+        let route = ForgeDraw.getRoute().map(e => e.name);
+        console.log(ForgeDraw.devices.map(e => e.result));
+
+        route.unshift("起點");
+        route.push("終點");
+
+        //顯示在網頁上
+        updatePathDisplay(route);
     }
 
     //讀取設備和路線資料並繪製
@@ -264,9 +265,9 @@
 <script src="../../Scripts/tool.js"></script>
 <script>
 
-    const RSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null;
+    const PSSN = '@ViewBag.PSSN';
+    let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
+    //let apiUrl = null;
 
     let fakeData = {
         "PathSample": {
@@ -439,10 +440,31 @@
         $("#path-auto").click(function () {
             $(this).blur();
             sortRouteModal.autoRouteToggle();
+            calcRoute();
         })
         $("#submit").click(function () {
             console.log("onclick submit")
-            save();
+            //save();
+            let pt = $("#PathTitle").val();
+            //console.log(pt);
+            //先判斷巡檢路線模板是否有填值
+            if (pt == "") {
+                errtext = "巡檢路線模板名稱不可為空!";
+                createDialogModal({
+                    id: "DialogModal-Error",
+                    inner: `${errtext}`,
+                    button: [
+                        {
+                            className: "btn btn-delete",
+                            cancel: true,
+                            text: "確定"
+                        },
+                    ]
+                })
+            }
+            else {
+                save();
+            }
         })
     }
 
@@ -479,44 +501,44 @@
 
         console.log(data);
 
-            /* $.ajax({
-            url: '@Url.Action("aaa", "bbb")',
+        $.ajax({
+            url: '@Url.Action("EditSamplePath", "SamplePath_Management")',
             data: JSON.stringify(data),
             type: "POST",
             dataType: "json",
             contentType: "application/json;charset=utf-8",
             success: onSuccess,
             error: onError
-            }) */
+        })
 
-            function onSuccess(res) {
-                console.log("Success");
-                console.log(res);
+        function onSuccess(res) {
+            console.log("Success");
+            console.log(res);
 
-                if (res.ResponseCode == 0) {
-                    createDialogModal({
-                        id: "DialogModal-Success",
-                        inner: "編輯成功！",
-                        button: [
-                            {
-                                className: "btn btn-delete",
-                                cancel: true,
-                                text: "確定"
-                            },
-                        ],
-                        onHide: () => {
-                            let url = '@Url.Action("Management", "SamplePath_Management")';
-                            window.location.href = url;
-                        }
-                    });
-                }
+            if (res.ResponseCode == 0) {
+                createDialogModal({
+                    id: "DialogModal-Success",
+                    inner: "編輯成功！",
+                    button: [
+                        {
+                            className: "btn btn-delete",
+                            cancel: true,
+                            text: "確定"
+                        },
+                    ],
+                    onHide: () => {
+                        let url = '@Url.Action("Management", "SamplePath_Management")';
+                        window.location.href = url;
+                    }
+                });
             }
+        }
         function onError(res) {
             console.log("error");
             console.log(res);
             let errtext;
 
-            switch (res) {
+            switch (res.responseText) {
                 case "duplicate title":
                     errtext = "巡檢路線模板名稱重複！";
                     break;

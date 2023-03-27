@@ -11,7 +11,7 @@
 </div>
 
 <div class="edit-area edit-area-small">
-    <form class="form" action="">
+    <form class="form" id="form">
         <div class="form-group d-lg-contents required">
             <label for="Unit">保養週期單位</label>
             <select class="form-select" name="Unit" id="Unit" required>
@@ -22,7 +22,7 @@
         </div>
         <div class="form-group d-lg-contents required">
             <label for="Period">保養週期</label>
-            <input class="form-control" type="number" name="Period" id="Period" min="1" value="1" required>
+            <input class="form-control" type="number" name="Period" id="Period" max="365" min="1" value="1" required>
         </div>
         <div class="form-group d-lg-contents required">
             <label for="IsEnable">啟用狀態</label>
@@ -36,7 +36,7 @@
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-submit" id="submit">儲存</button>
+    <button class="btn btn-submit" id="submit" form="form">儲存</button>
 </div>
 
 <script src="/Scripts/datatable.js"></script>
@@ -102,12 +102,10 @@
             history.back();
         });
 
-        $("#submit").click(function () {
-            save();
-        });
+        $("#submit").click(save);
     }
 
-    function save() {
+    function save(e) {
         let isValidity = $("form").toArray().map(e => e.checkValidity()).every(e => e);
         console.log("isValidity:", isValidity);
 
@@ -120,9 +118,9 @@
 
         console.log("jsonData:", jsonData);
         console.log("A", JSON.stringify(jsonData))
-        if (!isValidity) return;
-
-         $.ajax({
+        if (!isValidity) { return }
+        e.preventDefault();
+        $.ajax({
             url: '@Url.Action("EditBodySave", "EquipmentMaintainPeriod_Management")',
             data: JSON.stringify(jsonData),
             type: "post",
@@ -131,7 +129,6 @@
             success: onSuccess,
             error: onError
         })
-        console.log('哭阿')
         function onSuccess(res) {
             console.log(res);
             window.open('@Url.Action("Management", "EquipmentMaintainPeriod_Management")',"_self")

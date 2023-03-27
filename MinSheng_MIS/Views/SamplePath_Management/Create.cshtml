@@ -21,7 +21,7 @@
         </div>
         <div class="form-group required">
             <label for="PathTitle">巡檢路線模板</label>
-            <input type="text" class="form-control" name="PathTitle" id="PathTitle">
+            <input type="text" class="form-control" name="PathTitle" id="PathTitle"  maxlength="30">
         </div>
         <div class="button-group justify-content-start">
             <button type="button" class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
@@ -141,12 +141,6 @@
                 console.log("view => fd.linedata.removeall");
                 updatePathDisplay();
             });
-            /*
-            view.addEventListener("fd.devicepoint.usercreate", function (event) {
-                console.log("view => fd.devicepoint.usercreate");
-                createDeviceModal.create(event.detail);
-            });
-            */
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
                 calcRoute();
@@ -161,28 +155,29 @@
             ForgeDraw.resize();
         }
 
-        function calcRoute() {
+    }
 
-            if (ForgeDraw.lineData.length > 1) {
-                ForgeDraw.devices.forEach((dp) => {
-                    dp.update();
-                })
-            }
+    function calcRoute() {
 
-            if (!sortRouteModal.autoCalcRoute) {
-                return;
-            }
-
-            //開始計算路徑
-            let route = ForgeDraw.getRoute().map(e => e.name);
-            console.log(ForgeDraw.devices.map(e => e.result));
-
-            route.unshift("起點");
-            route.push("終點");
-
-            //顯示在網頁上
-            updatePathDisplay(route);
+        if (ForgeDraw.lineData.length > 1) {
+            ForgeDraw.devices.forEach((dp) => {
+                dp.update();
+            })
         }
+
+        if (!sortRouteModal.autoCalcRoute) {
+            return;
+        }
+
+        //開始計算路徑
+        let route = ForgeDraw.getRoute().map(e => e.name);
+        console.log(ForgeDraw.devices.map(e => e.result));
+
+        route.unshift("起點");
+        route.push("終點");
+
+        //顯示在網頁上
+        updatePathDisplay(route);
     }
 
     //更新網頁顯示的路徑
@@ -228,7 +223,13 @@
         );
         function onSuccess(res) {
             //console.log(res);
-            readDeviceData(fakeData.BIMDevices);
+            let eventName = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
+            let eventFunc = () => {
+                console.log("loadModel: FINAL_FRAME_RENDERED_CHANGED_EVENT")
+                readDeviceData(fakeData.BIMDevices);
+                viewer.removeEventListener(eventName,eventFunc);
+            };
+            viewer.addEventListener(eventName, eventFunc);
         }
         function onError(err) {
             console.log(err);
@@ -238,6 +239,7 @@
     //讀取設備資料並繪製
     function readDeviceData(data) {
         data.forEach((e) => {
+            console.log("readDeviceData: ",e)
             let btSprite = PIXI.Sprite.from(btUrl);
             btSprite.scale.set(0.6);
             btSprite.anchor.set(0.5);
@@ -285,6 +287,10 @@
         addButtonEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
         sortRouteModal.autoRouteToggle(true);
+
+        $("#PathTitle").change(function () {
+            $("#sample-path-name").text($(this).val())
+        })
 
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
     });
@@ -345,7 +351,7 @@
                 //$.getJSON('@Url.Action("action","Controller")', function (data) {
                 //fakeData = data;
                 //若非第一次初始化
-                
+
                 //})
             }
         })
@@ -374,10 +380,33 @@
         $("#path-auto").click(function () {
             $(this).blur();
             sortRouteModal.autoRouteToggle();
+            calcRoute();
         })
         $("#submit").click(function () {
+            //!!棟別樓層巡檢路線模板巡檢路線規劃 需有資料才傳!!
+
             console.log("onclick submit")
-            save();
+            let pt = $("#PathTitle").val();
+            console.log(pt);
+            //先判斷巡檢路線模板是否有填值
+            if (pt == "") {
+                errtext = "巡檢路線模板名稱不可為空!";
+                createDialogModal({
+                    id: "DialogModal-Error",
+                    inner: `${errtext}`,
+                    button: [
+                        {
+                            className: "btn btn-delete",
+                            cancel: true,
+                            text: "確定"
+                        },
+                    ]
+                })
+                //alert("巡檢路徑模板標題不可為空!")
+            }
+            else {
+                save();
+            }
         })
     }
 
@@ -410,21 +439,21 @@
             PathSampleRecord: PathSampleRecord
         }
 
-        console.log(data);
-
-        /* $.ajax({
-                url: '@Url.Action("aaa", "bbb")',
-                data: JSON.stringify(data),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-                }) */
+        //console.log(data);
+        //console.log(JSON.stringify(data));
+        $.ajax({
+            url: '@Url.Action("CreateSamplePath", "SamplePath_Management")',
+            data: JSON.stringify(data),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
 
         function onSuccess(res) {
             console.log("Success");
-            console.log(res);
+            //console.log(res);
 
             if (res.ResponseCode == 0) {
                 createDialogModal({
@@ -446,10 +475,10 @@
         }
         function onError(res) {
             console.log("error");
-            console.log(res);
+            //console.log(res);
             let errtext;
 
-            switch (res) {
+            switch (res.responseText) {
                 case "duplicate title":
                     errtext = "巡檢路線模板名稱重複！";
                     break;

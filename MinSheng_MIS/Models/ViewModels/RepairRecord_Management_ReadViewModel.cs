@@ -104,7 +104,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 var ReportStatedics = Surface.EquipmentReportFormState();
                 equipmentReportItem.ReportState = ReportStatedics[item.ReportState.Trim()];
                 equipmentReportItem.RSN = item.RSN.Trim();
-                equipmentReportItem.Date = item.Date?.ToString("yyyy/M/d HH:mm:ss");
+                equipmentReportItem.Date = item.Date.ToString("yyyy/M/d HH:mm:ss");
 
                 var ReportLeveldics = Surface.ReportLevel();
                 equipmentReportItem.ReportLevel = ReportLeveldics[item.ReportLevel.Trim()];
