@@ -142,6 +142,8 @@
                 <div class="search-area mb-3">
                     <form class="form">
 
+                        <input class="form-control" id="Source" name="Source" type="text" value="AddMaintainForm" hidden />
+
                         <div class="form-group">
                             <label for="ASN">棟別</label>
                             <select class="form-select" name="ASN" id="ASN">
@@ -842,6 +844,7 @@
                 }
             ]],
             columns: [[
+                { field: 'FormItemStatenum', title: '保養項目狀態編號', align: 'center', width: 210, sortable: true },
                 { field: 'StockState', title: '庫存狀態', align: 'center', width: 150, sortable: true },
                 { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 150, sortable: true },
                 { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },

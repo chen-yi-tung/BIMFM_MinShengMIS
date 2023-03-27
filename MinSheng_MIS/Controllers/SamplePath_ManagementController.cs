@@ -327,7 +327,6 @@ namespace MinSheng_MIS.Controllers
                 db.DrawPathSample.RemoveRange(dps);
                 db.SaveChanges();
 
-
                 //刪掉PathSample
                 var ps = db.PathSample.Find(PSSN);
                 db.PathSample.Remove(ps);

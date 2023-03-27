@@ -1569,13 +1569,17 @@
     <Content Include="Views\Account_Management\Edit.cshtml" />
     <Content Include="Views\Account_Management\Delete.cshtml" />
     <Content Include="Views\Account_Management\ChangePassword.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Management.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Read.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Edit.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Disable.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\CreateEquipment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\BigScreen\" />
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
-    <Folder Include="Views\EquipmentInfo_Management\" />
     <Folder Include="Views\SamplePath_Managements\" />
   </ItemGroup>
   <ItemGroup>

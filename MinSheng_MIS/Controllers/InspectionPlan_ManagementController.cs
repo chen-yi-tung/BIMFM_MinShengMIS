@@ -1,4 +1,7 @@
-﻿using System;
+﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Services;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,6 +11,7 @@ namespace MinSheng_MIS.Controllers
 {
     public class InspectionPlan_ManagementController : Controller
     {
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         #region 巡檢計畫管理
         public ActionResult Management()
         {
