@@ -337,6 +337,7 @@
     <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\MaintainRecord_Management_ViewModel.cs" />
     <Compile Include="Models\ViewModels\PathSampleViewModel.cs" />
     <Compile Include="Models\ViewModels\RepairRecord_Management_ReadViewModel.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemFormViewModel.cs" />

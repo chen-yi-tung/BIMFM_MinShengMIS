@@ -19,9 +19,19 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 查詢巡檢保養紀錄 (詳情)
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+
+        [HttpGet]
+        public ActionResult ReadBody(string id)
+        {
+            var MaintainRecord_Management_ViewModel = new MaintainRecord_Management_ViewModel();
+
+            string result = MaintainRecord_Management_ViewModel.GetJsonForRead(id);
+            return Content(result, "application/json");
         }
         #endregion
 

@@ -352,7 +352,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 {
                     PicResult += item + ",";
                 }
-                if (PicResult.Length > 0)
+                if (Pic.Count() > 0)
                 {
                     PicResult.Remove(PicResult.Length - 1); //移除最後一個'，'
                 }
@@ -586,7 +586,7 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 allPath += path + ",";
             }
-            if (allPath.Length > 0)
+            if (RCI.Count() > 0)
             {
                 allPath.Remove(allPath.Length - 1); //移除最後一個'，'
             }
