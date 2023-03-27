@@ -972,6 +972,9 @@ namespace MinSheng_MIS.Services
                               join x3 in db.MaintainItem on x1.MISN equals x3.MISN
                               select new { x1.EMISN, x1.IsEnable, x2.Area, x2.Floor, x2.System, x2.SubSystem, x1.ESN, x2.EName, x1.MISN, x3.MIName, x1.Unit, x1.Period, x1.LastTime, x1.NextTime, x2.EState };
 
+            //設備狀態為3(停用) 不顯示
+            SourceTable = SourceTable.Where(x => x.EState != "3");
+
             //Area查詢table方式 以Area至表[設備資訊]查詢出ESN，再以ESN至表[設備報修單]查詢出相關報修單。
             if (!string.IsNullOrEmpty(Area))
             {
