@@ -1328,14 +1328,15 @@
 
         function changeEditAreaCss() {
             let selfJQ = $(this);
+            let parent = selfJQ.parent();
             selfJQ.attr("data-once", '')
             selfJQ.siblings().removeClass("d-none");
-            selfJQ.parent().removeClass("mt-0");
-            selfJQ.parent().siblings(".datatable-easyui").removeClass("d-none");
-            selfJQ.parent().siblings(".form-group").removeClass("w-lg-auto");
-            selfJQ.parent().siblings(".form-group").addClass("required");
-            selfJQ.parent().siblings(".form-group").children("select").attr("required", '');
-            selfJQ.parent().parent().removeClass("flex-lg-row justify-content-start");
+            parent.removeClass("mt-0");
+            parent.siblings(".datatable-easyui").removeClass("d-none");
+            parent.siblings(".form-group").removeClass("w-lg-auto");
+            parent.siblings(".form-group").addClass("required");
+            parent.siblings(".form-group").children("select").attr("required", '');
+            parent.parent().removeClass("flex-lg-row justify-content-start");
         }
         function loadDatagrid(id) {
             let dg = $(`#${id} .modal-datagrid`);
