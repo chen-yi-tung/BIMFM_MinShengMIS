@@ -396,7 +396,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 string newFileName = string.Concat(
                 DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss_") + Path.GetFileNameWithoutExtension(file.FileName),
                 Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
-                
+
                 string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
                 file.SaveAs(fullFilePath);
                 return fileSavedPath + newFileName;
@@ -434,6 +434,27 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 return "";
             }
+        }
+        
+        /// <summary>
+        /// 在提交審核資料時:
+        /// 檢查設備EquipmentReportForm中有沒有其他未完成的項目，如果沒有的話則去EquipmentInfo把該設備(ESN)的Estate改為1
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckEquipState(string ESN)
+        {
+            try
+            {
+                var ERF = db.EquipmentReportForm.Where(x => x.ESN == ESN).Where(x => x.ReportState != "7");
+                if (ERF.Count() == 0)
+                {
+                    var EI = db.EquipmentInfo.Find(ESN);
+                    EI.EState = "1";
+                    db.EquipmentInfo.AddOrUpdate(EI);
+                }
+                return true;
+            }
+            catch { return false; }
         }
 
 
@@ -527,6 +548,15 @@ namespace MinSheng_MIS.Models.ViewModels
                 };
                 db.RepairAuditImage.Add(Image);
                 db.SaveChanges();
+            }
+
+            if (formCollection["AuditResult"].ToString() == "1") //審核狀態為審核通過時，要檢查該設備，並做設備狀態調整
+            {
+                var rsn = db.InspectionPlanRepair.Find(iprsn);
+                if (!CheckEquipState(rsn.RSN))
+                {
+                    return "檢查設備狀態時出錯!";
+                }
             }
 
             return "成功!";
