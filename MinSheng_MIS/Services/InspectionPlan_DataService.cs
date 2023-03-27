@@ -81,9 +81,35 @@ namespace MinSheng_MIS.Services
             //設備編號
             if (!string.IsNullOrEmpty(ESN))
             {
-
+                var RepairSourceTable = from x1 in db.InspectionPlanRepair
+                                        join x2 in db.EquipmentReportForm on x1.RSN equals x2.RSN
+                                        where x2.ESN == ESN
+                                        select x1.IPSN;
+                var MaintainSourceTable = from x1 in db.InspectionPlanMaintain
+                                          join x2 in db.EquipmentMaintainFormItem on x1.EMFISN equals x2.EMFISN
+                                          join x3 in db.EquipmentMaintainItem on x2.EMISN equals x3.EMISN
+                                          where x3.ESN == ESN
+                                          select x1.IPSN;
+                var IPSNlist = RepairSourceTable.Union(MaintainSourceTable);
+                SourceTable = SourceTable.Where(x => IPSNlist.Contains(x.IPSN));
             }
             //設備名稱
+            if (!string.IsNullOrEmpty(EName))
+            {
+                var RepairSourceTable = from x1 in db.InspectionPlanRepair
+                                        join x2 in db.EquipmentReportForm on x1.RSN equals x2.RSN
+                                        join x3 in db.EquipmentInfo on x2.ESN equals x3.ESN
+                                        where x3.EName.Contains(EName)
+                                        select x1.IPSN;
+                var MaintainSourceTable = from x1 in db.InspectionPlanMaintain
+                                          join x2 in db.EquipmentMaintainFormItem on x1.EMFISN equals x2.EMFISN
+                                          join x3 in db.EquipmentMaintainItem on x2.EMISN equals x3.EMISN
+                                          join x4 in db.EquipmentInfo on x3.ESN equals x4.ESN
+                                          where x4.EName.Contains(EName)
+                                          select x1.IPSN;
+                var IPSNlist = RepairSourceTable.Union(MaintainSourceTable);
+                SourceTable = SourceTable.Where(x => IPSNlist.Contains(x.IPSN));
+            }
             //日期(起)
             if (!string.IsNullOrEmpty(DateFrom))
             {
