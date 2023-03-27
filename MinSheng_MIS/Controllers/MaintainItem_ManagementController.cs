@@ -360,11 +360,12 @@ namespace MinSheng_MIS.Controllers
                     #endregion
 
                     #region 將目前相關設備(同系統別、子系統別與設備名稱)都加上該新增的保養項目 table Equipment Maintain Item
-
+                    //若設備狀態為3停用則不新增
                     var eqList = db.EquipmentInfo
                         .Where(e => e.System == inputItems.System)
                         .Where(e => e.SubSystem == inputItems.SubSystem)
                         .Where(e => e.EName == inputItems.EName)
+                        .Where(e => e.EState != "3")
                         .ToList();
 
                     int eqNum = eqList.Count();
