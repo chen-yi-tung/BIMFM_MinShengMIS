@@ -54,6 +54,10 @@ namespace MinSheng_MIS.Services
             string DateTo = form["DateTo"]?.ToString();
             //判斷是從哪裡來的請求DataGrid
             string SourceMaintain = form["SourceMaintain"]?.ToString();
+            //庫存狀態
+            string StockState = form["StockState"]?.ToString();
+            //設備狀態
+            string EState = form["EState"]?.ToString();
 
 
             #region 依據查詢字串檢索資料表
@@ -142,6 +146,24 @@ namespace MinSheng_MIS.Services
                         SourceTable = SourceTable.Where(x => x.Date < dateto);
                     }
                 }
+            }
+            //查詢庫存狀態
+            if (!string.IsNullOrEmpty(StockState))
+            {
+                switch (StockState)
+                {
+                    case "0":
+                        SourceTable = SourceTable.Where(x => x.StockState == false);
+                        break;
+                    case "1":
+                        SourceTable = SourceTable.Where(x => x.StockState == true);
+                        break;
+                } 
+            }
+            //查詢設備狀態
+            if (!string.IsNullOrEmpty(EState))
+            {
+                SourceTable = SourceTable.Where(x => x.EState == EState);
             }
             #endregion
 
