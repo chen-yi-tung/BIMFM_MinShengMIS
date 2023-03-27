@@ -79,7 +79,7 @@ namespace MinSheng_MIS.Models.ViewModels
             {
                 root.RSN = RSN;
 
-                root.Date = table[0].Date?.ToString("yyyy/MM/dd HH:mm:ss");
+                root.Date = table[0].Date.ToString("yyyy/MM/dd HH:mm:ss");
 
                 var levelDic = Surface.EquipmentReportFormState();
                 root.ReportLevel = levelDic[table[0].ReportLevel];

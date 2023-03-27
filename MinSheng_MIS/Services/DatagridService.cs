@@ -62,6 +62,8 @@ namespace MinSheng_MIS.Services
             string DateFrom = form["DateFrom"]?.ToString();
             //結束日期
             string DateTo = form["DateTo"]?.ToString();
+            //判斷是從哪裡來的請求DataGrid
+            string SourceReport = form["SourceReport"]?.ToString();
 
 
             #region 依據查詢字串檢索資料表
@@ -69,7 +71,16 @@ namespace MinSheng_MIS.Services
             var SourceTable = from x1 in db.EquipmentReportForm
                               join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
                               join x3 in db.AspNetUsers on x1.InformatUserID equals x3.UserName
-                              select new { x1.ReportState, x1.ReportLevel, x2.Area, x2.Floor, x1.ReportSource, x1.RSN, x1.Date, x2.PropertyCode, x1.ESN, x2.EName, x1.ReportContent, x3.MyName, x3.UserName };
+                              select new { x1.ReportState, x1.ReportLevel, x2.Area, x2.Floor, x1.ReportSource, x1.RSN, x1.Date, x2.PropertyCode, x1.ESN, x2.EName, x1.ReportContent, x3.MyName, x3.UserName, x2.EState, x1.StockState };
+
+            //若是用於新增巡檢計畫 的 新增維修單需增加狀態判斷
+            if (SourceReport == "AddReportForm")
+            {
+                //增加狀態判斷
+                SourceTable = SourceTable.Where(x => x.ReportState == "1" || x.ReportState == "5" || x.ReportState == "8" || x.ReportState == "9" || x.ReportState == "10" || x.ReportState == "11");
+                //設備若停用則不能加入巡檢計畫中
+                SourceTable = SourceTable.Where(x => x.EState != "3");
+            }
 
             //Area查詢table方式 以Area至表[設備資訊]查詢出ESN，再以ESN至表[設備報修單]查詢出相關報修單。
             if (!string.IsNullOrEmpty(Area))
@@ -166,7 +177,7 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("RSN", a.RSN);  //RSN
 
                 if (itemObjects["Date"] == null)
-                    itemObjects.Add("Date", a.Date?.ToString("yyyy/MM/dd HH:mm:ss"));                                //保養週期
+                    itemObjects.Add("Date", a.Date.ToString("yyyy/MM/dd HH:mm:ss"));                                //保養週期
 
                 if (itemObjects["PropertyCode"] == null)
                     itemObjects.Add("PropertyCode", a.PropertyCode);    //國有財產編碼
@@ -178,6 +189,14 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("ReportContent", a.ReportContent);    //報修內容
                 if (itemObjects["MyName"] == null)
                     itemObjects.Add("MyName", a.MyName);    //報修人員
+                if(a.StockState) //庫存狀態
+                {
+                    itemObjects.Add("StockState", "是");
+                }
+                else
+                {
+                    itemObjects.Add("StockState", "無");
+                }
                 ja.Add(itemObjects);
             }
 
@@ -873,7 +892,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("Area", EquipmentInfo_.Area);
                 itemObjects.Add("Floor", EquipmentInfo_.Floor);
                 itemObjects.Add("RSN", a.RSN);
-                itemObjects.Add("Date", EquipmentReportForm_.Date?.ToString("yyyy/MM/dd HH:mm:ss"));
+                itemObjects.Add("Date", EquipmentReportForm_.Date.ToString("yyyy/MM/dd HH:mm:ss"));
                 itemObjects.Add("PropertyCode", EquipmentInfo_.PropertyCode);
                 itemObjects.Add("ESN", EquipmentReportForm_.ESN);
                 itemObjects.Add("EName", EquipmentInfo_.EName);

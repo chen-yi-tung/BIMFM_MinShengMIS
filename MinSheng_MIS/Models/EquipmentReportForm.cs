@@ -23,12 +23,12 @@ namespace MinSheng_MIS.Models
     
         public string RSN { get; set; }
         public string ESN { get; set; }
-        public Nullable<System.DateTime> Date { get; set; }
+        public System.DateTime Date { get; set; }
         public string ReportLevel { get; set; }
         public string ReportContent { get; set; }
         public string InformatUserID { get; set; }
         public string ReportState { get; set; }
-        public Nullable<bool> StockState { get; set; }
+        public bool StockState { get; set; }
         public string ReportSource { get; set; }
     
         public virtual EquipmentInfo EquipmentInfo { get; set; }
