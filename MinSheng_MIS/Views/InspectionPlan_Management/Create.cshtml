@@ -322,28 +322,7 @@
         <h3 class="sample-path-title">巡檢路線規劃</h3>
 
         <div class="edit-area">
-            <div class="sample-path-group-area">
-                <div class="input-group sample-path-group">
-                    <div class="input-group-text">
-                        <button class="path-btn me-2" id="path-edit" data-bs-toggle="tooltip" title="拖曳順序">
-                            <i class="icon-handle"></i>
-                        </button>
-                        <span id="sample-path-name"></span>
-                    </div>
-                    <div type="text" class="form-control">
-                        <nav>
-                            <ol class="breadcrumb d-none" id="path-display">
-                                <li class="breadcrumb-item">起點</li>
-                                <li class="breadcrumb-item">終點</li>
-                            </ol>
-                        </nav>
-                        <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="手動修改路線">
-                            <i class="icon-edit"></i>
-                        </button>
-                    </div>
-                    <button class="btn-delete-item" data-bs-toggle="tooltip" title="刪除路線" onclick=""></button>
-                </div>
-            </div>
+            <div class="sample-path-group-area"></div>
             <div class="sample-path-draw-area d-none">
                 <div class="sample-path-toolbar">
                     <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
@@ -353,10 +332,6 @@
                     <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip"
                         data-bs-placement="right" title="清除路線">
                         <i class="icon-eraser"></i>
-                    </button>
-                    <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
-                        data-bs-placement="right" title="新增設備">
-                        <i class="icon-tools"></i>
                     </button>
 
                     <hr class="m-0">
@@ -443,12 +418,6 @@
                 console.log("view => fd.linedata.removeall");
                 updatePathDisplay();
             });
-
-            view.addEventListener("fd.devicepoint.usercreate", function (event) {
-                console.log("view => fd.devicepoint.usercreate");
-                //createDeviceModal.create(event.detail);
-            });
-
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
                 calcRoute();
@@ -681,9 +650,10 @@
                 let fsn = form.find("#FSN").val();
                 let pt = form.find("#ASN option:selected").text() + form.find("#FSN option:selected").text();
 
-                $("#sample-path-name").text(pt);
                 $(".sample-path-draw-area").removeClass("d-none");
                 $("#path-display").removeClass("d-none");
+
+                addRouteGroup(pt);
 
                 //$.getJSON('@Url.Action("action","Controller")', function (data) {
                 //fakeData = data;
@@ -709,9 +679,10 @@
                 let fsn = form.find("#FSN").val();
                 let pt = form.find("#PathTitle option:selected").text();
 
-                $("#sample-path-name").text(pt);
                 $(".sample-path-draw-area").removeClass("d-none");
                 $("#path-display").removeClass("d-none");
+
+                addRouteGroup(pt);
 
                 //$.getJSON('@Url.Action("action","Controller")', function (data) {
                 //fakeData = data;
@@ -740,10 +711,6 @@
             $(this).blur();
             controlToggle("path-eraser", ForgeDraw.Control.ERASER);
         })
-        $("#path-device").click(function () {
-            $(this).blur();
-            controlToggle("path-device", ForgeDraw.Control.DEVICE);
-        })
         $("#path-reload").click(function () {
             $(this).blur();
             ForgeDraw.removeAllData();
@@ -759,6 +726,45 @@
             console.log("onclick submit")
             save();
         })
+
+
+
+        function addRouteGroup(title) {
+            let group = $(`
+            <div class="input-group sample-path-group">
+                <div class="input-group-text">
+                    <button class="path-btn me-2" id="path-handle" data-bs-toggle="tooltip" title="拖曳順序">
+                        <i class="icon-handle"></i>
+                    </button>
+                    <span id="sample-path-name">${title}</span>
+                </div>
+                <div type="text" class="form-control">
+                    <nav>
+                        <ol class="breadcrumb d-none" id="path-display">
+                            <li class="breadcrumb-item">起點</li>
+                            <li class="breadcrumb-item">終點</li>
+                        </ol>
+                    </nav>
+                    <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="手動修改路線">
+                        <i class="icon-edit"></i>
+                    </button>
+                </div>
+                <button class="btn-delete-item" data-bs-toggle="tooltip" title="刪除路線"></button>
+            </div>`);
+
+            $(".sample-path-group-area").append(group);
+
+            group.find(".btn-delete-item").click(function () {
+                group.remove();
+            })
+
+            Sortable.create($(".sample-path-group-area")[0], {
+                draggable: ".sample-path-group",
+                handle: ".path-handle",
+                animation: 150,
+            })
+
+        }
     }
 
     function addDatagridEvent() {
