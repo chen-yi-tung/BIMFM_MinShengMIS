@@ -849,6 +849,7 @@
             idField: 'RSN',
             //sortName: 'RSN',
             columns: [[
+                { field: 'ReportStatenum', hidden: true },
                 { field: 'StockState', title: '庫存狀態', align: 'center', width: 150, sortable: true },
                 { field: 'ReportState', title: '報修單狀態', align: 'center', width: 145, sortable: true },
                 { field: 'EState', title: '設備狀態', align: 'center', width: 120, sortable: true },
@@ -1129,7 +1130,7 @@
                             onBeforeUnselect: (index) => onBeforeSelect(dg, index, M_RSC, true),
                             onLoadSuccess: (data) => {
                                 data.rows.forEach((row, index, arr) => {
-                                    switch (row.FormItemStatenum) {
+                                    switch (row.ReportStatenum) {
                                         case '9':
                                         case '10':
                                         case '11':
