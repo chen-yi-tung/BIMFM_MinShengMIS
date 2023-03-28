@@ -1067,7 +1067,6 @@
                     createDialogModal({
                         id: "DialogModal-Success",
                         inner: "刪除成功！",
-                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
                     })
 
                     /* TEST */ data.forEach((d) => { E_MDG.datagrid("deleteRow", E_MDG.datagrid("getRowIndex", d)) })
@@ -1081,7 +1080,6 @@
                     createDialogModal({
                         id: "DialogModal-Error",
                         inner: "刪除失敗！",
-                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
                     })
                     E_MDG.datagrid("clearChecked");
                 }
@@ -1227,7 +1225,6 @@
                     createDialogModal({
                         id: "DialogModal-Error",
                         inner: "新增失敗！",
-                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
                     })
                 }
             }
@@ -1258,7 +1255,6 @@
                     createDialogModal({
                         id: "DialogModal-Success",
                         inner: "刪除成功！",
-                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
                     })
 
                     /* TEST */ data.forEach((d) => { E_RDG.datagrid("deleteRow", E_RDG.datagrid("getRowIndex", d)) })
@@ -1272,7 +1268,6 @@
                     createDialogModal({
                         id: "DialogModal-Error",
                         inner: "刪除失敗！",
-                        button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
                     })
                     E_RDG.datagrid("clearChecked");
                 }
@@ -1365,13 +1360,6 @@
                 createDialogModal({
                     id: "DialogModal-Success",
                     inner: "新增成功！",
-                    button: [
-                        {
-                            className: "btn btn-delete",
-                            cancel: true,
-                            text: "確定"
-                        },
-                    ],
                     onHide: () => {
                         let url = '@Url.Action("Management", "SamplePath_Management")';
                         window.location.href = url;
@@ -1396,13 +1384,6 @@
             createDialogModal({
                 id: "DialogModal-Error",
                 inner: `新增失敗！${errtext}`,
-                button: [
-                    {
-                        className: "btn btn-delete",
-                        cancel: true,
-                        text: "確定"
-                    },
-                ]
             })
         }
     }

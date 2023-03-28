@@ -394,13 +394,6 @@
                 createDialogModal({
                     id: "DialogModal-Error",
                     inner: `${errtext}`,
-                    button: [
-                        {
-                            className: "btn btn-delete",
-                            cancel: true,
-                            text: "確定"
-                        },
-                    ]
                 })
                 //alert("巡檢路徑模板標題不可為空!")
             }
@@ -459,13 +452,6 @@
                 createDialogModal({
                     id: "DialogModal-Success",
                     inner: "新增成功！",
-                    button: [
-                        {
-                            className: "btn btn-delete",
-                            cancel: true,
-                            text: "確定"
-                        },
-                    ],
                     onHide: () => {
                         let url = '@Url.Action("Management", "SamplePath_Management")';
                         window.location.href = url;
@@ -490,13 +476,6 @@
             createDialogModal({
                 id: "DialogModal-Error",
                 inner: `新增失敗！${errtext}`,
-                button: [
-                    {
-                        className: "btn btn-delete",
-                        cancel: true,
-                        text: "確定"
-                    },
-                ]
             })
         }
     }

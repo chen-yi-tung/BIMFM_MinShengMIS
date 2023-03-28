@@ -80,16 +80,8 @@
                     確認是否刪除？
                 `,
                 button: [
-                    {
-                        className: "btn btn-cancel",
-                        cancel: true,
-                        text: "取消",
-                    },
-                    {
-                        className: "btn btn-delete",
-                        text: "確定刪除",
-                        onClick: onDelete
-                    },
+                    { className: "btn btn-cancel", cancel: true, text: "取消", },
+                    { className: "btn btn-delete", text: "確定刪除", onClick: onDelete },
                 ]
             })
 
@@ -123,13 +115,6 @@
                     createDialogModal({
                         id: "DialogModal-Success",
                         inner: "刪除成功！",
-                        button: [
-                            {
-                                className: "btn btn-delete",
-                                cancel: true,
-                                text: "確定"
-                            },
-                        ],
                         onHide: () => {
                             let url = '@Url.Action("Management", "Account_Management")';
                             window.location.href = url;
@@ -146,13 +131,6 @@
                     createDialogModal({
                         id: "DialogModal-Error",
                         inner: "刪除失敗！",
-                        button: [
-                            {
-                                className: "btn btn-delete",
-                                cancel: true,
-                                text: "確定"
-                            },
-                        ]
                     })
                 }
             }
