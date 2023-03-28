@@ -1200,25 +1200,25 @@
                 let btn = $(this);
                 btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
 
-                /* TEST */ setTimeout(onSuccess, 1000);
+                /* TEST */ //setTimeout(onSuccess, 1000);
 
-                /*$.ajax({
-                    url: '',
+                $.ajax({
+                    url: '@Url.Action("AddReportForm", "InspectionPlan_Management")',
                     data: JSON.stringify(data),
                     type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
-                })*/
+                })
 
                 function onSuccess(res) {
                     btn.children(".spinner-border").remove();
                     bootstrap.Modal.getInstance(modal[0]).hide();
 
-                    /* TEST */ M_RDG.datagrid("getChecked").forEach((d) => { E_RDG.datagrid("appendRow", d) })
+                    /* TEST */ //M_RDG.datagrid("getChecked").forEach((d) => { E_RDG.datagrid("appendRow", d) })
 
-                    //res.forEach((d) => { E_RDG.datagrid("appendRow", d) })
+                    res.rows.forEach((d) => { E_RDG.datagrid("appendRow", d) })
                 }
                 function onError(err) {
                     btn.children(".spinner-border").remove();
@@ -1234,19 +1234,17 @@
                 let btn = $(this);
                 btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
 
-                /* TEST */ setTimeout(onSuccess, 1000);
+                /* TEST */ //setTimeout(onSuccess, 1000);
 
-                /*$.ajax({
-                    url: '',
+                $.ajax({
+                    url: '@Url.Action("DeleteReportForm", "InspectionPlan_Management")',
                     data: JSON.stringify(data),
                     type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
-                })*/
-
-
+                })
 
                 function onSuccess(res) {
                     btn.children(".spinner-border").remove();
