@@ -153,6 +153,26 @@ h2 {
         width: auto !important;
     }
 
+    .w-lg-60 {
+        width: 60% !important;
+    }
+
+    .w-lg-40 {
+        width: 40% !important;
+    }
+
+    .w-lg-108px {
+        width: 108px !important;
+    }
+
+    .w-lg-205px {
+        width: 205px !important;
+    }
+
+    .w-lg-250px {
+        width: 250px !important;
+    }
+
     .container.render-body {
         max-width: 960px;
     }
@@ -163,6 +183,26 @@ h2 {
 }
 
 @media (min-width: 1200px) {
+    .w-xl-60 {
+        width: 60% !important;
+    }
+
+    .w-xl-40 {
+        width: 40% !important;
+    }
+
+    .w-xl-108px {
+        width: 108px !important;
+    }
+
+    .w-xl-205px {
+        width: 205px !important;
+    }
+
+    .w-xl-250px {
+        width: 250px !important;
+    }
+    
     .d-xl-contents {
         display: contents !important;
     }
