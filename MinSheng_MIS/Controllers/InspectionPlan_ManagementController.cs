@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
 
@@ -142,6 +143,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult DeleteMaintainForm(List<String> EMFISN)
         {
+            JArray ja = new JArray();
             foreach (var item in EMFISN)
             {
                 //變更狀態為保留中
@@ -160,12 +162,15 @@ namespace MinSheng_MIS.Controllers
                 }
                 db.EquipmentMaintainFormItem.AddOrUpdate(maintainform);
                 db.SaveChanges();
+                JObject itemObjects = new JObject();
+                itemObjects.Add("EMFISN", maintainform.EMFISN);
+                var EMISN = maintainform.EMISN;
+                var ESN = db.EquipmentMaintainItem.Find(EMISN).ESN;
+                itemObjects.Add("ESN", ESN);
+                ja.Add(itemObjects);
             }
 
-            JObject jo = new JObject();
-            jo.Add("Succed", true);
-
-            string result = JsonConvert.SerializeObject(jo);
+            string result = JsonConvert.SerializeObject(ja);
             return Content(result, "application/json");
         }
         #endregion
@@ -265,9 +270,10 @@ namespace MinSheng_MIS.Controllers
 
         #region 新增巡檢計畫-刪除維修設備
         [HttpPost]
-        public ActionResult DeleteReportForm(List<String> ESN)
+        public ActionResult DeleteReportForm(List<String> RSN)
         {
-            foreach (var item in ESN)
+            JArray ja = new JArray();
+            foreach (var item in RSN)
             {
                 //變更狀態為保留中
                 var RSNInfo = db.EquipmentReportForm.Find(item);
@@ -285,12 +291,14 @@ namespace MinSheng_MIS.Controllers
                 }
                 db.EquipmentReportForm.AddOrUpdate(RSNInfo);
                 db.SaveChanges();
+                JObject itemObjects = new JObject();
+                itemObjects.Add("RSN", item);
+                var ESN = db.EquipmentReportForm.Find(item).ESN;
+                itemObjects.Add("ESN", ESN);
+                ja.Add(itemObjects);
             }
 
-            JObject jo = new JObject();
-            jo.Add("Succed", true);
-
-            string result = JsonConvert.SerializeObject(jo);
+            string result = JsonConvert.SerializeObject(ja);
             return Content(result, "application/json");
         }
         #endregion
