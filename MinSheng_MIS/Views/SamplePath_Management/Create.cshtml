@@ -221,15 +221,12 @@
             onSuccess,
             onError
         );
-        function onSuccess(res) {
-            //console.log(res);
-            let eventName = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
-            let eventFunc = () => {
-                console.log("loadModel: FINAL_FRAME_RENDERED_CHANGED_EVENT")
-                readDeviceData(fakeData.BIMDevices);
-                viewer.removeEventListener(eventName, eventFunc);
-            };
-            viewer.addEventListener(eventName, eventFunc);
+        function onSuccess() {
+            $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {
+                $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, function () {
+                    readDeviceData(fakeData.BIMDevices);
+                })
+            })
         }
         function onError(err) {
             console.log(err);
@@ -334,25 +331,16 @@
                 function onSuccess(res) {
                     console.log(res);
                     fakeData = res;
-                    //若非第一次初始化
-                    if (viewer) {
-                        viewerUrl = "../" + fakeData.BIMPath;
-                        loadModel();
-                    }
-                    else {
-                        viewerUrl = "../" + fakeData.BIMPath;
-                        initializeViewer(initializeDrawer);
-                    }
+                    viewerUrl = "../" + fakeData.BIMPath;
+                    initializeViewer(initializeDrawer);
+
+                    $("#path-create").off();
+                    $('#ASN').attr("disabled",'');
+                    $('#FSN').attr("disabled",'');
                 }
                 function onError(res) {
                     console.log(res);
                 }
-
-                //$.getJSON('@Url.Action("action","Controller")', function (data) {
-                //fakeData = data;
-                //若非第一次初始化
-
-                //})
             }
         })
         $("#path-edit").click(function () {
@@ -366,12 +354,6 @@
             $(this).blur();
             controlToggle("path-eraser", ForgeDraw.Control.ERASER);
         })
-        /*
-        $("#path-device").click(function () {
-            $(this).blur();
-            controlToggle("path-device", ForgeDraw.Control.DEVICE);
-        })
-        */
         $("#path-reload").click(function () {
             $(this).blur();
             ForgeDraw.removeAllData();
@@ -390,7 +372,7 @@
             console.log(pt);
             //先判斷巡檢路線模板是否有填值
             if (pt == "") {
-                createDialogModal({ id: "DialogModal-Error", inner: "巡檢路線模板名稱不可為空！"})
+                createDialogModal({ id: "DialogModal-Error", inner: "巡檢路線模板名稱不可為空！" })
             }
             else {
                 save();
@@ -429,7 +411,7 @@
 
         //console.log(data);
         //console.log(JSON.stringify(data));
-        if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0){
+        if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0) {
             createDialogModal({ id: "DialogModal-Error", inner: "新增失敗！沒有規劃路線資料！" });
             return;
         }

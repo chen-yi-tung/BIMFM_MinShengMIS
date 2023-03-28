@@ -423,7 +423,13 @@
                 calcRoute();
             });
 
-            readDeviceData(fakeData.BIMDevices);
+            if (!fakeData.PathSample) {
+                readDeviceData(fakeData.BIMDevices);
+            }
+            else {
+                readDeviceData(fakeData.PathSample.BIMDevices);
+                readPathData(fakeData.PathSampleRecord);
+            }
 
             addTooltip();
         });
@@ -487,26 +493,30 @@
     }
 
     //更換模型和設備
-    function loadModel() {
+    function loadModel(PathSample = false) {
         ForgeDraw.removeAllDevice();
         ForgeDraw.removeAllData();
+        ForgeDraw.clearSelectPos();
 
-        viewerUrl = "../" + fakeData.BIMPath;
         viewer.loadModel(
             viewerUrl,
             { keepCurrentModels: false },
             onSuccess,
             onError
         );
+
         function onSuccess(res) {
-            //console.log(res);
-            let eventName = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
-            let eventFunc = () => {
-                console.log("loadModel: FINAL_FRAME_RENDERED_CHANGED_EVENT")
-                readDeviceData(fakeData.BIMDevices);
-                viewer.removeEventListener(eventName, eventFunc);
-            };
-            viewer.addEventListener(eventName, eventFunc);
+            $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {
+                $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, function () {
+                    if (!PathSample) {
+                        readDeviceData(fakeData.BIMDevices);
+                    }
+                    else {
+                        readDeviceData(fakeData.PathSample.BIMDevices);
+                        readPathData(fakeData.PathSampleRecord);
+                    }
+                })
+            })
         }
         function onError(err) {
             console.log(err);
@@ -522,6 +532,20 @@
             let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
         });
     }
+
+    //讀取路線資料
+    function readPathData(data) {
+        let reslineData = data.map((d) => {
+            let forgePos = new THREE.Vector3(d.LocationX, d.LocationY, 0);
+            let pos = viewer.worldToClient(forgePos);
+            let position = new PIXI.Point(pos.x, pos.y);
+            return {
+                position: position,
+                forgePos: forgePos
+            };
+        });
+        ForgeDraw.readLineData(reslineData);
+    }
 </script>
 
 <!-- Drag and Drop -->
@@ -534,7 +558,7 @@
 </script>
 
 <!-- EVENT -->
-<script src="../../Scripts/tool.js"></script>
+<script src="/Scripts/tool.js"></script>
 <script>
     let fakeData = {
         BIMPath: "BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
@@ -655,18 +679,32 @@
 
                 addRouteGroup(pt);
 
-                //$.getJSON('@Url.Action("action","Controller")', function (data) {
-                //fakeData = data;
-                //若非第一次初始化
-                if (viewer) {
-                    viewerUrl = "../" + fakeData.BIMPath;
-                    loadModel();
+                let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + fsn;
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+                function onSuccess(res) {
+                    console.log(res);
+                    fakeData = res;
+                    //若非第一次初始化
+                    if (viewer) {
+                        viewerUrl = "../" + fakeData.BIMPath;
+                        loadModel();
+                    }
+                    else {
+                        viewerUrl = "../" + fakeData.BIMPath;
+                        initializeViewer(initializeDrawer);
+                    }
                 }
-                else {
-                    viewerUrl = "../" + fakeData.BIMPath;
-                    initializeViewer(initializeDrawer);
+                function onError(res) {
+                    console.log(res);
                 }
-                //})
             }
         })
         $("#sample-path-create").click(function (e) {
@@ -678,24 +716,40 @@
                 let asn = form.find("#ASN").val();
                 let fsn = form.find("#FSN").val();
                 let pt = form.find("#PathTitle option:selected").text();
+                let PSSN = form.find("#PathTitle").val();
 
                 $(".sample-path-draw-area").removeClass("d-none");
                 $("#path-display").removeClass("d-none");
 
                 addRouteGroup(pt);
 
-                //$.getJSON('@Url.Action("action","Controller")', function (data) {
-                //fakeData = data;
-                //若非第一次初始化
-                if (viewer) {
-                    viewerUrl = "../" + fakeData.BIMPath;
-                    loadModel();
+                $.ajax({
+                    url: '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+                function onSuccess(res) {
+                    console.log(res);
+                    fakeData = res;
+                    //若非第一次初始化
+                    if (viewer) {
+                        viewerUrl = "../" + fakeData.PathSample.BIMPath;
+                        loadModel(true);
+                    }
+                    else {
+                        viewerUrl = "../" + fakeData.PathSample.BIMPath;
+                        initializeViewer(initializeDrawer);
+                    }
                 }
-                else {
-                    viewerUrl = "../" + fakeData.BIMPath;
-                    initializeViewer(initializeDrawer);
+
+                function onError(err) {
+                    console.log(err);
                 }
-                //})
+
             }
         })
 
@@ -728,9 +782,10 @@
             save();
         })
 
+        let path_id = 1;
         function addRouteGroup(title) {
             let group = $(`
-            <div class="input-group sample-path-group">
+            <div class="input-group sample-path-group" data-path-id="${path_id}">
                 <div class="input-group-text">
                     <button class="path-btn me-2" id="path-handle" data-bs-toggle="tooltip" title="拖曳順序">
                         <i class="icon-handle"></i>
@@ -754,8 +809,13 @@
             $(".sample-path-group-area").append(group);
 
             group.find(".btn-delete-item").click(function () {
+                let id = group.attr('data-path-id');
+                sessionStorage.removeItem('path_id_' + id);
                 group.remove();
+                console.log(`sessionStorage.removeItem('path_id_${id}');`)
             })
+
+            path_id++;
 
             new Sortable(document.querySelector(".sample-path-group-area"), {
                 handle: "#path-handle",
@@ -1379,17 +1439,13 @@
         function onSuccess(res) {
             console.log(res);
             createDialogModal({
-                id: "DialogModal-Success",
-                inner: "新增成功！",
+                id: "DialogModal-Success", inner: "新增成功！",
                 onHide: () => { window.location.href = '@Url.Action("Management", "InspectionPlan_Management")'; }
             });
         }
         function onError(res) {
             console.log(res);
-            createDialogModal({
-                id: "DialogModal-Error",
-                inner: `新增失敗！`,
-            })
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` })
         }
     }
 </script>
