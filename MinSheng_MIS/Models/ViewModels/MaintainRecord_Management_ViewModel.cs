@@ -84,6 +84,7 @@ namespace MinSheng_MIS.Models.ViewModels
             var EMF = db.EquipmentMaintainFormItem.Find(IPM.EMFISN);
             var EMI = db.EquipmentMaintainItem.Find(EMF.EMISN);
             var MI = db.MaintainItem.Find(EMI.MISN);
+
             #region  設備保養單項目
             EquipmentMaintainFormItem equipmentMaintainFormItem = new EquipmentMaintainFormItem();
             var dicFIS = Surfaces.Surface.EquipmentMaintainFormItemState();
