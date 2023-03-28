@@ -168,6 +168,7 @@ namespace MinSheng_MIS.Services
                     var dic = Surface.EquipmentReportFormState();
                     //string aaaaa = dic["8"];
                     itemObjects.Add("ReportState", dic[statsSN]); //報修單狀態
+                    itemObjects.Add("ReportStatenum", statsSN); //報修單狀態編碼
                 }
                 if (itemObjects["ReportLevel"] == null)
                 {
