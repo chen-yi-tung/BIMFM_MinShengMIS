@@ -10,8 +10,8 @@
     --theme-datagrid-tbody-bg: white;
     --theme-datagrid-color: #494949;
     /* border */
-    --theme-datagrid-thead-border: transparent;
-    --theme-datagrid-tbody-border: transparent;
+    --theme-datagrid-thead-border: #afd3ec;
+    --theme-datagrid-tbody-border: #ebebeb;
     --theme-datagrid-pagination-separator: transparent;
     /* btn */
     --theme-datagrid-btn-bg: #6487B0;
@@ -47,6 +47,7 @@
 }
 
 .datagrid-header td {
+    border-style: solid !important;
     border-color: var(--theme-datagrid-thead-border) !important;
 }
 
@@ -55,12 +56,13 @@
 }
 
 .datagrid-body td {
+    border-style: solid !important;
     border-color: var(--theme-datagrid-tbody-border) !important;
 }
 
 .datagrid-cell {
     font-size: 18px !important;
-    padding: 12px 6px !important;
+    padding: 0.4em 0.4em !important;
     overflow: hidden;
     white-space: nowrap;
     /* text-overflow: ellipsis; */
