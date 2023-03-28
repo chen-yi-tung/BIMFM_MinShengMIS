@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using System.Web.Mvc;
 using System.Data.Entity.Migrations;
 using System.IO;
+using System.Data.Entity.Validation;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
@@ -394,7 +395,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 }
 
                 string newFileName = string.Concat(
-                DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss_") + Path.GetFileNameWithoutExtension(file.FileName),
+                DateTime.Now.ToString("yyyy-MM-dd_") + Path.GetFileNameWithoutExtension(file.FileName),
                 Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
 
                 string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
@@ -423,7 +424,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 }
 
                 string newFileName = string.Concat(
-                DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss_") + Path.GetFileNameWithoutExtension(file.FileName),
+                DateTime.Now.ToString("yyyy-MM-dd_") + Path.GetFileNameWithoutExtension(file.FileName),
                 Path.GetExtension(file.FileName).ToLower()); //這段可以把檔案名稱改為當下時間
 
                 string fullFilePath = Path.Combine(Sev.MapPath(fileSavedPath), newFileName);
@@ -435,7 +436,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 return "";
             }
         }
-        
+
         /// <summary>
         /// 在提交審核資料時:
         /// 檢查設備EquipmentReportForm中有沒有其他未完成的項目，如果沒有的話則去EquipmentInfo把該設備(ESN)的Estate改為1
@@ -568,7 +569,7 @@ namespace MinSheng_MIS.Models.ViewModels
             public string MyName { get; set; }
             public string RepairDate { get; set; }
             public string RepairContent { get; set; }
-            public string ImgPath { get; set; }
+            public List<string> ImgPath { get; set; }
             //public string PRSN { get; set; }
             public string IPRSN { get; set; }
             //public string SupplementaryDate { get; set; }
@@ -581,14 +582,10 @@ namespace MinSheng_MIS.Models.ViewModels
             var RSI = db.RepairSupplementaryInfo.Where(x => x.IPRSN == IPRSN).FirstOrDefault();
             var RCI = db.RepairCompletionImage.Where(x => x.IPRSN == IPRSN).Select(x => x.ImgPath);
 
-            string allPath = "";
+            List<string> allPath = new List<string>();
             foreach (var path in RCI)
             {
-                allPath += path + ",";
-            }
-            if (RCI.Count() > 0)
-            {
-                allPath.Remove(allPath.Length - 1); //移除最後一個'，'
+                allPath.Add(path);
             }
             var dic = Surface.InspectionPlanRepairState();
             var SD = new SuppleData() //下面補件資料的所有資料
@@ -676,10 +673,10 @@ namespace MinSheng_MIS.Models.ViewModels
                 db.RepairSupplementaryInfo.Add(RSI);
 
                 //補件檔案
-                List<string> FilesPath = new List<string>(); 
+                List<string> FilesPath = new List<string>();
                 foreach (var item in fileList)
                 {
-                    string result = UploadFile(item,Sev);
+                    string result = UploadFile(item, Sev);
                     if (result != "")
                     {
                         FilesPath.Add(result);
