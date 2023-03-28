@@ -46,12 +46,12 @@
 
     <div class="sample-path-area">
         <h3 class="sample-path-title">定期保養設備</h3>
-        <div class="edit-area flex-lg-row justify-content-start" style="gap: 1em;">
-            <div class="form-group d-flex flex-column flex-lg-row align-items-start align-items-lg-center px-4 w-lg-auto"
+        <div class="edit-area" style="gap: 1em;">
+            <div class="form-group required d-flex flex-column flex-lg-row align-items-start align-items-lg-center px-4 d-none"
                 style="gap:0 1em; width:100%">
                 <label for="MaintainUserID" class="flex-shrink-0">審核人員</label>
                 <select type="text" class="form-select w-lg-250px" name="MaintainUserID" id="MaintainUserID"
-                    style="width: 100%;">
+                    style="width: 100%;" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
@@ -67,12 +67,12 @@
     </div>
     <div class="sample-path-area mt-4">
         <h3 class="sample-path-title">維修設備</h3>
-        <div class="edit-area flex-lg-row justify-content-start" style="gap: 1em;">
-            <div class="form-group d-flex flex-column flex-lg-row align-items-start align-items-lg-center px-4 w-lg-auto"
+        <div class="edit-area" style="gap: 1em;">
+            <div class="form-group required d-flex flex-column flex-lg-row align-items-start align-items-lg-center px-4 d-none"
                 style="gap:0 1em; width:100%">
                 <label for="RepairUserID" class="flex-shrink-0">審核人員</label>
                 <select type="text" class="form-select w-lg-250px" name="RepairUserID" id="RepairUserID"
-                    style="width: 100%;">
+                    style="width: 100%;" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
@@ -758,9 +758,8 @@
                 group.remove();
             })
 
-            Sortable.create($(".sample-path-group-area")[0], {
-                draggable: ".sample-path-group",
-                handle: ".path-handle",
+            new Sortable(document.querySelector(".sample-path-group-area"), {
+                handle: "#path-handle",
                 animation: 150,
             })
 
@@ -904,7 +903,11 @@
         }
 
 
-        $("#Maintain-create").one("click", function () {
+        $("#Maintain-create").one("click", MaintainCreate)
+
+        $("#Repair-create").one("click", RepairCreate)
+
+        function MaintainCreate() {
             let id = "DatagridModal-Maintain";
             let modal = $("#" + id);
             modal.one("shown.bs.modal", () => {
@@ -999,6 +1002,7 @@
 
                     $(`#${id} #add-row`).on("click", function () {
                         if (M_MDG.datagrid("getChecked").length !== 0) {
+                            changeEditAreaCss.call($("#Maintain-create")[0]);
                             appendData.call(this);
                         }
                     });
@@ -1007,7 +1011,7 @@
                             removeData.call(this);
                         }
                     });
-
+                    
                     changeEditAreaCss.call($("#Maintain-create")[0]);
                     initResultDatagrid();
                     $(`#${id} #add-row`).click();
@@ -1077,11 +1081,15 @@
                         inner: "刪除成功！",
                     })
 
-                    /* TEST */ data.forEach((d) => { E_MDG.datagrid("deleteRow", E_MDG.datagrid("getRowIndex", d)) })
+                    /* TEST */ //data.forEach((d) => { E_MDG.datagrid("deleteRow", E_MDG.datagrid("getRowIndex", d)) })
 
-                    //res.forEach((d) => { E_MDG.datagrid("deleteRow", E_MDG.datagrid("getRowIndex", d)) })
+                    res.forEach((d) => { E_MDG.datagrid("deleteRow", E_MDG.datagrid("getRowIndex", d.EMFISN)) })
 
                     E_MDG.datagrid("clearChecked");
+
+                    if (E_MDG.datagrid("getRows").length === 0) {
+                        changeEditAreaCss.call($("#Maintain-create")[0], true)
+                    }
                 }
                 function onError(err) {
                     btn.children(".spinner-border").remove();
@@ -1092,9 +1100,8 @@
                     E_MDG.datagrid("clearChecked");
                 }
             }
-        })
-
-        $("#Repair-create").one("click", function () {
+        }
+        function RepairCreate() {
             let id = "DatagridModal-Repair";
             let modal = $("#" + id);
             modal.one("shown.bs.modal", () => {
@@ -1188,6 +1195,7 @@
 
                     $(`#${id} #add-row`).on("click", function () {
                         if (M_RDG.datagrid("getChecked").length !== 0) {
+                            changeEditAreaCss.call($("#Repair-create")[0]);
                             appendData.call(this);
                         }
                     });
@@ -1264,11 +1272,15 @@
                         inner: "刪除成功！",
                     })
 
-                    /* TEST */ data.forEach((d) => { E_RDG.datagrid("deleteRow", E_RDG.datagrid("getRowIndex", d)) })
+                    /* TEST */ //data.forEach((d) => { E_RDG.datagrid("deleteRow", E_RDG.datagrid("getRowIndex", d)) })
 
-                    //res.forEach((d) => { E_RDG.datagrid("deleteRow", E_RDG.datagrid("getRowIndex", d)) })
+                    res.forEach((d) => { E_RDG.datagrid("deleteRow", E_RDG.datagrid("getRowIndex", d.RSN)) })
 
                     E_RDG.datagrid("clearChecked");
+
+                    if (E_RDG.datagrid("getRows").length === 0) {
+                        changeEditAreaCss.call($("#Repair-create")[0], true)
+                    }
                 }
                 function onError(err) {
                     btn.children(".spinner-border").remove();
@@ -1279,19 +1291,25 @@
                     E_RDG.datagrid("clearChecked");
                 }
             }
-        })
+        }
 
-        function changeEditAreaCss() {
+        function changeEditAreaCss(reserve = false) {
+
             let selfJQ = $(this);
             let parent = selfJQ.parent();
-            selfJQ.attr("data-once", '')
+
+            if (reserve) {
+                selfJQ.siblings().addClass("d-none");
+                parent.addClass("mt-0");
+                parent.siblings(".datatable-easyui").addClass("d-none");
+                parent.siblings(".form-group").addClass("d-none");
+                return;
+            }
+
             selfJQ.siblings().removeClass("d-none");
             parent.removeClass("mt-0");
             parent.siblings(".datatable-easyui").removeClass("d-none");
-            parent.siblings(".form-group").removeClass("w-lg-auto");
-            parent.siblings(".form-group").addClass("required");
-            parent.siblings(".form-group").children("select").attr("required", '');
-            parent.parent().removeClass("flex-lg-row justify-content-start");
+            parent.siblings(".form-group").removeClass("d-none");
         }
         function loadDatagrid(id) {
             let dg = $(`#${id} .modal-datagrid`);

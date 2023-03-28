@@ -96,6 +96,7 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
+<script src="../../Scripts/datatable.js"></script>
 <script src="../../Scripts/tool.js"></script>
 <script>
     var baseUrl = "/MaintainForm_Management/";
@@ -170,7 +171,7 @@
                 { field: 'EState', title: '設備狀態', align: 'center', width: 100, sortable: true },
                 { field: 'Area', title: '棟別', align: 'center', width: 130, sortable: true },
                 { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
-                
+
                 { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
                 { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
 
@@ -232,12 +233,19 @@
             error: onError
         })
         function onSuccess(res) {
-            alert("取消保留完成");
-            window.location.reload();
+            createDialogModal({
+                id: "DialogModal-Success",
+                inner: "取消保留成功！",
+            })
+            $('#DataGrid').datagrid('clearSelections');
+            $('#DataGrid').datagrid('reload');
         }
 
         function onError(res) {
-            alert("取消保留失敗");
+            createDialogModal({
+                id: "DialogModal-Error",
+                inner: "取消保留失敗！",
+            })
         }
     }
 
@@ -250,7 +258,7 @@
         });
 
         $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
+            $('#DataGrid').datagrid('load', getQueryParams())
         });
 
         $("#export").click(function () {

@@ -117,6 +117,7 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
+<script src="../../Scripts/datatable.js"></script>
 <script src="../../Scripts/tool.js"></script>
 <script>
     var baseUrl = "/Report_Management/";
@@ -208,7 +209,6 @@
                         if (row.ReportState == "保留中(待派工)" || row.ReportState == "保留中(未完成)" || row.ReportState == "保留中(審核未過)") {
                             return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
                         }
-                        //return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
                     }
                 },
             ]],
@@ -277,12 +277,19 @@
             error: onError
         })
         function onSuccess(res) {
-            alert("取消保留完成");
-            window.location.reload();
+            createDialogModal({
+                id: "DialogModal-Success",
+                inner: "取消保留成功！",
+            })
+            $('#DataGrid').datagrid('clearSelections');
+            $('#DataGrid').datagrid('reload');
         }
 
         function onError(res) {
-            alert("取消保留失敗");
+             createDialogModal({
+                id: "DialogModal-Error",
+                inner: "取消保留失敗！",
+            })
         }
     }
 
@@ -294,7 +301,7 @@
         });
 
         $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
+            $('#DataGrid').datagrid('load', getQueryParams())
         });
 
         $("#export").click(function () {
