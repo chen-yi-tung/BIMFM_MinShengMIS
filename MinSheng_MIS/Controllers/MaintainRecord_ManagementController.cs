@@ -36,15 +36,30 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 巡檢保養紀錄審核
-        public ActionResult Audit()
+        public ActionResult Audit(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult GetBufferData(string id)
+        {
+            var MaintainRecord_Management_ViewModel = new MaintainRecord_Management_ViewModel();
+
+            string result = MaintainRecord_Management_ViewModel.GetBufferData(id);
+            return Content(result, "application/json");
+        }
+        [HttpPost]
+        public ActionResult SubmitAuditData(FormCollection formCollection)
+        { 
+            return
         }
         #endregion
 
         #region 巡檢保養紀錄補件
-        public ActionResult Supplement()
+        public ActionResult Supplement(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         #endregion

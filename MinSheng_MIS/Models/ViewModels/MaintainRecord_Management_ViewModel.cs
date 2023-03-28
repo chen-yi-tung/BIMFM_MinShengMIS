@@ -1,9 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Owin;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using static MinSheng_MIS.Models.ViewModels.MaintainRecord_Management_ViewModel;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
@@ -201,6 +205,111 @@ namespace MinSheng_MIS.Models.ViewModels
 
             string result = JsonConvert.SerializeObject(root);
             return result;
+        }
+
+        public class AuditBufferData
+        { 
+            public string AuditMemo { get; set; }
+            public List<string> ImgPath { get; set; }
+            public string AuditResult { get; set; }
+        }
+
+        public string GetBufferData(string IPMSN)
+        {
+            var MAI = db.MaintainAuditInfo.Where(x => x.IPMSN == IPMSN).Where(x => x.IsBuffer == true).FirstOrDefault();
+            if (MAI != null)
+            {
+                var MAImg = db.MaintainAuditImage.Where(x => x.PMASN == MAI.PMASN).Select(x => x.ImgPath);
+                List<string> ImgList = new List<string>();
+                foreach (string path in MAImg)
+                {
+                    ImgList.Add(path);
+                }
+                var dic = Surfaces.Surface.AuditResult();
+                AuditBufferData auditData = new AuditBufferData()
+                { 
+                    AuditMemo = MAI.AuditMemo,
+                    ImgPath = ImgList,
+                    AuditResult = dic[MAI.AuditResult]
+                };
+                string result = JsonConvert.SerializeObject(auditData);
+                return result;
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        public string AuditSubmit(FormCollection form)
+        {
+            string ipmsn = form["IPMSN"].ToString();
+
+            bool IsBu = false;
+            switch (form["IsBuffer"].ToString())
+            {
+                case "0":
+                    IsBu = false;
+                    break;
+                case "1":
+                    IsBu = true;
+                    break;
+            }
+            var MAI = db.MaintainAuditInfo.Where(x => x.IPMSN == ipmsn).FirstOrDefault();
+
+            if (MAI != null) 
+            {
+                MAI.AuditUserID = form["AuditUserID"].ToString().Trim();
+                MAI.AuditMemo = form["AuditMemo"].ToString().Trim();
+                MAI.AuditResult = form["AuditResult"].ToString();
+                MAI.IsBuffer = IsBu;
+                MAI.AuditDate = DateTime.Now;
+                MAI.IPMSN = ipmsn;
+
+                db.MaintainAuditInfo.AddOrUpdate(MAI);
+                db.SaveChanges();
+            }
+            else
+            {
+                MAI.AuditUserID = form["AuditUserID"].ToString().Trim();
+                MAI.AuditMemo = form["AuditMemo"].ToString().Trim();
+                MAI.AuditResult = form["AuditResult"].ToString();
+                MAI.IsBuffer = IsBu;
+                MAI.AuditDate = DateTime.Now;
+                MAI.IPMSN = ipmsn;
+                MAI.PMASN = ipmsn + "_01";
+
+                db.MaintainAuditInfo.Add(MAI);
+                db.SaveChanges();
+            }
+
+            string IPM_AuditResult = "";
+            string IPM_State = "";
+            string EMFI_State = "";
+            string EMI_IsCreate = "";
+
+            switch (form["AuditResult"].ToString())
+            {
+                case "1":
+                    IPM_AuditResult = "1";
+                    IPM_State = "6";
+                    EMFI_State= "7";
+                    EMI_IsCreate = "0";
+                    break;
+                case "2":
+                    IPM_AuditResult = "2";
+                    IPM_State = "7";
+                    EMFI_State = "8";
+                    break;
+                case "3":
+                    IPM_AuditResult = "3";
+                    IPM_State = "5";
+                    EMFI_State = "6";
+                    break;
+            }
+
+            var IPM = db.InspectionPlanMaintain.Find(ipmsn);
+            IPM.
         }
     }
 }
