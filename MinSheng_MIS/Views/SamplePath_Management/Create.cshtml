@@ -21,7 +21,7 @@
         </div>
         <div class="form-group required">
             <label for="PathTitle">巡檢路線模板</label>
-            <input type="text" class="form-control" name="PathTitle" id="PathTitle"  maxlength="30">
+            <input type="text" class="form-control" name="PathTitle" id="PathTitle" maxlength="30">
         </div>
         <div class="button-group justify-content-start">
             <button type="button" class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
@@ -227,7 +227,7 @@
             let eventFunc = () => {
                 console.log("loadModel: FINAL_FRAME_RENDERED_CHANGED_EVENT")
                 readDeviceData(fakeData.BIMDevices);
-                viewer.removeEventListener(eventName,eventFunc);
+                viewer.removeEventListener(eventName, eventFunc);
             };
             viewer.addEventListener(eventName, eventFunc);
         }
@@ -239,7 +239,7 @@
     //讀取設備資料並繪製
     function readDeviceData(data) {
         data.forEach((e) => {
-            console.log("readDeviceData: ",e)
+            console.log("readDeviceData: ", e)
             let btSprite = PIXI.Sprite.from(btUrl);
             btSprite.scale.set(0.6);
             btSprite.anchor.set(0.5);
@@ -390,12 +390,7 @@
             console.log(pt);
             //先判斷巡檢路線模板是否有填值
             if (pt == "") {
-                errtext = "巡檢路線模板名稱不可為空!";
-                createDialogModal({
-                    id: "DialogModal-Error",
-                    inner: `${errtext}`,
-                })
-                //alert("巡檢路徑模板標題不可為空!")
+                createDialogModal({ id: "DialogModal-Error", inner: "巡檢路線模板名稱不可為空！"})
             }
             else {
                 save();
@@ -434,6 +429,11 @@
 
         //console.log(data);
         //console.log(JSON.stringify(data));
+        if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0){
+            createDialogModal({ id: "DialogModal-Error", inner: "新增失敗！沒有規劃路線資料！" });
+            return;
+        }
+
         $.ajax({
             url: '@Url.Action("CreateSamplePath", "SamplePath_Management")',
             data: JSON.stringify(data),

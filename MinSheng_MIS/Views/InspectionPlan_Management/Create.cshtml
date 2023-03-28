@@ -724,10 +724,9 @@
 
         $("#submit").click(function () {
             console.log("onclick submit")
+
             save();
         })
-
-
 
         function addRouteGroup(title) {
             let group = $(`
@@ -1011,7 +1010,7 @@
                             removeData.call(this);
                         }
                     });
-                    
+
                     changeEditAreaCss.call($("#Maintain-create")[0]);
                     initResultDatagrid();
                     $(`#${id} #add-row`).click();
@@ -1378,37 +1377,18 @@
         }) */
 
         function onSuccess(res) {
-            console.log("Success");
             console.log(res);
-
-            if (res.ResponseCode == 0) {
-                createDialogModal({
-                    id: "DialogModal-Success",
-                    inner: "新增成功！",
-                    onHide: () => {
-                        let url = '@Url.Action("Management", "SamplePath_Management")';
-                        window.location.href = url;
-                    }
-                });
-            }
+            createDialogModal({
+                id: "DialogModal-Success",
+                inner: "新增成功！",
+                onHide: () => { window.location.href = '@Url.Action("Management", "InspectionPlan_Management")'; }
+            });
         }
         function onError(res) {
-            console.log("error");
             console.log(res);
-            let errtext;
-
-            switch (res) {
-                case "duplicate title":
-                    errtext = "巡檢路線模板名稱重複！";
-                    break;
-                default:
-                    errtext = "";
-                    break;
-            }
-
             createDialogModal({
                 id: "DialogModal-Error",
-                inner: `新增失敗！${errtext}`,
+                inner: `新增失敗！`,
             })
         }
     }
