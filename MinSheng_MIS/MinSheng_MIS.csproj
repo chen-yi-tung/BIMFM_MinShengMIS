@@ -1490,6 +1490,7 @@
     <Content Include="AllFile\2023-03-2710-18-59-60.gradle" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
+    <Content Include="Scripts\datagrid-management.js" />
     <Content Include="Scripts\datatable.js" />
     <Content Include="Scripts\dataTable\EquipmentInfoModal.js" />
     <Content Include="Scripts\dataTable\InspectionPlanMaintain.js" />
