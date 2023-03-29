@@ -11,6 +11,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         public class PlanPathInput
         {
+            public string PlanDate { get; set; }
             public string ASN { get; set; }
             public string FSN { get; set; }
             public string PathTitle { get; set; }
@@ -22,8 +23,8 @@ namespace MinSheng_MIS.Models.ViewModels
             public PathSample PathSample { get; set; }
             public List<string> PathSampleOrder { get; set; }
             public List<PathSampleRecord> PathSampleRecord { get; set; }
-            public MaintainEquipment MaintainEquipment { get; set; }
-            public RepairEquipment RepairEquipment { get; set; }
+            public List<MaintainEquipment> MaintainEquipment { get; set; }
+            public List<RepairEquipment> RepairEquipment { get; set; }
         }
         public class PathSample
         {
@@ -51,14 +52,14 @@ namespace MinSheng_MIS.Models.ViewModels
         public class MaintainEquipment
         {
             public string ESN { get; set; }
-            public string DBID { get; set; }
+            public int DBID { get; set; }
             public Position Position { get; set; }
         }
 
         public class RepairEquipment
         {
             public string ESN { get; set; }
-            public string DBID { get; set; }
+            public int DBID { get; set; }
             public Position Position { get; set; }
         }
         public class Position

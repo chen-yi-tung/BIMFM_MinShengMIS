@@ -125,6 +125,8 @@
           <Property Name="RFID" Type="nvarchar(max)" />
           <Property Name="EState" Type="char" MaxLength="1" />
           <Property Name="FSN" Type="nvarchar" MaxLength="5" />
+          <Property Name="LocationX" Type="decimal" Precision="19" Scale="11" />
+          <Property Name="LocationY" Type="decimal" Precision="19" Scale="11" />
         </EntityType>
         <EntityType Name="EquipmentMaintainFormItem">
           <Key>
@@ -1264,6 +1266,8 @@
           <Property Name="RFID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="EState" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="FSN" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="LocationX" Type="Decimal" Precision="19" Scale="11" />
+          <Property Name="LocationY" Type="Decimal" Precision="19" Scale="11" />
           <NavigationProperty Name="EquipmentReportForm" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentReportForm_EquipmentInfo" FromRole="EquipmentInfo" ToRole="EquipmentReportForm" />
         </EntityType>
         <EntityType Name="EquipmentMaintainFormItem">
@@ -2077,6 +2081,8 @@
           <EntitySetMapping Name="EquipmentInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.EquipmentInfo">
               <MappingFragment StoreEntitySet="EquipmentInfo">
+                <ScalarProperty Name="LocationY" ColumnName="LocationY" />
+                <ScalarProperty Name="LocationX" ColumnName="LocationX" />
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="EState" ColumnName="EState" />
                 <ScalarProperty Name="RFID" ColumnName="RFID" />

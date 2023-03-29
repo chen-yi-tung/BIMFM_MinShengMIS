@@ -317,6 +317,11 @@ namespace MinSheng_MIS.Controllers
             var floorinfo = db.Floor_Info.Find(ps.FSN);
             ps.Floor = floorinfo.FloorName;
             ps.BIMPath = floorinfo.BIMPath;
+            var areainfo = db.AreaInfo.Find(ps.ASN);
+            ps.Area = areainfo.Area;
+            var plandate = Convert.ToDateTime(ppi.PlanDate);
+            var IPSNcount = db.InspectionPlan.Where(x => x.PlanDate == plandate).Count();
+            var tmpIPSN = "P" + plandate.ToString("yyMMdd") + (IPSNcount + 1).ToString().PadLeft(2, '0');
             //判斷PathTitle是否為空
             if (!string.IsNullOrEmpty(ppi.PathTitle))
             {
@@ -324,14 +329,93 @@ namespace MinSheng_MIS.Controllers
                 ps.PSSN = ppi.PathTitle;
                 var pathtitle = db.PathSample.Find(ps.PSSN).PathTitle;
                 //加入預估巡檢計畫單號
-                var IPSNcount = db.InspectionPlan.Where(x => x.PlanDate == DateTime.Today).Count();
-                ps.PathTitle = pathtitle;
+                ps.PathTitle = pathtitle + " " + tmpIPSN;
+                //找出來藍芽路徑
+                var BeaconOrder = db.PathSampleOrder.Where(x => x.PSSN == ps.PSSN).OrderBy(x => x.FPSSN).ToList();
+                List<string> psos = new List<string>();
+                foreach (var item in BeaconOrder)
+                {
+                    psos.Add(item.BeaconID);
+                }
+                ppo.PathSampleOrder = psos;
+                //找出繪製路徑
+                var DrawList = db.DrawPathSample.Where(x => x.PSSN == ps.PSSN).OrderBy(x => x.SISN).ToList();
+                List<PathSampleRecord> psrs = new List<PathSampleRecord>();
+                foreach (var item in DrawList)
+                {
+                    PathSampleRecord psr = new PathSampleRecord();
+                    psr.LocationX = item.LocationX;
+                    psr.LocationY = item.LocationY;
+                    psrs.Add(psr);
+                }
+                ppo.PathSampleRecord = psrs;
             }
             else
             {
-
+                //加入預估巡檢計畫單號
+                ps.PathTitle = ps.Area + "" + ps.Floor + " " + tmpIPSN;
+                List<string> psos = new List<string>();
+                ppo.PathSampleOrder = psos;
+                List<PathSampleRecord> psrs = new List<PathSampleRecord>();
+                ppo.PathSampleRecord = psrs;
             }
+            //Beacon
+            //找出該樓層所有藍芽
+            var BeaconList = db.EquipmentInfo.Where(x => x.FSN == ps.FSN && x.EName == "藍芽").ToList();
+            List<Beacon> beacons = new List<Beacon>();
+            foreach (var item in BeaconList)
+            {
+                Beacon beacon = new Beacon();
+                beacon.dbId = Convert.ToInt32(item.DBID);
+                beacon.deviceType = item.EName;
+                beacon.deviceName = item.ESN;
 
+                beacons.Add(beacon);
+            }
+            ps.Beacon = beacons;
+            ppo.PathSample = ps;
+
+            List<MaintainEquipment> maintainEquipments = new List<MaintainEquipment>();
+            foreach(var item in ppi.MaintainEquipment)
+            {
+                MaintainEquipment maintainEquipment = new MaintainEquipment();
+                maintainEquipment.ESN = item;
+                var DBID = db.EquipmentInfo.Find(item).DBID;
+                if (!string.IsNullOrEmpty(DBID.ToString()))
+                {
+                    maintainEquipment.DBID = (int)DBID;
+                }
+                else
+                {
+                    Position position = new Position();
+                    var xy = db.EquipmentInfo.Find(item);
+                    position.LocationX = (decimal)xy.LocationX;
+                    position.LocationY = (decimal)xy.LocationY;
+                }
+                maintainEquipments.Add(maintainEquipment);
+            }
+            ppo.MaintainEquipment = maintainEquipments;
+
+            List<RepairEquipment> repairEquipments = new List<RepairEquipment>();
+            foreach (var item in ppi.RepairEquipment)
+            {
+                RepairEquipment repairEquipment = new RepairEquipment();
+                repairEquipment.ESN = item;
+                var DBID = db.EquipmentInfo.Find(item).DBID;
+                if (!string.IsNullOrEmpty(DBID.ToString()))
+                {
+                    repairEquipment.DBID = (int)DBID;
+                }
+                else
+                {
+                    Position position = new Position();
+                    var xy = db.EquipmentInfo.Find(item);
+                    position.LocationX = (decimal)xy.LocationX;
+                    position.LocationY = (decimal)xy.LocationY;
+                }
+                repairEquipments.Add(repairEquipment);
+            }
+            ppo.RepairEquipment = repairEquipments;
 
             string result = JsonConvert.SerializeObject(ppo);
             return Content(result, "application/json");
