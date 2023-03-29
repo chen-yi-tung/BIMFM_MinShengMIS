@@ -381,7 +381,15 @@ namespace MinSheng_MIS.Controllers
                 MaintainEquipment maintainEquipment = new MaintainEquipment();
                 maintainEquipment.ESN = item;
                 var DBID = db.EquipmentInfo.Find(item).DBID;
-                maintainEquipment.DBID = DBID;
+                if (!string.IsNullOrEmpty(DBID.ToString()))
+                {
+                    //maintainEquipment.DBID = DBID;
+                }
+                else
+                {
+                    Position position = new Position();
+
+                }
             }
 
             string result = JsonConvert.SerializeObject(ppo);
