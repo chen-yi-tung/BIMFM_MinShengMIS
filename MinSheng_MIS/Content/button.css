@@ -3,6 +3,13 @@
     font-size: 18px;
 }
 
+.btn:disabled,
+.btn[disabled] {
+    --bs-btn-bg: #708298;
+    --bs-btn-hover-bg: #657589;
+    opacity: 0.8;
+}
+
 .btn-create {
     --bs-btn-bg: #0457D1;
     --bs-btn-color: white;
