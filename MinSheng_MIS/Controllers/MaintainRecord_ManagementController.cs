@@ -85,6 +85,11 @@ namespace MinSheng_MIS.Controllers
             List<HttpPostedFileBase> fileList = new List<HttpPostedFileBase>();
             foreach (string item in Request.Files)
             {
+                //限制檔案大小
+                //if (Request.Files[item].ContentLength )
+                //{
+
+                //}
                 if (item.Contains("Img"))
                 {
                     imgList.Add(Request.Files[item]);
