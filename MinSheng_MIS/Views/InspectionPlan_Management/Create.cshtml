@@ -759,7 +759,7 @@
             e.preventDefault();
             console.log("onclick path-create");
             let form = $("#path-form");
-            if (form[0].checkValidity()) {
+            if (form[0].checkValidity() && $("#PlanDate").val() !== '') {
                 let inputData = getDataGridData(form);
                 let FSN = form.find("#FSN").val();
                 $(".sample-path-draw-area").removeClass("d-none");
@@ -797,7 +797,7 @@
             e.preventDefault();
             console.log("onclick sample-path-create");
             let form = $("#sample-path-form");
-            if (form[0].checkValidity()) {
+            if (form[0].checkValidity() && $("#PlanDate").val() !== '') {
                 let inputData = getDataGridData(form);
                 let PSSN = form.find("#PathTitle").val();
 
@@ -845,6 +845,7 @@
             let Area = form.find("#ASN option:selected").text();
             let Floor = form.find("#FSN option:selected").text();
             let PathTitle = form.find("#PathTitle").val() ?? '';
+            let PlanDate = $("#PlanDate").val() ?? '';
 
             let MaintainEquipment = getfilterData("Maintain-datagrid");
 
@@ -854,6 +855,7 @@
                 ASN: ASN,
                 FSN: FSN,
                 PathTitle: PathTitle,
+                PlanDate: PlanDate,
                 MaintainEquipment: MaintainEquipment,
                 RepairEquipment: RepairEquipment,
             };
