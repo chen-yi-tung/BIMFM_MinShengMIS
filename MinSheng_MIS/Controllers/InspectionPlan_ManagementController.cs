@@ -324,8 +324,9 @@ namespace MinSheng_MIS.Controllers
                 ps.PSSN = ppi.PathTitle;
                 var pathtitle = db.PathSample.Find(ps.PSSN).PathTitle;
                 //加入預估巡檢計畫單號
-                var IPSNcount = db.InspectionPlan.Where(x => x.PlanDate == DateTime.Today).Count();
-                ps.PathTitle = pathtitle;
+                var plandate = Convert.ToDateTime(ppi.PlanDate);
+                var IPSNcount = db.InspectionPlan.Where(x => x.PlanDate == plandate).Count();
+                ps.PathTitle = pathtitle + " P" + plandate.ToString("yyMMdd") + (IPSNcount+1);
             }
             else
             {
