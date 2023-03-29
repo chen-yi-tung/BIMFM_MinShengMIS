@@ -1036,6 +1036,7 @@ var ForgeDraw = (function (e) {
         "clearSelectPos": clearSelectPos,
         "Control": Control,
         "EventMode": EventMode,
+        "Colors": Colors,
         "layer": layer,
         "lineData": lineData,
         "points": points,

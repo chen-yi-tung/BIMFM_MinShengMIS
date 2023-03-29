@@ -575,29 +575,73 @@
         let dataM = data.MaintainEquipment;
         let dataR = data.RepairEquipment;
 
-        //設備點分類
-        let BothDevice = dataM.filter(x => dataR.includes(x));
-        let MaintainE = dataM.filter(x => !dataR.includes(x));
-        let RepairE = dataR.filter(x => !dataM.includes(x));
-
-        MaintainE.forEach((e) => {
-            let dp = new ForgeDraw.DevicePoint(
-                filterData(e, "Maintain"),
-                { color: ForgeDraw.Colors.Maintain }
-            );
-        });
-        RepairE.forEach((e) => {
-            let dp = new ForgeDraw.DevicePoint(
-                filterData(e, "Repair"),
-                { color: ForgeDraw.Colors.Repair }
-            );
-        });
-        BothDevice.forEach((e) => {
-            let dp = new ForgeDraw.DevicePoint(
-                filterData(e, "BothDevice"),
-                { color: ForgeDraw.Colors.BothDevice }
-            );
-        });
+        if (dataM) {
+            let MaintainE = dataM;
+            if (dataR) {
+                MaintainE = [];
+                dataM.forEach((m, i) => {
+                    let b = false;
+                    dataR.forEach((r, j) => {
+                        if (m.ESN == r.ESN) {
+                            b = true;
+                        }
+                    })
+                    if (!b) {
+                        MaintainE.push(m);
+                    }
+                });
+            }
+            console.log("MaintainE:", MaintainE)
+            MaintainE.forEach((e) => {
+                let dp = new ForgeDraw.DevicePoint(
+                    filterData(e, "Maintain"),
+                    { color: ForgeDraw.Colors.Maintain }
+                );
+            });
+        }
+        if (dataR) {
+            let RepairE = dataR;
+            if (dataM) {
+                RepairE = [];
+                dataR.forEach((r, i) => {
+                    let b = false;
+                    dataM.forEach((m, j) => {
+                        if (m.ESN == r.ESN) {
+                            b = true;
+                        }
+                    })
+                    if (!b) {
+                        RepairE.push(r);
+                    }
+                });
+            }
+            console.log("RepairE:", RepairE)
+            RepairE.forEach((e) => {
+                let dp = new ForgeDraw.DevicePoint(
+                    filterData(e, "Repair"),
+                    { color: ForgeDraw.Colors.Repair }
+                );
+            });
+        }
+        if (dataM && dataR) {
+            //設備點分類
+            let BothDevice = [];
+            dataM.forEach((m, i) => {
+                dataR.forEach((r, j) => {
+                    if (m.ESN == r.ESN) {
+                        BothDevice.push(m);
+                    }
+                })
+            });
+            console.log("BothDevice:",BothDevice)
+            BothDevice.forEach((e) => {
+                let dp = new ForgeDraw.DevicePoint(
+                    filterData(e, "BothDevice"),
+                    { color: ForgeDraw.Colors.BothDevice }
+                );
+            });
+        }
+        
 
         function filterData(d, type) {
             let pos = d.Position ? {
@@ -607,7 +651,7 @@
             let fos = pos ? viewer.clientToWorld(pos.x, pos.y)
             : undefined;
             return {
-                dbid: d.DBID,
+                dbId: d.DBID,
                 deviceType: type,
                 deviceName: d.ESN,
                 position: pos,
@@ -764,14 +808,15 @@
                 let FSN = form.find("#FSN").val();
                 $(".sample-path-draw-area").removeClass("d-none");
 
-                /*$.ajax({
-                    url: '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + FSN,
-                    type: "GET",
+                $.ajax({
+                    url: '@Url.Action("AddPlanPath", "InspectionPlan_Management")',
+                    data: JSON.stringify(inputData),
+                    type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
-                })*/
+                })
 
                 function onSuccess(res) {
                     console.log(res);
@@ -780,11 +825,11 @@
                     addRouteGroup(fakeData);
 
                     if (viewer) {
-                        viewerUrl = "../" + fakeData.BIMPath;
+                        viewerUrl = "../" + fakeData.PathSample.BIMPath;
                         loadModel();
                     }
                     else {
-                        viewerUrl = "../" + fakeData.BIMPath;
+                        viewerUrl = "../" + fakeData.PathSample.BIMPath;
                         initializeViewer(initializeDrawer);
                     }
                 }
@@ -803,15 +848,15 @@
 
                 $(".sample-path-draw-area").removeClass("d-none");
 
-                /*
                 $.ajax({
-                    url: '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`,
-                    type: "GET",
+                    url: '@Url.Action("AddPlanPath", "InspectionPlan_Management")',
+                    data: JSON.stringify(inputData),
+                    type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
-                })*/
+                })
 
                 function onSuccess(res) {
                     console.log(res);

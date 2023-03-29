@@ -317,7 +317,7 @@ namespace MinSheng_MIS.Controllers
             var floorinfo = db.Floor_Info.Find(ps.FSN);
             ps.Floor = floorinfo.FloorName;
             ps.BIMPath = floorinfo.BIMPath;
-            var areainfo = db.AreaInfo.Find(ps.ASN);
+            var areainfo = db.AreaInfo.Find(Convert.ToInt32(ps.ASN));
             ps.Area = areainfo.Area;
             var plandate = Convert.ToDateTime(ppi.PlanDate);
             var IPSNcount = db.InspectionPlan.Where(x => x.PlanDate == plandate).Count();
