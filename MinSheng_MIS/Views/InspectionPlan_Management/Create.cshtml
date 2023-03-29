@@ -581,14 +581,39 @@
         let RepairE = dataR.filter(x => !dataM.includes(x));
 
         MaintainE.forEach((e) => {
-            let dp = new ForgeDraw.DevicePoint(e, { color: ForgeDraw.Colors.Maintain });
+            let dp = new ForgeDraw.DevicePoint(
+                filterData(e, "Maintain"),
+                { color: ForgeDraw.Colors.Maintain }
+            );
         });
         RepairE.forEach((e) => {
-            let dp = new ForgeDraw.DevicePoint(e, { color: ForgeDraw.Colors.Repair });
+            let dp = new ForgeDraw.DevicePoint(
+                filterData(e, "Repair"),
+                { color: ForgeDraw.Colors.Repair }
+            );
         });
         BothDevice.forEach((e) => {
-            let dp = new ForgeDraw.DevicePoint(e, { color: ForgeDraw.Colors.BothDevice });
+            let dp = new ForgeDraw.DevicePoint(
+                filterData(e, "BothDevice"),
+                { color: ForgeDraw.Colors.BothDevice }
+            );
         });
+
+        function filterData(d, type) {
+            let pos = d.Position ? {
+                x: d.Position.LocationX,
+                y: d.Position.LocationY
+            } : undefined;
+            let fos = pos ? viewer.clientToWorld(pos.x, pos.y);
+            : undefined;
+            return {
+                dbid: d.DBID,
+                deviceType: type,
+                deviceName: d.ESN,
+                position: pos,
+                forgePos: fos
+            }
+        }
     }
 
     //讀取路線資料
