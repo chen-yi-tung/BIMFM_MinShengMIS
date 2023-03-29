@@ -604,7 +604,7 @@
                 x: d.Position.LocationX,
                 y: d.Position.LocationY
             } : undefined;
-            let fos = pos ? viewer.clientToWorld(pos.x, pos.y);
+            let fos = pos ? viewer.clientToWorld(pos.x, pos.y)
             : undefined;
             return {
                 dbid: d.DBID,

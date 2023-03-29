@@ -11,6 +11,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
+using static MinSheng_MIS.Models.ViewModels.ReadInspectionPlanPathData;
+using PathSample = MinSheng_MIS.Models.ViewModels.ReadInspectionPlanPathData.PathSample;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -299,6 +301,39 @@ namespace MinSheng_MIS.Controllers
             }
 
             string result = JsonConvert.SerializeObject(ja);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 新增巡檢計畫-新增巡檢路線
+        [HttpPost]
+        public ActionResult AddPlanPath(PlanPathInput ppi)
+        {
+            PlanPathOutput ppo = new PlanPathOutput();
+
+            PathSample ps = new PathSample();
+            ps.ASN = ppi.ASN;
+            ps.FSN = ppi.FSN;
+            var floorinfo = db.Floor_Info.Find(ps.FSN);
+            ps.Floor = floorinfo.FloorName;
+            ps.BIMPath = floorinfo.BIMPath;
+            //判斷PathTitle是否為空
+            if (!string.IsNullOrEmpty(ppi.PathTitle))
+            {
+                //PathTitle不為空 找出路徑模板資料
+                ps.PSSN = ppi.PathTitle;
+                var pathtitle = db.PathSample.Find(ps.PSSN).PathTitle;
+                //加入預估巡檢計畫單號
+                var IPSNcount = db.InspectionPlan.Where(x => x.PlanDate == DateTime.Today).Count();
+                ps.PathTitle = pathtitle;
+            }
+            else
+            {
+
+            }
+
+
+            string result = JsonConvert.SerializeObject(ppo);
             return Content(result, "application/json");
         }
         #endregion
