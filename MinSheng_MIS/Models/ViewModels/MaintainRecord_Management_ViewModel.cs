@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using System.Web.Mvc;
 using static MinSheng_MIS.Models.ViewModels.MaintainRecord_Management_ViewModel;
 
 namespace MinSheng_MIS.Models.ViewModels
@@ -241,12 +242,13 @@ namespace MinSheng_MIS.Models.ViewModels
             }
         }
 
-        public string AuditSubmit(FormCollection form)
+        public string AuditSubmit(System.Web.Mvc.FormCollection form, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList)
         {
             string ipmsn = form["IPMSN"].ToString();
-
-            bool IsBu = false;
-            switch (form["IsBuffer"].ToString())
+            RepairRecord_Management_ReadViewModel RRMVM = new RepairRecord_Management_ReadViewModel();
+           
+            bool IsBu = false; 
+            switch (form["IsBuffer"].ToString()) //判斷是否暫存資料
             {
                 case "0":
                     IsBu = false;
@@ -255,7 +257,8 @@ namespace MinSheng_MIS.Models.ViewModels
                     IsBu = true;
                     break;
             }
-            var MAI = db.MaintainAuditInfo.Where(x => x.IPMSN == ipmsn).FirstOrDefault();
+
+            var MAI = db.MaintainAuditInfo.Where(x => x.IPMSN == ipmsn).FirstOrDefault(); //先看有沒有暫存資料
 
             if (MAI != null) 
             {
@@ -271,15 +274,18 @@ namespace MinSheng_MIS.Models.ViewModels
             }
             else
             {
-                MAI.AuditUserID = form["AuditUserID"].ToString().Trim();
-                MAI.AuditMemo = form["AuditMemo"].ToString().Trim();
-                MAI.AuditResult = form["AuditResult"].ToString();
-                MAI.IsBuffer = IsBu;
-                MAI.AuditDate = DateTime.Now;
-                MAI.IPMSN = ipmsn;
-                MAI.PMASN = ipmsn + "_01";
+                Models.MaintainAuditInfo MainAuIn = new Models.MaintainAuditInfo()
+                {
+                    AuditUserID = form["AuditUserID"].ToString().Trim(),
+                    AuditMemo = form["AuditMemo"].ToString().Trim(),
+                    AuditResult = form["AuditResult"].ToString(),
+                    IsBuffer = IsBu,
+                    AuditDate = DateTime.Now,
+                    IPMSN = ipmsn,
+                    PMASN = ipmsn + "_01"
+                };
 
-                db.MaintainAuditInfo.Add(MAI);
+                db.MaintainAuditInfo.Add(MainAuIn);
                 db.SaveChanges();
             }
 
@@ -309,7 +315,157 @@ namespace MinSheng_MIS.Models.ViewModels
             }
 
             var IPM = db.InspectionPlanMaintain.Find(ipmsn);
-            IPM.
+            IPM.MaintainState = IPM_State;
+            db.InspectionPlanMaintain.AddOrUpdate(IPM);
+            var EMFI = db.EquipmentMaintainFormItem.Find(IPM.EMFISN);
+            EMFI.FormItemState = EMFI_State;
+            if (EMI_IsCreate == "0")
+            {
+                var EMI = db.EquipmentMaintainItem.Find(EMFI.EMISN);
+                EMI.IsCreate = false;
+            }
+            db.SaveChanges();
+
+            //儲存照片
+            List<string> ImgsPath = new List<string>();
+            foreach (var item in imgList) 
+            {
+                string result = RRMVM.UploadFile(item, Sev);
+                if (result != "")
+                {
+                    ImgsPath.Add(result);
+                }
+                else
+                {
+                    return "檔案上傳過程出錯!";
+                }
+            }
+            //db存照片路徑
+            string pmasn = db.MaintainAuditInfo.Where(x => x.IPMSN == ipmsn).Select(x => x.PMASN).FirstOrDefault();
+            db.MaintainAuditImage.RemoveRange(db.MaintainAuditImage.Where(x => x.PMASN == pmasn));
+            db.SaveChanges();
+            foreach (string path in ImgsPath)
+            {
+                MaintainAuditImage MainAuImg = new MaintainAuditImage() 
+                {
+                    PMASN = pmasn,
+                    ImgPath = path
+                };
+                db.MaintainAuditImage.Add(MainAuImg);
+                db.SaveChanges();
+            }
+            return "提交成功!";
+        }
+
+        public class SuppleData
+        { 
+            public string MaintainState { get; set; }
+            public string MyName { get; set; }
+            public string MaintainDate { get; set; }
+            public string MaintainContent { get; set; }
+            public List<string> ImgPath { get; set; }
+        }
+
+        public string Supplement_GetData(string IPMSN)
+        {
+            var IPM = db.InspectionPlanMaintain.Find(IPMSN);
+            var Mname = db.AspNetUsers.Where(x => x.UserName == IPM.MaintainUserID).Select(x => x.MyName).FirstOrDefault();
+            var dic = Surfaces.Surface.InspectionPlanMaintainState();
+            var MCI = db.MaintainCompletionImage.Where(x => x.IPMSN == IPMSN);
+            List<string> PathList = new List<string>();
+            foreach (var item in MCI)
+            {
+                PathList.Add(item.ImgPath);
+            }
+            SuppleData sd = new SuppleData()
+            { 
+                MaintainState = dic[IPM.MaintainState],
+                MyName = Mname,
+                MaintainDate = IPM.MaintainDate.ToString("yyyy/MM/dd HH:mm:ss"),
+                MaintainContent = IPM.MaintainContent,
+                ImgPath = PathList
+            };
+            string result = JsonConvert.SerializeObject(sd);
+            return result;
+        }
+
+        public string Supplement_Submit(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList, List<HttpPostedFileBase> fileList)
+        {
+            try
+            {
+                RepairRecord_Management_ReadViewModel RRMVM = new RepairRecord_Management_ReadViewModel();
+                string ipmsn = formCollection["IPMSN"].ToString();
+                var IPM = db.InspectionPlanMaintain.Find(ipmsn);
+                IPM.MaintainContent = formCollection["MaintainContent"].ToString();
+                IPM.MaintainState = "3";
+                db.InspectionPlanMaintain.AddOrUpdate(IPM);
+                var EMFI = db.EquipmentMaintainFormItem.Find(IPM.EMFISN);
+                EMFI.FormItemState = "4";
+                db.EquipmentMaintainFormItem.AddOrUpdate(EMFI);
+                db.MaintainCompletionImage.RemoveRange(db.MaintainCompletionImage.Where(x => x.IPMSN == ipmsn));
+                db.SaveChanges();
+
+                //上傳照片
+                List<string> IPList = new List<string>();
+                foreach (var item in imgList)
+                {
+                    string result = RRMVM.UploadImg(item, Sev);
+                    if (result != "")
+                    {
+                        IPList.Add(result);
+                    }
+                    else
+                    {
+                        return "上傳圖片過程錯誤!";
+                    }
+                }
+                //儲存照片
+                foreach (string path in IPList)
+                {
+                    MaintainCompletionImage MCI = new MaintainCompletionImage()
+                    {
+                        IPMSN = ipmsn,
+                        ImgPath = path
+                    };
+                    db.MaintainCompletionImage.Add(MCI);
+                    db.SaveChanges();
+                }
+
+                var MainSupIn = db.MaintainSupplementaryInfo.Where(x => x.PMSN.Contains(ipmsn)).OrderByDescending(x => x.PMSN).Select(x => x.PMSN).FirstOrDefault();
+                //PMSN = IPMSN + 序號
+                string newPMSN = "";
+                if (MainSupIn.Count() == 0)
+                {
+                    newPMSN = ipmsn + "_01";
+                }
+                else
+                {
+                    int subIndex = ipmsn.Length;
+                    int nowIndex = Int32.Parse(MainSupIn.Substring(subIndex + 1));
+                    nowIndex++;
+                    string newIndex = nowIndex.ToString();
+                    if (newIndex.Length == 1)
+                    {
+                        newIndex = "0" + newIndex;
+                    }
+                    newPMSN = ipmsn + "_" + newIndex;
+                }
+                Models.MaintainSupplementaryInfo MSI = new Models.MaintainSupplementaryInfo()
+                {
+                    SupplementaryUserID = formCollection["SupplementaryUserID"].ToString(),
+                    SupplementaryContent = formCollection["SupplementaryContent"].ToString(),
+                    PMSN = newPMSN,
+                    IPMSN = ipmsn,
+                    SupplementaryDate = DateTime.Now
+                };
+                db.MaintainSupplementaryInfo.Add(MSI);
+
+                return "提交成功!";
+            }
+            catch(Exception ex) 
+            {
+                return ex.Message;
+            }
         }
     }
 }

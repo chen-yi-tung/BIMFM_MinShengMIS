@@ -51,8 +51,15 @@ namespace MinSheng_MIS.Controllers
         }
         [HttpPost]
         public ActionResult SubmitAuditData(FormCollection formCollection)
-        { 
-            return
+        {
+            var MaintainRecord_Management_ViewModel = new MaintainRecord_Management_ViewModel();
+            List<HttpPostedFileBase> imglist = new List<HttpPostedFileBase>();
+            foreach (string item in Request.Files)
+            {
+                imglist.Add(Request.Files[item]);
+            }
+            string result = MaintainRecord_Management_ViewModel.AuditSubmit(formCollection, Server, imglist);
+            return Content(result, "application/json");
         }
         #endregion
 
@@ -61,6 +68,34 @@ namespace MinSheng_MIS.Controllers
         {
             ViewBag.id = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult Supplement_GetData(string id)
+        {
+            var MaintainRecord_Management_ViewModel = new MaintainRecord_Management_ViewModel();
+
+            string result = MaintainRecord_Management_ViewModel.Supplement_GetData(id);
+            return Content(result, "application/json");
+        }
+        [HttpPost]
+        public ActionResult Supplement_Submit(FormCollection formCollection)
+        {
+            var MaintainRecord_Management_ViewModel = new MaintainRecord_Management_ViewModel();
+            List<HttpPostedFileBase> imgList = new List<HttpPostedFileBase>();
+            List<HttpPostedFileBase> fileList = new List<HttpPostedFileBase>();
+            foreach (string item in Request.Files)
+            {
+                if (item.Contains("Img"))
+                {
+                    imgList.Add(Request.Files[item]);
+                }
+                if (item.Contains("File"))
+                {
+                    fileList.Add(Request.Files[item]);
+                }
+            }
+            string result = MaintainRecord_Management_ViewModel.Supplement_Submit(formCollection, Server, imgList, fileList);
+            return Content(result, "application/json");
         }
         #endregion
     }
