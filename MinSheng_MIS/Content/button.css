@@ -1,7 +1,7 @@
 ﻿.btn {
     border-radius: 5px;
     font-size: 18px;
-    --bs-btn-disabled-color:white;
+    --bs-btn-disabled-color:#e2e2e2;
     --bs-btn-disabled-bg:#708298;
     --bs-btn-disabled-border-color:#708298;
     --bs-btn-disabled-opacity: 0.36;
