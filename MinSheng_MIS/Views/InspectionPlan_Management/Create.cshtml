@@ -284,14 +284,14 @@
                 <label>選取巡檢路線模板</label>
                 <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
                     <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
-                        <select type="text" class="form-select w-lg-205px" name="ASN" id="ASN" required>
+                        <select type="text" class="form-select w-lg-200px" name="ASN" id="ASN" required>
                             <option value="" disabled selected hidden>區域</option>
                         </select>
-                        <select type="text" class="form-select w-lg-108px" name="FSN" id="FSN" required>
+                        <select type="text" class="form-select w-lg-100px" name="FSN" id="FSN" required>
                             <option value="" disabled selected hidden>樓層</option>
                         </select>
                     </div>
-                    <select type="text" class="form-select w-lg-250px" name="PathTitle" id="PathTitle" required>
+                    <select type="text" class="form-select w-lg-225px" name="PathTitle" id="PathTitle" required>
                         <option value="" disabled selected hidden>選擇模板</option>
                     </select>
                     <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto"
@@ -303,10 +303,10 @@
                 <label>新增其他巡檢路線</label>
                 <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
                     <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
-                        <select type="text" class="form-select w-lg-205px" name="ASN" id="ASN" required>
+                        <select type="text" class="form-select w-lg-200px" name="ASN" id="ASN" required>
                             <option value="" disabled selected hidden>區域</option>
                         </select>
-                        <select type="text" class="form-select w-lg-108px" name="FSN" id="FSN" required>
+                        <select type="text" class="form-select w-lg-100px" name="FSN" id="FSN" required>
                             <option value="" disabled selected hidden>樓層</option>
                         </select>
                     </div>
@@ -323,7 +323,26 @@
 
         <div class="edit-area">
             <div class="sample-path-group-area"></div>
+
             <div class="sample-path-draw-area d-none">
+                <div class="mb-4">
+                    <div class="path-title-edit-group">
+                        <label for="current-PathTitle">路線名稱</label>
+                        <input class="form-control" type="text" id="current-PathTitle" name="current-PathTitle">
+                        <button class="btn btn-cancel" id="pathtitle-save">儲存模板</button>
+                    </div>
+                    <div class="input-group sample-path-group inner">
+                        <div type="text" class="form-control">
+                            <nav>
+                                <ol class="breadcrumb" id="current-path-display">
+                                    <li class="breadcrumb-item">起點</li>
+                                    <li class="breadcrumb-item">終點</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="sample-path-toolbar">
                     <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
                         data-bs-placement="right" title="規劃路線">
@@ -349,9 +368,32 @@
                     <div id="viewer3d" style="margin:0;"></div>
                     <canvas id="PathCanvas"></canvas>
                 </div>
+
+                <div class="label-area">
+                    <div class="label-item">
+                        <div class="cube cube-bluetooth"></div>
+                        <span>藍芽</span>
+                    </div>
+                    <div class="label-item">
+                        <div class="cube cube-maintain"></div>
+                        <span>定期保養</span>
+                    </div>
+                    <div class="label-item">
+                        <div class="cube cube-repair"></div>
+                        <span>維修</span>
+                    </div>
+                    <div class="label-item">
+                        <div class="cube cube-both"></div>
+                        <span>維修+保養</span>
+                    </div>
+                </div>
+                <div class="button-area mt-3">
+                    <button class="btn btn-search" id="path-save">儲存變更</button>
+                </div>
             </div>
         </div>
     </div>
+
 </section>
 
 <div class="edit-button-area">
@@ -429,6 +471,7 @@
             else {
                 readDeviceData(fakeData.PathSample.BIMDevices);
                 readPathData(fakeData.PathSampleRecord);
+                updatePathDisplay(fakeData.PathSampleOrder);
             }
 
             addTooltip();
@@ -456,8 +499,8 @@
         let route = ForgeDraw.getRoute().map(e => e.name);
         console.log(ForgeDraw.devices.map(e => e.result));
 
-        route.unshift("起點");
-        route.push("終點");
+        //route.unshift("起點");
+        //route.push("終點");
 
         //顯示在網頁上
         updatePathDisplay(route);
@@ -465,7 +508,7 @@
 
     //更新網頁顯示的路徑
     function updatePathDisplay(path = undefined) {
-        let $path = $("#path-display");
+        let $path = $("#current-path-display");
 
         if (!path) {
             $path.empty();
@@ -514,7 +557,9 @@
                     else {
                         readDeviceData(fakeData.PathSample.BIMDevices);
                         readPathData(fakeData.PathSampleRecord);
+                        updatePathDisplay(fakeData.PathSampleOrder);
                     }
+                    addTooltip();
                 })
             })
         }
@@ -675,9 +720,6 @@
                 let pt = form.find("#ASN option:selected").text() + form.find("#FSN option:selected").text();
 
                 $(".sample-path-draw-area").removeClass("d-none");
-                $("#path-display").removeClass("d-none");
-
-                addRouteGroup(pt);
 
                 let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + fsn;
                 $.ajax({
@@ -693,6 +735,8 @@
                     console.log(res);
                     fakeData = res;
                     //若非第一次初始化
+                    addRouteGroup(fakeData);
+
                     if (viewer) {
                         viewerUrl = "../" + fakeData.BIMPath;
                         loadModel();
@@ -719,9 +763,6 @@
                 let PSSN = form.find("#PathTitle").val();
 
                 $(".sample-path-draw-area").removeClass("d-none");
-                $("#path-display").removeClass("d-none");
-
-                addRouteGroup(pt);
 
                 $.ajax({
                     url: '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`,
@@ -736,6 +777,8 @@
                     console.log(res);
                     fakeData = res;
                     //若非第一次初始化
+                    addRouteGroup(fakeData);
+
                     if (viewer) {
                         viewerUrl = "../" + fakeData.PathSample.BIMPath;
                         loadModel(true);
@@ -778,41 +821,61 @@
 
         $("#submit").click(function () {
             console.log("onclick submit")
-
             save();
         })
 
         let path_id = 1;
-        function addRouteGroup(title) {
+        function addRouteGroup(data) {
+            let path = data.PathSampleOrder ?
+                data.PathSampleOrder.map((e) => `<li class="breadcrumb-item">${e}</li>`).join('') : '';
+            let PathTitle = data.PathSample ? data.PathSample.PathTitle : '';
             let group = $(`
             <div class="input-group sample-path-group" data-path-id="${path_id}">
                 <div class="input-group-text">
                     <button class="path-btn me-2" id="path-handle" data-bs-toggle="tooltip" title="拖曳順序">
                         <i class="icon-handle"></i>
                     </button>
-                    <span id="sample-path-name">${title}</span>
+                    <span id="sample-path-name">${PathTitle}</span>
                 </div>
                 <div type="text" class="form-control">
                     <nav>
-                        <ol class="breadcrumb d-none" id="path-display">
-                            <li class="breadcrumb-item">起點</li>
-                            <li class="breadcrumb-item">終點</li>
+                        <ol class="breadcrumb" id="path-display">
+                            ${path}
                         </ol>
                     </nav>
-                    <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="手動修改路線">
+                    <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="修改此路線">
                         <i class="icon-edit"></i>
                     </button>
                 </div>
                 <button class="btn-delete-item" data-bs-toggle="tooltip" title="刪除路線"></button>
             </div>`);
 
+            $("#current-PathTitle").val(PathTitle);
+
             $(".sample-path-group-area").append(group);
 
             group.find(".btn-delete-item").click(function () {
-                let id = group.attr('data-path-id');
-                sessionStorage.removeItem('path_id_' + id);
-                group.remove();
-                console.log(`sessionStorage.removeItem('path_id_${id}');`)
+                let dm = createDialogModal({
+                    id: "DialogModal", inner: `確定刪除此路線？`,
+                    button: [
+                        {
+                            className: "btn btn-cancel",
+                            cancel: true,
+                            text: "取消",
+                        },
+                        {
+                            className: "btn btn-delete",
+                            text: "確定",
+                            onClick: function () {
+                                let id = group.attr('data-path-id');
+                                sessionStorage.removeItem('path_id_' + id);
+                                group.remove();
+                                console.log(`sessionStorage.removeItem('path_id_${id}');`)
+                                dm.hide();
+                            }
+                        },
+                    ]
+                })
             })
 
             path_id++;
@@ -1402,10 +1465,6 @@
                 customClass: "sample-path-tooltip",
             })
         })
-        tooltipList.forEach(e => e.show())
-        setTimeout(() => {
-            tooltipList.forEach(e => e.hide())
-        }, 2000)
     }
 
     function save() {

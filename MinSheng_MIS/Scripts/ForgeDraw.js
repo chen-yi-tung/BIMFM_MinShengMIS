@@ -198,7 +198,7 @@ var ForgeDraw = (function (e) {
             console.log("getDeviceCenterPosition:", dbId)
             let box = viewer.utilities.getBoundingBox(); //THREE.Box3
             selectPos[dbId] = box.center(); //獲取 target 中心點座標並記錄於selectPos
-            forgeViewer.clearSelection();
+            //forgeViewer.clearSelection();
         }
     }
 

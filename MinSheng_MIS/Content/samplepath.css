@@ -148,15 +148,20 @@
     justify-content: center;
 }
 
-/* .sample-path-group.inner{
+.sample-path-group.inner{
     background: #ABC4E3;
     color: #404040;
     width: 100%;
     border-radius: 24px;
-    padding: 12px 26px;
-    min-height: calc(24px + 1.612em);
+    padding: 0em 1.5em;
+    min-height: calc(24px + 1em);
 }
-*/
+.sample-path-group.inner .form-control{
+    background-color: transparent;
+    padding: 0;
+    align-items: center;
+}
+
 .sample-path-group .form-control nav {
     flex: 1 0 0;
 }
@@ -277,12 +282,13 @@
 
 @media (max-width:1200px) {
     .sample-path-toolbar {
-        top: 1.2em;
-        left: 1em;
+        left: -2.2em;
         z-index: 1000;
-        border-bottom-right-radius: 0.4em;
+        border-top-left-radius: 0.4em;
+        border-bottom-left-radius: 0.4em;
         background: #D3E5FB;
-        padding: 0.5em;
+        padding: 1em;
+        padding-left: 1em;
     }
 }
 
@@ -354,4 +360,63 @@
 
 .sortlist li.disable:last-child::after {
     content: "";
+}
+
+/* label-area */
+.label-area{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    background-color: #EFEFEF;
+    padding: 0.6em 1em;
+    gap: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    max-width: max-content;
+}
+.label-area .cube{
+    display: inline-block;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 0.4rem;
+}
+
+.cube-bluetooth{
+    background-color: #2750B9;
+}
+
+.cube-maintain{
+    background-color: #279FB9;
+}
+
+.cube-repair{
+    background-color: #6C3ECE;
+}
+
+.cube-both{
+    background-color: #DB8400;
+}
+
+.path-title-edit-group{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1em;
+    column-gap: 1em;
+    row-gap: 0.8em;
+}
+
+.path-title-edit-group label{
+    flex: 0 0 auto;
+    color: #121212;
+}
+.path-title-edit-group .form-control{
+    display: inline-block;
+    max-width: max-content;
+    margin-right: auto;
+}
+.path-title-edit-group .btn{
+    flex: 0 0 auto;
 }

@@ -3293,6 +3293,8 @@
   background-color: #fff3f3;
   color: #000;
 }
+/* JUDY MinSheng_MIS Edit */
+/*
 .tooltip {
   position: absolute;
   display: none;
@@ -3393,7 +3395,7 @@
 }
 .tooltip-bottom .tooltip-arrow {
   border-bottom-color: #ffffff;
-}
+}*/
 .switchbutton {
   text-decoration: none;
   display: inline-block;
