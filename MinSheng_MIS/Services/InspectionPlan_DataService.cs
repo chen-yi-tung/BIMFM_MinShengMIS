@@ -50,7 +50,7 @@ namespace MinSheng_MIS.Services
 
 
             #region 依據查詢字串檢索資料表
-            var SourceTable = db.InspectionPlan.AsQueryable();
+            var SourceTable = db.InspectionPlan.Where(x => x.PlanState != "5").AsQueryable();
 
             //巡檢狀態
             if (!string.IsNullOrEmpty(PlanState))

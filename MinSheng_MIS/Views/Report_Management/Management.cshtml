@@ -194,13 +194,23 @@
                 {
                     field: '_dispatch', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDispatch(${index})">派工</button>`;
+                        if (row.ReportState == "待派工" || row.ReportState == "未完成" || row.ReportState == "審核未過") {
+                            return `<button class="btn btn-datagrid" onclick="onDispatch(${index})">派工</button>`;
+                        }
+                        else {
+
+                        }
                     }
                 },
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        if (row.DBID == "" || row.DBID == null) {
+
+                        }
+                        else {
+                            return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        }  
                     }
                 },
                 {
@@ -208,6 +218,9 @@
                     formatter: (val, row, index) => {
                         if (row.ReportState == "保留中(待派工)" || row.ReportState == "保留中(未完成)" || row.ReportState == "保留中(審核未過)") {
                             return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
+                        }
+                        else {
+
                         }
                     }
                 },
@@ -225,6 +238,7 @@
                 { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
                 { field: 'MyName', title: '報修人員', align: 'center', width: 110, sortable: true },
                 { field: 'ReportContent', title: '報修內容', align: 'center', width: 300, sortable: true },
+                { field: 'DBID', title: 'DBID', align: 'center', width: 150},
             ]],
             singleSelect: true,
             selectOnCheck: true,
