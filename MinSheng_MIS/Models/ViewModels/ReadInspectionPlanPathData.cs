@@ -52,7 +52,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public class MaintainEquipment
         {
             public string ESN { get; set; }
-            public string DBID { get; set; }
+            public int DBID { get; set; }
             public Position Position { get; set; }
         }
 
