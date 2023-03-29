@@ -1,13 +1,10 @@
 ﻿.btn {
     border-radius: 5px;
     font-size: 18px;
-}
-
-.btn:disabled,
-.btn[disabled] {
-    --bs-btn-bg: #708298;
-    --bs-btn-hover-bg: #657589;
-    opacity: 0.8;
+    --bs-btn-disabled-color:white;
+    --bs-btn-disabled-bg:#708298;
+    --bs-btn-disabled-border-color:#708298;
+    --bs-btn-disabled-opacity: 0.36;
 }
 
 .btn-create {
