@@ -1,8 +1,6 @@
-﻿
+﻿function DG() { return this }
 
-var dg = function () { }
-
-dg.prototype.Options = Object.freeze({
+DG.prototype.Options = Object.freeze({
     rownumbers: true,
     remoteSort: false,
     sortOrder: 'asc',
@@ -14,7 +12,7 @@ dg.prototype.Options = Object.freeze({
     pagePosition: 'bottom',
     pageSize: 10
 });
-dg.prototype.PageOptions = Object.freeze({
+DG.prototype.PageOptions = Object.freeze({
     pageSize: 10,
     showPageList: true,
     pageList: [10, 20, 50],
@@ -22,62 +20,68 @@ dg.prototype.PageOptions = Object.freeze({
     afterPageText: '頁，共 {pages} 頁',
     displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
 });
-dg.prototype.ColumnsOptions = Object.freeze({
+DG.prototype.ColumnsOptions = Object.freeze({
     align: 'center',
     sortable: true,
 });
 
-
-dg.prototype.initDataGrid = function (selector, options) {
+DG.prototype.init = function (selector, options) {
 
     const $dg = $(selector);
-
-    Object.assign(options, dg.Options);
-
-    $dg.datagrid({
-        url: '',
-        method: 'POST',
-        queryParams: getQueryParams(),
-        idField: 'PSSN',
-        sortName: 'PSSN',
-        frozenColumns: [[
-            {
-                field: '_detail', align: 'center',
-                formatter: (val, row, index) => {
-                    return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
-                }
-            },
-            {
-                field: '_dispatch', align: 'center',
-                formatter: (val, row, index) => {
-                    return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
-                }
-            },
-            {
-                field: '_locate', align: 'center',
-                formatter: (val, row, index) => {
-                    return `<button class="btn btn-datagrid" onclick="onDelete(${index})">刪除</button>`;
-                }
-            }
-        ]]
-    });
-    $($dg.datagrid('getPager')).pagination(dgPageOptions);
+    $dg.datagrid(Object.assign({}, this.Options, options));
+    $($dg.datagrid('getPager')).pagination(this.PageOptions);
 
     return $dg;
 }
 
-dg.prototype.frozenColumns = function (field, title, width, formatter) {
+DG.prototype.event = {};
+
+DG.prototype.addEvent = function (key, value) {
+    this.event[key] = value;
+}
+
+DG.prototype.removeEvent = function (key) {
+    delete this.event[key];
+}
+
+DG.prototype.frozenColumn = function (/* field, title, width, formatter */) {
     let args = arguments;
-    if (args.length === 2 && typeof args[1] === 'function'){
-        return { field: field, align: dg.ColumnsOptions.align, formatter: formatter }
+    if (args.length === 2 && typeof args[1] === 'function') {
+        return { field: args[0], align: this.ColumnsOptions.align, formatter: args[1] }
     }
-    return { field: field, title: title, align: dg.ColumnsOptions.align, width: width, formatter: formatter }
+    else if (args.length === 3 && typeof args[2] === 'function') {
+        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, formatter: args[2] }
+    }
+    else if (args.length === 4 && typeof args[3] === 'function') {
+        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, width: args[2], formatter: args[3] }
+    }
 }
 
-dg.prototype.columns = function (field, title, width) {
-    return { field: field, title: title, align: dg.ColumnsOptions.align, width: width, sortable: dg.ColumnsOptions.sortable }
+DG.prototype.column = function (/* field, title, width */) {
+    let args = arguments;
+    if (args.length === 1) {
+        return { field: args[0], title: args[0], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable }
+    }
+    else if (args.length === 2) {
+        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable }
+    }
+    else if (args.length === 3) {
+        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, width: args[2], sortable: this.ColumnsOptions.sortable }
+    }
 }
 
-dg.prototype.hiddenColumns = function (field) {
+DG.prototype.formatColumn = function (/* field, title, width, formatter */) {
+    let args = arguments;
+    if (args.length === 3) {
+        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable, formatter: args[2] }
+    }
+    else if (args.length === 4) {
+        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, width: args[2], sortable: this.ColumnsOptions.sortable, formatter: args[3] }
+    }
+}
+
+DG.prototype.hiddenColumn = function (field) {
     return { field: field, hidden: true }
 }
+
+var dg = new DG();

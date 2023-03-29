@@ -54,8 +54,9 @@
 <script>
 
     var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1] + '/';
 
-    var baseUrl = "/SamplePath_Management/";
     var areas = document.getElementById("ASN");
     areas.addEventListener("change", function () {
         let url = '@Url.Action("Floor", "DropDownList")';
@@ -95,81 +96,29 @@
     });
 
     function Initialize_DataGrid(getGridJSON) {
-
-        $('#DataGrid').datagrid({
-
-            url: getGridJSON,
+        DataGrid = dg.init("#DataGrid", {
+            //url: getGridJSON,
+            data: fakeData,
             method: 'POST',
             queryParams: getQueryParams(),
-            rownumbers: true,
             idField: 'PSSN',
-            sortName: 'PSSN',
-            remoteSort: false,
-            sortOrder: 'asc',
-            fit: true,
+            //sortName: 'PSSN',
             frozenColumns: [[
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_dispatch', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
-                    }
-                },
-                {
-                    field: '_locate', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDelete(${index})">刪除</button>`;
-                    }
-                }
+                dg.frozenColumn('_Area', function (v, row, i) {
+                    return `<button class="btn btn-datagrid" onclick="dg.event.log(${i})">button</button>`;
+                }),
             ]],
             columns: [[
-                { field: 'PSSN', title: 'PSSN', hidden: true },
-                { field: 'PathTitle', title: '巡檢路線模板名稱', align: 'center', width: 500, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 350, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 200, sortable: true },
-            ]],
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-
-            pagination: true,
-            pagePosition: 'bottom',
-            pageSize: 10
-        });
-        //------------Pager --------------------------------------------------
-        var pager = $('#DataGrid').datagrid('getPager');
-        $(pager).pagination({
-            pageSize: 10,
-            showPageList: true,
-            pageList: [10, 20, 50],
-            beforePageText: '第',
-            afterPageText: '頁，共 {pages} 頁',
-            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-        });
-    }
-
-    // datagrid onClick Function
-    function onDetail(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + '/' + row.PSSN;
-        window.open(url, "_blank");
-    }
-
-    function onEdit(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit' + '/' + row.PSSN;
-        window.open(url, "_self");
-    }
-
-    function onDelete(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Delete' + '/' + row.PSSN;
-        window.open(url, "_self");
+                dg.column('PSSN'),
+                dg.column('PathTitle'),
+                dg.column('Area', '棟別'),
+                dg.column('Floor', '樓層', 80),
+            ]]
+        })
+        dg.addEvent("log", function (i) {
+            alert('click index: '+i);
+            console.log(DataGrid.datagrid("getRows")[i]);
+        })
     }
 
     //search area onClick Function
@@ -180,7 +129,7 @@
         });
 
         $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
+            DataGrid.datagrid('load', getQueryParams());
         });
 
         $("#create").click(function () {
