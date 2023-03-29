@@ -125,13 +125,17 @@
                 {
                     field: '_edit', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
+                        if (row.PlanState == "待執行") {
+                            return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
+                        }
                     }
                 },
                 {
                     field: '_record', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onRecord(${index})">紀錄</button>`;
+                        if (row.PlanState == "巡檢完成" || row.PlanState == "巡檢未完成") {
+                            return `<button class="btn btn-datagrid" onclick="onRecord(${index})">紀錄</button>`;
+                        }
                     }
                 }
             ]],
