@@ -193,13 +193,17 @@
                 {
                     field: '_audit', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onAudit(${index})">審核</button>`;
+                        if (row.RepairState == "待審核") {
+                            return `<button class="btn btn-datagrid" onclick="onAudit(${index})">審核</button>`;
+                        }
                     }
                 },
                 {
                     field: '_supplement', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onSupplement(${index})">補件</button>`;
+                        if (row.RepairState == "待補件") {
+                            return `<button class="btn btn-datagrid" onclick="onSupplement(${index})">補件</button>`;
+                        }
                     }
                 },
                 {
