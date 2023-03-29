@@ -175,7 +175,12 @@
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        if (row.DBID == null || row.DBID == "") {
+
+                        }
+                        else {
+                            return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        }
                     }
                 }
             ]],
@@ -206,6 +211,7 @@
 
                 { field: 'LastTime', title: '上次保養日期', align: 'center', width: 150, sortable: true },
                 { field: 'NextTime', title: '最近應保養日期', align: 'center', width: 150, sortable: true },
+                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,

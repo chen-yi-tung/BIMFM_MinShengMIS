@@ -186,6 +186,9 @@
                         if (row.MaintainState == "待審核") {
                             return `<button class="btn btn-datagrid" onclick="onAudit(${index})">審核</button>`;
                         }
+                        else {
+
+                        }
                     }
                 },
                 {
@@ -194,12 +197,20 @@
                         if (row.MaintainState == "待補件") {
                             return `<button class="btn btn-datagrid" onclick="onSupplement(${index})">補件</button>`;
                         }
+                        else {
+
+                        }
                     }
                 },
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        if (row.DBID == null || row.DBID == "") {
+
+                        }
+                        else {
+                            return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        }
                     }
                 },
             ]],
@@ -227,6 +238,7 @@
                 { field: 'MaintainUserName', title: '保養人員', align: 'center', width: 110, sortable: true },
                 { field: 'AuditUserName', title: '審核人員', align: 'center', width: 110, sortable: true },
                 { field: 'AuditDate', title: '審核日期', align: 'center', width: 150, sortable: true },
+                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,

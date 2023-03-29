@@ -67,7 +67,7 @@ namespace MinSheng_MIS.Services
                               join x4 in db.MaintainItem on x2.MISN equals x4.MISN
                               join x5 in db.Floor_Info on x3.FSN equals x5.FSN
                               join x6 in db.AreaInfo on x5.ASN equals x6.ASN
-                              select new {  x1.FormItemState, x6.Area, x5.FloorName, x3.PropertyCode, x3.EName, x1.EMFISN, x4.MIName, x1.Unit, x1.Period, x1.LastTime, x1.Date, x5.ASN, x3.FSN, x2.ESN, x2.MISN, x3.EState, x1.StockState};
+                              select new {  x1.FormItemState, x6.Area, x5.FloorName, x3.PropertyCode, x3.EName, x1.EMFISN, x4.MIName, x1.Unit, x1.Period, x1.LastTime, x1.Date, x5.ASN, x3.FSN, x2.ESN, x2.MISN, x3.EState, x1.StockState, x3.DBID};
 
             //若是用於新增巡檢計畫 的 新增保養單項目需增加狀態判斷
             if (SourceMaintain == "AddMaintainForm")
@@ -260,6 +260,11 @@ namespace MinSheng_MIS.Services
                 if (!string.IsNullOrEmpty(item.FormItemState))
                 {
                     itemObjects.Add("FormItemStatenum", item.FormItemState);
+                }
+                //DBID
+                if (!string.IsNullOrEmpty(item.DBID.ToString()))
+                {
+                    itemObjects.Add("DBID", item.DBID);
                 }
 
                 ja.Add(itemObjects);

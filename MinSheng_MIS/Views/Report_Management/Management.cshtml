@@ -194,7 +194,7 @@
                 {
                     field: '_dispatch', align: 'center',
                     formatter: (val, row, index) => {
-                        if (row.ReportState == "待派工" || row.ReportState == "未完成" || row.ReportState == "審核未過") {
+                        if ((row.EState != "停用") && (row.ReportState == "待派工" || row.ReportState == "未完成" || row.ReportState == "審核未過")) {
                             return `<button class="btn btn-datagrid" onclick="onDispatch(${index})">派工</button>`;
                         }
                         else {
@@ -235,10 +235,11 @@
                 { field: 'Date', title: '報修時間', align: 'center', width: 200, sortable: true },
                 { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
                 { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
+                { field: 'EState', title: '設備狀態', align: 'center', width: 100, hidden: true },
                 { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
                 { field: 'MyName', title: '報修人員', align: 'center', width: 110, sortable: true },
                 { field: 'ReportContent', title: '報修內容', align: 'center', width: 300, sortable: true },
-                { field: 'DBID', title: 'DBID', align: 'center', width: 150},
+                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden:true},
             ]],
             singleSelect: true,
             selectOnCheck: true,

@@ -209,7 +209,12 @@
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        if (row.DBID == "" || row.DBID == null) {
+
+                        }
+                        else {
+                            return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        }
                     }
                 },
             ]],
@@ -232,6 +237,7 @@
                 { field: 'RepairUserID', title: '施工人員', align: 'center', width: 110, sortable: true },
                 { field: 'AuditUserID', title: '審核人員', align: 'center', width: 110, sortable: true },
                 { field: 'AuditDate', title: '審核日期', align: 'center', width: 150, sortable: true },
+                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,
