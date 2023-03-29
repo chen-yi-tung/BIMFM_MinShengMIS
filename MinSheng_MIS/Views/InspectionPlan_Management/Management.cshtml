@@ -125,7 +125,7 @@
                 {
                     field: '_edit', align: 'center',
                     formatter: (val, row, index) => {
-                        let disabled = row.PlanState == "待執行" ? 'disabled' : '';
+                        let disabled = row.PlanState == "待執行" ? '' : 'disabled';
                         return `<button class="btn btn-datagrid" onclick="onEdit(${index})" ${disabled}>編輯</button>`;
 
                     }
@@ -133,7 +133,7 @@
                 {
                     field: '_record', align: 'center',
                     formatter: (val, row, index) => {
-                        let disabled = row.PlanState == "巡檢完成" || row.PlanState == "巡檢未完成" ? 'disabled' : '';
+                        let disabled = row.PlanState == "巡檢完成" || row.PlanState == "巡檢未完成" ? '' : 'disabled';
                         return `<button class="btn btn-datagrid" onclick="onRecord(${index})" ${disabled}>紀錄</button>`;
                     }
                 }

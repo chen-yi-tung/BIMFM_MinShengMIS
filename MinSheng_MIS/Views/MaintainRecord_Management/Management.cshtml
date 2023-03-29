@@ -183,34 +183,22 @@
                 {
                     field: '_audit', align: 'center',
                     formatter: (val, row, index) => {
-                        if (row.MaintainState == "待審核") {
-                            return `<button class="btn btn-datagrid" onclick="onAudit(${index})">審核</button>`;
-                        }
-                        else {
-
-                        }
+                        let disabled = row.MaintainState == "待審核" ? '' : 'disabled';
+                        return `<button class="btn btn-datagrid" onclick="onAudit(${index})" ${disabled}>審核</button>`;
                     }
                 },
                 {
                     field: '_supplement', align: 'center',
                     formatter: (val, row, index) => {
-                        if (row.MaintainState == "待補件") {
-                            return `<button class="btn btn-datagrid" onclick="onSupplement(${index})">補件</button>`;
-                        }
-                        else {
-
-                        }
+                        let disabled = row.MaintainState == "待補件" ? '' : 'disabled';
+                        return `<button class="btn btn-datagrid" onclick="onSupplement(${index})" ${disabled}>補件</button>`;
                     }
                 },
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        if (row.DBID == null || row.DBID == "") {
-
-                        }
-                        else {
-                            return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
-                        }
+                        let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
                     }
                 },
             ]],

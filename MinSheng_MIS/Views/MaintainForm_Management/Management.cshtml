@@ -154,20 +154,15 @@
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        if (row.DBID == null) {
-
-                        }
-                        else {
-                            return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
-                        }
+                        let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
                     }
                 },
                 {
                     field: '_cancel', align: 'center',
                     formatter: (val, row, index) => {
-                        if (row.FormItemState == "保留中(待派工)" || row.FormItemState == "保留中(未完成)" || row.FormItemState == "保留中(審核未過)") {
-                            return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
-                        }
+                        let disabled = row.FormItemState == "保留中(待派工)" || row.FormItemState == "保留中(未完成)" || row.FormItemState == "保留中(審核未過)" ? '' : 'disabled'
+                        return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})" ${disabled}>取消保留</button>`;
                     }
                 },
             ]],

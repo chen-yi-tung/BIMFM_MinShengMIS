@@ -175,12 +175,8 @@
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        if (row.DBID == null || row.DBID == "") {
-
-                        }
-                        else {
-                            return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
-                        }
+                        let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
                     }
                 }
             ]],
