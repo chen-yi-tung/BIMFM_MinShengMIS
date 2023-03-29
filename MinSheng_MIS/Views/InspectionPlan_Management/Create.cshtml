@@ -334,10 +334,7 @@
                     <div class="input-group sample-path-group inner">
                         <div type="text" class="form-control">
                             <nav>
-                                <ol class="breadcrumb" id="current-path-display">
-                                    <li class="breadcrumb-item">起點</li>
-                                    <li class="breadcrumb-item">終點</li>
-                                </ol>
+                                <ol class="breadcrumb" id="current-path-display"></ol>
                             </nav>
                         </div>
                     </div>
@@ -465,14 +462,11 @@
                 calcRoute();
             });
 
-            if (!fakeData.PathSample) {
-                readDeviceData(fakeData.BIMDevices);
-            }
-            else {
-                readDeviceData(fakeData.PathSample.BIMDevices);
-                readPathData(fakeData.PathSampleRecord);
-                updatePathDisplay(fakeData.PathSampleOrder);
-            }
+            readBeaconData(fakeData.PathSample.Beacon);
+            readDeviceData(fakeData);
+            readPathData(fakeData.PathSampleRecord);
+            updatePathDisplay(fakeData.PathSampleOrder);
+
 
             addTooltip();
         });
@@ -536,7 +530,7 @@
     }
 
     //更換模型和設備
-    function loadModel(PathSample = false) {
+    function loadModel() {
         ForgeDraw.removeAllDevice();
         ForgeDraw.removeAllData();
         ForgeDraw.clearSelectPos();
@@ -551,14 +545,11 @@
         function onSuccess(res) {
             $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {
                 $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, function () {
-                    if (!PathSample) {
-                        readDeviceData(fakeData.BIMDevices);
-                    }
-                    else {
-                        readDeviceData(fakeData.PathSample.BIMDevices);
-                        readPathData(fakeData.PathSampleRecord);
-                        updatePathDisplay(fakeData.PathSampleOrder);
-                    }
+                    readBeaconData(fakeData.PathSample.Beacon);
+                    readDeviceData(fakeData);
+                    readPathData(fakeData.PathSampleRecord);
+                    updatePathDisplay(fakeData.PathSampleOrder);
+
                     addTooltip();
                 })
             })
@@ -568,13 +559,35 @@
         }
     }
 
-    //讀取設備資料並繪製
-    function readDeviceData(data) {
+    //讀取藍芽資料並繪製
+    function readBeaconData(data) {
         data.forEach((e) => {
             let btSprite = PIXI.Sprite.from(btUrl);
             btSprite.scale.set(0.6);
             btSprite.anchor.set(0.5);
             let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
+        });
+    }
+
+    //讀取設備資料並繪製
+    function readDeviceData(data) {
+        //原資料
+        let dataM = data.MaintainEquipment;
+        let dataR = data.RepairEquipment;
+
+        //設備點分類
+        let BothDevice = dataM.filter(x => dataR.includes(x));
+        let MaintainE = dataM.filter(x => !dataR.includes(x));
+        let RepairE = dataR.filter(x => !dataM.includes(x));
+
+        MaintainE.forEach((e) => {
+            let dp = new ForgeDraw.DevicePoint(e, { color: ForgeDraw.Colors.Maintain });
+        });
+        RepairE.forEach((e) => {
+            let dp = new ForgeDraw.DevicePoint(e, { color: ForgeDraw.Colors.Repair });
+        });
+        BothDevice.forEach((e) => {
+            let dp = new ForgeDraw.DevicePoint(e, { color: ForgeDraw.Colors.BothDevice });
         });
     }
 
@@ -605,31 +618,13 @@
 <!-- EVENT -->
 <script src="/Scripts/tool.js"></script>
 <script>
-    let fakeData = {
-        BIMPath: "BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
-        BIMDevices: [
-            {
-                dbId: 3078,
-                deviceType: "bluetooth",
-                deviceName: "BT-11014",
-            },
-            {
-                dbId: 3239,
-                deviceType: "bluetooth",
-                deviceName: "BT-11015",
-            },
-            {
-                dbId: 3162,
-                deviceType: "bluetooth",
-                deviceName: "BT-11016",
-            }
-        ]
-    }
+    let fakeData;
 
     let DatagridEvent;
 
     $(async function () {
         addButtonEvent();
+        addForgeDrawEvent();
         DatagridEvent = addDatagridEvent();
         await addDropDownList();
         await addAreaFloorEvent();
@@ -706,6 +701,31 @@
         })
     }
 
+    function addForgeDrawEvent() {
+        /* 畫線功能 */
+        $("#path-edit").click(function () {
+            sortRouteModal.create();
+        })
+        $("#path-draw").click(function () {
+            $(this).blur();
+            controlToggle("path-draw", ForgeDraw.Control.DRAW);
+        })
+        $("#path-eraser").click(function () {
+            $(this).blur();
+            controlToggle("path-eraser", ForgeDraw.Control.ERASER);
+        })
+        $("#path-reload").click(function () {
+            $(this).blur();
+            ForgeDraw.removeAllData();
+            sortRouteModal.autoRouteToggle(true);
+        })
+        $("#path-auto").click(function () {
+            $(this).blur();
+            sortRouteModal.autoRouteToggle();
+            calcRoute();
+        })
+    }
+
     function addButtonEvent() {
         $("#back").click(function () {
             history.back();
@@ -715,21 +735,18 @@
             console.log("onclick path-create");
             let form = $("#path-form");
             if (form[0].checkValidity()) {
-                let asn = form.find("#ASN").val();
-                let fsn = form.find("#FSN").val();
-                let pt = form.find("#ASN option:selected").text() + form.find("#FSN option:selected").text();
-
+                let inputData = getDataGridData(form);
+                let FSN = form.find("#FSN").val();
                 $(".sample-path-draw-area").removeClass("d-none");
 
-                let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + fsn;
-                $.ajax({
-                    url: url,
+                /*$.ajax({
+                    url: '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + FSN,
                     type: "GET",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
-                })
+                })*/
 
                 function onSuccess(res) {
                     console.log(res);
@@ -756,14 +773,12 @@
             console.log("onclick sample-path-create");
             let form = $("#sample-path-form");
             if (form[0].checkValidity()) {
-
-                let asn = form.find("#ASN").val();
-                let fsn = form.find("#FSN").val();
-                let pt = form.find("#PathTitle option:selected").text();
+                let inputData = getDataGridData(form);
                 let PSSN = form.find("#PathTitle").val();
 
                 $(".sample-path-draw-area").removeClass("d-none");
 
+                /*
                 $.ajax({
                     url: '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`,
                     type: "GET",
@@ -771,7 +786,7 @@
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
-                })
+                })*/
 
                 function onSuccess(res) {
                     console.log(res);
@@ -781,7 +796,7 @@
 
                     if (viewer) {
                         viewerUrl = "../" + fakeData.PathSample.BIMPath;
-                        loadModel(true);
+                        loadModel();
                     }
                     else {
                         viewerUrl = "../" + fakeData.PathSample.BIMPath;
@@ -795,34 +810,42 @@
 
             }
         })
-
-        /* 畫線功能 */
-        $("#path-edit").click(function () {
-            sortRouteModal.create();
-        })
-        $("#path-draw").click(function () {
-            $(this).blur();
-            controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        })
-        $("#path-eraser").click(function () {
-            $(this).blur();
-            controlToggle("path-eraser", ForgeDraw.Control.ERASER);
-        })
-        $("#path-reload").click(function () {
-            $(this).blur();
-            ForgeDraw.removeAllData();
-            sortRouteModal.autoRouteToggle(true);
-        })
-        $("#path-auto").click(function () {
-            $(this).blur();
-            sortRouteModal.autoRouteToggle();
-            calcRoute();
-        })
-
         $("#submit").click(function () {
             console.log("onclick submit")
             save();
         })
+        function getDataGridData(form) {
+            let ASN = form.find("#ASN").val();
+            let FSN = form.find("#FSN").val();
+            let Area = form.find("#ASN option:selected").text();
+            let Floor = form.find("#FSN option:selected").text();
+            let PathTitle = form.find("#PathTitle").val() ?? '';
+
+            let MaintainEquipment = getfilterData("Maintain-datagrid");
+
+            let RepairEquipment = getfilterData("Repair-datagrid");
+
+            let data = {
+                ASN: ASN,
+                FSN: FSN,
+                PathTitle: PathTitle,
+                MaintainEquipment: MaintainEquipment,
+                RepairEquipment: RepairEquipment,
+            };
+            console.log("getDataGridData: ", data);
+            return data;
+
+            function getfilterData(id) {
+                if ($("#" + id).css("display") !== 'none') { return []; }
+
+                let data = $("#" + id).datagrid("getRows");
+                if (data.length === 0) { return []; }
+
+                return data.filter((e, i, arr) => {
+                    return e.Area == Area && e.Floor == Floor;
+                }).map((e) => e.ESN).filter((e, i, arr) => arr.indexOf(e) === i);
+            }
+        }
 
         let path_id = 1;
         function addRouteGroup(data) {

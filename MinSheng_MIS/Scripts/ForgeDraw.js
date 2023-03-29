@@ -84,6 +84,9 @@ var ForgeDraw = (function (e) {
         End: 0xFF9559,
         Line: 0xFCC7C7,
         BlueTooth: 0x2750B9,
+        Maintain: 0x279FB9,
+        Repair: 0x6C3ECE,
+        BothDevice: 0xDB8400,
         DefaultDevice: 0x3ac0ff,
     };
 
