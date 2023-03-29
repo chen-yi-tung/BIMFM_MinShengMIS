@@ -588,6 +588,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("MaintainUserName", AspNetUsers_MaintainID_.MyName);
                 itemObjects.Add("AuditUserName", AspNetUsers_AuditID_.MyName);
                 itemObjects.Add("AuditDate", MaintainAuditInfo_.AuditDate.ToString("yyyy/M/d"));
+                itemObjects.Add("DBID", EquipmentInfo_.DBID);
                 ja.Add(itemObjects);
             }
             #endregion
@@ -925,7 +926,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("RepairUserID", AspNetUsers_Repair.MyName);
                 itemObjects.Add("AuditUserID", AspNetUsers_Audit.MyName);
                 itemObjects.Add("AuditDate", RepairAuditInfo_.AuditDate.ToString("yyyy/M/d") == "0001/1/1"? "": RepairAuditInfo_.AuditDate.ToString("yyyy/M/d"));
-
+                itemObjects.Add("DBID", EquipmentInfo_.DBID);
                 ja.Add(itemObjects);
             }
             #endregion
@@ -979,7 +980,7 @@ namespace MinSheng_MIS.Services
             var SourceTable = from x1 in db.EquipmentMaintainItem
                               join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
                               join x3 in db.MaintainItem on x1.MISN equals x3.MISN
-                              select new { x1.EMISN, x1.IsEnable, x2.Area, x2.Floor, x2.System, x2.SubSystem, x1.ESN, x2.EName, x1.MISN, x3.MIName, x1.Unit, x1.Period, x1.LastTime, x1.NextTime, x2.EState };
+                              select new { x1.EMISN, x1.IsEnable, x2.Area, x2.Floor, x2.System, x2.SubSystem, x1.ESN, x2.EName, x1.MISN, x3.MIName, x1.Unit, x1.Period, x1.LastTime, x1.NextTime, x2.EState, x2.DBID };
 
             //設備狀態為3(停用) 不顯示
             SourceTable = SourceTable.Where(x => x.EState != "3");
@@ -1076,6 +1077,11 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("LastTime", a.LastTime?.ToString("yyyy/MM/dd"));    //上次保養日期
                 if (itemObjects["NextTime"] == null)
                     itemObjects.Add("NextTime", a.NextTime?.ToString("yyyy/MM/dd"));    //最近應保養日期
+                //DBID
+                if (!string.IsNullOrEmpty(a.DBID.ToString()))
+                {
+                    itemObjects.Add("DBID", a.DBID);
+                }
                 ja.Add(itemObjects);
             }
 
