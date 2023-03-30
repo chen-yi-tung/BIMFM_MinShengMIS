@@ -860,22 +860,18 @@
             }
         }
         function getDataGridData(form) {
-            let ASN = form.find("#ASN").val();
-            let FSN = form.find("#FSN").val();
             let Area = form.find("#ASN option:selected").text();
             let Floor = form.find("#FSN option:selected").text();
-            let PathTitle = form.find("#PathTitle").val() ?? '';
-            let PlanDate = $("#PlanDate").val() ?? '';
 
             let MaintainEquipment = getfilterData("Maintain-datagrid");
 
             let RepairEquipment = getfilterData("Repair-datagrid");
 
             let data = {
-                ASN: ASN,
-                FSN: FSN,
-                PathTitle: PathTitle,
-                PlanDate: PlanDate,
+                ASN: form.find("#ASN").val(),
+                FSN: form.find("#FSN").val(),
+                PathTitle: form.find("#PathTitle").val() ?? '',
+                PlanDate: $("#PlanDate").val(),
                 MaintainEquipment: MaintainEquipment,
                 RepairEquipment: RepairEquipment,
             };
