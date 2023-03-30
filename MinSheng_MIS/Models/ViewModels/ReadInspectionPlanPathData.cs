@@ -9,6 +9,20 @@ namespace MinSheng_MIS.Models.ViewModels
 {
     public class ReadInspectionPlanPathData
     {
+        public class postPathData
+        {
+            public string PlanDate { get; set; }
+            public string ASN { get; set; }
+            public string FSN { get; set; }
+            public string PathTitle { get; set; }
+        }
+        public class postResPathData
+        {
+            public PathSample PathSample { get; set; }
+            public List<string> PathSampleOrder { get; set; }
+            public List<PathSampleRecord> PathSampleRecord { get; set; }
+        }
+
         public class PlanPathInput
         {
             public string PlanDate { get; set; }

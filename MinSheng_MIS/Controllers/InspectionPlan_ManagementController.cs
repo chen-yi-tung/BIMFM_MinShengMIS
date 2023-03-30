@@ -411,7 +411,7 @@ namespace MinSheng_MIS.Controllers
             }
             ps.Beacon = beacons;
             ppo.PathSample = ps;
-
+            /*
             List<MaintainEquipment> maintainEquipments = new List<MaintainEquipment>();
             if (ppi.MaintainEquipment != null)
             {
@@ -458,61 +458,11 @@ namespace MinSheng_MIS.Controllers
                     repairEquipments.Add(repairEquipment);
                 }
             }
-            ppo.RepairEquipment = repairEquipments;
+            ppo.RepairEquipment = repairEquipments;*/
 
             string result = JsonConvert.SerializeObject(ppo);
             return Content(result, "application/json");
-        }
-        #endregion
 
-        #region 巡檢計畫詳情
-        public ActionResult Read()
-        {
-            return View();
-        }
-        #endregion
-
-        #region 編輯巡檢計畫
-        public ActionResult Edit()
-        {
-            return View();
-        }
-        #endregion
-
-        #region 刪除巡檢計畫
-        public ActionResult Delete()
-        {
-            return View();
-        }
-        #endregion
-
-        #region 巡檢紀錄
-        public ActionResult Record()
-        {
-            return View();
-        }
-        #endregion
-
-        #region 巡檢軌跡紀錄
-        public ActionResult TrackRecord()
-        {
-            return View();
-        }
-        #endregion
-
-        #region 定期保養單詳情
-        public ActionResult ReadMaintainForm()
-        {
-            return View();
-        }
-        #endregion
-
-        #region 設備維修單詳情
-        public ActionResult ReadReportForm()
-        {
-            return View();
-        }
-        #endregion
 
     }
 }
