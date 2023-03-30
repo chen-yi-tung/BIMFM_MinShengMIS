@@ -186,22 +186,16 @@ var ForgeDraw = (function (e) {
     }
 
     function addViewerSelectEvent() {
-        
-        /* forgeViewer.addEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT, function (e) {
-            console.log("SELECTION_CHANGED_EVENT:", e)
-            getDeviceCenterPosition(e.dbIdArray[0])
-        }); */
 
         forgeViewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT, function (e) {
-            console.log("AGGREGATE_SELECTION_CHANGED_EVENT:", e)
+            //console.log("AGGREGATE_SELECTION_CHANGED_EVENT:", e)
             e.selections.length !== 0 && getDeviceCenterPosition(e.selections[0].dbIdArray[0])
         });
 
         function getDeviceCenterPosition(dbId) {
-            console.log("getDeviceCenterPosition:", dbId)
+            //console.log("getDeviceCenterPosition:", dbId)
             let box = viewer.utilities.getBoundingBox(); //THREE.Box3
             selectPos[dbId] = box.center(); //獲取 target 中心點座標並記錄於selectPos
-            //forgeViewer.clearSelection();
         }
     }
 

@@ -327,6 +327,7 @@
             <div class="sample-path-draw-area d-none">
                 <div class="mb-4">
                     <div class="path-title-edit-group">
+                        <input type="text" id="PathID" hidden>
                         <label for="current-PathTitle">路線名稱</label>
                         <input class="form-control" type="text" id="current-PathTitle" name="current-PathTitle">
                         <button class="btn btn-cancel" id="pathtitle-save">儲存模板</button>
@@ -570,15 +571,14 @@
 
     //讀取設備資料並繪製
     function readDeviceData(pathID, data) {
+        console.time("readDeviceData")
         //原資料
-        let dataM = data.MaintainEquipment;
-        let dataR = data.RepairEquipment;
+        let dataM = data.MaintainEquipment ?? [];
+        let dataR = data.RepairEquipment ?? [];
 
         let MaintainE = dataM;
         let RepairE = dataR;
         let BothDevice = [];
-
-        //todo
 
         if (dataM) {
             if (dataR) {
@@ -592,16 +592,14 @@
                     })
                     if (!b) {
                         MaintainE.push(m);
+                        new ForgeDraw.DevicePoint(
+                            filterData(m, "Maintain"),
+                            { color: ForgeDraw.Colors.Maintain }
+                        );
                     }
                 });
             }
             console.log("MaintainE:", MaintainE)
-            MaintainE.forEach((e) => {
-                let dp = new ForgeDraw.DevicePoint(
-                    filterData(e, "Maintain"),
-                    { color: ForgeDraw.Colors.Maintain }
-                );
-            });
         }
         if (dataR) {
             if (dataM) {
@@ -615,40 +613,34 @@
                     })
                     if (!b) {
                         RepairE.push(r);
+                        new ForgeDraw.DevicePoint(
+                            filterData(r, "Repair"),
+                            { color: ForgeDraw.Colors.Repair }
+                        );
                     }
                 });
             }
             console.log("RepairE:", RepairE)
-            RepairE.forEach((e) => {
-                let dp = new ForgeDraw.DevicePoint(
-                    filterData(e, "Repair"),
-                    { color: ForgeDraw.Colors.Repair }
-                );
-            });
         }
         if (dataM && dataR) {
             dataM.forEach((m, i) => {
                 dataR.forEach((r, j) => {
                     if (m.ESN == r.ESN) {
                         BothDevice.push(m);
+                        new ForgeDraw.DevicePoint(
+                            filterData(m, "BothDevice"),
+                            { color: ForgeDraw.Colors.BothDevice }
+                        );
                     }
                 })
             });
-            console.log("BothDevice:", BothDevice)
-            BothDevice.forEach((e) => {
-                let dp = new ForgeDraw.DevicePoint(
-                    filterData(e, "BothDevice"),
-                    { color: ForgeDraw.Colors.BothDevice }
-                );
-            });
         }
-
         sessionStorage.setItem(`P${pathID}_device`, JSON.stringify({
             MaintainE: MaintainE,
             RepairE: RepairE,
             BothDevice: BothDevice
         }));
-
+        console.timeEnd("readDeviceData")
 
         function filterData(d, type) {
             let pos = d.Position ? {
