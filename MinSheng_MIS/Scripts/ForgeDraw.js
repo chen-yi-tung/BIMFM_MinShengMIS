@@ -84,6 +84,9 @@ var ForgeDraw = (function (e) {
         End: 0xFF9559,
         Line: 0xFCC7C7,
         BlueTooth: 0x2750B9,
+        Maintain: 0x279FB9,
+        Repair: 0x6C3ECE,
+        BothDevice: 0xDB8400,
         DefaultDevice: 0x3ac0ff,
     };
 
@@ -173,23 +176,31 @@ var ForgeDraw = (function (e) {
 
         forgeViewer = forgeGuiViewer3D;
 
-        forgeViewer.addEventListener(
-            Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-            getDeviceCenterPosition
-        );
+        addViewerSelectEvent();
 
         stage = new ForgeDraw.Stage();
         exports.stage = stage;
 
         callback();
         return app;
+    }
 
-        function getDeviceCenterPosition(e) {
-            let dbId = e.dbIdArray[0]; //target dbId
+    function addViewerSelectEvent() {
+
+        forgeViewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT, function (e) {
+            //console.log("AGGREGATE_SELECTION_CHANGED_EVENT:", e)
+            e.selections.length !== 0 && getDeviceCenterPosition(e.selections[0].dbIdArray[0])
+        });
+
+        function getDeviceCenterPosition(dbId) {
+            //console.log("getDeviceCenterPosition:", dbId)
             let box = viewer.utilities.getBoundingBox(); //THREE.Box3
             selectPos[dbId] = box.center(); //獲取 target 中心點座標並記錄於selectPos
-            forgeViewer.clearSelection();
         }
+    }
+
+    function clearSelectPos() {
+        selectPos = {};
     }
 
     function resize() {
@@ -678,12 +689,14 @@ var ForgeDraw = (function (e) {
         }
         create() {
             const self = this;
+            console.log(`${this.name} => create`, this.dbId);
             if (this.dbId) {
                 forgeViewer.select(this.dbId);
                 this.forgePos = selectPos[this.dbId];
-                this.position = forgeViewer.worldToClient(this.forgePos);
+                this.forgePos && (this.position = forgeViewer.worldToClient(this.forgePos));
             }
-            console.log(`${this.name} => create`, this.position);
+            console.log(`${this.name} => position`, this.position);
+
 
             if (this.sprite !== undefined) {
                 this.graphics = this.sprite;
@@ -787,12 +800,14 @@ var ForgeDraw = (function (e) {
             }
         }
         resize() {
-            this.position = forgeViewer.worldToClient(this.forgePos);
-            this.graphics.position = this.position;
-            if (this.text) {
-                this.text.position = this.position;
-                this.text.position.x += (this.options.strokeWeight + this.options.width) / 2;
-                this.text.position.y += 32;
+            if (this.forgePos) {
+                this.position = forgeViewer.worldToClient(this.forgePos);
+                this.graphics.position = this.position;
+                if (this.text) {
+                    this.text.position = this.position;
+                    this.text.position.x += (this.options.strokeWeight + this.options.width) / 2;
+                    this.text.position.y += 32;
+                }
             }
         }
         remove() {
@@ -1011,8 +1026,11 @@ var ForgeDraw = (function (e) {
         "getDrawSetting": getDrawSetting,
         "setDrawSetting": setDrawSetting,
         "setForgeViewer": setForgeViewer,
+        "addViewerSelectEvent": addViewerSelectEvent,
+        "clearSelectPos": clearSelectPos,
         "Control": Control,
-        "EventMode":EventMode,
+        "EventMode": EventMode,
+        "Colors": Colors,
         "layer": layer,
         "lineData": lineData,
         "points": points,

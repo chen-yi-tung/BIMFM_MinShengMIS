@@ -314,10 +314,16 @@ function createDialogModal(options) {
             </div>
         </div>
         `);
-        
-    options.button && options.button.forEach((b) => {
-        modal.find(".modal-footer").append(createButton(b));
-    })
+
+    if (options.button === undefined) {
+        modal.find(".modal-footer").append(createButton({ className: "btn btn-delete", cancel: true, text: "確定" }));
+    }
+    else if (options.button !== null || options.button !== false) {
+        options.button.length !== 0 && options.button.forEach((b) => {
+            modal.find(".modal-footer").append(createButton(b));
+        })
+    }
+
 
     let myModal = bootstrap.Modal.getOrCreateInstance(modal[0]);
     myModal.show();

@@ -272,7 +272,6 @@
             createDialogModal({
                 id: "DialogModal-Error",
                 inner: "請選擇審核結果！",
-                button: [{ className: "btn btn-delete", cancel: true, text: "確定" }]
             })
             return;
         }
@@ -305,7 +304,6 @@
             createDialogModal({
                 id: "DialogModal-Success",
                 inner: "送出成功！",
-                button: [{ className: "btn btn-delete", cancel: true, text: "確定" }],
                 onHide: () => {
                     window.location.href = '@Url.Action("Management", "RepairRecord_Management")';
                 }

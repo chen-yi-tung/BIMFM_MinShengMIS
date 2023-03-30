@@ -117,6 +117,7 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
+<script src="../../Scripts/datatable.js"></script>
 <script src="../../Scripts/tool.js"></script>
 <script>
     var baseUrl = "/Report_Management/";
@@ -193,38 +194,40 @@
                 {
                     field: '_dispatch', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDispatch(${index})">派工</button>`;
+                        let disabled = (row.EState != "停用") && (row.ReportState == "待派工" || row.ReportState == "未完成" || row.ReportState == "審核未過") ? '' : 'disabled';
+                        return `<button class="btn btn-datagrid" onclick="onDispatch(${index})" ${disabled}>派工</button>`;
                     }
                 },
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
                     }
                 },
                 {
                     field: '_cancel', align: 'center',
                     formatter: (val, row, index) => {
-                        if (row.ReportState == "保留中(待派工)" || row.ReportState == "保留中(未完成)" || row.ReportState == "保留中(審核未過)") {
-                            return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
-                        }
-                        //return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
+                        let disabled = row.ReportState == "保留中(待派工)" || row.ReportState == "保留中(未完成)" || row.ReportState == "保留中(審核未過)" ? '' : 'disabled'
+                        return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})" ${disabled}>取消保留</button>`;
                     }
                 },
             ]],
             columns: [[
                 { field: 'ReportState', title: '報修單狀態', align: 'center', width: 145, sortable: true },
-                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 95, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 115, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
+                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 100, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 130, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
                 { field: 'ReportSource', title: '報修來源', align: 'center', width: 100, sortable: true },
-                { field: 'RSN', title: '報修單號', align: 'center', width: 110, sortable: true },
-                { field: 'Date', title: '報修時間', align: 'center', width: 175, sortable: true },
+                { field: 'RSN', title: '報修單號', align: 'center', width: 116, sortable: true },
+                { field: 'Date', title: '報修時間', align: 'center', width: 200, sortable: true },
                 { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
                 { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 110, sortable: true },
-                { field: 'ReportContent', title: '報修內容', align: 'center', width: 110, sortable: true },
+                { field: 'EState', title: '設備狀態', align: 'center', width: 100, hidden: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
                 { field: 'MyName', title: '報修人員', align: 'center', width: 110, sortable: true },
+                { field: 'ReportContent', title: '報修內容', align: 'center', width: 300, sortable: true },
+                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,
@@ -277,12 +280,19 @@
             error: onError
         })
         function onSuccess(res) {
-            alert("取消保留完成");
-            window.location.reload();
+            createDialogModal({
+                id: "DialogModal-Success",
+                inner: "取消保留成功！",
+            })
+            $('#DataGrid').datagrid('clearSelections');
+            $('#DataGrid').datagrid('reload');
         }
 
         function onError(res) {
-            alert("取消保留失敗");
+            createDialogModal({
+                id: "DialogModal-Error",
+                inner: "取消保留失敗！",
+            })
         }
     }
 
@@ -294,7 +304,7 @@
         });
 
         $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
+            $('#DataGrid').datagrid('load', getQueryParams())
         });
 
         $("#export").click(function () {

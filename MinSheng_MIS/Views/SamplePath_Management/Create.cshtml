@@ -21,7 +21,7 @@
         </div>
         <div class="form-group required">
             <label for="PathTitle">巡檢路線模板</label>
-            <input type="text" class="form-control" name="PathTitle" id="PathTitle"  maxlength="30">
+            <input type="text" class="form-control" name="PathTitle" id="PathTitle" maxlength="30">
         </div>
         <div class="button-group justify-content-start">
             <button type="button" class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
@@ -221,15 +221,12 @@
             onSuccess,
             onError
         );
-        function onSuccess(res) {
-            //console.log(res);
-            let eventName = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
-            let eventFunc = () => {
-                console.log("loadModel: FINAL_FRAME_RENDERED_CHANGED_EVENT")
-                readDeviceData(fakeData.BIMDevices);
-                viewer.removeEventListener(eventName,eventFunc);
-            };
-            viewer.addEventListener(eventName, eventFunc);
+        function onSuccess() {
+            $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {
+                $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, function () {
+                    readDeviceData(fakeData.BIMDevices);
+                })
+            })
         }
         function onError(err) {
             console.log(err);
@@ -239,7 +236,7 @@
     //讀取設備資料並繪製
     function readDeviceData(data) {
         data.forEach((e) => {
-            console.log("readDeviceData: ",e)
+            console.log("readDeviceData: ", e)
             let btSprite = PIXI.Sprite.from(btUrl);
             btSprite.scale.set(0.6);
             btSprite.anchor.set(0.5);
@@ -334,25 +331,16 @@
                 function onSuccess(res) {
                     console.log(res);
                     fakeData = res;
-                    //若非第一次初始化
-                    if (viewer) {
-                        viewerUrl = "../" + fakeData.BIMPath;
-                        loadModel();
-                    }
-                    else {
-                        viewerUrl = "../" + fakeData.BIMPath;
-                        initializeViewer(initializeDrawer);
-                    }
+                    viewerUrl = "../" + fakeData.BIMPath;
+                    initializeViewer(initializeDrawer);
+
+                    $("#path-create").off();
+                    $('#ASN').attr("disabled",'');
+                    $('#FSN').attr("disabled",'');
                 }
                 function onError(res) {
                     console.log(res);
                 }
-
-                //$.getJSON('@Url.Action("action","Controller")', function (data) {
-                //fakeData = data;
-                //若非第一次初始化
-
-                //})
             }
         })
         $("#path-edit").click(function () {
@@ -366,12 +354,6 @@
             $(this).blur();
             controlToggle("path-eraser", ForgeDraw.Control.ERASER);
         })
-        /*
-        $("#path-device").click(function () {
-            $(this).blur();
-            controlToggle("path-device", ForgeDraw.Control.DEVICE);
-        })
-        */
         $("#path-reload").click(function () {
             $(this).blur();
             ForgeDraw.removeAllData();
@@ -390,19 +372,7 @@
             console.log(pt);
             //先判斷巡檢路線模板是否有填值
             if (pt == "") {
-                errtext = "巡檢路線模板名稱不可為空!";
-                createDialogModal({
-                    id: "DialogModal-Error",
-                    inner: `${errtext}`,
-                    button: [
-                        {
-                            className: "btn btn-delete",
-                            cancel: true,
-                            text: "確定"
-                        },
-                    ]
-                })
-                //alert("巡檢路徑模板標題不可為空!")
+                createDialogModal({ id: "DialogModal-Error", inner: "巡檢路線模板名稱不可為空！" })
             }
             else {
                 save();
@@ -441,6 +411,11 @@
 
         //console.log(data);
         //console.log(JSON.stringify(data));
+        if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0) {
+            createDialogModal({ id: "DialogModal-Error", inner: "新增失敗！沒有規劃路線資料！" });
+            return;
+        }
+
         $.ajax({
             url: '@Url.Action("CreateSamplePath", "SamplePath_Management")',
             data: JSON.stringify(data),
@@ -459,13 +434,6 @@
                 createDialogModal({
                     id: "DialogModal-Success",
                     inner: "新增成功！",
-                    button: [
-                        {
-                            className: "btn btn-delete",
-                            cancel: true,
-                            text: "確定"
-                        },
-                    ],
                     onHide: () => {
                         let url = '@Url.Action("Management", "SamplePath_Management")';
                         window.location.href = url;
@@ -490,13 +458,6 @@
             createDialogModal({
                 id: "DialogModal-Error",
                 inner: `新增失敗！${errtext}`,
-                button: [
-                    {
-                        className: "btn btn-delete",
-                        cancel: true,
-                        text: "確定"
-                    },
-                ]
             })
         }
     }

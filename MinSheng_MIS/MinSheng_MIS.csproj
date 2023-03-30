@@ -339,6 +339,7 @@
     </Compile>
     <Compile Include="Models\ViewModels\MaintainRecord_Management_ViewModel.cs" />
     <Compile Include="Models\ViewModels\PathSampleViewModel.cs" />
+    <Compile Include="Models\ViewModels\ReadInspectionPlanPathData.cs" />
     <Compile Include="Models\ViewModels\RepairRecord_Management_ReadViewModel.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemFormViewModel.cs" />
     <Compile Include="Models\ViewModels\ReportManagementViewModel.cs" />
@@ -354,6 +355,19 @@
     <Compile Include="Surfaces\Surface.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AllImage\2023-03-2710-09-27-97.png" />
+    <Content Include="AllImage\2023-03-2710-10-45-50.png" />
+    <Content Include="AllImage\2023-03-2710-10-45-51.png" />
+    <Content Include="AllImage\2023-03-2710-11-48-12.png" />
+    <Content Include="AllImage\2023-03-2710-11-55-70.png" />
+    <Content Include="AllImage\2023-03-2710-11-58-10.png" />
+    <Content Include="AllImage\2023-03-2710-17-30-63.png" />
+    <Content Include="AllImage\2023-03-2710-17-30-64.png" />
+    <Content Include="AllImage\2023-03-2710-17-47-28.png" />
+    <Content Include="AllImage\2023-03-2710-17-47-29.png" />
+    <Content Include="AllImage\2023-03-2710-18-00-23.png" />
+    <Content Include="AllImage\2023-03-2710-18-02-92.png" />
+    <Content Include="AllImage\2023-03-2710-18-04-56.png" />
     <Content Include="BimModels\Site01\preview1.png" />
     <Content Include="BimModels\Site01\preview2.png" />
     <Content Include="BimModels\Site01\preview4.png" />
@@ -1471,8 +1485,13 @@
     <Content Include="BimModels\Site01\Resource\objects_vals.json.gz" />
     <Content Include="BimModels\Site01\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\Site01\viewable.json" />
+    <Content Include="AllFile\2023-03-2710-18-53-35.gradle" />
+    <Content Include="AllFile\2023-03-2710-18-55-27.properties" />
+    <Content Include="AllFile\2023-03-2710-18-57-05.properties" />
+    <Content Include="AllFile\2023-03-2710-18-59-60.gradle" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
+    <Content Include="Scripts\datagrid-management.js" />
     <Content Include="Scripts\datatable.js" />
     <Content Include="Scripts\dataTable\EquipmentInfoModal.js" />
     <Content Include="Scripts\dataTable\InspectionPlanMaintain.js" />

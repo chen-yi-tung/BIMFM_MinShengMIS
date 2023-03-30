@@ -8,8 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
+using static MinSheng_MIS.Models.ViewModels.ReadInspectionPlanPathData;
+using PathSample = MinSheng_MIS.Models.ViewModels.ReadInspectionPlanPathData.PathSample;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -138,10 +141,48 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 新增巡檢計畫-新增定期保養/維修設備 回傳設備資料
+        [HttpPost]
+        public ActionResult ResponseDeviceInfo(List<String> ESN)
+        {
+            JArray ja = new JArray();
+            foreach (var item in ESN)
+            {
+                var deviceinfo = db.EquipmentInfo.Find(item);
+                JObject itemObjects = new JObject();
+                itemObjects.Add("FSN", deviceinfo.FSN);
+                itemObjects.Add("ESN", item);
+                itemObjects.Add("DBID", deviceinfo.DBID);
+                JObject positionObjects = new JObject();
+                if(deviceinfo.LocationX != null && deviceinfo.LocationY != null){
+                    positionObjects.Add("LocaiotnX", deviceinfo.LocationX);
+                    positionObjects.Add("LocaiotnY", deviceinfo.LocationY);
+                    itemObjects.Add("Position", positionObjects);
+                }
+                else
+                {
+                    itemObjects.Add("Position", null);
+                }
+                
+                var FSN = deviceinfo.FSN;
+                var ASN = db.Floor_Info.Find(FSN).ASN;
+                itemObjects.Add("ASN", ASN);
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("DeviceData", ja);
+
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
+        }
+        #endregion
+
         #region 新增巡檢計畫-刪除定期保養單
         [HttpPost]
         public ActionResult DeleteMaintainForm(List<String> EMFISN)
         {
+            JArray ja = new JArray();
             foreach (var item in EMFISN)
             {
                 //變更狀態為保留中
@@ -160,12 +201,15 @@ namespace MinSheng_MIS.Controllers
                 }
                 db.EquipmentMaintainFormItem.AddOrUpdate(maintainform);
                 db.SaveChanges();
+                JObject itemObjects = new JObject();
+                itemObjects.Add("EMFISN", maintainform.EMFISN);
+                var EMISN = maintainform.EMISN;
+                var ESN = db.EquipmentMaintainItem.Find(EMISN).ESN;
+                itemObjects.Add("ESN", ESN);
+                ja.Add(itemObjects);
             }
 
-            JObject jo = new JObject();
-            jo.Add("Succed", true);
-
-            string result = JsonConvert.SerializeObject(jo);
+            string result = JsonConvert.SerializeObject(ja);
             return Content(result, "application/json");
         }
         #endregion
@@ -265,9 +309,10 @@ namespace MinSheng_MIS.Controllers
 
         #region 新增巡檢計畫-刪除維修設備
         [HttpPost]
-        public ActionResult DeleteReportForm(List<String> ESN)
+        public ActionResult DeleteReportForm(List<String> RSN)
         {
-            foreach (var item in ESN)
+            JArray ja = new JArray();
+            foreach (var item in RSN)
             {
                 //變更狀態為保留中
                 var RSNInfo = db.EquipmentReportForm.Find(item);
@@ -285,13 +330,139 @@ namespace MinSheng_MIS.Controllers
                 }
                 db.EquipmentReportForm.AddOrUpdate(RSNInfo);
                 db.SaveChanges();
+                JObject itemObjects = new JObject();
+                itemObjects.Add("RSN", item);
+                var ESN = db.EquipmentReportForm.Find(item).ESN;
+                itemObjects.Add("ESN", ESN);
+                ja.Add(itemObjects);
             }
 
-            JObject jo = new JObject();
-            jo.Add("Succed", true);
-
-            string result = JsonConvert.SerializeObject(jo);
+            string result = JsonConvert.SerializeObject(ja);
             return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 新增巡檢計畫-新增巡檢路線
+        [HttpPost]
+        public ActionResult AddPlanPath(PlanPathInput ppi)
+        {
+            PlanPathOutput ppo = new PlanPathOutput();
+
+            PathSample ps = new PathSample();
+            ps.ASN = ppi.ASN;
+            ps.FSN = ppi.FSN;
+            var floorinfo = db.Floor_Info.Find(ps.FSN);
+            ps.Floor = floorinfo.FloorName;
+            ps.BIMPath = floorinfo.BIMPath;
+            var areainfo = db.AreaInfo.Find(Convert.ToInt32(ps.ASN));
+            ps.Area = areainfo.Area;
+            var plandate = Convert.ToDateTime(ppi.PlanDate);
+            var IPSNcount = db.InspectionPlan.Where(x => x.PlanDate == plandate).Count();
+            var tmpIPSN = "P" + plandate.ToString("yyMMdd") + (IPSNcount + 1).ToString().PadLeft(2, '0');
+            //判斷PathTitle是否為空
+            if (!string.IsNullOrEmpty(ppi.PathTitle))
+            {
+                //PathTitle不為空 找出路徑模板資料
+                ps.PSSN = ppi.PathTitle;
+                var pathtitle = db.PathSample.Find(ps.PSSN).PathTitle;
+                //加入預估巡檢計畫單號
+                ps.PathTitle = pathtitle + " " + tmpIPSN;
+                //找出來藍芽路徑
+                var BeaconOrder = db.PathSampleOrder.Where(x => x.PSSN == ps.PSSN).OrderBy(x => x.FPSSN).ToList();
+                List<string> psos = new List<string>();
+                foreach (var item in BeaconOrder)
+                {
+                    psos.Add(item.BeaconID);
+                }
+                ppo.PathSampleOrder = psos;
+                //找出繪製路徑
+                var DrawList = db.DrawPathSample.Where(x => x.PSSN == ps.PSSN).OrderBy(x => x.SISN).ToList();
+                List<PathSampleRecord> psrs = new List<PathSampleRecord>();
+                foreach (var item in DrawList)
+                {
+                    PathSampleRecord psr = new PathSampleRecord();
+                    psr.LocationX = item.LocationX;
+                    psr.LocationY = item.LocationY;
+                    psrs.Add(psr);
+                }
+                ppo.PathSampleRecord = psrs;
+            }
+            else
+            {
+                //加入預估巡檢計畫單號
+                ps.PathTitle = ps.Area + "" + ps.Floor + " " + tmpIPSN;
+                List<string> psos = new List<string>();
+                ppo.PathSampleOrder = psos;
+                List<PathSampleRecord> psrs = new List<PathSampleRecord>();
+                ppo.PathSampleRecord = psrs;
+            }
+            //Beacon
+            //找出該樓層所有藍芽
+            var BeaconList = db.EquipmentInfo.Where(x => x.FSN == ps.FSN && x.EName == "藍芽").ToList();
+            List<Beacon> beacons = new List<Beacon>();
+            foreach (var item in BeaconList)
+            {
+                Beacon beacon = new Beacon();
+                beacon.dbId = Convert.ToInt32(item.DBID);
+                beacon.deviceType = item.EName;
+                beacon.deviceName = item.ESN;
+
+                beacons.Add(beacon);
+            }
+            ps.Beacon = beacons;
+            ppo.PathSample = ps;
+            /*
+            List<MaintainEquipment> maintainEquipments = new List<MaintainEquipment>();
+            if (ppi.MaintainEquipment != null)
+            {
+                foreach (var item in ppi.MaintainEquipment)
+                {
+                    MaintainEquipment maintainEquipment = new MaintainEquipment();
+                    maintainEquipment.ESN = item;
+                    var DBID = db.EquipmentInfo.Find(item).DBID;
+                    if (!string.IsNullOrEmpty(DBID.ToString()))
+                    {
+                        maintainEquipment.DBID = (int)DBID;
+                    }
+                    else
+                    {
+                        Position position = new Position();
+                        var xy = db.EquipmentInfo.Find(item);
+                        position.LocationX = (decimal)xy.LocationX;
+                        position.LocationY = (decimal)xy.LocationY;
+                    }
+                    maintainEquipments.Add(maintainEquipment);
+                }
+            }
+            ppo.MaintainEquipment = maintainEquipments;
+
+            List<RepairEquipment> repairEquipments = new List<RepairEquipment>();
+            if(ppi.RepairEquipment != null)
+            {
+                foreach (var item in ppi.RepairEquipment)
+                {
+                    RepairEquipment repairEquipment = new RepairEquipment();
+                    repairEquipment.ESN = item;
+                    var DBID = db.EquipmentInfo.Find(item).DBID;
+                    if (!string.IsNullOrEmpty(DBID.ToString()))
+                    {
+                        repairEquipment.DBID = (int)DBID;
+                    }
+                    else
+                    {
+                        Position position = new Position();
+                        var xy = db.EquipmentInfo.Find(item);
+                        position.LocationX = (decimal)xy.LocationX;
+                        position.LocationY = (decimal)xy.LocationY;
+                    }
+                    repairEquipments.Add(repairEquipment);
+                }
+            }
+            ppo.RepairEquipment = repairEquipments;*/
+
+            string result = JsonConvert.SerializeObject(ppo);
+            return Content(result, "application/json");
+
         }
         #endregion
 
@@ -343,6 +514,5 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         #endregion
-
     }
 }

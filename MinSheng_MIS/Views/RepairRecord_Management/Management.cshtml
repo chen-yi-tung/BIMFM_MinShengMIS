@@ -158,7 +158,7 @@
     });
 
     var getGridJSON = '@Url.Action("RepairRecord_Management", "Datagrid")';
-    
+
     $(async function () {
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
         await pushSelect("RepairState", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
@@ -193,41 +193,45 @@
                 {
                     field: '_audit', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onAudit(${index})">審核</button>`;
+                        let disabled = row.RepairState == "待審核" ? '' : 'disabled';
+                        return `<button class="btn btn-datagrid" onclick="onAudit(${index})" ${disabled}>審核</button>`;
                     }
                 },
                 {
                     field: '_supplement', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onSupplement(${index})">補件</button>`;
+                        let disabled = row.RepairState == "待補件" ? '' : 'disabled';
+                        return `<button class="btn btn-datagrid" onclick="onSupplement(${index})" ${disabled}>補件</button>`;
                     }
                 },
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
                     }
                 },
             ]],
             columns: [[
                 { field: 'IPRSN', hidden: true },
-                { field: 'IPSN', title: '計畫編號', align: 'center', width: 120, sortable: true },
-                { field: 'IPName', title: '計畫名稱', align: 'center', width: 200, sortable: true },
-                { field: 'PlanDate', title: '計畫日期', align: 'center', width: 100, sortable: true },
+                { field: 'IPSN', title: '計畫編號', align: 'center', width: 110, sortable: true },
+                { field: 'IPName', title: '計畫名稱', align: 'center', width: 250, sortable: true },
+                { field: 'PlanDate', title: '計畫日期', align: 'center', width: 150, sortable: true },
                 { field: 'RepairState', title: '維修單狀態', align: 'center', width: 120, sortable: true },
                 { field: 'ReportLevel', title: '報修等級', align: 'center', width: 106, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 66, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 66, sortable: true },
-                { field: 'RSN', title: '報修單號', align: 'center', width: 120, sortable: true },
-                { field: 'Date', title: '報修時間', align: 'center', width: 175, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 130, sortable: true },
+                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
+                { field: 'RSN', title: '報修單號', align: 'center', width: 116, sortable: true },
+                { field: 'Date', title: '報修時間', align: 'center', width: 200, sortable: true },
                 { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
                 { field: 'ESN', title: '設備編號', align: 'center', width: 110, sortable: true },
                 { field: 'EName', title: '設備名稱', align: 'center', width: 200, sortable: true },
-                { field: 'ReportContent', title: '報修內容', align: 'center', width: 110, sortable: true },
+                { field: 'ReportContent', title: '報修內容', align: 'center', width: 300, sortable: true },
                 { field: 'InformantUserID', title: '報修人員', align: 'center', width: 110, sortable: true },
                 { field: 'RepairUserID', title: '施工人員', align: 'center', width: 110, sortable: true },
                 { field: 'AuditUserID', title: '審核人員', align: 'center', width: 110, sortable: true },
-                { field: 'AuditDate', title: '審核日期', align: 'center', width: 100, sortable: true },
+                { field: 'AuditDate', title: '審核日期', align: 'center', width: 150, sortable: true },
+                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,

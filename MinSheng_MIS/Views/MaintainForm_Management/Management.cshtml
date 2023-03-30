@@ -96,6 +96,7 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
+<script src="../../Scripts/datatable.js"></script>
 <script src="../../Scripts/tool.js"></script>
 <script>
     var baseUrl = "/MaintainForm_Management/";
@@ -153,35 +154,36 @@
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})">定位</button>`;
+                        let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
                     }
                 },
                 {
                     field: '_cancel', align: 'center',
                     formatter: (val, row, index) => {
-                        if (row.FormItemState == "保留中(待派工)" || row.FormItemState == "保留中(未完成)" || row.FormItemState == "保留中(審核未過)") {
-                            return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})">取消保留</button>`;
-                        }
+                        let disabled = row.FormItemState == "保留中(待派工)" || row.FormItemState == "保留中(未完成)" || row.FormItemState == "保留中(審核未過)" ? '' : 'disabled'
+                        return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})" ${disabled}>取消保留</button>`;
                     }
                 },
             ]],
             columns: [[
                 { field: 'FormItemState', title: '保養項目狀態', align: 'center', width: 150, sortable: true },
                 { field: 'EState', title: '設備狀態', align: 'center', width: 100, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
+                { field: 'Area', title: '棟別', align: 'center', width: 130, sortable: true },
                 { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
-                
+
                 { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
                 { field: 'PropertyCode', title: '國有財產編碼', align: 'center', width: 150, sortable: true },
 
-                { field: 'EMFISN', title: '保養單項目編號', align: 'center', width: 210, sortable: true },
+                { field: 'EMFISN', title: '保養單項目編號', align: 'center', width: 225, sortable: true },
 
                 { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
                 { field: 'Unit', title: '保養週期單位', align: 'center', width: 130, sortable: true },
                 { field: 'Period', title: '保養週期', align: 'center', width: 100, sortable: true },
 
-                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 140, sortable: true },
+                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 150, sortable: true },
                 { field: 'Date', title: '最近應保養日期', align: 'center', width: 150, sortable: true },
+                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden: true },
             ]],
             singleSelect: true,
             selectOnCheck: true,
@@ -232,12 +234,19 @@
             error: onError
         })
         function onSuccess(res) {
-            alert("取消保留完成");
-            window.location.reload();
+            createDialogModal({
+                id: "DialogModal-Success",
+                inner: "取消保留成功！",
+            })
+            $('#DataGrid').datagrid('clearSelections');
+            $('#DataGrid').datagrid('reload');
         }
 
         function onError(res) {
-            alert("取消保留失敗");
+            createDialogModal({
+                id: "DialogModal-Error",
+                inner: "取消保留失敗！",
+            })
         }
     }
 
@@ -250,7 +259,7 @@
         });
 
         $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
+            $('#DataGrid').datagrid('load', getQueryParams())
         });
 
         $("#export").click(function () {
