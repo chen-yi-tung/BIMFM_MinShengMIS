@@ -77,6 +77,8 @@
 
     const IPMSN = '@ViewBag.id';
     let apiUrl = '@Url.Action("ReadBody", "MaintainRecord_Management")' + `/${IPMSN}`;
+    let GetBufferUrl = '@Url.Action("GetBufferData", "MaintainRecord_Management")' + `/${IPMSN}`; //Method : Get    取得下方審核暫存資料
+    let SubmitUrl = '@Url.Action("SubmitAuditData", "MaintainRecord_Management")';//Method : Post    type = formdata   提交下方表格，除了下方表格資料要傳之外，還須提供 IPMSN 、 IsBuffer -> 點擊[暫存草稿]則為"1" ， 點擊[送出]則為"0"
     //let apiUrl = null;
 
     let imgFiles = [];

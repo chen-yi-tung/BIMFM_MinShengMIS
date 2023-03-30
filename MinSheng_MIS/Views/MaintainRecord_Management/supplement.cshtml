@@ -93,6 +93,8 @@
 
     const IPMSN = '@ViewBag.id';
     let apiUrl = '@Url.Action("ReadBody", "MaintainRecord_Management")' + `/${IPMSN}`;
+    let GetSupDataUrl = '@Url.Action("Supplement_GetData", "MaintainRecord_Management")' + `/${IPMSN}`; //Method : Get  取得下方保養資料
+    let SubmitUrl = '@Url.Action("Supplement_Submit", "MaintainRecord_Management")';//Method : Post    type = formdata    提交下方表格，除了表格本身資料要傳之外，還須提供 IPMSN
     //let apiUrl = null
 
     let imgFiles = [];

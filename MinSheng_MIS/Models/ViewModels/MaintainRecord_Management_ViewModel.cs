@@ -246,6 +246,7 @@ namespace MinSheng_MIS.Models.ViewModels
         /// <summary>
         /// IPMSN type = text
         /// IsBuffer type = text 判斷使用者點擊[暫存]或是[儲存]
+        /// img1、2、... type = file  可多筆
         /// AuditUserID type = text 
         /// AuditMemo type = text
         /// AuditResult type = text
@@ -433,7 +434,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 var EMFI = db.EquipmentMaintainFormItem.Find(IPM.EMFISN);
                 EMFI.FormItemState = "4";
                 db.EquipmentMaintainFormItem.AddOrUpdate(EMFI);
-                db.MaintainCompletionImage.RemoveRange(db.MaintainCompletionImage.Where(x => x.IPMSN == ipmsn));
+                db.MaintainCompletionImage.RemoveRange(db.MaintainCompletionImage.Where(x => x.IPMSN == ipmsn)); //移除該IPMSN下所有照片，會在下方重新加入照片
                 db.SaveChanges();
 
                 //上傳照片
