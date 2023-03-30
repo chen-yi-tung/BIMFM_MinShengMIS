@@ -376,44 +376,50 @@ namespace MinSheng_MIS.Controllers
             ppo.PathSample = ps;
 
             List<MaintainEquipment> maintainEquipments = new List<MaintainEquipment>();
-            foreach(var item in ppi.MaintainEquipment)
+            if (ppi.MaintainEquipment != null)
             {
-                MaintainEquipment maintainEquipment = new MaintainEquipment();
-                maintainEquipment.ESN = item;
-                var DBID = db.EquipmentInfo.Find(item).DBID;
-                if (!string.IsNullOrEmpty(DBID.ToString()))
+                foreach (var item in ppi.MaintainEquipment)
                 {
-                    maintainEquipment.DBID = (int)DBID;
+                    MaintainEquipment maintainEquipment = new MaintainEquipment();
+                    maintainEquipment.ESN = item;
+                    var DBID = db.EquipmentInfo.Find(item).DBID;
+                    if (!string.IsNullOrEmpty(DBID.ToString()))
+                    {
+                        maintainEquipment.DBID = (int)DBID;
+                    }
+                    else
+                    {
+                        Position position = new Position();
+                        var xy = db.EquipmentInfo.Find(item);
+                        position.LocationX = (decimal)xy.LocationX;
+                        position.LocationY = (decimal)xy.LocationY;
+                    }
+                    maintainEquipments.Add(maintainEquipment);
                 }
-                else
-                {
-                    Position position = new Position();
-                    var xy = db.EquipmentInfo.Find(item);
-                    position.LocationX = (decimal)xy.LocationX;
-                    position.LocationY = (decimal)xy.LocationY;
-                }
-                maintainEquipments.Add(maintainEquipment);
             }
             ppo.MaintainEquipment = maintainEquipments;
 
             List<RepairEquipment> repairEquipments = new List<RepairEquipment>();
-            foreach (var item in ppi.RepairEquipment)
+            if(ppi.RepairEquipment != null)
             {
-                RepairEquipment repairEquipment = new RepairEquipment();
-                repairEquipment.ESN = item;
-                var DBID = db.EquipmentInfo.Find(item).DBID;
-                if (!string.IsNullOrEmpty(DBID.ToString()))
+                foreach (var item in ppi.RepairEquipment)
                 {
-                    repairEquipment.DBID = (int)DBID;
+                    RepairEquipment repairEquipment = new RepairEquipment();
+                    repairEquipment.ESN = item;
+                    var DBID = db.EquipmentInfo.Find(item).DBID;
+                    if (!string.IsNullOrEmpty(DBID.ToString()))
+                    {
+                        repairEquipment.DBID = (int)DBID;
+                    }
+                    else
+                    {
+                        Position position = new Position();
+                        var xy = db.EquipmentInfo.Find(item);
+                        position.LocationX = (decimal)xy.LocationX;
+                        position.LocationY = (decimal)xy.LocationY;
+                    }
+                    repairEquipments.Add(repairEquipment);
                 }
-                else
-                {
-                    Position position = new Position();
-                    var xy = db.EquipmentInfo.Find(item);
-                    position.LocationX = (decimal)xy.LocationX;
-                    position.LocationY = (decimal)xy.LocationY;
-                }
-                repairEquipments.Add(repairEquipment);
             }
             ppo.RepairEquipment = repairEquipments;
 
