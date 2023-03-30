@@ -1225,6 +1225,18 @@
                     success: onSuccess,
                     error: onError
                 })
+                let esnData = M_MDG.datagrid("getChecked").map((d) => { return d.ESN });
+                $.ajax({
+                    url: '@Url.Action("ResponseDeviceInfo", "InspectionPlan_Management")',
+                    data: JSON.stringify(esnData),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: (res) => {
+                        console.log(res)
+                    },
+                    error: onError
+                })
 
                 function onSuccess(res) {
                     console.log(res)
@@ -1416,6 +1428,18 @@
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
+                    error: onError
+                })
+                let esnData = M_RDG.datagrid("getChecked").map((d) => { return d.ESN });
+                $.ajax({
+                    url: '@Url.Action("ResponseDeviceInfo", "InspectionPlan_Management")',
+                    data: JSON.stringify(esnData),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: (res) => {
+                        console.log(res)
+                    },
                     error: onError
                 })
 

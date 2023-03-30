@@ -141,6 +141,43 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 新增巡檢計畫-新增定期保養/維修設備 回傳設備資料
+        [HttpPost]
+        public ActionResult ResponseDeviceInfo(List<String> ESN)
+        {
+            JArray ja = new JArray();
+            foreach (var item in ESN)
+            {
+                var deviceinfo = db.EquipmentInfo.Find(item);
+                JObject itemObjects = new JObject();
+                itemObjects.Add("FSN", deviceinfo.FSN);
+                itemObjects.Add("ESN", item);
+                itemObjects.Add("DBID", deviceinfo.DBID);
+                JObject positionObjects = new JObject();
+                if(deviceinfo.LocationX != null && deviceinfo.LocationY != null){
+                    positionObjects.Add("LocaiotnX", deviceinfo.LocationX);
+                    positionObjects.Add("LocaiotnY", deviceinfo.LocationY);
+                    itemObjects.Add("Position", positionObjects);
+                }
+                else
+                {
+                    itemObjects.Add("Position", null);
+                }
+                
+                var FSN = deviceinfo.FSN;
+                var ASN = db.Floor_Info.Find(FSN).ASN;
+                itemObjects.Add("ASN", ASN);
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("DeviceData", ja);
+
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
+        }
+        #endregion
+
         #region 新增巡檢計畫-刪除定期保養單
         [HttpPost]
         public ActionResult DeleteMaintainForm(List<String> EMFISN)
