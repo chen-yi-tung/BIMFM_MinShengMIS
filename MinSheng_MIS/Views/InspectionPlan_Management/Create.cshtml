@@ -463,10 +463,9 @@
             });
 
             readBeaconData(fakeData.PathSample.Beacon);
-            readDeviceData(fakeData);
+            readDeviceData(1, fakeData);
             readPathData(fakeData.PathSampleRecord);
             updatePathDisplay(fakeData.PathSampleOrder);
-
 
             addTooltip();
         });
@@ -530,7 +529,7 @@
     }
 
     //更換模型和設備
-    function loadModel() {
+    function loadModel(pathID) {
         ForgeDraw.removeAllDevice();
         ForgeDraw.removeAllData();
         ForgeDraw.clearSelectPos();
@@ -546,7 +545,7 @@
             $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {
                 $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, function () {
                     readBeaconData(fakeData.PathSample.Beacon);
-                    readDeviceData(fakeData);
+                    readDeviceData(pathID, fakeData);
                     readPathData(fakeData.PathSampleRecord);
                     updatePathDisplay(fakeData.PathSampleOrder);
 
@@ -570,13 +569,18 @@
     }
 
     //讀取設備資料並繪製
-    function readDeviceData(data) {
+    function readDeviceData(pathID, data) {
         //原資料
         let dataM = data.MaintainEquipment;
         let dataR = data.RepairEquipment;
 
+        let MaintainE = dataM;
+        let RepairE = dataR;
+        let BothDevice = [];
+
+        //todo
+
         if (dataM) {
-            let MaintainE = dataM;
             if (dataR) {
                 MaintainE = [];
                 dataM.forEach((m, i) => {
@@ -600,7 +604,6 @@
             });
         }
         if (dataR) {
-            let RepairE = dataR;
             if (dataM) {
                 RepairE = [];
                 dataR.forEach((r, i) => {
@@ -624,8 +627,6 @@
             });
         }
         if (dataM && dataR) {
-            //設備點分類
-            let BothDevice = [];
             dataM.forEach((m, i) => {
                 dataR.forEach((r, j) => {
                     if (m.ESN == r.ESN) {
@@ -633,7 +634,7 @@
                     }
                 })
             });
-            console.log("BothDevice:",BothDevice)
+            console.log("BothDevice:", BothDevice)
             BothDevice.forEach((e) => {
                 let dp = new ForgeDraw.DevicePoint(
                     filterData(e, "BothDevice"),
@@ -641,7 +642,13 @@
                 );
             });
         }
-        
+
+        sessionStorage.setItem(`P${pathID}_device`, JSON.stringify({
+            MaintainE: MaintainE,
+            RepairE: RepairE,
+            BothDevice: BothDevice
+        }));
+
 
         function filterData(d, type) {
             let pos = d.Position ? {
@@ -649,7 +656,7 @@
                 y: d.Position.LocationY
             } : undefined;
             let fos = pos ? viewer.clientToWorld(pos.x, pos.y)
-            : undefined;
+                : undefined;
             return {
                 dbId: d.DBID,
                 deviceType: type,
@@ -802,50 +809,29 @@
         $("#path-create").click(function (e) {
             e.preventDefault();
             console.log("onclick path-create");
-            let form = $("#path-form");
-            if (form[0].checkValidity() && $("#PlanDate").val() !== '') {
-                let inputData = getDataGridData(form);
-                let FSN = form.find("#FSN").val();
-                $(".sample-path-draw-area").removeClass("d-none");
-
-                $.ajax({
-                    url: '@Url.Action("AddPlanPath", "InspectionPlan_Management")',
-                    data: JSON.stringify(inputData),
-                    type: "POST",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
-
-                function onSuccess(res) {
-                    console.log(res);
-                    fakeData = res;
-                    //若非第一次初始化
-                    addRouteGroup(fakeData);
-
-                    if (viewer) {
-                        viewerUrl = "../" + fakeData.PathSample.BIMPath;
-                        loadModel();
-                    }
-                    else {
-                        viewerUrl = "../" + fakeData.PathSample.BIMPath;
-                        initializeViewer(initializeDrawer);
-                    }
-                }
-                function onError(res) {
-                    console.log(res);
-                }
-            }
+            pathCreateEvent("path-form")
         })
         $("#sample-path-create").click(function (e) {
             e.preventDefault();
             console.log("onclick sample-path-create");
-            let form = $("#sample-path-form");
-            if (form[0].checkValidity() && $("#PlanDate").val() !== '') {
-                let inputData = getDataGridData(form);
-                let PSSN = form.find("#PathTitle").val();
+            pathCreateEvent("sample-path-form")
 
+        })
+        $("#submit").click(function () {
+            console.log("onclick submit")
+            save();
+        })
+        function pathCreateEvent(id) {
+            if ($("#PlanDate").val() == '') {
+                createDialogModal({
+                    id: "DialogModal",
+                    inner: `請輸入計畫日期！`
+                })
+                return;
+            }
+            let form = $("#" + id);
+            if (form[0].checkValidity()) {
+                let inputData = getDataGridData(form);
                 $(".sample-path-draw-area").removeClass("d-none");
 
                 $.ajax({
@@ -862,14 +848,15 @@
                     console.log(res);
                     fakeData = res;
                     //若非第一次初始化
-                    addRouteGroup(fakeData);
+                    let pathID = addRouteGroup(fakeData);
+                    sessionStorage.setItem(`P${pathID}_input`, JSON.stringify(inputData));
+                    sessionStorage.setItem(`P${pathID}_output`, JSON.stringify(res));
 
+                    viewerUrl = "../" + res.PathSample.BIMPath;
                     if (viewer) {
-                        viewerUrl = "../" + fakeData.PathSample.BIMPath;
-                        loadModel();
+                        loadModel(pathID);
                     }
                     else {
-                        viewerUrl = "../" + fakeData.PathSample.BIMPath;
                         initializeViewer(initializeDrawer);
                     }
                 }
@@ -879,11 +866,7 @@
                 }
 
             }
-        })
-        $("#submit").click(function () {
-            console.log("onclick submit")
-            save();
-        })
+        }
         function getDataGridData(form) {
             let ASN = form.find("#ASN").val();
             let FSN = form.find("#FSN").val();
@@ -963,9 +946,10 @@
                             text: "確定",
                             onClick: function () {
                                 let id = group.attr('data-path-id');
-                                sessionStorage.removeItem('path_id_' + id);
+                                sessionStorage.removeItem(`P${id}_input`);
+                                sessionStorage.removeItem(`P${id}_output`);
+                                sessionStorage.removeItem(`P${id}_device`);
                                 group.remove();
-                                console.log(`sessionStorage.removeItem('path_id_${id}');`)
                                 dm.hide();
                             }
                         },
@@ -979,6 +963,8 @@
                 handle: "#path-handle",
                 animation: 150,
             })
+
+            return group.attr('data-path-id');
 
         }
     }
