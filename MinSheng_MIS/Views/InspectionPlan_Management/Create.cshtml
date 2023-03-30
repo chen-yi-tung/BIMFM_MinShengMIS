@@ -726,7 +726,7 @@
 
         let DMM = 'DatagridModal-Maintain';
         await pushSelect(DMM + " #FormItemState", '@Url.Action("AddFormItemState", "DropDownList")');
-        await pushSelect(DMM + " #EState", '@Url.Action("EState", "DropDownList")');
+        await pushSelect(DMM + " #EState", '@Url.Action("EState", "DropDownList")' + "?url=AddToPlan");
         await pushSelect(DMM + " #StockState", '@Url.Action("StockState", "DropDownList")');
 
         let DMR = 'DatagridModal-Repair';
