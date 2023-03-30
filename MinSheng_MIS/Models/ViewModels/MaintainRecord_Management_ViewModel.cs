@@ -111,7 +111,8 @@ namespace MinSheng_MIS.Models.ViewModels
             inspectionPlan.PlanDate = IP.PlanDate.ToString("yyyy/MM/dd");
             var dicPS = Surfaces.Surface.InspectionPlanState();
             inspectionPlan.PlanState = dicPS[IP.PlanState];
-            inspectionPlan.Shift = IP.Shift;
+            var dicShift = Surfaces.Surface.Shift();
+            inspectionPlan.Shift = dicShift[IP.Shift];
             var IDlist = db.InspectionPlanMember.Where(x => x.IPSN == IP.IPSN).Select(x => x.UserID);
             string Namelist = "";
             foreach (string ID in IDlist)
@@ -124,7 +125,7 @@ namespace MinSheng_MIS.Models.ViewModels
             }
             if (IDlist.Count() > 0)
             {
-                Namelist.Remove(Namelist.Length - 1);
+                Namelist = Namelist.Remove((Namelist.Length - 1), 1);
             }
             inspectionPlan.MyName = Namelist; 
             #endregion
@@ -184,12 +185,12 @@ namespace MinSheng_MIS.Models.ViewModels
                 {
                     IPlist.Add(Path);
                 }
-
+                var dicAR = Surfaces.Surface.AuditResult();
                 MaintainAuditInfo maintainAuIn = new MaintainAuditInfo()
                 { 
                     MyName = AuName,
                     AuditDate = item.AuditDate.ToString("yyyy/MM/dd"),
-                    AuditResult = item.AuditResult,
+                    AuditResult = dicAR[item.AuditResult] ,
                     AuditMemo = item.AuditMemo,
                     ImgPath = IPlist
                 };
@@ -242,6 +243,17 @@ namespace MinSheng_MIS.Models.ViewModels
             }
         }
 
+        /// <summary>
+        /// IPMSN type = text
+        /// IsBuffer type = text 判斷使用者點擊[暫存]或是[儲存]
+        /// AuditUserID type = text 
+        /// AuditMemo type = text
+        /// AuditResult type = text
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="Sev"></param>
+        /// <param name="imgList"></param>
+        /// <returns></returns>
         public string AuditSubmit(System.Web.Mvc.FormCollection form, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList)
         {
             string ipmsn = form["IPMSN"].ToString();
@@ -366,6 +378,11 @@ namespace MinSheng_MIS.Models.ViewModels
             public List<string> ImgPath { get; set; }
         }
 
+        /// <summary>
+        /// 取得補件資料
+        /// </summary>
+        /// <param name="IPMSN"></param>
+        /// <returns></returns>
         public string Supplement_GetData(string IPMSN)
         {
             var IPM = db.InspectionPlanMaintain.Find(IPMSN);
@@ -389,6 +406,20 @@ namespace MinSheng_MIS.Models.ViewModels
             return result;
         }
 
+        /// <summary>
+        /// formdata提交格式
+        /// file1  type = file  僅一筆
+        /// img1   type = file  可多筆
+        /// IPMSN  type = text
+        /// MaintainContent  type = text
+        /// SupplementaryUserID  type = text
+        /// SupplementaryContent  type = text
+        /// </summary>
+        /// <param name="formCollection"></param>
+        /// <param name="Sev"></param>
+        /// <param name="imgList"></param>
+        /// <param name="fileList"></param>
+        /// <returns></returns>
         public string Supplement_Submit(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList, List<HttpPostedFileBase> fileList)
         {
             try
@@ -459,6 +490,32 @@ namespace MinSheng_MIS.Models.ViewModels
                     SupplementaryDate = DateTime.Now
                 };
                 db.MaintainSupplementaryInfo.Add(MSI);
+                db.SaveChanges();
+
+                //補件檔案上傳
+                List<string> filesPath = new List<string>();
+                foreach (var item in fileList)
+                {
+                    string result = RRMVM.UploadFile(item, Sev);
+                    if (result != "")
+                    {
+                        filesPath.Add(result);
+                    }
+                    else 
+                    {
+                        return "檔案上傳過程出錯!";
+                    }
+                }
+                foreach (var item in filesPath)
+                {
+                    Models.MaintainSupplementaryFile MS = new Models.MaintainSupplementaryFile()
+                    {
+                        PMSN = newPMSN,
+                        FilePath = item
+                    };
+                    db.MaintainSupplementaryFile.Add(MS);
+                    db.SaveChanges();
+                }
 
                 return "提交成功!";
             }

@@ -252,9 +252,9 @@ namespace MinSheng_MIS.Models.ViewModels
 
 
 
-
+                var dicS = Surfaces.Surface.InspectionPlanRepairState();
                 InspectionPlanRepair planRepair = new InspectionPlanRepair(); //維修資訊
-                planRepair.RepairState = item.RepairState;
+                planRepair.RepairState = dicS[item.RepairState];
                 planRepair.RepairContent = item.RepairContent;
 
                 var Name2 = db.AspNetUsers.Where(x => x.UserName == item.RepairUserID).Select(x => x.MyName).FirstOrDefault();
@@ -294,11 +294,11 @@ namespace MinSheng_MIS.Models.ViewModels
                 foreach (var item3 in RepairAuIn2)
                 {
                     RepairAuditInfo RAI = new RepairAuditInfo(); //審核資料
-
+                    var dicAR = Surfaces.Surface.AuditResult();
                     var AName2 = db.AspNetUsers.Where(x => x.UserName == item3.AuditUserID).Select(x => x.MyName).FirstOrDefault();
                     RAI.MyName = AName2;
                     RAI.AuditDate = item3.AuditDate.ToString("yyyy/MM/dd");
-                    RAI.AuditResult = item3.AuditResult;
+                    RAI.AuditResult = dicAR[item3.AuditResult];
                     RAI.AuditMemo = item3.AuditMemo;
                     var ImgP2 = db.RepairAuditImage.Where(x => x.PRASN == item3.PRASN).Select(x => x.ImgPath).ToList();
                     RAI.ImgPath = ImgP2;
@@ -355,7 +355,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 }
                 if (Pic.Count() > 0)
                 {
-                    PicResult.Remove(PicResult.Length - 1); //移除最後一個'，'
+                    PicResult = PicResult.Remove(PicResult.Length - 1); //移除最後一個'，'
                 }
 
                 var dic = Surface.AuditResult();
@@ -602,6 +602,17 @@ namespace MinSheng_MIS.Models.ViewModels
             return result;
         }
 
+        /// <summary>
+        /// IPRSN type = text
+        /// RepairContent type = text
+        /// SupplementaryUserID type = text
+        /// SupplementaryContent type = text
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="Sev"></param>
+        /// <param name="imgList"></param>
+        /// <param name="fileList"></param>
+        /// <returns></returns>
         public string UpdateSuppleData(System.Web.Mvc.FormCollection form, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList, List<HttpPostedFileBase> fileList) //提交補件資料，要更新和新建資料Repair Supplementary Info
         {
             try
