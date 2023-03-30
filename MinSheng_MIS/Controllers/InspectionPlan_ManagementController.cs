@@ -465,5 +465,54 @@ namespace MinSheng_MIS.Controllers
 
         }
         #endregion
+
+        #region 巡檢計畫詳情
+        public ActionResult Read()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 編輯巡檢計畫
+        public ActionResult Edit()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 刪除巡檢計畫
+        public ActionResult Delete()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 巡檢紀錄
+        public ActionResult Record()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 巡檢軌跡紀錄
+        public ActionResult TrackRecord()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 定期保養單詳情
+        public ActionResult ReadMaintainForm()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 設備維修單詳情
+        public ActionResult ReadReportForm()
+        {
+            return View();
+        }
+        #endregion
     }
 }
