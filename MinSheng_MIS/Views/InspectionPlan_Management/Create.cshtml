@@ -464,9 +464,11 @@
             });
 
             readBeaconData(fakeData.PathSample.Beacon);
-            readDeviceData(1, fakeData);
+            readDeviceData(1);
             readPathData(fakeData.PathSampleRecord);
             updatePathDisplay(fakeData.PathSampleOrder);
+
+            calcRoute();
 
             addTooltip();
         });
@@ -502,21 +504,26 @@
 
     //更新網頁顯示的路徑
     function updatePathDisplay(path = undefined) {
-        let $path = $("#current-path-display");
+        let Cpath = $("#current-path-display");
+        let pathID = $("#PathID").val();
+        let $path = $(`[data-path-id=${pathID}] #path-display`);
 
         if (!path) {
             $path.empty();
-            $path.append(`
+            Cpath.empty();
+            /*$path.append(`
             <li class="breadcrumb-item">起點</li>
             <li class="breadcrumb-item">終點</li>
-            `);
+            `);*/
             return;
         }
 
         $path.empty();
+        Cpath.empty();
         path.forEach(r => {
             let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
             $path.append(pathPoint);
+            Cpath.append(pathPoint);
         })
     }
 
@@ -546,9 +553,11 @@
             $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {
                 $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, function () {
                     readBeaconData(fakeData.PathSample.Beacon);
-                    readDeviceData(pathID, fakeData);
+                    readDeviceData(pathID);
                     readPathData(fakeData.PathSampleRecord);
                     updatePathDisplay(fakeData.PathSampleOrder);
+
+                    calcRoute();
 
                     addTooltip();
                 })
@@ -570,93 +579,59 @@
     }
 
     //讀取設備資料並繪製
-    function readDeviceData(pathID, data) {
+    function readDeviceData(pathID) {
         console.time("readDeviceData")
-        //原資料
-        let dataM = data.MaintainEquipment ?? [];
-        let dataR = data.RepairEquipment ?? [];
+        let deviceDatas = JSON.parse(sessionStorage.getItem(`DeviceDatas`));
+        let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`));
 
-        let MaintainE = dataM;
-        let RepairE = dataR;
-        let BothDevice = [];
+        let ASN = pathData.PathSample.ASN;
+        let FSN = pathData.PathSample.FSN;
 
-        if (dataM) {
-            if (dataR) {
-                MaintainE = [];
-                dataM.forEach((m, i) => {
-                    let b = false;
-                    dataR.forEach((r, j) => {
-                        if (m.ESN == r.ESN) {
-                            b = true;
-                        }
-                    })
-                    if (!b) {
-                        MaintainE.push(m);
-                        new ForgeDraw.DevicePoint(
-                            filterData(m, "Maintain"),
-                            { color: ForgeDraw.Colors.Maintain }
-                        );
-                    }
-                });
-            }
-            console.log("MaintainE:", MaintainE)
-        }
-        if (dataR) {
-            if (dataM) {
-                RepairE = [];
-                dataR.forEach((r, i) => {
-                    let b = false;
-                    dataM.forEach((m, j) => {
-                        if (m.ESN == r.ESN) {
-                            b = true;
-                        }
-                    })
-                    if (!b) {
-                        RepairE.push(r);
-                        new ForgeDraw.DevicePoint(
-                            filterData(r, "Repair"),
-                            { color: ForgeDraw.Colors.Repair }
-                        );
-                    }
-                });
-            }
-            console.log("RepairE:", RepairE)
-        }
-        if (dataM && dataR) {
-            dataM.forEach((m, i) => {
-                dataR.forEach((r, j) => {
-                    if (m.ESN == r.ESN) {
-                        BothDevice.push(m);
-                        new ForgeDraw.DevicePoint(
-                            filterData(m, "BothDevice"),
-                            { color: ForgeDraw.Colors.BothDevice }
-                        );
-                    }
-                })
-            });
-        }
-        sessionStorage.setItem(`P${pathID}_device`, JSON.stringify({
-            MaintainE: MaintainE,
-            RepairE: RepairE,
-            BothDevice: BothDevice
-        }));
+        let dataM = getESN("Maintain-datagrid");
+        let dataR = getESN("Repair-datagrid");
+        let BothDevice = dataM.filter(x => dataR.includes(x));
+        let MaintainE = dataM.filter(x => !dataR.includes(x));
+        let RepairE = dataR.filter(x => !dataM.includes(x));
+
+        pathData.MaintainEquipment = MaintainE;
+        pathData.RepairEquipment = RepairE;
+        pathData.BothEquipment = BothDevice;
+
+        console.log("readDeviceData", pathData);
+        sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(pathData));
+
+        BothDevice.forEach(ESN => {
+            let e = deviceDatas[ASN][FSN][ESN];
+            e.deviceType = "BothDevice";
+            new ForgeDraw.DevicePoint(e, { color: ForgeDraw.Colors.BothDevice });
+        })
+        MaintainE.forEach(ESN => {
+            let e = deviceDatas[ASN][FSN][ESN];
+            e.deviceType = "Maintain";
+            new ForgeDraw.DevicePoint(e, { color: ForgeDraw.Colors.Maintain });
+        })
+        RepairE.forEach(ESN => {
+            let e = deviceDatas[ASN][FSN][ESN];
+            e.deviceType = "Repair";
+            new ForgeDraw.DevicePoint(e, { color: ForgeDraw.Colors.Repair });
+        })
+
         console.timeEnd("readDeviceData")
 
-        function filterData(d, type) {
-            let pos = d.Position ? {
-                x: d.Position.LocationX,
-                y: d.Position.LocationY
-            } : undefined;
-            let fos = pos ? viewer.clientToWorld(pos.x, pos.y)
-                : undefined;
-            return {
-                dbId: d.DBID,
-                deviceType: type,
-                deviceName: d.ESN,
-                position: pos,
-                forgePos: fos
-            }
+        function getESN(id) {
+            if ($("#" + id).css("display") !== 'none') { return []; }
+
+            let data = $("#" + id).datagrid("getRows");
+            if (data.length === 0) { return []; }
+
+            let Area = pathData.PathSample.Area;
+            let Floor = pathData.PathSample.Floor;
+
+            return data.filter((e, i, arr) => {
+                return e.Area == Area && e.Floor == Floor;
+            }).map((e) => e.ESN).filter((e, i, arr) => arr.indexOf(e) === i);
         }
+
     }
 
     //讀取路線資料
@@ -708,6 +683,10 @@
         });
 
         $(".spinner-area").fadeOut(300, function () { $(this).remove(); });
+
+        window.addEventListener("beforeunload", (event) => {
+            sessionStorage.clear();
+        });
     });
 
     async function addDropDownList() {
@@ -807,7 +786,21 @@
             e.preventDefault();
             console.log("onclick sample-path-create");
             pathCreateEvent("sample-path-form")
+        })
+        $("#path-save").click(function () {
+            let currentPathID = $("#PathID").val()
+            savePath(currentPathID)
+            createDialogModal({ id: "DialogModal", inner: "儲存成功！" })
+        })
+        $("#current-PathTitle").change(function () {
+            let pathID = $("#PathID").val()
+            let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
+            let title = $("#current-PathTitle").val()
+            pathData.PathSample.PathTitle = title
+            sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(pathData))
 
+            //修改上方路線名稱
+            $(`[data-path-id=${pathID}] #sample-path-name`).text(title)
         })
         $("#submit").click(function () {
             console.log("onclick submit")
@@ -840,9 +833,10 @@
                     console.log(res);
                     fakeData = res;
                     //若非第一次初始化
-                    let pathID = addRouteGroup(fakeData);
-                    sessionStorage.setItem(`P${pathID}_input`, JSON.stringify(inputData));
-                    sessionStorage.setItem(`P${pathID}_output`, JSON.stringify(res));
+                    let pathID = addRouteGroup(res);
+                    $("#PathID").val(pathID);
+
+                    sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(res));
 
                     viewerUrl = "../" + res.PathSample.BIMPath;
                     if (viewer) {
@@ -858,35 +852,19 @@
                 }
 
             }
-        }
-        function getDataGridData(form) {
-            let Area = form.find("#ASN option:selected").text();
-            let Floor = form.find("#FSN option:selected").text();
 
-            let MaintainEquipment = getfilterData("Maintain-datagrid");
+            function getDataGridData(form) {
+                let Area = form.find("#ASN option:selected").text();
+                let Floor = form.find("#FSN option:selected").text();
 
-            let RepairEquipment = getfilterData("Repair-datagrid");
-
-            let data = {
-                ASN: form.find("#ASN").val(),
-                FSN: form.find("#FSN").val(),
-                PathTitle: form.find("#PathTitle").val() ?? '',
-                PlanDate: $("#PlanDate").val(),
-                MaintainEquipment: MaintainEquipment,
-                RepairEquipment: RepairEquipment,
-            };
-            console.log("getDataGridData: ", data);
-            return data;
-
-            function getfilterData(id) {
-                if ($("#" + id).css("display") !== 'none') { return []; }
-
-                let data = $("#" + id).datagrid("getRows");
-                if (data.length === 0) { return []; }
-
-                return data.filter((e, i, arr) => {
-                    return e.Area == Area && e.Floor == Floor;
-                }).map((e) => e.ESN).filter((e, i, arr) => arr.indexOf(e) === i);
+                let data = {
+                    ASN: form.find("#ASN").val(),
+                    FSN: form.find("#FSN").val(),
+                    PathTitle: form.find("#PathTitle").val() ?? '',
+                    PlanDate: $("#PlanDate").val(),
+                };
+                console.log("getDataGridData: ", data);
+                return data;
             }
         }
 
@@ -934,15 +912,24 @@
                             text: "確定",
                             onClick: function () {
                                 let id = group.attr('data-path-id');
-                                sessionStorage.removeItem(`P${id}_input`);
-                                sessionStorage.removeItem(`P${id}_output`);
-                                sessionStorage.removeItem(`P${id}_device`);
+                                sessionStorage.removeItem(`P${id}_pathData`);
                                 group.remove();
+                                $(".sample-path-draw-area").addClass('d-none');
                                 dm.hide();
                             }
                         },
                     ]
                 })
+            })
+
+            group.find("#path-edit").click(() => {
+                let currentPathID = $("#PathID").val()
+                let id = group.attr("data-path-id");
+                if (!$(".sample-path-draw-area").hasClass('d-none')){
+                    savePath(currentPathID)
+                }
+
+                loadPath(id)
             })
 
             path_id++;
@@ -953,7 +940,6 @@
             })
 
             return group.attr('data-path-id');
-
         }
     }
 
@@ -1209,41 +1195,27 @@
                 }
             }
             function appendData() {
-                let data = M_MDG.datagrid("getChecked").map((d) => { return d.EMFISN });
-                console.log(data);
+                let data = M_MDG.datagrid("getChecked");
+                console.log("appendData POST", data);
                 let btn = $(this);
                 btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
 
-                /* TEST */ //setTimeout(onSuccess, 1000);
+                getDeviceData(data);
 
                 $.ajax({
                     url: '@Url.Action("AddMaintainForm", "InspectionPlan_Management")',
-                    data: JSON.stringify(data),
+                    data: JSON.stringify(data.map(d => d.EMFISN)),
                     type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
                 })
-                let esnData = M_MDG.datagrid("getChecked").map((d) => { return d.ESN });
-                $.ajax({
-                    url: '@Url.Action("ResponseDeviceInfo", "InspectionPlan_Management")',
-                    data: JSON.stringify(esnData),
-                    type: "POST",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: (res) => {
-                        console.log(res)
-                    },
-                    error: onError
-                })
 
                 function onSuccess(res) {
-                    console.log(res)
+                    console.log("appendData onSuccess", res)
                     btn.children(".spinner-border").remove();
                     bootstrap.Modal.getInstance(modal[0]).hide();
-
-                    ///* TEST */ M_MDG.datagrid("getChecked").forEach((d) => { E_MDG.datagrid("appendRow", d) })
 
                     res.rows.forEach((d) => { E_MDG.datagrid("appendRow", d) })
                 }
@@ -1414,40 +1386,27 @@
                 }
             }
             function appendData() {
-                let data = M_RDG.datagrid("getChecked").map((d) => { return d.RSN });
-                console.log(data);
+                let data = M_RDG.datagrid("getChecked");
+                console.log("appendData POST", data);
                 let btn = $(this);
                 btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
 
-                /* TEST */ //setTimeout(onSuccess, 1000);
+                getDeviceData(data);
 
                 $.ajax({
                     url: '@Url.Action("AddReportForm", "InspectionPlan_Management")',
-                    data: JSON.stringify(data),
+                    data: JSON.stringify(data.map(d => d.RSN)),
                     type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
                 })
-                let esnData = M_RDG.datagrid("getChecked").map((d) => { return d.ESN });
-                $.ajax({
-                    url: '@Url.Action("ResponseDeviceInfo", "InspectionPlan_Management")',
-                    data: JSON.stringify(esnData),
-                    type: "POST",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: (res) => {
-                        console.log(res)
-                    },
-                    error: onError
-                })
 
                 function onSuccess(res) {
+                    console.log("appendData onSuccess", res)
                     btn.children(".spinner-border").remove();
                     bootstrap.Modal.getInstance(modal[0]).hide();
-
-                    /* TEST */ //M_RDG.datagrid("getChecked").forEach((d) => { E_RDG.datagrid("appendRow", d) })
 
                     res.rows.forEach((d) => { E_RDG.datagrid("appendRow", d) })
                 }
@@ -1548,6 +1507,70 @@
             if (getCheckbox(dg, index) == null) return bool;
             return onSelectBtn(dg, index, sc);
         }
+
+        function getDeviceData(data) {
+            let ESNDatas = JSON.parse(sessionStorage.getItem(`ESNDatas`));
+            let postData;
+            if (ESNDatas) {
+                postData = new Set(data.map(d => d.ESN).filter(e => !ESNDatas.includes(e)))
+            }
+            else {
+                postData = new Set(data.map(d => d.ESN));
+            }
+
+            if (postData.size !== 0) {
+                $.ajax({
+                    url: '@Url.Action("ResponseDeviceInfo", "InspectionPlan_Management")',
+                    data: JSON.stringify([...postData]),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: (res) => {
+                        console.log("getDeviceData onSuccess", res)
+
+                        storeESNData(postData, ESNDatas);
+                        storeDeviceData(res.DeviceData);
+                    },
+                    error: (err) => { console.log(err) }
+                })
+            }
+        }
+
+        function storeESNData(postData, ESNDatas) {
+            let esnSet;
+            if (ESNDatas) {
+                esnSet = new Set([...postData, ...ESNDatas]);
+            }
+            else {
+                esnSet = postData;
+            }
+            sessionStorage.setItem(`ESNDatas`, JSON.stringify([...esnSet]));
+        }
+
+        function storeDeviceData(data) {
+            let DeviceDatas = JSON.parse(sessionStorage.getItem(`DeviceDatas`)) ?? {};
+            for (let i = 0; i < data.length; i++) {
+                let e = data[i];
+
+                DeviceDatas[e.ASN] ?? (DeviceDatas[e.ASN] = {})
+                DeviceDatas[e.ASN][e.FSN] ?? (DeviceDatas[e.ASN][e.FSN] = {})
+                DeviceDatas[e.ASN][e.FSN][e.ESN] = filterData(e);
+            }
+
+            sessionStorage.setItem(`DeviceDatas`, JSON.stringify(DeviceDatas));
+
+            function filterData(d) {
+                let fos = d.Position ? new THREE.Vector3(d.Position.LocationX, d.Position.LocationY, 0) : undefined;
+                let pos = fos ? viewer.worldToClient(fos) : undefined;
+                return {
+                    dbId: d.DBID,
+                    deviceType: "device",
+                    deviceName: d.ESN,
+                    position: pos ? new PIXI.Point(pos.x, pos.y) : undefined,
+                    forgePos: fos
+                }
+            }
+        }
         return this;
     }
 
@@ -1558,6 +1581,48 @@
                 customClass: "sample-path-tooltip",
             })
         })
+    }
+
+    function savePath(pathID) {
+        let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
+        let title = $("#current-PathTitle").val()
+        let PathSampleOrder = $("#current-path-display .breadcrumb-item").toArray().map(e => e.innerHTML);
+        let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
+            return { LocationX: e.x, LocationY: e.y };
+        })
+        pathData.PathSample.PathTitle = title;
+        pathData.PathSampleOrder = PathSampleOrder;
+        pathData.PathSampleRecord = PathSampleRecord;
+        sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(pathData))
+    }
+
+    function loadPath(pathID) {
+        $("#PathID").val(pathID);
+        ForgeDraw.removeAllDevice();
+        ForgeDraw.removeAllData();
+        ForgeDraw.clearSelectPos();
+
+        let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
+        $("#current-PathTitle").val(pathData.PathSample.PathTitle);
+        //開啟forge顯示
+        $(".sample-path-draw-area").removeClass('d-none')
+
+        viewer.loadModel(viewerUrl, { keepCurrentModels: false },
+            onSuccess, (err) => { console.log(err) }
+        );
+
+        function onSuccess(res) {
+            $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {
+                $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, function () {
+                    readBeaconData(pathData.PathSample.Beacon);
+                    readDeviceData(pathID);
+                    readPathData(pathData.PathSampleRecord);
+                    updatePathDisplay(pathData.PathSampleOrder);
+
+                    calcRoute();
+                })
+            })
+        }
     }
 
     function save() {
