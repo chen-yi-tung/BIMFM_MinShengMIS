@@ -37,7 +37,9 @@
             <div class="input-group sample-path-group">
                 <span class="input-group-text" id="sample-path-name"></span>
                 <div type="text" class="form-control">
-                    <nav><ol class="breadcrumb d-none" id="path-display"></ol></nav>
+                    <nav>
+                        <ol class="breadcrumb d-none" id="path-display"></ol>
+                    </nav>
                     <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="手動修改路線">
                         <i class="icon-edit"></i>
                     </button>
@@ -103,22 +105,32 @@
             view.addEventListener("fd.linedata.detail", function (event) {
                 console.log("view => fd.linedata.detail", event.detail);
                 if (event.detail instanceof ForgeDraw.DevicePoint) {
-                    createDataDetailModal({
-                        title: "設備資訊",
-                        id: "",
-                        sn: [
-                            { text: "名稱", value: "name" },
-                            { text: "DBID", value: "dbid" },
-                            { text: "座標X", value: "x" },
-                            { text: "座標Y", value: "y" },
-                        ],
-                        data: {
-                            name: event.detail.name,
-                            dbid: event.detail.dbId,
-                            x: event.detail.forgePos.x,
-                            y: event.detail.forgePos.y
-                        }
-                    });
+                    let url = `@Url.Action("ReadBody", "EquipmentInfo_Management")/${event.detail.dbId}`
+                    $.getJSON(url, function (res) {
+                        createDataDetailModal({
+                            title: "設備資訊",
+                            id: "",
+                            sn: [
+                                { text: "系統別", value: "System" },
+                                { text: "子系統別", value: "SubSystem" },
+                                { text: "設備名稱", value: "EName" },
+                                { text: "區域", value: "Area" },
+                                { text: "樓層", value: "Floor" },
+                                { text: "空間名稱", value: "RoomName" },
+                                { text: "國有財產編碼", value: "PropertyCode" },
+                                { text: "廠牌", value: "Brand" },
+                                { text: "DBID", value: "DBID" },
+                                { text: "RFID", value: "RFID" },
+                                { text: "設備狀態", value: "EState" },
+                                { text: "座標X", value: "x" },
+                                { text: "座標Y", value: "y" },
+                            ],
+                            data: Object.assign({
+                                x: event.detail.forgePos.x,
+                                y: event.detail.forgePos.y
+                            }, res)
+                        });
+                    })
                 }
                 else {
                     createDataDetailModal({
@@ -330,8 +342,8 @@
                     initializeViewer(initializeDrawer);
 
                     $("#path-create").off();
-                    $('#ASN').attr("disabled",'');
-                    $('#FSN').attr("disabled",'');
+                    $('#ASN').attr("disabled", '');
+                    $('#FSN').attr("disabled", '');
                 }
                 function onError(res) {
                     console.log(res);

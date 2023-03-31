@@ -85,22 +85,32 @@
             onClick: function (event, point) {
                 console.log(`point ${point.index} => 詳細`, point);
                 let index = point.index;
-                createDataDetailModal({
-                    title: "設備資訊",
-                    id: "",
-                    sn: [
-                        { text: "名稱", value: "name" },
-                        { text: "DBID", value: "dbid" },
-                        { text: "座標X", value: "x" },
-                        { text: "座標Y", value: "y" },
-                    ],
-                    data: {
-                        name: point.name,
-                        dbid: point.dbId,
-                        x: point.forgePos.x,
-                        y: point.forgePos.y
-                    }
-                });
+                let url = `@Url.Action("ReadBody", "EquipmentInfo_Management")/${point.dbId}`
+                $.getJSON(url, function (res) {
+                    createDataDetailModal({
+                        title: "設備資訊",
+                        id: "",
+                        sn: [
+                            { text: "系統別", value: "System" },
+                            { text: "子系統別", value: "SubSystem" },
+                            { text: "設備名稱", value: "EName" },
+                            { text: "區域", value: "Area" },
+                            { text: "樓層", value: "Floor" },
+                            { text: "空間名稱", value: "RoomName" },
+                            { text: "國有財產編碼", value: "PropertyCode" },
+                            { text: "廠牌", value: "Brand" },
+                            { text: "DBID", value: "DBID" },
+                            { text: "RFID", value: "RFID" },
+                            { text: "設備狀態", value: "EState" },
+                            { text: "座標X", value: "x" },
+                            { text: "座標Y", value: "y" },
+                        ],
+                        data: Object.assign({
+                            x: point.forgePos.x,
+                            y: point.forgePos.y
+                        }, res)
+                    });
+                })
             }
         }]);
 
