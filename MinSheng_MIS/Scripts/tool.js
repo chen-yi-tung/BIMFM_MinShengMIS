@@ -135,11 +135,11 @@ function getQueryParams(selector = null) {
         .find("input:not([type='button']):not([type='submit']):not([type='reset']), select")
         .toArray()
         .map(e => $(e).attr("name"));
-    console.log(searchParams)
+    //console.log(searchParams)
     let queryParams = searchParams.reduce((total, c) => {
         total[c] = $(selector ? `${selector} #${c}` : `#${c}`).val()
         return total;
     }, {})
-    console.log(queryParams)
+    console.log("queryParams",queryParams)
     return queryParams;
 }
