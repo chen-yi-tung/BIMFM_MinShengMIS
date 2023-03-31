@@ -153,13 +153,18 @@
     color: #404040;
     width: 100%;
     border-radius: 24px;
-    padding: 0em 1.5em;
+    padding: 0em 1em 0 1.5em;
     min-height: calc(24px + 1em);
 }
 .sample-path-group.inner .form-control{
     background-color: transparent;
     padding: 0;
     align-items: center;
+}
+
+.sample-path-group.inner .path-btn{
+    width: 1.6em;
+    height: 1.6em;
 }
 
 .sample-path-group .form-control nav {
@@ -313,15 +318,13 @@
     border-radius: 50px;
     min-width: 50px;
     text-align: center;
-    background: #3ac0ff;
+    background-color: #3ac0ff;
     border: 3px solid #FFFFFF;
     color: #fff;
 }
 
 .sortlist li.bluetooth {
-    background: #2750B9;
-    border: 3px solid #FFFFFF;
-    color: #fff;
+    background-color: #2750B9;
 }
 
 .sortlist li::after {
@@ -346,19 +349,19 @@
     color: white;
 }
 
-.sortlist li.disable:first-child {
+/* .sortlist li.disable:first-child {
     background: #EC6767;
-}
+} */
 
-.sortlist li.disable:first-child::after {
+.sortlist li:first-child::after {
     color: black;
 }
 
-.sortlist li.disable:last-child {
+/* .sortlist li.disable:last-child {
     background: #FF9559;
-}
+} */
 
-.sortlist li.disable:last-child::after {
+.sortlist li:last-child::after {
     content: "";
 }
 
@@ -383,19 +386,19 @@
 }
 
 .cube-bluetooth{
-    background-color: #2750B9;
+    background-color: #2750B9 !important;
 }
 
 .cube-maintain{
-    background-color: #279FB9;
+    background-color: #279FB9 !important;
 }
 
 .cube-repair{
-    background-color: #6C3ECE;
+    background-color: #6C3ECE !important;
 }
 
 .cube-both{
-    background-color: #DB8400;
+    background-color: #DB8400 !important;
 }
 
 .path-title-edit-group{

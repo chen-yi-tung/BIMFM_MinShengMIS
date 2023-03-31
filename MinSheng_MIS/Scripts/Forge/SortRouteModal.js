@@ -50,19 +50,34 @@ function SortRouteModal(options = {}) {
         function createRouteItems() {
             sortlist.empty();
             let devicelist = ForgeDraw.devices;
-            let itemSelector = ".breadcrumb-item:not(:first-child):not(:last-child)";
+            //let itemSelector = ".breadcrumb-item:not(:first-child):not(:last-child)";
+            let itemSelector = ".breadcrumb-item";
             let pathList = $(selector ? `${selector} ${itemSelector}` : itemSelector);
 
             console.log(devicelist);
             console.log(pathList);
-            sortlist.append(`<li class="disable">起點</li>`);
+            //sortlist.append(`<li class="disable">起點</li>`);
 
             pathList.each((i, e) => {
                 let type = devicelist.find(dp => dp.name == e.innerHTML).type;
+                switch (type) {
+                    case "藍芽":
+                        type = "cube-bluetooth";
+                        break;
+                    case "BothDevice":
+                        type = "cube-both";
+                        break;
+                    case "Maintain":
+                        type = "cube-maintain";
+                        break;
+                    case "Repair":
+                        type = "cube-repair";
+                        break;
+                }
                 let li = `<li class="item ${type}">${e.innerHTML}</li>`;
                 sortlist.append(li);
             })
-            sortlist.append(`<li class="disable">終點</li>`);
+            //sortlist.append(`<li class="disable">終點</li>`);
         }
     }
     this.save = function () {

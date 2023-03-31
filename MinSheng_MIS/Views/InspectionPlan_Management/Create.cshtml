@@ -337,6 +337,10 @@
                             <nav>
                                 <ol class="breadcrumb" id="current-path-display"></ol>
                             </nav>
+                            <button class="path-btn align-self-center" id="current-path-edit" data-bs-toggle="tooltip"
+                                title="手動修改路線">
+                                <i class="icon-edit"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -471,11 +475,12 @@
             calcRoute();
 
             addTooltip();
+            togglePointerEvent(true);
         });
 
-        window.onresize = function () {
+        window.addEventListener('resize',function () {
             ForgeDraw.resize();
-        }
+        })
 
     }
 
@@ -506,7 +511,7 @@
     function updatePathDisplay(path = undefined) {
         let Cpath = $("#current-path-display");
         let pathID = $("#PathID").val();
-        let $path = $(`[data-path-id=${pathID}] #path-display`);
+        let $path = $(`.sample-path-group[data-path-id=${pathID}]`).find("#path-display");
 
         if (!path) {
             $path.empty();
@@ -560,6 +565,7 @@
                     calcRoute();
 
                     addTooltip();
+                    togglePointerEvent(true);
                 })
             })
         }
@@ -788,8 +794,7 @@
             pathCreateEvent("sample-path-form")
         })
         $("#path-save").click(function () {
-            let currentPathID = $("#PathID").val()
-            savePath(currentPathID)
+            savePath()
             createDialogModal({ id: "DialogModal", inner: "儲存成功！" })
         })
         $("#current-PathTitle").change(function () {
@@ -802,6 +807,9 @@
             //修改上方路線名稱
             $(`[data-path-id=${pathID}] #sample-path-name`).text(title)
         })
+         $("#current-path-edit").click(function(){
+            sortRouteModal.create("#current-path-display");
+         })
         $("#submit").click(function () {
             console.log("onclick submit")
             save();
@@ -816,6 +824,7 @@
             }
             let form = $("#" + id);
             if (form[0].checkValidity()) {
+
                 let inputData = getDataGridData(form);
                 $(".sample-path-draw-area").removeClass("d-none");
 
@@ -832,6 +841,7 @@
                 function onSuccess(res) {
                     console.log(res);
                     fakeData = res;
+                    togglePointerEvent(false);
                     //若非第一次初始化
                     let pathID = addRouteGroup(res);
                     $("#PathID").val(pathID);
@@ -887,8 +897,8 @@
                             ${path}
                         </ol>
                     </nav>
-                    <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="修改此路線">
-                        <i class="icon-edit"></i>
+                    <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="查看此路線">
+                        <i class="icon-search"></i>
                     </button>
                 </div>
                 <button class="btn-delete-item" data-bs-toggle="tooltip" title="刪除路線"></button>
@@ -923,10 +933,9 @@
             })
 
             group.find("#path-edit").click(() => {
-                let currentPathID = $("#PathID").val()
                 let id = group.attr("data-path-id");
-                if (!$(".sample-path-draw-area").hasClass('d-none')){
-                    savePath(currentPathID)
+                if (!$(".sample-path-draw-area").hasClass('d-none')) {
+                    savePath()
                 }
 
                 loadPath(id)
@@ -1172,6 +1181,9 @@
                         MaintainColumns
                     )
                 )
+                window.addEventListener("resize", (event) => {
+                    dg.datagrid('resize');
+                });
             }
             function addRowEvent() {
                 if (M_MDG.datagrid("getChecked").length !== 0) {
@@ -1218,6 +1230,8 @@
                     bootstrap.Modal.getInstance(modal[0]).hide();
 
                     res.rows.forEach((d) => { E_MDG.datagrid("appendRow", d) })
+
+                    reloadDeviceData();
                 }
                 function onError(err) {
                     btn.children(".spinner-border").remove();
@@ -1233,8 +1247,6 @@
                 console.log(data);
                 let btn = $(this);
                 btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
-
-                /* TEST */ //setTimeout(onSuccess, 1000);
 
                 $.ajax({
                     url: '@Url.Action("DeleteMaintainForm", "InspectionPlan_Management")',
@@ -1256,9 +1268,9 @@
                         inner: "刪除成功！",
                     })
 
-                    /* TEST */ //data.forEach((d) => { E_MDG.datagrid("deleteRow", E_MDG.datagrid("getRowIndex", d)) })
-
                     res.forEach((d) => { E_MDG.datagrid("deleteRow", E_MDG.datagrid("getRowIndex", d.EMFISN)) })
+
+                    reloadDeviceData();
 
                     E_MDG.datagrid("clearChecked");
 
@@ -1363,6 +1375,9 @@
                         RepairColumns
                     )
                 )
+                window.addEventListener("resize", (event) => {
+                    dg.datagrid('resize');
+                });
             }
             function addRowEvent() {
                 if (M_RDG.datagrid("getChecked").length !== 0) {
@@ -1409,6 +1424,8 @@
                     bootstrap.Modal.getInstance(modal[0]).hide();
 
                     res.rows.forEach((d) => { E_RDG.datagrid("appendRow", d) })
+
+                    reloadDeviceData();
                 }
                 function onError(err) {
                     btn.children(".spinner-border").remove();
@@ -1423,8 +1440,6 @@
                 console.log(data);
                 let btn = $(this);
                 btn.append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
-
-                /* TEST */ //setTimeout(onSuccess, 1000);
 
                 $.ajax({
                     url: '@Url.Action("DeleteReportForm", "InspectionPlan_Management")',
@@ -1446,9 +1461,9 @@
                         inner: "刪除成功！",
                     })
 
-                    /* TEST */ //data.forEach((d) => { E_RDG.datagrid("deleteRow", E_RDG.datagrid("getRowIndex", d)) })
-
                     res.forEach((d) => { E_RDG.datagrid("deleteRow", E_RDG.datagrid("getRowIndex", d.RSN)) })
+
+                    reloadDeviceData();
 
                     E_RDG.datagrid("clearChecked");
 
@@ -1536,6 +1551,19 @@
             }
         }
 
+        function reloadDeviceData() {
+            if (!$(".sample-path-draw-area").hasClass('d-none')) {
+                let pathID = $("#PathID").val();
+                ForgeDraw.removeAllDevice();
+
+                let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`));
+                readBeaconData(pathData.PathSample.Beacon);
+                readDeviceData(pathID);
+
+                calcRoute();
+            }
+        }
+
         function storeESNData(postData, ESNDatas) {
             let esnSet;
             if (ESNDatas) {
@@ -1583,7 +1611,8 @@
         })
     }
 
-    function savePath(pathID) {
+    function savePath() {
+        let pathID = $("#PathID").val()
         let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
         let title = $("#current-PathTitle").val()
         let PathSampleOrder = $("#current-path-display .breadcrumb-item").toArray().map(e => e.innerHTML);
@@ -1606,6 +1635,7 @@
         $("#current-PathTitle").val(pathData.PathSample.PathTitle);
         //開啟forge顯示
         $(".sample-path-draw-area").removeClass('d-none')
+        togglePointerEvent(false);
 
         viewer.loadModel(viewerUrl, { keepCurrentModels: false },
             onSuccess, (err) => { console.log(err) }
@@ -1620,9 +1650,17 @@
                     updatePathDisplay(pathData.PathSampleOrder);
 
                     calcRoute();
+                    togglePointerEvent(true);
                 })
             })
         }
+    }
+
+    function togglePointerEvent(bool) {
+        $(".btn").toggleClass("pe-none", !bool);
+        $(".path-btn").toggleClass("pe-none", !bool);
+        $(".path-icon").toggleClass("pe-none", !bool);
+        $(".btn-delete-item").toggleClass("pe-none", !bool);
     }
 
     function save() {

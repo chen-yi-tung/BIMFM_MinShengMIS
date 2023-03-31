@@ -37,12 +37,7 @@
             <div class="input-group sample-path-group">
                 <span class="input-group-text" id="sample-path-name"></span>
                 <div type="text" class="form-control">
-                    <nav>
-                        <ol class="breadcrumb d-none" id="path-display">
-                            <li class="breadcrumb-item">起點</li>
-                            <li class="breadcrumb-item">終點</li>
-                        </ol>
-                    </nav>
+                    <nav><ol class="breadcrumb d-none" id="path-display"></ol></nav>
                     <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="手動修改路線">
                         <i class="icon-edit"></i>
                     </button>
@@ -173,8 +168,8 @@
         let route = ForgeDraw.getRoute().map(e => e.name);
         console.log(ForgeDraw.devices.map(e => e.result));
 
-        route.unshift("起點");
-        route.push("終點");
+        //route.unshift("起點");
+        //route.push("終點");
 
         //顯示在網頁上
         updatePathDisplay(route);
@@ -186,10 +181,10 @@
 
         if (!path) {
             $path.empty();
-            $path.append(`
+            /*$path.append(`
             <li class="breadcrumb-item">起點</li>
             <li class="breadcrumb-item">終點</li>
-            `);
+            `);*/
             return;
         }
 
@@ -394,7 +389,7 @@
     }
 
     function save() {
-        let PathSampleOrder = $(".breadcrumb-item:not(:first-child):not(:last-child)").toArray().map(e => e.innerHTML);
+        let PathSampleOrder = $(".breadcrumb-item").toArray().map(e => e.innerHTML);
         let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
             return { LocationX: e.x, LocationY: e.y };
         })

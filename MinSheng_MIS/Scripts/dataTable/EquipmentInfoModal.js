@@ -16,16 +16,9 @@ function EquipmentInfoModal(url) {
     ]
     
     let ModalJQ, ModalBs;
-    if ($(".data-detail-modal")[0]) {
-        console.log("show data-detail-modal")
-        bootstrap.Modal.getInstance($(".data-detail-modal")[0]).show();
-    }
-    else {
-        $.getJSON(url, readData);
-        //readData({
-        //    EName: "AAA"
-        //})
-    }
+
+    $.getJSON(url, readData);
+    
     function readData(data) {
         console.log("data-detail-modal readData: ",data);
         const html = `
@@ -47,10 +40,13 @@ function EquipmentInfoModal(url) {
         </div>
         `;
         ModalJQ = $(html);
-        $(document.body).append(ModalJQ);
         ModalBs = new bootstrap.Modal(ModalJQ[0]);
 
         ModalBs.show();
-    }
 
+        ModalJQ[0].addEventListener("hidden.bs.modal", () => {
+            ModalBs.dispose();
+            ModalJQ.remove();
+        })
+    }
 }
