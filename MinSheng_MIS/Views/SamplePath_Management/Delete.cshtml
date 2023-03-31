@@ -22,10 +22,7 @@
                 <span class="input-group-text" id="current-path-title"></span>
                 <div type="text" class="form-control">
                     <nav>
-                        <ol class="breadcrumb" id="current-path-display">
-                            <li class="breadcrumb-item">起點</li>
-                            <li class="breadcrumb-item">終點</li>
-                        </ol>
+                        <ol class="breadcrumb" id="current-path-display"></ol>
                     </nav>
                 </div>
             </div>
@@ -150,15 +147,16 @@
                 function onSuccess(res) {
                     console.log(res);
                     modal.hide();
-
-                    createDialogModal({
-                        id: "DialogModal-Success",
-                        inner: "刪除成功！",
-                        onHide: () => {
-                            let url = '@Url.Action("Management", "SamplePath_Management")';
-                            window.location.href = url;
-                        }
-                    })
+                    if (res.ResponseCode == 0) {
+                        createDialogModal({
+                            id: "DialogModal-Success",
+                            inner: "刪除成功！",
+                            onHide: () => {
+                                let url = '@Url.Action("Management", "SamplePath_Management")';
+                                window.location.href = url;
+                            }
+                        })
+                    }
                 }
 
                 function onError(res) {

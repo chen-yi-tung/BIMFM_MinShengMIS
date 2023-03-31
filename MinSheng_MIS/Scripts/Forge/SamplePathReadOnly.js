@@ -34,7 +34,7 @@ function initializeDrawer() {
         updatePathDisplay(fakeData.PathSampleOrder);
     });
 
-    window.onresize = function () {
+    window.addEventListener("resize",function () {
         ForgeDraw.resize();
-    }
+    })
 }

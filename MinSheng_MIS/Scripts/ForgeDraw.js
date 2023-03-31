@@ -616,7 +616,7 @@ var ForgeDraw = (function (e) {
                 }
                 else {
                     ;
-                    layer.line.removeChildAt(lines.splice(i - 1, 1)[0].container);
+                    layer.line.removeChild(lines.splice(i - 1, 1)[0].container);
                 }
             }
             points.splice(i, 1);
