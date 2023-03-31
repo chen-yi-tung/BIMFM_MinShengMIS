@@ -647,7 +647,6 @@
                 return e.Area == Area && e.Floor == Floor;
             }).map((e) => e.ESN).filter((e, i, arr) => arr.indexOf(e) === i);
         }
-
     }
 
     //讀取路線資料
@@ -1674,7 +1673,7 @@
     }
 
     function save() {
-        let PathSampleOrder = $(".breadcrumb-item:not(:first-child):not(:last-child)").toArray().map(e => e.innerHTML);
+        let PathSampleOrder = $(".breadcrumb-item").toArray().map(e => e.innerHTML);
         let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
             return { LocationX: e.x, LocationY: e.y };
         })

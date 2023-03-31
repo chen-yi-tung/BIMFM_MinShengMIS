@@ -216,30 +216,6 @@
         btn.toggleClass("active", true);
     }
 
-    //更換模型和設備
-    function loadModel() {
-        ForgeDraw.removeAllDevice();
-        ForgeDraw.removeAllData();
-
-        viewerUrl = "../" + fakeData.BIMPath;
-        viewer.loadModel(
-            viewerUrl,
-            { keepCurrentModels: false },
-            onSuccess,
-            onError
-        );
-        function onSuccess() {
-            $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function () {
-                $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, function () {
-                    readDeviceData(fakeData.BIMDevices);
-                })
-            })
-        }
-        function onError(err) {
-            console.log(err);
-        }
-    }
-
     //讀取設備資料並繪製
     function readDeviceData(data) {
         data.forEach((e) => {

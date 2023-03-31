@@ -1,6 +1,6 @@
 ﻿var viewer; //GuiViewer3D
 var viewerUrl;
-//var viewerUrl = "../BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf"; //svf檔路徑
+//var viewerUrl = "BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf"; //svf檔路徑
 async function initializeViewer(callback) {
     const myProfileSettings_up = {
         name: "mySettings_up",

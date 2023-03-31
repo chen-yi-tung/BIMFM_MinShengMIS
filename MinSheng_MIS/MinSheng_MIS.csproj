@@ -1501,6 +1501,8 @@
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
     <Content Include="Scripts\ForgeDraw.js" />
     <Content Include="Scripts\Forge\CreateDeviceModal.js" />
+    <Content Include="Scripts\Forge\ForgeDrawFunction.js" />
+    <Content Include="Scripts\Forge\SamplePathReadOnly.js" />
     <Content Include="Scripts\Forge\SortRouteModal.js" />
     <Content Include="Scripts\Forge\UpViewer.js" />
     <Content Include="Scripts\ImageDisplay.js" />
