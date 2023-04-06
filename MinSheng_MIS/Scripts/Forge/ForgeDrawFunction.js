@@ -15,7 +15,7 @@ function addToolbarEvent() {
         sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(pathData))
 
         //修改上方路線名稱
-        $(`[data-path-id=${pathID}] #sample-path-name`).text(pathTitle)
+        $(`.sample-path-group[data-path-id='${pathID}'] #sample-path-name`).text(pathTitle)
     })
     $("#current-path-edit").click(function () {
         sortRouteModal.create("#current-path-display");
@@ -365,7 +365,7 @@ function createPath(selector) {
 
                 sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(res));
 
-                viewerUrl = '/' + res.PathSample.BIMPath;
+                viewerUrl = window.location.origin + res.PathSample.BIMPath;
                 if (viewer) {
                     loadModel(viewerUrl, pathID, loadPath);
                 }
@@ -402,9 +402,15 @@ function createPath(selector) {
  * @param {boolean?} options.delete
  * @returns {PathGroup}
  */
-function PathGroup(options) {
-    PathGroup.prototype.count = 1;
-    PathGroup.prototype.create = function (data) {
+
+const pathGroup = PathGroup();
+function PathGroup(setting = {}) {
+    let options = setting;
+    this.getSetting = () => options
+    this.setSetting = (s) => {
+        options = s;
+    }
+    this.create = function (data) {
         let path = data.PathSampleOrder ? data.PathSampleOrder.map((e) => `<li class="breadcrumb-item">${e}</li>`).join('') : '';
         let PathTitle = data.PathSample ? data.PathSample.PathTitle : '';
         let group = $(`
@@ -463,26 +469,39 @@ function PathGroup(options) {
 
         PathGroup.prototype.count++;
 
+        new Sortable(document.querySelector(".sample-path-group-area"), {
+            handle: "#path-handle",
+            animation: 150,
+        })
+
         return group.attr('data-path-id');
     }
     return this;
 }
+PathGroup.prototype.count = 1;
+
+
 
 /**
  * 儲存當前路線資料到sessionStorage
  */
-function saveCurrentPath() {
+function saveCurrentPath(onSuccess = () => { }) {
     let pathID = $("#current-path-id").val()
     let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
     let title = $("#current-path-title").val()
-    let PathSampleOrder = $("#current-path-display .breadcrumb-item").toArray().map(e => e.innerHTML);
-    let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
-        return { LocationX: e.x, LocationY: e.y };
-    })
+    let PathSampleOrder = getPathSampleOrder("#current-path-display .breadcrumb-item");
+    let PathSampleRecord = getPathSampleRecord();
+
+    if (PathSampleRecord.every(e => e) === false) {
+        createDialogModal({ id: "DialogModal-Error", inner: "儲存失敗！路線超出模型範圍！" })
+        return
+    }
+
     pathData.PathSample.PathTitle = title;
     pathData.PathSampleOrder = PathSampleOrder;
     pathData.PathSampleRecord = PathSampleRecord;
     sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(pathData))
+    onSuccess();
 }
 
 /**

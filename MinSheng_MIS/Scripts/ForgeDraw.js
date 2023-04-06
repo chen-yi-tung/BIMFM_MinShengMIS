@@ -175,12 +175,18 @@ var ForgeDraw = (function (e) {
         view.addEventListener("contextmenu", preventDefaultEvent);
         $(document.body).on("contextmenu", ".contextMenu", preventDefaultEvent);
 
+        window.addEventListener("resize", function () {
+            resize();
+        })
+
         forgeViewer = forgeGuiViewer3D;
 
         addViewerSelectEvent();
 
         stage = new ForgeDraw.Stage();
         exports.stage = stage;
+
+
 
         callback();
         return app;
