@@ -115,10 +115,6 @@
                     createPointDetailModal(event.detail);
                 }
             });
-            view.addEventListener("fd.linedata.removeall", function (event) {
-                console.log("view => fd.linedata.removeall");
-                updatePathDisplay();
-            });
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
                 updatePathDisplay(calcPath());
@@ -237,10 +233,13 @@
     }
 
     function save() {
-        let PathSampleOrder = $(".breadcrumb-item").toArray().map(e => e.innerHTML);
-        let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
-            return { LocationX: e.x, LocationY: e.y };
-        })
+        let PathSampleOrder = getPathSampleOrder();
+        let PathSampleRecord = getPathSampleRecord();
+
+        if (PathSampleRecord.every(e => e) === false){
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
+            return
+        }
 
         let data = {
             PathSample: {

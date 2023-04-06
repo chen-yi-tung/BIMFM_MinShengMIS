@@ -569,7 +569,7 @@ var ForgeDraw = (function (e) {
 
                 lineData[self.index].position = pos;
                 let w = forgeViewer.clientToWorld(pos.x, pos.y);
-                lineData[self.index].ForgePos = w ? w.point : undefined;
+                lineData[self.index].forgePos = w ? w.point : undefined;
 
                 view.dispatchEvent(new LineDataChangeEvent(lineData[self.index]));
 

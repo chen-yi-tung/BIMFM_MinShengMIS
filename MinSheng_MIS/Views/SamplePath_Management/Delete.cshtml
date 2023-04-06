@@ -147,16 +147,14 @@
                 function onSuccess(res) {
                     console.log(res);
                     modal.hide();
-                    if (res.ResponseCode == 0) {
-                        createDialogModal({
-                            id: "DialogModal-Success",
-                            inner: "刪除成功！",
-                            onHide: () => {
-                                let url = '@Url.Action("Management", "SamplePath_Management")';
-                                window.location.href = url;
-                            }
-                        })
-                    }
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "刪除成功！",
+                        onHide: () => {
+                            let url = '@Url.Action("Management", "SamplePath_Management")';
+                            window.location.href = url;
+                        }
+                    })
                 }
 
                 function onError(res) {

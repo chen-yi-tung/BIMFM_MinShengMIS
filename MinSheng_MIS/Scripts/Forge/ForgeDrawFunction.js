@@ -32,11 +32,12 @@ function addToolbarEvent() {
         $(this).blur();
         ForgeDraw.removeAllData();
         sortRouteModal.autoRouteToggle(true);
+        updatePathDisplay();
     })
     $("#path-auto").click(function () {
         $(this).blur();
         sortRouteModal.autoRouteToggle();
-        calcPath();
+        updatePathDisplay(calcPath());
     })
 }
 
@@ -111,18 +112,19 @@ function calcPath() {
 
 /**
  * 顯示路線於網頁上
- * @param {string} selector 預設為 "#current-path-display"
  * @param {string[]} path 路線資料
+ * @param {string} selector 預設為 "#current-path-display"
  */
 function updatePathDisplay(path = undefined, selector = "#current-path-display") {
+    console.log("updatePathDisplay path: ", path);
     let display = $(selector);
 
     //自動更新選項沒有開啟時，calcPath()回傳null，不做任何事
-    if (path == null) { return; }
+    if (path === null) { return; }
 
     //清空顯示後，重新帶入對應路線資料
     display.empty();
-    if (path == undefined || path.length == 0) { return; }
+    if (path === undefined || path.length === 0) { return; }
     path.forEach(r => {
         let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
         display.append(pathPoint);
@@ -320,8 +322,8 @@ function createDevicePointDetailModal(point) {
  * @param {ForgeDraw.Point} point 
  */
 function createPointDetailModal(point) {
-    let index = point.index;
-    let pointData = ForgeDraw.lineData[index].forgePos;
+    console.log(point)
+    let forgePos = point.forgePos;
     createDataDetailModal({
         title: "座標資訊",
         id: "",
@@ -329,7 +331,7 @@ function createPointDetailModal(point) {
             { text: "座標X", value: "x" },
             { text: "座標Y", value: "y" },
         ],
-        data: { x: pointData ? pointData.x : undefined, y: pointData ? pointData.y : undefined }
+        data: { x: forgePos ? forgePos.x : undefined, y: forgePos ? forgePos.y : undefined }
     });
 }
 
@@ -496,7 +498,7 @@ function loadPath(pathID) {
     createLinePath(pathData.PathSampleRecord);
     updatePathDisplay(pathData.PathSampleOrder);
 
-    calcPath();
+    updatePathDisplay(calcPath());
 }
 
 /**
@@ -569,7 +571,15 @@ function reloadDeviceData() {
         createBeacons(pathData.PathSample.Beacon);
         createDevices(pathID);
 
-        calcPath();
+        updatePathDisplay(calcPath());
     }
 }
 
+
+function getPathSampleOrder(selector = ".breadcrumb-item") {
+    return $(selector).toArray().map(e => e.innerHTML)
+}
+
+function getPathSampleRecord() {
+    return ForgeDraw.getForgeLineData().map(e => (e ? { LocationX: e.x, LocationY: e.y } : null))
+}

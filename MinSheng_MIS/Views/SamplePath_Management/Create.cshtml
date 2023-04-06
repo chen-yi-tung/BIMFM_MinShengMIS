@@ -37,7 +37,9 @@
             <div class="input-group sample-path-group" data-path-id="1">
                 <span class="input-group-text" id="current-path-title"></span>
                 <div type="text" class="form-control">
-                    <nav> <ol class="breadcrumb" id="current-path-display"></ol></nav>
+                    <nav>
+                        <ol class="breadcrumb" id="current-path-display"></ol>
+                    </nav>
                     <button class="path-btn" id="current-path-edit" data-bs-toggle="tooltip" title="手動修改路線">
                         <i class="icon-edit"></i>
                     </button>
@@ -110,10 +112,6 @@
                     createPointDetailModal(event.detail);
                 }
             });
-            view.addEventListener("fd.linedata.removeall", function (event) {
-                console.log("view => fd.linedata.removeall");
-                updatePathDisplay();
-            });
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
                 updatePathDisplay(calcPath());
@@ -125,7 +123,7 @@
             addTooltip(true);
         });
 
-        window.addEventListener("resize",function () {
+        window.addEventListener("resize", function () {
             ForgeDraw.resize();
         })
     }
@@ -218,10 +216,17 @@
     }
 
     function save() {
-        let PathSampleOrder = $(".breadcrumb-item").toArray().map(e => e.innerHTML);
-        let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
-            return { LocationX: e.x, LocationY: e.y };
-        })
+        let PathSampleOrder = getPathSampleOrder();
+        let PathSampleRecord = getPathSampleRecord();
+
+        if (PathSampleRecord.every(e => e) === false) {
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
+            return
+        }
+        if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0) {
+            createDialogModal({ id: "DialogModal-Error", inner: "新增失敗！沒有規劃路線資料！" });
+            return;
+        }
 
         let data = {
             PathSample: {
@@ -235,10 +240,6 @@
 
         //console.log(data);
         //console.log(JSON.stringify(data));
-        if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0) {
-            createDialogModal({ id: "DialogModal-Error", inner: "新增失敗！沒有規劃路線資料！" });
-            return;
-        }
 
         $.ajax({
             url: '@Url.Action("CreateSamplePath", "SamplePath_Management")',
