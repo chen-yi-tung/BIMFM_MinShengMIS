@@ -366,7 +366,7 @@ namespace MinSheng_MIS.Controllers
                 ps.PSSN = ppi.PathTitle;
                 var pathtitle = db.PathSample.Find(ps.PSSN).PathTitle;
                 //加入預估巡檢計畫單號
-                ps.PathTitle = pathtitle + " " + tmpIPSN;
+                ps.PathTitle = ps.Area + " " + ps.Floor + " " +pathtitle + " " + tmpIPSN;
                 //找出來藍芽路徑
                 var BeaconOrder = db.PathSampleOrder.Where(x => x.PSSN == ps.PSSN).OrderBy(x => x.FPSSN).ToList();
                 List<string> psos = new List<string>();
@@ -390,7 +390,7 @@ namespace MinSheng_MIS.Controllers
             else
             {
                 //加入預估巡檢計畫單號
-                ps.PathTitle = ps.Area + "" + ps.Floor + " " + tmpIPSN;
+                ps.PathTitle = ps.Area + " " + ps.Floor + " " + tmpIPSN;
                 List<string> psos = new List<string>();
                 ppo.PathSampleOrder = psos;
                 List<PathSampleRecord> psrs = new List<PathSampleRecord>();
