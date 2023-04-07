@@ -425,10 +425,7 @@
         app = ForgeDraw.init(view, viewer, function () {
             view.addEventListener("fd.linedata.change", function (event) {
                 console.log("view => fd.linedata.change");
-                let pathID = $("#current-path-id").val()
-                let path = calcPath();
-                updatePathDisplay(path);
-                updatePathDisplay(path, `.sample-path-group[data-path-id='${pathID}'] #path-display`);
+                updatePathDisplay(calcPath(), $("#current-path-id").val());
             });
             view.addEventListener("fd.linedata.detail", function (event) {
                 console.log("view => fd.linedata.detail", event.detail);
@@ -441,7 +438,7 @@
             });
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
-                updatePathDisplay(calcPath());
+                updatePathDisplay(calcPath(), $("#current-path-id").val());
             });
 
             let pathData = JSON.parse(sessionStorage.getItem(`P1_pathData`))
@@ -449,7 +446,7 @@
             createBeacons(pathData.PathSample.Beacon);
             createDevices(1);
             createLinePath(pathData.PathSampleRecord);
-            updatePathDisplay(pathData.PathSampleOrder);
+            updatePathDisplay(pathData.PathSampleOrder, 1);
 
             addToolbarEvent();
             addTooltip(true);
@@ -463,10 +460,9 @@
 <script src="/Scripts/Forge/SortRouteModal.js"></script>
 <script>
     const sortRouteModal = new SortRouteModal({
-        onSave: (path)=>{
-            let pathID= $("#current-path-id").val();
-            updatePathDisplay(path);
-            updatePathDisplay(path, `.sample-path-group[data-path-id='${pathID}'] #path-display`);
+        onSave: (path) => {
+            let pathID = $("#current-path-id").val();
+            updatePathDisplay(path, pathID);
         }
     });
 </script>
