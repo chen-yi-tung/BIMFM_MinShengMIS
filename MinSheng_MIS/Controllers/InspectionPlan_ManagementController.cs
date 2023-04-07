@@ -363,9 +363,9 @@ namespace MinSheng_MIS.Controllers
             ps.BIMPath = floorinfo.BIMPath;
             var areainfo = db.AreaInfo.Find(Convert.ToInt32(ps.ASN));
             ps.Area = areainfo.Area;
-            var plandate = Convert.ToDateTime(ppi.PlanDate);
-            var IPSNcount = db.InspectionPlan.Where(x => x.PlanDate == plandate).Count();
-            var tmpIPSN = "P" + plandate.ToString("yyMMdd") + (IPSNcount + 1).ToString().PadLeft(2, '0');
+            //var plandate = Convert.ToDateTime(ppi.PlanDate);
+            //var IPSNcount = db.InspectionPlan.Where(x => x.PlanDate == plandate).Count();
+            //var tmpIPSN = "P" + plandate.ToString("yyMMdd") + (IPSNcount + 1).ToString().PadLeft(2, '0');
             //判斷PathTitle是否為空
             if (!string.IsNullOrEmpty(ppi.PathTitle))
             {
@@ -373,7 +373,7 @@ namespace MinSheng_MIS.Controllers
                 ps.PSSN = ppi.PathTitle;
                 var pathtitle = db.PathSample.Find(ps.PSSN).PathTitle;
                 //加入預估巡檢計畫單號
-                ps.PathTitle = ps.Area + " " + ps.Floor + " " +pathtitle + " " + tmpIPSN;
+                ps.PathTitle = ps.Area + " " + ps.Floor + " " + pathtitle; // + " " + tmpIPSN
                 //找出來藍芽路徑
                 var BeaconOrder = db.PathSampleOrder.Where(x => x.PSSN == ps.PSSN).OrderBy(x => x.FPSSN).ToList();
                 List<string> psos = new List<string>();
@@ -397,7 +397,7 @@ namespace MinSheng_MIS.Controllers
             else
             {
                 //加入預估巡檢計畫單號
-                ps.PathTitle = ps.Area + " " + ps.Floor + " " + tmpIPSN;
+                ps.PathTitle = ps.Area + " " + ps.Floor + " 巡檢路線"; // + " " + tmpIPSN
                 List<string> psos = new List<string>();
                 ppo.PathSampleOrder = psos;
                 List<PathSampleRecord> psrs = new List<PathSampleRecord>();

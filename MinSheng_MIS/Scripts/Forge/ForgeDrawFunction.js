@@ -32,12 +32,12 @@ function addToolbarEvent() {
         $(this).blur();
         ForgeDraw.removeAllData();
         sortRouteModal.autoRouteToggle(true);
-        updatePathDisplay();
+        updatePathDisplay(calcPath(), $("#current-path-id").val());
     })
     $("#path-auto").click(function () {
         $(this).blur();
         sortRouteModal.autoRouteToggle();
-        updatePathDisplay(calcPath());
+        updatePathDisplay(calcPath(), $("#current-path-id").val());
     })
 }
 
@@ -113,21 +113,24 @@ function calcPath() {
 /**
  * 顯示路線於網頁上
  * @param {string[]} path 路線資料
- * @param {string} selector 預設為 "#current-path-display"
+ * @param {string} pathID 預設為 null
  */
-function updatePathDisplay(path = undefined, selector = "#current-path-display") {
+function updatePathDisplay(path = undefined, pathID = null) {
     console.log("updatePathDisplay path: ", path);
-    let display = $(selector);
-
     //自動更新選項沒有開啟時，calcPath()回傳null，不做任何事
     if (path === null) { return; }
 
     //清空顯示後，重新帶入對應路線資料
+    let display = $("#current-path-display");
+    let pathID_Display = pathID && $(`.sample-path-group[data-path-id='${pathID}'] #path-display`);
+    console.log(pathID_Display)
     display.empty();
+    pathID_Display && pathID_Display.empty();
     if (path === undefined || path.length === 0) { return; }
     path.forEach(r => {
         let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
         display.append(pathPoint);
+        pathID_Display && pathID_Display.append(pathPoint);
     })
 }
 
@@ -269,8 +272,8 @@ function createDevices(pathID, OldPathData = null, options = null) {
  * @param {ForgeDraw.DevicePoint} point 
  */
 function createDevicePointDetailModal(point) {
-    /*if (point.dbId) {
-        let url = `/EquipmentInfo_Management/ReadBody/${point.dbId}`
+    if (point.name) {
+        let url = window.location.origin + `/EquipmentInfo_Management/ReadBody/${point.name}`
         $.getJSON(url, function (res) {
             createDataDetailModal({
                 title: "設備資訊",
@@ -297,7 +300,7 @@ function createDevicePointDetailModal(point) {
             });
         })
         return;
-    }*/
+    }
     createDataDetailModal({
         title: "設備資訊",
         id: "",
@@ -340,6 +343,10 @@ function createPointDetailModal(point) {
  * @param {string} selector 表單
  */
 function createPath(selector) {
+    if (!$(".sample-path-draw-area").hasClass('d-none')) {
+        saveCurrentPath();
+    }
+
     if ($("#PlanDate").val() == '') {
         createDialogModal({
             id: "DialogModal",
@@ -515,9 +522,9 @@ function loadPath(pathID) {
     createBeacons(pathData.PathSample.Beacon);
     createDevices(pathID);
     createLinePath(pathData.PathSampleRecord);
-    updatePathDisplay(pathData.PathSampleOrder);
+    updatePathDisplay(pathData.PathSampleOrder,pathID);
 
-    updatePathDisplay(calcPath());
+    updatePathDisplay(calcPath(),pathID);
 }
 
 /**
@@ -590,7 +597,7 @@ function reloadDeviceData() {
         createBeacons(pathData.PathSample.Beacon);
         createDevices(pathID);
 
-        updatePathDisplay(calcPath());
+        updatePathDisplay(calcPath(),pathID);
     }
 }
 

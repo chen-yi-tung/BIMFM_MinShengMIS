@@ -11,7 +11,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         public class postPathData
         {
-            public string PlanDate { get; set; }
+            //public string PlanDate { get; set; }
             public string ASN { get; set; }
             public string FSN { get; set; }
             public string PathTitle { get; set; }
