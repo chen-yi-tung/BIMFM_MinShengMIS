@@ -273,7 +273,7 @@
     </div>
 </div>
 
-<hr class="hr-dashed">
+<!--<hr class="hr-dashed">-->
 
 <section>
 
@@ -501,15 +501,40 @@
                 onClick: (e) => {
                     let pathID = $(e.target).closest(".sample-path-group").attr("data-path-id");
                     if (!$(".sample-path-draw-area").hasClass('d-none')) {
-                        saveCurrentPath();
+                        let modal = createDialogModal({
+                            id: "DialogModal",
+                            inner: "尚未儲存目前路線變更，是否儲存？",
+                            button: [
+                                { className: "btn btn-cancel", cancel: true, text: "取消" },
+                                {
+                                    className: "btn btn-submit", text: "是", onClick: () => {
+                                        saveCurrentPath();
+                                        callback();
+                                        modal.hide();
+                                    }
+                                },
+                                {
+                                    className: "btn btn-delete", text: "否", onClick: () => {
+                                        callback();
+                                        modal.hide();
+                                    }
+                                },
+                            ]
+                        })
+                        return;
                     }
 
-                    let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
-                    $("#current-path-title").val(pathData.PathSample.PathTitle);
-                    loadModel(
-                        window.location.origin + pathData.PathSample.BIMPath,
-                        pathID,
-                        loadPath)
+                    callback();
+
+                    function callback() {
+                        let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
+                        $("#current-path-title").val(pathData.PathSample.PathTitle);
+                        loadModel(
+                            window.location.origin + pathData.PathSample.BIMPath,
+                            pathID,
+                            loadPath)
+                    }
+
                 }
             }
         })
