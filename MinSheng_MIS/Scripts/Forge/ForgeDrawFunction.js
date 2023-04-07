@@ -272,8 +272,8 @@ function createDevices(pathID, OldPathData = null, options = null) {
  * @param {ForgeDraw.DevicePoint} point 
  */
 function createDevicePointDetailModal(point) {
-    /*if (point.dbId) {
-        let url = `/EquipmentInfo_Management/ReadBody/${point.dbId}`
+    if (point.name) {
+        let url = window.location.origin + `/EquipmentInfo_Management/ReadBody/${point.name}`
         $.getJSON(url, function (res) {
             createDataDetailModal({
                 title: "設備資訊",
@@ -300,7 +300,7 @@ function createDevicePointDetailModal(point) {
             });
         })
         return;
-    }*/
+    }
     createDataDetailModal({
         title: "設備資訊",
         id: "",
