@@ -59,7 +59,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult AllMyName()
         {
             List<JObject> list = new List<JObject>();
-            var abc = db.AspNetUsers.ToList();
+            var abc = db.AspNetUsers.Where(x => x.IsEnabled == true).ToList();
             foreach (var item in abc)
             {
                 JObject jo = new JObject();
