@@ -166,6 +166,7 @@ namespace MinSheng_MIS.Surfaces
             ValueOption.Add("1", "APP");
             ValueOption.Add("2", "BIM模型");
             ValueOption.Add("3", "以資查圖");
+            ValueOption.Add("4", "一般報修");
             return ValueOption;
         }
         #endregion

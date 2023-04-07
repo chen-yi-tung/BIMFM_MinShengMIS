@@ -34,7 +34,7 @@ namespace MinSheng_MIS.Models
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
         public string UserName { get; set; }
-        public Nullable<bool> IsEnabled { get; set; }
+        public bool IsEnabled { get; set; }
         public string MyName { get; set; }
         public string Authority { get; set; }
         public string Apartment { get; set; }

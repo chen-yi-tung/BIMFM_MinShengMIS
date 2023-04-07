@@ -72,9 +72,9 @@
           <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
           <Property Name="AccessFailedCount" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="IsEnabled" Type="bit" />
-          <Property Name="MyName" Type="nvarchar" MaxLength="50" />
-          <Property Name="Authority" Type="nvarchar" MaxLength="10" />
+          <Property Name="IsEnabled" Type="bit" Nullable="false" />
+          <Property Name="MyName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Authority" Type="char" MaxLength="1" />
           <Property Name="Apartment" Type="nvarchar" MaxLength="20" />
           <Property Name="Title" Type="nvarchar" MaxLength="20" />
         </EntityType>
@@ -1207,9 +1207,9 @@
           <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
           <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="IsEnabled" Type="Boolean" />
-          <Property Name="MyName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Authority" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="IsEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="MyName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Authority" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="Apartment" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Title" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUserClaims" Relationship="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
