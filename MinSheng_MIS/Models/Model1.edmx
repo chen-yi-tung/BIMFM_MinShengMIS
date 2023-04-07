@@ -74,59 +74,9 @@
           <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="IsEnabled" Type="bit" Nullable="false" />
           <Property Name="MyName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Authority" Type="nvarchar" MaxLength="10" />
+          <Property Name="Authority" Type="char" MaxLength="1" />
           <Property Name="Apartment" Type="nvarchar" MaxLength="20" />
           <Property Name="Title" Type="nvarchar" MaxLength="20" />
-        </EntityType>
-        <EntityType Name="CameraData">
-          <Key>
-            <PropertyRef Name="Number" />
-          </Key>
-          <Property Name="Number" Type="int" Nullable="false" />
-          <Property Name="CameraType" Type="nvarchar" MaxLength="10" />
-          <Property Name="Longitude" Type="nvarchar" MaxLength="20" />
-          <Property Name="Latitude" Type="nvarchar" MaxLength="20" />
-          <Property Name="Memo" Type="nvarchar" MaxLength="200" />
-          <Property Name="Url" Type="nvarchar" MaxLength="200" />
-        </EntityType>
-        <EntityType Name="CarInformation">
-          <Key>
-            <PropertyRef Name="CI_CSN" />
-          </Key>
-          <Property Name="CI_CSN" Type="int" Nullable="false" />
-          <Property Name="CI_RFID" Type="nvarchar" MaxLength="50" />
-          <Property Name="CI_LicensePlateNum" Type="nvarchar" MaxLength="10" />
-          <Property Name="CI_Company" Type="nvarchar" MaxLength="20" />
-          <Property Name="CI_DriverName" Type="nvarchar" MaxLength="10" />
-          <Property Name="CI_CarType" Type="nvarchar" MaxLength="20" />
-          <Property Name="License" Type="nvarchar" MaxLength="20" />
-          <Property Name="ApplyingCheck" Type="nvarchar" MaxLength="20" />
-          <Property Name="Insurance" Type="nvarchar" MaxLength="20" />
-          <Property Name="LaborInsuranceCheck" Type="nvarchar" MaxLength="20" />
-          <Property Name="HazardNotificationCheck" Type="nvarchar" MaxLength="20" />
-          <Property Name="CertificateCheck" Type="nvarchar" MaxLength="20" />
-          <Property Name="CertificateFile" Type="nvarchar" MaxLength="200" />
-          <Property Name="CI_Inspector" Type="nvarchar" MaxLength="20" />
-          <Property Name="CI_State" Type="bit" />
-          <Property Name="Updater" Type="nvarchar" MaxLength="50" />
-          <Property Name="UpdateTime" Type="datetime" />
-        </EntityType>
-        <EntityType Name="CarInOut">
-          <Key>
-            <PropertyRef Name="CIO_SN" />
-          </Key>
-          <Property Name="CIO_SN" Type="int" Nullable="false" />
-          <Property Name="CIO_RFID" Type="nvarchar" MaxLength="50" />
-          <Property Name="CIO_LicensePlateNum" Type="nvarchar" MaxLength="10" />
-          <Property Name="CIO_Company" Type="nvarchar" MaxLength="20" />
-          <Property Name="CIO_DriverName" Type="nvarchar" MaxLength="20" />
-          <Property Name="CIO_CarType" Type="nvarchar" MaxLength="20" />
-          <Property Name="CI_CSN" Type="nvarchar" MaxLength="10" />
-          <Property Name="TCA_CSN" Type="nvarchar" MaxLength="20" />
-          <Property Name="EntrySite" Type="nchar" MaxLength="1" />
-          <Property Name="EntryTime" Type="datetime" />
-          <Property Name="LeaveSite" Type="nchar" MaxLength="1" />
-          <Property Name="LeaveTime" Type="datetime" />
         </EntityType>
         <EntityType Name="CompletionReportImage">
           <Key>
@@ -152,18 +102,6 @@
           <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
           <Property Name="LocationX" Type="decimal" Precision="19" Scale="11" Nullable="false" />
           <Property Name="LocationY" Type="decimal" Precision="19" Scale="11" Nullable="false" />
-        </EntityType>
-        <EntityType Name="EnviData">
-          <Key>
-            <PropertyRef Name="E_SN" />
-          </Key>
-          <Property Name="E_SN" Type="int" Nullable="false" />
-          <Property Name="Tmp" Type="nvarchar" MaxLength="10" />
-          <Property Name="Hum" Type="nvarchar" MaxLength="10" />
-          <Property Name="PM25" Type="nvarchar" MaxLength="10" />
-          <Property Name="Noise" Type="nvarchar" MaxLength="10" />
-          <Property Name="HeatIndex" Type="nvarchar" MaxLength="10" />
-          <Property Name="SampleTime" Type="datetime" />
         </EntityType>
         <EntityType Name="EquipmentInfo">
           <Key>
@@ -240,23 +178,6 @@
           <Property Name="ASN" Type="int" Nullable="false" />
           <Property Name="FloorName" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="BIMPath" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
-        <EntityType Name="HeadsetVideo">
-          <Key>
-            <PropertyRef Name="V_SN" />
-          </Key>
-          <Property Name="V_SN" Type="int" Nullable="false" />
-          <Property Name="V_Title" Type="nvarchar" MaxLength="50" />
-          <Property Name="V_FileName" Type="nvarchar" MaxLength="200" />
-          <Property Name="V_VideoFile" Type="nvarchar" MaxLength="200" />
-          <Property Name="V_GrapherAccount" Type="nvarchar" MaxLength="50" />
-          <Property Name="V_ShootingTime" Type="datetime" />
-          <Property Name="V_Memo" Type="nvarchar" MaxLength="200" />
-          <Property Name="V_State" Type="nvarchar" MaxLength="10" />
-          <Property Name="Filer" Type="nvarchar" MaxLength="50" />
-          <Property Name="FilerTime" Type="datetime" />
-          <Property Name="Updater" Type="nvarchar" MaxLength="50" />
-          <Property Name="UpdateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="ImspectionPlanFloorPath">
           <Key>
@@ -417,52 +338,6 @@
           <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
           <Property Name="BeaconID" Type="char" MaxLength="6" Nullable="false" />
         </EntityType>
-        <EntityType Name="PersonInfomaton">
-          <Key>
-            <PropertyRef Name="PI_MSN" />
-          </Key>
-          <Property Name="PI_MSN" Type="int" Nullable="false" />
-          <Property Name="PI_RFID" Type="nvarchar" MaxLength="50" />
-          <Property Name="PI_Company" Type="nvarchar" MaxLength="50" />
-          <Property Name="PI_Name" Type="nvarchar" MaxLength="20" />
-          <Property Name="PI_Phone" Type="nvarchar" MaxLength="10" />
-          <Property Name="PI_Case" Type="nvarchar" MaxLength="50" />
-          <Property Name="PI_ID" Type="nvarchar" MaxLength="10" />
-          <Property Name="PI_Title" Type="nvarchar" MaxLength="20" />
-          <Property Name="PI_BloodType" Type="nchar" MaxLength="1" />
-          <Property Name="PI_Contact" Type="nvarchar" MaxLength="20" />
-          <Property Name="PI_EmergentPhone" Type="nvarchar" MaxLength="10" />
-          <Property Name="PI_Photo" Type="nvarchar" MaxLength="200" />
-          <Property Name="PI_ApplyingCheck" Type="bit" />
-          <Property Name="PI_ApplyingFile" Type="nvarchar" MaxLength="200" />
-          <Property Name="PI_PhysicalCheck" Type="bit" />
-          <Property Name="PI_PhysicalFile" Type="nvarchar" MaxLength="200" />
-          <Property Name="PI_TrainingCheck" Type="bit" />
-          <Property Name="PI_TrainingFile" Type="nvarchar" MaxLength="200" />
-          <Property Name="PI_InsuranceCheck" Type="bit" />
-          <Property Name="PI_InsuranceFile" Type="nvarchar" MaxLength="200" />
-          <Property Name="PI_Memo" Type="nvarchar" MaxLength="200" />
-          <Property Name="PI_Status" Type="datetime" />
-          <Property Name="PI_State" Type="bit" />
-          <Property Name="Updater" Type="nvarchar" MaxLength="50" />
-          <Property Name="UpdateTime" Type="datetime" />
-        </EntityType>
-        <EntityType Name="PersonInOut">
-          <Key>
-            <PropertyRef Name="PIO_SN" />
-          </Key>
-          <Property Name="PIO_SN" Type="int" Nullable="false" />
-          <Property Name="PIO_RFID" Type="nvarchar" MaxLength="50" />
-          <Property Name="PIO_Company" Type="nvarchar" MaxLength="50" />
-          <Property Name="PIO_Name" Type="nvarchar" MaxLength="20" />
-          <Property Name="PIO_Title" Type="nvarchar" MaxLength="20" />
-          <Property Name="PI_MSN" Type="nvarchar" MaxLength="10" />
-          <Property Name="TPA_SN" Type="nvarchar" MaxLength="20" />
-          <Property Name="EntrySite" Type="nchar" MaxLength="1" />
-          <Property Name="EntryTime" Type="datetime" />
-          <Property Name="LeaveSite" Type="nchar" MaxLength="1" />
-          <Property Name="LeaveTime" Type="datetime" />
-        </EntityType>
         <EntityType Name="RepairAuditImage">
           <Key>
             <PropertyRef Name="ImgPath" />
@@ -539,109 +414,6 @@
           <Property Name="SystemID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="System" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SystemIsEnable" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="TemporaryCarApply">
-          <Key>
-            <PropertyRef Name="TCA_CSN" />
-          </Key>
-          <Property Name="TCA_CSN" Type="nchar" MaxLength="11" Nullable="false" />
-          <Property Name="TCR_RFID" Type="nvarchar" MaxLength="50" />
-          <Property Name="TCA_LicensePlateNum" Type="nvarchar" MaxLength="10" />
-          <Property Name="TCA_Company" Type="nvarchar" MaxLength="20" />
-          <Property Name="TCA_DriverName" Type="nvarchar" MaxLength="10" />
-          <Property Name="TCA_CarType" Type="nvarchar" MaxLength="20" />
-          <Property Name="License" Type="nvarchar" MaxLength="20" />
-          <Property Name="ApplyingCheck" Type="nvarchar" MaxLength="20" />
-          <Property Name="Insurance" Type="nvarchar" MaxLength="20" />
-          <Property Name="LaborInsuranceCheck" Type="nvarchar" MaxLength="20" />
-          <Property Name="HazardNotificationCheck" Type="nvarchar" MaxLength="20" />
-          <Property Name="CertificateCheck" Type="nvarchar" MaxLength="20" />
-          <Property Name="CertificateFile" Type="nvarchar" MaxLength="200" />
-          <Property Name="TCA_Inspector" Type="nvarchar" MaxLength="20" />
-          <Property Name="TCA_InspectorDate" Type="datetime" />
-          <Property Name="TCA_StartDate" Type="datetime" />
-          <Property Name="TCA_EndDate" Type="datetime" />
-          <Property Name="TCA_Memo" Type="nvarchar" MaxLength="200" />
-          <Property Name="TCA_State" Type="nvarchar" MaxLength="10" />
-          <Property Name="Filer" Type="nvarchar" MaxLength="20" />
-          <Property Name="FilerTime" Type="datetime" />
-          <Property Name="Updater" Type="nvarchar" MaxLength="20" />
-          <Property Name="UpdateTime" Type="datetime" />
-          <Property Name="DeliverDate" Type="datetime" />
-          <Property Name="ReturnDate" Type="datetime" />
-        </EntityType>
-        <EntityType Name="TemporaryCarRFID">
-          <Key>
-            <PropertyRef Name="TCR_SN" />
-          </Key>
-          <Property Name="TCR_SN" Type="int" Nullable="false" />
-          <Property Name="TCR_RFID" Type="nvarchar" MaxLength="50" />
-          <Property Name="TCR_State" Type="nvarchar" MaxLength="10" />
-          <Property Name="DeliverDate" Type="datetime" />
-          <Property Name="ReturnDate" Type="datetime" />
-          <Property Name="TCA_SN" Type="nvarchar" MaxLength="20" />
-          <Property Name="Updater" Type="nvarchar" MaxLength="50" />
-          <Property Name="UpdateTime" Type="datetime" />
-        </EntityType>
-        <EntityType Name="TemporaryPersonApply">
-          <Key>
-            <PropertyRef Name="TPA_SN" />
-          </Key>
-          <Property Name="TPA_SN" Type="nchar" MaxLength="11" Nullable="false" />
-          <Property Name="TPR_RFID" Type="nvarchar" MaxLength="50" />
-          <Property Name="TPA_Company" Type="nvarchar" MaxLength="50" />
-          <Property Name="TPA_Name" Type="nvarchar" MaxLength="50" />
-          <Property Name="TPA_Phone" Type="nvarchar" MaxLength="10" />
-          <Property Name="TPA_Title" Type="nvarchar" MaxLength="20" />
-          <Property Name="TPA_BloodType" Type="nchar" MaxLength="1" />
-          <Property Name="TPA_Contact" Type="nvarchar" MaxLength="20" />
-          <Property Name="TPA_EmergentPhone" Type="nvarchar" MaxLength="10" />
-          <Property Name="TPA_Photo" Type="nvarchar" MaxLength="200" />
-          <Property Name="TPA_Inspector" Type="nvarchar" MaxLength="20" />
-          <Property Name="TPA_InspectorDate" Type="datetime" />
-          <Property Name="TPA_StartDate" Type="datetime" />
-          <Property Name="TPA_EndDate" Type="datetime" />
-          <Property Name="TPA_Memo" Type="nvarchar" MaxLength="200" />
-          <Property Name="TPA_State" Type="nvarchar" MaxLength="10" />
-          <Property Name="Filer" Type="nvarchar" MaxLength="50" />
-          <Property Name="FilerTime" Type="datetime" />
-          <Property Name="Updater" Type="nvarchar" MaxLength="50" />
-          <Property Name="UpdateTime" Type="datetime" />
-          <Property Name="DeliverDate" Type="datetime" />
-          <Property Name="ReturnDate" Type="datetime" />
-        </EntityType>
-        <EntityType Name="TemporaryPersonRFID">
-          <Key>
-            <PropertyRef Name="TPR_SN" />
-          </Key>
-          <Property Name="TPR_SN" Type="int" Nullable="false" />
-          <Property Name="TPR_RFID" Type="nvarchar" MaxLength="50" />
-          <Property Name="TPR_State" Type="nvarchar" MaxLength="5" />
-          <Property Name="DeliverDate" Type="datetime" />
-          <Property Name="ReturnDate" Type="datetime" />
-          <Property Name="TPA_SN" Type="nvarchar" MaxLength="20" />
-          <Property Name="Updater" Type="nvarchar" MaxLength="50" />
-          <Property Name="UpdateTime" Type="datetime" />
-        </EntityType>
-        <EntityType Name="UserInformation">
-          <Key>
-            <PropertyRef Name="U_SN" />
-          </Key>
-          <Property Name="U_SN" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="U_Name" Type="nvarchar" MaxLength="255" />
-          <Property Name="U_Email" Type="nvarchar" MaxLength="255" />
-          <Property Name="U_Phone" Type="nvarchar" MaxLength="255" />
-          <Property Name="U_Account" Type="nvarchar" MaxLength="255" />
-          <Property Name="U_PassWord" Type="nvarchar" MaxLength="255" />
-          <Property Name="U_Company" Type="nvarchar" MaxLength="255" />
-          <Property Name="PI_MSN" Type="nvarchar" MaxLength="255" />
-          <Property Name="U_Permission" Type="nvarchar" MaxLength="255" />
-          <Property Name="U_PswState" Type="bit" />
-          <Property Name="U_State" Type="bit" />
-          <Property Name="Filer" Type="nvarchar" MaxLength="255" />
-          <Property Name="FilerTime" Type="datetime" />
-          <Property Name="UpdateTime" Type="datetime" />
-          <Property Name="Updater" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <Association Name="FK_CompletionReportImage_InspectionPlan">
           <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
@@ -1043,19 +815,14 @@
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CameraData" EntityType="Self.CameraData" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CarInformation" EntityType="Self.CarInformation" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CarInOut" EntityType="Self.CarInOut" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompletionReportImage" EntityType="Self.CompletionReportImage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawInspectionPlanPath" EntityType="Self.DrawInspectionPlanPath" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawPathSample" EntityType="Self.DrawPathSample" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="EnviData" EntityType="Self.EnviData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentInfo" EntityType="Self.EquipmentInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentMaintainFormItem" EntityType="Self.EquipmentMaintainFormItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentMaintainItem" EntityType="Self.EquipmentMaintainItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentReportForm" EntityType="Self.EquipmentReportForm" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Floor_Info" EntityType="Self.Floor_Info" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="HeadsetVideo" EntityType="Self.HeadsetVideo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ImspectionPlanFloorPath" EntityType="Self.ImspectionPlanFloorPath" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlan" EntityType="Self.InspectionPlan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlanMaintain" EntityType="Self.InspectionPlanMaintain" Schema="dbo" store:Type="Tables" />
@@ -1071,8 +838,6 @@
           <EntitySet Name="MaintainSupplementaryInfo" EntityType="Self.MaintainSupplementaryInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSample" EntityType="Self.PathSample" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSampleOrder" EntityType="Self.PathSampleOrder" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PersonInfomaton" EntityType="Self.PersonInfomaton" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PersonInOut" EntityType="Self.PersonInOut" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairAuditImage" EntityType="Self.RepairAuditImage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairAuditInfo" EntityType="Self.RepairAuditInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairCompletionImage" EntityType="Self.RepairCompletionImage" Schema="dbo" store:Type="Tables" />
@@ -1082,11 +847,6 @@
           <EntitySet Name="SubSystemManagement" EntityType="Self.SubSystemManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SystemManagement" EntityType="Self.SystemManagement" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TemporaryCarApply" EntityType="Self.TemporaryCarApply" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TemporaryCarRFID" EntityType="Self.TemporaryCarRFID" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TemporaryPersonApply" EntityType="Self.TemporaryPersonApply" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TemporaryPersonRFID" EntityType="Self.TemporaryPersonRFID" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UserInformation" EntityType="Self.UserInformation" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_CompletionReportImage_InspectionPlan" Association="Self.FK_CompletionReportImage_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
             <End Role="CompletionReportImage" EntitySet="CompletionReportImage" />
@@ -1227,19 +987,14 @@
           <EntitySet Name="AspNetUserClaims" EntityType="Bimfm_MinSheng_MISModel.AspNetUserClaims" />
           <EntitySet Name="AspNetUserLogins" EntityType="Bimfm_MinSheng_MISModel.AspNetUserLogins" />
           <EntitySet Name="AspNetUsers" EntityType="Bimfm_MinSheng_MISModel.AspNetUsers" />
-          <EntitySet Name="CameraData" EntityType="Bimfm_MinSheng_MISModel.CameraData" />
-          <EntitySet Name="CarInformation" EntityType="Bimfm_MinSheng_MISModel.CarInformation" />
-          <EntitySet Name="CarInOut" EntityType="Bimfm_MinSheng_MISModel.CarInOut" />
           <EntitySet Name="CompletionReportImage" EntityType="Bimfm_MinSheng_MISModel.CompletionReportImage" />
           <EntitySet Name="DrawInspectionPlanPath" EntityType="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath" />
           <EntitySet Name="DrawPathSample" EntityType="Bimfm_MinSheng_MISModel.DrawPathSample" />
-          <EntitySet Name="EnviData" EntityType="Bimfm_MinSheng_MISModel.EnviData" />
           <EntitySet Name="EquipmentInfo" EntityType="Bimfm_MinSheng_MISModel.EquipmentInfo" />
           <EntitySet Name="EquipmentMaintainFormItem" EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainFormItem" />
           <EntitySet Name="EquipmentMaintainItem" EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainItem" />
           <EntitySet Name="EquipmentReportForm" EntityType="Bimfm_MinSheng_MISModel.EquipmentReportForm" />
           <EntitySet Name="Floor_Info" EntityType="Bimfm_MinSheng_MISModel.Floor_Info" />
-          <EntitySet Name="HeadsetVideo" EntityType="Bimfm_MinSheng_MISModel.HeadsetVideo" />
           <EntitySet Name="ImspectionPlanFloorPath" EntityType="Bimfm_MinSheng_MISModel.ImspectionPlanFloorPath" />
           <EntitySet Name="InspectionPlan" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan" />
           <EntitySet Name="InspectionPlanMaintain" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" />
@@ -1255,8 +1010,6 @@
           <EntitySet Name="MaintainSupplementaryInfo" EntityType="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo" />
           <EntitySet Name="PathSample" EntityType="Bimfm_MinSheng_MISModel.PathSample" />
           <EntitySet Name="PathSampleOrder" EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" />
-          <EntitySet Name="PersonInfomaton" EntityType="Bimfm_MinSheng_MISModel.PersonInfomaton" />
-          <EntitySet Name="PersonInOut" EntityType="Bimfm_MinSheng_MISModel.PersonInOut" />
           <EntitySet Name="RepairAuditImage" EntityType="Bimfm_MinSheng_MISModel.RepairAuditImage" />
           <EntitySet Name="RepairAuditInfo" EntityType="Bimfm_MinSheng_MISModel.RepairAuditInfo" />
           <EntitySet Name="RepairCompletionImage" EntityType="Bimfm_MinSheng_MISModel.RepairCompletionImage" />
@@ -1266,11 +1019,6 @@
           <EntitySet Name="SubSystemManagement" EntityType="Bimfm_MinSheng_MISModel.SubSystemManagement" />
           <EntitySet Name="sysdiagrams" EntityType="Bimfm_MinSheng_MISModel.sysdiagrams" />
           <EntitySet Name="SystemManagement" EntityType="Bimfm_MinSheng_MISModel.SystemManagement" />
-          <EntitySet Name="TemporaryCarApply" EntityType="Bimfm_MinSheng_MISModel.TemporaryCarApply" />
-          <EntitySet Name="TemporaryCarRFID" EntityType="Bimfm_MinSheng_MISModel.TemporaryCarRFID" />
-          <EntitySet Name="TemporaryPersonApply" EntityType="Bimfm_MinSheng_MISModel.TemporaryPersonApply" />
-          <EntitySet Name="TemporaryPersonRFID" EntityType="Bimfm_MinSheng_MISModel.TemporaryPersonRFID" />
-          <EntitySet Name="UserInformation" EntityType="Bimfm_MinSheng_MISModel.UserInformation" />
           <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo">
             <End Role="AreaInfo" EntitySet="AreaInfo" />
             <End Role="Floor_Info" EntitySet="Floor_Info" />
@@ -1461,62 +1209,12 @@
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="IsEnabled" Type="Boolean" Nullable="false" />
           <Property Name="MyName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Authority" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Authority" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="Apartment" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Title" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUserClaims" Relationship="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
           <NavigationProperty Name="AspNetUserLogins" Relationship="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
           <NavigationProperty Name="AspNetRoles" Relationship="Bimfm_MinSheng_MISModel.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
-        </EntityType>
-        <EntityType Name="CameraData">
-          <Key>
-            <PropertyRef Name="Number" />
-          </Key>
-          <Property Name="Number" Type="Int32" Nullable="false" />
-          <Property Name="CameraType" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Longitude" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Latitude" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="Url" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="CarInformation">
-          <Key>
-            <PropertyRef Name="CI_CSN" />
-          </Key>
-          <Property Name="CI_CSN" Type="Int32" Nullable="false" />
-          <Property Name="CI_RFID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CI_LicensePlateNum" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="CI_Company" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="CI_DriverName" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="CI_CarType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="License" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="ApplyingCheck" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Insurance" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="LaborInsuranceCheck" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="HazardNotificationCheck" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="CertificateCheck" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="CertificateFile" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="CI_Inspector" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="CI_State" Type="Boolean" />
-          <Property Name="Updater" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UpdateTime" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="CarInOut">
-          <Key>
-            <PropertyRef Name="CIO_SN" />
-          </Key>
-          <Property Name="CIO_SN" Type="Int32" Nullable="false" />
-          <Property Name="CIO_RFID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CIO_LicensePlateNum" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="CIO_Company" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="CIO_DriverName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="CIO_CarType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="CI_CSN" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="TCA_CSN" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="EntrySite" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
-          <Property Name="EntryTime" Type="DateTime" Precision="3" />
-          <Property Name="LeaveSite" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
-          <Property Name="LeaveTime" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="CompletionReportImage">
           <Key>
@@ -1545,18 +1243,6 @@
           <Property Name="LocationX" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
           <Property Name="LocationY" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
           <NavigationProperty Name="PathSample" Relationship="Bimfm_MinSheng_MISModel.FK_DrawPathSample_DrawPathSample" FromRole="DrawPathSample" ToRole="PathSample" />
-        </EntityType>
-        <EntityType Name="EnviData">
-          <Key>
-            <PropertyRef Name="E_SN" />
-          </Key>
-          <Property Name="E_SN" Type="Int32" Nullable="false" />
-          <Property Name="Tmp" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Hum" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="PM25" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Noise" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="HeatIndex" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="SampleTime" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="EquipmentInfo">
           <Key>
@@ -1641,23 +1327,6 @@
           <Property Name="FloorName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="BIMPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AreaInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="Floor_Info" ToRole="AreaInfo" />
-        </EntityType>
-        <EntityType Name="HeadsetVideo">
-          <Key>
-            <PropertyRef Name="V_SN" />
-          </Key>
-          <Property Name="V_SN" Type="Int32" Nullable="false" />
-          <Property Name="V_Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="V_FileName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="V_VideoFile" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="V_GrapherAccount" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="V_ShootingTime" Type="DateTime" Precision="3" />
-          <Property Name="V_Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="V_State" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Filer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="FilerTime" Type="DateTime" Precision="3" />
-          <Property Name="Updater" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UpdateTime" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="ImspectionPlanFloorPath">
           <Key>
@@ -1853,52 +1522,6 @@
           <Property Name="BeaconID" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
           <NavigationProperty Name="PathSample" Relationship="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" FromRole="PathSampleOrder" ToRole="PathSample" />
         </EntityType>
-        <EntityType Name="PersonInfomaton">
-          <Key>
-            <PropertyRef Name="PI_MSN" />
-          </Key>
-          <Property Name="PI_MSN" Type="Int32" Nullable="false" />
-          <Property Name="PI_RFID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PI_Company" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PI_Name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="PI_Phone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="PI_Case" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PI_ID" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="PI_Title" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="PI_BloodType" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
-          <Property Name="PI_Contact" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="PI_EmergentPhone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="PI_Photo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="PI_ApplyingCheck" Type="Boolean" />
-          <Property Name="PI_ApplyingFile" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="PI_PhysicalCheck" Type="Boolean" />
-          <Property Name="PI_PhysicalFile" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="PI_TrainingCheck" Type="Boolean" />
-          <Property Name="PI_TrainingFile" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="PI_InsuranceCheck" Type="Boolean" />
-          <Property Name="PI_InsuranceFile" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="PI_Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="PI_Status" Type="DateTime" Precision="3" />
-          <Property Name="PI_State" Type="Boolean" />
-          <Property Name="Updater" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UpdateTime" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="PersonInOut">
-          <Key>
-            <PropertyRef Name="PIO_SN" />
-          </Key>
-          <Property Name="PIO_SN" Type="Int32" Nullable="false" />
-          <Property Name="PIO_RFID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PIO_Company" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PIO_Name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="PIO_Title" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="PI_MSN" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_SN" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="EntrySite" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
-          <Property Name="EntryTime" Type="DateTime" Precision="3" />
-          <Property Name="LeaveSite" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
-          <Property Name="LeaveTime" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="RepairAuditImage">
           <Key>
             <PropertyRef Name="ImgPath" />
@@ -1984,109 +1607,6 @@
           <Property Name="System" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="SystemIsEnable" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="SubSystemManagement" Relationship="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement" FromRole="SystemManagement" ToRole="SubSystemManagement" />
-        </EntityType>
-        <EntityType Name="TemporaryCarApply">
-          <Key>
-            <PropertyRef Name="TCA_CSN" />
-          </Key>
-          <Property Name="TCA_CSN" Type="String" Nullable="false" MaxLength="11" FixedLength="true" Unicode="true" />
-          <Property Name="TCR_RFID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TCA_LicensePlateNum" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="TCA_Company" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="TCA_DriverName" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="TCA_CarType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="License" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="ApplyingCheck" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Insurance" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="LaborInsuranceCheck" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="HazardNotificationCheck" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="CertificateCheck" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="CertificateFile" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="TCA_Inspector" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="TCA_InspectorDate" Type="DateTime" Precision="3" />
-          <Property Name="TCA_StartDate" Type="DateTime" Precision="3" />
-          <Property Name="TCA_EndDate" Type="DateTime" Precision="3" />
-          <Property Name="TCA_Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="TCA_State" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Filer" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="FilerTime" Type="DateTime" Precision="3" />
-          <Property Name="Updater" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="UpdateTime" Type="DateTime" Precision="3" />
-          <Property Name="DeliverDate" Type="DateTime" Precision="3" />
-          <Property Name="ReturnDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="TemporaryCarRFID">
-          <Key>
-            <PropertyRef Name="TCR_SN" />
-          </Key>
-          <Property Name="TCR_SN" Type="Int32" Nullable="false" />
-          <Property Name="TCR_RFID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TCR_State" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="DeliverDate" Type="DateTime" Precision="3" />
-          <Property Name="ReturnDate" Type="DateTime" Precision="3" />
-          <Property Name="TCA_SN" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Updater" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UpdateTime" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="TemporaryPersonApply">
-          <Key>
-            <PropertyRef Name="TPA_SN" />
-          </Key>
-          <Property Name="TPA_SN" Type="String" Nullable="false" MaxLength="11" FixedLength="true" Unicode="true" />
-          <Property Name="TPR_RFID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_Company" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_Phone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_Title" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_BloodType" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
-          <Property Name="TPA_Contact" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_EmergentPhone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_Photo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_Inspector" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_InspectorDate" Type="DateTime" Precision="3" />
-          <Property Name="TPA_StartDate" Type="DateTime" Precision="3" />
-          <Property Name="TPA_EndDate" Type="DateTime" Precision="3" />
-          <Property Name="TPA_Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="TPA_State" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Filer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="FilerTime" Type="DateTime" Precision="3" />
-          <Property Name="Updater" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UpdateTime" Type="DateTime" Precision="3" />
-          <Property Name="DeliverDate" Type="DateTime" Precision="3" />
-          <Property Name="ReturnDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="TemporaryPersonRFID">
-          <Key>
-            <PropertyRef Name="TPR_SN" />
-          </Key>
-          <Property Name="TPR_SN" Type="Int32" Nullable="false" />
-          <Property Name="TPR_RFID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TPR_State" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
-          <Property Name="DeliverDate" Type="DateTime" Precision="3" />
-          <Property Name="ReturnDate" Type="DateTime" Precision="3" />
-          <Property Name="TPA_SN" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Updater" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UpdateTime" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="UserInformation">
-          <Key>
-            <PropertyRef Name="U_SN" />
-          </Key>
-          <Property Name="U_SN" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="U_Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="U_Email" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="U_Phone" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="U_Account" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="U_PassWord" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="U_Company" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="PI_MSN" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="U_Permission" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="U_PswState" Type="Boolean" />
-          <Property Name="U_State" Type="Boolean" />
-          <Property Name="Filer" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="FilerTime" Type="DateTime" Precision="3" />
-          <Property Name="UpdateTime" Type="DateTime" Precision="3" />
-          <Property Name="Updater" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Floor_Info_AreaInfo">
           <End Type="Bimfm_MinSheng_MISModel.AreaInfo" Role="AreaInfo" Multiplicity="1" />
@@ -2530,59 +2050,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="CameraData">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.CameraData">
-              <MappingFragment StoreEntitySet="CameraData">
-                <ScalarProperty Name="Url" ColumnName="Url" />
-                <ScalarProperty Name="Memo" ColumnName="Memo" />
-                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
-                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
-                <ScalarProperty Name="CameraType" ColumnName="CameraType" />
-                <ScalarProperty Name="Number" ColumnName="Number" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="CarInformation">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.CarInformation">
-              <MappingFragment StoreEntitySet="CarInformation">
-                <ScalarProperty Name="UpdateTime" ColumnName="UpdateTime" />
-                <ScalarProperty Name="Updater" ColumnName="Updater" />
-                <ScalarProperty Name="CI_State" ColumnName="CI_State" />
-                <ScalarProperty Name="CI_Inspector" ColumnName="CI_Inspector" />
-                <ScalarProperty Name="CertificateFile" ColumnName="CertificateFile" />
-                <ScalarProperty Name="CertificateCheck" ColumnName="CertificateCheck" />
-                <ScalarProperty Name="HazardNotificationCheck" ColumnName="HazardNotificationCheck" />
-                <ScalarProperty Name="LaborInsuranceCheck" ColumnName="LaborInsuranceCheck" />
-                <ScalarProperty Name="Insurance" ColumnName="Insurance" />
-                <ScalarProperty Name="ApplyingCheck" ColumnName="ApplyingCheck" />
-                <ScalarProperty Name="License" ColumnName="License" />
-                <ScalarProperty Name="CI_CarType" ColumnName="CI_CarType" />
-                <ScalarProperty Name="CI_DriverName" ColumnName="CI_DriverName" />
-                <ScalarProperty Name="CI_Company" ColumnName="CI_Company" />
-                <ScalarProperty Name="CI_LicensePlateNum" ColumnName="CI_LicensePlateNum" />
-                <ScalarProperty Name="CI_RFID" ColumnName="CI_RFID" />
-                <ScalarProperty Name="CI_CSN" ColumnName="CI_CSN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="CarInOut">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.CarInOut">
-              <MappingFragment StoreEntitySet="CarInOut">
-                <ScalarProperty Name="LeaveTime" ColumnName="LeaveTime" />
-                <ScalarProperty Name="LeaveSite" ColumnName="LeaveSite" />
-                <ScalarProperty Name="EntryTime" ColumnName="EntryTime" />
-                <ScalarProperty Name="EntrySite" ColumnName="EntrySite" />
-                <ScalarProperty Name="TCA_CSN" ColumnName="TCA_CSN" />
-                <ScalarProperty Name="CI_CSN" ColumnName="CI_CSN" />
-                <ScalarProperty Name="CIO_CarType" ColumnName="CIO_CarType" />
-                <ScalarProperty Name="CIO_DriverName" ColumnName="CIO_DriverName" />
-                <ScalarProperty Name="CIO_Company" ColumnName="CIO_Company" />
-                <ScalarProperty Name="CIO_LicensePlateNum" ColumnName="CIO_LicensePlateNum" />
-                <ScalarProperty Name="CIO_RFID" ColumnName="CIO_RFID" />
-                <ScalarProperty Name="CIO_SN" ColumnName="CIO_SN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="CompletionReportImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.CompletionReportImage">
               <MappingFragment StoreEntitySet="CompletionReportImage">
@@ -2608,19 +2075,6 @@
                 <ScalarProperty Name="LocationX" ColumnName="LocationX" />
                 <ScalarProperty Name="PSSN" ColumnName="PSSN" />
                 <ScalarProperty Name="SISN" ColumnName="SISN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EnviData">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.EnviData">
-              <MappingFragment StoreEntitySet="EnviData">
-                <ScalarProperty Name="SampleTime" ColumnName="SampleTime" />
-                <ScalarProperty Name="HeatIndex" ColumnName="HeatIndex" />
-                <ScalarProperty Name="Noise" ColumnName="Noise" />
-                <ScalarProperty Name="PM25" ColumnName="PM25" />
-                <ScalarProperty Name="Hum" ColumnName="Hum" />
-                <ScalarProperty Name="Tmp" ColumnName="Tmp" />
-                <ScalarProperty Name="E_SN" ColumnName="E_SN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2702,24 +2156,6 @@
                 <ScalarProperty Name="FloorName" ColumnName="FloorName" />
                 <ScalarProperty Name="ASN" ColumnName="ASN" />
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="HeadsetVideo">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.HeadsetVideo">
-              <MappingFragment StoreEntitySet="HeadsetVideo">
-                <ScalarProperty Name="UpdateTime" ColumnName="UpdateTime" />
-                <ScalarProperty Name="Updater" ColumnName="Updater" />
-                <ScalarProperty Name="FilerTime" ColumnName="FilerTime" />
-                <ScalarProperty Name="Filer" ColumnName="Filer" />
-                <ScalarProperty Name="V_State" ColumnName="V_State" />
-                <ScalarProperty Name="V_Memo" ColumnName="V_Memo" />
-                <ScalarProperty Name="V_ShootingTime" ColumnName="V_ShootingTime" />
-                <ScalarProperty Name="V_GrapherAccount" ColumnName="V_GrapherAccount" />
-                <ScalarProperty Name="V_VideoFile" ColumnName="V_VideoFile" />
-                <ScalarProperty Name="V_FileName" ColumnName="V_FileName" />
-                <ScalarProperty Name="V_Title" ColumnName="V_Title" />
-                <ScalarProperty Name="V_SN" ColumnName="V_SN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2897,54 +2333,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="PersonInfomaton">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PersonInfomaton">
-              <MappingFragment StoreEntitySet="PersonInfomaton">
-                <ScalarProperty Name="UpdateTime" ColumnName="UpdateTime" />
-                <ScalarProperty Name="Updater" ColumnName="Updater" />
-                <ScalarProperty Name="PI_State" ColumnName="PI_State" />
-                <ScalarProperty Name="PI_Status" ColumnName="PI_Status" />
-                <ScalarProperty Name="PI_Memo" ColumnName="PI_Memo" />
-                <ScalarProperty Name="PI_InsuranceFile" ColumnName="PI_InsuranceFile" />
-                <ScalarProperty Name="PI_InsuranceCheck" ColumnName="PI_InsuranceCheck" />
-                <ScalarProperty Name="PI_TrainingFile" ColumnName="PI_TrainingFile" />
-                <ScalarProperty Name="PI_TrainingCheck" ColumnName="PI_TrainingCheck" />
-                <ScalarProperty Name="PI_PhysicalFile" ColumnName="PI_PhysicalFile" />
-                <ScalarProperty Name="PI_PhysicalCheck" ColumnName="PI_PhysicalCheck" />
-                <ScalarProperty Name="PI_ApplyingFile" ColumnName="PI_ApplyingFile" />
-                <ScalarProperty Name="PI_ApplyingCheck" ColumnName="PI_ApplyingCheck" />
-                <ScalarProperty Name="PI_Photo" ColumnName="PI_Photo" />
-                <ScalarProperty Name="PI_EmergentPhone" ColumnName="PI_EmergentPhone" />
-                <ScalarProperty Name="PI_Contact" ColumnName="PI_Contact" />
-                <ScalarProperty Name="PI_BloodType" ColumnName="PI_BloodType" />
-                <ScalarProperty Name="PI_Title" ColumnName="PI_Title" />
-                <ScalarProperty Name="PI_ID" ColumnName="PI_ID" />
-                <ScalarProperty Name="PI_Case" ColumnName="PI_Case" />
-                <ScalarProperty Name="PI_Phone" ColumnName="PI_Phone" />
-                <ScalarProperty Name="PI_Name" ColumnName="PI_Name" />
-                <ScalarProperty Name="PI_Company" ColumnName="PI_Company" />
-                <ScalarProperty Name="PI_RFID" ColumnName="PI_RFID" />
-                <ScalarProperty Name="PI_MSN" ColumnName="PI_MSN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PersonInOut">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PersonInOut">
-              <MappingFragment StoreEntitySet="PersonInOut">
-                <ScalarProperty Name="LeaveTime" ColumnName="LeaveTime" />
-                <ScalarProperty Name="LeaveSite" ColumnName="LeaveSite" />
-                <ScalarProperty Name="EntryTime" ColumnName="EntryTime" />
-                <ScalarProperty Name="EntrySite" ColumnName="EntrySite" />
-                <ScalarProperty Name="TPA_SN" ColumnName="TPA_SN" />
-                <ScalarProperty Name="PI_MSN" ColumnName="PI_MSN" />
-                <ScalarProperty Name="PIO_Title" ColumnName="PIO_Title" />
-                <ScalarProperty Name="PIO_Name" ColumnName="PIO_Name" />
-                <ScalarProperty Name="PIO_Company" ColumnName="PIO_Company" />
-                <ScalarProperty Name="PIO_RFID" ColumnName="PIO_RFID" />
-                <ScalarProperty Name="PIO_SN" ColumnName="PIO_SN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="RepairAuditImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairAuditImage">
               <MappingFragment StoreEntitySet="RepairAuditImage">
@@ -3028,114 +2416,6 @@
                 <ScalarProperty Name="SystemIsEnable" ColumnName="SystemIsEnable" />
                 <ScalarProperty Name="System" ColumnName="System" />
                 <ScalarProperty Name="SystemID" ColumnName="SystemID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TemporaryCarApply">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.TemporaryCarApply">
-              <MappingFragment StoreEntitySet="TemporaryCarApply">
-                <ScalarProperty Name="ReturnDate" ColumnName="ReturnDate" />
-                <ScalarProperty Name="DeliverDate" ColumnName="DeliverDate" />
-                <ScalarProperty Name="UpdateTime" ColumnName="UpdateTime" />
-                <ScalarProperty Name="Updater" ColumnName="Updater" />
-                <ScalarProperty Name="FilerTime" ColumnName="FilerTime" />
-                <ScalarProperty Name="Filer" ColumnName="Filer" />
-                <ScalarProperty Name="TCA_State" ColumnName="TCA_State" />
-                <ScalarProperty Name="TCA_Memo" ColumnName="TCA_Memo" />
-                <ScalarProperty Name="TCA_EndDate" ColumnName="TCA_EndDate" />
-                <ScalarProperty Name="TCA_StartDate" ColumnName="TCA_StartDate" />
-                <ScalarProperty Name="TCA_InspectorDate" ColumnName="TCA_InspectorDate" />
-                <ScalarProperty Name="TCA_Inspector" ColumnName="TCA_Inspector" />
-                <ScalarProperty Name="CertificateFile" ColumnName="CertificateFile" />
-                <ScalarProperty Name="CertificateCheck" ColumnName="CertificateCheck" />
-                <ScalarProperty Name="HazardNotificationCheck" ColumnName="HazardNotificationCheck" />
-                <ScalarProperty Name="LaborInsuranceCheck" ColumnName="LaborInsuranceCheck" />
-                <ScalarProperty Name="Insurance" ColumnName="Insurance" />
-                <ScalarProperty Name="ApplyingCheck" ColumnName="ApplyingCheck" />
-                <ScalarProperty Name="License" ColumnName="License" />
-                <ScalarProperty Name="TCA_CarType" ColumnName="TCA_CarType" />
-                <ScalarProperty Name="TCA_DriverName" ColumnName="TCA_DriverName" />
-                <ScalarProperty Name="TCA_Company" ColumnName="TCA_Company" />
-                <ScalarProperty Name="TCA_LicensePlateNum" ColumnName="TCA_LicensePlateNum" />
-                <ScalarProperty Name="TCR_RFID" ColumnName="TCR_RFID" />
-                <ScalarProperty Name="TCA_CSN" ColumnName="TCA_CSN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TemporaryCarRFID">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.TemporaryCarRFID">
-              <MappingFragment StoreEntitySet="TemporaryCarRFID">
-                <ScalarProperty Name="UpdateTime" ColumnName="UpdateTime" />
-                <ScalarProperty Name="Updater" ColumnName="Updater" />
-                <ScalarProperty Name="TCA_SN" ColumnName="TCA_SN" />
-                <ScalarProperty Name="ReturnDate" ColumnName="ReturnDate" />
-                <ScalarProperty Name="DeliverDate" ColumnName="DeliverDate" />
-                <ScalarProperty Name="TCR_State" ColumnName="TCR_State" />
-                <ScalarProperty Name="TCR_RFID" ColumnName="TCR_RFID" />
-                <ScalarProperty Name="TCR_SN" ColumnName="TCR_SN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TemporaryPersonApply">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.TemporaryPersonApply">
-              <MappingFragment StoreEntitySet="TemporaryPersonApply">
-                <ScalarProperty Name="ReturnDate" ColumnName="ReturnDate" />
-                <ScalarProperty Name="DeliverDate" ColumnName="DeliverDate" />
-                <ScalarProperty Name="UpdateTime" ColumnName="UpdateTime" />
-                <ScalarProperty Name="Updater" ColumnName="Updater" />
-                <ScalarProperty Name="FilerTime" ColumnName="FilerTime" />
-                <ScalarProperty Name="Filer" ColumnName="Filer" />
-                <ScalarProperty Name="TPA_State" ColumnName="TPA_State" />
-                <ScalarProperty Name="TPA_Memo" ColumnName="TPA_Memo" />
-                <ScalarProperty Name="TPA_EndDate" ColumnName="TPA_EndDate" />
-                <ScalarProperty Name="TPA_StartDate" ColumnName="TPA_StartDate" />
-                <ScalarProperty Name="TPA_InspectorDate" ColumnName="TPA_InspectorDate" />
-                <ScalarProperty Name="TPA_Inspector" ColumnName="TPA_Inspector" />
-                <ScalarProperty Name="TPA_Photo" ColumnName="TPA_Photo" />
-                <ScalarProperty Name="TPA_EmergentPhone" ColumnName="TPA_EmergentPhone" />
-                <ScalarProperty Name="TPA_Contact" ColumnName="TPA_Contact" />
-                <ScalarProperty Name="TPA_BloodType" ColumnName="TPA_BloodType" />
-                <ScalarProperty Name="TPA_Title" ColumnName="TPA_Title" />
-                <ScalarProperty Name="TPA_Phone" ColumnName="TPA_Phone" />
-                <ScalarProperty Name="TPA_Name" ColumnName="TPA_Name" />
-                <ScalarProperty Name="TPA_Company" ColumnName="TPA_Company" />
-                <ScalarProperty Name="TPR_RFID" ColumnName="TPR_RFID" />
-                <ScalarProperty Name="TPA_SN" ColumnName="TPA_SN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TemporaryPersonRFID">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.TemporaryPersonRFID">
-              <MappingFragment StoreEntitySet="TemporaryPersonRFID">
-                <ScalarProperty Name="UpdateTime" ColumnName="UpdateTime" />
-                <ScalarProperty Name="Updater" ColumnName="Updater" />
-                <ScalarProperty Name="TPA_SN" ColumnName="TPA_SN" />
-                <ScalarProperty Name="ReturnDate" ColumnName="ReturnDate" />
-                <ScalarProperty Name="DeliverDate" ColumnName="DeliverDate" />
-                <ScalarProperty Name="TPR_State" ColumnName="TPR_State" />
-                <ScalarProperty Name="TPR_RFID" ColumnName="TPR_RFID" />
-                <ScalarProperty Name="TPR_SN" ColumnName="TPR_SN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="UserInformation">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.UserInformation">
-              <MappingFragment StoreEntitySet="UserInformation">
-                <ScalarProperty Name="Updater" ColumnName="Updater" />
-                <ScalarProperty Name="UpdateTime" ColumnName="UpdateTime" />
-                <ScalarProperty Name="FilerTime" ColumnName="FilerTime" />
-                <ScalarProperty Name="Filer" ColumnName="Filer" />
-                <ScalarProperty Name="U_State" ColumnName="U_State" />
-                <ScalarProperty Name="U_PswState" ColumnName="U_PswState" />
-                <ScalarProperty Name="U_Permission" ColumnName="U_Permission" />
-                <ScalarProperty Name="PI_MSN" ColumnName="PI_MSN" />
-                <ScalarProperty Name="U_Company" ColumnName="U_Company" />
-                <ScalarProperty Name="U_PassWord" ColumnName="U_PassWord" />
-                <ScalarProperty Name="U_Account" ColumnName="U_Account" />
-                <ScalarProperty Name="U_Phone" ColumnName="U_Phone" />
-                <ScalarProperty Name="U_Email" ColumnName="U_Email" />
-                <ScalarProperty Name="U_Name" ColumnName="U_Name" />
-                <ScalarProperty Name="U_SN" ColumnName="U_SN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

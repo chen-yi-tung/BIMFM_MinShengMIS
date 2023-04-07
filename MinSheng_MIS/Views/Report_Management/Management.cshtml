@@ -166,7 +166,7 @@
         await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
         //document.getElementById('Area').value = '1'
         await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
-        await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');
+        await pushSelect("InformantUserID", '@Url.Action("ReportUser", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
         //$("#Area option[value=1]").attr('selected', 'selected');
