@@ -309,6 +309,7 @@
     <Compile Include="Models\UserInformation.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\InspectionPlanViewModel.cs" />
     <Compile Include="Models\ViewModels\JsonResponseViewModel.cs" />
     <Compile Include="Models\MaintainAuditImage.cs">
       <DependentUpon>Model1.tt</DependentUpon>
