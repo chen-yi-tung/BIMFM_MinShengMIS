@@ -37,23 +37,21 @@
     <h3 class="sample-path-title">巡檢路線規劃</h3>
 
     <div class="edit-area">
-        <div class="sample-path-group-area">
-            <div class="input-group sample-path-group">
-                <span class="input-group-text" id="sample-path-name"></span>
+        <div class="sample-path-group-area d-none">
+            <div class="input-group sample-path-group" data-path-id="1">
+                <span class="input-group-text" id="current-path-title"></span>
                 <div type="text" class="form-control">
                     <nav>
-                        <ol class="breadcrumb d-none" id="path-display">
-                            <li class="breadcrumb-item">起點</li>
-                            <li class="breadcrumb-item">終點</li>
-                        </ol>
+                        <ol class="breadcrumb" id="current-path-display"></ol>
                     </nav>
-                    <button class="path-btn" id="path-edit" data-bs-toggle="tooltip" title="手動修改路線">
+                    <button class="path-btn" id="current-path-edit" data-bs-toggle="tooltip" title="手動修改路線">
                         <i class="icon-edit"></i>
                     </button>
                 </div>
             </div>
         </div>
         <div class="sample-path-draw-area d-none">
+            <input type="number" id="current-path-id" value="1" hidden>
             <div class="sample-path-toolbar">
                 <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
                     data-bs-placement="right" title="規劃路線">
@@ -63,10 +61,6 @@
                     data-bs-placement="right" title="清除路線">
                     <i class="icon-eraser"></i>
                 </button>
-                @* <button class="path-icon path-icon-radio" id="path-device" data-bs-toggle="tooltip"
-                data-bs-placement="right" title="新增設備">
-                <i class="icon-tools"></i>
-                </button> *@
                 <hr class="m-0">
                 <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
                     title="重新規劃路線">
@@ -100,155 +94,45 @@
 <script src="https://pixijs.download/v7.2.2/pixi.js"></script>
 <script src="/Scripts/ForgeDraw.js"></script>
 <script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/Forge/ForgeDrawFunction.js"></script>
 <script>
     var view = document.querySelector("#PathCanvas");
     var app;
     var stage;
 
-    let btUrl = "/Content/img/bluetooth.svg";
-
     function initializeDrawer() {
         app = ForgeDraw.init(view, viewer, function () {
             view.addEventListener("fd.linedata.change", function (event) {
                 console.log("view => fd.linedata.change");
-                calcRoute();
+                updatePathDisplay(calcPath());
             });
-
             view.addEventListener("fd.linedata.detail", function (event) {
                 console.log("view => fd.linedata.detail", event.detail);
                 if (event.detail instanceof ForgeDraw.DevicePoint) {
-                    createDataDetailModal({
-                        title: "設備資訊",
-                        id: "",
-                        sn: [
-                            { text: "名稱", value: "name" },
-                            { text: "DBID", value: "dbid" },
-                            { text: "座標X", value: "x" },
-                            { text: "座標Y", value: "y" },
-                        ],
-                        data: {
-                            name: event.detail.name,
-                            dbid: event.detail.dbId,
-                            x: event.detail.forgePos.x,
-                            y: event.detail.forgePos.y
-                        }
-                    });
+                    createDevicePointDetailModal(event.detail);
                 }
                 else {
-                    createDataDetailModal({
-                        title: "座標資訊",
-                        id: "",
-                        sn: [
-                            { text: "座標X", value: "x" },
-                            { text: "座標Y", value: "y" },
-                        ],
-                        data: { x: event.detail.forgePos.x, y: event.detail.forgePos.y }
-                    });
+                    createPointDetailModal(event.detail);
                 }
-            });
-            view.addEventListener("fd.linedata.removeall", function (event) {
-                console.log("view => fd.linedata.removeall");
-                updatePathDisplay();
             });
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
-                calcRoute();
+                updatePathDisplay(calcPath());
             });
 
-            readDeviceAndLineData(fakeData)
+            createBeacons(fakeData.PathSample.BIMDevices);
+            createLinePath(fakeData.PathSampleRecord);
 
-            //讀取路徑
-            let route = [...fakeData.PathSampleOrder];
-            route.unshift("起點");
-            route.push("終點");
-            updatePathDisplay(route);
+            updatePathDisplay(fakeData.PathSampleOrder);
 
-            addTooltip();
+            addToolbarEvent();
+            addTooltip(true);
         });
 
-        window.onresize = function () {
+        window.addEventListener("resize", function () {
             ForgeDraw.resize();
-        }
-
-    }
-
-    function calcRoute() {
-
-        if (ForgeDraw.lineData.length > 1) {
-            ForgeDraw.devices.forEach((dp) => {
-                dp.update();
-            })
-        }
-
-        if (!sortRouteModal.autoCalcRoute) {
-            return;
-        }
-
-        //開始計算路徑
-        let route = ForgeDraw.getRoute().map(e => e.name);
-        console.log(ForgeDraw.devices.map(e => e.result));
-
-        route.unshift("起點");
-        route.push("終點");
-
-        //顯示在網頁上
-        updatePathDisplay(route);
-    }
-
-    //讀取設備和路線資料並繪製
-    function readDeviceAndLineData(data) {
-        data.PathSample.BIMDevices.forEach((e) => {
-            let btSprite = PIXI.Sprite.from(btUrl);
-            btSprite.scale.set(0.6);
-            btSprite.anchor.set(0.5);
-            let dp = new ForgeDraw.DevicePoint(e, { sprite: btSprite });
-        });
-
-        //讀取路線資料
-        let reslineData = data.PathSampleRecord.map((d) => {
-            let forgePos = new THREE.Vector3(d.LocationX, d.LocationY, 0);
-            let pos = viewer.worldToClient(forgePos);
-            let position = new PIXI.Point(pos.x, pos.y);
-            return {
-                position: position,
-                forgePos: forgePos
-            };
-        });
-
-
-        console.log(reslineData);
-        ForgeDraw.readLineData(reslineData);
-    }
-
-    //更新網頁顯示的路徑
-    function updatePathDisplay(path = undefined) {
-        let $path = $("#path-display");
-
-        if (!path) {
-            $path.empty();
-            $path.append(`
-            <li class="breadcrumb-item">起點</li>
-            <li class="breadcrumb-item">終點</li>
-            `);
-            return;
-        }
-
-        $path.empty();
-        path.forEach(r => {
-            let pathPoint = `<li class="breadcrumb-item">${r}</li>`;
-            $path.append(pathPoint);
         })
     }
-
-    //切換操作
-    function controlToggle(id, control) {
-        let btn = $("#" + id);
-        ForgeDraw.setControl(control);
-
-        $(".path-icon-radio").removeClass("active");
-        btn.toggleClass("active", true);
-    }
-
 </script>
 
 
@@ -267,95 +151,8 @@
 
     const PSSN = '@ViewBag.PSSN';
     let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
-    //let apiUrl = null;
 
-    let fakeData = {
-        "PathSample": {
-            "PSSN": "000001",
-            "Area": "Area1",
-            "Floor": "Floor1_1",
-            "ASN": "1",
-            "FSN": "1_1",
-            "PathTitle": "123",
-            "BIMPath": "BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
-            "BIMDevices": [
-                {
-                    dbId: 3078,
-                    deviceType: "bluetooth",
-                    deviceName: "BT-11014",
-                },
-                {
-                    dbId: 3239,
-                    deviceType: "bluetooth",
-                    deviceName: "BT-11015",
-                },
-                {
-                    dbId: 3162,
-                    deviceType: "bluetooth",
-                    deviceName: "BT-11016",
-                }
-            ]
-        },
-        "PathSampleOrder": [
-            "BT-11014",
-            "BT-11015",
-            "BT-11016"
-        ],
-        "PathSampleRecord": [
-            {
-                "LocationX": 3.281535257805018,
-                "LocationY": -70.78609689705826
-            },
-            {
-                "LocationX": 17.614257498023093,
-                "LocationY": -17.842776490580817
-            },
-            {
-                "LocationX": 7.961607826039497,
-                "LocationY": -14.332722098991141
-            },
-            {
-                "LocationX": -0.8135282394001422,
-                "LocationY": -32.175498589571944
-            },
-            {
-                "LocationX": -9.881168840354427,
-                "LocationY": -28.080435132717326
-            },
-            {
-                "LocationX": -10.758682446898383,
-                "LocationY": 2.3400362610597796
-            },
-            {
-                "LocationX": -4.616087201090643,
-                "LocationY": 2.6325407936922716
-            },
-            {
-                "LocationX": -4.616087201090643,
-                "LocationY": 9.94515410950406
-            },
-            {
-                "LocationX": -21.28884572542593,
-                "LocationY": 10.530163174769001
-            },
-            {
-                "LocationX": -20.99634118991129,
-                "LocationY": -31.59048952430699
-            },
-            {
-                "LocationX": -31.526504468438844,
-                "LocationY": -32.76050765483687
-            },
-            {
-                "LocationX": -33.574036217041424,
-                "LocationY": -45.63070709066565
-            },
-            {
-                "LocationX": -22.16635933196992,
-                "LocationY": -75.46616941917782
-            }
-        ]
-    }
+    let fakeData;
 
     $(async function () {
         await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
@@ -363,6 +160,10 @@
         addButtonEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
         sortRouteModal.autoRouteToggle(false);
+
+        $("#PathTitle").change(function () {
+            $("#current-path-title").text($(this).val())
+        })
 
         readData(apiUrl);
     });
@@ -408,52 +209,22 @@
             console.log("onclick path-create");
             if ($("form")[0].checkValidity()) {
 
-                let pt = $("#PathTitle").val();
-
-                $("#sample-path-name").text(pt);
+                $("#current-path-title").text($("#PathTitle").val());
+                $(".sample-path-group-area").removeClass("d-none");
                 $(".sample-path-draw-area").removeClass("d-none");
-                $("#path-display").removeClass("d-none");
 
                 if (!viewer) {
-                    viewerUrl = "../../" + fakeData.PathSample.BIMPath;
+                    viewerUrl = window.location.origin + fakeData.PathSample.BIMPath;
                     initializeViewer(initializeDrawer);
                 }
 
             }
         })
-        $("#path-edit").click(function () {
-            sortRouteModal.create();
-        })
-        $("#path-draw").click(function () {
-            $(this).blur();
-            controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        })
-        $("#path-eraser").click(function () {
-            $(this).blur();
-            controlToggle("path-eraser", ForgeDraw.Control.ERASER);
-        })
-        $("#path-reload").click(function () {
-            $(this).blur();
-            ForgeDraw.removeAllData();
-            sortRouteModal.autoRouteToggle(true);
-        })
-        $("#path-auto").click(function () {
-            $(this).blur();
-            sortRouteModal.autoRouteToggle();
-            calcRoute();
-        })
         $("#submit").click(function () {
             console.log("onclick submit")
-            //save();
-            let pt = $("#PathTitle").val();
-            //console.log(pt);
-            //先判斷巡檢路線模板是否有填值
-            if (pt == "") {
+            if ($("#PathTitle").val() == "") {
                 errtext = "巡檢路線模板名稱不可為空!";
-                createDialogModal({
-                    id: "DialogModal-Error",
-                    inner: `${errtext}`,
-                })
+                createDialogModal({ id: "DialogModal-Error", inner: `${errtext}` })
             }
             else {
                 save();
@@ -461,25 +232,14 @@
         })
     }
 
-    function addTooltip() {
-        let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl, {
-                customClass: "sample-path-tooltip",
-                //template: `<div class="tooltip" role="tooltip"><div class="tooltip-inner"></div></div>`
-            })
-        })
-        tooltipList.forEach(e => e.show())
-        setTimeout(() => {
-            tooltipList.forEach(e => e.hide())
-        }, 2000)
-    }
-
     function save() {
-        let PathSampleOrder = $(".breadcrumb-item:not(:first-child):not(:last-child)").toArray().map(e => e.innerHTML);
-        let PathSampleRecord = ForgeDraw.getForgeLineData().map(e => {
-            return { LocationX: e.x, LocationY: e.y };
-        })
+        let PathSampleOrder = getPathSampleOrder();
+        let PathSampleRecord = getPathSampleRecord();
+
+        if (PathSampleRecord.every(e => e) === false){
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
+            return
+        }
 
         let data = {
             PathSample: {
@@ -505,8 +265,7 @@
         })
 
         function onSuccess(res) {
-            console.log("Success");
-            console.log(res);
+            //console.log(res);
 
             if (res.ResponseCode == 0) {
                 createDialogModal({
@@ -520,8 +279,7 @@
             }
         }
         function onError(res) {
-            console.log("error");
-            console.log(res);
+            //console.log(res);
             let errtext;
 
             switch (res.responseText) {
@@ -533,10 +291,7 @@
                     break;
             }
 
-            createDialogModal({
-                id: "DialogModal-Error",
-                inner: `編輯失敗！${errtext}`,
-            })
+            createDialogModal({ id: "DialogModal-Error", inner: `編輯失敗！${errtext}` })
         }
     }
 </script>

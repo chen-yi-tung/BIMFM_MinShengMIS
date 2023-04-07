@@ -5,6 +5,10 @@
     --bs-btn-disabled-bg:#708298;
     --bs-btn-disabled-border-color:#708298;
     --bs-btn-disabled-opacity: 0.36;
+    transition: all .15s ease-in-out;
+}
+.btn.pe-none{
+    opacity: 0.6;
 }
 
 .btn-create {

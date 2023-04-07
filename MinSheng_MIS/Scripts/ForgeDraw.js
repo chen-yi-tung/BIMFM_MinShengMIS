@@ -170,9 +170,14 @@ var ForgeDraw = (function (e) {
         });
 
         app.stage.addChild(...Object.values(layer));
+        layer.device.sortableChildren = true;
 
         view.addEventListener("contextmenu", preventDefaultEvent);
         $(document.body).on("contextmenu", ".contextMenu", preventDefaultEvent);
+
+        window.addEventListener("resize", function () {
+            resize();
+        })
 
         forgeViewer = forgeGuiViewer3D;
 
@@ -180,6 +185,8 @@ var ForgeDraw = (function (e) {
 
         stage = new ForgeDraw.Stage();
         exports.stage = stage;
+
+
 
         callback();
         return app;
@@ -568,7 +575,7 @@ var ForgeDraw = (function (e) {
 
                 lineData[self.index].position = pos;
                 let w = forgeViewer.clientToWorld(pos.x, pos.y);
-                lineData[self.index].ForgePos = w ? w.point : undefined;
+                lineData[self.index].forgePos = w ? w.point : undefined;
 
                 view.dispatchEvent(new LineDataChangeEvent(lineData[self.index]));
 
@@ -611,17 +618,16 @@ var ForgeDraw = (function (e) {
             let i = this.index;
             if (lines.length != 0) {
                 if (i != lineData.length - 1) {
-                    lines.splice(i, 1);
-                    layer.line.removeChildAt(i);
+                    layer.line.removeChild(lines.splice(i, 1)[0].container);
                 }
                 else {
-                    lines.splice(i - 1, 1);
-                    layer.line.removeChildAt(i - 1);
+                    ;
+                    layer.line.removeChild(lines.splice(i - 1, 1)[0].container);
                 }
             }
-            layer.point.removeChildAt(i);
             points.splice(i, 1);
             lineData.splice(i, 1);
+            layer.point.removeChild(this.container);
 
             updatePoints();
 
@@ -730,10 +736,12 @@ var ForgeDraw = (function (e) {
             this.onOverEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onOverEvent`);
                 !self.isUpdate && self.text && (self.text.visible = true);
+                self.container.zIndex = 100;
             }
             this.onOutEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onOutEvent`);
                 !self.isUpdate && self.text && (self.text.visible = false);
+                self.container.zIndex = 0;
             }
             this.onRightDownEvent = function (event) {
                 console.log(`${self.name} ${self.index} => onRightDownEvent`);
@@ -813,8 +821,8 @@ var ForgeDraw = (function (e) {
         remove() {
             let i = this.index;
 
-            layer.device.removeChildAt(i);
             devices.splice(i, 1);
+            layer.device.removeChild(this.container);
 
             view.dispatchEvent(new LineDataChangeEvent(null));
 
