@@ -390,7 +390,7 @@ namespace MinSheng_MIS.Controllers
             else
             {
                 //加入預估巡檢計畫單號
-                ps.PathTitle = ps.Area + " " + ps.Floor + "巡檢路線"; // + " " + tmpIPSN
+                ps.PathTitle = ps.Area + " " + ps.Floor + " 巡檢路線"; // + " " + tmpIPSN
                 List<string> psos = new List<string>();
                 ppo.PathSampleOrder = psos;
                 List<PathSampleRecord> psrs = new List<PathSampleRecord>();
