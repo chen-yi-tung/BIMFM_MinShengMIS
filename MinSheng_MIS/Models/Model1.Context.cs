@@ -31,19 +31,14 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
         public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
-        public virtual DbSet<CameraData> CameraData { get; set; }
-        public virtual DbSet<CarInformation> CarInformation { get; set; }
-        public virtual DbSet<CarInOut> CarInOut { get; set; }
         public virtual DbSet<CompletionReportImage> CompletionReportImage { get; set; }
         public virtual DbSet<DrawInspectionPlanPath> DrawInspectionPlanPath { get; set; }
         public virtual DbSet<DrawPathSample> DrawPathSample { get; set; }
-        public virtual DbSet<EnviData> EnviData { get; set; }
         public virtual DbSet<EquipmentInfo> EquipmentInfo { get; set; }
         public virtual DbSet<EquipmentMaintainFormItem> EquipmentMaintainFormItem { get; set; }
         public virtual DbSet<EquipmentMaintainItem> EquipmentMaintainItem { get; set; }
         public virtual DbSet<EquipmentReportForm> EquipmentReportForm { get; set; }
         public virtual DbSet<Floor_Info> Floor_Info { get; set; }
-        public virtual DbSet<HeadsetVideo> HeadsetVideo { get; set; }
         public virtual DbSet<ImspectionPlanFloorPath> ImspectionPlanFloorPath { get; set; }
         public virtual DbSet<InspectionPlan> InspectionPlan { get; set; }
         public virtual DbSet<InspectionPlanMaintain> InspectionPlanMaintain { get; set; }
@@ -59,8 +54,6 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<MaintainSupplementaryInfo> MaintainSupplementaryInfo { get; set; }
         public virtual DbSet<PathSample> PathSample { get; set; }
         public virtual DbSet<PathSampleOrder> PathSampleOrder { get; set; }
-        public virtual DbSet<PersonInfomaton> PersonInfomaton { get; set; }
-        public virtual DbSet<PersonInOut> PersonInOut { get; set; }
         public virtual DbSet<RepairAuditImage> RepairAuditImage { get; set; }
         public virtual DbSet<RepairAuditInfo> RepairAuditInfo { get; set; }
         public virtual DbSet<RepairCompletionImage> RepairCompletionImage { get; set; }
@@ -70,10 +63,5 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<SystemManagement> SystemManagement { get; set; }
-        public virtual DbSet<TemporaryCarApply> TemporaryCarApply { get; set; }
-        public virtual DbSet<TemporaryCarRFID> TemporaryCarRFID { get; set; }
-        public virtual DbSet<TemporaryPersonApply> TemporaryPersonApply { get; set; }
-        public virtual DbSet<TemporaryPersonRFID> TemporaryPersonRFID { get; set; }
-        public virtual DbSet<UserInformation> UserInformation { get; set; }
     }
 }
