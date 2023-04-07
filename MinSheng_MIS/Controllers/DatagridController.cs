@@ -55,5 +55,13 @@ namespace MinSheng_MIS.Controllers
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
+        [HttpPost]
+        public ActionResult Account_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_Account_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
     }
 }

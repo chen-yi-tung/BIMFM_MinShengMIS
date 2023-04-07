@@ -43,7 +43,7 @@ namespace MinSheng_MIS.Controllers
         }
         public ActionResult Create_()
         {
-            InspectionPlanViewModel IPV = new InspectionPlanViewModel();
+            
             
             return View();
         }
