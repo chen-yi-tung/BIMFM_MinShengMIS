@@ -148,7 +148,6 @@ function loadModel(url, pathID, onload) {
     //開啟forge顯示
     $(".sample-path-draw-area").removeClass('d-none')
     togglePointerEvent(false);
-    sortRouteModal.autoRouteToggle(false);
 
     viewer.loadModel(url, { keepCurrentModels: false },
         () => {
@@ -529,6 +528,9 @@ function saveCurrentPath(onSuccess = () => { }) {
     pathData.PathSampleOrder = PathSampleOrder;
     pathData.PathSampleRecord = PathSampleRecord;
     sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(pathData))
+
+    sortRouteModal.autoRouteToggle(false);
+    updatePathDisplay(PathSampleOrder,pathID);
     onSuccess();
 }
 

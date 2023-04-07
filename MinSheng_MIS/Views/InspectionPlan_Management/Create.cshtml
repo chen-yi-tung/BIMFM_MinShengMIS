@@ -425,7 +425,7 @@
         app = ForgeDraw.init(view, viewer, function () {
             view.addEventListener("fd.linedata.change", function (event) {
                 console.log("view => fd.linedata.change");
-                updatePathDisplay(calcPath(), $("#current-path-id").val());
+                updatePathDisplay(calcPath());
             });
             view.addEventListener("fd.linedata.detail", function (event) {
                 console.log("view => fd.linedata.detail", event.detail);
@@ -438,7 +438,7 @@
             });
             view.addEventListener("fd.devicepoint.ignore", function (event) {
                 console.log("view => fd.devicepoint.ignore");
-                updatePathDisplay(calcPath(), $("#current-path-id").val());
+                updatePathDisplay(calcPath());
             });
 
             let pathData = JSON.parse(sessionStorage.getItem(`P1_pathData`))
@@ -462,7 +462,7 @@
     const sortRouteModal = new SortRouteModal({
         onSave: (path) => {
             let pathID = $("#current-path-id").val();
-            updatePathDisplay(path, pathID);
+            updatePathDisplay(path);
         }
     });
 </script>
@@ -489,6 +489,7 @@
         });
 
         pathGroup.setSetting({
+            delete: true,
             startButton: {
                 id: "path-handle",
                 icon: "icon-handle",
@@ -529,6 +530,7 @@
                     function callback() {
                         let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
                         $("#current-path-title").val(pathData.PathSample.PathTitle);
+                        sortRouteModal.autoRouteToggle(false);
                         loadModel(
                             window.location.origin + pathData.PathSample.BIMPath,
                             pathID,
