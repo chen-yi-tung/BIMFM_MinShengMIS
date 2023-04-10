@@ -1506,6 +1506,7 @@
     <Content Include="Scripts\Forge\SortRouteModal.js" />
     <Content Include="Scripts\Forge\UpViewer.js" />
     <Content Include="Scripts\ImageDisplay.js" />
+    <Content Include="Scripts\InspectionPlan\CreateDataGrids.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />

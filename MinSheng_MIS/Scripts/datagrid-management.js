@@ -28,8 +28,9 @@ DG.prototype.ColumnsOptions = Object.freeze({
 DG.prototype.init = function (selector, options) {
 
     const $dg = $(selector);
-    $dg.datagrid(Object.assign({}, this.Options, options));
-    $($dg.datagrid('getPager')).pagination(this.PageOptions);
+    const op = Object.assign({}, this.Options, options);
+    $dg.datagrid(op);
+    op.pagination && $($dg.datagrid('getPager')).pagination(this.PageOptions);
 
     return $dg;
 }

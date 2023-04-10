@@ -459,24 +459,23 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="/Scripts/Forge/SortRouteModal.js"></script>
 <script>
-    const sortRouteModal = new SortRouteModal({
-        onSave: (path) => {
-            let pathID = $("#current-path-id").val();
-            updatePathDisplay(path);
-        }
-    });
+    const sortRouteModal = new SortRouteModal({  onSave: updatePathDisplay });
 </script>
 
 <!-- EVENT -->
 <script src="/Scripts/tool.js"></script>
+<script src="/Scripts/InspectionPlan/CreateDataGrids.js"></script>
 <script>
     let fakeData;
 
     let DatagridEvent;
 
+    let maintainDG_Controller;
+
     $(async function () {
         addButtonEvent();
-        DatagridEvent = addDatagridEvent();
+        //DatagridEvent = addDatagridEvent();
+        maintainDG_Controller = new IPDG(mop);
         await addDropDownList();
         await addAreaFloorEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
