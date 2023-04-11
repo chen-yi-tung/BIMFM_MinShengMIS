@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace MinSheng_MIS.Models
 {
@@ -108,5 +110,31 @@ namespace MinSheng_MIS.Models
         [EmailAddress]
         [Display(Name = "電子郵件")]
         public string Email { get; set; }
+    }
+
+    public class AccountData 
+    {
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+
+        public JObject GetCurAccountData(string UserName)
+        { 
+            var data = db.AspNetUsers.Where(x => x.UserName == UserName).FirstOrDefault();
+            if (data != null)
+            {
+                JObject jo = new JObject();
+                jo.Add("UserName", data.UserName);
+                jo.Add("MyName", data.MyName);
+                jo.Add("Authority", data.Authority);
+                jo.Add("Email", data.Email);
+                jo.Add("PhoneNumber", data.PhoneNumber);
+                jo.Add("Apartment", data.Apartment);
+                jo.Add("Title", data.Title);
+                return jo;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

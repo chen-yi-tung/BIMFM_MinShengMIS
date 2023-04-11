@@ -5,7 +5,7 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="edit-area edit-area-small">
-    <form class="form" action="">
+    <form class="form" action="Create_Add" method="post" enctype="multipart/form-data" id="createForm">
         <div class="form-group d-lg-contents required">
             <label for="UserName">帳號</label>
             <input class="form-control" type="text" name="UserName" id="UserName" required>
@@ -54,7 +54,6 @@
             <label for="Title">職稱</label>
             <input class="form-control" type="text" name="Title" id="Title">
         </div>
-
     </form>
 </div>
 
@@ -64,6 +63,9 @@
 </div>
 
 <script>
+
+    var CreateUrl = '@Url.Action("Create_Add", "Account_Management")'; //Method : Post , 新增帳號
+
     window.onload = function () {
         addButtonEvent();
     }
@@ -72,8 +74,25 @@
         $("#back").click(function () {
             history.back();
         })
-        /*$("#submit").click(function () {
+        $("#submit").click(function () {
             console.log("onclick submit")
-        })*/
+            const form = document.querySelector('#createForm');
+            const formData = new FormData(form);
+            $.ajax({
+                url: CreateUrl,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log(response);
+                    alert(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert(error);
+                }
+            });
+        })
     }
 </script>
