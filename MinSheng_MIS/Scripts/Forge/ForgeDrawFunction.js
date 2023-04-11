@@ -32,12 +32,12 @@ function addToolbarEvent() {
         $(this).blur();
         ForgeDraw.removeAllData();
         sortRouteModal.autoRouteToggle(true);
-        updatePathDisplay(calcPath(), $("#current-path-id").val());
+        updatePathDisplay(calcPath());
     })
     $("#path-auto").click(function () {
         $(this).blur();
         sortRouteModal.autoRouteToggle();
-        updatePathDisplay(calcPath(), $("#current-path-id").val());
+        updatePathDisplay(calcPath());
     })
 }
 
@@ -144,7 +144,7 @@ function loadModel(url, pathID, onload) {
     ForgeDraw.removeAllDevice();
     ForgeDraw.removeAllData();
     ForgeDraw.clearSelectPos();
-
+    
     //開啟forge顯示
     $(".sample-path-draw-area").removeClass('d-none')
     togglePointerEvent(false);
@@ -344,52 +344,72 @@ function createPointDetailModal(point) {
  */
 function createPath(selector) {
     if (!$(".sample-path-draw-area").hasClass('d-none')) {
-        saveCurrentPath();
-    }
-
-    if ($("#PlanDate").val() == '') {
-        createDialogModal({
+        let modal = createDialogModal({
             id: "DialogModal",
-            inner: `請輸入計畫日期！`
+            inner: "尚未儲存目前路線變更，是否儲存？",
+            button: [
+                { className: "btn btn-cancel", cancel: true, text: "取消" },
+                {
+                    className: "btn btn-submit", text: "是", onClick: () => {
+                        saveCurrentPath();
+                        callback();
+                        modal.hide();
+                    }
+                },
+                {
+                    className: "btn btn-delete", text: "否", onClick: () => {
+                        callback();
+                        modal.hide();
+                    }
+                },
+            ]
         })
         return;
     }
-    let form = $(selector);
-    if (form[0].checkValidity()) {
 
-        $(".sample-path-draw-area").removeClass("d-none");
+    callback();
 
-        $.ajax({
-            url: "/InspectionPlan_Management/AddPlanPath",
-            data: JSON.stringify(getDataGridData(form)),
-            type: "POST",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: (res) => {
-                console.log(res);
-                let pathID = pathGroup.create(res);
-                $("#current-path-id").val(pathID);
+    function callback(){
+        let form = $(selector);
+        if (form[0].checkValidity()) {
+    
+            $(".sample-path-draw-area").removeClass("d-none");
+            sortRouteModal.autoRouteToggle(selector === "#path-form");
+    
+            $.ajax({
+                url: "/InspectionPlan_Management/AddPlanPath",
+                data: JSON.stringify(getDataGridData(form)),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: (res) => {
+                    console.log(res);
 
-                sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(res));
+                    let pathID = pathGroup.create(res);
+                    addTooltip();
 
-                viewerUrl = window.location.origin + res.PathSample.BIMPath;
-                if (viewer) {
-                    loadModel(viewerUrl, pathID, loadPath);
-                }
-                else {
-                    initializeViewer(initializeDrawer);
-                }
-            },
-            error: (err) => { console.log(err) }
-        })
+                    $("#current-path-id").val(pathID);
+    
+                    sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(res));
+    
+                    viewerUrl = window.location.origin + res.PathSample.BIMPath;
+                    if (viewer) {
+                        loadModel(viewerUrl, pathID, loadPath);
+                    }
+                    else {
+                        initializeViewer(initializeDrawer);
+                    }
+                },
+                error: (err) => { console.log(err) }
+            })
+        }
     }
 
     function getDataGridData(form) {
         let data = {
             ASN: form.find("#ASN").val(),
             FSN: form.find("#FSN").val(),
-            PathTitle: form.find("#PathTitle").val() ?? '',
-            PlanDate: $("#PlanDate").val(),
+            PathTitle: form.find("#PathTitle").val() ?? ''
         };
         //console.log("getDataGridData: ", data);
         return data;
@@ -508,6 +528,9 @@ function saveCurrentPath(onSuccess = () => { }) {
     pathData.PathSampleOrder = PathSampleOrder;
     pathData.PathSampleRecord = PathSampleRecord;
     sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(pathData))
+
+    sortRouteModal.autoRouteToggle(false);
+    updatePathDisplay(PathSampleOrder,pathID);
     onSuccess();
 }
 
@@ -522,9 +545,9 @@ function loadPath(pathID) {
     createBeacons(pathData.PathSample.Beacon);
     createDevices(pathID);
     createLinePath(pathData.PathSampleRecord);
-    updatePathDisplay(pathData.PathSampleOrder,pathID);
+    updatePathDisplay(pathData.PathSampleOrder, pathID);
 
-    updatePathDisplay(calcPath(),pathID);
+    updatePathDisplay(calcPath());
 }
 
 /**
@@ -597,7 +620,7 @@ function reloadDeviceData() {
         createBeacons(pathData.PathSample.Beacon);
         createDevices(pathID);
 
-        updatePathDisplay(calcPath(),pathID);
+        updatePathDisplay(calcPath());
     }
 }
 
