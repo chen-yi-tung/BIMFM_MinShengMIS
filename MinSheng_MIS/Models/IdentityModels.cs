@@ -16,6 +16,11 @@ namespace MinSheng_MIS.Models
             // 在這裡新增自訂使用者宣告
             return userIdentity;
         }
+        public bool IsEnabled { get; set; } //啟用與否
+        public string MyName { get; set; } //使用者名稱
+        public string Authority { get; set; } //權限
+        public string Apartment { get; set; } //單位
+        public string Title { get; set; } //職稱
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

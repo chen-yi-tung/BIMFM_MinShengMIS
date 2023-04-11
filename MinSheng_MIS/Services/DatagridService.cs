@@ -1127,11 +1127,11 @@ namespace MinSheng_MIS.Services
 
             if (!string.IsNullOrEmpty(UserName))
             {
-                Data = Data.Where(x => x.UserName == UserName);
+                Data = Data.Where(x => x.UserName.Contains(UserName));
             }
             if (!string.IsNullOrEmpty(MyName)) 
             {
-                Data = Data.Where(x => x.MyName == MyName);
+                Data = Data.Where(x => x.MyName.Contains(MyName));
             }
             if (!string.IsNullOrEmpty(Authority)) 
             {
@@ -1139,19 +1139,19 @@ namespace MinSheng_MIS.Services
             }
             if (!string.IsNullOrEmpty(Email)) 
             {
-                Data = Data.Where(x => x.Email == Email);
+                Data = Data.Where(x => x.Email.Contains(Email));
             }
             if (!string.IsNullOrEmpty(PhoneNumber)) 
             {
-                Data = Data.Where(x => x.PhoneNumber == PhoneNumber);
+                Data = Data.Where(x => x.PhoneNumber.Contains(PhoneNumber));
             }
             if (!string.IsNullOrEmpty(Apartment)) 
             {
-                Data = Data.Where(x => x.Apartment == Apartment);
+                Data = Data.Where(x => x.Apartment.Contains(Apartment));
             }
             if (!string.IsNullOrEmpty(Title)) 
             {
-                Data = Data.Where(x => x.Title == Title);
+                Data = Data.Where(x => x.Title.Contains(Title));
             }
             #endregion
 
@@ -1164,12 +1164,14 @@ namespace MinSheng_MIS.Services
             //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
             result = result.Skip((page - 1) * rows).Take(rows);
 
+            var Dic = Surfaces.Surface.Authority();
+
             foreach (var item in Data)
             {
                 var itemObjects = new JObject();
                 itemObjects.Add("UserName", item.UserName);
                 itemObjects.Add("MyName", item.MyName);
-                itemObjects.Add("Authority", item.Authority);
+                itemObjects.Add("Authority", Dic[item.Authority]);
                 itemObjects.Add("Email", item.Email);
                 itemObjects.Add("PhoneNumber", item.PhoneNumber);
                 itemObjects.Add("Apartment", item.Apartment);
