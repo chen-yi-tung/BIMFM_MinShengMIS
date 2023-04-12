@@ -475,7 +475,8 @@
     $(async function () {
         addButtonEvent();
         //DatagridEvent = addDatagridEvent();
-        maintainDG_Controller = new IPDG(mop);
+        maintainDG_Controller = new IPDG(MDGOptions);
+        repairDG_Controller = new IPDG(RDGOptions);
         await addDropDownList();
         await addAreaFloorEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);

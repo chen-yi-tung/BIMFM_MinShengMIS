@@ -578,7 +578,7 @@
     return this;
 } */
 
-let mop = {
+const MDGOptions = {
     mdg: '#DatagridModal-Maintain .modal-datagrid',
     edg: '#Maintain-datagrid',
     id: "DatagridModal-Maintain",
@@ -593,9 +593,9 @@ let mop = {
         idField: 'EMFISN',
         remoteSort: false,
         sortOrder: 'asc',
-        singleSelect: false,
-        selectOnCheck: true,
-        checkOnSelect: true
+        singleSelect: true,
+        selectOnCheck: false,
+        checkOnSelect: false
     },
     columns: [[
         { field: 'FormItemStatenum', hidden: true },
@@ -644,6 +644,69 @@ let mop = {
     }
 }
 
+const RDGOptions = {
+    mdg: '#DatagridModal-Repair .modal-datagrid',
+    edg: '#Repair-datagrid',
+    id: "DatagridModal-Repair",
+    type: "Repair",
+    initDatagridUrl: "/Datagrid/Report_Management",
+    appendDataUrl: "/InspectionPlan_Management/AddReportForm",
+    appendDataKey: "RSN",
+    removeDataUrl: "/InspectionPlan_Management/DeleteReportForm",
+    removeDataKey: "RSN",
+    filterCheckKey: "ReportStatenum",
+    datagridOptions: {
+        idField: 'RSN',
+        remoteSort: false,
+        sortOrder: 'asc',
+        singleSelect: true,
+        selectOnCheck: false,
+        checkOnSelect: false
+    },
+    columns: [[
+        { field: 'ReportStatenum', hidden: true },
+        { field: 'StockState', title: '庫存狀態', align: 'center', width: 120, sortable: true },
+        { field: 'ReportState', title: '報修單狀態', align: 'center', width: 145, sortable: true },
+        { field: 'EState', title: '設備狀態', align: 'center', width: 120, sortable: true },
+        { field: 'Area', title: '棟別', align: 'center', width: 130, sortable: true },
+        { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
+
+        { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
+        { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
+
+        { field: 'RSN', title: '報修單號', align: 'center', width: 116, sortable: true },
+        { field: 'ReportLevel', title: '報修等級', align: 'center', width: 95, sortable: true },
+        { field: 'Date', title: '報修時間', align: 'center', width: 200, sortable: true },
+        { field: 'MyName', title: '報修人員', align: 'center', width: 110, sortable: true },
+        { field: 'ReportContent', title: '報修內容', align: 'center', width: 300, sortable: true },
+    ]],
+    frozenColumns: [[
+        { field: '_select', checkbox: true, },
+        {
+            field: '_detail', align: 'center', width: 71, formatter: (val, row, index) => {
+                return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="detail">詳情</button>`;
+            }
+        },
+        {
+            field: '_locate', align: 'center', width: 71, formatter: (val, row, index) => {
+                return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="locate">定位</button>`;
+            }
+        }
+    ]],
+    pageOptions: {
+        pageSize: 10,
+        showPageList: true,
+        pageList: [10, 20, 50],
+        beforePageText: '第',
+        afterPageText: '頁，共 {pages} 頁',
+        displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+    },
+    evnet: {
+        detail: (row, index) => { window.open(`/Report_Management/Read/${row.RSN}`, "_blank"); },
+        locate: (row, index) => { window.open(`/Report_Management/Read/${row.RSN}`, "_blank"); },
+    }
+}
+
 function IPDG(options) {
     const self = this;
     this.options = options;
@@ -655,7 +718,6 @@ function IPDG(options) {
     this.createBtn = $(`#${this.options.type}-create`);
     this.deleteBtn = $(`#${this.options.type}-delete`);
     this.event = this.options.evnet;
-    this.selectCheck = null;
     this.appendData = function () {
         let data = self.mdg.datagrid("getChecked");
         console.log("appendData POST", data);
@@ -740,8 +802,6 @@ function IPDG(options) {
                 pageSize: 10,
                 frozenColumns: self.options.frozenColumns,
                 columns: self.options.columns,
-                onBeforeSelect: (index) => self.onBeforeSelect(dg, index, false),
-                onBeforeUnselect: (index) => self.onBeforeSelect(dg, index, true),
                 onLoadSuccess: (data) => { self.filterCheck(dg, data, self.options.filterCheckKey) }
             }))
         $(dg.datagrid('getPager')).pagination(self.options.pageOptions);
@@ -752,8 +812,6 @@ function IPDG(options) {
             {
                 frozenColumns: self.options.frozenColumns,
                 columns: self.options.columns,
-                onBeforeSelect: (index) => self.onSelectBtn(dg, index),
-                onBeforeUnselect: (index) => self.onSelectBtn(dg, index),
             }))
         window.addEventListener("resize", (event) => { dg.datagrid('resize'); });
         self.addButtonEvent(dg);
@@ -794,22 +852,11 @@ IPDG.prototype.loadDatagrid = function (id) {
     dg.datagrid("load", getQueryParams(`#${id} form`));
 }
 IPDG.prototype.getCheckbox = function (dg, index) {
-    return dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].querySelector(".datagrid-cell-check");
+    return dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].querySelector("input[type=checkbox]");
 }
 IPDG.prototype.getChecked = function (dg, index) {
     let dom = this.getCheckbox(dg, index);
     return dom ? dom.checked : null;
-}
-IPDG.prototype.onSelectBtn = function (dg, index) {
-    if (this.selectCheck !== null && this.selectCheck == this.getChecked(dg, index)) {
-        this.selectCheck = null;
-        return false;
-    }
-    return true;
-}
-IPDG.prototype.onBeforeSelect = function (dg, index, bool) {
-    if (this.getCheckbox(dg, index) == null) return bool;
-    return this.onSelectBtn(dg, index);
 }
 IPDG.prototype.filterCheck = function (dg, data, key) {
     data.rows.forEach((row, index) => {
@@ -856,10 +903,9 @@ IPDG.prototype.addButtonEvent = function (dg) {
     let self = this;
     $(dg.datagrid("getPanel")).on("click", "button[data-btn-type]", function () {
         let btn = $(this);
-        let index = btn.attr("data-index");
+        let index = +(btn.attr("data-index"));
         let type = btn.attr("data-btn-type");
         let row = dg.datagrid('getRows')[index];
-        self.selectCheck = self.getChecked(dg, index);
         self.event[type](row, index);
     })
 }
