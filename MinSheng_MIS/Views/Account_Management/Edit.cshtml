@@ -4,7 +4,7 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="edit-area edit-area-small">
-    <form class="form" action="">
+    <form class="form" action="" id="editForm" enctype="multipart/form-data">
         <div class="form-group d-lg-contents">
             <label for="UserName">帳號</label>
             <input class="form-control readonly" type="text" name="UserName" id="UserName" readonly>
@@ -53,7 +53,9 @@
 </div>
 
 <script>
-    let apiUrl = null;
+    const UserName = '@ViewBag.id';
+    let apiUrl = '@Url.Action("Edit_LoadData", "Account_Management")' + `/${UserName}`;
+
     const fakeData = {
         UserName: "Admin",
         MyName: "Admin",
@@ -73,8 +75,8 @@
         url == null ? onSuccess(fakeData) :
             $.ajax({
                 url: url,
-                data: JSON.stringify(jsonData),
-                type: "POST",
+                //data: JSON.stringify(jsonData),
+                type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
@@ -95,8 +97,25 @@
         $("#back").click(function () {
             history.back();
         })
-        /*$("#submit").click(function () {
+        $("#submit").click(function () {
             console.log("onclick submit")
-        })*/
+            const form = document.querySelector('#editForm');
+            const formData = new FormData(form);
+            $.ajax({
+                url: '@Url.Action("Edit_SaveData", "Account_Management")',
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log(response);
+                    alert(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert(error);
+                }
+            });
+        })
     }
 </script>

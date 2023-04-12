@@ -171,6 +171,18 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        //8 帳號管理-權限對照表
+        #region Authority 權限
+        public static Dictionary<string,string> Authority() 
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "管理人員");
+            ValueOption.Add("2", "操作人員");
+            ValueOption.Add("3", "一般人員");
+            return ValueOption;
+        }
+        #endregion
+
         //庫存狀態
         #region StockState 庫存狀態
         public static Dictionary<string, string> StockState()

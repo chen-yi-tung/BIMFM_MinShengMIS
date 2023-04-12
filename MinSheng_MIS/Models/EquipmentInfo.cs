@@ -40,6 +40,8 @@ namespace MinSheng_MIS.Models
         public string FSN { get; set; }
         public Nullable<decimal> LocationX { get; set; }
         public Nullable<decimal> LocationY { get; set; }
+        public string Model { get; set; }
+        public string SubSystemID { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EquipmentReportForm> EquipmentReportForm { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Ajax.Utilities;
 using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
@@ -38,6 +39,12 @@ namespace MinSheng_MIS.Controllers
         #region 新增巡檢計畫
         public ActionResult Create()
         {
+            return View();
+        }
+        public ActionResult Create_()
+        {
+            
+            
             return View();
         }
         #endregion

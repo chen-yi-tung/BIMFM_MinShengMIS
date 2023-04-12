@@ -62,7 +62,7 @@
 <script src="../../Scripts/tool.js"></script>
 <script>
 
-    var getGridJSON = '@Url.Action("Account_Management", "DataGird")';
+    var getGridJSON = '@Url.Action("Account_Management", "Datagrid")';
 
     var baseUrl = "/Account_Management/";
 
@@ -96,8 +96,8 @@
 
         $('#DataGrid').datagrid({
 
-            //url: getGridJSON,
-            data: fakedata,
+            url: getGridJSON,
+            //data: fakedata,
             method: 'POST',
             queryParams: getQueryParams(),
             rownumbers: true,

@@ -17,7 +17,8 @@
 
 <script src="/Scripts/datatable.js"></script>
 <script>
-    const apiUrl = null;
+    const UserName = '@ViewBag.id';
+    const apiUrl = '@Url.Action("Delete_LoadData", "Account_Management")' + `/${UserName}`;
 
     const SerializedName = [
         { text: "帳號", value: "UserName" },
@@ -48,8 +49,8 @@
         url == null ? onSuccess(fakeData) :
             $.ajax({
                 url: url,
-                data: JSON.stringify(jsonData),
-                type: "POST",
+                //data: JSON.stringify(jsonData),
+                type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
@@ -86,24 +87,24 @@
             })
 
             function onDelete(e) {
-                let UserName = $("#d-UserName").val();
-                console.log(UserName);
+                //let UserName = $("#d-UserName").val();
+                //console.log(UserName);
                 let spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
                 $(this).append(spinner);
 
                 setTimeout(onSuccess, 1000);
 
-                /*
+                
                 $.ajax({
-                    url: '@Url.Action("Delete", "Account_Management")?UserName=' + UserName,
-                    data: JSON.stringify(UserName),
-                    type: "POST",
+                    url: '@Url.Action("Delete_Account", "Account_Management")' + `/${UserName}`,
+                    //data: JSON.stringify(UserName),
+                    type: "GET",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
                 })
-                */
+                
 
                 function onSuccess(res) {
                     console.log("Success");
@@ -111,7 +112,6 @@
                     modal.hide();
 
                     //if (res.ResponseCode == 0) {
-
                     createDialogModal({
                         id: "DialogModal-Success",
                         inner: "刪除成功！",
