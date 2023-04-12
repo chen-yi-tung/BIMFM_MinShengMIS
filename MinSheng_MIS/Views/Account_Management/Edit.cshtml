@@ -104,6 +104,7 @@
             $.ajax({
                 url: '@Url.Action("Edit_SaveData", "Account_Management")',
                 type: "POST",
+                dataType: 'text',
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -113,7 +114,7 @@
                 },
                 error: function (error) {
                     console.log(error);
-                    alert(error);
+                    alert(error.responseText);
                 }
             });
         })
