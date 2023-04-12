@@ -58,8 +58,6 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Account_Management(FormCollection form)
         {
-            string page = form["page"]?.ToString();
-            string rows = form["rows"]?.ToString();
             var service = new DatagridService();
             var a = service.GetJsonForGrid_Account_Management(form);
             string result = JsonConvert.SerializeObject(a);
