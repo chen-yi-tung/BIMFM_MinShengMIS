@@ -62,20 +62,18 @@ namespace MinSheng_MIS.Controllers
         public async Task<ActionResult> Create_Add(FormCollection form)
         {
             #region 判斷資料是否為空
-            string responsemessage = form["UserName"].IsNullOrWhiteSpace() ? "帳號為必填欄位!" : string.Empty;
-            responsemessage += form["UserPassword"].IsNullOrWhiteSpace() ? "密碼為必填欄位!" : string.Empty;
-            responsemessage += form["UserPWR"].IsNullOrWhiteSpace() ? "密碼與確認密碼不一致!" : string.Empty;
-            responsemessage += form["MyName"].IsNullOrWhiteSpace() ? "姓名為必填欄位!" : string.Empty;
-            responsemessage += form["Authority"].IsNullOrWhiteSpace() ? "權限為必填欄位!" : string.Empty;
-            responsemessage += form["Email"].IsNullOrWhiteSpace() ? "信箱為必填欄位!" : string.Empty;
+            string responsemessage = form["UserName"].IsNullOrWhiteSpace() ? "帳號為必填欄位!\n" : string.Empty;
+            responsemessage += form["UserPassword"].IsNullOrWhiteSpace() ? "密碼為必填欄位!\n" : string.Empty;
+            responsemessage += form["UserPWR"].IsNullOrWhiteSpace() ? "密碼與確認密碼不一致!\n" : string.Empty;
+            responsemessage += form["MyName"].IsNullOrWhiteSpace() ? "姓名為必填欄位!\n" : string.Empty;
+            responsemessage += form["Authority"].IsNullOrWhiteSpace() ? "權限為必填欄位!\n" : string.Empty;
+            responsemessage += form["Email"].IsNullOrWhiteSpace() ? "信箱為必填欄位!\n" : string.Empty;
             if(responsemessage != string.Empty)
             {
                 Response.StatusCode = 400;
                 return Content(responsemessage);
             }
             #endregion
-
-            //檢查帳號有沒有重複
 
             //新增帳號
             try
@@ -95,128 +93,109 @@ namespace MinSheng_MIS.Controllers
                 var result = await UserManager.CreateAsync(user, Pd);
                 if (result.Succeeded)
                 {
-                    JObject jo = new JObject
-                    {
-                        { "Succeed", true }
-                    };
                     Response.StatusCode = 201;
-                    string ResultString = JsonConvert.SerializeObject(jo);
-                    return Content(ResultString, "application/json");
+                    return Content("新增成功!");
                 }
                 else
                 {
-                    JObject jo = new JObject
-                    {
-                        { "Succeed", false },
-                        { "ErrorMessage",string.Join( ",", result.Errors.ToList() )}
-                    };
                     Response.StatusCode = 500;
-                    string ResultString = JsonConvert.SerializeObject(jo);
-                    return Content(ResultString, "application/json");
+                    string message = string.Join(",", result.Errors.ToList());
+                    return Content(message);
                 }
             }
             catch (Exception ex)
             {
-                JObject jo = new JObject
-                {
-                    { "Succeed", false },
-                    { "ErrorMessage",string.Join( ",", ex.Message )}
-                };
+                //JObject jo = new JObject
+                //{
+                //    { "Succeed", false },
+                //    { "ErrorMessage",string.Join( ",", ex.Message )}
+                //};
                 Response.StatusCode = 500;
-                string ResultString = JsonConvert.SerializeObject(jo);
-                return Content(ResultString, "application/json");
+                //string ResultString = JsonConvert.SerializeObject(jo);
+                return Content(string.Join(",", ex.Message));
             }
         }
         #endregion
 
         #region 編輯帳號
-        public ActionResult Edit()
+        [HttpGet]
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         [HttpGet]
         public ActionResult Edit_LoadData(string id)
         {
             AccountData accountData = new AccountData();
-            var data = accountData.GetCurAccountData(id);
+            var data = accountData.GetCurAccountData(id, false);
             string result = JsonConvert.SerializeObject(data);
             return Content(result, "application/json");
         }
-        public async Task<ActionResult> Edit_SaveData(FormCollection form)
+        [HttpPost]
+        public ActionResult Edit_SaveData(FormCollection form)
         {
             #region 判斷資料是否為空
-            string responsemessage = form["UserName"].IsNullOrWhiteSpace() ? "需要提供使用者帳號!!" : string.Empty;
-            responsemessage += form["MyName"].IsNullOrWhiteSpace() ? "姓名為必填欄位!" : string.Empty;
-            responsemessage += form["Authority"].IsNullOrWhiteSpace() ? "權限為必填欄位!" : string.Empty;
-            responsemessage += form["Email"].IsNullOrWhiteSpace() ? "信箱為必填欄位!" : string.Empty;
+            string responsemessage = form["UserName"].IsNullOrWhiteSpace() ? "需要提供使用者帳號!\n" : string.Empty;
+            responsemessage += form["MyName"].IsNullOrWhiteSpace() ? "姓名為必填欄位!\n" : string.Empty;
+            responsemessage += form["Authority"].IsNullOrWhiteSpace() ? "權限為必填欄位!\n" : string.Empty;
+            responsemessage += form["Email"].IsNullOrWhiteSpace() ? "信箱為必填欄位!\n" : string.Empty;
             if (responsemessage != string.Empty)
             {
                 Response.StatusCode = 400;
                 return Content(responsemessage);
             }
             #endregion
-            try
+
+            AccountData accountData = new AccountData();
+            string result = accountData.UpdateUserData(form);
+            switch (result)
             {
-                var getData = await UserManager.FindByIdAsync(form["UserName"].ToString());
-                if (getData != null)
-                {
-                    getData.MyName = form["MyName"].ToString();
-                    getData.Authority = form["Authority"].ToString();
-                    getData.Email = form["Email"].ToString();
-                    getData.PhoneNumber = form["PhoneNumber"].ToString();
-                    getData.Apartment = form["Apartment"].ToString();
-                    getData.Title = form["Title"].ToString();
-                    var result = await UserManager.UpdateAsync(getData);
-                    if (result.Succeeded)
-                    {
-                        Response.StatusCode = 200;
-                        return Content("編輯成功!");
-                    }
-                    else
-                    {
-                        Response.StatusCode = 500;
-                        return Content("編輯失敗!");
-                    }
-                }
-                else
-                {
-                    Response.StatusCode = 500;
+                case "200":
+                    Response.StatusCode = 200;
+                    return Content("編輯成功!");
+                case "400":
+                    Response.StatusCode = 400;
                     return Content("無此使用者!");
-                }
-            }
-            catch (Exception)
-            {
-                Response.StatusCode = 500;
-                return Content("更新過程出錯!");
+                default:
+                    Response.StatusCode = 500;
+                    //return Content(result);
+                    return Content("編輯過程出錯!");
             }
         }
         #endregion
 
         #region 刪除帳號
-        public ActionResult Delete()
+        [HttpGet]
+        public ActionResult Delete(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         [HttpGet]
-        public async Task<string> Delete_Account(string id) //把IsEnable轉為0就是不啟用此帳號了
+        public ActionResult Delete_LoadData(string id)
         {
-            var getData = await UserManager.FindByIdAsync(id);
-            if (getData != null)
+            AccountData accountData = new AccountData();
+            var data = accountData.GetCurAccountData(id, true);
+            string result = JsonConvert.SerializeObject(data);
+            return Content(result, "application/json");
+        }
+        [HttpGet]
+        public ActionResult Delete_Account(string id) //把IsEnable轉為0就是不啟用此帳號了
+        {
+            AccountData accountData = new AccountData();
+            string result = accountData.DeleteAccount(id);
+            switch (result)
             {
-                getData.IsEnabled = false;
-                var result = await UserManager.UpdateAsync(getData);
-                if (result.Succeeded)
-                {
-                    return "刪除成功!";
-                }
-                else
-                {
-                    return "刪除失敗!";
-                }
-            }
-            else
-            {
-                return "無此使用者!";
+                case "200":
+                    Response.StatusCode = 200;
+                    return Content("刪除成功!","application/json");
+                case "400":
+                    Response.StatusCode = 400;
+                    return Content("無此使用者!", "application/json");
+                default:
+                    Response.StatusCode = 500;
+                    return Content("處理過程出錯!", "application/json");
             }
         }
         #endregion
