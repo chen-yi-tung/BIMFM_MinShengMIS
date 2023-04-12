@@ -628,11 +628,34 @@
         })
         $("#submit").click(function () {
             console.log("onclick submit")
+            if (!$(".sample-path-draw-area").hasClass('d-none')) {
+                let modal = createDialogModal({
+                    id: "DialogModal",
+                    inner: "尚未儲存目前路線變更，是否儲存？",
+                    button: [
+                        { className: "btn btn-cancel", cancel: true, text: "取消" },
+                        {
+                            className: "btn btn-submit", text: "是", onClick: () => {
+                                saveCurrentPath();
+                                save();
+                                modal.hide();
+                            }
+                        },
+                        {
+                            className: "btn btn-delete", text: "否", onClick: () => {
+                                save();
+                                modal.hide();
+                            }
+                        },
+                    ]
+                })
+                return;
+            }
             save();
         })
     }
 
-    function addDatagridEvent() {
+    @* function addDatagridEvent() {
         const M_MDG = $('#DatagridModal-Maintain .modal-datagrid');
         const E_MDG = $('#Maintain-datagrid');
 
@@ -1203,20 +1226,41 @@
             return onSelectBtn(dg, index, sc);
         }
         return this;
-    }
+    } *@
 
     function save() {
-        let PathSampleOrder = getPathSampleOrder();
-        let PathSampleRecord = getPathSampleRecord();
+        let MaintainEquipment = $("#Maintain-datagrid").parent().hasClass("d-none") ? null : $("#Maintain-datagrid").datagrid('getRows').map(e=>e.EMFISN);
+        let MaintainUserID = $("#MaintainUserID").val();
+
+        if (MaintainEquipment !== null && MaintainUserID === ''){
+            return;
+        }
+
+        let RepairEquipment = $("#Repair-datagrid").parent().hasClass("d-none") ? null : $("#Repair-datagrid").datagrid('getRows').map(e=>e.RSN);
+        let RepairUserID = $("#RepairUserID").val();
+
+        if (RepairEquipment !== null && RepairUserID === ''){
+            return;
+        }
 
         let data = {
-            PathSample: {
-                ASN: $("#ASN").val(),
-                FSN: $("#FSN").val(),
-                PathTitle: $("#PathTitle").val()
-            },
-            PathSampleOrder: PathSampleOrder,
-            PathSampleRecord: PathSampleRecord
+            IPName: $("#IPName").val(),
+            PlanDate: $("#PlanDate").val(),
+            Shift: $("#Shift").val(),
+            UserID: $("#UserID").tagbox('getValues'),
+            MaintainUserID: MaintainUserID,
+            RepairUserID: RepairUserID,
+            MaintainEquipment: MaintainEquipment,
+            RepairEquipment: RepairEquipment,
+            InspectionPlanPaths: getPathDatas()
+        }
+
+        function getPathDatas(){
+            let arr = [];
+            for (let i = 1; i < PathGroup.prototype.count ; i++){
+                arr.push(JSON.parse(sessionStorage.getItem(`P${i}_pathData`)));
+            }
+            return arr.filter((e)=>e);
         }
 
         console.log(data);
