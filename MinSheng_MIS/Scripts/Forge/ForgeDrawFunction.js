@@ -144,7 +144,7 @@ function loadModel(url, pathID, onload) {
     ForgeDraw.removeAllDevice();
     ForgeDraw.removeAllData();
     ForgeDraw.clearSelectPos();
-    
+
     //開啟forge顯示
     $(".sample-path-draw-area").removeClass('d-none')
     togglePointerEvent(false);
@@ -343,7 +343,9 @@ function createPointDetailModal(point) {
  * @param {string} selector 表單
  */
 function createPath(selector) {
-    if (!$(".sample-path-draw-area").hasClass('d-none')) {
+    let isChange = isPathDataChange();
+    if (isChange === undefined) { return; }
+    if (!$(".sample-path-draw-area").hasClass('d-none') && isChange === true) {
         let modal = createDialogModal({
             id: "DialogModal",
             inner: "尚未儲存目前路線變更，是否儲存？",
@@ -369,13 +371,13 @@ function createPath(selector) {
 
     callback();
 
-    function callback(){
+    function callback() {
         let form = $(selector);
         if (form[0].checkValidity()) {
-    
+
             $(".sample-path-draw-area").removeClass("d-none");
             sortRouteModal.autoRouteToggle(selector === "#path-form");
-    
+
             $.ajax({
                 url: "/InspectionPlan_Management/AddPlanPath",
                 data: JSON.stringify(getDataGridData(form)),
@@ -389,9 +391,9 @@ function createPath(selector) {
                     addTooltip();
 
                     $("#current-path-id").val(pathID);
-    
+
                     sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(res));
-    
+
                     viewerUrl = window.location.origin + res.PathSample.BIMPath;
                     if (viewer) {
                         loadModel(viewerUrl, pathID, loadPath);
@@ -530,7 +532,7 @@ function saveCurrentPath(onSuccess = () => { }) {
     sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(pathData))
 
     sortRouteModal.autoRouteToggle(false);
-    updatePathDisplay(PathSampleOrder,pathID);
+    updatePathDisplay(PathSampleOrder, pathID);
     onSuccess();
 }
 
@@ -631,4 +633,23 @@ function getPathSampleOrder(selector = ".breadcrumb-item") {
 
 function getPathSampleRecord() {
     return ForgeDraw.getForgeLineData().map(e => (e ? { LocationX: e.x, LocationY: e.y } : null))
+}
+
+function isPathDataChange() {
+    let pathID = $("#current-path-id").val();
+    let oldDataStr = sessionStorage.getItem(`P${pathID}_pathData`)
+    let pathData = JSON.parse(oldDataStr);
+    let title = $("#current-path-title").val()
+    let PathSampleOrder = getPathSampleOrder("#current-path-display .breadcrumb-item");
+    let PathSampleRecord = getPathSampleRecord();
+
+    if (PathSampleRecord.every(e => e) === false) {
+        createDialogModal({ id: "DialogModal-Error", inner: "路線超出模型範圍！" })
+        return;
+    }
+
+    pathData.PathSample.PathTitle = title;
+    pathData.PathSampleOrder = PathSampleOrder;
+    pathData.PathSampleRecord = PathSampleRecord;
+    return JSON.stringify(pathData) !== oldDataStr;
 }
