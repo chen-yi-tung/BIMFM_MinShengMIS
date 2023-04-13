@@ -784,7 +784,7 @@ var ForgeDraw = (function (e) {
                 let b = arr[i + 1].position;
                 let p = this.findNearest(this.position, a, b);
                 let r = this.twoPointDistance(this.position, p);
-                if (result.r > r && r < 50) {
+                if (result.r > r && r < 20 * this.getForgeVectorDistance()) {
                     result = {
                         i: i,
                         r: r,
@@ -854,6 +854,13 @@ var ForgeDraw = (function (e) {
          */
         twoPointDistance(p1, p2) {
             return Math.sqrt(Math.pow((p1.x - p2.x), 2) + Math.pow((p1.y - p2.y), 2));
+        }
+        getForgeVectorDistance() {
+            let a = viewer.worldToClient(new THREE.Vector3(0, 0, 0));
+            let b = viewer.worldToClient(new THREE.Vector3(1, 0, 0));
+            let pa = new PIXI.Point(a.x, a.y);
+            let pb = new PIXI.Point(b.x, b.y);
+            return this.twoPointDistance(pa, pb);
         }
         on(eventKey, callback) {
             this.graphics.on(eventKey, callback);
