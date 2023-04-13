@@ -274,6 +274,7 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\AddInspectionPlan.cs" />
+    <Compile Include="Models\ViewModels\InspectionPlan_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\JsonResponseViewModel.cs" />
     <Compile Include="Models\MaintainAuditImage.cs">
       <DependentUpon>Model1.tt</DependentUpon>

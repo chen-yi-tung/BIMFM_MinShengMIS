@@ -21,8 +21,11 @@ namespace MinSheng_MIS.Controllers
 {
     public class InspectionPlan_ManagementController : Controller
     {
+
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+
         InspectionPlan_DataService IP_ds = new InspectionPlan_DataService();
+
         #region 巡檢計畫管理
         public ActionResult Management()
         {
