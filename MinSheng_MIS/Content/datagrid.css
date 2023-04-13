@@ -82,7 +82,21 @@
     color: var(--theme-datagrid-tbody-color) !important;
 }
 
-/* form footer info*/
+/* check-input */
+.datagrid-header-check,
+.datagrid-cell-check {
+    font-size: 20px !important;
+    width: 1.5em !important;
+    height: 1.3em !important;
+}
+
+.datagrid-header-check input,
+.datagrid-cell-check input {
+    width: 1em !important;
+    height: 1em !important;
+}
+
+/* form footer info */
 .datagrid .datagrid-pager {
     background: var(--theme-datagrid-thead-bg);
 }

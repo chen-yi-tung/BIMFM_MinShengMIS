@@ -819,7 +819,7 @@ function IPDG(options) {
 
     this.modal.one("shown.bs.modal", () => {
         self.initDatagrid(self.mdg);
-        self.modal.on("shown.bs.modal", () => { self.mdg.datagrid("load") });
+        self.modal.on("shown.bs.modal", () => { self.mdg.datagrid("load", getQueryParams(`#${self.options.id} form`)) });
         self.modal.on("hidden.bs.modal", () => { $(`#${self.options.id} form`)[0].reset(); self.mdg.datagrid("clearChecked"); });
     });
 
