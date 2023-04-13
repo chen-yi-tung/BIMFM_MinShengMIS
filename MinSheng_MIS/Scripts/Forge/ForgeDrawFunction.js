@@ -656,8 +656,8 @@ function isPathDataChange() {
     pathData.PathSampleOrder = PathSampleOrder;
     pathData.PathSampleRecord = PathSampleRecord;
 
-    console.log("old",JSON.parse(oldDataStr))
-    console.log("new",pathData)
+    //console.log("old",JSON.parse(oldDataStr))
+    //console.log("new",pathData)
 
     return JSON.stringify(pathData) !== oldDataStr;
 }
