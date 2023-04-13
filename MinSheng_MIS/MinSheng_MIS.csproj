@@ -246,10 +246,10 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\ImspectionPlanFloorPath.cs">
+    <Compile Include="Models\InspectionPlan.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\InspectionPlan.cs">
+    <Compile Include="Models\InspectionPlanFloorPath.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\InspectionPlanMaintain.cs">
