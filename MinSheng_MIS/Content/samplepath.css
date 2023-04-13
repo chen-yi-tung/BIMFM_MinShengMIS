@@ -423,3 +423,12 @@
 .path-title-edit-group .btn{
     flex: 0 0 auto;
 }
+
+/* screenshot-img-area */
+
+.screenshot-img-area{
+    position: relative;
+}
+.screenshot-img-area img{
+    position: absolute;
+}

@@ -661,3 +661,35 @@ function isPathDataChange() {
 
     return JSON.stringify(pathData) !== oldDataStr;
 }
+
+function addSaveSamplePathEvent() {
+    $("#SaveSamplePathModal").on("shown.bs.modal", async function () {
+        const area = document.querySelector(".screenshot-img-area");
+        const canvas = document.querySelector("#screenshot-canvas");
+
+        let rect = view.getBoundingClientRect();
+        area.style.width = rect.width + "px";
+        area.style.height = rect.height + "px";
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        document.querySelector("#SaveSamplePathModal .modal-dialog").style.maxWidth = `calc(${rect.width}px + 2.1rem)`;
+
+        const ctx = canvas.getContext('2d');
+        viewer.getScreenShot(0, 0, (e) => {
+            const img = new Image();
+            img.onload = async function () { 
+                ctx.drawImage(img, 0, 0);
+                const image = await ForgeDraw.getScreenShot();
+                ctx.drawImage(image, 0, 0);
+            }
+            img.src = e;
+        })
+        
+    })
+    $("#SaveSamplePathModal").on("hidden.bs.modal", async function () {
+        let area = document.querySelector(".screenshot-img-area");
+        area.innerHTML = '<canvas id="screenshot-canvas"></canvas>';
+
+    })
+}

@@ -330,7 +330,8 @@
                         <input type="text" id="current-path-id" hidden>
                         <label for="current-path-title">路線名稱</label>
                         <input class="form-control" type="text" id="current-path-title" name="current-path-title">
-                        <button class="btn btn-cancel" id="pathtitle-save">儲存模板</button>
+                        <button class="btn btn-cancel" id="pathtitle-save" data-bs-toggle="modal"
+                            data-bs-target="#SaveSamplePathModal">儲存模板</button>
                     </div>
                     <div class="input-group sample-path-group inner">
                         <div type="text" class="form-control">
@@ -401,6 +402,23 @@
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增計畫</button>
+</div>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="SaveSamplePathModal" style="--bs-modal-margin: 1.75rem;">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>儲存模板</h2>
+                <div class="screenshot-img-area">
+                    <canvas id="screenshot-canvas"></canvas>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="add-row">新增</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Autodesk Forge -->
@@ -542,6 +560,8 @@
                 }
             }
         })
+
+        addSaveSamplePathEvent();
     });
 
     async function addDropDownList() {
