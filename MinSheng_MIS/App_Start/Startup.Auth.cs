@@ -70,10 +70,10 @@ namespace MinSheng_MIS
             c.CheckEquipmentFormItem();
             #endregion
 
-            #region 檢查巡檢計畫是否過期還沒開始巡檢
-            Check_InspectionPlan checkplan = new Check_InspectionPlan();
-            checkplan.CheckInspectionPlan();
-            #endregion
+            //#region 檢查巡檢計畫是否過期還沒開始巡檢
+            //Check_InspectionPlan checkplan = new Check_InspectionPlan();
+            //checkplan.CheckInspectionPlan();
+            //#endregion
 
             System.Timers.Timer Wtimer = new System.Timers.Timer(3600000);//執行任務的週期 //小時3600000 1000
             Wtimer.Elapsed += new System.Timers.ElapsedEventHandler(Wtimer_Elapsed);
@@ -88,10 +88,10 @@ namespace MinSheng_MIS
             Check_EquipmentFormItem c = new Check_EquipmentFormItem();
             c.CheckEquipmentFormItem();
             #endregion
-            #region 檢查巡檢計畫是否過期還沒開始巡檢
-            Check_InspectionPlan checkplan = new Check_InspectionPlan();
-            checkplan.CheckInspectionPlan();
-            #endregion
+            //#region 檢查巡檢計畫是否過期還沒開始巡檢
+            //Check_InspectionPlan checkplan = new Check_InspectionPlan();
+            //checkplan.CheckInspectionPlan();
+            //#endregion
    
         }
     }
