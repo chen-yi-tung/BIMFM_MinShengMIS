@@ -181,14 +181,6 @@
           <Property Name="FloorName" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="BIMPath" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
-        <EntityType Name="ImspectionPlanFloorPath">
-          <Key>
-            <PropertyRef Name="FPSN" />
-          </Key>
-          <Property Name="FPSN" Type="nchar" MaxLength="15" Nullable="false" />
-          <Property Name="PSN" Type="nchar" MaxLength="12" Nullable="false" />
-          <Property Name="DeviceID" Type="char" MaxLength="6" Nullable="false" />
-        </EntityType>
         <EntityType Name="InspectionPlan">
           <Key>
             <PropertyRef Name="IPSN" />
@@ -208,6 +200,14 @@
           <Property Name="MaintainUserID" Type="nvarchar" MaxLength="256" />
           <Property Name="RepairUserID" Type="nvarchar" MaxLength="256" />
           <Property Name="PlanStartTime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="InspectionPlanFloorPath">
+          <Key>
+            <PropertyRef Name="FPSN" />
+          </Key>
+          <Property Name="FPSN" Type="nchar" MaxLength="15" Nullable="false" />
+          <Property Name="PSN" Type="nchar" MaxLength="12" Nullable="false" />
+          <Property Name="DeviceID" Type="char" MaxLength="6" Nullable="false" />
         </EntityType>
         <EntityType Name="InspectionPlanMaintain">
           <Key>
@@ -547,12 +547,12 @@
         </Association>
         <Association Name="FK_ImspectionPlanFloorPath_InspectionPlanPath">
           <End Role="InspectionPlanPath" Type="Self.InspectionPlanPath" Multiplicity="1" />
-          <End Role="ImspectionPlanFloorPath" Type="Self.ImspectionPlanFloorPath" Multiplicity="*" />
+          <End Role="InspectionPlanFloorPath" Type="Self.InspectionPlanFloorPath" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPlanPath">
               <PropertyRef Name="PSN" />
             </Principal>
-            <Dependent Role="ImspectionPlanFloorPath">
+            <Dependent Role="InspectionPlanFloorPath">
               <PropertyRef Name="PSN" />
             </Dependent>
           </ReferentialConstraint>
@@ -825,8 +825,8 @@
           <EntitySet Name="EquipmentMaintainItem" EntityType="Self.EquipmentMaintainItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentReportForm" EntityType="Self.EquipmentReportForm" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Floor_Info" EntityType="Self.Floor_Info" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="ImspectionPlanFloorPath" EntityType="Self.ImspectionPlanFloorPath" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlan" EntityType="Self.InspectionPlan" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionPlanFloorPath" EntityType="Self.InspectionPlanFloorPath" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlanMaintain" EntityType="Self.InspectionPlanMaintain" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlanMember" EntityType="Self.InspectionPlanMember" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlanPath" EntityType="Self.InspectionPlanPath" Schema="dbo" store:Type="Tables" />
@@ -891,7 +891,7 @@
           </AssociationSet>
           <AssociationSet Name="FK_ImspectionPlanFloorPath_InspectionPlanPath" Association="Self.FK_ImspectionPlanFloorPath_InspectionPlanPath">
             <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
-            <End Role="ImspectionPlanFloorPath" EntitySet="ImspectionPlanFloorPath" />
+            <End Role="InspectionPlanFloorPath" EntitySet="InspectionPlanFloorPath" />
           </AssociationSet>
           <AssociationSet Name="FK_InspectionPlanMaintain_EquipmentMaintainFormItem" Association="Self.FK_InspectionPlanMaintain_EquipmentMaintainFormItem">
             <End Role="EquipmentMaintainFormItem" EntitySet="EquipmentMaintainFormItem" />
@@ -997,8 +997,8 @@
           <EntitySet Name="EquipmentMaintainItem" EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainItem" />
           <EntitySet Name="EquipmentReportForm" EntityType="Bimfm_MinSheng_MISModel.EquipmentReportForm" />
           <EntitySet Name="Floor_Info" EntityType="Bimfm_MinSheng_MISModel.Floor_Info" />
-          <EntitySet Name="ImspectionPlanFloorPath" EntityType="Bimfm_MinSheng_MISModel.ImspectionPlanFloorPath" />
           <EntitySet Name="InspectionPlan" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan" />
+          <EntitySet Name="InspectionPlanFloorPath" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanFloorPath" />
           <EntitySet Name="InspectionPlanMaintain" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" />
           <EntitySet Name="InspectionPlanMember" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanMember" />
           <EntitySet Name="InspectionPlanPath" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanPath" />
@@ -1065,10 +1065,6 @@
             <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
             <End Role="ReportImage" EntitySet="ReportImage" />
           </AssociationSet>
-          <AssociationSet Name="FK_ImspectionPlanFloorPath_InspectionPlanPath" Association="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath">
-            <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
-            <End Role="ImspectionPlanFloorPath" EntitySet="ImspectionPlanFloorPath" />
-          </AssociationSet>
           <AssociationSet Name="FK_InspectionPlanMaintain_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
             <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
@@ -1088,6 +1084,10 @@
           <AssociationSet Name="FK_InspectionPlanRepair_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
             <End Role="InspectionPlanRepair" EntitySet="InspectionPlanRepair" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ImspectionPlanFloorPath_InspectionPlanPath" Association="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath">
+            <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
+            <End Role="InspectionPlanFloorPath" EntitySet="InspectionPlanFloorPath" />
           </AssociationSet>
           <AssociationSet Name="FK_MaintainAuditInfo_InspectionPlanMaintain" Association="Bimfm_MinSheng_MISModel.FK_MaintainAuditInfo_InspectionPlanMaintain">
             <End Role="InspectionPlanMaintain" EntitySet="InspectionPlanMaintain" />
@@ -1332,15 +1332,6 @@
           <Property Name="BIMPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AreaInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="Floor_Info" ToRole="AreaInfo" />
         </EntityType>
-        <EntityType Name="ImspectionPlanFloorPath">
-          <Key>
-            <PropertyRef Name="FPSN" />
-          </Key>
-          <Property Name="FPSN" Type="String" Nullable="false" MaxLength="15" FixedLength="true" Unicode="true" />
-          <Property Name="PSN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="true" />
-          <Property Name="DeviceID" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
-          <NavigationProperty Name="InspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath" FromRole="ImspectionPlanFloorPath" ToRole="InspectionPlanPath" />
-        </EntityType>
         <EntityType Name="InspectionPlan">
           <Key>
             <PropertyRef Name="IPSN" />
@@ -1366,6 +1357,15 @@
           <NavigationProperty Name="InspectionPlanMember" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMember_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanMember" />
           <NavigationProperty Name="InspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanPath_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanPath" />
           <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlanRepair" />
+        </EntityType>
+        <EntityType Name="InspectionPlanFloorPath">
+          <Key>
+            <PropertyRef Name="FPSN" />
+          </Key>
+          <Property Name="FPSN" Type="String" Nullable="false" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="PSN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="true" />
+          <Property Name="DeviceID" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="InspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath" FromRole="InspectionPlanFloorPath" ToRole="InspectionPlanPath" />
         </EntityType>
         <EntityType Name="InspectionPlanMaintain">
           <Key>
@@ -1406,8 +1406,8 @@
           <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawInspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_DrawInspectionPlanPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="DrawInspectionPlanPath" />
-          <NavigationProperty Name="ImspectionPlanFloorPath" Relationship="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="ImspectionPlanFloorPath" />
           <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanPath_InspectionPlan" FromRole="InspectionPlanPath" ToRole="InspectionPlan" />
+          <NavigationProperty Name="InspectionPlanFloorPath" Relationship="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="InspectionPlanFloorPath" />
         </EntityType>
         <EntityType Name="InspectionPlanRepair">
           <Key>
@@ -1748,18 +1748,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ImspectionPlanFloorPath_InspectionPlanPath">
-          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanPath" Role="InspectionPlanPath" Multiplicity="1" />
-          <End Type="Bimfm_MinSheng_MISModel.ImspectionPlanFloorPath" Role="ImspectionPlanFloorPath" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="InspectionPlanPath">
-              <PropertyRef Name="PSN" />
-            </Principal>
-            <Dependent Role="ImspectionPlanFloorPath">
-              <PropertyRef Name="PSN" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_InspectionPlanMaintain_InspectionPlan">
           <End Type="Bimfm_MinSheng_MISModel.InspectionPlan" Role="InspectionPlan" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" Role="InspectionPlanMaintain" Multiplicity="*" />
@@ -1817,6 +1805,18 @@
             </Principal>
             <Dependent Role="InspectionPlanRepair">
               <PropertyRef Name="IPSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ImspectionPlanFloorPath_InspectionPlanPath">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanPath" Role="InspectionPlanPath" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlanFloorPath" Role="InspectionPlanFloorPath" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlanPath">
+              <PropertyRef Name="PSN" />
+            </Principal>
+            <Dependent Role="InspectionPlanFloorPath">
+              <PropertyRef Name="PSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2165,15 +2165,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="ImspectionPlanFloorPath">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ImspectionPlanFloorPath">
-              <MappingFragment StoreEntitySet="ImspectionPlanFloorPath">
-                <ScalarProperty Name="DeviceID" ColumnName="DeviceID" />
-                <ScalarProperty Name="PSN" ColumnName="PSN" />
-                <ScalarProperty Name="FPSN" ColumnName="FPSN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="InspectionPlan">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan">
               <MappingFragment StoreEntitySet="InspectionPlan">
@@ -2192,6 +2183,15 @@
                 <ScalarProperty Name="PlanDate" ColumnName="PlanDate" />
                 <ScalarProperty Name="IPName" ColumnName="IPName" />
                 <ScalarProperty Name="IPSN" ColumnName="IPSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InspectionPlanFloorPath">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlanFloorPath">
+              <MappingFragment StoreEntitySet="InspectionPlanFloorPath">
+                <ScalarProperty Name="DeviceID" ColumnName="DeviceID" />
+                <ScalarProperty Name="PSN" ColumnName="PSN" />
+                <ScalarProperty Name="FPSN" ColumnName="FPSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
