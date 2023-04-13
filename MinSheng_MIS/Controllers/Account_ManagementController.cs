@@ -193,7 +193,6 @@ namespace MinSheng_MIS.Controllers
                     jo.Add("Succeed", true);
                     string result1 = JsonConvert.SerializeObject(jo);
                     return Content(result1, "application/json");
-
                     //return Content("刪除成功!","application/json");
                 case "400":
                     Response.StatusCode = 400;
