@@ -85,7 +85,10 @@
                 contentType: false,
                 success: function (response) {
                     console.log(response);
-                    alert(response);
+                    //alert(response);
+                    let url = '@Url.Action("Management", "Account_Management")';
+                    window.location.href = url;
+                    //onHide: () => { window.location.href = '@Url.Action("Management", "Account_Management")'; }
                 },
                 error: function (error) {
                     console.log(error);
