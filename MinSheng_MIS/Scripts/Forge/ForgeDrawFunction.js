@@ -638,6 +638,10 @@ function getPathSampleRecord() {
 function isPathDataChange() {
     let pathID = $("#current-path-id").val();
     let oldDataStr = sessionStorage.getItem(`P${pathID}_pathData`)
+
+    if (!oldDataStr) {
+        return false;
+    }
     let pathData = JSON.parse(oldDataStr);
     let title = $("#current-path-title").val()
     let PathSampleOrder = getPathSampleOrder("#current-path-display .breadcrumb-item");
@@ -651,5 +655,9 @@ function isPathDataChange() {
     pathData.PathSample.PathTitle = title;
     pathData.PathSampleOrder = PathSampleOrder;
     pathData.PathSampleRecord = PathSampleRecord;
+
+    console.log("old",JSON.parse(oldDataStr))
+    console.log("new",pathData)
+
     return JSON.stringify(pathData) !== oldDataStr;
 }
