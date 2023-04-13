@@ -348,6 +348,7 @@
     <Compile Include="Models\ViewModels\ReadEqMaintainItemViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Check_EquipmentFormItem.cs" />
+    <Compile Include="Services\Check_InspectionPlan.cs" />
     <Compile Include="Services\DatagridService.cs" />
     <Compile Include="Services\EquipmentMaintainForm_DataService.cs" />
     <Compile Include="Services\InspectionPlan_DataService.cs" />
