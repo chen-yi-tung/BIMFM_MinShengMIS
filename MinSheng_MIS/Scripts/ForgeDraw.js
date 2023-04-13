@@ -784,7 +784,7 @@ var ForgeDraw = (function (e) {
                 let b = arr[i + 1].position;
                 let p = this.findNearest(this.position, a, b);
                 let r = this.twoPointDistance(this.position, p);
-                if (result.r > r && r < 25 * this.getForgeVectorDistance()) {
+                if (result.r > r && r < 20 * this.getForgeVectorDistance()) {
                     result = {
                         i: i,
                         r: r,
