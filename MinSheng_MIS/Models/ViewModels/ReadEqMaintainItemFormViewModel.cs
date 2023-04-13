@@ -142,7 +142,7 @@ namespace MinSheng_MIS.Models.ViewModels
                 //保養備註
                 inspectionPlanMaintain.MaintainContent = item.MaintainContent;
                 //填報時間
-                inspectionPlanMaintain.MaintainDate = item.MaintainDate.ToString("yyyy/MM/dd HH:mm:ss");
+                inspectionPlanMaintain.MaintainDate = item.MaintainDate?.ToString("yyyy/MM/dd HH:mm:ss");
                 //保養照片
                 var imgpathlist = db.MaintainCompletionImage.Where(x => x.IPMSN == item.IPMSN).Select(x => x.ImgPath).ToList();
                 inspectionPlanMaintain.ImgPath = imgpathlist;

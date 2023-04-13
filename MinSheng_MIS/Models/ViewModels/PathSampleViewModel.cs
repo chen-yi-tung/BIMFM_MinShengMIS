@@ -23,6 +23,7 @@ namespace MinSheng_MIS.Models.ViewModels
             public string PathTitle { get; set; }
             public string BIMPath { get; set; }
             public List<BIMDevices> BIMDevices { get; set; }
+            public List<BIMDevices> Beacon { get; set; }
         }
         public class PathSampleRecord
         {

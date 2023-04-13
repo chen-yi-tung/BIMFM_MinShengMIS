@@ -217,10 +217,10 @@
           <Property Name="IPSN" Type="nchar" MaxLength="9" Nullable="false" />
           <Property Name="EMFISN" Type="nchar" MaxLength="20" Nullable="false" />
           <Property Name="MaintainState" Type="char" MaxLength="1" Nullable="false" />
-          <Property Name="MaintainUserID" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="MaintainDate" Type="datetime" Nullable="false" />
-          <Property Name="MaintainContent" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="MaintainStateOfFilling" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="MaintainUserID" Type="nvarchar" MaxLength="256" />
+          <Property Name="MaintainDate" Type="datetime" />
+          <Property Name="MaintainContent" Type="nvarchar" MaxLength="200" />
+          <Property Name="MaintainStateOfFilling" Type="char" MaxLength="1" />
         </EntityType>
         <EntityType Name="InspectionPlanMember">
           <Key>
@@ -1375,10 +1375,10 @@
           <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
           <Property Name="EMFISN" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="true" />
           <Property Name="MaintainState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="MaintainUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="MaintainDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="MaintainContent" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="MaintainStateOfFilling" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="MaintainUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="MaintainDate" Type="DateTime" Precision="3" />
+          <Property Name="MaintainContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="MaintainStateOfFilling" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <NavigationProperty Name="EquipmentMaintainFormItem" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_EquipmentMaintainFormItem" FromRole="InspectionPlanMaintain" ToRole="EquipmentMaintainFormItem" />
           <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan" FromRole="InspectionPlanMaintain" ToRole="InspectionPlan" />
           <NavigationProperty Name="InspectionPlan1" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan1" FromRole="InspectionPlanMaintain" ToRole="InspectionPlan" />
