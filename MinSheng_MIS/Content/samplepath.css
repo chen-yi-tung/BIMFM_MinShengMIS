@@ -429,6 +429,8 @@
 .screenshot-img-area{
     position: relative;
 }
-.screenshot-img-area img{
-    position: absolute;
+
+#screenshot-canvas{
+    width: 100%;
+    height: 100%;
 }

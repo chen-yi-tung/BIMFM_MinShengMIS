@@ -114,14 +114,15 @@ function calcPath() {
  * 顯示路線於網頁上
  * @param {string[]} path 路線資料
  * @param {string} pathID 預設為 null
+ * @param {string} selector 預設為 "#current-path-display"
  */
-function updatePathDisplay(path = undefined, pathID = null) {
+function updatePathDisplay(path = undefined, pathID = null, selector = "#current-path-display") {
     console.log("updatePathDisplay path: ", path);
     //自動更新選項沒有開啟時，calcPath()回傳null，不做任何事
     if (path === null) { return; }
 
     //清空顯示後，重新帶入對應路線資料
-    let display = $("#current-path-display");
+    let display = $(selector);
     let pathID_Display = pathID && $(`.sample-path-group[data-path-id='${pathID}'] #path-display`);
     console.log(pathID_Display)
     display.empty();
@@ -343,33 +344,8 @@ function createPointDetailModal(point) {
  * @param {string} selector 表單
  */
 function createPath(selector) {
-    let isChange = isPathDataChange();
-    if (isChange === undefined) { return; }
-    if (!$(".sample-path-draw-area").hasClass('d-none') && isChange === true) {
-        let modal = createDialogModal({
-            id: "DialogModal",
-            inner: "尚未儲存目前路線變更，是否儲存？",
-            button: [
-                { className: "btn btn-cancel", cancel: true, text: "取消" },
-                {
-                    className: "btn btn-submit", text: "是", onClick: () => {
-                        saveCurrentPath();
-                        callback();
-                        modal.hide();
-                    }
-                },
-                {
-                    className: "btn btn-delete", text: "否", onClick: () => {
-                        callback();
-                        modal.hide();
-                    }
-                },
-            ]
-        })
-        return;
-    }
 
-    callback();
+    checkNeedSaveCurrentPath(callback);
 
     function callback() {
         let form = $(selector);
@@ -626,31 +602,43 @@ function reloadDeviceData() {
     }
 }
 
-
+/**
+ * 獲取路線順序陣列
+ * @param {string} selector 預設為".breadcrumb-item"
+ * @returns {string[]} 路線順序陣列
+ */
 function getPathSampleOrder(selector = ".breadcrumb-item") {
     return $(selector).toArray().map(e => e.innerHTML)
 }
 
+/**
+ * 獲取路線路徑點陣列
+ * @returns {object[]} 路線路徑點陣列
+ */
 function getPathSampleRecord() {
     return ForgeDraw.getForgeLineData().map(e => (e ? { LocationX: e.x, LocationY: e.y } : null))
 }
 
+/**
+ * 目前的路線資料與已儲存路線資料不一致，則回傳true
+ * 
+ * 若一致或無已儲存資料則回傳false
+ * 
+ * 若路線超出模型範圍則回傳undefined
+ * @returns {boolean | undefined} 
+ */
 function isPathDataChange() {
     let pathID = $("#current-path-id").val();
     let oldDataStr = sessionStorage.getItem(`P${pathID}_pathData`)
 
-    if (!oldDataStr) {
-        return false;
-    }
+    if (!oldDataStr) { return false; }
+
     let pathData = JSON.parse(oldDataStr);
     let title = $("#current-path-title").val()
     let PathSampleOrder = getPathSampleOrder("#current-path-display .breadcrumb-item");
     let PathSampleRecord = getPathSampleRecord();
 
-    if (PathSampleRecord.every(e => e) === false) {
-        createDialogModal({ id: "DialogModal-Error", inner: "路線超出模型範圍！" })
-        return;
-    }
+    if (PathSampleRecord.every(e => e) === false) { return undefined; }
 
     pathData.PathSample.PathTitle = title;
     pathData.PathSampleOrder = PathSampleOrder;
@@ -662,34 +650,146 @@ function isPathDataChange() {
     return JSON.stringify(pathData) !== oldDataStr;
 }
 
-function addSaveSamplePathEvent() {
-    $("#SaveSamplePathModal").on("shown.bs.modal", async function () {
-        const area = document.querySelector(".screenshot-img-area");
-        const canvas = document.querySelector("#screenshot-canvas");
+/**
+ * 檢查是否需要儲存路徑的標準行為 
+ * @param {Function} callback 檢查完畢後要做的事
+ */
+function checkNeedSaveCurrentPath(callback) {
+    let isChange = isPathDataChange();
 
-        let rect = view.getBoundingClientRect();
-        area.style.width = rect.width + "px";
-        area.style.height = rect.height + "px";
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+    if (isChange === undefined) {
+        createDialogModal({ id: "DialogModal-Error", inner: "路線超出模型範圍！" })
+        return;
+    }
 
-        document.querySelector("#SaveSamplePathModal .modal-dialog").style.maxWidth = `calc(${rect.width}px + 2.1rem)`;
-
-        const ctx = canvas.getContext('2d');
-        viewer.getScreenShot(0, 0, (e) => {
-            const img = new Image();
-            img.onload = async function () { 
-                ctx.drawImage(img, 0, 0);
-                const image = await ForgeDraw.getScreenShot();
-                ctx.drawImage(image, 0, 0);
-            }
-            img.src = e;
+    if (!$(".sample-path-draw-area").hasClass('d-none') && isChange === true) {
+        let modal = createDialogModal({
+            id: "DialogModal",
+            inner: "尚未儲存目前路線變更，是否儲存？",
+            button: [
+                { className: "btn btn-cancel", cancel: true, text: "取消" },
+                { className: "btn btn-submit", text: "是", onClick: () => { saveCurrentPath(); callback(); modal.hide(); } },
+                { className: "btn btn-delete", text: "否", onClick: () => { callback(); modal.hide(); } },
+            ]
         })
+        return;
+    }
+
+    callback();
+}
+
+function addSaveSamplePathEvent() {
+    $("#ShowSaveSamplePathModal").click(function () {
+        checkNeedSaveCurrentPath(() => {
+            bootstrap.Modal.getOrCreateInstance(document.querySelector('#SaveSamplePathModal')).show();
+        })
+    })
+    $("#SaveSamplePathModal").on("shown.bs.modal", async function () {
+        let pathID = $("#current-path-id").val();
         
+        ForgeDraw.removeAllDevice();
+        let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`));
+        createBeacons(pathData.PathSample.Beacon);
+
+        putImageToModal();
+        putDataToModal();
+
+        function getOrderWithoutEquipment(){
+            let devicelist = ForgeDraw.devices;
+            let pathList = $("#current-path-display .breadcrumb-item");
+            let arr = []
+            pathList.each((i, e) => {
+                let dp = devicelist.find(dp => dp.name == e.innerHTML);
+                if (dp && dp.type === "藍芽"){ arr.push(dp.name); }
+            })
+            return arr;
+        }
+
+        function putImageToModal() {
+            const canvas = document.querySelector("#screenshot-canvas");
+            let rect = view.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            const ctx = canvas.getContext('2d');
+            viewer.getScreenShot(0, 0, (e) => {
+                const fimg = new Image();
+                fimg.onload = async function () {
+                    ctx.drawImage(fimg, 0, 0);
+                    const pimg = await ForgeDraw.getScreenShot();
+                    ctx.drawImage(pimg, 0, 0);
+                }
+                fimg.src = e;
+            })
+        }
+
+        function putDataToModal() {
+            let pathID = $("#current-path-id").val();
+            let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`));
+
+            $("#SaveSamplePathForm_Area").val(pathData.PathSample.Area);
+            $("#SaveSamplePathForm_ASN").val(pathData.PathSample.ASN);
+            $("#SaveSamplePathForm_Floor").val(pathData.PathSample.Floor);
+            $("#SaveSamplePathForm_FSN").val(pathData.PathSample.FSN);
+            $("#SaveSamplePathForm_PathTitle").val(pathData.PathSample.PathTitle);
+
+            updatePathDisplay(getOrderWithoutEquipment(), null, "#SaveSamplePathForm_path-display");
+        }
     })
     $("#SaveSamplePathModal").on("hidden.bs.modal", async function () {
-        let area = document.querySelector(".screenshot-img-area");
-        area.innerHTML = '<canvas id="screenshot-canvas"></canvas>';
+        document.querySelector(".screenshot-img-area").innerHTML = '<canvas id="screenshot-canvas"></canvas>';
+        reloadDeviceData();
+    })
+    $("#SaveSamplePath").click(function () {
+        let PathSampleOrder = getPathSampleOrder("#SaveSamplePathForm_path-display .breadcrumb-item");
+        let PathSampleRecord = getPathSampleRecord();
 
+        if (PathSampleRecord.every(e => e) === false) {
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
+            return
+        }
+        if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0) {
+            createDialogModal({ id: "DialogModal-Error", inner: "新增失敗！沒有規劃路線資料！" });
+            return;
+        }
+
+        let data = {
+            PathSample: {
+                ASN: $("#SaveSamplePathForm_ASN").val(),
+                FSN: $("#SaveSamplePathForm_FSN").val(),
+                PathTitle: $("#SaveSamplePathForm_PathTitle").val()
+            },
+            PathSampleOrder: PathSampleOrder,
+            PathSampleRecord: PathSampleRecord
+        }
+
+        $.ajax({
+            url: "/SamplePath_Management/CreateSamplePath",
+            data: JSON.stringify(data),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "儲存模板成功！",
+                onHide: () => { bootstrap.Modal.getOrCreateInstance(document.querySelector('#SaveSamplePathModal')).hide(); }
+            });
+        }
+        function onError(res) {
+            let errtext;
+            switch (res.responseText) {
+                case "duplicate title":
+                    errtext = "巡檢路線模板名稱重複！";
+                    break;
+                default:
+                    errtext = "";
+                    break;
+            }
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！${errtext}` })
+        }
     })
 }

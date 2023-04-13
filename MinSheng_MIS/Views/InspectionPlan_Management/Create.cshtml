@@ -330,8 +330,7 @@
                         <input type="text" id="current-path-id" hidden>
                         <label for="current-path-title">路線名稱</label>
                         <input class="form-control" type="text" id="current-path-title" name="current-path-title">
-                        <button class="btn btn-cancel" id="pathtitle-save" data-bs-toggle="modal"
-                            data-bs-target="#SaveSamplePathModal">儲存模板</button>
+                        <button class="btn btn-cancel" id="ShowSaveSamplePathModal">儲存模板</button>
                     </div>
                     <div class="input-group sample-path-group inner">
                         <div type="text" class="form-control">
@@ -409,13 +408,41 @@
         <div class="modal-content">
             <div class="modal-body">
                 <h2>儲存模板</h2>
-                <div class="screenshot-img-area">
+                <div class="search-area bg-transparent m-0">
+                    <form class="form" id="SaveSamplePathForm">
+                        <div class="form-group w-lg-250px">
+                            <label for="SaveSamplePathForm_Area">棟別</label>
+                            <input id="SaveSamplePathForm_ASN" name="ASN" type="text" hidden />
+                            <input class="form-control readonly" id="SaveSamplePathForm_Area" name="Area" type="text"
+                                readonly />
+                        </div>
+                        <div class="form-group w-lg-250px">
+                            <label for="SaveSamplePathForm_Floor">樓層</label>
+                            <input id="SaveSamplePathForm_FSN" name="FSN" type="text" hidden />
+                            <input class="form-control readonly" id="SaveSamplePathForm_Floor" name="Floor" type="text"
+                                readonly />
+                        </div>
+                        <div class="form-group w-lg-250px">
+                            <label for="SaveSamplePathForm_PathTitle">模板名稱</label>
+                            <input class="form-control" id="SaveSamplePathForm_PathTitle" name="PathTitle"
+                                type="text" />
+                        </div>
+                    </form>
+                </div>
+                <div class="input-group sample-path-group inner">
+                    <div type="text" class="form-control">
+                        <nav>
+                            <ol class="breadcrumb" id="SaveSamplePathForm_path-display"></ol>
+                        </nav>
+                    </div>
+                </div>
+                <div class="screenshot-img-area mt-3">
                     <canvas id="screenshot-canvas"></canvas>
                 </div>
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                <button type="button" class="btn btn-export" id="add-row">新增</button>
+                <button type="button" class="btn btn-export" id="SaveSamplePath">新增</button>
             </div>
         </div>
     </div>
@@ -518,36 +545,11 @@
                 icon: "icon-search",
                 tooltip: "查看此路線",
                 onClick: (e) => {
-                    let pathID = $(e.target).closest(".sample-path-group").attr("data-path-id");
-                    let isChange = isPathDataChange();
-                    if (isChange === undefined) { return; }
-                    if (!$(".sample-path-draw-area").hasClass('d-none') && isChange === true) {
-                        let modal = createDialogModal({
-                            id: "DialogModal",
-                            inner: "尚未儲存目前路線變更，是否儲存？",
-                            button: [
-                                { className: "btn btn-cancel", cancel: true, text: "取消" },
-                                {
-                                    className: "btn btn-submit", text: "是", onClick: () => {
-                                        saveCurrentPath();
-                                        callback();
-                                        modal.hide();
-                                    }
-                                },
-                                {
-                                    className: "btn btn-delete", text: "否", onClick: () => {
-                                        callback();
-                                        modal.hide();
-                                    }
-                                },
-                            ]
-                        })
-                        return;
-                    }
 
-                    callback();
+                    checkNeedSaveCurrentPath(callback);
 
                     function callback() {
+                        let pathID = $(e.target).closest(".sample-path-group").attr("data-path-id");
                         let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
                         $("#current-path-title").val(pathData.PathSample.PathTitle);
                         sortRouteModal.autoRouteToggle(false);
@@ -650,32 +652,7 @@
         })
         $("#submit").click(function () {
             console.log("onclick submit")
-            let isChange = isPathDataChange();
-            if (isChange === undefined) { return; }
-            if (!$(".sample-path-draw-area").hasClass('d-none') && isChange === true) {
-                let modal = createDialogModal({
-                    id: "DialogModal",
-                    inner: "尚未儲存目前路線變更，是否儲存？",
-                    button: [
-                        { className: "btn btn-cancel", cancel: true, text: "取消" },
-                        {
-                            className: "btn btn-submit", text: "是", onClick: () => {
-                                saveCurrentPath();
-                                save();
-                                modal.hide();
-                            }
-                        },
-                        {
-                            className: "btn btn-delete", text: "否", onClick: () => {
-                                save();
-                                modal.hide();
-                            }
-                        },
-                    ]
-                })
-                return;
-            }
-            save();
+            checkNeedSaveCurrentPath(save);
         })
     }
 
