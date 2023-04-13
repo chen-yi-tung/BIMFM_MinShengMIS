@@ -13,6 +13,8 @@ using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
 using static MinSheng_MIS.Models.ViewModels.ReadInspectionPlanPathData;
+using static MinSheng_MIS.Models.ViewModels.AddInspectionPlan;
+using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
 using PathSample = MinSheng_MIS.Models.ViewModels.ReadInspectionPlanPathData.PathSample;
 
 namespace MinSheng_MIS.Controllers
@@ -41,11 +43,123 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-        public ActionResult Create_()
+        [HttpPost]
+        public ActionResult CreateInspectionPlan(AddInspectionPlan InspectionPlan)
         {
-            
-            
-            return View();
+            #region 新增巡檢計畫 dbo.InspectionPlan
+            InspectionPlan plan = new InspectionPlan();
+            //為巡檢計畫編號
+            var count = db.InspectionPlan.Where(x => x.PlanDate == InspectionPlan.PlanDate.Date).Count() + 1;
+            plan.IPSN = "P" + InspectionPlan.PlanDate.ToString("yyMMdd") + count.ToString().PadLeft(2, '0');
+            var IPSN = plan.IPSN;
+            plan.IPName = InspectionPlan.IPName;
+            plan.PlanDate = InspectionPlan.PlanDate.Date;
+            plan.Shift = InspectionPlan.Shift;
+            plan.MaintainUserID = InspectionPlan.MaintainUserID;
+            plan.RepairUserID = InspectionPlan.RepairUserID;
+            //計算定期保養數量
+            plan.MaintainAmount = InspectionPlan.MaintainEquipment.Count();
+            //計算維修設備數量
+            plan.RepairAmount = InspectionPlan.RepairEquipment.Count();
+            plan.PlanState = "1"; //=待執行
+            plan.PlanCreateUserID = InspectionPlan.PlanCreateUserID; //當前登入者帳號
+            db.InspectionPlan.AddOrUpdate(plan);
+            db.SaveChanges();
+            #endregion
+            #region 新增巡檢計畫人員資料 dbo.InspectionPlanMember
+            if(InspectionPlan.UserID != null)
+            {
+                int i = 1;
+                foreach(var member in InspectionPlan.UserID)
+                {
+                    InspectionPlanMember planMember = new InspectionPlanMember();
+                    planMember.IPSN = IPSN;
+                    planMember.PMSN = IPSN + "_" + i;
+                    planMember.UserID = member;
+                    db.InspectionPlanMember.AddOrUpdate(planMember);
+                    db.SaveChanges();
+                    i++;
+                }
+            }
+            #endregion 巡檢計畫含保養 dbo.InspectionPlanMaintain
+            if(InspectionPlan.MaintainEquipment != null)
+            {
+                int i = 1;
+                foreach (var EMFISN in InspectionPlan.MaintainEquipment)
+                {
+                    //新增巡檢計畫含保養
+                    InspectionPlanMaintain planMaintain = new InspectionPlanMaintain();
+                    planMaintain.IPSN = IPSN;
+                    planMaintain.IPMSN = IPSN + "_M" + i.ToString().PadLeft(2,'0');
+                    planMaintain.EMFISN = EMFISN;
+                    planMaintain.MaintainState = "1";//已派工
+                    db.InspectionPlanMaintain.AddOrUpdate(planMaintain);
+                    db.SaveChanges();
+                    //更改該保養單狀態
+                    EquipmentMaintainFormItem maintainformitem = db.EquipmentMaintainFormItem.Find(EMFISN);
+                    maintainformitem.FormItemState = "2"; //已派工
+                    db.EquipmentMaintainFormItem.AddOrUpdate(maintainformitem);
+                    db.SaveChanges();
+                    i++;
+                }
+            }
+            #region 巡檢計畫含維修 dbo.InspectionPlanRepair
+            if(InspectionPlan.RepairEquipment != null)
+            {
+                int i = 1;
+                foreach(var RSN in InspectionPlan.RepairEquipment)
+                {
+                    //巡檢計畫含維修
+                    InspectionPlanRepair planRepair = new InspectionPlanRepair();
+                    planRepair.IPSN = IPSN;
+                    planRepair.IPRSN = IPSN + "_R" + i.ToString().PadLeft(2, '0');
+                    planRepair.RSN = RSN;
+                    planRepair.RepairState = "1"; //已派工
+                    db.InspectionPlanRepair.AddOrUpdate(planRepair);
+                    db.SaveChanges();
+                    //更改報修單狀態
+                    EquipmentReportForm report = db.EquipmentReportForm.Find(RSN);
+                    report.ReportState = "2"; //已派工
+                    db.EquipmentReportForm.AddOrUpdate(report);
+                    db.SaveChanges();
+                    i++;
+                }
+            }
+            #endregion
+            #region 巡檢路線規劃(路徑標題及路徑順序)
+            if(InspectionPlan.InspectionPlanPaths != null)
+            {
+                var i = 0;
+                foreach(var paths in InspectionPlan.InspectionPlanPaths)
+                {
+                    #region 巡檢計畫路徑 dbo.InspectionPlanPath
+                    InspectionPlanPath planPath = new InspectionPlanPath();
+                    planPath.IPSN = IPSN;
+                    planPath.PSN = IPSN + "_" + i.ToString().PadLeft(2, '0');
+                    var PSN = planPath.PSN;
+                    planPath.FSN = paths.PathSample.FSN;
+                    planPath.PathTitle = paths.PathSample.PathTitle;
+                    db.InspectionPlanPath.AddOrUpdate(planPath);
+                    db.SaveChanges();
+                    #endregion
+                    #region 巡檢計畫單樓層路徑 dbo.InspectionPlanFloorPath
+                    if(paths.PathSampleOrder != null)
+                    {
+                        foreach(var DeviceID in paths.PathSampleOrder)
+                        {
+                            //InspectionPlanFloorPath floorPath = new InspectionPlanFloorPath();
+
+                        }
+                    }
+                    #endregion
+                    i++;
+                }
+            }
+            #endregion
+            JObject jo = new JObject();
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
         }
         #endregion
 

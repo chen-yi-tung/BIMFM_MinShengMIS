@@ -1265,15 +1265,15 @@
 
         console.log(data);
 
-        /* $.ajax({
-            url: '@Url.Action("aaa", "bbb")',
+        $.ajax({
+            url: '@Url.Action("CreateInspectionPlan", "InspectionPlan_Management")',
             data: JSON.stringify(data),
             type: "POST",
             dataType: "json",
             contentType: "application/json;charset=utf-8",
             success: onSuccess,
             error: onError
-        }) */
+        })
 
         function onSuccess(res) {
             console.log(res);
