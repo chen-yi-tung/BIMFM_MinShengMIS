@@ -73,11 +73,16 @@ namespace MinSheng_MIS
             Wtimer.Enabled = true;
             Wtimer.AutoReset = true;
             #endregion
+
+            #region 檢查巡檢計畫是否過期還沒開始巡檢
+            #endregion
         }
         async void Wtimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            #region 檢查是否需產生設備保養單項目
             Check_EquipmentFormItem c = new Check_EquipmentFormItem();
             c.CheckEquipmentFormItem();
+            #endregion
         }
     }
 }
