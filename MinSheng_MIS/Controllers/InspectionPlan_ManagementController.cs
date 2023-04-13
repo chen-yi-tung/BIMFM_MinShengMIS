@@ -145,10 +145,33 @@ namespace MinSheng_MIS.Controllers
                     #region 巡檢計畫單樓層路徑 dbo.InspectionPlanFloorPath
                     if(paths.PathSampleOrder != null)
                     {
+                        int j = 1;
                         foreach(var DeviceID in paths.PathSampleOrder)
                         {
-                            //InspectionPlanFloorPath floorPath = new InspectionPlanFloorPath();
-
+                            InspectionPlanFloorPath floorPath = new InspectionPlanFloorPath();
+                            floorPath.FPSN = PSN + "_" + j.ToString().PadLeft(2, '0');
+                            floorPath.PSN = PSN;
+                            floorPath.DeviceID = DeviceID;
+                            db.InspectionPlanFloorPath.AddOrUpdate(floorPath);
+                            db.SaveChanges();
+                            j++;
+                        }
+                    }
+                    #endregion
+                    #region 巡檢計畫路徑繪製 dbo.DrawInspectionPlanPath
+                    if (paths.PathSampleRecord != null)
+                    {
+                        int j = 1;
+                        foreach (var location in paths.PathSampleRecord)
+                        {
+                            DrawInspectionPlanPath drawPath = new DrawInspectionPlanPath();
+                            drawPath.ISN = PSN + "_" + j.ToString().PadLeft(2, '0');
+                            drawPath.PSN = PSN;
+                            drawPath.LocationX = location.LocationX;
+                            drawPath.LocationY = location.LocationY;
+                            db.DrawInspectionPlanPath.AddOrUpdate(drawPath);
+                            db.SaveChanges();
+                            j++;
                         }
                     }
                     #endregion
