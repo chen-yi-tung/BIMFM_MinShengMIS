@@ -12,7 +12,7 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class ImspectionPlanFloorPath
+    public partial class InspectionPlanFloorPath
     {
         public string FPSN { get; set; }
         public string PSN { get; set; }

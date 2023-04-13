@@ -18,7 +18,7 @@ namespace MinSheng_MIS.Models
         public InspectionPlanPath()
         {
             this.DrawInspectionPlanPath = new HashSet<DrawInspectionPlanPath>();
-            this.ImspectionPlanFloorPath = new HashSet<ImspectionPlanFloorPath>();
+            this.InspectionPlanFloorPath = new HashSet<InspectionPlanFloorPath>();
         }
     
         public string PSN { get; set; }
@@ -28,8 +28,8 @@ namespace MinSheng_MIS.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawInspectionPlanPath> DrawInspectionPlanPath { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ImspectionPlanFloorPath> ImspectionPlanFloorPath { get; set; }
         public virtual InspectionPlan InspectionPlan { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<InspectionPlanFloorPath> InspectionPlanFloorPath { get; set; }
     }
 }

@@ -39,8 +39,8 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<EquipmentMaintainItem> EquipmentMaintainItem { get; set; }
         public virtual DbSet<EquipmentReportForm> EquipmentReportForm { get; set; }
         public virtual DbSet<Floor_Info> Floor_Info { get; set; }
-        public virtual DbSet<ImspectionPlanFloorPath> ImspectionPlanFloorPath { get; set; }
         public virtual DbSet<InspectionPlan> InspectionPlan { get; set; }
+        public virtual DbSet<InspectionPlanFloorPath> InspectionPlanFloorPath { get; set; }
         public virtual DbSet<InspectionPlanMaintain> InspectionPlanMaintain { get; set; }
         public virtual DbSet<InspectionPlanMember> InspectionPlanMember { get; set; }
         public virtual DbSet<InspectionPlanPath> InspectionPlanPath { get; set; }
