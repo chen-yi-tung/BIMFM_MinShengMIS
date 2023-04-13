@@ -27,7 +27,7 @@ namespace MinSheng_MIS.Models
         public string EMFISN { get; set; }
         public string MaintainState { get; set; }
         public string MaintainUserID { get; set; }
-        public System.DateTime MaintainDate { get; set; }
+        public Nullable<System.DateTime> MaintainDate { get; set; }
         public string MaintainContent { get; set; }
         public string MaintainStateOfFilling { get; set; }
     

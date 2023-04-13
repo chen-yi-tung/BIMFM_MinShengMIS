@@ -137,7 +137,7 @@ namespace MinSheng_MIS.Models.ViewModels
             var mName = db.AspNetUsers.Where(x => x.UserName == IPM.MaintainUserID).Select(x => x.MyName).FirstOrDefault();
             inspectionPlanMaintain.MyName = mName;
             inspectionPlanMaintain.MaintainContent = IPM.MaintainContent;
-            inspectionPlanMaintain.MaintainDate = IPM.MaintainDate.ToString("yyyy/MM/dd HH:mm:ss");
+            inspectionPlanMaintain.MaintainDate = IPM.MaintainDate?.ToString("yyyy/MM/dd HH:mm:ss");
             var ImgP = db.MaintainCompletionImage.Where(x => x.IPMSN == IPM.IPMSN).Select(x => x.ImgPath);
             List<string> Imglist = new List<string>();
             foreach (string Path in ImgP)
@@ -399,7 +399,7 @@ namespace MinSheng_MIS.Models.ViewModels
             { 
                 MaintainState = dic[IPM.MaintainState],
                 MyName = Mname,
-                MaintainDate = IPM.MaintainDate.ToString("yyyy/MM/dd HH:mm:ss"),
+                MaintainDate = IPM.MaintainDate?.ToString("yyyy/MM/dd HH:mm:ss"),
                 MaintainContent = IPM.MaintainContent,
                 ImgPath = PathList
             };
