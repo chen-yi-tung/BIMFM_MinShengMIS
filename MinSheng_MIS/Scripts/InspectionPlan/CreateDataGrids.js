@@ -892,8 +892,10 @@ IPDG.prototype.addRowEvent = function () {
             }
         });
 
-        this.changeEditAreaCss();
-        this.initResultDatagrid(this.edg);
+        if (this.edg.closest(".datatable-easyui").hasClass('d-none')){
+            this.changeEditAreaCss();
+            this.initResultDatagrid(this.edg);
+        }
         this.addRowBtn.click();
     }
 }
