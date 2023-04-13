@@ -521,10 +521,10 @@ namespace MinSheng_MIS.Controllers
                 ppo.PathSampleOrder = psos;
                 //找出繪製路徑
                 var DrawList = db.DrawPathSample.Where(x => x.PSSN == ps.PSSN).OrderBy(x => x.SISN).ToList();
-                List<PathSampleRecord> psrs = new List<PathSampleRecord>();
+                List<ReadInspectionPlanPathData.PathSampleRecord> psrs = new List<ReadInspectionPlanPathData.PathSampleRecord>();
                 foreach (var item in DrawList)
                 {
-                    PathSampleRecord psr = new PathSampleRecord();
+                    ReadInspectionPlanPathData.PathSampleRecord psr = new ReadInspectionPlanPathData.PathSampleRecord();
                     psr.LocationX = item.LocationX;
                     psr.LocationY = item.LocationY;
                     psrs.Add(psr);
@@ -537,7 +537,7 @@ namespace MinSheng_MIS.Controllers
                 ps.PathTitle = ps.Area + " " + ps.Floor + " 巡檢路線"; // + " " + tmpIPSN
                 List<string> psos = new List<string>();
                 ppo.PathSampleOrder = psos;
-                List<PathSampleRecord> psrs = new List<PathSampleRecord>();
+                List<ReadInspectionPlanPathData.PathSampleRecord> psrs = new List<ReadInspectionPlanPathData.PathSampleRecord>();
                 ppo.PathSampleRecord = psrs;
             }
             //Beacon
