@@ -535,6 +535,7 @@
 
         pathGroup.setSetting({
             delete: true,
+            sortable: true,
             startButton: {
                 id: "path-handle",
                 icon: "icon-handle",
@@ -687,11 +688,10 @@
         }
 
         function getPathDatas() {
-            let arr = [];
-            for (let i = 1; i < PathGroup.prototype.count; i++) {
-                arr.push(JSON.parse(sessionStorage.getItem(`P${i}_pathData`)));
-            }
-            return arr.filter((e) => e);
+            return $(".sample-path-group[data-path-id]").toArray().map((e) => {
+                let pathID = $(e).attr('data-path-id');
+                return JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
+            })
         }
 
         console.log(data);

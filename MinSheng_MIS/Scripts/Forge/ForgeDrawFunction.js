@@ -154,7 +154,7 @@ function loadModel(url, pathID, onload) {
         () => {
             $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, () => {
                 $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, () => {
-                    onload(pathID);
+                    onload(pathID, ForgeDraw.getControl() === ForgeDraw.Control.READONLY);
                     togglePointerEvent(true);
                 })
             })
@@ -262,9 +262,10 @@ function createDevices(pathID, OldPathData = null, options = null) {
         let Area = pathData.PathSample.Area;
         let Floor = pathData.PathSample.Floor;
 
-        return data.filter((e, i, arr) => {
-            return e.Area == Area && e.Floor == Floor;
-        }).map((e) => e.ESN).filter((e, i, arr) => arr.indexOf(e) === i);
+        let arr = data.filter((e, i, arr) => e.Area == Area && e.Floor == Floor).map((e) => e.ESN);
+        console.log("getESN", arr);
+
+        return [...new Set(arr)];
     }
 }
 
@@ -404,6 +405,7 @@ function createPath(selector) {
  * @param {object} options 
  * @param {PathGroupButtonOptions?} options.startButton
  * @param {PathGroupButtonOptions?} options.endButton
+ * @param {boolean?} options.sortable
  * @param {boolean?} options.delete
  * @returns {PathGroup}
  */
@@ -474,10 +476,11 @@ function PathGroup(setting = {}) {
 
         PathGroup.prototype.count++;
 
-        new Sortable(document.querySelector(".sample-path-group-area"), {
-            handle: "#path-handle",
-            animation: 150,
-        })
+        options.sortable &&
+            new Sortable(document.querySelector(".sample-path-group-area"), {
+                handle: "#path-handle",
+                animation: 150,
+            })
 
         return group.attr('data-path-id');
     }
@@ -515,8 +518,9 @@ function saveCurrentPath(onSuccess = () => { }) {
 /**
  * 讀取指定路線
  * @param {string | number} pathID 
+ * @param {boolean} readonly
  */
-function loadPath(pathID) {
+function loadPath(pathID, readonly = false) {
     $("#current-path-id").val(pathID);
     let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
 
@@ -525,7 +529,7 @@ function loadPath(pathID) {
     createLinePath(pathData.PathSampleRecord);
     updatePathDisplay(pathData.PathSampleOrder, pathID);
 
-    updatePathDisplay(calcPath());
+    !readonly && updatePathDisplay(calcPath());
 }
 
 /**
@@ -686,7 +690,7 @@ function addSaveSamplePathEvent() {
     })
     $("#SaveSamplePathModal").on("shown.bs.modal", async function () {
         let pathID = $("#current-path-id").val();
-        
+
         ForgeDraw.removeAllDevice();
         let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`));
         createBeacons(pathData.PathSample.Beacon);
@@ -694,13 +698,13 @@ function addSaveSamplePathEvent() {
         putImageToModal();
         putDataToModal();
 
-        function getOrderWithoutEquipment(){
+        function getOrderWithoutEquipment() {
             let devicelist = ForgeDraw.devices;
             let pathList = $("#current-path-display .breadcrumb-item");
             let arr = []
             pathList.each((i, e) => {
                 let dp = devicelist.find(dp => dp.name == e.innerHTML);
-                if (dp && dp.type === "藍芽"){ arr.push(dp.name); }
+                if (dp && dp.type === "藍芽") { arr.push(dp.name); }
             })
             return arr;
         }

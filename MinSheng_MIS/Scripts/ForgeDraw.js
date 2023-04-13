@@ -246,7 +246,9 @@ var ForgeDraw = (function (e) {
     function readLineData(data) {
         data.forEach(d => {
             lineData.push(d);
-            points.push(new Point(d.position));
+            let p = new Point(d.position);
+            p.forgePos = d.forgePos;
+            points.push(p);
             if (lineData.length !== 1) {
                 lines.push(new Line(lineData.at(-1).position, d.position));
             }
