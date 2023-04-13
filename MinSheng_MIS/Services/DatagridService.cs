@@ -553,7 +553,7 @@ namespace MinSheng_MIS.Services
 
             #region 塞資料
             //建Json格式資料表回傳給前端
-            foreach (var a in DataSource)
+            foreach (var a in result)
             {
                 var InspectionPlan_ = db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault() == null ? new InspectionPlan() : db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault();
                 var EquipmentMaintainFormItem_ = db.EquipmentMaintainFormItem.Where(x => x.EMFISN == a.EMFISN).FirstOrDefault() == null ? new EquipmentMaintainFormItem() : db.EquipmentMaintainFormItem.Where(x => x.EMFISN == a.EMFISN).FirstOrDefault();
@@ -892,7 +892,7 @@ namespace MinSheng_MIS.Services
 
             #region 塞資料
             //建Json格式資料表回傳給前端
-            foreach (var a in DataSource)
+            foreach (var a in result)
             {
                 var InspectionPlan_ = db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault() == null ? new InspectionPlan() : db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault();
                 var EquipmentReportForm_ = db.EquipmentReportForm.Where(x => x.RSN == a.RSN).FirstOrDefault() == null ? new EquipmentReportForm() : db.EquipmentReportForm.Where(x => x.RSN == a.RSN).FirstOrDefault();
@@ -1166,7 +1166,7 @@ namespace MinSheng_MIS.Services
 
             var Dic = Surfaces.Surface.Authority();
 
-            foreach (var item in Data)
+            foreach (var item in result)
             {
                 var itemObjects = new JObject();
                 itemObjects.Add("UserName", item.UserName);
