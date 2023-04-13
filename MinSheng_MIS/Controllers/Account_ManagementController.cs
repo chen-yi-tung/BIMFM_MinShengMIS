@@ -189,7 +189,12 @@ namespace MinSheng_MIS.Controllers
             {
                 case "200":
                     Response.StatusCode = 200;
-                    return Content("刪除成功!","application/json");
+                    JObject jo = new JObject();
+                    jo.Add("Succeed", true);
+                    string result1 = JsonConvert.SerializeObject(jo);
+                    return Content(result1, "application/json");
+
+                    //return Content("刪除成功!","application/json");
                 case "400":
                     Response.StatusCode = 400;
                     return Content("無此使用者!", "application/json");
