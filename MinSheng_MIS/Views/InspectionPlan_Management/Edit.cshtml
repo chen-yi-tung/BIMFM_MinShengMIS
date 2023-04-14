@@ -1,9 +1,866 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "編輯巡檢計畫";
 }
 
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
 <link rel="stylesheet" href="/Content/samplepath.css">
+<link rel="stylesheet" href="/Content/tagbox.css">
+<link rel="stylesheet" href="/Content/datagrid-modal.css">
+
+<div class="spinner-area">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
 <h2>@ViewBag.Title</h2>
 
+<section>
+    <div class="search-area bg-transparent">
+        <form class="form">
+            <div class="form-group required">
+                <label for="IPName">巡檢計畫名稱</label>
+                <input type="text" class="form-control" name="IPName" id="IPName" maxlength="20">
+            </div>
+
+            <div class="form-group required">
+                <label for="PlanDate">巡檢日期</label>
+                <input type="date" class="form-control" name="PlanDate" id="PlanDate">
+            </div>
+
+            <div class="form-group required">
+                <label for="Shift">巡檢班別</label>
+                <select type="text" class="form-select" name="Shift" id="Shift" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+
+            <div class="form-group required f-3">
+                <label for="UserID">巡檢人員</label>
+                <select type="text" class="form-select" name="UserID" id="UserID"></select>
+            </div>
+        </form>
+    </div>
+
+    <div class="sample-path-area">
+        <h3 class="sample-path-title">定期保養設備</h3>
+        <div class="edit-area" style="gap: 1em;">
+            <div class="form-group required d-flex flex-column flex-lg-row align-items-start align-items-lg-center px-4 d-none"
+                style="gap:0 1em; width:100%">
+                <label for="MaintainUserID" class="flex-shrink-0">審核人員</label>
+                <select type="text" class="form-select w-lg-250px" name="MaintainUserID" id="MaintainUserID"
+                    style="width: 100%;" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+            <div class="datatable-easyui w-100 d-none">
+                <table id="Maintain-datagrid"></table>
+            </div>
+            <div class="edit-button-area m-0 w-auto">
+                <button class="btn btn-search" id="Maintain-create" data-bs-toggle="modal"
+                    data-bs-target="#DatagridModal-Maintain">新增定期保養設備</button>
+                <button class="btn btn-delete d-none" id="Maintain-delete">刪除</button>
+            </div>
+        </div>
+    </div>
+    <div class="sample-path-area mt-4">
+        <h3 class="sample-path-title">維修設備</h3>
+        <div class="edit-area" style="gap: 1em;">
+            <div class="form-group required d-flex flex-column flex-lg-row align-items-start align-items-lg-center px-4 d-none"
+                style="gap:0 1em; width:100%">
+                <label for="RepairUserID" class="flex-shrink-0">審核人員</label>
+                <select type="text" class="form-select w-lg-250px" name="RepairUserID" id="RepairUserID"
+                    style="width: 100%;" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+            <div class="datatable-easyui w-100 d-none">
+                <table id="Repair-datagrid"></table>
+            </div>
+            <div class="edit-button-area m-0 w-auto">
+                <button class="btn btn-search" id="Repair-create" data-bs-toggle="modal"
+                    data-bs-target="#DatagridModal-Repair">新增維修設備</button>
+                <button class="btn btn-delete d-none" id="Repair-delete">刪除</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal-Maintain">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>新增定期保養單</h2>
+                <div class="search-area mb-3">
+                    <form class="form">
+
+                        <input class="form-control" id="SourceMaintain" name="SourceMaintain" type="text"
+                            value="AddMaintainForm" hidden />
+
+                        <div class="form-group">
+                            <label for="ASN">棟別</label>
+                            <select class="form-select" name="ASN" id="ASN">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+                        <input class="form-control" id="Area" name="Area" type="text" hidden />
+
+
+                        <div class="form-group">
+                            <label for="FSN">樓層</label>
+                            <select class="form-select" name="FSN" id="FSN">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+                        <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+
+                        <div class="form-group">
+                            <label for="ESN">設備編號</label>
+                            <input class="form-control" id="ESN" name="ESN" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="EName">設備名稱</label>
+                            <input class="form-control" id="EName" name="EName" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="FormItemState">保養狀態</label>
+                            <select class="form-select" name="FormItemState" id="FormItemState">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="EState">設備狀態</label>
+                            <select class="form-select" name="EState" id="EState">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="StockState">庫存狀態</label>
+                            <select class="form-select" name="StockState" id="StockState">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateSelect">日期項目選擇</label>
+                            <select class="form-select" name="DateSelect" id="DateSelect">
+                                <option value="1">上次保養日期</option>
+                                <option value="2">最近應保養日期</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateFrom">日期(起)</label>
+                            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateTo">日期(迄)</label>
+                            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-search" id="search">查詢</button>
+                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="modal-datagrid"></table>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="add-row">新增</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal-Repair">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>新增設備維修單</h2>
+                <div class="search-area mb-3">
+                    <form class="form">
+
+                        <input class="form-control" id="SourceReport" name="SourceReport" type="text"
+                            value="AddReportForm" hidden />
+
+                        <div class="form-group">
+                            <label for="ASN">棟別</label>
+                            <select class="form-select" name="ASN" id="ASN">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+                        <input class="form-control" id="Area" name="Area" type="text" hidden />
+
+
+                        <div class="form-group">
+                            <label for="FSN">樓層</label>
+                            <select class="form-select" name="FSN" id="FSN">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+                        <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+
+                        <div class="form-group">
+                            <label for="ReportLevel">報修等級</label>
+                            <select class="form-select" name="ReportLevel" id="ReportLevel">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ESN">設備編號</label>
+                            <input class="form-control" id="ESN" name="ESN" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="EName">設備名稱</label>
+                            <input class="form-control" id="EName" name="EName" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ReportState">報修單狀態</label>
+                            <select class="form-select" name="ReportState" id="ReportState">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="StockState">庫存狀態</label>
+                            <select class="form-select" name="StockState" id="StockState">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="UserID">報修人員</label>
+                            <select class="form-select" name="UserID" id="UserID">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateFrom">日期(起)</label>
+                            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateTo">日期(迄)</label>
+                            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-search" id="search">查詢</button>
+                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="modal-datagrid"></table>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="add-row">新增</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<hr class="hr-dashed">-->
+
+<section>
+
+    <div class="search-area bg-transparent">
+        <div class="form d-flex flex-column flex-xl-row align-items-stretch align-items-xl-end">
+
+            <form class="form-group w-auto w-xl-60" id="sample-path-form">
+                <label>選取巡檢路線模板</label>
+                <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
+                    <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
+                        <select type="text" class="form-select w-lg-200px" name="ASN" id="ASN" required>
+                            <option value="" disabled selected hidden>區域</option>
+                        </select>
+                        <select type="text" class="form-select w-lg-100px" name="FSN" id="FSN" required>
+                            <option value="" disabled selected hidden>樓層</option>
+                        </select>
+                    </div>
+                    <select type="text" class="form-select w-lg-225px" name="PathTitle" id="PathTitle" required>
+                        <option value="" disabled selected hidden>選擇模板</option>
+                    </select>
+                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto"
+                        id="sample-path-create">新增</button>
+                </div>
+            </form>
+
+            <form class="form-group w-auto w-xl-40" id="path-form">
+                <label>新增其他巡檢路線</label>
+                <div class="d-flex flex-column flex-lg-row align-items-center" style="gap:1em;">
+                    <div class="d-lg-contents d-flex flex-sm-row flex-column w-100" style="gap:1em;">
+                        <select type="text" class="form-select w-lg-200px" name="ASN" id="ASN" required>
+                            <option value="" disabled selected hidden>區域</option>
+                        </select>
+                        <select type="text" class="form-select w-lg-100px" name="FSN" id="FSN" required>
+                            <option value="" disabled selected hidden>樓層</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-search flex-shrink-0 w-100 w-lg-auto"
+                        id="path-create">新增</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="sample-path-area">
+        <h3 class="sample-path-title">巡檢路線規劃</h3>
+
+        <div class="edit-area">
+            <div class="sample-path-group-area"></div>
+
+            <div class="sample-path-draw-area d-none">
+                <div class="mb-4">
+                    <div class="path-title-edit-group">
+                        <input type="text" id="current-path-id" hidden>
+                        <label for="current-path-title">路線名稱</label>
+                        <input class="form-control" type="text" id="current-path-title" name="current-path-title">
+                        <button class="btn btn-cancel" id="ShowSaveSamplePathModal">儲存模板</button>
+                    </div>
+                    <div class="input-group sample-path-group inner">
+                        <div type="text" class="form-control">
+                            <nav>
+                                <ol class="breadcrumb" id="current-path-display"></ol>
+                            </nav>
+                            <button class="path-btn align-self-center" id="current-path-edit" data-bs-toggle="tooltip"
+                                title="手動修改路線">
+                                <i class="icon-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sample-path-toolbar">
+                    <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="規劃路線">
+                        <i class="icon-pen"></i>
+                    </button>
+                    <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip"
+                        data-bs-placement="right" title="清除路線">
+                        <i class="icon-eraser"></i>
+                    </button>
+
+                    <hr class="m-0">
+
+                    <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
+                        title="重新規劃路線">
+                        <i class="icon-reload"></i>
+                    </button>
+                    <button class="path-icon" id="path-auto" data-bs-toggle="tooltip" data-bs-placement="right"
+                        title="自動計算路線">
+                        <i class="icon-auto"></i>
+                    </button>
+                </div>
+                <div class="viewer3Dcontainer">
+                    <div id="viewer3d" style="margin:0;"></div>
+                    <canvas id="PathCanvas"></canvas>
+                </div>
+
+                <div class="label-area">
+                    <div class="label-item">
+                        <div class="cube cube-bluetooth"></div>
+                        <span>藍芽</span>
+                    </div>
+                    <div class="label-item">
+                        <div class="cube cube-maintain"></div>
+                        <span>定期保養</span>
+                    </div>
+                    <div class="label-item">
+                        <div class="cube cube-repair"></div>
+                        <span>維修</span>
+                    </div>
+                    <div class="label-item">
+                        <div class="cube cube-both"></div>
+                        <span>維修+保養</span>
+                    </div>
+                </div>
+                <div class="button-area mt-3">
+                    <button class="btn btn-search" id="path-save">儲存變更</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除計畫</button>
+    <button class="btn btn-export" id="submit">儲存計畫</button>
+</div>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="SaveSamplePathModal" style="--bs-modal-margin: 1.75rem;">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>儲存模板</h2>
+                <div class="search-area bg-transparent m-0">
+                    <form class="form" id="SaveSamplePathForm">
+                        <div class="form-group w-lg-250px">
+                            <label for="SaveSamplePathForm_Area">棟別</label>
+                            <input id="SaveSamplePathForm_ASN" name="ASN" type="text" hidden />
+                            <input class="form-control readonly" id="SaveSamplePathForm_Area" name="Area" type="text"
+                                readonly />
+                        </div>
+                        <div class="form-group w-lg-250px">
+                            <label for="SaveSamplePathForm_Floor">樓層</label>
+                            <input id="SaveSamplePathForm_FSN" name="FSN" type="text" hidden />
+                            <input class="form-control readonly" id="SaveSamplePathForm_Floor" name="Floor" type="text"
+                                readonly />
+                        </div>
+                        <div class="form-group w-lg-250px">
+                            <label for="SaveSamplePathForm_PathTitle">模板名稱</label>
+                            <input class="form-control" id="SaveSamplePathForm_PathTitle" name="PathTitle"
+                                type="text" maxlength="50"/>
+                        </div>
+                    </form>
+                </div>
+                <div class="input-group sample-path-group inner">
+                    <div type="text" class="form-control">
+                        <nav>
+                            <ol class="breadcrumb" id="SaveSamplePathForm_path-display"></ol>
+                        </nav>
+                    </div>
+                </div>
+                <div class="screenshot-img-area mt-3">
+                    <canvas id="screenshot-canvas"></canvas>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="SaveSamplePath">新增</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Autodesk Forge -->
+<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
+    type="text/css">
+<script language="JavaScript"
+    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
+<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
+
+<!-- PIXI Draw -->
+<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
+<script src="/Scripts/ForgeDraw.js"></script>
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/Forge/ForgeDrawFunction.js"></script>
+
+<!-- Drag and Drop -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="/Scripts/Forge/SortRouteModal.js"></script>
+
+<script src="/Scripts/Forge/InspectionPlan.js"></script>
+
+<!-- EVENT -->
+<script src="/Scripts/tool.js"></script>
+<script src="/Scripts/InspectionPlan/CreateDataGrids.js"></script>
+<script src="/Scripts/InspectionPlan/Create.js"></script>
+
+<!-- Edit readData -->
+<script>
+    let EditFakeData = {
+        "IPSN": "P12345",
+        "IPName": "AAA",
+        "PlanCreateUserID": "Admin",
+        "PlanDate": "2023-04-13",
+        "PlanState": "執行中",
+        "Shift": "1",
+        "UserID": ["A101204", "KennyTest"],
+        "MaintainUserID": "A101204",
+        "RepairUserID": "A101204",
+        "MaintainEquipment": [
+            {
+                "StockState": "無",
+                "FormItemState": "保留中(待派工)",
+                "EMFISN": "E00024_000035_230407",
+                "Period": 1,
+                "Unit": "月",
+                "LastTime": "2023/03/07",
+                "Date": "2023/04/07",
+                "EState": "正常",
+                "Area": "生物處理單元",
+                "Floor": "管廊底",
+                "ESN": "E00024",
+                "EName": "加氯消毒池混和井攪拌機",
+                "MIName": "加氯保養測試1"
+            },
+            {
+                "StockState": "無",
+                "FormItemState": "保留中(待派工)",
+                "EMFISN": "E00020_000048_230329",
+                "Period": 3,
+                "Unit": "日",
+                "LastTime": "2023/03/29",
+                "Date": "2023/03/29",
+                "EState": "正常",
+                "Area": "生物處理單元",
+                "Floor": "管廊底",
+                "ESN": "E00020",
+                "EName": "二沉池刮泥機",
+                "MIName": "二沉池保養一"
+            },
+            {
+                "StockState": "無",
+                "FormItemState": "保留中(待派工)",
+                "EMFISN": "E00021_000048_230329",
+                "Period": 3,
+                "Unit": "日",
+                "LastTime": "2023/03/29",
+                "Date": "2023/03/29",
+                "EState": "正常",
+                "Area": "生物處理單元",
+                "Floor": "管廊頂",
+                "ESN": "E00021",
+                "EName": "二沉池刮泥機",
+                "MIName": "二沉池保養一"
+            }
+        ],
+        "RepairEquipment": [
+            {
+                "StockState": "有",
+                "ReportState": "保留中(待派工)",
+                "ESN": "E00143",
+                "RSN": "R23032901",
+                "ReportLevel": "緊急",
+                "Date": "2023/03/29 09:00:00",
+                "ReportContent": "壞壞JUDY",
+                "InformatUserID": "賈皓麟",
+                "EState": "報修中",
+                "Area": "進流抽水站",
+                "Floor": "B2F",
+                "EName": "二沉池刮泥機"
+            },
+            {
+                "StockState": "無",
+                "ReportState": "保留中(待派工)",
+                "ESN": "E00002",
+                "RSN": "R23022606",
+                "ReportLevel": "一般",
+                "Date": "2023/02/26 14:00:00",
+                "ReportContent": "假資料",
+                "InformatUserID": "賈皓麟",
+                "EState": "報修中",
+                "Area": "前處理機房",
+                "Floor": "B1F",
+                "EName": "粗攔物除物皮帶輸送機"
+            },
+            {
+                "StockState": "無",
+                "ReportState": "保留中(待派工)",
+                "ESN": "E00002",
+                "RSN": "R23022605",
+                "ReportLevel": "一般",
+                "Date": "2023/02/26 13:00:00",
+                "ReportContent": "假資料",
+                "InformatUserID": "賈皓麟",
+                "EState": "報修中",
+                "Area": "前處理機房",
+                "Floor": "B1F",
+                "EName": "粗攔物除物皮帶輸送機"
+            }
+        ],
+        "InspectionPlanPaths": [
+            {
+                "PathSample": {
+                    "PSSN": null,
+                    "Area": "進流抽水站",
+                    "Floor": "B2F",
+                    "ASN": "1",
+                    "FSN": "1_2",
+                    "PathTitle": "進流抽水站 B2F 巡檢路線",
+                    "BIMPath": "/BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+                    "Beacon": [
+                        {
+                            "dbId": 3078,
+                            "deviceType": "藍芽",
+                            "deviceName": "E00028"
+                        },
+                        {
+                            "dbId": 3239,
+                            "deviceType": "藍芽",
+                            "deviceName": "E00029"
+                        },
+                        {
+                            "dbId": 3162,
+                            "deviceType": "藍芽",
+                            "deviceName": "E00030"
+                        },
+                        {
+                            "dbId": 3113,
+                            "deviceType": "藍芽",
+                            "deviceName": "E00031"
+                        }
+                    ]
+                },
+                "PathSampleOrder": [
+                    "E00028",
+                    "E00028",
+                    "E00031",
+                    "E00029",
+                    "E00029",
+                    "E00030",
+                    "E00143"
+                ],
+                "PathSampleRecord": [
+                    {
+                        "LocationX": 4.343302473135253,
+                        "LocationY": -71.36540038498816
+                    },
+                    {
+                        "LocationX": 20.78023159302441,
+                        "LocationY": -10.403119589648426
+                    },
+                    {
+                        "LocationX": -23.74512070642215,
+                        "LocationY": 7.074121320960913
+                    },
+                    {
+                        "LocationX": -37.269176311394254,
+                        "LocationY": -69.28477646705846
+                    }
+                ],
+                "MaintainEquipment": [
+                    "E00028",
+                    "E00029"
+                ],
+                "RepairEquipment": [
+                    "E00143"
+                ],
+                "BothEquipment": []
+            },
+            {
+                "PathSample": {
+                    "PSSN": null,
+                    "Area": "進流抽水站",
+                    "Floor": "B2F",
+                    "ASN": "1",
+                    "FSN": "1_2",
+                    "PathTitle": "進流抽水站 B2F 巡檢路線",
+                    "BIMPath": "/BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+                    "Beacon": [
+                        {
+                            "dbId": 3078,
+                            "deviceType": "藍芽",
+                            "deviceName": "E00028"
+                        },
+                        {
+                            "dbId": 3239,
+                            "deviceType": "藍芽",
+                            "deviceName": "E00029"
+                        },
+                        {
+                            "dbId": 3162,
+                            "deviceType": "藍芽",
+                            "deviceName": "E00030"
+                        },
+                        {
+                            "dbId": 3113,
+                            "deviceType": "藍芽",
+                            "deviceName": "E00031"
+                        }
+                    ]
+                },
+                "PathSampleOrder": [
+                    "E00031",
+                    "E00028",
+                    "E00028",
+                    "E00143",
+                    "E00030",
+                    "E00029",
+                    "E00029"
+                ],
+                "PathSampleRecord": [
+                    {
+                        "LocationX": 18.699608986978998,
+                        "LocationY": -25.591673713233597
+                    },
+                    {
+                        "LocationX": -8.140441162223595,
+                        "LocationY": -73.23796191112488
+                    },
+                    {
+                        "LocationX": -46.42392164399074,
+                        "LocationY": -53.47203469079287
+                    },
+                    {
+                        "LocationX": -15.838749737361553,
+                        "LocationY": -28.504547675636672
+                    },
+                    {
+                        "LocationX": -48.712607977139854,
+                        "LocationY": -9.570870022476527
+                    },
+                    {
+                        "LocationX": -29.778930130178928,
+                        "LocationY": 7.9063708881328125
+                    },
+                    {
+                        "LocationX": 23.276980320096186,
+                        "LocationY": -20.39011439571091
+                    }
+                ],
+                "MaintainEquipment": [
+                    "E00028",
+                    "E00029"
+                ],
+                "RepairEquipment": [
+                    "E00143"
+                ],
+                "BothEquipment": []
+            }
+        ]
+    }
+    const IPSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${IPSN}`;
+    let apiUrl = null;
+    function readData(url = null) {
+
+        url == null ? onSuccess(EditFakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            EditFakeData = res;
+
+            sortRouteModal.autoRouteToggle(false);
+
+            $("#PlanDate").attr('disabled', '');
+
+            $("#IPName").val(res.IPName);
+            $("#PlanDate").val(res.PlanDate);
+            $("#Shift").val(res.Shift);
+            $("#UserID").tagbox('setValues', res.UserID);
+
+            $("#MaintainUserID").val(res.MaintainUserID);
+            $("#RepairUserID").val(res.RepairUserID);
+
+            maintainDG_Controller.changeEditAreaCss()
+            repairDG_Controller.changeEditAreaCss()
+
+            maintainDG_Controller.initResultDatagrid(maintainDG_Controller.edg)
+            repairDG_Controller.initResultDatagrid(repairDG_Controller.edg)
+
+            maintainDG_Controller.edg.datagrid('loadData', res.MaintainEquipment);
+            repairDG_Controller.edg.datagrid('loadData', res.RepairEquipment);
+
+            getDeviceData([...res.MaintainEquipment.map(e => e.ESN), ...res.RepairEquipment.map(e => e.ESN)]);
+
+            res.InspectionPlanPaths.forEach((e, i, arr) => {
+                sessionStorage.setItem(`P${i + 1}_pathData`, JSON.stringify(e));
+                pathGroup.create(e);
+            })
+
+            $(".sample-path-draw-area").removeClass('d-none');
+
+            $("#current-path-id").val(1);
+            viewerUrl = window.location.origin + res.InspectionPlanPaths[0].PathSample.BIMPath;
+            initializeViewer(initializeDrawer);
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function save() {
+        let data = getCreateSaveData();
+
+        console.log(data);
+
+        if (!data) return;
+
+        $.ajax({
+            url: "/InspectionPlan_Management/EditInspectionPlan",
+            data: JSON.stringify(data),
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "儲存成功！",
+                onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` })
+        }
+    }
+
+    function deleteIP() {
+        $.ajax({
+            url: "/InspectionPlan_Management/DeleteInspectionPlan?IPSN=" + IPSN,
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "刪除成功！",
+                onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
+        }
+    }
+
+    $(async function () {
+        addButtonEvent();
+        //DatagridEvent = addDatagridEvent();
+        maintainDG_Controller = new IPDG(MDGOptions);
+        repairDG_Controller = new IPDG(RDGOptions);
+        await addDropDownList();
+        await addAreaFloorEvent();
+        controlToggle("path-draw", ForgeDraw.Control.DRAW);
+        sortRouteModal.autoRouteToggle(true);
+
+        $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
+
+        window.addEventListener("beforeunload", (event) => {
+            sessionStorage.clear();
+        });
+
+        addSaveSamplePathEvent();
+
+        $("#delete").click(deleteIP);
+
+        readData(apiUrl);
+
+        $(".spinner-area").fadeOut(300, function () { $(this).remove(); });
+
+    })
+</script>

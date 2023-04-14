@@ -237,7 +237,7 @@
           </Key>
           <Property Name="PSN" Type="nchar" MaxLength="12" Nullable="false" />
           <Property Name="IPSN" Type="nchar" MaxLength="9" Nullable="false" />
-          <Property Name="PathTitle" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="PathTitle" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
         </EntityType>
         <EntityType Name="InspectionPlanRepair">
@@ -1403,7 +1403,7 @@
           </Key>
           <Property Name="PSN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="true" />
           <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
-          <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawInspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_DrawInspectionPlanPath_InspectionPlanPath" FromRole="InspectionPlanPath" ToRole="DrawInspectionPlanPath" />
           <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanPath_InspectionPlan" FromRole="InspectionPlanPath" ToRole="InspectionPlan" />

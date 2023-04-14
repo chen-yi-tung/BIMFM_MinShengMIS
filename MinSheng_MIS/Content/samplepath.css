@@ -423,3 +423,14 @@
 .path-title-edit-group .btn{
     flex: 0 0 auto;
 }
+
+/* screenshot-img-area */
+
+.screenshot-img-area{
+    position: relative;
+}
+
+#screenshot-canvas{
+    width: 100%;
+    height: 100%;
+}

@@ -50,6 +50,13 @@
 	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
 }
 
+.datagrid-modal .search-area .form-control.readonly,
+.datagrid-modal .search-area .form-select.readonly {
+	background: #ffffff9e;
+	color: #7e7e7e !important;
+	font-size: 1rem;
+}
+
 /* datagrid */
 
 .datagrid-modal .datagrid {

@@ -186,10 +186,23 @@ var ForgeDraw = (function (e) {
         stage = new ForgeDraw.Stage();
         exports.stage = stage;
 
+        let bg = new PIXI.Graphics()
+            .lineStyle(1, 0xffffff, 0.01)
+            .drawRect(0, 0, rect.width, rect.height)
+        layer.stage.addChild(bg);
 
 
         callback();
         return app;
+    }
+
+    function getScreenShot() {
+        return app.renderer.extract.image(
+            app.stage,
+            "image/png",
+            1,
+            app.screen
+        );
     }
 
     function addViewerSelectEvent() {
@@ -233,7 +246,9 @@ var ForgeDraw = (function (e) {
     function readLineData(data) {
         data.forEach(d => {
             lineData.push(d);
-            points.push(new Point(d.position));
+            let p = new Point(d.position);
+            p.forgePos = d.forgePos;
+            points.push(p);
             if (lineData.length !== 1) {
                 lines.push(new Line(lineData.at(-1).position, d.position));
             }
@@ -1043,6 +1058,7 @@ var ForgeDraw = (function (e) {
         "setForgeViewer": setForgeViewer,
         "addViewerSelectEvent": addViewerSelectEvent,
         "clearSelectPos": clearSelectPos,
+        "getScreenShot": getScreenShot,
         "Control": Control,
         "EventMode": EventMode,
         "Colors": Colors,
