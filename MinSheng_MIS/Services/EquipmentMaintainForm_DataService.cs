@@ -266,6 +266,16 @@ namespace MinSheng_MIS.Services
                 {
                     itemObjects.Add("DBID", item.DBID);
                 }
+                //ASN
+                if (!string.IsNullOrEmpty(item.ASN.ToString()))
+                {
+                    itemObjects.Add("ASN", item.ASN);
+                }
+                //FSN
+                if (!string.IsNullOrEmpty(item.FSN.ToString()))
+                {
+                    itemObjects.Add("FSN", item.FSN);
+                }
 
                 ja.Add(itemObjects);
             }
