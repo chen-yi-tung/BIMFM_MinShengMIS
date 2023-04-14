@@ -115,12 +115,18 @@ function getCreateSaveData() {
         dialogError("至少需要一條巡檢路線！")
         return;
     }
-    InspectionPlanPaths.forEach((e) => {
+
+    for (const e of InspectionPlanPaths) {
         if (e.error && e.error === "order") {
-            dialogError("計畫中設備未排入巡檢路線中")
+            dialogError(`計畫中設備未排入巡檢路線 ${e.pathTitle} 中！`)
             return;
         }
-    })
+    }
+
+    if (!checkAllAreaFloor(InspectionPlanPaths)) {
+        dialogError(`巡檢路線中無計畫中設備的棟別樓層！`)
+        return;
+    }
 
     let data = {
         IPName: $("#IPName").val(),
@@ -143,14 +149,38 @@ function getCreateSaveData() {
         return $(".sample-path-group[data-path-id]").toArray().map((e) => {
             let pathID = $(e).attr('data-path-id');
             let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`));
-            if (checkEveryItemInArray(pathData)) { return { error: "order" } }
+            if (!checkOrder(pathData)) {
+                return {
+                    error: "order",
+                    pathID: pathID,
+                    pathTitle: pathData.PathSample.PathTitle
+                }
+            }
             return pathData;
         })
     }
-    function checkEveryItemInArray(data) {
-        let equip = [...new Set([...data.MaintainEquipment, ...data.RepairEquipment, ...data.BothEquipment])];
+    function checkAllAreaFloor(data) {
+        for (const e of getEquip()) {
+            for (const d of data) {
+                if (d.error) {
+                    return false;
+                }
+                if (e.ASN !== d.PathSample.ASN || e.FSN !== d.PathSample.FSN) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+
+        function getEquip() {
+            return [...getDgRows(maintainDG_Controller), ...getDgRows(repairDG_Controller)]
+        }
+    }
+    function checkOrder(data) {
+        let equip = getEquipData();
         let beacon = data.PathSample.Beacon.map(e => e.deviceName);
-        let order = data.PathSampleOrder.filter((e, i, arr) => !beacon.includes(e));
+        let order = data.PathSampleOrder.filter(e => !beacon.includes(e));
         let result;
 
         if (equip.length > order.length) {
@@ -159,15 +189,30 @@ function getCreateSaveData() {
             result = check(equip, order);
         }
 
+        console.log("checkOrder:", {
+            equip: equip,
+            order: order,
+            result: result
+        });
+
         return result.every((e) => e);
-        
-        function getEquipData(){
-            maintainDG_Controller.edg.datagrid('getRows').map(e=>e.ESN)
+
+        function getEquipData() {
+            return [...new Set([...getESNs(maintainDG_Controller), ...getESNs(repairDG_Controller)])];
+        }
+        function getESNs(dgc) {
+            return getDgRows(dgc).filter(e => {
+                return e.ASN === data.PathSample.ASN && e.FSN === data.PathSample.FSN
+            }).map(e => e.ESN)
         }
         function check(a, b) {
-            return b.map((e, i, arr) => a.includes(e));
+            return b.map(e => a.includes(e));
         }
     }
+    function getDgRows(dgc) {
+        return dgc.edg.datagrid('getRows');
+    }
+
     function dialogError(inner) {
         createDialogModal({ id: "DialogModal-Error", inner: inner })
     }
