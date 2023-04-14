@@ -565,6 +565,8 @@
         })
 
         addSaveSamplePathEvent();
+
+        $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
     });
 
     async function addDropDownList() {
