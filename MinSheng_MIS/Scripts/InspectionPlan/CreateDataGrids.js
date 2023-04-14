@@ -774,7 +774,6 @@ function IPDG(options) {
         function onSuccess(res) {
             console.log(res);
             self.removeSpinner(btn);
-            bootstrap.Modal.getInstance(self.modal[0]).hide();
 
             createDialogModal({ id: "DialogModal-Success", inner: "刪除成功！", })
 
@@ -831,6 +830,8 @@ function IPDG(options) {
 
     this.addRowBtn.on("click", () => { self.addRowEvent() });
 
+    this.deleteBtn.on("click", () => { if (this.edg.datagrid("getChecked").length !== 0) { this.removeData(); } });
+
     return this;
 }
 
@@ -886,13 +887,7 @@ IPDG.prototype.addRowEvent = function () {
             }
         });
 
-        this.deleteBtn.on("click", () => {
-            if (this.edg.datagrid("getChecked").length !== 0) {
-                this.removeData();
-            }
-        });
-
-        if (this.edg.closest(".datatable-easyui").hasClass('d-none')){
+        if (this.edg.closest(".datatable-easyui").hasClass('d-none')) {
             this.changeEditAreaCss();
             this.initResultDatagrid(this.edg);
         }

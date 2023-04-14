@@ -460,63 +460,18 @@
 <script src="/Scripts/ForgeDraw.js"></script>
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/Forge/ForgeDrawFunction.js"></script>
-<script>
-    var view = document.querySelector("#PathCanvas");
-    var app;
-    var stage;
-    let btUrl = "/Content/img/bluetooth.svg";
-
-    function initializeDrawer() {
-        app = ForgeDraw.init(view, viewer, function () {
-            view.addEventListener("fd.linedata.change", function (event) {
-                console.log("view => fd.linedata.change");
-                updatePathDisplay(calcPath());
-            });
-            view.addEventListener("fd.linedata.detail", function (event) {
-                console.log("view => fd.linedata.detail", event.detail);
-                if (event.detail instanceof ForgeDraw.DevicePoint) {
-                    createDevicePointDetailModal(event.detail);
-                }
-                else {
-                    createPointDetailModal(event.detail);
-                }
-            });
-            view.addEventListener("fd.devicepoint.ignore", function (event) {
-                console.log("view => fd.devicepoint.ignore");
-                updatePathDisplay(calcPath());
-            });
-
-            let pathData = JSON.parse(sessionStorage.getItem(`P1_pathData`))
-
-            createBeacons(pathData.PathSample.Beacon);
-            createDevices(1);
-            createLinePath(pathData.PathSampleRecord);
-            updatePathDisplay(pathData.PathSampleOrder, 1);
-
-            addToolbarEvent();
-            addTooltip(true);
-            togglePointerEvent(true);
-        });
-    }
-</script>
 
 <!-- Drag and Drop -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="/Scripts/Forge/SortRouteModal.js"></script>
-<script>
-    const sortRouteModal = new SortRouteModal({ onSave: updatePathDisplay });
-</script>
+
+<script src="/Scripts/Forge/InspectionPlan.js"></script>
 
 <!-- EVENT -->
 <script src="/Scripts/tool.js"></script>
 <script src="/Scripts/InspectionPlan/CreateDataGrids.js"></script>
+<script src="/Scripts/InspectionPlan/Create.js"></script>
 <script>
-    let fakeData;
-
-    let DatagridEvent;
-
-    let maintainDG_Controller;
-
     $(async function () {
         addButtonEvent();
         //DatagridEvent = addDatagridEvent();
@@ -527,179 +482,24 @@
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
         sortRouteModal.autoRouteToggle(true);
 
-        $(".spinner-area").fadeOut(300, function () { $(this).remove(); });
+        $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
 
         window.addEventListener("beforeunload", (event) => {
             sessionStorage.clear();
         });
 
-        pathGroup.setSetting({
-            delete: true,
-            sortable: true,
-            startButton: {
-                id: "path-handle",
-                icon: "icon-handle",
-                tooltip: "拖曳順序",
-            },
-            endButton: {
-                id: "path-search",
-                icon: "icon-search",
-                tooltip: "查看此路線",
-                onClick: (e) => {
-
-                    checkNeedSaveCurrentPath(callback);
-
-                    function callback() {
-                        let pathID = $(e.target).closest(".sample-path-group").attr("data-path-id");
-                        let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
-                        $("#current-path-title").val(pathData.PathSample.PathTitle);
-                        sortRouteModal.autoRouteToggle(false);
-                        loadModel(
-                            window.location.origin + pathData.PathSample.BIMPath,
-                            pathID,
-                            loadPath)
-                    }
-
-                }
-            }
-        })
-
         addSaveSamplePathEvent();
 
-        $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
-    });
-
-    async function addDropDownList() {
-        await pushSelect("Shift", '@Url.Action("Shift", "DropDownList")');
-        await pushSelect("MaintainUserID", '@Url.Action("AllMyName", "DropDownList")');
-        await pushSelect("RepairUserID", '@Url.Action("AllMyName", "DropDownList")');
-
-
-        let DMM = 'DatagridModal-Maintain';
-        await pushSelect(DMM + " #FormItemState", '@Url.Action("AddFormItemState", "DropDownList")');
-        await pushSelect(DMM + " #EState", '@Url.Action("EState", "DropDownList")' + "?url=AddToPlan");
-        await pushSelect(DMM + " #StockState", '@Url.Action("StockState", "DropDownList")');
-
-        let DMR = 'DatagridModal-Repair';
-        await pushSelect(DMR + " #ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
-        await pushSelect(DMR + " #ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")?url=CanAddToPlanReportState');
-        await pushSelect(DMR + " #UserID", '@Url.Action("ReportUser", "DropDownList")');
-        await pushSelect(DMR + " #StockState", '@Url.Action("StockState", "DropDownList")');
-
-        await $('#UserID').tagbox({
-            url: '@Url.Action("AllMyName", "DropDownList")',
-            textField: 'Text',
-            valueField: 'Value',
-            hasDownArrow: true,
-            limitToList: true,
-        });
-    }
-
-    async function addAreaFloorEvent() {
-        let areaList = ["path-form", "sample-path-form", "DatagridModal-Maintain", "DatagridModal-Repair"];
-        areaList.forEach((id) => {
-            pushSelect(`${id} #ASN`, '@Url.Action("Area", "DropDownList")');
-            let ASN = $(`#${id} #ASN`);
-
-            ASN.on("change", async function () {
-
-                if (ASN.val()) {
-                    $(`#${id} #Area`).val(ASN.children("option:selected").text());
-                }
-                else {
-                    $(`#${id} #Area`).val('');
-                }
-
-                await pushSelect(`${id} #FSN`, '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.val()}`);
-                $(`#${id} #FSN`).val('');
-            });
-        })
-
-        let floorList = ["path-form", "sample-path-form", "DatagridModal-Maintain", "DatagridModal-Repair"];
-        floorList.forEach((id) => {
-            let FSN = $(`#${id} #FSN`);
-
-            FSN.on("change", async function () {
-
-                if (FSN.val()) {
-                    $(`#${id} #Floor`).val(FSN.children("option:selected").text());
-                }
-                else {
-                    $(`#${id} #Floor`).val('');
-                }
-
-                if (id == "sample-path-form") {
-                    await pushSelect(`${id} #PathTitle`, '@Url.Action("PathTitle", "DropDownList")' + `?FSN=${FSN.val()}`);
-                    $(`#${id} #PathTitle`).val('');
-                }
-            });
-        })
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-        $("#path-create").click(function (e) {
-            e.preventDefault();
-            console.log("onclick path-create");
-            createPath("#path-form")
-        })
-        $("#sample-path-create").click(function (e) {
-            e.preventDefault();
-            console.log("onclick sample-path-create");
-            createPath("#sample-path-form")
-        })
-        $("#path-save").click(function () {
-            saveCurrentPath(() => { createDialogModal({ id: "DialogModal", inner: "儲存成功！" }) })
-        })
-        $("#submit").click(function () {
-            console.log("onclick submit")
-            checkNeedSaveCurrentPath(save);
-        })
-    }
+        $(".spinner-area").fadeOut(300, function () { $(this).remove(); });
+    })
 
     function save() {
-        let MaintainEquipment = $("#Maintain-datagrid").parent().hasClass("d-none") ? null : $("#Maintain-datagrid").datagrid('getRows').map(e => e.EMFISN);
-        let MaintainUserID = $("#MaintainUserID").val();
-
-        if (MaintainEquipment !== null && MaintainUserID === '') {
-            createDialogModal({ id: "DialogModal-Error", inner: "未選擇定期保養審核人員！" })
-            return;
-        }
-
-        let RepairEquipment = $("#Repair-datagrid").parent().hasClass("d-none") ? null : $("#Repair-datagrid").datagrid('getRows').map(e => e.RSN);
-        let RepairUserID = $("#RepairUserID").val();
-
-        if (RepairEquipment !== null && RepairUserID === '') {
-            createDialogModal({ id: "DialogModal-Error", inner: "未選擇維修審核人員！" })
-            return;
-        }
-
-        let data = {
-            IPName: $("#IPName").val(),
-            PlanCreateUserID: $("#NavbarUserID").val(),
-            PlanDate: $("#PlanDate").val(),
-            Shift: $("#Shift").val(),
-            UserID: $("#UserID").tagbox('getValues'),
-            MaintainUserID: MaintainUserID,
-            RepairUserID: RepairUserID,
-            MaintainEquipment: MaintainEquipment,
-            RepairEquipment: RepairEquipment,
-            InspectionPlanPaths: getPathDatas()
-        }
-
-        function getPathDatas() {
-            return $(".sample-path-group[data-path-id]").toArray().map((e) => {
-                let pathID = $(e).attr('data-path-id');
-                return JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
-            })
-        }
+        let data = getCreateSaveData();
 
         console.log(data);
 
         $.ajax({
-            url: '@Url.Action("CreateInspectionPlan", "InspectionPlan_Management")',
+            url: "/InspectionPlan_Management/CreateInspectionPlan",
             data: JSON.stringify(data),
             type: "POST",
             dataType: "json",
@@ -712,7 +512,7 @@
             console.log(res);
             createDialogModal({
                 id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = '@Url.Action("Management", "InspectionPlan_Management")'; }
+                onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
             });
         }
         function onError(res) {
