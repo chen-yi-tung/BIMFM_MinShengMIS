@@ -138,7 +138,10 @@ namespace MinSheng_MIS.Models.ViewModels
                 var maintainstatedic = Surface.InspectionPlanMaintainState();
                 inspectionPlanMaintain.MaintainState = maintainstatedic[item.MaintainState];
                 //填報人員
-                inspectionPlanMaintain.MyName = db.AspNetUsers.Where(x => x.UserName == item.MaintainUserID).FirstOrDefault().MyName;
+                if (!string.IsNullOrEmpty(item.MaintainUserID))
+                {
+                    inspectionPlanMaintain.MyName = db.AspNetUsers.Where(x => x.UserName == item.MaintainUserID).FirstOrDefault().MyName;
+                }
                 //保養備註
                 inspectionPlanMaintain.MaintainContent = item.MaintainContent;
                 //填報時間
