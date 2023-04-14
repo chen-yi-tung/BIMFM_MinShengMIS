@@ -48,7 +48,7 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             public string IPSN { get; set; }
             public string IPName { get; set; }
-            public string PlanDate { get; set; }
+            public DateTime PlanDate { get; set; }
             public string PlanState { get; set; }
             public string Shift { get; set; }
             public string MyName { get; set; }
@@ -65,7 +65,7 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             public string PlanState { get; set; }
             public string MyName { get; set; }
-            public string DateOfFilling { get; set; }
+            public DateTime DateOfFilling { get; set; }
             public string InspectionRecord { get; set; }
             public List<string> ImgPath { get; set; }
         }
@@ -80,20 +80,57 @@ namespace MinSheng_MIS.Models.ViewModels
         }
 
 
-        public string GetJsonForRecord()
-        { 
-            Root root = new Root();
-
+        public string GetJsonForRecord(string IPSN)
+        {
             InspectionPlan inspectionPlan = new InspectionPlan();
+            var InsPlan = db.InspectionPlan.Find(IPSN);
+            var InsPlanMember = db.InspectionPlanMember.Where(x => x.IPSN == IPSN).Select(x => x.UserID);
+            List<string> NameList = new List<string>();
+            string MyNameString = string.Empty;
+            foreach (var item in InsPlanMember)
+            {
+                var MyName = db.AspNetUsers.Where(x => x.UserName == item).Select(x => x.MyName).FirstOrDefault();
+                NameList.Add(MyName);
+            }
+            MyNameString = string.Join(",", NameList);
+            
+            inspectionPlan.IPSN = IPSN;
+            inspectionPlan.IPName = InsPlan.IPName;
+            inspectionPlan.PlanDate = InsPlan.PlanDate;
+            inspectionPlan.Shift = InsPlan.Shift;
+            inspectionPlan.MyName = MyNameString;
+
             InspectionPlanRecord inspectionPlanRecord= new InspectionPlanRecord();
+            inspectionPlanRecord.PlanState = InsPlan.PlanState;
+            string InfoName = db.AspNetUsers.Where(x => x.UserName == InsPlan.InformatUserID).Select(x => x.MyName).FirstOrDefault();
+            inspectionPlanRecord.MyName = InfoName;
+            inspectionPlanRecord.DateOfFilling = (DateTime)InsPlan.DateOfFilling;
+            inspectionPlanRecord.InspectionRecord = InsPlan.InspectionRecord;
+            List<string> ImgList = new List<string>();
+            var pathList = db.CompletionReportImage.Where(x => x.IPSN == IPSN).Select(x => x.ImgPath);
+            foreach (var item in pathList)
+            {
+                ImgList.Add(item);
+            }
+            inspectionPlanRecord.ImgPath = ImgList;
+
             List<InspectionPlanMember> ListIP = new List<InspectionPlanMember>();
-            InspectionPlanMember inspectionPlanMember = new InspectionPlanMember();
-            ListIP.Add(inspectionPlanMember);
+            var IPM = db.InspectionPlanMember.Where(x => x.IPSN == IPSN);
+            foreach (var item in IPM) 
+            {
+                InspectionPlanMember inspectionPlanMember = new InspectionPlanMember();
+                var ipmName = db.AspNetUsers.Where(x => x.UserName == item.UserID).Select(x => x.MyName).FirstOrDefault(); 
+                inspectionPlanMember.MyName = ipmName;
+                inspectionPlanMember.WatchID = item.WatchID;
+                inspectionPlanMember.PMSN = item.PMSN;
+                ListIP.Add(inspectionPlanMember);
+            }
+
+
             EquipmentMaintainRecord equipmentMaintainRecord = new EquipmentMaintainRecord();
             EquipmentRepairRecord equipmentRepairRecord = new EquipmentRepairRecord();
 
-
-
+            Root root = new Root();
             root.InspectionPlan = inspectionPlan;
             root.InspectionPlanRecord = inspectionPlanRecord;
             root.InspectionPlanMember = ListIP;

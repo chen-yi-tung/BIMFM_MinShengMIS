@@ -34,9 +34,9 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
 
-    const RSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null;
+    const IPSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${IPSN}`;
+    //let apiUrl = null;
     let apiUrl_Maintain = '@Url.Action("MaintainRecord_Management", "Datagrid")';
     let apiUrl_Repair = '@Url.Action("RepairRecord_Management", "Datagrid")';
 
