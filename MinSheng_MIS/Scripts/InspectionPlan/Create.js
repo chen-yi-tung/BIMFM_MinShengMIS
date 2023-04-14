@@ -93,12 +93,12 @@ function addButtonEvent() {
     })
 }
 
-function getCreateSaveData(){
+function getCreateSaveData() {
     let MaintainEquipment = $("#Maintain-datagrid").parent().hasClass("d-none") ? null : $("#Maintain-datagrid").datagrid('getRows').map(e => e.EMFISN);
     let MaintainUserID = $("#MaintainUserID").val();
 
     if (MaintainEquipment !== null && MaintainUserID === '') {
-        createDialogModal({ id: "DialogModal-Error", inner: "未選擇定期保養審核人員！" })
+        dialogError("未選擇定期保養審核人員！")
         return;
     }
 
@@ -106,9 +106,21 @@ function getCreateSaveData(){
     let RepairUserID = $("#RepairUserID").val();
 
     if (RepairEquipment !== null && RepairUserID === '') {
-        createDialogModal({ id: "DialogModal-Error", inner: "未選擇維修審核人員！" })
+        dialogError("未選擇維修審核人員！")
         return;
     }
+
+    let InspectionPlanPaths = getPathDatas()
+    if (InspectionPlanPaths.length === 0) {
+        dialogError("至少需要一條巡檢路線！")
+        return;
+    }
+    InspectionPlanPaths.forEach((e) => {
+        if (e.error && e.error === "order") {
+            dialogError("計畫中設備未排入巡檢路線中")
+            return;
+        }
+    })
 
     let data = {
         IPName: $("#IPName").val(),
@@ -120,15 +132,43 @@ function getCreateSaveData(){
         RepairUserID: RepairUserID,
         MaintainEquipment: MaintainEquipment,
         RepairEquipment: RepairEquipment,
-        InspectionPlanPaths: getPathDatas()
+        InspectionPlanPaths: InspectionPlanPaths
     }
 
-    return data;
+    console.log(data);
+
+    //return data;
 
     function getPathDatas() {
         return $(".sample-path-group[data-path-id]").toArray().map((e) => {
             let pathID = $(e).attr('data-path-id');
-            return JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
+            let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`));
+            if (checkEveryItemInArray(pathData)) { return { error: "order" } }
+            return pathData;
         })
+    }
+    function checkEveryItemInArray(data) {
+        let equip = [...new Set([...data.MaintainEquipment, ...data.RepairEquipment, ...data.BothEquipment])];
+        let beacon = data.PathSample.Beacon.map(e => e.deviceName);
+        let order = data.PathSampleOrder.filter((e, i, arr) => !beacon.includes(e));
+        let result;
+
+        if (equip.length > order.length) {
+            result = check(order, equip);
+        } else if (equip.length <= order.length) {
+            result = check(equip, order);
+        }
+
+        return result.every((e) => e);
+        
+        function getEquipData(){
+            maintainDG_Controller.edg.datagrid('getRows').map(e=>e.ESN)
+        }
+        function check(a, b) {
+            return b.map((e, i, arr) => a.includes(e));
+        }
+    }
+    function dialogError(inner) {
+        createDialogModal({ id: "DialogModal-Error", inner: inner })
     }
 }
