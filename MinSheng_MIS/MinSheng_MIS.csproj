@@ -1487,10 +1487,7 @@
     <Content Include="BimModels\Site01\Resource\objects_vals.json.gz" />
     <Content Include="BimModels\Site01\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\Site01\viewable.json" />
-    <Content Include="AllFile\2023-03-2710-18-53-35.gradle" />
-    <Content Include="AllFile\2023-03-2710-18-55-27.properties" />
-    <Content Include="AllFile\2023-03-2710-18-57-05.properties" />
-    <Content Include="AllFile\2023-03-2710-18-59-60.gradle" />
+    <Content Include="AllFile\2023-03-30_settings.gradle" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datagrid-management.js" />
