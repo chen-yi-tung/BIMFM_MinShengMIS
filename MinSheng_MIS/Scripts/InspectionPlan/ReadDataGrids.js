@@ -30,10 +30,11 @@
         ]]
     })
     dg.addEvent("detail", function (row, i) {
-        window.open('@Url.Action("Read","MaintainForm_Management")/' + row.EMFISN, "_blank");
+        
+        window.open('/MaintainForm_Management/Read/' + row.EMFISN, "_blank");
     })
     dg.addEvent("locate", function (row, i) {
-        window.open('@Url.Action("Read","MaintainForm_Management")/' + row.EMFISN, "_blank");
+        window.open('/MaintainForm_Management/Read/' + row.EMFISN, "_blank");
     })
 }
 
@@ -68,9 +69,9 @@ function initDatagrid_Repair(data) {
         ]]
     })
     dg.addEvent("detail", function (row, i) {
-        window.open('@Url.Action("Read","Report_Management")/' + row.RSN, "_blank");
+        window.open('/Report_Management/Read/' + row.RSN, "_blank");
     })
     dg.addEvent("locate", function (row, i) {
-        window.open('@Url.Action("Read","Report_Management")/' + row.RSN, "_blank");
+        window.open('/Report_Management/Read/' + row.RSN, "_blank");
     })
 }
