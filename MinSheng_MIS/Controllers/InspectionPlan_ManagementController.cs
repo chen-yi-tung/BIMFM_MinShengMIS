@@ -242,6 +242,7 @@ namespace MinSheng_MIS.Controllers
                 var ESN = db.EquipmentMaintainItem.Find(EMISN).ESN;
                 var MISN = db.EquipmentMaintainItem.Find(EMISN).MISN;
                 var Equipment = db.EquipmentInfo.Find(ESN);
+                var ASN = db.Floor_Info.Find(Equipment.FSN).ASN;
                 //設備狀態
                 if (!string.IsNullOrEmpty(Equipment.EState))
                 {
@@ -253,10 +254,18 @@ namespace MinSheng_MIS.Controllers
                 {
                     itemObjects.Add("Area", Equipment.Area);
                 }
+                if (!string.IsNullOrEmpty(ASN.ToString()))
+                {
+                    itemObjects.Add("ASN", ASN);
+                }
                 //樓層
                 if (!string.IsNullOrEmpty(Equipment.Floor))
                 {
                     itemObjects.Add("Floor", Equipment.Floor);
+                }
+                if (!string.IsNullOrEmpty(Equipment.FSN))
+                {
+                    itemObjects.Add("FSN", Equipment.FSN);
                 }
                 //設備編號
                 if (!string.IsNullOrEmpty(ESN))
@@ -418,6 +427,7 @@ namespace MinSheng_MIS.Controllers
                 itemObjects.Add("InformatUserID", MyName);
 
                 var Equipment = db.EquipmentInfo.Find(ESN);
+                var ASN = db.Floor_Info.Find(Equipment.FSN).ASN;
                 //設備狀態
                 if (!string.IsNullOrEmpty(Equipment.EState))
                 {
@@ -429,10 +439,18 @@ namespace MinSheng_MIS.Controllers
                 {
                     itemObjects.Add("Area", Equipment.Area);
                 }
+                if (!string.IsNullOrEmpty(ASN.ToString()))
+                {
+                    itemObjects.Add("ASN", ASN);
+                }
                 //樓層
                 if (!string.IsNullOrEmpty(Equipment.Floor))
                 {
                     itemObjects.Add("Floor", Equipment.Floor);
+                }
+                if (!string.IsNullOrEmpty(Equipment.FSN))
+                {
+                    itemObjects.Add("FSN", Equipment.FSN);
                 }
                 //設備名稱
                 if (!string.IsNullOrEmpty(Equipment.EName))
