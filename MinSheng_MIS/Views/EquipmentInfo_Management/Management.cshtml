@@ -96,6 +96,7 @@
     });
 
     function Initialize_DataGrid(getGridJSON) {
+        let dg = new DG();
         DataGrid = dg.init("#DataGrid", {
             //url: getGridJSON,
             data: fakeData,
@@ -104,9 +105,7 @@
             idField: 'PSSN',
             //sortName: 'PSSN',
             frozenColumns: [[
-                dg.frozenColumn('_Area', function (v, row, i) {
-                    return `<button class="btn btn-datagrid" onclick="dg.event.log(${i})">button</button>`;
-                }),
+                dg.frozenColumn('_TEST', (v, row, i) => dg.eventButton(i, "TEST", "log")),
             ]],
             columns: [[
                 dg.column('PSSN'),
@@ -115,9 +114,9 @@
                 dg.column('Floor', '樓層', 80),
             ]]
         })
-        dg.addEvent("log", function (i) {
-            alert('click index: '+i);
-            console.log(DataGrid.datagrid("getRows")[i]);
+        dg.addEvent("log", function (row, i) {
+            alert('click index: ' + i);
+            console.log(row);
         })
     }
 

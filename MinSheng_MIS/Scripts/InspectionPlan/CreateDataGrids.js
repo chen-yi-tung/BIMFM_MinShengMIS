@@ -625,8 +625,10 @@ const MDGOptions = {
             }
         },
         {
-            field: '_locate', align: 'center', width: 71, formatter: (val, row, index) => {
-                return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="locate">定位</button>`;
+            field: '_locate', align: 'center', width: 71,
+            formatter: (val, row, index) => {
+                let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="locate" ${disabled}>定位</button>`;
             }
         }
     ]],
@@ -688,8 +690,10 @@ const RDGOptions = {
             }
         },
         {
-            field: '_locate', align: 'center', width: 71, formatter: (val, row, index) => {
-                return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="locate">定位</button>`;
+            field: '_locate', align: 'center', width: 71,
+            formatter: (val, row, index) => {
+                let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="locate" ${disabled}>定位</button>`;
             }
         }
     ]],
@@ -888,8 +892,10 @@ IPDG.prototype.addRowEvent = function () {
             }
         });
 
-        this.changeEditAreaCss();
-        this.initResultDatagrid(this.edg);
+        if (this.edg.closest(".datatable-easyui").hasClass('d-none')){
+            this.changeEditAreaCss();
+            this.initResultDatagrid(this.edg);
+        }
         this.addRowBtn.click();
     }
 }
