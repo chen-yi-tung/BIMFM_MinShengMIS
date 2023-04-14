@@ -129,7 +129,7 @@ namespace MinSheng_MIS.Controllers
             #region 巡檢路線規劃(路徑標題及路徑順序)
             if(InspectionPlan.InspectionPlanPaths != null)
             {
-                var i = 0;
+                var i = 1;
                 foreach(var paths in InspectionPlan.InspectionPlanPaths)
                 {
                     #region 巡檢計畫路徑 dbo.InspectionPlanPath
