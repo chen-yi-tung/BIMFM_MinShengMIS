@@ -635,9 +635,17 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 巡檢紀錄
-        public ActionResult Record()
+        public ActionResult Record(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult Record_Data(string id) 
+        {
+            var IMV = new InspectionPlan_ManagementViewModel();
+            string result = IMV.GetJsonForRecord(id);
+            return Content(result, "application/json");
         }
         #endregion
 

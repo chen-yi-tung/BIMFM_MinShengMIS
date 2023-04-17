@@ -58,11 +58,24 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Account_Management(FormCollection form)
         {
-            string page = form["page"]?.ToString();
-            string rows = form["rows"]?.ToString();
             var service = new DatagridService();
             var a = service.GetJsonForGrid_Account_Management(form);
             string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
+        [HttpPost]
+        public ActionResult InspectationPlan_Record_EquipMaintain(FormCollection form)
+        {
+            var service = new DatagridService();
+            string result = service.GetJsonForGrid_InspectationPlan_Record_EquipMaintain(form);
+            return Content(result, "application/json");
+        }
+
+        [HttpPost]
+        public ActionResult InspectationPlan_Record_EquipRepair(FormCollection form)
+        {
+            var service = new DatagridService();
+            string result = service.GetJsonForGrid_InspectationPlan_Record_EquipRepair(form);
             return Content(result, "application/json");
         }
     }

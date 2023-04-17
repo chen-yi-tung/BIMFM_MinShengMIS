@@ -1184,5 +1184,163 @@ namespace MinSheng_MIS.Services
             jo.Add("total", total);
             return jo;
         }
+
+        public string GetJsonForGrid_InspectationPlan_Record_EquipMaintain(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+
+            string IPSN = form["IPSN"].ToString();
+
+            var SourceTable = db.InspectionPlanMaintain.Where(x => x.IPSN == IPSN);
+
+            var resulttable = SourceTable.OrderByDescending(x => x.EMFISN).AsQueryable();
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = resulttable.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            resulttable = resulttable.Skip((page - 1) * rows).Take(rows);
+
+            foreach (var item in resulttable)
+            {
+                var itemObjects = new JObject();
+                itemObjects.Add("IPMSN", item.IPMSN);
+                itemObjects.Add("IPSN", IPSN);
+                var dic_IPMS = Surfaces.Surface.InspectionPlanMaintainState();
+                itemObjects.Add("MaintainState", dic_IPMS[item.MaintainState]);
+                var EMFI = db.EquipmentMaintainFormItem.Find(item.EMFISN);
+                var EMI = db.EquipmentMaintainItem.Find(EMFI.EMISN);
+                var EI = db.EquipmentInfo.Find(EMI.ESN);
+                var MI = db.MaintainItem.Find(EMI.MISN);
+                itemObjects.Add("Area", EI.Area);
+                itemObjects.Add("Floor", EI.Floor);
+                itemObjects.Add("ESN", EI.ESN);
+                var dic_EState = Surfaces.Surface.EState();
+                itemObjects.Add("EState", dic_EState[EI.EState]);
+                itemObjects.Add("EName", EI.EName);
+                itemObjects.Add("EMFISN", item.EMFISN);
+                itemObjects.Add("MIName", MI.MIName);
+                itemObjects.Add("Unit", EMFI.Unit);
+                itemObjects.Add("Period", EMFI.Period.ToString());
+                itemObjects.Add("LastTime", EMFI.LastTime.ToString("yyyy/MM/dd"));
+                itemObjects.Add("NextTime", EMFI.NextTime?.ToString("yyyy/MM/dd"));
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            string reString = JsonConvert.SerializeObject(jo);
+            return reString;
+        }
+
+        public string GetJsonForGrid_InspectationPlan_Record_EquipRepair(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+
+            string IPSN = form["IPSN"].ToString();
+
+            var SourceTable = db.InspectionPlanRepair.Where(x => x.IPSN == IPSN);
+
+            var resulttable = SourceTable.OrderByDescending(x => x.IPRSN).AsQueryable();
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = resulttable.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            resulttable = resulttable.Skip((page - 1) * rows).Take(rows);
+
+
+            foreach (var item in resulttable)
+            {
+                var itemObjects = new JObject();
+                itemObjects.Add("IPRSN", item.IPRSN);
+                itemObjects.Add("IPSN", IPSN);
+                var dic_IPRS = Surfaces.Surface.InspectionPlanRepairState();
+                itemObjects.Add("RepairState", dic_IPRS[item.RepairState]);
+                var ERF = db.EquipmentReportForm.Find(item.RSN);
+                var EI = db.EquipmentInfo.Find(ERF.ESN);
+                var dic_RL = Surfaces.Surface.ReportLevel();
+                itemObjects.Add("ReportLevel", dic_RL[ERF.ReportLevel]);
+                itemObjects.Add("Area", EI.Area);
+                itemObjects.Add("Floor", EI.Floor);
+                itemObjects.Add("RSN", item.RSN);
+                itemObjects.Add("Date", ERF.Date.ToString("yyyy/MM/dd HH:mm:ss"));
+                itemObjects.Add("ESN", ERF.ESN);
+                itemObjects.Add("EName", EI.EName);
+                var Name = db.AspNetUsers.Where(x => x.UserName == ERF.InformatUserID).Select(x => x.MyName).FirstOrDefault();
+                itemObjects.Add("InformantUserID", Name);
+                itemObjects.Add("ReportContent", ERF.ReportContent);
+                ja.Add(itemObjects);
+            }
+
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            string reString = JsonConvert.SerializeObject(jo);
+            return reString;
+        }
+
+
+
+        public JObject DataGridSample (System.Web.Mvc.FormCollection form)
+        {
+            var SourceTable = db.InspectionPlanMaintain.Where(x => x.IPSN == form[""]);
+
+            var resulttable = SourceTable.OrderByDescending(x => x.EMFISN).AsQueryable();
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = resulttable.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+            resulttable = resulttable.Skip((page - 1) * rows).Take(rows);
+
+            foreach (var item in resulttable)
+            {
+                var itemObjects = new JObject();
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+
+            return jo;
+        }
     }
 }

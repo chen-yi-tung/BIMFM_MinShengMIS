@@ -35,10 +35,10 @@
 <script>
 
     const IPSN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${IPSN}`;
+    let apiUrl = '@Url.Action("Record_Data", "InspectionPlan_Management")' + `/${IPSN}`;
     //let apiUrl = null;
-    let apiUrl_Maintain = '@Url.Action("MaintainRecord_Management", "Datagrid")';
-    let apiUrl_Repair = '@Url.Action("RepairRecord_Management", "Datagrid")';
+    let apiUrl_Maintain = '@Url.Action("InspectationPlan_Record_EquipMaintain", "Datagrid")';
+    let apiUrl_Repair = '@Url.Action("InspectationPlan_Record_EquipRepair", "Datagrid")';
 
     const sn = {
         InspectionPlan: [
@@ -145,7 +145,7 @@
         $('#DataGrid-Maintain').datagrid({
             url: url,
             queryParams: {
-                IPSN: $("#d-IPSN").text()
+                IPSN: IPSN
             },
             frozenColumns: [[
                 {
@@ -169,7 +169,7 @@
                 { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
                 { field: 'ESN', title: '設備編號', align: 'center', width: 110, sortable: true },
                 { field: 'EName', title: '設備名稱', align: 'center', width: 200, sortable: true },
-
+                { field: 'EState', title: '設備狀態', align: 'center', width: 210, sortable: true },
                 { field: 'EMFISN', title: '保養項目編號', align: 'center', width: 210, sortable: true },
                 { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
                 { field: 'Period', title: '週期', align: 'center', width: 110, sortable: true },
@@ -194,7 +194,7 @@
         $('#DataGrid-Repair').datagrid({
             url: url,
             queryParams: {
-                IPSN: $("#d-IPSN").text()
+                IPSN: IPSN
             },
             frozenColumns: [[
                 {
