@@ -50,33 +50,12 @@
     <table id="DataGrid"></table>
 </div>
 <script src="../../Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
 
     var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
 
     var baseUrl = "/SamplePath_Management/";
-    var areas = document.getElementById("ASN");
-    areas.addEventListener("change", function () {
-        let url = '@Url.Action("Floor", "DropDownList")';
-        if (areas.value != "") {
-            $('#Area').val($("#ASN option:selected").text());
-        }
-        else {
-            $('#Area').val('');
-        }
-        url = url + `?ASN=${areas.value}`;
-        pushSelect("FSN", url);
-        $('#Floor').val('');
-    });
-    var FSNs = document.getElementById("FSN");
-    FSNs.addEventListener("change", function () {
-        if (FSNs.value != "") {
-            $('#Floor').val($("#FSN option:selected").text());
-        }
-        else {
-            $('#Floor').val('');
-        }
-    });
 
     const fakeData = [
         {
@@ -88,7 +67,7 @@
     ]
 
     $(async function () {
-        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+        await AreaFloorEvent();
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });

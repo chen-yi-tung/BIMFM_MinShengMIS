@@ -98,35 +98,14 @@
 </div>
 <script src="../../Scripts/datatable.js"></script>
 <script src="../../Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
     var baseUrl = "/MaintainForm_Management/";
-    var areas = document.getElementById("ASN");
-    areas.addEventListener("change", function () {
-        let url = '@Url.Action("Floor", "DropDownList")';
-        if (areas.value != "") {
-            $('#Area').val($("#ASN option:selected").text());
-        }
-        else {
-            $('#Area').val('');
-        }
-        url = url + `?ASN=${areas.value}`;
-        pushSelect("FSN", url);
-        $('#Floor').val('');
-    });
-    var FSNs = document.getElementById("FSN");
-    FSNs.addEventListener("change", function () {
-        if (FSNs.value != "") {
-            $('#Floor').val($("#FSN option:selected").text());
-        }
-        else {
-            $('#Floor').val('');
-        }
-    });
 
     var getGridJSON = '@Url.Action("MaintainForm_Management", "MaintainForm_Management")';
 
     $(async function () {
-        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+        await AreaFloorEvent();
         await pushSelect("FormItemState", '@Url.Action("FormItemState", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
