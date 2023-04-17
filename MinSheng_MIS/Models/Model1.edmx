@@ -110,7 +110,7 @@
           <Property Name="ESN" Type="char" MaxLength="6" Nullable="false" />
           <Property Name="System" Type="nvarchar" MaxLength="20" />
           <Property Name="SubSystem" Type="nvarchar" MaxLength="20" />
-          <Property Name="EName" Type="nvarchar" MaxLength="20" />
+          <Property Name="EName" Type="nvarchar" MaxLength="50" />
           <Property Name="Area" Type="nvarchar" MaxLength="20" />
           <Property Name="Floor" Type="nvarchar" MaxLength="20" />
           <Property Name="Room" Type="nvarchar" MaxLength="50" />
@@ -1253,7 +1253,7 @@
           <Property Name="ESN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
           <Property Name="System" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="SubSystem" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="EName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="EName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Area" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Floor" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="Room" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
