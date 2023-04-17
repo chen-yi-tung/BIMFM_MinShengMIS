@@ -203,7 +203,7 @@ function getCreateSaveData() {
         let result = equip.filter((e, i, arr) => {
             return data.findIndex(d => {
                 if (d.error) return false
-                return e.ASN == d.PathSample.ASN || e.FSN === d.PathSample.FSN
+                return e.ASN == d.PathSample.ASN && e.FSN === d.PathSample.FSN
             }) === -1
         })
         console.log("findUnusedEquip result:", result)
@@ -245,6 +245,9 @@ function getCreateSaveData() {
         }
     }
     function getDgRows(dgc) {
+        if (dgc.edg.parent().hasClass('d-none')) {
+            return [];
+        }
         return dgc.edg.datagrid('getRows');
     }
 
