@@ -72,7 +72,8 @@ namespace MinSheng_MIS.Services
             var SourceTable = from x1 in db.EquipmentReportForm
                               join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
                               join x3 in db.AspNetUsers on x1.InformatUserID equals x3.UserName
-                              select new { x1.ReportState, x1.ReportLevel, x2.Area, x2.Floor, x1.ReportSource, x1.RSN, x1.Date, x2.PropertyCode, x1.ESN, x2.EName, x1.ReportContent, x3.MyName, x3.UserName, x2.EState, x1.StockState, x2.DBID };
+                              join x4 in db.Floor_Info on x2.FSN equals x4.FSN
+                              select new { x1.ReportState, x1.ReportLevel, x2.Area, x2.Floor, x1.ReportSource, x1.RSN, x1.Date, x2.PropertyCode, x1.ESN, x2.EName, x1.ReportContent, x3.MyName, x3.UserName, x2.EState, x1.StockState, x2.DBID, x2.FSN, x4.ASN };
 
             //若是用於新增巡檢計畫 的 新增維修單需增加狀態判斷
             if (SourceReport == "AddReportForm")
@@ -221,6 +222,14 @@ namespace MinSheng_MIS.Services
                 if (!string.IsNullOrEmpty(a.DBID.ToString()))
                 {
                     itemObjects.Add("DBID", a.DBID);
+                }
+                if (!string.IsNullOrEmpty(a.FSN.ToString()))
+                {
+                    itemObjects.Add("FSN", a.FSN);
+                }
+                if (!string.IsNullOrEmpty(a.ASN.ToString()))
+                {
+                    itemObjects.Add("ASN", a.ASN);
                 }
             }
 

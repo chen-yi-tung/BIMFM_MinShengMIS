@@ -75,6 +75,11 @@ var ForgeDraw = (function (e) {
             return new CustomEvent('fd.devicepoint.removeall', { 'detail': detail })
         }
     }
+    class PointDetectErrorEvent {
+        constructor(detail) {
+            return new CustomEvent('fd.point.detecterror', { 'detail': detail })
+        }
+    }
 
     /* setting */
     const Colors = {
@@ -295,7 +300,7 @@ var ForgeDraw = (function (e) {
         layer.line.removeChildren();
         layer.point.removeChildren();
 
-        devices.forEach(e => e.update());
+        //devices.forEach(e => e.update());
 
         view.dispatchEvent(new LineDataRemoveAllEvent());
     }
@@ -307,14 +312,66 @@ var ForgeDraw = (function (e) {
     }
 
     function getRoute() {
-        return devices
+        const fvd = getForgeVectorDistance();
+        let result = lineData.map((e, i, arr) => {
+            if (arr.length - 1 == i) { return []; }
+            let a = e.position;
+            let b = arr[i + 1].position;
+            return devices.map((d) => {
+                let p = findNearest(d.position, a, b);
+                let r = twoPointDistance(d.position, p);
+                if (r < 20 * fvd) {
+                    return {
+                        name: d.name,
+                        line: i,
+                        devicePoint: d,
+                        distanceToLine: r,
+                        distanceToA: twoPointDistance(d.position, a),
+                    }
+                }
+                return;
+            })
+        })
+
+        let result2 = result.flatMap((res) =>
+            res.filter(e => e).sort((a, b) => a.distanceToA - b.distanceToA)
+        ).filter((e, i, arr) => {
+            let f = arr[i + 1];
+            if (f) { return e.name != f.name; }
+            return e
+        }).map(e => e.devicePoint)
+
+        //console.log("getRoute() newResult:", result2);
+
+        return result2;
+        /* return devices
             .filter(e => e.result != undefined)
             .sort((a, b) => {
                 if (a.result.i == b.result.i) {
                     return a.result.distanceToA - b.result.distanceToA;
                 }
                 return a.result.i - b.result.i;
-            });
+            }); */
+
+        function findNearest(p, a, b) {
+            let atob = { x: b.x - a.x, y: b.y - a.y };
+            let atop = { x: p.x - a.x, y: p.y - a.y };
+            let len = atob.x * atob.x + atob.y * atob.y;
+            let dot = atop.x * atob.x + atop.y * atob.y;
+            let t = Math.min(1, Math.max(0, dot / len));
+            //dot = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+            return { x: a.x + atob.x * t, y: a.y + atob.y * t };
+        }
+        function twoPointDistance(p1, p2) {
+            return Math.sqrt(Math.pow((p1.x - p2.x), 2) + Math.pow((p1.y - p2.y), 2));
+        }
+        function getForgeVectorDistance() {
+            let a = viewer.worldToClient(new THREE.Vector3(0, 0, 0));
+            let b = viewer.worldToClient(new THREE.Vector3(1, 0, 0));
+            let pa = new PIXI.Point(a.x, a.y);
+            let pb = new PIXI.Point(b.x, b.y);
+            return twoPointDistance(pa, pb);
+        }
     }
 
     function getForgeLineData() {
@@ -960,7 +1017,18 @@ var ForgeDraw = (function (e) {
 
             this.onUpEvent = function (event) {
                 console.log(`${self.name} => onUpEvent`);
+                self.off("pointermove", self.onMoveEvent);
+                self.off("pointerup", self.onUpEvent);
+
                 let w = forgeViewer.clientToWorld(movingPoint.position.x, movingPoint.position.y);
+
+                if (!(w && w.point)) {
+                    layer.point.removeChild(movingPoint.container)
+                    if (lineData.length !== 0) { layer.line.removeChild(movingLine.container) }
+                    view.dispatchEvent(new PointDetectErrorEvent());
+                    return;
+                }
+
                 let data = {
                     position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y),
                     forgePos: w ? w.point : undefined
@@ -974,10 +1042,6 @@ var ForgeDraw = (function (e) {
                     movingLine.eventMode = EventMode.STATIC;
                     lines.push(movingLine);
                 }
-
-                self.off("pointermove", self.onMoveEvent);
-                self.off("pointerup", self.onUpEvent);
-
             }
 
             this.onDeviceUpEvent = function (event) {

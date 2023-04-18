@@ -14,8 +14,10 @@
     <form class="form" method="post" action="">
 
         <div class="form-group">
-            <label for="PathTitle">巡檢路線模板名稱</label>
-            <input class="form-control" id="PathTitle" name="PathTitle" type="text" />
+            <label for="EState">設備狀態</label>
+            <select class="form-select" name="EState" id="EState">
+                <option value="">請選擇</option>
+            </select>
         </div>
 
         <div class="form-group">
@@ -38,6 +40,46 @@
             <input class="form-control" id="Floor" name="Floor" type="text" hidden />
         </div>
 
+        <div class="form-group">
+            <label for="RoomName">空間名稱</label>
+            <input class="form-control" id="RoomName" name="RoomName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="System">系統別</label>
+            <input class="form-control" id="System" name="System" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="SubSystem">子系統別</label>
+            <input class="form-control" id="SubSystem" name="SubSystem" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <input class="form-control" id="EName" name="EName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Brand">廠牌</label>
+            <input class="form-control" id="Brand" name="Brand" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Model">型號</label>
+            <input class="form-control" id="Model" name="Model" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="PropertyCode">國有財產編碼</label>
+            <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" />
+        </div>
+
         <div class="button-group">
             <button type="button" class="btn btn-search" id="search">查詢</button>
             <button type="button" class="btn btn-clear" id="clear">清除</button>
@@ -51,34 +93,12 @@
 </div>
 <script src="/Scripts/datagrid-management.js"></script>
 <script src="/Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
 
     var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
     var DataGrid;
     var baseUrl = '/' + window.location.pathname.split('/')[1] + '/';
-
-    var areas = document.getElementById("ASN");
-    areas.addEventListener("change", function () {
-        let url = '@Url.Action("Floor", "DropDownList")';
-        if (areas.value != "") {
-            $('#Area').val($("#ASN option:selected").text());
-        }
-        else {
-            $('#Area').val('');
-        }
-        url = url + `?ASN=${areas.value}`;
-        pushSelect("FSN", url);
-        $('#Floor').val('');
-    });
-    var FSNs = document.getElementById("FSN");
-    FSNs.addEventListener("change", function () {
-        if (FSNs.value != "") {
-            $('#Floor').val($("#FSN option:selected").text());
-        }
-        else {
-            $('#Floor').val('');
-        }
-    });
 
     const fakeData = [
         {
@@ -90,7 +110,7 @@
     ]
 
     $(async function () {
-        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+        await AreaFloorEvent();
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });
@@ -105,18 +125,54 @@
             idField: 'PSSN',
             //sortName: 'PSSN',
             frozenColumns: [[
-                dg.frozenColumn('_TEST', (v, row, i) => dg.eventButton(i, "TEST", "log")),
+                dg.frozenColumn('_locate', (v, row, i) => {
+                    let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                    return dg.eventButton(i, "定位", "locate", { disabled: disabled })
+                }),
+                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                dg.frozenColumn('FilePath', (v, row, i) => {
+                    let disabled = v == null || v == "" ? 'disabled' : '';
+                    return dg.eventButton(i, "操作手冊", "filePath", { disabled: disabled })
+                }),
+                dg.frozenColumn('_activate', (v, row, i) => {
+                    return row.EState == "停用" ?
+                        dg.eventButton(i, "啟用", "activate") :
+                        dg.eventButton(i, "停用", "deactivate", { className: "btn btn-datagrid btn-datagrid-secondary" })
+                }),
             ]],
             columns: [[
-                dg.column('PSSN'),
-                dg.column('PathTitle'),
-                dg.column('Area', '棟別'),
-                dg.column('Floor', '樓層', 80),
+                dg.column('EState', '設備狀態', 110),
+                dg.column('Area', '棟別', 130),
+                dg.column('RoomName', '空間名稱', 110),
+                dg.column('System', '系統別', 200),
+                dg.column('SubSystem', '子系統別', 250),
+                dg.column('ESN', '設備編號', 110),
+                dg.column('EName', '設備名稱', 200),
+                dg.column('Brand', '廠牌', 110),
+                dg.column('Model', '型號', 110),
+                dg.column('PropertyCode', '國有財產編碼', 150),
             ]]
         })
-        dg.addEvent("log", function (row, i) {
-            alert('click index: ' + i);
-            console.log(row);
+        dg.addEvent("locate", function (row, i) {
+            window.open(baseUrl + 'Read', "_blank")
+        })
+        dg.addEvent("detail", function (row, i) {
+            window.open(baseUrl + 'Read', "_blank")
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(baseUrl + 'Edit', "_self")
+        })
+        dg.addEvent("filePath", function (row, i) {
+            window.open(row.FilePath, "_blank")
+        })
+        dg.addEvent("activate", function (row, i) {
+            console.log("activate", i)
+            //todo activate
+        })
+        dg.addEvent("deactivate", function (row, i) {
+            console.log("deactivate", i)
+            //todo deactivate
         })
     }
 
@@ -132,8 +188,7 @@
         });
 
         $("#create").click(function () {
-            let url = baseUrl + 'Create';
-            window.open(url, "_self");
+            window.open(baseUrl + 'CreateEquipment', "_self");
         });
     }
 </script>

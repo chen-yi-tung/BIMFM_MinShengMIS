@@ -208,6 +208,12 @@
     pointer-events: none;
 }
 
+#viewer3d #current-path-areafloor{
+    position: absolute;
+    font-size: 1.5em;
+    margin-left: 0.35em;
+}
+
 #PathCanvas {
     position: relative;
     width: 100%;

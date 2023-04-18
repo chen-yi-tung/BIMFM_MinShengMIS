@@ -139,15 +139,15 @@ th.datatable-header,
 
 /* datatable small grid */
 
-.datatable-small-grid th.datatable-header{
+.datatable-table th.datatable-header{
     font-weight: normal;
     border-bottom-width: var(--datatable-border-width);
 }
-.datatable-small-grid th.datatable-header+th.datatable-header{
+.datatable-table th.datatable-header+th.datatable-header{
     border-left-width: var(--datatable-border-width);
 }
 
-.datatable-small-grid td:not(.datatable-table-th)+td {
+.datatable-table td:not(.datatable-table-th)+td {
     border-left-width: var(--datatable-border-width);
 }
 

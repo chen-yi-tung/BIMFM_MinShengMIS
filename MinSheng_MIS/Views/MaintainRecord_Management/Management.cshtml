@@ -124,38 +124,24 @@
     <table id="DataGrid"></table>
 </div>
 <script src="../../Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
     var baseUrl = "/MaintainRecord_Management/";
-    var areas = document.getElementById("ASN");
-    areas.addEventListener("change", function () {
-        let url = '@Url.Action("Floor", "DropDownList")';
-        if (areas.value != "") {
-            $('#Area').val($("#ASN option:selected").text());
-        }
-        else {
-            $('#Area').val('');
-        }
-        url = url + `?ASN=${areas.value}`;
-        pushSelect("FSN", url);
-        $('#Floor').val('');
-    });
-    var FSNs = document.getElementById("FSN");
-    FSNs.addEventListener("change", function () {
-        if (FSNs.value != "") {
-            $('#Floor').val($("#FSN option:selected").text());
-        }
-        else {
-            $('#Floor').val('');
-        }
-    });
+    
     var getGridJSON = '@Url.Action("MaintainRecord_Management", "Datagrid")';
 
     $(async function () {
-        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+        await AreaFloorEvent();
         await pushSelect("MaintainState", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
         //document.getElementById('Area').value = '1'
         await pushSelect("MaintainUserID", '@Url.Action("MaintainUser", "DropDownList")');
         await pushSelect("AuditUserID", '@Url.Action("AuditUser_Maintain", "DropDownList")');
+
+        if (window.location.search) {
+            let params = new URL(document.location).searchParams;
+            params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
+        }
+
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
         //$("#Area option[value=1]").attr('selected', 'selected');

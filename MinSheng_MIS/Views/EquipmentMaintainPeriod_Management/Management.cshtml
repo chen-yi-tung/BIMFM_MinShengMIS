@@ -89,6 +89,7 @@
     <button type="button" class="btn btn-search" id="save">儲存本頁變更</button>
 </div>
 <script src="../../Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
 
     var baseUrl = "/EquipmentMaintainPeriod_Management/";
@@ -111,28 +112,6 @@
             NextTime: "2023/01/01",
         }
     ]
-    var areas = document.getElementById("ASN");
-    areas.addEventListener("change", function () {
-        let url = '@Url.Action("Floor", "DropDownList")';
-        if (areas.value != "") {
-            $('#Area').val($("#ASN option:selected").text());
-        }
-        else {
-            $('#Area').val('');
-        }
-        url = url + `?ASN=${areas.value}`;
-        pushSelect("FSN", url);
-        $('#Floor').val('');
-    });
-    var FSNs = document.getElementById("FSN");
-    FSNs.addEventListener("change", function () {
-        if (FSNs.value != "") {
-            $('#Floor').val($("#FSN option:selected").text());
-        }
-        else {
-            $('#Floor').val('');
-        }
-    });
     var Systems = document.getElementById('System')
     Systems.addEventListener("change", function () {
         let url = '@Url.Action("SubSystem", "DropDownList")';
@@ -143,7 +122,7 @@
 
     var getGridJSON = '@Url.Action("EquipmentMaintainPeriod_Management", "Datagrid")';
     $(async function () {
-        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+        await AreaFloorEvent();
         await pushSelect("System", '@Url.Action("System", "DropDownList")');
         //await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
         Initialize_DataGrid(getGridJSON);

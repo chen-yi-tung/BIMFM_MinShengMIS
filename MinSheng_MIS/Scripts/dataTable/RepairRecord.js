@@ -83,4 +83,15 @@
                 itemTitleKey: "AuditDate"
             }) : "",
     );
+
+    let ESN = data.EquipmentReportItem.ESN;
+
+    $("#MaintainRecord").click(function () {
+        let url = `/MaintainRecord_Management/Management?ESN=${ESN}`;
+        window.open(url, "_blank");
+    });
+    $("#OtherRepairRecord").click(function () {
+        let url = `/RepairRecord_Management/Management?ESN=${ESN}`;
+        window.open(url, "_blank");
+    });
 }

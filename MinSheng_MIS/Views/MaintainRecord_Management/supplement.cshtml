@@ -211,14 +211,6 @@
     }
 
     function addButtonEvent() {
-        $("#OtherMaintainRecord").click(function () {
-            let url = baseUrl + 'Read' + `/${RSN}`;
-            window.open(url, "_blank");
-        });
-        $("#RepairRecord").click(function () {
-            let url = baseUrl + 'Read' + `/${RSN}`;
-            window.open(url, "_blank");
-        });
         $("#ImgPath").change(function (e) {
             console.log(this.files);
             if (this.files && this.files.length !== 0) {

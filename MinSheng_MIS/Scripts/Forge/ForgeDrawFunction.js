@@ -96,9 +96,9 @@ function togglePointerEvent(bool, selectors = null) {
  */
 function calcPath() {
     //若有線條資料，則更新設備
-    if (ForgeDraw.lineData.length > 1) {
+    /* if (ForgeDraw.lineData.length > 1) {
         ForgeDraw.devices.forEach((dp) => { dp.update(); })
-    }
+    } */
 
     //若自動更新選項沒有開啟，則返回null
     if (!sortRouteModal.autoCalcRoute) { return null; }

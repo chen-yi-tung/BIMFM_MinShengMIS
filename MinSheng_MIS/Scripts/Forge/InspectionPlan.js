@@ -6,6 +6,10 @@ const sortRouteModal = new SortRouteModal({ onSave: updatePathDisplay });
 
 function initializeDrawer() {
     app = ForgeDraw.init(view, viewer, function () {
+        view.addEventListener("fd.point.detecterror", function (event) {
+            console.log("view => fd.point.detecterror");
+            createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
+        });
         view.addEventListener("fd.linedata.change", function (event) {
             console.log("view => fd.linedata.change");
             updatePathDisplay(calcPath());

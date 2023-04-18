@@ -9,7 +9,7 @@
     <section id="InspectionPlanRepairList"></section>
 
     <div class="edit-button-area mb-5">
-        <button class="btn btn-search" id="OtherReportRecord">本設備其他維修紀錄</button>
+        <button class="btn btn-search" id="OtherRepairRecord">本設備其他維修紀錄</button>
         <button class="btn btn-back" id="MaintainRecord">本設備定期保養紀錄</button>
     </div>
 </section>
@@ -263,14 +263,6 @@
     }
 
     function addButtonEvent() {
-        $("#OtherMaintainRecord").click(function () {
-            let url = baseUrl + 'Read' + `/${RSN}`;
-            window.open(url, "_blank");
-        });
-        $("#MaintainRecord").click(function () {
-            let url = baseUrl + 'Read' + `/${RSN}`;
-            window.open(url, "_blank");
-        });
         $("#ImgPath").change(function (e) {
             console.log(this.files);
             if (this.files && this.files.length !== 0) {

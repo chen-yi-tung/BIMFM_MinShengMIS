@@ -133,20 +133,8 @@
         }
     }
 
-    function addButtonEvent() {
-        $("#OtherMaintainRecord").click(function () {
-            let url = baseUrl + 'Read' + `/${IPMSN}`;
-            window.open(url, "_blank");
-        });
-        $("#RepairRecord").click(function () {
-            let url = baseUrl + 'Read' + `/${IPMSN}`;
-            window.open(url, "_blank");
-        });
-    }
-
     window.onload = function () {
         readData(apiUrl);
-        addButtonEvent();
     }
 
 </script>
