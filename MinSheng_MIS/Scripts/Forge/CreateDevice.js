@@ -99,13 +99,18 @@ function initDrawerLocate() {
     app = ForgeDraw.init(view, viewer, function () {
         ForgeDraw.setControl(ForgeDraw.Control.DEVICE);
         view.addEventListener("fd.devicepoint.change", function (event) {
-            let pos = event.detail;
-            let fos = viewer.clientToWorld(pos.x, pos.y);
+            let fos = event.detail;
             console.log("view => fd.devicepoint.change", fos.point);
-
             if (fos && fos.point) {
                 $("#LocationX").text(fos.point.x);
                 $("#LocationY").text(fos.point.y);
+            }
+            else {
+                !$("#DialogModal-Error")[0] &&
+                    createDialogModal({ id: "DialogModal-Error", inner: "超出模型範圍！" })
+                ForgeDraw.stage.off("pointermove", ForgeDraw.stage.onDeviceMoveEvent);
+                ForgeDraw.stage.off("pointerup", ForgeDraw.stage.onDeviceUpEvent);
+
             }
         });
     });
