@@ -614,8 +614,15 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 巡檢計畫詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
+            return View();
+        }
+        public ActionResult Read_Data(string id)
+        {
+            InspectionPlan_ManagementViewModel IMV = new InspectionPlan_ManagementViewModel();
+
             return View();
         }
         #endregion

@@ -1305,18 +1305,41 @@ namespace MinSheng_MIS.Services
         }
 
 
-
         public JObject DataGridSample (System.Web.Mvc.FormCollection form)
         {
-            var SourceTable = db.InspectionPlanMaintain.Where(x => x.IPSN == form[""]);
+            var SourceTable = db.InspectionPlanMaintain.Where(x => x.IPSN == form[""]); //作主表查詢，需要先宣告EF資料庫模型
 
-            var resulttable = SourceTable.OrderByDescending(x => x.EMFISN).AsQueryable();
-            //回傳JSON陣列
-            JArray ja = new JArray();
-            //記住總筆數
-            int total = resulttable.Count();
-            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-            #region datagrid呼叫時的預設參數有 rows 跟 page
+            //在這裡做關鍵字查詢
+            /* 範例:
+            
+                *模糊查詢
+            if (!string.IsNullOrEmpty(MyName)) 
+            {
+                Data = Data.Where(x => x.MyName.Contains(MyName));
+            }
+
+                *精準查詢
+            if (!string.IsNullOrEmpty(Authority)) 
+            {
+                Data = Data.Where(x => x.Authority == Authority);
+            }
+
+                *日期
+            if (!string.IsNullOrEmpty(DateFrom))
+            {
+                var datefrom = DateTime.Parse(DateFrom);
+                SourceTable = SourceTable.Where(x => x.Date >= datefrom);
+            }
+              
+            */
+
+
+            var resulttable = SourceTable.OrderByDescending(x => x.EMFISN).AsQueryable(); //重新排序，轉換成IQueryable
+
+            #region 不需要動，除非要改預設值
+            int total = resulttable.Count(); //記住總筆數
+            
+            //要顯示的頁面和單頁的資料筆數
             int page = 1;
             if (!string.IsNullOrEmpty(form["page"]?.ToString()))
             {
@@ -1327,18 +1350,53 @@ namespace MinSheng_MIS.Services
             {
                 rows = short.Parse(form["rows"]?.ToString());
             }
-            #endregion
+            
+            //把總資料做指定頁面的筆數切割
             resulttable = resulttable.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            #endregion
 
             foreach (var item in resulttable)
             {
                 var itemObjects = new JObject();
+                //在此新增資料
+                //itemObjects.Add("IPMSN", item.IPMSN);
+
                 ja.Add(itemObjects);
             }
 
             JObject jo = new JObject();
             jo.Add("rows", ja);
             jo.Add("total", total);
+
+            #region 參考部分
+            /* JObject 取值範例
+             * string json =
+             * {  
+             *    "name": "John",
+             *    "age": 30,
+             *    "address": {
+             *        "city": "Taipei",    
+             *        "number": 504
+             *    }
+             * }   
+             *  
+             *  JObject jo = JObject.Parse(json);
+             *  
+             *  string name = (string)jo["name"];
+             *  int age = (int)jo["age"];
+             *  
+             *  JObject address = (JObject)jo["address"];
+             *  
+             *  string city = (string)address["city"];
+             */
+
+            //如果要回傳Json字串，反註解下面這2行，記得上面回傳形態要改string
+            //string reString = JsonConvert.SerializeObject(jo);
+            //return reString;
+            #endregion
 
             return jo;
         }

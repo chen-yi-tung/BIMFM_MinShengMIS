@@ -12,6 +12,137 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
+        #region 巡檢計畫-詳情 DataGrid
+        public string InspectationPlan_Read_Data(string IPSN)
+        {
+            var dic_InPlanState = Surfaces.Surface.InspectionPlanState();
+            var dic_Shift = Surfaces.Surface.Shift();
+            var dic_EMFIState = Surfaces.Surface.EquipmentMaintainFormItemState();
+            var dic_EState = Surfaces.Surface.EState();
+            var dic_ERFState = Surfaces.Surface.EquipmentReportFormState();
+            var dic_RL = Surfaces.Surface.ReportLevel();
+
+            #region 巡檢計畫
+            var IP_SourceTable = db.InspectionPlan.Find(IPSN);
+            var IPM_UID = db.InspectionPlanMember.Where(x => x.IPSN == IPSN).Select(x => x.UserID);
+            List<string> IP_NameList = new List<string>();
+            foreach (var item in IPM_UID)
+            {
+                var IP_Name = db.AspNetUsers.Where(x => x.UserName == item).Select(x => x.MyName).FirstOrDefault();
+                IP_NameList.Add(IP_Name);
+            }
+            #endregion
+
+            #region 定期保養設備
+            JArray ME = new JArray();
+
+            var IPM_SourceTable = db.InspectionPlanMaintain.Where(x => x.IPSN == IPSN);
+
+            foreach (var IPM_item in IPM_SourceTable)
+            {
+                var EMFI_SourceTable = db.EquipmentMaintainFormItem.Find(IPM_item.EMFISN);
+                var EMI_SourceTable = db.EquipmentMaintainItem.Find(EMFI_SourceTable.EMISN);
+                var EI_SourceTable = db.EquipmentInfo.Find(EMI_SourceTable.ESN);
+                var MI_SourceTable = db.MaintainItem.Find(EMI_SourceTable.MISN);
+                JObject ME_Row = new JObject()
+                {
+                    { "StockState", EMFI_SourceTable.StockState? "有":"無" },
+                    { "FormItemState", dic_EMFIState[EMFI_SourceTable.FormItemState] },
+                    { "EMFISN", IPM_item.EMFISN },
+                    { "Period", EMFI_SourceTable.Period },
+                    { "Unit", EMFI_SourceTable.Unit },
+                    { "LastTime", EMFI_SourceTable.LastTime.ToString("yyyy/MM/dd") },
+                    { "Date", EMFI_SourceTable.Date.ToString("yyyy/MM/dd") },
+                    { "EState", dic_EState[EI_SourceTable.EState] },
+                    { "Area", EI_SourceTable.Area },
+                    { "Floor", EI_SourceTable.Floor },
+                    { "ESN", EMI_SourceTable.ESN },
+                    { "EName", EI_SourceTable.EName },
+                    { "MIName", MI_SourceTable.MIName }
+                };
+                ME.Add(ME_Row);
+            }
+            #endregion
+
+            #region 維修設備
+            JArray RE = new JArray();
+
+            var IPR_SourceTable = db.InspectionPlanRepair.Where(x => x.IPSN == IPSN);
+
+            foreach (var IPR_item in IPR_SourceTable)
+            {
+                var ERF_SourceTable = db.EquipmentReportForm.Find(IPR_item.RSN);
+                var EI_SourceTable = db.EquipmentInfo.Find(ERF_SourceTable.ESN);
+                var ERF_Name = db.AspNetUsers.Where(x => x.UserName == ERF_SourceTable.InformatUserID).Select(x => x.MyName).FirstOrDefault();
+                JObject RE_Row = new JObject()
+                {
+                    { "StockState", ERF_SourceTable.StockState?"有":"無" },
+                    { "ReportState", dic_ERFState[ERF_SourceTable.ReportState] },
+                    { "ESN", ERF_SourceTable.ESN },
+                    { "RSN", IPR_item.RSN },
+                    { "ReportLevel", dic_RL[ERF_SourceTable.ReportLevel] },
+                    { "Date", ERF_SourceTable.Date.ToString("yyyy/MM/dd HH:mm:ss") },
+                    { "ReportContent", ERF_SourceTable.ReportContent },
+                    { "InformatUserID", ERF_Name },
+                    { "EState", dic_EState[EI_SourceTable.EState] },
+                    { "Area", EI_SourceTable.Area },
+                    { "Floor", EI_SourceTable.Floor },
+                    { "EName", EI_SourceTable.EName }
+                };
+                RE.Add(RE_Row);
+            }
+            #endregion
+
+            #region 巡檢路線規劃
+            JArray IPP = new JArray();
+
+            JObject IPP_Row = new JObject()
+            {
+                { "PathSample", "" },
+                { "PathSampleOrder", "" },
+                { "PathSampleRecord", "" },
+                { "MaintainEquipment", "" },
+                { "RepairEquipment", "" },
+                { "BothEquipment", "" }
+            };
+            IPP.Add(IPP_Row);
+
+
+            #region 路徑標題
+
+            #endregion
+
+            #region 路線順序
+
+            #endregion
+
+            #region 路線呈現
+
+            #endregion
+
+            #endregion
+            
+            JObject Main_jo = new JObject
+            {
+                { "IPSN", "" },
+                { "IPName", "" },
+                { "PlanCreateUserID", "" },
+                { "PlanDate", "" },
+                { "PlanState", "" },
+                { "Shift", "" },
+                { "UserID", "" },
+                { "MaintainUserID", "" },
+                { "RepairUserID", "" },
+                { "MaintainEquipment", ME },
+                { "RepairEquipment", RE },
+                { "InspectionPlanPaths", IPP }
+            };
+
+            string reString = JsonConvert.SerializeObject(Main_jo);
+            return reString;
+        }
+        #endregion
+
         #region 巡檢計畫-紀錄 格式
         public class Root
         {
