@@ -12,6 +12,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
+
         #region 巡檢計畫-詳情 DataGrid
         public string InspectationPlan_Read_Data(string IPSN)
         {
@@ -31,6 +32,8 @@ namespace MinSheng_MIS.Models.ViewModels
                 var IP_Name = db.AspNetUsers.Where(x => x.UserName == item).Select(x => x.MyName).FirstOrDefault();
                 IP_NameList.Add(IP_Name);
             }
+            var IP_MaintainName = db.AspNetUsers.Where(x => x.UserName == IP_SourceTable.MaintainUserID).Select(x => x.MyName).FirstOrDefault();
+            var IP_RepairName = db.AspNetUsers.Where(x => x.UserName == IP_SourceTable.RepairUserID).Select(x => x.MyName).FirstOrDefault();
             #endregion
 
             #region 定期保養設備
@@ -83,7 +86,7 @@ namespace MinSheng_MIS.Models.ViewModels
                     { "ReportLevel", dic_RL[ERF_SourceTable.ReportLevel] },
                     { "Date", ERF_SourceTable.Date.ToString("yyyy/MM/dd HH:mm:ss") },
                     { "ReportContent", ERF_SourceTable.ReportContent },
-                    { "InformatUserID", ERF_Name },
+                    { "MyName", ERF_Name },
                     { "EState", dic_EState[EI_SourceTable.EState] },
                     { "Area", EI_SourceTable.Area },
                     { "Floor", EI_SourceTable.Floor },
@@ -96,43 +99,80 @@ namespace MinSheng_MIS.Models.ViewModels
             #region 巡檢路線規劃
             JArray IPP = new JArray();
 
-            JObject IPP_Row = new JObject()
+            var IPP_SourceTable = db.InspectionPlanPath.Where(x => x.IPSN == IPSN);
+
+            foreach (var IPP_item in IPP_SourceTable)
             {
-                { "PathSample", "" },
-                { "PathSampleOrder", "" },
-                { "PathSampleRecord", "" },
-                { "MaintainEquipment", "" },
-                { "RepairEquipment", "" },
-                { "BothEquipment", "" }
-            };
-            IPP.Add(IPP_Row);
+                JArray PathSampleOrder_ja = new JArray(); //路徑
+                JArray PathSampleRecord_ja = new JArray(); //座標
+                JArray MaintainEquipment_ja = new JArray(); //沒用到
+                JArray RepairEquipment_ja = new JArray(); //沒用到
+                JArray BothEquipment_ja = new JArray(); //沒用到
 
+                #region 路徑標題
+                var FI_SourceTable = db.Floor_Info.Find(IPP_item.FSN);
+                var AI_SourceTable = db.AreaInfo.Find(FI_SourceTable.ASN);
 
-            #region 路徑標題
+                JObject PathSample_jo = new JObject()
+                {
+                    {"PSSN", IPP_item.PSN },
+                    {"Area", AI_SourceTable.Area },
+                    {"Floor", FI_SourceTable.FloorName },
+                    {"ASN", FI_SourceTable.ASN },
+                    {"FSN", IPP_item.FSN },
+                    {"PathTitle", IPP_item.PathTitle },
+                    {"BIMPath", FI_SourceTable.BIMPath },
+                    {"Beacon","" }
+                }; //路徑資訊
+                #endregion
 
+                #region 路線順序
+                var IPFP_SourceTable = db.InspectionPlanFloorPath.Where(x => x.PSN == IPP_item.PSN).OrderBy(x => x.FPSN);
+
+                foreach (var IPFP_item in IPFP_SourceTable)
+                {
+                    PathSampleOrder_ja.Add(IPFP_item.DeviceID.ToString());
+                }
+                #endregion
+
+                #region 路線呈現
+                var DIPP_SourceTable = db.DrawInspectionPlanPath.Where(x => x.PSN == IPP_item.PSN);
+
+                foreach (var DIPP_item in DIPP_SourceTable)
+                {
+                    JObject XY_Path = new JObject()
+                    {
+                        { "LocationX", DIPP_item.LocationX },
+                        { "LocationY", DIPP_item.LocationY }
+                    };
+                    PathSampleRecord_ja.Add(XY_Path);
+                }
+                #endregion
+
+                JObject IPP_Row = new JObject()
+                {
+                    { "PathSample", PathSample_jo },
+                    { "PathSampleOrder", PathSampleOrder_ja },
+                    { "PathSampleRecord", PathSampleRecord_ja },
+                    { "MaintainEquipment", MaintainEquipment_ja },
+                    { "RepairEquipment", RepairEquipment_ja },
+                    { "BothEquipment", BothEquipment_ja }
+                };
+                IPP.Add(IPP_Row);
+            }
             #endregion
 
-            #region 路線順序
-
-            #endregion
-
-            #region 路線呈現
-
-            #endregion
-
-            #endregion
-            
             JObject Main_jo = new JObject
             {
-                { "IPSN", "" },
-                { "IPName", "" },
+                { "IPSN", IPSN },
+                { "IPName", IP_SourceTable.IPName },
                 { "PlanCreateUserID", "" },
-                { "PlanDate", "" },
-                { "PlanState", "" },
-                { "Shift", "" },
-                { "UserID", "" },
-                { "MaintainUserID", "" },
-                { "RepairUserID", "" },
+                { "PlanDate", IP_SourceTable.PlanDate.ToString("yyyy/MM/dd") },
+                { "PlanState", dic_InPlanState[IP_SourceTable.PlanState] },
+                { "Shift", dic_Shift[IP_SourceTable.Shift] },
+                { "UserID", string.Join("、",IP_NameList) },
+                { "MaintainUserID", IP_MaintainName },
+                { "RepairUserID", IP_RepairName },
                 { "MaintainEquipment", ME },
                 { "RepairEquipment", RE },
                 { "InspectionPlanPaths", IPP }

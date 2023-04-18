@@ -640,8 +640,8 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Read_Data(string id)
         {
             InspectionPlan_ManagementViewModel IMV = new InspectionPlan_ManagementViewModel();
-
-            return View();
+            string result = IMV.InspectationPlan_Read_Data(id);
+            return Content(result,"application/json");
         }
         #endregion
 

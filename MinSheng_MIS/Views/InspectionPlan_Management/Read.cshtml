@@ -60,9 +60,9 @@
 <!-- readData -->
 <script src="/Scripts/InspectionPlan/ReadDataGrids.js"></script>
 <script>
-    const RSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
-    let apiUrl = null;
+    const IPSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("Read_Data", "InspectionPlan_Management")' + `/${IPSN}`;
+    //let apiUrl = null;
 
     const sn = {
         InspectionPlan: [
