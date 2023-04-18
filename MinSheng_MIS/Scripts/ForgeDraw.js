@@ -60,11 +60,6 @@ var ForgeDraw = (function (e) {
             return new CustomEvent('fd.linedata.removeall', { 'detail': detail })
         }
     }
-    class DevicePointUserCreateEvent {
-        constructor(detail) {
-            return new CustomEvent('fd.devicepoint.usercreate', { 'detail': detail })
-        }
-    }
     class DevicePointIgnoreEvent {
         constructor(detail) {
             return new CustomEvent('fd.devicepoint.ignore', { 'detail': detail })
@@ -73,6 +68,11 @@ var ForgeDraw = (function (e) {
     class DevicePointRemoveAllEvent {
         constructor(detail) {
             return new CustomEvent('fd.devicepoint.removeall', { 'detail': detail })
+        }
+    }
+    class DevicePointChangeEvent {
+        constructor(detail) {
+            return new CustomEvent('fd.devicepoint.change', { 'detail': detail })
         }
     }
     class PointDetectErrorEvent {
@@ -989,11 +989,25 @@ var ForgeDraw = (function (e) {
                         break;
                     case Control.DEVICE:
                         //todo
-                        movingPoint = new Point(pos, {
-                            color: Colors.DefaultDevice,
-                            eventMode: EventMode.AUTO,
-                            label: false,
-                        });
+                        if (!movingPoint) {
+                            movingPoint = new Point(pos, {
+                                color: Colors.Middle,
+                                eventMode: EventMode.AUTO,
+                                label: false,
+                                contextMenu: null
+                            });
+                            movingPoint.onMoveEvent = function (event) {
+                                console.log(`${movingPoint.name} ${movingPoint.index} => onMoveEvent`);
+                                let pos = this.parent.toLocal(event.global, null);
+                                movingPoint.position = pos;
+                                view.dispatchEvent(new DevicePointChangeEvent(pos));
+                            }
+                        }
+
+                        movingPoint.eventMode = EventMode.AUTO;
+                        movingPoint.position = pos;
+                        view.dispatchEvent(new DevicePointChangeEvent(pos));
+
                         self.on("pointermove", self.onDeviceMoveEvent);
                         self.on("pointerup", self.onDeviceUpEvent);
                         break;
@@ -1013,6 +1027,7 @@ var ForgeDraw = (function (e) {
                 let pos = this.parent.toLocal(event.global, null);
                 console.log(`${self.name} => onDeviceMoveEvent`, pos);
                 movingPoint.position = pos;
+                view.dispatchEvent(new DevicePointChangeEvent(pos));
             }
 
             this.onUpEvent = function (event) {
@@ -1046,11 +1061,7 @@ var ForgeDraw = (function (e) {
 
             this.onDeviceUpEvent = function (event) {
                 console.log(`${self.name} => onDeviceUpEvent`);
-                let data = {
-                    position: new PIXI.Point(movingPoint.position.x, movingPoint.position.y),
-                    callback: () => { layer.point.removeChild(movingPoint.container); }
-                }
-                view.dispatchEvent(new DevicePointUserCreateEvent(data));
+                movingPoint.eventMode = EventMode.STATIC;
                 self.off("pointermove", self.onDeviceMoveEvent);
                 self.off("pointerup", self.onDeviceUpEvent);
             }

@@ -68,9 +68,15 @@
             </div>
             <div class="form-group mb-2">
                 <label for="">設備使用手冊</label>
-                <div class="edit-button-area mt-1">
-                    <button type="button" class="btn btn-search w-lg-auto w-100" id="checkFilePath">檢查</button>
-                    <label for="FilePath" type="button" class="btn btn-search w-lg-auto w-100 mt-0">上傳</label>
+                <div class="edit-button-area mt-1 flex-wrap">
+                    <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
+                        <button type="button" class="btn btn-search w-lg-auto w-100" id="checkFilePath">檢查</button>
+                        <label for="FilePath" type="button" class="btn btn-search w-lg-auto w-100 mt-0">上傳</label>
+                    </div>
+                    <div class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto">
+                        <div id="FilePathName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
+                        <button type="button" class="btn-delete-item flex-shrink-0 d-none" id="FilePathDelete"></button>
+                    </div>
                 </div>
                 <input id="FilePath" name="FilePath" type="file" class="position-absolute"
                     style="width: 0px; height:0px; opacity:0;">
@@ -115,9 +121,14 @@
 <script language="JavaScript"
     src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
 <script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
+<!-- PIXI Draw -->
+<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
+<script src="/Scripts/ForgeDraw.js"></script>
+<!-- Event -->
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 <script src="/Scripts/AreaFloorEvent.js"></script>
+<script src="/Scripts/Forge/CreateDeviceModal.js"></script>
 <script>
     $(async function () {
         await AreaFloorEvent();
@@ -132,23 +143,51 @@
         addButtonEvent();
     });
 
+    function initDrawerLocate() {
+        var view = document.querySelector("#PathCanvas");
+        var app;
+        app = ForgeDraw.init(view, viewer, function () {
+            ForgeDraw.setControl(ForgeDraw.Control.DEVICE);
+            view.addEventListener("fd.devicepoint.change", function (event) {
+                let pos = event.detail;
+                let fos = viewer.clientToWorld(pos.x, pos.y);
+                console.log("view => fd.devicepoint.change", fos.point);
+
+                if (fos && fos.point) {
+                    $("#LocationX").text(fos.point.x);
+                    $("#LocationY").text(fos.point.y);
+                }
+            });
+        });
+    }
+
     function addButtonEvent() {
         $("#back").click(function () {
             history.back();
         })
 
         $("#checkFilePath").click(function () {
-
+            new CreateDeviceModal().create();
         })
 
-        $("#FilePath").change(function () {
+        $("#FilePath").change(function (e) {
+            console.log(this.files);
+            if (this.files && this.files.length !== 0) {
+                let file = this.files[0];
+                $("#FilePathName").text(file.name);
+                $("#FilePathDelete").removeClass('d-none');
+            }
+        })
 
+        $("#FilePathDelete").click(function(){
+            $("#FilePath").val('');
+            $("#FilePathName").text('');
+            $("#FilePathDelete").addClass('d-none');
         })
 
         $("#locate").click(function () {
 
             if (!getAreaFloor()) return;
-
 
             let data = {
                 ASN: $("#ASN").val(),
@@ -167,20 +206,13 @@
                     toggleLocateState(true);
                     viewerUrl = window.location.origin + res.PathSample.BIMPath;
                     if (viewer) {
-                        //loadModel(viewerUrl, pathID, loadPath);
+                        viewer.loadModel(viewerUrl, { keepCurrentModels: false },
+                            (res) => { console.log(res) },
+                            (err) => { console.log(err) }
+                        );
                     }
                     else {
-                        initializeViewer(() => {
-                            //todo
-                            $("#PathCanvas").on("click", function (e) {
-                                //console.log(e);
-                                let ctw = viewer.clientToWorld(e.offsetX, e.offsetY);
-                                if (ctw && ctw.point) {
-                                    $("#LocationX").text(ctw.point.x);
-                                    $("#LocationY").text(ctw.point.y);
-                                }
-                            })
-                        });
+                        initializeViewer(initDrawerLocate);
                     }
                 },
                 error: (err) => { console.log(err) }
