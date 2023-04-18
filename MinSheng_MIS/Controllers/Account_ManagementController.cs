@@ -14,6 +14,7 @@ using Microsoft.Ajax.Utilities;
 using System.Web.Http.Results;
 using Newtonsoft.Json.Linq;
 using System.Collections;
+using System.Data.Entity.Validation;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -208,6 +209,28 @@ namespace MinSheng_MIS.Controllers
         public ActionResult ChangePassword()
         {
             return View();
+        }
+        [HttpPost]
+        public async Task<ActionResult> ChangePD_Submit(FormCollection form)
+        {
+            string old = form["OldPassword"].ToString().Trim();
+            string newPd = form["NewPassword"].ToString().Trim();
+            string confirm = form["ConfirmPassword"].ToString().Trim();
+            try
+            {
+                var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), old, newPd);
+                if (result.Succeeded)
+                {
+                    return Content("變更成功!");
+                }
+                return Content("變更失敗!");
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var entityError = ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage);
+                var getFullMessage = string.Join("; ", entityError);
+                return Content(getFullMessage);
+            }
         }
         #endregion
     }
