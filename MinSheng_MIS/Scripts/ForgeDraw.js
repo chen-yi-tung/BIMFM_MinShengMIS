@@ -300,7 +300,7 @@ var ForgeDraw = (function (e) {
         layer.line.removeChildren();
         layer.point.removeChildren();
 
-        devices.forEach(e => e.update());
+        //devices.forEach(e => e.update());
 
         view.dispatchEvent(new LineDataRemoveAllEvent());
     }
@@ -323,10 +323,9 @@ var ForgeDraw = (function (e) {
                 if (r < 20 * fvd) {
                     return {
                         name: d.name,
-                        i: i,
-                        r: r,
-                        x: p.x,
-                        y: p.y,
+                        line: i,
+                        devicePoint: d,
+                        distanceToLine: r,
                         distanceToA: twoPointDistance(d.position, a),
                     }
                 }
@@ -334,26 +333,25 @@ var ForgeDraw = (function (e) {
             })
         })
 
-        
+        let result2 = result.flatMap((res) =>
+            res.filter(e => e).sort((a, b) => a.distanceToA - b.distanceToA)
+        ).filter((e, i, arr) => {
+            let f = arr[i + 1];
+            if (f) { return e.name != f.name; }
+            return e
+        }).map(e => e.devicePoint)
 
-        let result2 = result.flatMap((res) => {
-            return res.filter(e => e)
-                .sort((a, b) => {
-                    return a.distanceToA - b.distanceToA;
-                })
-        }).filter(e => e)
+        //console.log("getRoute() newResult:", result2);
 
-        console.log("getRoute() newResult:", result2);
-
-        //return result;
-        return devices
+        return result2;
+        /* return devices
             .filter(e => e.result != undefined)
             .sort((a, b) => {
                 if (a.result.i == b.result.i) {
                     return a.result.distanceToA - b.result.distanceToA;
                 }
                 return a.result.i - b.result.i;
-            });
+            }); */
 
         function findNearest(p, a, b) {
             let atob = { x: b.x - a.x, y: b.y - a.y };
