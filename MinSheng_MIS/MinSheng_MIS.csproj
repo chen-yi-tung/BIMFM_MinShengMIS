@@ -196,6 +196,7 @@
     <Compile Include="Controllers\MaintainItem_ManagementController.cs" />
     <Compile Include="Controllers\MaintainRecord_ManagementController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\ManufacturerInfo_ManagementController.cs" />
     <Compile Include="Controllers\RepairRecord_ManagementController.cs" />
     <Compile Include="Controllers\Report_ManagementController.cs" />
     <Compile Include="Controllers\SamplePath_ManagementController.cs" />
@@ -1501,7 +1502,7 @@
     <Content Include="Scripts\dataTable\RepairRecord.js" />
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
     <Content Include="Scripts\ForgeDraw.js" />
-    <Content Include="Scripts\Forge\CreateDeviceModal.js" />
+    <Content Include="Scripts\Forge\CreateDevice.js" />
     <Content Include="Scripts\Forge\ForgeDrawFunction.js" />
     <Content Include="Scripts\Forge\InspectionPlan.js" />
     <Content Include="Scripts\Forge\InspectionPlanReadOnly.js" />
@@ -1603,6 +1604,10 @@
     <Content Include="Views\EquipmentInfo_Management\Edit.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\Disable.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\CreateEquipment.cshtml" />
+    <Content Include="Views\ManufacturerInfo_Management\Management.cshtml" />
+    <Content Include="Views\ManufacturerInfo_Management\Create.cshtml" />
+    <Content Include="Views\ManufacturerInfo_Management\Read.cshtml" />
+    <Content Include="Views\ManufacturerInfo_Management\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
