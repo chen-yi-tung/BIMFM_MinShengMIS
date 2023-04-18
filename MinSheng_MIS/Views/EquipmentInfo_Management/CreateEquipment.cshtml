@@ -8,17 +8,17 @@
 <section style="max-width: 855px;margin: auto;">
     <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
         <form class="form d-lg-contents">
-            <div class="form-group w-lg-250px">
+            <div class="form-group w-lg-250px required">
                 <label for="ASN">棟別</label>
-                <select class="form-select" name="ASN" id="ASN">
+                <select class="form-select" name="ASN" id="ASN" required>
                     <option value="">請選擇</option>
                 </select>
                 <input class="form-control" id="Area" name="Area" type="text" hidden />
             </div>
 
-            <div class="form-group w-lg-250px">
+            <div class="form-group w-lg-250px required">
                 <label for="FSN">樓層</label>
-                <select class="form-select" name="FSN" id="FSN">
+                <select class="form-select" name="FSN" id="FSN" required>
                     <option value="">請選擇</option>
                 </select>
                 <input class="form-control" id="Floor" name="Floor" type="text" hidden />
@@ -29,42 +29,42 @@
                 <input class="form-control" id="RoomName" name="RoomName" type="text" maxlength="50" />
             </div>
 
-            <div class="form-group w-lg-250px">
+            <div class="form-group w-lg-250px required">
                 <label for="System">系統別</label>
-                <select class="form-select" name="System" id="System">
+                <select class="form-select" name="System" id="System" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
 
-            <div class="form-group w-lg-250px">
+            <div class="form-group w-lg-250px required">
                 <label for="SubSystem">子系統別</label>
-                <select class="form-select" name="SubSystem" id="SubSystem">
+                <select class="form-select" name="SubSystem" id="SubSystem" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
 
-            <div class="form-group w-lg-250px">
+            <div class="form-group w-lg-250px required">
                 <label for="PropertyCode">國有財產編碼</label>
-                <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" />
+                <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" required/>
             </div>
         </form>
     </div>
 
     <div class="edit-area flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
         <form class="form d-lg-contents">
-            <div class="form-group w-lg-250px">
+            <div class="form-group w-lg-250px required">
                 <label for="EName">設備名稱</label>
-                <input class="form-control" id="EName" name="EName" type="text" maxlength="50" />
+                <input class="form-control" id="EName" name="EName" type="text" maxlength="50" required/>
             </div>
 
-            <div class="form-group w-lg-250px">
+            <div class="form-group w-lg-250px required">
                 <label for="Brand">廠牌</label>
-                <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" />
+                <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" required/>
             </div>
 
-            <div class="form-group w-lg-250px">
+            <div class="form-group w-lg-250px required">
                 <label for="Model">型號</label>
-                <input class="form-control" id="Model" name="Model" type="text" maxlength="50" />
+                <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required/>
             </div>
             <div class="form-group mb-2">
                 <label for="">設備使用手冊</label>
@@ -73,13 +73,15 @@
                         <button type="button" class="btn btn-search w-lg-auto w-100" id="checkFilePath">檢查</button>
                         <label for="FilePath" type="button" class="btn btn-search w-lg-auto w-100 mt-0">上傳</label>
                     </div>
-                    <div class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto">
+                    <div
+                        class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto">
                         <div id="FilePathName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
                         <button type="button" class="btn-delete-item flex-shrink-0 d-none" id="FilePathDelete"></button>
                     </div>
                 </div>
                 <input id="FilePath" name="FilePath" type="file" class="position-absolute"
                     style="width: 0px; height:0px; opacity:0;">
+                <input type="text" id="checkFilePath_val" name="checkFilePath_val" hidden>
             </div>
         </form>
     </div>
@@ -128,7 +130,7 @@
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 <script src="/Scripts/AreaFloorEvent.js"></script>
-<script src="/Scripts/Forge/CreateDeviceModal.js"></script>
+<script src="/Scripts/Forge/CreateDevice.js"></script>
 <script>
     $(async function () {
         await AreaFloorEvent();
@@ -142,139 +144,23 @@
         });
         addButtonEvent();
     });
-
-    function initDrawerLocate() {
-        var view = document.querySelector("#PathCanvas");
-        var app;
-        app = ForgeDraw.init(view, viewer, function () {
-            ForgeDraw.setControl(ForgeDraw.Control.DEVICE);
-            view.addEventListener("fd.devicepoint.change", function (event) {
-                let pos = event.detail;
-                let fos = viewer.clientToWorld(pos.x, pos.y);
-                console.log("view => fd.devicepoint.change", fos.point);
-
-                if (fos && fos.point) {
-                    $("#LocationX").text(fos.point.x);
-                    $("#LocationY").text(fos.point.y);
-                }
-            });
-        });
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#checkFilePath").click(function () {
-            new CreateDeviceModal().create();
-        })
-
-        $("#FilePath").change(function (e) {
-            console.log(this.files);
-            if (this.files && this.files.length !== 0) {
-                let file = this.files[0];
-                $("#FilePathName").text(file.name);
-                $("#FilePathDelete").removeClass('d-none');
-            }
-        })
-
-        $("#FilePathDelete").click(function(){
-            $("#FilePath").val('');
-            $("#FilePathName").text('');
-            $("#FilePathDelete").addClass('d-none');
-        })
-
-        $("#locate").click(function () {
-
-            if (!getAreaFloor()) return;
-
-            let data = {
-                ASN: $("#ASN").val(),
-                FSN: $("#FSN").val(),
-                PathTitle: ''
-            };
-
-            $.ajax({
-                url: "/InspectionPlan_Management/AddPlanPath",
-                data: JSON.stringify(data),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: (res) => {
-                    console.log(res);
-                    toggleLocateState(true);
-                    viewerUrl = window.location.origin + res.PathSample.BIMPath;
-                    if (viewer) {
-                        viewer.loadModel(viewerUrl, { keepCurrentModels: false },
-                            (res) => { console.log(res) },
-                            (err) => { console.log(err) }
-                        );
-                    }
-                    else {
-                        initializeViewer(initDrawerLocate);
-                    }
-                },
-                error: (err) => { console.log(err) }
-            })
-        })
-
-        $("#submit").click(function () {
-            console.log("onclick submit")
-            save();
-        })
-    }
-
-    function toggleLocateState(bool) {
-
-        $("#locate-draw-area").toggleClass("d-none", !bool);
-        $("#locate").toggleClass("d-none", bool);
-
-        if (bool) {
-            $("#ASN").on("mousedown", AreaFloorChange);
-            $("#FSN").on("mousedown", AreaFloorChange);
-        }
-        else {
-            $("#ASN").off("mousedown");
-            $("#FSN").off("mousedown");
-        }
-
-        function AreaFloorChange(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            let modal = createDialogModal({
-                id: "DialogModal", inner: `確定要更改棟別樓層？這會導致重設設備定位點。`,
-                button: [
-                    { className: "btn btn-cancel", cancel: true, text: "取消" },
-                    {
-                        className: "btn btn-delete", text: "確定", onClick: () => {
-                            toggleLocateState(false);
-                            modal.hide();
-                        }
-                    },
-                ]
-            })
-        }
-
-    }
-
-    function getAreaFloor() {
-        let area = $("#Area").val();
-        let floor = $("#Floor").val();
-
-        $("#current-path-asn").val($("ASN").val());
-        $("#current-path-fsn").val($("FSN").val());
-
-        if (area == '' || floor == '') {
-            createDialogModal({ id: "DialogModal-Error", inner: `請選擇棟別樓層！` })
-            return false;
-        }
-
-        $("#current-path-areafloor").text(`${area} ${floor}`);
-        return true;
-    }
-
+    
     function save(data) {
+
+        const fd = new FormData();
+
+        fd.append("ASN",$("#ASN").val())
+        fd.append("FSN",$("#FSN").val())
+        fd.append("RoomName",$("#RoomName").val())
+        fd.append("System",$("#System").val())
+        fd.append("SubSystem",$("#SubSystem").val())
+        fd.append("PropertyCode",$("#PropertyCode").val())
+        fd.append("EName",$("#EName").val())
+        fd.append("Brand",$("#Brand").val())
+        fd.append("Model",$("#Model").val())
+        fd.append("LocationX",$("#LocationX").text())
+        fd.append("LocationY",$("#LocationY").text())
+        fd.append("FilePath",$("#FilePath").val())
 
         console.log(data);
 

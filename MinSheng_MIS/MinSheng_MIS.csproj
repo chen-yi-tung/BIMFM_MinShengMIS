@@ -1500,7 +1500,7 @@
     <Content Include="Scripts\dataTable\RepairRecord.js" />
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
     <Content Include="Scripts\ForgeDraw.js" />
-    <Content Include="Scripts\Forge\CreateDeviceModal.js" />
+    <Content Include="Scripts\Forge\CreateDevice.js" />
     <Content Include="Scripts\Forge\ForgeDrawFunction.js" />
     <Content Include="Scripts\Forge\InspectionPlan.js" />
     <Content Include="Scripts\Forge\InspectionPlanReadOnly.js" />
