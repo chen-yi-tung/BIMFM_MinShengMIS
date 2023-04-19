@@ -185,6 +185,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Account_ManagementController.cs" />
+    <Compile Include="Controllers\AsBuiltDrawing_ManagementController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
     <Compile Include="Controllers\DatagridController.cs" />
     <Compile Include="Controllers\DropDownListController.cs" />
@@ -1608,6 +1609,11 @@
     <Content Include="Views\ManufacturerInfo_Management\Create.cshtml" />
     <Content Include="Views\ManufacturerInfo_Management\Read.cshtml" />
     <Content Include="Views\ManufacturerInfo_Management\Edit.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Management.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Create.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Read.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Edit.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
