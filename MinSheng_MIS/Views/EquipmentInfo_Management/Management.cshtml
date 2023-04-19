@@ -106,10 +106,19 @@
 
     const fakeData = [
         {
-            PSSN: "000001",
-            PathTitle: "A棟1F路線",
+            EState: "正常",
             Area: "A棟",
             Floor: "1F",
+            RoomName: "機房115旁",
+            System: "前處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            Brand: "A廠牌",
+            Model: "A256-O8",
+            PropertyCode: "VF2ADS112",
+            FilePath: '',
+            DBID: '',
         }
     ]
 
@@ -136,13 +145,13 @@
             //sortName: 'PSSN',
             frozenColumns: [[
                 dg.frozenColumn('_locate', (v, row, i) => {
-                    let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                    let disabled = row.DBID == null || row.DBID == "";
                     return dg.eventButton(i, "定位", "locate", { disabled: disabled })
                 }),
                 dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                 dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
                 dg.frozenColumn('FilePath', (v, row, i) => {
-                    let disabled = v == null || v == "" ? 'disabled' : '';
+                    let disabled = v == null || v == "";
                     return dg.eventButton(i, "操作手冊", "filePath", { disabled: disabled })
                 }),
                 dg.frozenColumn('_activate', (v, row, i) => {

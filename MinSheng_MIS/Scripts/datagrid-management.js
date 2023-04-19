@@ -101,12 +101,13 @@ DG.prototype.hiddenColumn = function (field) {
 }
 
 DG.prototype.eventButton = function (index, text, eventName = null, options = null) {
-    let optionStr = "";
+    let optionStr = [];
+    
     let className = "btn btn-datagrid";
     if (options) {
         options.className && options.className.length !== 0 && (className = options.className)
-        options.disabled === true && (optionStr += "disabled")
-        options.hidden === true && (optionStr += "hidden")
+        options.disabled === true && optionStr.push("disabled")
+        options.hidden === true && optionStr.push("hidden")
     }
-    return `<button class="${className}" data-index="${index}" data-btn-type="${eventName ?? 'null'}" ${optionStr}>${text}</button>`;
+    return `<button class="${className}" data-index="${index}" data-btn-type="${eventName ?? 'null'}" ${optionStr.join(" ")}>${text}</button>`;
 }
