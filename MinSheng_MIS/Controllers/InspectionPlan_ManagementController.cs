@@ -646,9 +646,23 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯巡檢計畫
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult Edit_Data(string id)
+        {
+            var IMV = new InspectionPlan_ManagementViewModel();
+            string result = IMV.InspectationPlan_Edit_Data(id);
+            return Content(result, "application/json");
+        }
+        [HttpPost]
+        public ActionResult Edit_Update(FormCollection form)
+        {
+            var IMV = new InspectionPlan_ManagementViewModel();
+            return Content("", "application/json");
         }
         #endregion
 
