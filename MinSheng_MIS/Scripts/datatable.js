@@ -38,37 +38,37 @@ function createTableInner(data, sn) {
     const nullString = "-";
     return sn.map((e) => {
         let html;
-        switch (e.value) {
-            case "ImgPath":
-                html = `
-                    <tr>
-                        <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putImage(data[e.value]) : nullString}</td>
-                    </tr>`;
-                break;
-            case "FilePath":
-                html = `
-                    <tr>
-                        <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putFile(data[e.value]) : nullString}</td>
-                    </tr>`;
-                break;
-            default:
-                if (e.formatter) {
+        if (e.formatter){
+            html = `
+            <tr>
+                <td class="datatable-table-th">${e.text}</td>
+                <td class="datatable-table-td" id="d-${e.value}">${e.formatter(data[e.value])}</td>
+            </tr>`;
+        }
+        else {
+            switch (e.value) {
+                case "ImgPath":
                     html = `
                         <tr>
                             <td class="datatable-table-th">${e.text}</td>
-                            <td class="datatable-table-td" id="d-${e.value}">${e.formatter(data[e.value])}</td>
+                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putImage(data[e.value]) : nullString}</td>
                         </tr>`;
-                }
-                else {
+                    break;
+                case "FilePath":
+                    html = `
+                        <tr>
+                            <td class="datatable-table-th">${e.text}</td>
+                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putFile(data[e.value]) : nullString}</td>
+                        </tr>`;
+                    break;
+                default:
                     html = `
                         <tr>
                             <td class="datatable-table-th">${e.text}</td>
                             <td class="datatable-table-td" id="d-${e.value}">${data[e.value] ?? nullString}</td>
                         </tr>`;
-                }
-                break;
+                    break;
+            }
         }
         return html;
     }).join("");

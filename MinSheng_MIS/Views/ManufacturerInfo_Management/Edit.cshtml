@@ -3,7 +3,7 @@
 }
 <h2>@ViewBag.Title</h2>
 
-<div class="edit-area ms-auto me-auto" style="max-width: 578px;">
+<div class="edit-area edit-area-small">
     <form class="form pt-0">
         <div class="form-group">
             <label for="MFRName">供應商名稱</label>
@@ -47,7 +47,7 @@
 </div>
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-export" id="submit">新增</button>
+    <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
 <script>
@@ -97,9 +97,16 @@
         }
     }
 
+    function save(){
+        console.log("todo: save()")
+    }
+
     function addButtonEvent() {
         $("#back").click(function () {
             history.back();
+        })
+        $("#submit").click(function () {
+            save();
         })
     }
 </script>

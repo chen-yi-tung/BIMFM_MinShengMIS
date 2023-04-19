@@ -102,6 +102,7 @@
             ImgName: "空調控制配置平面圖",
             UploadDate: "2023/04/11 10:30:26",
             ImgVersion: "1.0",
+            ImgPath: "2023-03-30_B.png",
         }
     ]
 
@@ -127,7 +128,7 @@
             idField: 'ImgNum',
             //sortName: 'ImgNum',
             frozenColumns: [[
-                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "檢視", "detail")),
+                dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
                 dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
                 dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete")),
             ]],
@@ -142,8 +143,8 @@
                 dg.column('ImgVersion', '版本', 110),
             ]]
         })
-        dg.addEvent("detail", function (row, i) {
-            window.open(`${baseUrl}/Read/${row.ImgNum}`, "_blank")
+        dg.addEvent("view", function (row, i) {
+            window.open(`/AllImage/${row.ImgPath}`, "_blank")
         })
         dg.addEvent("edit", function (row, i) {
             window.open(`${baseUrl}/Edit/${row.ImgNum}`, "_self")

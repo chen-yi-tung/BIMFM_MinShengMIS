@@ -164,14 +164,14 @@ function addButtonEvent() {
         if (this.files && this.files.length !== 0) {
             let file = this.files[0];
             $("#FilePathName").text(file.name);
-            $("#FilePathDelete").removeClass('d-none');
+            $("#FilePathGroup").removeClass('d-none');
         }
     })
 
     $("#FilePathDelete").click(function () {
         $("#FilePath").val('');
         $("#FilePathName").text('');
-        $("#FilePathDelete").addClass('d-none');
+        $("#FilePathGroup").addClass('d-none');
     })
 
     $("#locate").click(function () {
