@@ -132,7 +132,9 @@ th.datatable-header,
     border-left-width: var(--datatable-border-width);
     
 } */
-
+.datatable-small{
+    --datatable-table-th-width: 200px;
+}
 .datatable-small .datatable-table-th {
     background: var(--datatable-header-bg);
 }
@@ -280,7 +282,7 @@ th.datatable-header,
     }
 
     .datatable-small .datatable-table-th {
-        width: 200px;
+        width: var(--datatable-table-th-width);
     }
 
     .datatable-table-th {

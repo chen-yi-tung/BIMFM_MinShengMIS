@@ -121,10 +121,7 @@
 
         const Systems = document.getElementById('System')
         Systems.addEventListener("change", function () {
-            let url = '@Url.Action("SubSystem", "DropDownList")';
-            let system = $('#System').val();
-            url = url + `?System=${system}`;
-            pushSelect("SubSystem", url);
+            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
         });
     });
 

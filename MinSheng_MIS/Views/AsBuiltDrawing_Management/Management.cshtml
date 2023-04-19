@@ -1,7 +1,172 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "竣工圖管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
 
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增竣工圖</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="System">系統別</label>
+            <select class="form-select" name="System" id="System">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="SubSystem">子系統別</label>
+            <select class="form-select" name="SubSystem" id="SubSystem">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ImgNum">圖號</label>
+            <input class="form-control" id="ImgNum" name="ImgNum" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ImgName">圖名</label>
+            <input class="form-control" id="ImgName" name="ImgName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ImgVersion">版本</label>
+            <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="StartDate">日期(起)</label>
+            <input class="form-control" id="StartDate" name="StartDate" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="EndDate">日期(迄)</label>
+            <input class="form-control" id="EndDate" name="EndDate" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="/Scripts/datagrid-management.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
+<script>
+
+    var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+    const fakeData = [
+        {
+            Area: "A棟",
+            Floor: "1F",
+            System: "空調系統",
+            SubSystem: "空調系統",
+            ImgNum: "M7-126",
+            ImgName: "空調控制配置平面圖",
+            UploadDate: "2023/04/11 10:30:26",
+            ImgVersion: "1.0",
+        }
+    ]
+
+    $(async function () {
+        await AreaFloorEvent();
+        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+
+        const Systems = document.getElementById('System')
+        Systems.addEventListener("change", function () {
+            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        });
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
+            //url: getGridJSON,
+            data: fakeData,
+            method: 'POST',
+            queryParams: getQueryParams(),
+            idField: 'ImgNum',
+            //sortName: 'ImgNum',
+            frozenColumns: [[
+                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "檢視", "detail")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete")),
+            ]],
+            columns: [[
+                dg.column('Area', '棟別', 130),
+                dg.column('Floor', '樓層', 80),
+                dg.column('System', '系統別', 200),
+                dg.column('SubSystem', '子系統別', 250),
+                dg.column('ImgNum', '圖號', 110),
+                dg.column('ImgName', '圖名', 200),
+                dg.column('UploadDate', '上傳時間', 200),
+                dg.column('ImgVersion', '版本', 110),
+            ]]
+        })
+        dg.addEvent("detail", function (row, i) {
+            window.open(`${baseUrl}/Read/${row.ImgNum}`, "_blank")
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(`${baseUrl}/Edit/${row.ImgNum}`, "_self")
+        })
+        dg.addEvent("delete", function (row, i) {
+            window.open(`${baseUrl}/Delete/${row.ImgNum}`, "_self")
+        })
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+        });
+
+        $("#search").click(function () {
+            DataGrid.datagrid('load', getQueryParams());
+        });
+
+        $("#create").click(function () {
+            window.open(`${baseUrl}/Create`, "_self");
+        });
+    }
+</script>
