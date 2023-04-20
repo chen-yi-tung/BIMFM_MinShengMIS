@@ -38,7 +38,7 @@ function createTableInner(data, sn) {
     const nullString = "-";
     return sn.map((e) => {
         let html;
-        if (e.formatter){
+        if (e.formatter) {
             html = `
             <tr>
                 <td class="datatable-table-th">${e.text}</td>
@@ -93,6 +93,7 @@ function createTableInner(data, sn) {
  * @property {string} id - use to html id and the key to find value from data
  * @property {string} title - use to th
  * @property {string?} width - ex: "30%"
+ * @property {boolean?} required
  * @property {function (value):string?} formatter - use to formatter td data
  * 
  * @typedef {object} TableGridOptions
@@ -113,7 +114,7 @@ function createTableGrid(data, options) {
     function createThs(op) {
         return op.map(o => {
             let w = typeof o.width == "string" ? o.width : o.width + "px";
-            let th = `<th class="datatable-header" style="${o.width ? `width:${w}` : ''}">${o.title}</th>`;
+            let th = `<th class="datatable-header ${o.required ? "required" : ''}" style="${o.width ? `width:${w}` : ''}"><span>${o.title}</span></th>`;
             return th;
         }).join("");
     }
