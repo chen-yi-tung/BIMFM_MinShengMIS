@@ -369,7 +369,11 @@ namespace MinSheng_MIS.Models.ViewModels
             RepairEquipment: RepairEquipment,
             InspectionPlanPaths: InspectionPlanPaths
             */
-            var IP_SourceTable = db.InspectionPlan.Find(form[""]); //我寫到這
+            var IP_SourceTable = db.InspectionPlan.Find(form["IPSN"].ToString());
+            IP_SourceTable.IPName = form["IPName"].ToString();
+            IP_SourceTable.PlanDate = DateTime.Parse(form["PlanDate"].ToString());
+            IP_SourceTable.Shift = form["Shift"].ToString();
+
             return "";
         }
         #endregion

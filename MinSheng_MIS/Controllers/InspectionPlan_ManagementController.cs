@@ -662,6 +662,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Edit_Update(FormCollection form)
         {
             var IMV = new InspectionPlan_ManagementViewModel();
+            string result = IMV.InspectationPlan_Edit_Update(form);
             return Content("", "application/json");
         }
         #endregion
