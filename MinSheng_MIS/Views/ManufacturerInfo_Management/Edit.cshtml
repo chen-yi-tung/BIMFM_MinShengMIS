@@ -12,23 +12,23 @@
 
 <div class="edit-area edit-area-small">
     <form class="form pt-0">
-        <div class="form-group">
+        <div class="form-group required">
             <label for="MFRName">供應商名稱</label>
-            <input class="form-control" type="text" name="MFRName" id="MFRName">
+            <input class="form-control" type="text" name="MFRName" id="MFRName" maxlength="50" required>
         </div>
         <div class="form-group">
             <label for="ContactPerson">聯絡人</label>
-            <input class="form-control" type="text" name="ContactPerson" id="ContactPerson">
+            <input class="form-control" type="text" name="ContactPerson" id="ContactPerson" maxlength="50">
         </div>
 
         <div class="form-group">
             <label for="MFRTelNO">電話</label>
-            <input class="form-control" type="text" name="MFRTelNO" id="MFRTelNO">
+            <input class="form-control" type="tel" name="MFRTelNO" id="MFRTelNO">
         </div>
 
         <div class="form-group">
             <label for="MFRMBPhone">手機</label>
-            <input class="form-control" type="text" name="MFRMBPhone" id="MFRMBPhone">
+            <input class="form-control" type="tel" name="MFRMBPhone" id="MFRMBPhone">
         </div>
 
         <div class="form-group g-col-2">
@@ -38,7 +38,7 @@
 
         <div class="form-group g-col-2">
             <label for="MFREmail">電子郵件</label>
-            <input class="form-control" type="email" name="MFREmail" id="MFREmail">
+            <input class="form-control" type="email" name="MFREmail" id="MFREmail" maxlength="256">
         </div>
 
         <div class="form-group g-col-2">
@@ -48,7 +48,7 @@
 
         <div class="form-group g-col-2">
             <label for="MFRMainProduct">主要商品</label>
-            <input class="form-control" type="text" name="MFRMainProduct" id="MFRMainProduct">
+            <input class="form-control" type="text" name="MFRMainProduct" id="MFRMainProduct" maxlength="200">
         </div>
     </form>
 </div>

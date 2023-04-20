@@ -102,6 +102,10 @@
     left: -10px;
 }
 
+.edit-area .form-group.required label.btn::before {
+    content: '';
+}
+
 .edit-area label {
     position: relative;
     grid-column-start: 1;

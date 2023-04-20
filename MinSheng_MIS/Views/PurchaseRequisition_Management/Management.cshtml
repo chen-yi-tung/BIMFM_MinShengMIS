@@ -1,7 +1,150 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "請購管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">請購申請</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="PRState">狀態</label>
+            <select class="form-select" name="PRState" id="PRState">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="PRN">單號</label>
+            <input class="form-control" id="PRN" name="PRN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="PRUserName">請購人</label>
+            <select class="form-select" name="PRUserName" id="PRUserName">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="PRDept">請購部門</label>
+            <select class="form-select" name="PRDept" id="PRDept">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="AuditUserID">審核者</label>
+            <input class="form-control" id="AuditUserID" name="AuditUserID" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateSelect">日期項目選擇</label>
+            <select class="form-select" name="DateSelect" id="DateSelect">
+                <option value="請購申請日期">請購申請日期</option>
+                <option value="預計交期">預計交期</option>
+                <option value="審核日期">審核日期</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="DateFrom">日期(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateTo">日期(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="/Scripts/datagrid-management.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script>
+
+    var getGridJSON = '@Url.Action("PurchaseRequisition_Management", "Datagrid")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+    const fakeData = [
+        {
+            PRState: "待審核",
+            PRN: "1120301001",
+            PRDate: "2023/03/01",
+            PRUserName: "王大明",
+            PRDept: "機電維修部",
+            EstimatedDate: "2023/04/01",
+            AuditUserID: "",
+            AuditDate: "",
+            AuditContent: "",
+        }
+    ]
+
+    $(async function () {
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
+            //url: getGridJSON,
+            data: fakeData,
+            method: 'POST',
+            queryParams: getQueryParams(),
+            idField: 'ImgNum',
+            //sortName: 'ImgNum',
+            frozenColumns: [[
+                dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit")),
+            ]],
+            columns: [[
+                dg.column('PRState', '請購單狀態', 130),
+                dg.column('PRN', '單號', 130),
+                dg.column('PRDate', '請購申請日期', 200),
+                dg.column('PRUserName', '請購人', 110),
+                dg.column('PRDept', '請購部門', 150),
+                dg.column('EstimatedDate', '預計交期', 200),
+                dg.column('AuditUserID', '審核者', 110),
+                dg.column('AuditDate', '審核日期', 200),
+                dg.column('AuditContent', '審核意見', 400),
+            ]]
+        })
+        dg.addEvent("audit", function (row, i) {
+            window.open(`${baseUrl}/Audit/${row.PRN}`, "_self")
+        })
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+        });
+
+        $("#search").click(function () {
+            DataGrid.datagrid('load', getQueryParams());
+        });
+
+        $("#create").click(function () {
+            window.open(`${baseUrl}/Create`, "_self");
+        });
+    }
+</script>
 
