@@ -2,6 +2,41 @@
     ViewBag.Title = "請購申請";
 }
 
+<style>
+    .datatable-input-area {
+        display: flex;
+        flex-direction: column;
+        max-width: 1090px;
+        margin: auto;
+        max-height: calc(100vh - var(--navbar-height));
+        max-height: calc(100dvh - var(--navbar-height));
+        gap: 1rem;
+    }
+
+    .datatable-input-area .edit-area {
+        max-height: 30rem;
+        padding: 1rem;
+        display: block;
+    }
+
+    .datatable-input-area .datatable,
+    .datatable-input-area .datatable-body {
+        max-height: 28rem;
+        margin: 0;
+    }
+
+    @@media (max-width:991.98px) {
+        .datatable-input-area .edit-area {
+            max-height: calc(100vh - var(--navbar-height) - 5rem);
+        }
+
+        .datatable-input-area .datatable,
+        .datatable-input-area .datatable-body {
+            max-height: calc(100vh - var(--navbar-height) - 7rem);
+        }
+    }
+</style>
+
 <h2>@ViewBag.Title</h2>
 
 <section style="max-width: 855px;margin: auto;">
@@ -25,12 +60,12 @@
     </div>
 
 </section>
-<section style="max-width: 1090px;margin: auto;">
-    <button type="button" class="btn btn-search mt-3" id="create-item">+ 新增</button>
+<section class="datatable-input-area mt-3">
+    <button type="button" class="btn btn-search align-self-start" id="create-item">+ 新增</button>
     <form class="d-contents">
-        <div class="edit-area mt-3">
-            <div class="datatable datatable-grid w-100">
-                <div class="datatable-body overflow-auto">
+        <div class="edit-area m-0">
+            <div class="datatable datatable-grid w-100 h-100">
+                <div class="datatable-body h-100 overflow-auto">
                     <table class="datatable-table" style="width: max-content;">
                         <thead>
                             <tr>
@@ -96,6 +131,7 @@
 
     function SampleTr() {
         this.count = 0;
+        this.data = {};
         this.init = async function () {
             await pushSelect("Kind", '@Url.Action("AllMyName","DropDownList")');
             await pushSelect("Unit", '@Url.Action("AllMyName","DropDownList")');
@@ -112,6 +148,7 @@
             let item = this.sample.clone();
             item.attr('id', this.count);
             $("#item-area").append(item);
+            this.data[this.count] = item;
             this.count++;
         }
         this.init();
