@@ -198,6 +198,7 @@
     <Compile Include="Controllers\MaintainRecord_ManagementController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ManufacturerInfo_ManagementController.cs" />
+    <Compile Include="Controllers\PurchaseRequisition_ManagementController.cs" />
     <Compile Include="Controllers\RepairRecord_ManagementController.cs" />
     <Compile Include="Controllers\Report_ManagementController.cs" />
     <Compile Include="Controllers\SamplePath_ManagementController.cs" />
@@ -1614,6 +1615,9 @@
     <Content Include="Views\AsBuiltDrawing_Management\Read.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Edit.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Delete.cshtml" />
+    <Content Include="Views\PurchaseRequisition_Management\Management.cshtml" />
+    <Content Include="Views\PurchaseRequisition_Management\Create.cshtml" />
+    <Content Include="Views\PurchaseRequisition_Management\Audit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
