@@ -357,7 +357,19 @@ namespace MinSheng_MIS.Models.ViewModels
         #region 巡檢計畫-編輯 update
         public string InspectationPlan_Edit_Update(System.Web.Mvc.FormCollection form)
         {
-
+            /*  前端回傳格式
+            IPName: IPName,
+            PlanCreateUserID: PlanCreateUserID,
+            PlanDate: PlanDate,
+            Shift: Shift,
+            UserID: UserID,
+            MaintainUserID: MaintainUserID,
+            RepairUserID: RepairUserID,
+            MaintainEquipment: MaintainEquipment,
+            RepairEquipment: RepairEquipment,
+            InspectionPlanPaths: InspectionPlanPaths
+            */
+            var IP_SourceTable = db.InspectionPlan.Find(form[""]); //我寫到這
             return "";
         }
         #endregion
