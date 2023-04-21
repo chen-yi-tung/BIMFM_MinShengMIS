@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,7 +12,6 @@ namespace MinSheng_MIS.Models.ViewModels
     public class InspectionPlan_ManagementViewModel
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-
 
         #region 巡檢計畫-詳情 DataGrid
         public string InspectationPlan_Read_Data(string IPSN)
@@ -373,6 +373,11 @@ namespace MinSheng_MIS.Models.ViewModels
             IP_SourceTable.IPName = form["IPName"].ToString();
             IP_SourceTable.PlanDate = DateTime.Parse(form["PlanDate"].ToString());
             IP_SourceTable.Shift = form["Shift"].ToString();
+            IP_SourceTable.MaintainUserID = form["MaintainUserID"].ToString();
+            IP_SourceTable.RepairUserID = form["RepairUserID"].ToString();
+            JArray ME_ob = (JArray)form["MaintainEquipment"].ToString();
+            
+            //IP_SourceTable.MaintainAmount = form["MaintainEquipment"];
 
             return "";
         }
