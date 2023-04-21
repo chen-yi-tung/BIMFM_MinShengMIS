@@ -63,6 +63,11 @@
     --bs-btn-hover-bg: #657589;
 }
 
+.btn-datagrid-third {
+    --bs-btn-bg: #506D8E;
+    --bs-btn-hover-bg: #496381;
+}
+
 .btn-delete,
 .btn-delete-confirm{
     --bs-btn-bg: #E06666;

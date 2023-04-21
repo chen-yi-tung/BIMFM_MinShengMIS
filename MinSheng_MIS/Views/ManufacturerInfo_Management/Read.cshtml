@@ -35,7 +35,11 @@
         { text: "手機", value: "MFRMBPhone" },
         { text: "電子郵件", value: "MFREmail" },
         { text: "地址", value: "MFRAddress" },
-        { text: "網站", value: "MFRWeb" },
+        {
+            text: "網站", value: "MFRWeb", formatter: (v) => {
+                return `<a href="${v}" target="_blank">${v}</a>`;
+            }
+        },
         { text: "主要商品", value: "MFRMainProduct" },
     ]
 

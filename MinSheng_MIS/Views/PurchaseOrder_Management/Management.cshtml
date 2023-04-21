@@ -1,7 +1,171 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "採購管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+
+<h2>@ViewBag.Title</h2>
+
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="IOSN">採購單號</label>
+            <input class="form-control" id="IOSN" name="IOSN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="IOUserName">詢價人員</label>
+            <select class="form-select" name="IOUserName" id="IOUserName">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="IOUserName">採購人員</label>
+            <select class="form-select" name="IOUserName" id="IOUserName">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="MFRName">廠商</label>
+            <input class="form-control" id="MFRName" name="MFRName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="IOUserName">收貨人員</label>
+            <select class="form-select" name="IOUserName" id="IOUserName">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="IOUserName">驗收人員</label>
+            <select class="form-select" name="IOUserName" id="IOUserName">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="DateSelect">日期項目選擇</label>
+            <select class="form-select" name="DateSelect" id="DateSelect">
+                <option value="詢價單建立時間">詢價單建立時間</option>
+                <option value="審核日期時間">審核日期時間</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="DateFrom">日期(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateTo">日期(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="/Scripts/datagrid-management.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script>
+
+    var getGridJSON = '@Url.Action("PurchaseOrder_Management", "PurchaseOrder_Management")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+    const fakeData = [
+        {
+            POState: "已採購",
+            POSN: "PO23041201",
+            InquiryUserName: "王大明",
+            IOSN: "IO23041201",
+            POUserName: "OOO",
+            PODate: "2023/04/15",
+            MFRName: "OOXX",
+            ConsignUserName: "OOO",
+            ConsignDate: "2023/04/15",
+            AcceptUserName: "OOO",
+            AcceptDate: "2023/04/15",
+        }
+    ]
+
+    $(async function () {
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+        let dg = new DG();
+        let thirdClassName = "btn btn-datagrid btn-datagrid-third";
+        DataGrid = dg.init("#DataGrid", {
+            //url: getGridJSON,
+            data: fakeData,
+            method: 'POST',
+            queryParams: getQueryParams(),
+            idField: 'POSN',
+            //sortName: 'POSN',
+            frozenColumns: [[
+                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                dg.frozenColumn('_order', (v, row, i) => dg.eventButton(i, "下單", "order")),
+                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "撤銷", "delete")),
+                dg.frozenColumn('_delivery', (v, row, i) => dg.eventButton(i, "收貨", "delivery", { className: thirdClassName })),
+                dg.frozenColumn('_accept', (v, row, i) => dg.eventButton(i, "驗收", "accept", { className: thirdClassName })),
+            ]],
+            columns: [[
+                dg.hiddenColumn('QAmount'),
+                dg.column('POState', '狀態', 130),
+                dg.column('POSN', '採購單號', 130),
+                dg.column('InquiryUserName', '詢價人員', 110),
+                dg.column('IOSN', '詢價單號', 130),
+                dg.column('POUserName', '採購人員', 110),
+                dg.column('PODate', '採購日期', 200),
+                dg.column('MFRName', '廠商', 200),
+                dg.column('ConsignUserName', '收貨人員', 110),
+                dg.column('ConsignDate', '到貨日期', 200),
+                dg.column('AcceptUserName', '驗收人員', 110),
+                dg.column('AcceptDate', '驗收日期', 200),
+            ]]
+        })
+        dg.addEvent("detail", function (row, i) {
+            window.open(`${baseUrl}/Read/${row.MFRSN}`, "_blank")
+        })
+        dg.addEvent("order", function (row, i) {
+            //todo
+        })
+        dg.addEvent("delete", function (row, i) {
+            //todo
+        })
+        dg.addEvent("delivery", function (row, i) {
+            window.open(`${baseUrl}/Delivery/${row.MFRSN}`, "_self")
+        })
+        dg.addEvent("accept", function (row, i) {
+            window.open(`${baseUrl}/Accept/${row.MFRSN}`, "_self")
+        })
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+        });
+
+        $("#search").click(function () {
+            DataGrid.datagrid('load', getQueryParams());
+        });
+    }
+</script>
 
