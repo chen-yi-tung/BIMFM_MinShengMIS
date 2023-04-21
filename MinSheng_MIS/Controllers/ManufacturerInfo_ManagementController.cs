@@ -1,15 +1,19 @@
-﻿using MinSheng_MIS.Services;
+﻿using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Models;
+using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
 
 namespace MinSheng_MIS.Controllers
 {
     public class ManufacturerInfo_ManagementController : Controller
     {
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         DatagridService ds = new DatagridService();
         // GET: ManufacturerInfo_Management
         #region 廠商管理
@@ -35,9 +39,17 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 廠商詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult ReadBody(string id)
+        {
+            var MFR = db.ManufacturerInfo.Find(id);
+            string result = JsonConvert.SerializeObject(MFR);
+            return Content(result, "application/json");
         }
         #endregion
 
