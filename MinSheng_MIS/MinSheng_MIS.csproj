@@ -199,6 +199,7 @@
     <Compile Include="Controllers\MaintainRecord_ManagementController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ManufacturerInfo_ManagementController.cs" />
+    <Compile Include="Controllers\PurchaseOrder_ManagementController.cs" />
     <Compile Include="Controllers\PurchaseRequisition_ManagementController.cs" />
     <Compile Include="Controllers\RepairRecord_ManagementController.cs" />
     <Compile Include="Controllers\Report_ManagementController.cs" />
@@ -1625,6 +1626,10 @@
     <Content Include="Views\Inquiry_Management\Edit.cshtml" />
     <Content Include="Views\Inquiry_Management\CreateInquiry.cshtml" />
     <Content Include="Views\Inquiry_Management\InquiryManagement.cshtml" />
+    <Content Include="Views\PurchaseOrder_Management\Management.cshtml" />
+    <Content Include="Views\PurchaseOrder_Management\Read.cshtml" />
+    <Content Include="Views\PurchaseOrder_Management\Delivery.cshtml" />
+    <Content Include="Views\PurchaseOrder_Management\Accept.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
