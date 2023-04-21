@@ -1409,5 +1409,122 @@ namespace MinSheng_MIS.Services
 
             return jo;
         }
+
+        public JObject GetJsonForGrid_ManufacturerInfo_Management(System.Web.Mvc.FormCollection form) //廠商管理
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+            string propertyName = "MFRSN";
+            string order = "asc";
+
+            //塞來自formdata的資料
+            //廠商名稱
+            string MFRName = form["MFRName"]?.ToString();
+            //聯絡人
+            string ContactPerson = form["ContactPerson"]?.ToString();
+            //電話
+            string MFRTelNO = form["MFRTelNO"]?.ToString();
+            //手機
+            string MFRMBPhone = form["MFRMBPhone"]?.ToString();
+            //主要商品
+            string MFRMainProduct = form["MFRMainProduct"]?.ToString();
+            //地址
+            string MFRAddress = form["MFRAddress"]?.ToString();
+
+            #region 依據查詢字串檢索資料表
+            var SourceTable = db.ManufacturerInfo.AsQueryable();
+
+            if (!string.IsNullOrEmpty(MFRName))
+            {
+                SourceTable = SourceTable.Where(x => x.MFRName.Contains(MFRName));
+            }
+            if (!string.IsNullOrEmpty(ContactPerson))
+            {
+                SourceTable = SourceTable.Where(x => x.ContactPerson.Contains(ContactPerson));
+            }
+            if (!string.IsNullOrEmpty(MFRTelNO))
+            {
+                SourceTable = SourceTable.Where(x => x.MFRTelNO.Contains(MFRTelNO));
+            }
+            if (!string.IsNullOrEmpty(MFRMBPhone))
+            {
+                SourceTable = SourceTable.Where(x => x.MFRMBPhone.Contains(MFRMBPhone));
+            }
+            if (!string.IsNullOrEmpty(MFRMainProduct))
+            {
+                SourceTable = SourceTable.Where(x => x.MFRMainProduct.Contains(MFRMainProduct));
+            }
+            if (!string.IsNullOrEmpty(MFRAddress))
+            {
+                SourceTable = SourceTable.Where(x => x.MFRAddress.Contains(MFRAddress));
+            }
+
+            #endregion
+            var resulttable = SourceTable.OrderByDescending(x => x.MFRSN).AsQueryable();
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = resulttable.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            resulttable = resulttable.Skip((page - 1) * rows).Take(rows);
+
+
+            foreach (var a in resulttable)
+            {
+                var itemObjects = new JObject();
+                itemObjects.Add("MFRSN", a.MFRSN);
+
+                if (!string.IsNullOrEmpty(a.MFRName))
+                {
+                    itemObjects.Add("MFRName", a.MFRName);
+                }
+                if (!string.IsNullOrEmpty(a.ContactPerson))
+                {
+                    itemObjects.Add("ContactPerson", a.ContactPerson);
+                }
+                if (!string.IsNullOrEmpty(a.MFRTelNO))
+                {
+                    itemObjects.Add("MFRTelNO", a.MFRTelNO);
+                }
+                if (!string.IsNullOrEmpty(a.MFRMBPhone))
+                {
+                    itemObjects.Add("MFRMBPhone", a.MFRMBPhone);
+                }
+                if (!string.IsNullOrEmpty(a.MFRMainProduct))
+                {
+                    itemObjects.Add("MFRMainProduct", a.MFRMainProduct);
+                }
+                if (!string.IsNullOrEmpty(a.MFREmail))
+                {
+                    itemObjects.Add("MFREmail", a.MFREmail);
+                }
+                if (!string.IsNullOrEmpty(a.MFRAddress))
+                {
+                    itemObjects.Add("MFRAddress", a.MFRAddress);
+                }
+                if (!string.IsNullOrEmpty(a.MFRWeb))
+                {
+                    itemObjects.Add("MFRWeb", a.MFRWeb);
+                }
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            return jo;
+        }
+
+
     }
 }
