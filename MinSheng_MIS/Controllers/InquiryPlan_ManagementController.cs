@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
 {
-    public class Inquiry_ManagementController : Controller
+    public class InquiryPlan_ManagementController : Controller
     {
         // GET: Inquiry_Management
         #region 詢價計畫管理
