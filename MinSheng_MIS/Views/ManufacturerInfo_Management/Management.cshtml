@@ -58,7 +58,7 @@
 <script src="/Scripts/tool.js"></script>
 <script>
 
-    var getGridJSON = '@Url.Action("ManufacturerInfo_Management", "Datagrid")';
+    var getGridJSON = '@Url.Action("ManufacturerInfo_Management", "ManufacturerInfo_Management")';
     var DataGrid;
     var baseUrl = '/' + window.location.pathname.split('/')[1];
 
@@ -84,8 +84,8 @@
     function Initialize_DataGrid(getGridJSON) {
         let dg = new DG();
         DataGrid = dg.init("#DataGrid", {
-            //url: getGridJSON,
-            data: fakeData,
+            url: getGridJSON,
+            //data: fakeData,
             method: 'POST',
             queryParams: getQueryParams(),
             idField: 'MFRSN',
