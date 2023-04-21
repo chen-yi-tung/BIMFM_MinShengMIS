@@ -48,7 +48,6 @@ namespace MinSheng_MIS.Controllers
         public ActionResult ReadBody(string id)
         {
             var MFR = db.ManufacturerInfo.Find(id);
-            //var MFR = db.ManufacturerInfo.Where(x => x.MFRSN == id).FirstOrDefault();//var MFR = db.ManufacturerInfo.Find(id)
             string result = JsonConvert.SerializeObject(MFR);
             return Content(result, "application/json");
         }
