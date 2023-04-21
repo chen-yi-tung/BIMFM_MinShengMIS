@@ -8,6 +8,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
+using System.Data.Entity.Migrations;
+using Newtonsoft.Json.Linq;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -54,9 +56,30 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯廠商
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpPost]
+        public ActionResult EditMFR(ManufacturerInfo MFR)
+        {
+            var Manufacturer = db.ManufacturerInfo.Find(MFR.MFRSN);
+            Manufacturer.MFRName = MFR.MFRName;
+            Manufacturer.ContactPerson = MFR.ContactPerson;
+            Manufacturer.MFRTelNO = MFR.MFRTelNO;
+            Manufacturer.MFRMBPhone = MFR.MFRMBPhone;
+            Manufacturer.MFRAddress = MFR.MFRAddress;
+            Manufacturer.MFREmail = MFR.MFREmail;
+            Manufacturer.MFRWeb = MFR.MFRWeb;
+            Manufacturer.MFRMainProduct = MFR.MFRMainProduct;
+            db.ManufacturerInfo.AddOrUpdate(Manufacturer);
+            db.SaveChanges();
+
+            JObject jo = new JObject();
+            jo.Add("Succed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
         }
         #endregion
     }
