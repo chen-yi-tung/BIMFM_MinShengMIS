@@ -72,6 +72,9 @@ function DeviceFileModal() {
         let c = self.ModalJQ.find(".list-group-item .form-check-input:checked")
         let name = c.siblings('span').text();
         this.file = c.val();
+
+        console.log("todo FileReader readFromUrl into this.file")
+
         this.validityAndShow(name);
     };
 
