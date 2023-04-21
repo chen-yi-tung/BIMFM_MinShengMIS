@@ -105,7 +105,7 @@
                 dg.column('MFREmail', '電子郵件', 300),
                 dg.column('MFRAddress', '地址', 300),
                 dg.column('MFRWeb', '企業網站', 300, (v, row, i) => {
-                    return `<a href="${v}">${v}</a>`;
+                    return `<a href="${v}" target="_blank">${v}</a>`;
                 }),
             ]]
         })
