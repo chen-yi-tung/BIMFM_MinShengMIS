@@ -59,8 +59,8 @@
 
 <script>
     const MFRSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "ManufacturerInfo_Management")' + `/${MFRSN}`;
-    let apiUrl = null;
+    let apiUrl = '@Url.Action("ReadBody", "ManufacturerInfo_Management")' + `/${MFRSN}`;
+    //let apiUrl = null;
 
     const fakeData = {
         MFRSN: "00001",
@@ -108,6 +108,7 @@
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
+        //'@Url.Action("EditMFR", "ManufacturerInfo_Management")'
     }
 
     function addButtonEvent() {
