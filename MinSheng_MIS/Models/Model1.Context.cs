@@ -63,5 +63,6 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<SystemManagement> SystemManagement { get; set; }
+        public virtual DbSet<ManufacturerInfo> ManufacturerInfo { get; set; }
     }
 }
