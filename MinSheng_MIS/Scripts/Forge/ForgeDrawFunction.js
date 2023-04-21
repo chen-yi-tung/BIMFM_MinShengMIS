@@ -350,7 +350,7 @@ function createPath(selector) {
 
     function callback() {
         let form = $(selector);
-        if (form[0].checkValidity()) {
+        if (form[0].reportValidity()) {
 
             $(".sample-path-draw-area").removeClass("d-none");
             sortRouteModal.autoRouteToggle(selector === "#path-form");

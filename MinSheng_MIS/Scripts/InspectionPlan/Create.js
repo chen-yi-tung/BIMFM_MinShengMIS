@@ -75,12 +75,12 @@ function addButtonEvent() {
         history.back();
     })
     $("#path-create").click(function (e) {
-        e.preventDefault();
+        //e.preventDefault();
         console.log("onclick path-create");
         createPath("#path-form")
     })
     $("#sample-path-create").click(function (e) {
-        e.preventDefault();
+        //e.preventDefault();
         console.log("onclick sample-path-create");
         createPath("#sample-path-form")
     })

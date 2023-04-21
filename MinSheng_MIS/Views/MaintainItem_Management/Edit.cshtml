@@ -215,7 +215,7 @@
     function saveMaintainItem() {
         //todo
 
-        let isValidity = $("form").toArray().map(e => e.checkValidity()).every(e => e);
+        let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
         console.log("isValidity:", isValidity);
         if (!isValidity) return;
 

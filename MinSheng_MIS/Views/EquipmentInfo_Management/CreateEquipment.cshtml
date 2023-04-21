@@ -45,7 +45,7 @@
 
             <div class="form-group w-lg-250px required">
                 <label for="PropertyCode">國有財產編碼</label>
-                <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" required/>
+                <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" required />
             </div>
         </form>
     </div>
@@ -54,17 +54,17 @@
         <form class="form d-lg-contents">
             <div class="form-group w-lg-250px required">
                 <label for="EName">設備名稱</label>
-                <input class="form-control" id="EName" name="EName" type="text" maxlength="50" required/>
+                <input class="form-control" id="EName" name="EName" type="text" maxlength="50" required />
             </div>
 
             <div class="form-group w-lg-250px required">
                 <label for="Brand">廠牌</label>
-                <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" required/>
+                <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" required />
             </div>
 
             <div class="form-group w-lg-250px required">
                 <label for="Model">型號</label>
-                <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required/>
+                <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required />
             </div>
             <div class="form-group mb-2">
                 <label for="">設備使用手冊</label>
@@ -79,9 +79,9 @@
                         <button type="button" class="btn-delete-item flex-shrink-0" id="FilePathDelete"></button>
                     </div>
                 </div>
-                <input id="FilePath" name="FilePath" type="file" class="position-absolute"
-                    style="width: 0px; height:0px; opacity:0;">
-                <input type="text" id="checkFilePath_val" name="checkFilePath_val" hidden>
+                <input id="FilePath" name="FilePath" type="file" class="form-file-input">
+                <input type="checkbox" id="_checkFilePath" name="_checkFilePath" class="form-file-input" required
+                    oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的使用手冊' : '')">
             </div>
         </form>
     </div>
@@ -96,8 +96,18 @@
         <input type="text" id="current-path-asn" name="current-path-asn" hidden>
         <input type="text" id="current-path-fsn" name="current-path-fsn" hidden>
         <div class="w-100 mb-3 d-flex flex-wrap text-light" style="gap: 1rem;">
-            <div class="d-inline-block"><span style="color: #C1DDFF;">X座標：</span><span id="LocationX">0</span></div>
-            <div class="d-inline-block"><span style="color: #C1DDFF;">Y座標：</span><span id="LocationY">0</span></div>
+            
+                <div class="form-group d-inline-block readonly">
+                    <label style="color: #C1DDFF;">X座標：</label>
+                    <input class="form-control readonly d-inline-block w-auto pe-none" tabindex="-1" type="number" id="LocationX"
+                        name="LocationX" placeholder="0" required>
+                </div>
+                <div class="form-group d-inline-block readonly">
+                    <label style="color: #C1DDFF;">Y座標：</label>
+                    <input class="form-control readonly d-inline-block w-auto pe-none" tabindex="-1" type="number" id="LocationY"
+                        name="LocationY" placeholder="0" required>
+                </div>
+            
         </div>
         <div class="w-100 position-relative">
             <div class="viewer3Dcontainer">
@@ -141,23 +151,28 @@
         });
         addButtonEvent();
     });
-    
+
     function save(data) {
+
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("todo save():", isValidity)
+        if (!isValidity) return;
+        if (!$("#LocationX").val() || !$("#LocationX").val()) return;
 
         const fd = new FormData();
 
-        fd.append("ASN",$("#ASN").val())
-        fd.append("FSN",$("#FSN").val())
-        fd.append("RoomName",$("#RoomName").val())
-        fd.append("System",$("#System").val())
-        fd.append("SubSystem",$("#SubSystem").val())
-        fd.append("PropertyCode",$("#PropertyCode").val())
-        fd.append("EName",$("#EName").val())
-        fd.append("Brand",$("#Brand").val())
-        fd.append("Model",$("#Model").val())
-        fd.append("LocationX",$("#LocationX").text())
-        fd.append("LocationY",$("#LocationY").text())
-        fd.append("FilePath",$("#FilePath").val())
+        fd.append("ASN", $("#ASN").val())
+        fd.append("FSN", $("#FSN").val())
+        fd.append("RoomName", $("#RoomName").val())
+        fd.append("System", $("#System").val())
+        fd.append("SubSystem", $("#SubSystem").val())
+        fd.append("PropertyCode", $("#PropertyCode").val())
+        fd.append("EName", $("#EName").val())
+        fd.append("Brand", $("#Brand").val())
+        fd.append("Model", $("#Model").val())
+        fd.append("LocationX", $("#LocationX").val())
+        fd.append("LocationY", $("#LocationY").val())
+        fd.append("FilePath", deviceFileModal.file)
 
         console.log(data);
 

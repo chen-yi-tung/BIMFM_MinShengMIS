@@ -22,24 +22,24 @@
         <form class="form">
             <div class="form-group required">
                 <label for="IPName">巡檢計畫名稱</label>
-                <input type="text" class="form-control" name="IPName" id="IPName" maxlength="20">
+                <input type="text" class="form-control" name="IPName" id="IPName" maxlength="20" required>
             </div>
 
             <div class="form-group required">
                 <label for="PlanDate">巡檢日期</label>
-                <input type="date" class="form-control" name="PlanDate" id="PlanDate">
+                <input type="date" class="form-control" name="PlanDate" id="PlanDate" required>
             </div>
 
-            <div class="form-group required">
+            <div class="form-group">
                 <label for="Shift">巡檢班別</label>
-                <select type="text" class="form-select" name="Shift" id="Shift" required>
+                <select type="text" class="form-select" name="Shift" id="Shift">
                     <option value="">請選擇</option>
                 </select>
             </div>
 
             <div class="form-group required f-3">
                 <label for="UserID">巡檢人員</label>
-                <select type="text" class="form-select" name="UserID" id="UserID"></select>
+                <select type="text" class="form-select" name="UserID" id="UserID" required></select>
             </div>
         </form>
     </div>

@@ -11,6 +11,13 @@
     font-size: 18px;
 }
 
+.form-file-input{
+    position: absolute;
+    width: 12rem;
+    height: 1px;
+    opacity: 0;
+}
+
 /* management */
 .search-area {
     background: rgba(35, 106, 146, 0.43);
@@ -42,6 +49,7 @@
 }
 
 .search-area .form-group label {
+    position: relative;
     color: white;
     margin-bottom: 4px;
 }
@@ -95,7 +103,8 @@
 }
 
 .form-required::before,
-.edit-area .form-group.required label::before {
+.edit-area .form-group.required label::before,
+.search-area .form-group.required label::before {
     content: '*';
     position: absolute;
     color: red;
