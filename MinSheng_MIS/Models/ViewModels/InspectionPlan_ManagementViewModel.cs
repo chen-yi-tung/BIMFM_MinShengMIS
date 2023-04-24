@@ -3,6 +3,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web;
 using System.Web.Http.Results;
@@ -369,13 +371,36 @@ namespace MinSheng_MIS.Models.ViewModels
             RepairEquipment: RepairEquipment,
             InspectionPlanPaths: InspectionPlanPaths
             */
+
             var IP_SourceTable = db.InspectionPlan.Find(form["IPSN"].ToString());
             IP_SourceTable.IPName = form["IPName"].ToString();
             IP_SourceTable.PlanDate = DateTime.Parse(form["PlanDate"].ToString());
             IP_SourceTable.Shift = form["Shift"].ToString();
             IP_SourceTable.MaintainUserID = form["MaintainUserID"].ToString();
             IP_SourceTable.RepairUserID = form["RepairUserID"].ToString();
-            JArray ME_ob = (JArray)form["MaintainEquipment"].ToString();
+            JArray ME_ja = (JArray)form["MaintainEquipment"];
+            JArray RE_ja = (JArray)form["RepairEquipment"];
+            IP_SourceTable.MaintainAmount = ME_ja.Count();
+            IP_SourceTable.RepairAmount = RE_ja.Count();
+            IP_SourceTable.PlanState = "1";
+            db.InspectionPlan.AddOrUpdate(IP_SourceTable);
+            db.SaveChanges();
+
+            JArray NameArray = (JArray)form["UserID"];
+            db.InspectionPlanMember.RemoveRange(db.InspectionPlanMember.Where(x => x.IPSN == form["IPSN"].ToString()));//先刪除全部成員
+            for (int i = 0; i < NameArray.Count(); i++)
+            {
+                Models.InspectionPlanMember IPM = new Models.InspectionPlanMember()
+                {
+                    PMSN = form["IPSN"].ToString() + "_" + (i + 1).ToString(),
+                    IPSN = form["IPSN"].ToString(),
+                    UserID = NameArray[i].ToString(),
+                    WatchID = NameArray[i].ToString() //這個之後會需要再換!!!!!
+                };
+                db.InspectionPlanMember.Add(IPM);
+                db.SaveChanges();
+            }
+
             
             //IP_SourceTable.MaintainAmount = form["MaintainEquipment"];
 
