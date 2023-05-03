@@ -188,9 +188,11 @@
     <Compile Include="Controllers\AsBuiltDrawing_ManagementController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
     <Compile Include="Controllers\DatagridController.cs" />
+    <Compile Include="Controllers\DesignDiagramsController.cs" />
     <Compile Include="Controllers\DropDownListController.cs" />
     <Compile Include="Controllers\EquipmentInfo_ManagementController.cs" />
     <Compile Include="Controllers\EquipmentMaintainPeriod_ManagementController.cs" />
+    <Compile Include="Controllers\EquipmentOperatingManualController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InquiryPlan_ManagementController.cs" />
     <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
@@ -1633,6 +1635,15 @@
     <Content Include="Views\PurchaseOrder_Management\Read.cshtml" />
     <Content Include="Views\PurchaseOrder_Management\Delivery.cshtml" />
     <Content Include="Views\PurchaseOrder_Management\Accept.cshtml" />
+    <Content Include="Views\DesignDiagrams\Management.cshtml" />
+    <Content Include="Views\DesignDiagrams\Create.cshtml" />
+    <Content Include="Views\DesignDiagrams\Edit.cshtml" />
+    <Content Include="Views\DesignDiagrams\Delete.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Management.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Create.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Read.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Edit.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
