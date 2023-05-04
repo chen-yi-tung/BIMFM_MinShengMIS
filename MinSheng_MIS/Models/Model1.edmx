@@ -324,6 +324,21 @@
           <Property Name="SupplementaryDate" Type="datetime" Nullable="false" />
           <Property Name="SupplementaryContent" Type="nvarchar" MaxLength="200" Nullable="false" />
         </EntityType>
+        <EntityType Name="ManufacturerInfo">
+          <Key>
+            <PropertyRef Name="MFRSN" />
+          </Key>
+          <Property Name="MFRSN" Type="nchar" MaxLength="5" Nullable="false" />
+          <Property Name="MFRName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ContactPerson" Type="nvarchar" MaxLength="50" />
+          <Property Name="MFRTelNO" Type="nvarchar(max)" />
+          <Property Name="MFRMBPhone" Type="nvarchar(max)" />
+          <Property Name="MFRAddress" Type="nvarchar(max)" />
+          <Property Name="MFREmail" Type="nvarchar" MaxLength="256" />
+          <Property Name="MFRWeb" Type="nvarchar(max)" />
+          <Property Name="MFRMainProduct" Type="nvarchar" MaxLength="200" />
+          <Property Name="Memo" Type="nvarchar" MaxLength="200" />
+        </EntityType>
         <EntityType Name="PathSample">
           <Key>
             <PropertyRef Name="PSSN" />
@@ -838,6 +853,7 @@
           <EntitySet Name="MaintainItem" EntityType="Self.MaintainItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaintainSupplementaryFile" EntityType="Self.MaintainSupplementaryFile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaintainSupplementaryInfo" EntityType="Self.MaintainSupplementaryInfo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ManufacturerInfo" EntityType="Self.ManufacturerInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSample" EntityType="Self.PathSample" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSampleOrder" EntityType="Self.PathSampleOrder" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairAuditImage" EntityType="Self.RepairAuditImage" Schema="dbo" store:Type="Tables" />
@@ -1010,6 +1026,7 @@
           <EntitySet Name="MaintainItem" EntityType="Bimfm_MinSheng_MISModel.MaintainItem" />
           <EntitySet Name="MaintainSupplementaryFile" EntityType="Bimfm_MinSheng_MISModel.MaintainSupplementaryFile" />
           <EntitySet Name="MaintainSupplementaryInfo" EntityType="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo" />
+          <EntitySet Name="ManufacturerInfo" EntityType="Bimfm_MinSheng_MISModel.ManufacturerInfo" />
           <EntitySet Name="PathSample" EntityType="Bimfm_MinSheng_MISModel.PathSample" />
           <EntitySet Name="PathSampleOrder" EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" />
           <EntitySet Name="RepairAuditImage" EntityType="Bimfm_MinSheng_MISModel.RepairAuditImage" />
@@ -1506,6 +1523,21 @@
           <NavigationProperty Name="MaintainSupplementaryFile" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryFile" />
           <NavigationProperty Name="MaintainSupplementaryInfo1" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo" ToRole="MaintainSupplementaryInfo1" />
           <NavigationProperty Name="MaintainSupplementaryInfo2" Relationship="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" FromRole="MaintainSupplementaryInfo1" ToRole="MaintainSupplementaryInfo" />
+        </EntityType>
+        <EntityType Name="ManufacturerInfo">
+          <Key>
+            <PropertyRef Name="MFRSN" />
+          </Key>
+          <Property Name="MFRSN" Type="String" Nullable="false" MaxLength="5" FixedLength="true" Unicode="true" />
+          <Property Name="MFRName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ContactPerson" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MFRTelNO" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MFRMBPhone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MFRAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MFREmail" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="MFRWeb" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MFRMainProduct" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="PathSample">
           <Key>
@@ -2318,6 +2350,22 @@
                 <ScalarProperty Name="SupplementaryUserID" ColumnName="SupplementaryUserID" />
                 <ScalarProperty Name="IPMSN" ColumnName="IPMSN" />
                 <ScalarProperty Name="PMSN" ColumnName="PMSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ManufacturerInfo">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ManufacturerInfo">
+              <MappingFragment StoreEntitySet="ManufacturerInfo">
+                <ScalarProperty Name="Memo" ColumnName="Memo" />
+                <ScalarProperty Name="MFRMainProduct" ColumnName="MFRMainProduct" />
+                <ScalarProperty Name="MFRWeb" ColumnName="MFRWeb" />
+                <ScalarProperty Name="MFREmail" ColumnName="MFREmail" />
+                <ScalarProperty Name="MFRAddress" ColumnName="MFRAddress" />
+                <ScalarProperty Name="MFRMBPhone" ColumnName="MFRMBPhone" />
+                <ScalarProperty Name="MFRTelNO" ColumnName="MFRTelNO" />
+                <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
+                <ScalarProperty Name="MFRName" ColumnName="MFRName" />
+                <ScalarProperty Name="MFRSN" ColumnName="MFRSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

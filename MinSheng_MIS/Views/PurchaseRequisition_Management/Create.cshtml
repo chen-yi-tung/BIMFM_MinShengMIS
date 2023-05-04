@@ -1,0 +1,175 @@
+﻿@{
+    ViewBag.Title = "請購申請";
+}
+
+<style>
+    .datatable-input-area {
+        display: flex;
+        flex-direction: column;
+        max-width: 1090px;
+        margin: auto;
+        max-height: calc(100vh - var(--navbar-height));
+        max-height: calc(100dvh - var(--navbar-height));
+        gap: 1rem;
+    }
+
+    .datatable-input-area .edit-area {
+        max-height: 30rem;
+        padding: 1rem;
+        display: block;
+    }
+
+    .datatable-input-area .datatable,
+    .datatable-input-area .datatable-body {
+        max-height: 28rem;
+        margin: 0;
+    }
+
+    @@media (max-width:991.98px) {
+        .datatable-input-area .edit-area {
+            max-height: calc(100vh - var(--navbar-height) - 5rem);
+        }
+
+        .datatable-input-area .datatable,
+        .datatable-input-area .datatable-body {
+            max-height: calc(100vh - var(--navbar-height) - 7rem);
+        }
+    }
+</style>
+
+<h2>@ViewBag.Title</h2>
+
+<section style="max-width: 855px;margin: auto;">
+    <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
+        <form class="form d-lg-contents">
+            <div class="form-group w-lg-250px required">
+                <label for="PRUserName">請購人</label>
+                <input class="form-control" id="PRUserName" name="PRUserName" type="text" required />
+            </div>
+
+            <div class="form-group w-lg-250px">
+                <label for="PRDept">請購部門</label>
+                <input class="form-control" id="PRDept" name="PRDept" type="text" maxlength="20" />
+            </div>
+
+            <div class="form-group w-lg-250px">
+                <label for="EstimatedDate">預計交期</label>
+                <input class="form-control" id="EstimatedDate" name="EstimatedDate" type="date" />
+            </div>
+        </form>
+    </div>
+
+</section>
+<section class="datatable-input-area mt-3">
+    <button type="button" class="btn btn-search align-self-start" id="create-item">+ 新增</button>
+    <form class="d-contents">
+        <div class="edit-area m-0">
+            <div class="datatable datatable-grid w-100 h-100">
+                <div class="datatable-body h-100 overflow-auto">
+                    <table class="datatable-table" style="width: max-content;">
+                        <thead>
+                            <tr>
+                                <th class="datatable-header required" style="width:150px"><span>類別</span></th>
+                                <th class="datatable-header required" style="width:250px"><span>品名</span></th>
+                                <th class="datatable-header" style="width:150px"><span>尺寸</span></th>
+                                <th class="datatable-header required" style="width:120px"><span>數量</span></th>
+                                <th class="datatable-header required" style="width:150px"><span>單位</span></th>
+                                <th class="datatable-header" style="width:200px"><span>申請用途</span></th>
+                                <th class="datatable-header" style="width:36px"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="item-area">
+                            <tr id="sample-input-tr">
+                                <td id="d-Kind">
+                                    <select class="form-select" id="Kind" name="Kind" required></select>
+                                </td>
+                                <td id="d-ItemName">
+                                    <input class="form-control" type="text" id="ItemName" name="ItemName" maxlength="50"
+                                        required />
+                                </td>
+                                <td id="d-Size">
+                                    <input class="form-control" type="text" id="Size" name="Size" maxlength="50" />
+                                </td>
+                                <td id="d-PRAmount">
+                                    <input class="form-control" type="number" id="PRAmount" name="PRAmount" min="1"
+                                        value="1" required />
+                                </td>
+                                <td id="d-Unit">
+                                    <select class="form-select" id="Unit" name="Unit" required></select>
+                                </td>
+                                <td id="d-ApplicationPurpose">
+                                    <input class="form-control" type="text" id="ApplicationPurpose"
+                                        name="ApplicationPurpose" maxlength="200" />
+                                </td>
+                                <td id="d-_delete" class="p-1 pt-2">
+                                    <button type="button" class="btn-delete-item"></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">新增</button>
+</div>
+
+<script src="/Scripts/tool.js"></script>
+<script src="/Scripts/datatable.js"></script>
+<script>
+
+    let sampleTr;
+
+    $(async function () {
+        addButtonEvent();
+        sampleTr = new SampleTr();
+    })
+
+    function SampleTr() {
+        this.count = 0;
+        this.data = {};
+        this.init = async function () {
+            await pushSelect("Kind", '@Url.Action("AllMyName","DropDownList")');
+            await pushSelect("Unit", '@Url.Action("AllMyName","DropDownList")');
+
+            $("#item-area").on("click", ".btn-delete-item", function (e) {
+                $(this).parent().parent().remove();
+            })
+
+            this.sample = $("#sample-input-tr").clone();
+            $("#sample-input-tr").remove();
+            this.add();
+        }
+        this.add = function () {
+            let item = this.sample.clone();
+            item.attr('id', this.count);
+            $("#item-area").append(item);
+            this.data[this.count] = item;
+            this.count++;
+        }
+        this.init();
+        return this;
+    }
+
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("todo save():", isValidity)
+        if (!isValidity) return;
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        });
+        $("#create-item").click(function () {
+            sampleTr.add();
+        });
+        $("#submit").click(function () {
+            save();
+        });
+    }
+</script>

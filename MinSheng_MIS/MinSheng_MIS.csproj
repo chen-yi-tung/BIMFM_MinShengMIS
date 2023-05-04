@@ -185,21 +185,31 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Account_ManagementController.cs" />
+    <Compile Include="Controllers\AsBuiltDrawing_ManagementController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
     <Compile Include="Controllers\DatagridController.cs" />
+    <Compile Include="Controllers\DesignDiagramsController.cs" />
     <Compile Include="Controllers\DropDownListController.cs" />
     <Compile Include="Controllers\EquipmentInfo_ManagementController.cs" />
     <Compile Include="Controllers\EquipmentMaintainPeriod_ManagementController.cs" />
+    <Compile Include="Controllers\EquipmentOperatingManualController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InquiryPlan_ManagementController.cs" />
     <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
     <Compile Include="Controllers\MaintainForm_ManagementController.cs" />
     <Compile Include="Controllers\MaintainItem_ManagementController.cs" />
     <Compile Include="Controllers\MaintainRecord_ManagementController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ManufacturerInfo_ManagementController.cs" />
+    <Compile Include="Controllers\PurchaseOrder_ManagementController.cs" />
+    <Compile Include="Controllers\PurchaseRequisition_ManagementController.cs" />
     <Compile Include="Controllers\RepairRecord_ManagementController.cs" />
     <Compile Include="Controllers\Report_ManagementController.cs" />
     <Compile Include="Controllers\SamplePath_ManagementController.cs" />
+    <Compile Include="Controllers\StockIn_ManagementController.cs" />
+    <Compile Include="Controllers\StockOut_ManagementController.cs" />
+    <Compile Include="Controllers\Stock_ManagementController.cs" />
+    <Compile Include="Controllers\StoresRequisition_ManagementController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -266,6 +276,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\InspectionTrack.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ManufacturerInfo.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubSystemManagement.cs">
@@ -1608,6 +1621,47 @@
     <Content Include="Views\ManufacturerInfo_Management\Create.cshtml" />
     <Content Include="Views\ManufacturerInfo_Management\Read.cshtml" />
     <Content Include="Views\ManufacturerInfo_Management\Edit.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Management.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Create.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Read.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Edit.cshtml" />
+    <Content Include="Views\AsBuiltDrawing_Management\Delete.cshtml" />
+    <Content Include="Views\PurchaseRequisition_Management\Management.cshtml" />
+    <Content Include="Views\PurchaseRequisition_Management\Create.cshtml" />
+    <Content Include="Views\PurchaseRequisition_Management\Audit.cshtml" />
+    <Content Include="Views\InquiryPlan_Management\Management.cshtml" />
+    <Content Include="Views\InquiryPlan_Management\CreatePlan.cshtml" />
+    <Content Include="Views\InquiryPlan_Management\Read.cshtml" />
+    <Content Include="Views\InquiryPlan_Management\Edit.cshtml" />
+    <Content Include="Views\InquiryPlan_Management\CreateInquiry.cshtml" />
+    <Content Include="Views\InquiryPlan_Management\InquiryManagement.cshtml" />
+    <Content Include="Views\PurchaseOrder_Management\Management.cshtml" />
+    <Content Include="Views\PurchaseOrder_Management\Read.cshtml" />
+    <Content Include="Views\PurchaseOrder_Management\Delivery.cshtml" />
+    <Content Include="Views\PurchaseOrder_Management\Accept.cshtml" />
+    <Content Include="Views\DesignDiagrams\Management.cshtml" />
+    <Content Include="Views\DesignDiagrams\Create.cshtml" />
+    <Content Include="Views\DesignDiagrams\Edit.cshtml" />
+    <Content Include="Views\DesignDiagrams\Delete.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Management.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Create.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Read.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Edit.cshtml" />
+    <Content Include="Views\EquipmentOperatingManual\Delete.cshtml" />
+    <Content Include="Views\StockIn_Management\Management.cshtml" />
+    <Content Include="Views\StockIn_Management\Create.cshtml" />
+    <Content Include="Views\StockIn_Management\Read.cshtml" />
+    <Content Include="Views\Stock_Management\Management.cshtml" />
+    <Content Include="Views\Stock_Management\Read.cshtml" />
+    <Content Include="Views\Stock_Management\MinStockAmountSetting.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Management.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Create.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Read.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Edit.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Audit.cshtml" />
+    <Content Include="Views\StockOut_Management\Management.cshtml" />
+    <Content Include="Views\StockOut_Management\Create.cshtml" />
+    <Content Include="Views\StockOut_Management\Read.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

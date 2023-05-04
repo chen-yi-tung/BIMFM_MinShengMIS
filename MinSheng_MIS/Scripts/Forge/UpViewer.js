@@ -29,9 +29,9 @@ async function initializeViewer(callback) {
     );
     const options = { 'env': "Local", 'document': viewerUrl };
     Autodesk.Viewing.Initializer(options, function () {
-        viewer.start(options.document, options, onSuccessCallback, onErrorCallback);
-        async function onSuccessCallback() {
-            console.log("onSuccessCallback");
+        viewer.start(options.document, options, onSuccess, onError);
+        async function onSuccess() {
+            console.log("onSuccess");
             viewer.setBackgroundOpacity(0);
             viewer.setBackgroundColor();
             viewer.setLightPreset(16);
@@ -39,10 +39,12 @@ async function initializeViewer(callback) {
             viewer.toolbar.removeControl("navTools");
             viewer.toolbar.removeControl("settingsTools");
 
+            viewer.impl.controls.handleKeyDown = () => {}
+
             viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, ON_GEOMETRY_LOADED);
-            viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, ON_EXTENSION_LOADED)
+            viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, ON_EXTENSION_LOADED);
         }
-        function onErrorCallback() { console.log("onErrorCallback"); }
+        function onError() { console.log("onError"); }
     });
 
     function ON_GEOMETRY_LOADED(e) {

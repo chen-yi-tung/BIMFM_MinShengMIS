@@ -1,7 +1,80 @@
-﻿
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = "新增廠商";
 }
+<style>
+    @@media (min-width: 992px){
+        .edit-area .form {
+            grid-template-columns: 250px 250px;
+        }
+    }
+</style>
+<h2>@ViewBag.Title</h2>
 
-<h2>Create</h2>
+<div class="edit-area edit-area-small">
+    <form class="form pt-0">
+        <div class="form-group required">
+            <label for="MFRName">供應商名稱</label>
+            <input class="form-control" type="text" name="MFRName" id="MFRName" maxlength="50" required>
+        </div>
+        <div class="form-group">
+            <label for="ContactPerson">聯絡人</label>
+            <input class="form-control" type="text" name="ContactPerson" id="ContactPerson" maxlength="50">
+        </div>
+
+        <div class="form-group">
+            <label for="MFRTelNO">電話</label>
+            <input class="form-control" type="tel" name="MFRTelNO" id="MFRTelNO">
+        </div>
+
+        <div class="form-group">
+            <label for="MFRMBPhone">手機</label>
+            <input class="form-control" type="tel" name="MFRMBPhone" id="MFRMBPhone">
+        </div>
+
+        <div class="form-group g-col-2">
+            <label for="MFRAddress">地址</label>
+            <input class="form-control" type="text" name="MFRAddress" id="MFRAddress">
+        </div>
+
+        <div class="form-group g-col-2">
+            <label for="MFREmail">電子郵件</label>
+            <input class="form-control" type="email" name="MFREmail" id="MFREmail" maxlength="256">
+        </div>
+
+        <div class="form-group g-col-2">
+            <label for="MFRWeb">網站</label>
+            <input class="form-control" type="url" name="MFRWeb" id="MFRWeb">
+        </div>
+
+        <div class="form-group g-col-2">
+            <label for="MFRMainProduct">主要商品</label>
+            <input class="form-control" type="text" name="MFRMainProduct" id="MFRMainProduct" maxlength="200">
+        </div>
+    </form>
+</div>
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+
+<script>
+    $(function () {
+        addButtonEvent();
+    })
+
+    function save(){
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("todo save():", isValidity)
+        if (!isValidity) return;
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+        $("#submit").click(function () {
+            save();
+        })
+    }
+</script>
 

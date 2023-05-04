@@ -38,37 +38,37 @@ function createTableInner(data, sn) {
     const nullString = "-";
     return sn.map((e) => {
         let html;
-        switch (e.value) {
-            case "ImgPath":
-                html = `
-                    <tr>
-                        <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putImage(data[e.value]) : nullString}</td>
-                    </tr>`;
-                break;
-            case "FilePath":
-                html = `
-                    <tr>
-                        <td class="datatable-table-th">${e.text}</td>
-                        <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putFile(data[e.value]) : nullString}</td>
-                    </tr>`;
-                break;
-            default:
-                if (e.formatter) {
+        if (e.formatter) {
+            html = `
+            <tr>
+                <td class="datatable-table-th">${e.text}</td>
+                <td class="datatable-table-td" id="d-${e.value}">${e.formatter(data[e.value])}</td>
+            </tr>`;
+        }
+        else {
+            switch (e.value) {
+                case "ImgPath":
                     html = `
                         <tr>
                             <td class="datatable-table-th">${e.text}</td>
-                            <td class="datatable-table-td" id="d-${e.value}">${e.formatter(data[e.value])}</td>
+                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putImage(data[e.value]) : nullString}</td>
                         </tr>`;
-                }
-                else {
+                    break;
+                case "FilePath":
+                    html = `
+                        <tr>
+                            <td class="datatable-table-th">${e.text}</td>
+                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putFile(data[e.value]) : nullString}</td>
+                        </tr>`;
+                    break;
+                default:
                     html = `
                         <tr>
                             <td class="datatable-table-th">${e.text}</td>
                             <td class="datatable-table-td" id="d-${e.value}">${data[e.value] ?? nullString}</td>
                         </tr>`;
-                }
-                break;
+                    break;
+            }
         }
         return html;
     }).join("");
@@ -93,6 +93,7 @@ function createTableInner(data, sn) {
  * @property {string} id - use to html id and the key to find value from data
  * @property {string} title - use to th
  * @property {string?} width - ex: "30%"
+ * @property {boolean?} required
  * @property {function (value):string?} formatter - use to formatter td data
  * 
  * @typedef {object} TableGridOptions
@@ -113,7 +114,7 @@ function createTableGrid(data, options) {
     function createThs(op) {
         return op.map(o => {
             let w = typeof o.width == "string" ? o.width : o.width + "px";
-            let th = `<th class="datatable-header" style="${o.width ? `width:${w}` : ''}">${o.title}</th>`;
+            let th = `<th class="datatable-header ${o.required ? "required" : ''}" style="${o.width ? `width:${w}` : ''}"><span>${o.title}</span></th>`;
             return th;
         }).join("");
     }

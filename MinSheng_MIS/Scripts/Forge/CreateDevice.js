@@ -1,4 +1,5 @@
-﻿function DeviceFileModal() {
+﻿const deviceFileModal = new DeviceFileModal();
+function DeviceFileModal() {
     const self = this;
     this.autoCalcRoute = true;
     this.ModalJQ = $(`
@@ -51,6 +52,7 @@
 
         function onSuccess(res) {
             let listGroup = self.ModalJQ.find(".list-group");
+            listGroup.empty();
             res.forEach(e => {
                 listGroup.append(listItem(e));
             });
@@ -69,11 +71,19 @@
     this.save = () => {
         let c = self.ModalJQ.find(".list-group-item .form-check-input:checked")
         let name = c.siblings('span').text();
-        let val = c.val();
-        $("#checkFilePath_val").val(val);
+        this.file = c.val();
+
+        console.log("todo FileReader readFromUrl into this.file")
+
+        this.validityAndShow(name);
+    };
+
+    this.validityAndShow = (name)=>{
+        $("#_checkFilePath").prop('checked', true);
+        $("#_checkFilePath")[0].setCustomValidity('');
         $("#FilePathName").text(name);
         $("#FilePathDelete").removeClass('d-none');
-    };
+    }
 
     this.ModalJQ.one("hidden.bs.modal", () => {
         self.ModalBs.dispose();
@@ -99,13 +109,18 @@ function initDrawerLocate() {
     app = ForgeDraw.init(view, viewer, function () {
         ForgeDraw.setControl(ForgeDraw.Control.DEVICE);
         view.addEventListener("fd.devicepoint.change", function (event) {
-            let pos = event.detail;
-            let fos = viewer.clientToWorld(pos.x, pos.y);
+            let fos = event.detail;
             console.log("view => fd.devicepoint.change", fos.point);
-
             if (fos && fos.point) {
-                $("#LocationX").text(fos.point.x);
-                $("#LocationY").text(fos.point.y);
+                $("#LocationX").val(fos.point.x);
+                $("#LocationY").val(fos.point.y);
+            }
+            else {
+                !$("#DialogModal-Error")[0] &&
+                    createDialogModal({ id: "DialogModal-Error", inner: "超出模型範圍！" })
+                ForgeDraw.stage.off("pointermove", ForgeDraw.stage.onDeviceMoveEvent);
+                ForgeDraw.stage.off("pointerup", ForgeDraw.stage.onDeviceUpEvent);
+
             }
         });
     });
@@ -117,56 +132,33 @@ function addButtonEvent() {
     })
 
     $("#checkFilePath").click(function () {
-        let System = $("#System").val();
-        let SubSystem = $("#SubSystem").val();
-        let EName = $("#EName").val();
-        let Brand = $("#Brand").val();
-        let Model = $("#Model").val();
-        if (System && SubSystem && EName && Brand && Model) {
-            new DeviceFileModal().create({
-                System,
-                SubSystem,
-                EName,
-                Brand,
-                Model
-            });
-        }
-        else {
-            let label;
-            switch (true) {
-                case (!System):
-                    label = $('label[for="System"]').text();
-                    break;
-                case (!SubSystem):
-                    label = $('label[for="SubSystem"]').text();
-                    break;
-                case (!EName):
-                    label = $('label[for="EName"]').text();
-                    break;
-                case (!Brand):
-                    label = $('label[for="Brand"]').text();
-                    break;
-                case (!Model):
-                    label = $('label[for="Model"]').text();
-                    break;
-            }
-            createDialogModal({ id: "DialogModal-Error", inner: `請輸入${label}！` })
+        const arr = [
+            "System",
+            "SubSystem",
+            "EName",
+            "Brand",
+            "Model"
+        ]
+
+        let check = arr.map(e => document.getElementById(e).reportValidity()).every(e => e);
+        if (check) {
+            deviceFileModal.create(arr.map(e => document.getElementById(e).value));
         }
     })
 
     $("#FilePath").change(function (e) {
         console.log(this.files);
-        if (this.files && this.files.length !== 0) {
+        if (this.files && this.files[0]) {
             let file = this.files[0];
-            $("#FilePathName").text(file.name);
-            $("#FilePathDelete").removeClass('d-none');
+            deviceFileModal.validityAndShow(file.name);
+            deviceFileModal.file = file;
         }
     })
 
     $("#FilePathDelete").click(function () {
         $("#FilePath").val('');
         $("#FilePathName").text('');
-        $("#FilePathDelete").addClass('d-none');
+        $("#FilePathGroup").addClass('d-none');
     })
 
     $("#locate").click(function () {
@@ -204,7 +196,6 @@ function addButtonEvent() {
     })
 
     $("#submit").click(function () {
-        console.log("onclick submit")
         save();
     })
 }

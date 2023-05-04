@@ -999,14 +999,20 @@ var ForgeDraw = (function (e) {
                             movingPoint.onMoveEvent = function (event) {
                                 console.log(`${movingPoint.name} ${movingPoint.index} => onMoveEvent`);
                                 let pos = this.parent.toLocal(event.global, null);
-                                movingPoint.position = pos;
-                                view.dispatchEvent(new DevicePointChangeEvent(pos));
+                                let fos = forgeViewer.clientToWorld(pos.x, pos.y);
+                                if (fos && fos.point) {
+                                    movingPoint.position = pos;
+                                    view.dispatchEvent(new DevicePointChangeEvent(fos));
+                                }
                             }
                         }
 
                         movingPoint.eventMode = EventMode.AUTO;
-                        movingPoint.position = pos;
-                        view.dispatchEvent(new DevicePointChangeEvent(pos));
+                        let fos = forgeViewer.clientToWorld(pos.x, pos.y);
+                        if (fos && fos.point) {
+                            movingPoint.position = pos;
+                            view.dispatchEvent(new DevicePointChangeEvent(fos));
+                        }
 
                         self.on("pointermove", self.onDeviceMoveEvent);
                         self.on("pointerup", self.onDeviceUpEvent);
@@ -1026,8 +1032,11 @@ var ForgeDraw = (function (e) {
             this.onDeviceMoveEvent = function (event) {
                 let pos = this.parent.toLocal(event.global, null);
                 console.log(`${self.name} => onDeviceMoveEvent`, pos);
-                movingPoint.position = pos;
-                view.dispatchEvent(new DevicePointChangeEvent(pos));
+                let fos = forgeViewer.clientToWorld(pos.x, pos.y);
+                if (fos && fos.point) {
+                    movingPoint.position = pos;
+                    view.dispatchEvent(new DevicePointChangeEvent(fos));
+                }
             }
 
             this.onUpEvent = function (event) {

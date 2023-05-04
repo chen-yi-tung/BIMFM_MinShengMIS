@@ -59,39 +59,41 @@ DG.prototype.removeEvent = function (key) {
 }
 
 DG.prototype.frozenColumn = function (/* field, title, width, formatter */) {
-    let args = arguments;
-    if (args.length === 2 && typeof args[1] === 'function') {
-        return { field: args[0], align: this.ColumnsOptions.align, formatter: args[1] }
+    let args = [].slice.call(arguments);
+    let res = { field: args[0], align: this.ColumnsOptions.align, formatter: args.at(-1) };
+    switch (true) {
+        case (args.length === 4):
+            res.width = args[2];
+        case (args.length === 3):
+            res.title = args[1];
     }
-    else if (args.length === 3 && typeof args[2] === 'function') {
-        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, formatter: args[2] }
-    }
-    else if (args.length === 4 && typeof args[3] === 'function') {
-        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, width: args[2], formatter: args[3] }
-    }
+    return res;
 }
 
 DG.prototype.column = function (/* field, title, width */) {
-    let args = arguments;
-    if (args.length === 1) {
-        return { field: args[0], title: args[0], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable }
+    let args = [].slice.call(arguments);
+    let res = { field: args[0], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable };
+    switch (true) {
+        case (args.length === 4):
+            res.formatter = args[3];
+        case (args.length === 3):
+            res.width = args[2];
+        case (args.length === 2):
+            res.title = args[1];
     }
-    else if (args.length === 2) {
-        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable }
-    }
-    else if (args.length === 3) {
-        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, width: args[2], sortable: this.ColumnsOptions.sortable }
-    }
+    return res;
 }
 
 DG.prototype.formatColumn = function (/* field, title, width, formatter */) {
-    let args = arguments;
-    if (args.length === 3) {
-        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable, formatter: args[2] }
+    let args = [].slice.call(arguments);
+    let res = { field: args[0], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable, formatter: args.at(-1) };
+    switch (true) {
+        case (args.length === 4):
+            res.width = args[2];
+        case (args.length === 3):
+            res.title = args[1];
     }
-    else if (args.length === 4) {
-        return { field: args[0], title: args[1], align: this.ColumnsOptions.align, width: args[2], sortable: this.ColumnsOptions.sortable, formatter: args[3] }
-    }
+    return res;
 }
 
 DG.prototype.hiddenColumn = function (field) {
@@ -99,12 +101,13 @@ DG.prototype.hiddenColumn = function (field) {
 }
 
 DG.prototype.eventButton = function (index, text, eventName = null, options = null) {
-    let optionStr = "";
+    let optionStr = [];
+    
     let className = "btn btn-datagrid";
     if (options) {
         options.className && options.className.length !== 0 && (className = options.className)
-        options.disabled === true && (optionStr += "disabled")
-        options.hidden === true && (optionStr += "hidden")
+        options.disabled === true && optionStr.push("disabled")
+        options.hidden === true && optionStr.push("hidden")
     }
-    return `<button class="${className}" data-index="${index}" data-btn-type="${eventName ?? 'null'}" ${optionStr}>${text}</button>`;
+    return `<button class="${className}" data-index="${index}" data-btn-type="${eventName ?? 'null'}" ${optionStr.join(" ")}>${text}</button>`;
 }

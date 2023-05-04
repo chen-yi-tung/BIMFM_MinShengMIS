@@ -80,7 +80,7 @@
             },
             { id: "ESN", title: "設備編號", width: "30%" },
             {
-                id: "Unit", title: "保養週期單位", width: "36%", formatter: (data) => {
+                id: "Unit", title: "保養週期單位", width: "36%", required: true, formatter: (data) => {
                     return `
                     <select class="form-select" name="Unit" id="Unit" required>
                         <option value="日" ${data == "日" ? "selected" : ""}>日</option>
@@ -91,7 +91,7 @@
                 }
             },
             {
-                id: "Period", title: "保養週期", width: "28%", formatter: (data) => {
+                id: "Period", title: "保養週期", width: "28%", required: true, formatter: (data) => {
                     return `<input class="form-control" type="number" name="Period" id="Period" min="1" value="${data}" required/>`
                 }
             },
@@ -148,7 +148,7 @@
             $("#MISN").val(res.MISN);
 
             $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
-            
+
             if (res.EquipmentMaintainItem) {
                 $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
             }
@@ -215,7 +215,7 @@
     function saveMaintainItem() {
         //todo
 
-        let isValidity = $("form").toArray().map(e => e.checkValidity()).every(e => e);
+        let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
         console.log("isValidity:", isValidity);
         if (!isValidity) return;
 

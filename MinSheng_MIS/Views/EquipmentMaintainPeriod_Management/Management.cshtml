@@ -112,19 +112,17 @@
             NextTime: "2023/01/01",
         }
     ]
-    var Systems = document.getElementById('System')
-    Systems.addEventListener("change", function () {
-        let url = '@Url.Action("SubSystem", "DropDownList")';
-        let system = $('#System').val();
-        url = url + `?System=${system}`;
-        pushSelect("SubSystem", url);
-    });
+
+
 
     var getGridJSON = '@Url.Action("EquipmentMaintainPeriod_Management", "Datagrid")';
     $(async function () {
         await AreaFloorEvent();
         await pushSelect("System", '@Url.Action("System", "DropDownList")');
-        //await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+        const Systems = document.getElementById('System')
+        Systems.addEventListener("change", function () {
+            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        });
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
         addSaveClickEvent();
@@ -258,7 +256,7 @@
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
-                }) 
+            })
 
             function onSuccess(res) {
                 alert("儲存本頁變更完成");

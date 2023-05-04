@@ -47,12 +47,16 @@
 
         <div class="form-group">
             <label for="System">系統別</label>
-            <input class="form-control" id="System" name="System" type="text" />
+            <select class="form-select" name="System" id="System">
+                <option value="">請選擇</option>
+            </select>
         </div>
 
         <div class="form-group">
             <label for="SubSystem">子系統別</label>
-            <input class="form-control" id="SubSystem" name="SubSystem" type="text" />
+            <select class="form-select" name="SubSystem" id="SubSystem">
+                <option value="">請選擇</option>
+            </select>
         </div>
 
         <div class="form-group">
@@ -102,17 +106,32 @@
 
     const fakeData = [
         {
-            PSSN: "000001",
-            PathTitle: "A棟1F路線",
+            EState: "正常",
             Area: "A棟",
             Floor: "1F",
+            RoomName: "機房115旁",
+            System: "前處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            Brand: "A廠牌",
+            Model: "A256-O8",
+            PropertyCode: "VF2ADS112",
+            FilePath: '',
+            DBID: '',
         }
     ]
 
     $(async function () {
         await AreaFloorEvent();
+        await pushSelect("System", '@Url.Action("System", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
+
+        const Systems = document.getElementById('System')
+        Systems.addEventListener("change", function () {
+            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        });
     });
 
     function Initialize_DataGrid(getGridJSON) {
@@ -126,13 +145,13 @@
             //sortName: 'PSSN',
             frozenColumns: [[
                 dg.frozenColumn('_locate', (v, row, i) => {
-                    let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
+                    let disabled = row.DBID == null || row.DBID == "";
                     return dg.eventButton(i, "定位", "locate", { disabled: disabled })
                 }),
                 dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                 dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
                 dg.frozenColumn('FilePath', (v, row, i) => {
-                    let disabled = v == null || v == "" ? 'disabled' : '';
+                    let disabled = v == null || v == "";
                     return dg.eventButton(i, "操作手冊", "filePath", { disabled: disabled })
                 }),
                 dg.frozenColumn('_activate', (v, row, i) => {
@@ -144,6 +163,7 @@
             columns: [[
                 dg.column('EState', '設備狀態', 110),
                 dg.column('Area', '棟別', 130),
+                dg.column('Floor', '樓層', 80),
                 dg.column('RoomName', '空間名稱', 110),
                 dg.column('System', '系統別', 200),
                 dg.column('SubSystem', '子系統別', 250),
@@ -180,7 +200,8 @@
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $("form")[0].reset();
-            pushSelect("Floor", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
         });
 
         $("#search").click(function () {

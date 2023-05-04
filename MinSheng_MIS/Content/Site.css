@@ -8,6 +8,10 @@
     display: contents !important;
 }
 
+.g-col-2 {
+    grid-column: auto/span 2;
+}
+
 body {
     font-family: 'Noto Sans TC', sans-serif;
     background: url("/Content/img/bg.png");
