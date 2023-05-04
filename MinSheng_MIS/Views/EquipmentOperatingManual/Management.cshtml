@@ -19,7 +19,6 @@
                 <option value="">請選擇</option>
             </select>
         </div>
-
         <div class="form-group">
             <label for="SubSystem">子系統別</label>
             <select class="form-select" name="SubSystem" id="SubSystem">
@@ -71,23 +70,25 @@
 
     const fakedata = [
         {
-            UserName: "Admin",
-            MyName: "Admin",
-            Authority: "管理人員",
-            Email: "Admin123@gmail.com",
-            PhoneNumber: "0900123123",
-            Apartment: "Admin",
-            Title: "Admin",
+            EOMSN: "230502002",
+            Filepath: "59.120.37.49:9686/EquipmentOperatingManual/230502002.pdf",
+            System: "處理系統",
+            SubSystem: "前處理系統",
+            EName: "除霧皮帶輸送機",
+            Brand: "A廠牌",
+            Model: "HT-6356",
+            UploadDate: "2023/05/02"
         },
         {
-            UserName: "DDD",
-            MyName: "DDD",
-            Authority: "管理人員",
-            Email: "DDD456@gmail.com",
-            PhoneNumber: "0900456456",
-            Apartment: "DDD",
-            Title: "DDD",
-        },
+            EOMSN: "230502002",
+            Filepath: "59.120.37.49:9686/EquipmentOperatingManual/230502002.pdf",
+            System: "處理系統",
+            SubSystem: "前處理系統",
+            EName: "除霧皮帶輸送機",
+            Brand: "A廠牌",
+            Model: "HT-6356",
+            UploadDate: "2023/05/02"
+        }
     ]
 
     $(async function () {
@@ -100,12 +101,12 @@
         $('#DataGrid').datagrid({
 
             url: getGridJSON,
-            //data: fakedata,
-            method: 'POST',
+            data: fakedata,
+            method: 'GET',
             queryParams: getQueryParams(),
             rownumbers: true,
-            idField: 'UserName',
-            //sortName: 'UserName',
+            idField: 'EOMSN',
+            //sortName: 'EOMSN',
             remoteSort: false,
             sortOrder: 'asc',
             fit: true,
@@ -130,14 +131,14 @@
                 }
             ]],
             columns: [[
-                { field: 'EOMSN', title: '設備操作手冊編號', align: 'center', width: 200, sortable: true, hidden: },
-                { field: 'Filepath', title: '設備操作手冊路徑', align: 'center', width: 180, sortable: true },
-                { field: 'System', title: '系統別', align: 'center', width: 150, sortable: true },
-                { field: 'SubSystem', title: '子系統別', align: 'center', width: 300, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 180, sortable: true },
-                { field: 'Brand', title: '廠牌', align: 'center', width: 180, sortable: true },
+                { field: 'EOMSN', title: '設備操作手冊編號', align: 'center', width: 180, sortable: true, hidden: true },
+                { field: 'Filepath', title: '設備操作手冊路徑', align: 'center', width: 300, sortable: true, hidden: true },
+                { field: 'System', title: '系統別', align: 'center', width: 180, sortable: true },
+                { field: 'SubSystem', title: '子系統別', align: 'center', width: 180, sortable: true },
+                { field: 'EName', title: '設備名稱', align: 'center', width: 240, sortable: true },
+                { field: 'Brand', title: '廠牌', align: 'center', width: 200, sortable: true },
                 { field: 'Model', title: '型號', align: 'center', width: 180, sortable: true },
-                { field: 'UploadDate', title: '上傳時間', align: 'center', width: 180, sortable: true }
+                { field: 'UploadDate', title: '上傳時間', align: 'center', width: 240, sortable: true }
             ]],
             singleSelect: true,
             selectOnCheck: true,
