@@ -206,6 +206,10 @@
     <Compile Include="Controllers\RepairRecord_ManagementController.cs" />
     <Compile Include="Controllers\Report_ManagementController.cs" />
     <Compile Include="Controllers\SamplePath_ManagementController.cs" />
+    <Compile Include="Controllers\StockIn_ManagementController.cs" />
+    <Compile Include="Controllers\StockOut_ManagementController.cs" />
+    <Compile Include="Controllers\Stock_ManagementController.cs" />
+    <Compile Include="Controllers\StoresRequisition_ManagementController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -1644,6 +1648,20 @@
     <Content Include="Views\EquipmentOperatingManual\Read.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Edit.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Delete.cshtml" />
+    <Content Include="Views\StockIn_Management\Management.cshtml" />
+    <Content Include="Views\StockIn_Management\Create.cshtml" />
+    <Content Include="Views\StockIn_Management\Read.cshtml" />
+    <Content Include="Views\Stock_Management\Management.cshtml" />
+    <Content Include="Views\Stock_Management\Read.cshtml" />
+    <Content Include="Views\Stock_Management\MinStockAmountSetting.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Management.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Create.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Read.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Edit.cshtml" />
+    <Content Include="Views\StoresRequisition_Management\Audit.cshtml" />
+    <Content Include="Views\StockOut_Management\Management.cshtml" />
+    <Content Include="Views\StockOut_Management\Create.cshtml" />
+    <Content Include="Views\StockOut_Management\Read.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
