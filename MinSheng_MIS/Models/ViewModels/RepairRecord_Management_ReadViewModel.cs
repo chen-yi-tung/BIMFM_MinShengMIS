@@ -18,6 +18,8 @@ namespace MinSheng_MIS.Models.ViewModels
     public class RepairRecord_Management_ReadViewModel
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+
+        #region 巡檢維修紀錄-詳情格式
         private class EquipmentReportItem
         {
             public string ReportState { get; set; }
@@ -88,8 +90,10 @@ namespace MinSheng_MIS.Models.ViewModels
             public List<RepairAuditInfo> RepairAuditInfo { get; set; }
             public List<InspectionPlanList> InspectionPlanList { get; set; }
         }
+        #endregion
 
-        public string GetJsonForRead(string IPRSN) //巡檢維修紀錄-詳情
+        #region 巡檢維修紀錄-詳情
+        public string GetJsonForRead(string IPRSN)
         {
 
             Root root = new Root();
@@ -321,7 +325,9 @@ namespace MinSheng_MIS.Models.ViewModels
             string result = JsonConvert.SerializeObject(root);
             return result;
         }
+        #endregion
 
+        #region 提取暫存資料格式
         public class AllRepairAudit
         {
             public string AuditUserName { get; set; }
@@ -334,7 +340,9 @@ namespace MinSheng_MIS.Models.ViewModels
             public string AuditDate { get; set; }
 
         }
+        #endregion
 
+        #region 提取審核暫存資料
         /// <summary>
         /// 檢查有沒有草稿(IsBuffer = 1)，有的話就帶回資料，沒有的話就不帶
         /// </summary>
@@ -349,23 +357,24 @@ namespace MinSheng_MIS.Models.ViewModels
                 var Name = db.AspNetUsers.Where(x => x.UserName == RepairAuIn.AuditUserID).Select(x => x.MyName).FirstOrDefault();
                 var Pic = db.RepairAuditImage.Where(x => x.PRASN == RepairAuIn.PRASN).Select(x => x.ImgPath); //可能會有很多張圖
                 string PicResult = "";
-                foreach (var item in Pic)
+                if (Pic != null)
                 {
-                    PicResult += item + ",";
-                }
-                if (Pic.Count() > 0)
-                {
-                    PicResult = PicResult.Remove(PicResult.Length - 1); //移除最後一個'，'
+                    List<string> PicStr = new List<string>();
+                    foreach (var item in Pic)
+                    {
+                        PicStr.Add(item);
+                    }
+                    PicResult = string.Join(",", PicStr);
                 }
 
-                var dic = Surface.AuditResult();
+                var dic_AuditResult = Surface.AuditResult();
                 AllRepairAudit ReAu = new AllRepairAudit()
                 {
                     AuditUserName = Name,
                     AuditUserID = RepairAuIn.AuditUserID,
                     AuditMemo = RepairAuIn.AuditMemo,
                     ImgPath = PicResult,  //如果多張圖片的話， 用'，'分開
-                    AuditResult = dic[RepairAuIn.AuditResult],
+                    AuditResult = dic_AuditResult[RepairAuIn.AuditResult],
                     PRASN = RepairAuIn.PRASN,
                     IPRSN = IPRSN,
                     AuditDate = RepairAuIn.AuditDate.ToString("yyyy/MM/dd HH:mm:ss")
@@ -379,6 +388,8 @@ namespace MinSheng_MIS.Models.ViewModels
                 return "";
             }
         }
+        #endregion
+
         /// <summary>
         /// 上傳照片，並回傳Server端儲存路徑
         /// </summary>
@@ -437,6 +448,7 @@ namespace MinSheng_MIS.Models.ViewModels
             }
         }
 
+        #region 提交審核資料後設備狀態調整
         /// <summary>
         /// 在提交審核資料時:
         /// 檢查設備EquipmentReportForm中有沒有其他未完成的項目，如果沒有的話則去EquipmentInfo把該設備(ESN)的Estate改為1
@@ -457,6 +469,7 @@ namespace MinSheng_MIS.Models.ViewModels
             }
             catch { return false; }
         }
+        #endregion
 
 
         public string CreateAuditData(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev, List<HttpPostedFileBase> fileList)
@@ -482,34 +495,17 @@ namespace MinSheng_MIS.Models.ViewModels
                     break;
             }
 
-            if (formCollection["isBuffer"] == "0") //先判斷是按哪一個按鈕，新增
+            var RAI = new Models.RepairAuditInfo()
             {
-                var RAI = new Models.RepairAuditInfo()
-                {
-                    PRASN = prasn,
-                    IPRSN = iprsn,
-                    AuditUserID = formCollection["AuditUserID"].ToString(),
-                    AuditDate = DateTime.Now,
-                    AuditMemo = formCollection["AuditMemo"].ToString(),
-                    AuditResult = formCollection["AuditResult"].ToString(),
-                    IsBuffer = false
-                };
-                db.RepairAuditInfo.AddOrUpdate(RAI);
-            }
-            else //暫存
-            {
-                var RAI = new Models.RepairAuditInfo()
-                {
-                    PRASN = prasn,
-                    IPRSN = iprsn,
-                    AuditUserID = formCollection["AuditUserID"].ToString(),
-                    AuditDate = DateTime.Now,
-                    AuditMemo = formCollection["AuditMemo"].ToString(),
-                    AuditResult = formCollection["AuditResult"].ToString(),
-                    IsBuffer = true
-                };
-                db.RepairAuditInfo.AddOrUpdate(RAI);
-            }
+                PRASN = prasn,
+                IPRSN = iprsn,
+                AuditUserID = formCollection["AuditUserID"].ToString(),
+                AuditDate = DateTime.Now,
+                AuditMemo = formCollection["AuditMemo"].ToString(),
+                AuditResult = formCollection["AuditResult"].ToString(),
+                IsBuffer = formCollection["isBuffer"] == "0" ? false : true
+            };
+            db.RepairAuditInfo.AddOrUpdate(RAI);
             db.SaveChanges();
 
             var InsPlanRe = db.InspectionPlanRepair.Find(iprsn);
