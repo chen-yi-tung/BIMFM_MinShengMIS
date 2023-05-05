@@ -11,9 +11,13 @@
 <h2>@ViewBag.Title</h2>
 <div class="edit-area edit-area-small">
     <form class="form pt-0">
+        <div class="form-group required" hidden>
+            <label for="EOMSN" >設備操作手冊編號</label>
+            <input class="form-control" id="EOMSN" name="EOMSN" type="text" maxlength="50" required/>
+        </div>
         <div class="form-group required">
             <label for="System">系統別</label>
-            <select class="form-select" name="System" id="System" required>
+            <select class="form-select" name="System" id="System" required disabled>
                 <option value="">請選擇</option>
             </select>
             <input class="form-control" id="System" name="System" type="text" hidden />
@@ -21,7 +25,7 @@
 
         <div class="form-group required">
             <label for="SubSystem">子系統別</label>
-            <select class="form-select" name="SubSystem" id="SubSystem" required>
+            <select class="form-select" name="SubSystem" id="SubSystem" required disabled>
                 <option value="">請選擇</option>
             </select>
             <input class="form-control" id="SubSystem" name="SubSystem" type="text" hidden />
@@ -29,7 +33,7 @@
 
         <div class="form-group required">
             <label for="EName">設備名稱</label>
-            <select class="form-select" name="EName" id="EName" required>
+            <select class="form-select" name="EName" id="EName" required disabled>
                 <option value="">請選擇</option>
             </select>
             <input class="form-control" id="EName" name="EName" type="text" hidden />

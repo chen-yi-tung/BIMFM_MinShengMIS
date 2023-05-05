@@ -62,10 +62,11 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
+<script src="/Scripts/datagrid-management.js"></script>
 <script src="../../Scripts/tool.js"></script>
 <script>
     var getGridJSON = '@Url.Action("EquipmentOperatingManual", "Datagrid")';
-
+    var DataGrid;
     var baseUrl = "/EquipmentOperatingManual/";
 
     const fakedata = [
@@ -97,9 +98,8 @@
     });
 
     function Initialize_DataGrid(getGridJSON) {
-
-        $('#DataGrid').datagrid({
-
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
             url: getGridJSON,
             data: fakedata,
             method: 'GET',
@@ -111,24 +111,9 @@
             sortOrder: 'asc',
             fit: true,
             frozenColumns: [[
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">檢視</button>`;
-                    }
-                },
-                {
-                    field: '_edit', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
-                    }
-                },
-                {
-                    field: '_delete', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDelete(${index})">刪除</button>`;
-                    }
-                }
+                dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete"))
             ]],
             columns: [[
                 { field: 'EOMSN', title: '設備操作手冊編號', align: 'center', width: 180, sortable: true, hidden: true },
@@ -139,15 +124,17 @@
                 { field: 'Brand', title: '廠牌', align: 'center', width: 200, sortable: true },
                 { field: 'Model', title: '型號', align: 'center', width: 180, sortable: true },
                 { field: 'UploadDate', title: '上傳時間', align: 'center', width: 240, sortable: true }
-            ]],
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-
-            pagination: true,
-            pagePosition: 'bottom',
-            pageSize: 10
-        });
+            ]]
+        })
+        dg.addEvent("view", function (row, i) {
+            window.open(`/AllImage/${row.ManualFile}`, "_blank")
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(`${baseUrl}/Edit/${row.EOMSN}`, "_self")
+        })
+        dg.addEvent("delete", function (row, i) {
+            window.open(`${baseUrl}/Delete/${row.EOMSN}`, "_self")
+        })
         //------------Pager --------------------------------------------------
         var pager = $('#DataGrid').datagrid('getPager');
         $(pager).pagination({
@@ -160,29 +147,11 @@
         });
     }
 
-    // datagrid onClick Function
-    function onDetail(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + `/${row.EOMSN}`;
-        window.open(url, "_self");
-    }
-
-    function onEdit(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit' + `/${row.EOMSN}`;
-        window.open(url, "_self");
-    }
-
-    function onDelete(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Delete' + `/${row.EOMSN}`;
-        window.open(url, "_self");
-    }
-
     //search area onClick Function
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $("form")[0].reset();
+            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
         });
 
         $("#search").click(function () {
