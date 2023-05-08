@@ -1,4 +1,4 @@
-﻿﻿@{
+﻿@{
     ViewBag.Title = "刪除設計圖說";
 }
 
@@ -98,3 +98,42 @@
                     { className: "btn btn-delete", text: "確定刪除", onClick: onDelete },
                 ]
             })
+
+            function onDelete(e) {
+                let spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+                $(this).append(spinner);
+
+                $.ajax({
+                    url: '@Url.Action("Delete", "AsBuiltDrawing_Management")?ImgNum=' + ImgNum,
+                    data: JSON.stringify(ImgNum),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+
+                function onSuccess(res) {
+                    console.log(res);
+                    modal.hide();
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "刪除成功！",
+                        onHide: () => {
+                            let url = '@Url.Action("Management", "AsBuiltDrawing_Management")';
+                            window.location.href = url;
+                        }
+                    })
+                }
+
+                function onError(res) {
+                    console.log(res);
+                    modal.hide();
+
+                    createDialogModal({ id: "DialogModal-Error", inner: "刪除失敗！" })
+                }
+            }
+        });
+    }
+</script>
