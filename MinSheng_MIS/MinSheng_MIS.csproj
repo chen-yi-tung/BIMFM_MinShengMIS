@@ -185,7 +185,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Account_ManagementController.cs" />
-    <Compile Include="Controllers\DesignDiagrams_ManagementController.cs" />
     <Compile Include="Controllers\AsBuiltDrawing_ManagementController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
     <Compile Include="Controllers\DatagridController.cs" />
@@ -1406,7 +1405,7 @@
     <Content Include="Content\img\bluetooth.svg" />
     <Content Include="Content\img\loginBG.png" />
     <Content Include="Content\img\logo.png" />
-    <Content Include="Content\img\new_bg.png" />
+    <Content Include="Content\img\Search.svg" />
     <Content Include="Content\login.css" />
     <Content Include="Content\navbar.css" />
     <Content Include="Content\samplepath.css" />
