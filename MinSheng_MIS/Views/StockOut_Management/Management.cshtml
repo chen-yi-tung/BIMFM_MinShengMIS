@@ -1,7 +1,139 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "出庫管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
 
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增出庫</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="SORSN">出庫單號</label>
+            <input class="form-control" id="SORSN" name="SORSN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="SRSN">領用單號</label>
+            <input class="form-control" id="SRSN" name="SRSN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="StockOutName">出庫人員</label>
+            <input class="form-control" id="StockOutName" name="StockOutName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ReceiverName">領取人員</label>
+            <input class="form-control" id="ReceiverName" name="ReceiverName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="StockOutContent">說明</label>
+            <input class="form-control" id="StockOutContent" name="StockOutContent" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateStart">日期(起)</label>
+            <input class="form-control" id="DateStart" name="DateStart" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateEnd">日期(迄)</label>
+            <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+            <button type="button" class="btn btn-export" id="export">匯出</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="/Scripts/datagrid-management.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
+<script>
+
+   // var getGridJSON = '@Url.Action("AsBuiltDrawing_Management", "Datagrid")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+    const fakeData = [
+        {
+            SORSN: "SO230502002",
+            SRSN: "SR230501001",
+            StockOutName: "王小明",
+            StockOutDateTime: "2023/05/02",
+            ReceiverName: "陳大明",
+            StockOutContent: "維修設備需要"
+
+        }
+    ]
+
+    $(async function () {
+        //await AreaFloorEvent();
+        //await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        Initialize_DataGrid();
+        addSearchAreaClickEvent();
+
+        const Systems = document.getElementById('System')
+        @*Systems.addEventListener("change", function () {
+            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        });*@
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
+            //url: getGridJSON,
+            data: fakeData,
+            method: 'GET',
+            queryParams: getQueryParams(),
+            idField: 'DDSN',
+            //sortName: 'ImgNum',
+            frozenColumns: [[
+                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+            ]],
+            columns: [[
+                dg.column('SORSN', '出庫單號', 180),
+                dg.column('SRSN', '領用單號', 200),
+                dg.column('StockOutName', '出庫人員', 180),
+                dg.column('StockOutDateTime', '出庫日期', 180),
+                dg.column('ReceiverName', '領取人員', 180),
+                dg.column('StockOutContent', '說明', 180),
+            ]]
+        })
+        dg.addEvent("detail", function (row, i) {
+            window.open(`${baseUrl}/Read/${row.SISN}`, "_blank")
+
+        })
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+        });
+
+        $("#search").click(function () {
+            DataGrid.datagrid('load', getQueryParams());
+        });
+
+        $("#create").click(function () {
+            window.open(`${baseUrl}/Create`, "_self");
+        });
+    }
+</script>

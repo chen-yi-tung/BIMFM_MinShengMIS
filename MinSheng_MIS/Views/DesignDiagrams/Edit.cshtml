@@ -57,16 +57,15 @@
     //let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ImgNum}`;
     let apiUrl = null;
 
-    const fakeData = [
+    const fakeData = 
         {
             DDSN: "230502002",
-            ImgPath: "59.120.37.49:9686/DesignDiagrams/230502002.jpg",
             ImgName: "機電A設計圖",
             ImgType: "機電類",
-            UploadDate: "2023/05/02",
+            DesignDiagrams: "圖說.jpg",
 
         }
-    ]
+    
 
 
     $(async function () {
@@ -74,10 +73,10 @@
         //await pushSelect("System", '@Url.Action("System", "DropDownList")');
         addButtonEvent();
 
-        const Systems = document.getElementById('System')
+        @*const Systems = document.getElementById('System')
         Systems.addEventListener("change", function () {
             pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-        });
+        });*@
 
         readData(apiUrl);
     });
@@ -98,16 +97,13 @@
             console.log(res);
 
             for (const [k, v] of Object.entries(res)) {
+                console.log(k)
                 switch (k) {
-                    case "FSN":
-                        await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")?ASN=' + res.ASN);
+                    case "ImgType":
+                        //await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")?ASN=' + res.ImgType);
                         $(`#${k}`).val(v);
                         break;
-                    case "SubSystem":
-                        await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")?System=' + res.System);
-                        $(`#${k}`).val(v);
-                        break;
-                    case "ImgPath":
+                    case "DesignDiagrams":
                         $("#ImgPathName").text(v);
                         $("#ImgPathGroup").removeClass('d-none');
                         break;
