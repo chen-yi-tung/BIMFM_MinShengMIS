@@ -65,7 +65,7 @@ namespace MinSheng_MIS.Controllers
             List<HttpPostedFileBase> fileList = new List<HttpPostedFileBase>();
             foreach (string item in Request.Files)
             {
-                fileList.Add(Request.Files[item] as HttpPostedFileBase);
+                fileList.Add(Request.Files[item]);
             }
             string result = repairRecord_Management_ReadViewModel.CreateAuditData(formCollection,Server, fileList);
             return Content(result, "application/json");

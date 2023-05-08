@@ -1,5 +1,6 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,8 +100,8 @@ namespace MinSheng_MIS.Controllers
                     fileList.Add(Request.Files[item]);
                 }
             }
-            string result = MaintainRecord_Management_ViewModel.Supplement_Submit(formCollection, Server, imgList, fileList);
-            return Content(result, "application/json");
+            var result = MaintainRecord_Management_ViewModel.Supplement_Submit(formCollection, Server, imgList, fileList);
+            return Content(JsonConvert.SerializeObject(result), "application/json");
         }
         #endregion
     }

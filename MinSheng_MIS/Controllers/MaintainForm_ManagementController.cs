@@ -15,7 +15,7 @@ namespace MinSheng_MIS.Controllers
     public class MaintainForm_ManagementController : Controller
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-        EquipmentMaintainForm_DataService EMF_ds = new EquipmentMaintainForm_DataService();
+
         #region 定期保養管理
         public ActionResult Management()
         {
@@ -29,7 +29,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult MaintainForm_Management(FormCollection form)
         {
             var service = new DatagridService();
-            var a = EMF_ds.GetJsonForGrid_Management(form);
+            var a = service.GetJsonForGrid_MaintainForm(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }

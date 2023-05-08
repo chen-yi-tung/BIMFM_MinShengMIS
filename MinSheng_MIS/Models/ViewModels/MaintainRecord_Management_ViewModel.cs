@@ -1,4 +1,5 @@
 ﻿using Microsoft.Owin;
+using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace MinSheng_MIS.Models.ViewModels
     public class MaintainRecord_Management_ViewModel
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+
+        #region 巡檢保養紀錄_詳情_格式
         public class EquipmentMaintainFormItem
         {
             public string FormItemState { get; set; }
@@ -80,8 +83,9 @@ namespace MinSheng_MIS.Models.ViewModels
             public List<MaintainAuditInfo> MaintainAuditInfo { get; set; }
             public List<InspectionPlanList> InspectionPlanList { get; set; }
         }
+        #endregion
 
-
+        #region 巡檢保養紀錄_詳情
         public string GetJsonForRead(string IPMSN)
         {
             Root root = new Root();
@@ -208,14 +212,18 @@ namespace MinSheng_MIS.Models.ViewModels
             string result = JsonConvert.SerializeObject(root);
             return result;
         }
+        #endregion
 
+        #region 巡檢保養紀錄_審核_取得暫存資料_格式
         public class AuditBufferData
         { 
             public string AuditMemo { get; set; }
             public List<string> ImgPath { get; set; }
             public string AuditResult { get; set; }
         }
+        #endregion
 
+        #region 巡檢保養紀錄_審核_取得暫存資料
         public string GetBufferData(string IPMSN)
         {
             var MAI = db.MaintainAuditInfo.Where(x => x.IPMSN == IPMSN).Where(x => x.IsBuffer == true).FirstOrDefault();
@@ -239,10 +247,12 @@ namespace MinSheng_MIS.Models.ViewModels
             }
             else
             {
-                return "";
+                return JsonConvert.SerializeObject("");
             }
         }
+        #endregion
 
+        #region 巡檢保養紀錄_審核_提交
         /// <summary>
         /// IPMSN type = text
         /// IsBuffer type = text 判斷使用者點擊[暫存]或是[儲存]
@@ -257,6 +267,8 @@ namespace MinSheng_MIS.Models.ViewModels
         /// <returns></returns>
         public string AuditSubmit(System.Web.Mvc.FormCollection form, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList)
         {
+            JsonResponseViewModel Jresult = new JsonResponseViewModel();
+
             string ipmsn = form["IPMSN"].ToString();
             RepairRecord_Management_ReadViewModel RRMVM = new RepairRecord_Management_ReadViewModel();
            
@@ -339,22 +351,16 @@ namespace MinSheng_MIS.Models.ViewModels
             }
             db.SaveChanges();
 
+
+            string pmasn = db.MaintainAuditInfo.Where(x => x.IPMSN == ipmsn).Select(x => x.PMASN).FirstOrDefault();
             //儲存照片
             List<string> ImgsPath = new List<string>();
-            foreach (var item in imgList) 
+            if (!ComFunc.UpdateFile(imgList,Sev,ref ImgsPath, pmasn))
             {
-                string result = RRMVM.UploadFile(item, Sev);
-                if (result != "")
-                {
-                    ImgsPath.Add(result);
-                }
-                else
-                {
-                    return "檔案上傳過程出錯!";
-                }
+                return "檔案上傳過程出錯!";
             }
+            
             //db存照片路徑
-            string pmasn = db.MaintainAuditInfo.Where(x => x.IPMSN == ipmsn).Select(x => x.PMASN).FirstOrDefault();
             db.MaintainAuditImage.RemoveRange(db.MaintainAuditImage.Where(x => x.PMASN == pmasn));
             db.SaveChanges();
             foreach (string path in ImgsPath)
@@ -369,7 +375,9 @@ namespace MinSheng_MIS.Models.ViewModels
             }
             return "提交成功!";
         }
+        #endregion
 
+        #region 巡檢保養紀錄_補件_取得補件資料_格式
         public class SuppleData
         { 
             public string MaintainState { get; set; }
@@ -378,7 +386,9 @@ namespace MinSheng_MIS.Models.ViewModels
             public string MaintainContent { get; set; }
             public List<string> ImgPath { get; set; }
         }
+        #endregion
 
+        #region 巡檢保養紀錄_補件_取得補件資料
         /// <summary>
         /// 取得補件資料
         /// </summary>
@@ -406,7 +416,9 @@ namespace MinSheng_MIS.Models.ViewModels
             string result = JsonConvert.SerializeObject(sd);
             return result;
         }
+        #endregion
 
+        #region 巡檢保養紀錄_補件_提交
         /// <summary>
         /// formdata提交格式
         /// file1  type = file  僅一筆
@@ -421,8 +433,9 @@ namespace MinSheng_MIS.Models.ViewModels
         /// <param name="imgList"></param>
         /// <param name="fileList"></param>
         /// <returns></returns>
-        public string Supplement_Submit(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList, List<HttpPostedFileBase> fileList)
+        public JsonResponseViewModel Supplement_Submit(System.Web.Mvc.FormCollection formCollection, HttpServerUtilityBase Sev, List<HttpPostedFileBase> imgList, List<HttpPostedFileBase> fileList)
         {
+            JsonResponseViewModel Jresult = new JsonResponseViewModel();
             try
             {
                 RepairRecord_Management_ReadViewModel RRMVM = new RepairRecord_Management_ReadViewModel();
@@ -439,18 +452,13 @@ namespace MinSheng_MIS.Models.ViewModels
 
                 //上傳照片
                 List<string> IPList = new List<string>();
-                foreach (var item in imgList)
+                if (!ComFunc.UpdateFile(imgList,Sev,ref IPList, ipmsn))
                 {
-                    string result = RRMVM.UploadImg(item, Sev);
-                    if (result != "")
-                    {
-                        IPList.Add(result);
-                    }
-                    else
-                    {
-                        return "上傳圖片過程錯誤!";
-                    }
+                    Jresult.ResponseCode = 500;
+                    Jresult.ResponseMessage = "上傳圖片過程錯誤!";
+                    return Jresult;
                 }
+               
                 //儲存照片
                 foreach (string path in IPList)
                 {
@@ -495,19 +503,14 @@ namespace MinSheng_MIS.Models.ViewModels
 
                 //補件檔案上傳
                 List<string> filesPath = new List<string>();
-                foreach (var item in fileList)
+                if (!ComFunc.UpdateFile(fileList,Sev,ref filesPath, newPMSN))
                 {
-                    string result = RRMVM.UploadFile(item, Sev);
-                    if (result != "")
-                    {
-                        filesPath.Add(result);
-                    }
-                    else 
-                    {
-                        return "檔案上傳過程出錯!";
-                    }
+                    Jresult.ResponseCode = 500;
+                    Jresult.ResponseMessage = "檔案上傳過程出錯!";
+                    return Jresult;
                 }
-                foreach (var item in filesPath)
+
+                foreach (string item in filesPath)
                 {
                     Models.MaintainSupplementaryFile MS = new Models.MaintainSupplementaryFile()
                     {
@@ -518,12 +521,17 @@ namespace MinSheng_MIS.Models.ViewModels
                     db.SaveChanges();
                 }
 
-                return "提交成功!";
+                Jresult.ResponseCode = 200;
+                Jresult.ResponseMessage = "提交成功!";
+                return Jresult;
             }
-            catch(Exception ex) 
+            catch(Exception) 
             {
-                return ex.Message;
+                Jresult.ResponseCode = 500;
+                Jresult.ResponseMessage = "提交失敗!";
+                return Jresult;
             }
         }
+        #endregion
     }
 }

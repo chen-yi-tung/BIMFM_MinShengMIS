@@ -94,7 +94,7 @@ namespace MinSheng_MIS.Controllers
                 var result = await UserManager.CreateAsync(user, Pd);
                 if (result.Succeeded)
                 {
-                    Response.StatusCode = 201;
+                    Response.StatusCode = 200;
                     return Content("新增成功!");
                 }
                 else
@@ -149,20 +149,27 @@ namespace MinSheng_MIS.Controllers
             #endregion
 
             AccountData accountData = new AccountData();
-            string result = accountData.UpdateUserData(form);
-            switch (result)
+            int resultCode = accountData.UpdateUserData(form);
+
+            JsonResponseViewModel Jresult = new JsonResponseViewModel()
             {
-                case "200":
-                    Response.StatusCode = 200;
-                    return Content("編輯成功!");
-                case "400":
-                    Response.StatusCode = 400;
-                    return Content("無此使用者!");
-                default:
-                    Response.StatusCode = 500;
-                    //return Content(result);
-                    return Content("編輯過程出錯!");
+                ResponseCode = resultCode
+            };
+            
+            switch (resultCode)
+            {
+                case 200:
+                    Jresult.ResponseMessage = "編輯成功!";
+                    break;
+                case 400:
+                    Jresult.ResponseMessage = "無此使用者!";
+                    break;
+                default: //500
+                    Jresult.ResponseMessage = "編輯過程出錯!";
+                    break;
             }
+
+            return Content(JsonConvert.SerializeObject(Jresult), "application/json");
         }
         #endregion
 
@@ -181,27 +188,30 @@ namespace MinSheng_MIS.Controllers
             string result = JsonConvert.SerializeObject(data);
             return Content(result, "application/json");
         }
-        [HttpGet]
-        public ActionResult Delete_Account(string id) //把IsEnable轉為0就是不啟用此帳號了
+        [HttpDelete]
+        public ActionResult Delete_Account(string id)
         {
             AccountData accountData = new AccountData();
-            string result = accountData.DeleteAccount(id);
-            switch (result)
+            int resultCode = accountData.DeleteAccount(id);
+
+            JsonResponseViewModel Jresult = new JsonResponseViewModel()
+            { 
+                ResponseCode = resultCode
+            };
+
+            switch (resultCode)
             {
-                case "200":
-                    Response.StatusCode = 200;
-                    JObject jo = new JObject();
-                    jo.Add("Succeed", true);
-                    string result1 = JsonConvert.SerializeObject(jo);
-                    return Content(result1, "application/json");
-                    //return Content("刪除成功!","application/json");
-                case "400":
-                    Response.StatusCode = 400;
-                    return Content("無此使用者!", "application/json");
-                default:
-                    Response.StatusCode = 500;
-                    return Content("處理過程出錯!", "application/json");
+                case 200:
+                    Jresult.ResponseMessage = "刪除成功!";
+                    break;
+                case 400:
+                    Jresult.ResponseMessage = "無此使用者!";
+                    break;
+                default: //500
+                    Jresult.ResponseMessage = "處理過程出錯!";
+                    break;
             }
+            return Content(JsonConvert.SerializeObject(Jresult), "application/json");
         }
         #endregion
 
