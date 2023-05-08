@@ -1,7 +1,121 @@
 ﻿@{
     ViewBag.Title = "入庫管理詳情";
 }
-<link rel="stylesheet" href="/Content/samplepath.css">
 
 <h2>@ViewBag.Title</h2>
 
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="StockInDetail"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-fill mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="ExternalRFID">
+        </table>
+    </div>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+
+    const SIRSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${SIRSN}`;
+    let apiUrl = null
+    const SerializedName = [
+        { text: "入庫編號", value: "SIRSN" },
+        { text: "入庫人員", value: "StockInName" }
+    ]
+    const fakeData = {
+        "SIRSN": "1120301001",
+        "StockInName": "王大明",
+        ExternalRFID: [
+            {
+                ExternalRFID: "A101",
+                StockType: "備料",
+                StockName: "藥劑-1",
+                MName: "藥劑-分類1",
+                Size: "1L",
+                Brand: "A廠牌",
+                Model: "XMA-56",
+                Amount: "5",
+                Packaging: "罐",
+                ExpiryDate: "2023/05/06",
+                Location: "倉庫A,5,6,2,1",
+            },
+            {
+                ExternalRFID: "A101",
+                StockType: "備料",
+                StockName: "藥劑-1",
+                MName: "藥劑-分類1",
+                Size: "1L",
+                Brand: "A廠牌",
+                Model: "XMA-56",
+                Amount: "5",
+                Packaging: "罐",
+                ExpiryDate: "2023/05/06",
+                Location: "倉庫A,5,6,2,1",
+            },
+            {
+                ExternalRFID: "A101",
+                StockType: "備料",
+                StockName: "藥劑-1",
+                MName: "藥劑-分類1",
+                Size: "1L",
+                Brand: "A廠牌",
+                Model: "XMA-56",
+                Amount: "5",
+                Packaging: "罐",
+                ExpiryDate: "2023/05/06",
+                Location: "倉庫A,5,6,2,1",
+            },
+        ]
+    }
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "ExternalRFID", title: "RFID標籤(外)"},
+            { id: "StockType", title: "品項"},
+            { id: "StockName", title: "品名"},
+            { id: "MName", title: "廠商品名"},
+            { id: "Size", title: "尺寸"},
+            { id: "Brand", title: "廠牌"},
+            { id: "Model", title: "型號"},
+            { id: "Amount", title: "數量"},
+            { id: "Packaging", title: "單位"},
+            { id: "ExpiryDate", title: "到期日"},
+            { id: "Location", title: "擺放位置(貨架,倉庫,排,層,位)"}
+        ]
+    }
+
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#StockInDetail").append(createTableInner(res, SerializedName));
+            $("#ExternalRFID").append(createTableGrid(res.ExternalRFID, GridOptions))
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+
+        readData(apiUrl);
+    }
+
+</script>
