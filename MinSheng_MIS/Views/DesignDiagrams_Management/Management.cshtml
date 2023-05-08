@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "設計圖說管理";
+}
+
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增設計圖</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="ImgNum">圖名</label>
+            <input class="form-control" id="ImgName" name="ImgName" type="text" />
+        </div>
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="ImgType">圖說種類</label>
+            <select class="form-select" name="ImgType" id="ImgType">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="DateStart">上傳日期(起)</label>
+            <input class="form-control" id="DateStart" name="DateStart" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateEnd">上傳日期(迄)</label>
+            <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="/Scripts/datagrid-management.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
+<script>
+
+   // var getGridJSON = '@Url.Action("AsBuiltDrawing_Management", "Datagrid")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+    const fakeData = [
+        {
+            DDSN: "230502002",
+            ImgPath: "59.120.37.49:9686/DesignDiagrams/230502002.jpg",
+            ImgName: "機電A設計圖",
+            ImgType: "機電類",
+            UploadDate: "2023/05/02",
+
+        }
+    ]
+
+    $(async function () {
+        //await AreaFloorEvent();
+        //await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        Initialize_DataGrid();
+        addSearchAreaClickEvent();
+
+        const Systems = document.getElementById('System')
+        @*Systems.addEventListener("change", function () {
+            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        });*@
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
+            //url: getGridJSON,
+            data: fakeData,
+            method: 'GET',
+            queryParams: getQueryParams(),
+            idField: 'DDSN',
+            //sortName: 'ImgNum',
+            frozenColumns: [[
+                dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete")),
+            ]],
+            columns: [[
+                { field: 'DDSN', title: '設計圖說編號', width: 200, hidden: true },
+                { field: 'ImgPath', title: '設計圖說路徑', width: 200, hidden: true },
+                dg.column('ImgName', '圖名', 200),
+                dg.column('ImgType', '圖說種類', 180),
+                dg.column('UploadDate', '上傳日期時間', 180),
+            ]]
+        })
+        dg.addEvent("view", function (row, i) {
+            window.open(`/AllImage/${row.ImgPath}`, "_blank")
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(`${baseUrl}/Edit/${row.DDSN}`, "_self")
+        })
+        dg.addEvent("delete", function (row, i) {
+            window.open(`${baseUrl}/Delete/${row.DDSN}`, "_self")
+        })
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+        });
+
+        $("#search").click(function () {
+            DataGrid.datagrid('load', getQueryParams());
+        });
+
+        $("#create").click(function () {
+            window.open(`${baseUrl}/Create`, "_self");
+        });
+    }
+</script>
