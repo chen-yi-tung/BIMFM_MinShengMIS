@@ -1,7 +1,172 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "入庫管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
 
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增入庫</button>
+<div 
+class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="SIRSN">入庫編號</label>
+            <input class="form-control" id="SIRSN" name="SIRSN" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="StockType">品項</label>
+            <select class="form-select" name="StockType" id="StockType">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="StockName">品名</label>
+            <input class="form-control" id="StockName" name="StockName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Size">尺寸</label>
+            <input class="form-control" id="Size" name="Size" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="StockInName">入庫人員</label>
+            <input class="form-control" id="StockInName" name="StockInName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateStart">日期(起)</label>
+            <input class="form-control" id="DateStart" name="DateStart" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateEnd">日期(迄)</label>
+            <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+            <button type="button" class="btn btn-export" id="export">匯出</button>
+        </div>
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="../../Scripts/tool.js"></script>
+<script>
+    var getGridJSON = '@Url.Action("StockIn_Management", "Datagrid")';
+
+    var baseUrl = "/StockIn_Management/";
+
+    const fakedata = [
+        {
+            SIRSN: "SI230506001",
+            StockType: "備料",
+            StockName: "軸承潤滑劑",
+            Size: "10L",
+            TotalAmount: "50",
+            Unit: "罐",
+            StockInDateTime: "2023/05/06 9:00",
+            StockInName: "王大明"
+        },
+        {
+            SIRSN: "SI230506001",
+            StockType: "備料",
+            StockName: "軸承潤滑劑",
+            Size: "10L",
+            TotalAmount: "50",
+            Unit: "罐",
+            StockInDateTime: "2023/05/06 9:00",
+            StockInName: "王大明"
+        }
+    ]
+
+    $(async function () {
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+
+        $('#DataGrid').datagrid({
+
+            url: getGridJSON,
+            data: fakedata,
+            method: 'GET',
+            queryParams: getQueryParams(),
+            rownumbers: true,
+            idField: 'SIRSN',
+            //sortName: 'SIRSN',
+            remoteSort: false,
+            sortOrder: 'asc',
+            fit: true,
+            frozenColumns: [[
+                {
+                    field: '_detail', align: 'center',
+                    formatter: (val, row, index) => {
+                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
+                    }
+                }
+            ]],
+            columns: [[
+                { field: 'SIRSN', title: '入庫編號', align: 'center', width: 200, sortable: true },
+                { field: 'StockType', title: '品項', align: 'center', width: 200, sortable: true },
+                { field: 'StockName', title: '品名', align: 'center', width: 200, sortable: true },
+                { field: 'Size', title: '尺寸', align: 'center', width: 160, sortable: true },
+                { field: 'TotalAmount', title: '總數量', align: 'center', width: 160, sortable: true },
+                { field: 'Unit', title: '單位', align: 'center', width: 180, sortable: true },
+                { field: 'StockInDateTime', title: '入庫時間', align: 'center', width: 240, sortable: true },
+                { field: 'StockInName', title: '入庫人員', align: 'center', width: 240, sortable: true }
+            ]],
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+
+            pagination: true,
+            pagePosition: 'bottom',
+            pageSize: 10
+        });
+        //------------Pager --------------------------------------------------
+        var pager = $('#DataGrid').datagrid('getPager');
+        $(pager).pagination({
+            pageSize: 10,
+            showPageList: true,
+            pageList: [10, 20, 50],
+            beforePageText: '第',
+            afterPageText: '頁，共 {pages} 頁',
+            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
+        });
+    }
+
+    // datagrid onClick Function
+    function onDetail(index) {
+        let row = $('#DataGrid').datagrid('getRows')[index];
+        let url = baseUrl + 'Read' + `/${row.SIRSN}`;
+        window.open(url, "_self");
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $("form")[0].reset();
+        });
+
+        $("#search").click(function () {
+            Initialize_DataGrid(getGridJSON)
+        });
+
+        $("#create").click(function () {
+            let url = baseUrl + 'Create';
+            window.open(url, "_self");
+        });
+    }
+</script>

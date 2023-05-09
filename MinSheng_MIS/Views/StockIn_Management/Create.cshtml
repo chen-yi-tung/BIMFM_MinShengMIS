@@ -1,7 +1,284 @@
-﻿
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = "新增入庫";
 }
+<style>
+    .datatable-input-area {
+        display: flex;
+        flex-direction: column;
+        max-width: 1090px;
+        margin: auto;
+        max-height: calc(100vh - var(--navbar-height));
+        max-height: calc(100vh - var(--navbar-height));
+        gap: 1rem;
+    }
+    .edit-area {
+        display: flex;
+        justify-content: left;
+        align-items: start;
+    }
+    .paths-btn {
+        width: 40px;
+        height: 40px;
+        background: #44BCC2;
+        color: #fff;
+        border-radius: 5px;
+        border: 0;
+        opacity: 1;
+        transition: all .3s;
+    }
+    .datatable {
+        border: 0;
+    }
+    .datatable-body {
+        border: 1px solid var(--datatable-border-color);
+    }
+</style>
 
-<h2>Create</h2>
+<h2>@ViewBag.Title</h2>
 
+<section class="datatable-input-area mt-3">
+    <div class="edit-area edit-area-middle">
+        <div class="d-flex">
+            <form class="form" enctype="multipart/form-data">
+                <div class="form-group d-lg-contents">
+                    <label for="POSN">採購單號</label>
+                    <input class="form-control" type="text" id="POSN" name="POSN">
+                </div>
+            </form>
+            <div style="padding:18px 0; margin-left:23px">
+                <button class="paths-btn" id="path-search" data-bs-toggle="modal" data-bs-target="#DatagridModal-Repair"><i class="icon-search"></i></button>
+            </div>
+        </div>
+        <div class="datatable datatable-fill mt-5 d-none">
+            <div class="datatable-body">
+                <table class="datatable-table" id="EquipmentMaintainItem">
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<form class="form">
+    <div class="datatable mt-5 datatable-table POSNItem d-none">
+        <div class="mb-1" style="font-size:18px; color:white; text-align:left;">採購單號:<span id="POSN"></span></div> 
+        <input type="text" id="POISN" name="POISN" value="@ViewBag.id" hidden readonly="readonly">
+        <div class="datatable-body" id="POSNItem"></div>
+        <div class="edit-button-area">
+            <button class="btn btn-create-item" id="StockIn">入庫</button>
+        </div>
+    </div>
+</form>
+
+
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+
+    const SIRSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${SIRSN}`;
+    let apiUrl = null;
+    var selectedIndex = "";
+    
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            {
+                id: "_checkbox",
+                title: "",
+                width: "6%",
+                formatter: (data, row, index) => {
+                    return `<input class="form-check-input check-item" type="radio" name="radio-POSN" id="checkbox-${index}"/>`
+                }
+            },
+            { id: "POState", title: "狀態" },
+            { id: "POSN", title: "採購單號" },
+            { id: "PurchaseName", title: "採購人員" },
+            { id: "PurchaseDataTime", title: "採購日期" },
+            { id: "MFRName", title: "廠商" },
+            { id: "Accepter", title: "驗收人員" },
+            { id: "AcceptanceDateTime", title: "驗收日期" },
+            { id: "InquiryName", title: "詢價人員" }
+        ]
+    }
+    const GridOptions2 = {
+        thead: true,
+        columns: [
+            {
+                id: "_checkbox",
+                title: "",
+                width: "6%",
+                formatter: (data, row, index) => {
+                    return `<input class="form-check-input check-item" type="radio" name="checkbox-POISN" id="checkbox2-${index}"/>`
+                }
+            },
+            //{ id: "POISN", title: "採購單項目編號"},
+            { id: "Kind", title: "類別" },
+            { id: "ItemName", title: "品名" },
+            { id: "Size", title: "尺寸" },
+            { id: "Brand", title: "廠牌" },
+            { id: "Model", title: "型號" },
+            { id: "Amount", title: "數量" },
+            { id: "Packaging", title: "包裝型式" }
+        ]
+    }
+    const fakeData = {
+
+        EquipmentMaintainItem: [
+            {
+                POState:"部分驗收",
+                POSN: "PO23050201",
+                PurchaseName:"王小明",
+                PurchaseDataTime:"2023/05/02",
+                MFRName:"A廠商",
+                Accepter:"陳大明",
+                AcceptanceDateTime:"2023/05/06",
+                InquiryName:"黃中明",
+                SelectObject:[
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-1",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    }
+                ]
+            },
+            {
+                POState:"部分驗收",
+                POSN: "PO23050201",
+                PurchaseName:"王小明",
+                PurchaseDataTime:"2023/05/02",
+                MFRName:"A廠商",
+                Accepter:"陳大明",
+                AcceptanceDateTime:"2023/05/06",
+                InquiryName:"黃中明",
+                SelectObject:[
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-2",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    },
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-2",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    },
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-2",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    }
+                ]
+            },
+            {
+                POState:"部分驗收",
+                POSN: "PO23050201",
+                PurchaseName:"王小明",
+                PurchaseDataTime:"2023/05/02",
+                MFRName:"A廠商",
+                Accepter:"陳大明",
+                AcceptanceDateTime:"2023/05/06",
+                InquiryName:"黃中明" ,
+                SelectObject:[
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-3",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    },
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-3",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    }
+                ]
+            }
+        ]
+    }
+
+    $(async function () {
+        addButtonEvent();
+    })
+
+    function addButtonEvent() {
+        //1.搜尋後列出所有的採購單號
+        $("#path-search").click(function () {
+            //e.preventDefault();
+            console.log("onclick path-search");
+            $(".datatable.datatable-fill.mt-5").removeClass("d-none");
+        });
+        //2.選擇其中一個採購單號後，會跳出各自的資訊(Datatable)
+        $("#EquipmentMaintainItem").change(function() {
+            $(`.POSNItem`).removeClass("d-none");
+            let selectedRadio = $(this).find("input[name='radio-POSN']:checked");
+            selectedIndex = selectedRadio.closest("tr").index();
+            $(`[id^=POSNItem-]`).addClass("d-none");
+            $(`#POSNItem-${selectedIndex}`).removeClass("d-none");
+            console.log(selectedIndex);
+        });
+        //3.
+    }
+    
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            console.log("selectedIndex:",selectedIndex);
+            $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
+            $("#POISN").parent().children().first().children().html(res.EquipmentMaintainItem[0].POSN)
+            res.EquipmentMaintainItem.forEach((d,i)=>{
+                let table = $(`<table class="datatable-table" id="POSNItem-${i}"></table>`);
+                table.append(createTableGrid(d.SelectObject, GridOptions2));
+                table.addClass("d-none");
+                $("#POSNItem").append(table);
+            })
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+
+        readData(apiUrl);
+    }
+
+</script>

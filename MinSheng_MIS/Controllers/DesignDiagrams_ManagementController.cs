@@ -6,32 +6,39 @@ using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
 {
-    public class StockIn_ManagementController : Controller
+    public class DesignDiagrams_ManagementController : Controller
     {
-        // GET: StockIn_Management
-        #region 入庫管理
+        // GET: AsBuiltDrawing_Management
+        #region 設計圖管理
         public ActionResult Management()
         {
             return View();
         }
         #endregion
 
-        #region 新增入庫
+        #region 新增設計圖
         public ActionResult Create()
         {
             return View();
         }
         #endregion
 
-        #region 新增入庫項目
-        public ActionResult CreateStockIn()
+        #region 檢視設計圖
+        public ActionResult Read()
         {
             return View();
         }
         #endregion
 
-        #region 入庫詳情
-        public ActionResult Read()
+        #region 編輯設計圖
+        public ActionResult Edit()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 刪除設計圖
+        public ActionResult Delete()
         {
             return View();
         }

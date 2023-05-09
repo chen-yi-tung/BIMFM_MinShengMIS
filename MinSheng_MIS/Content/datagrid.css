@@ -4,7 +4,7 @@
 
 /* easyui */
 .datagrid {
-    --theme-datagrid-thead-bg: #357BAD;
+    --theme-datagrid-thead-bg: rgba(31, 78, 126, 1);
     --theme-datagrid-thead-hover-bg: #306f9c;
     --theme-datagrid-thead-color: white;
     --theme-datagrid-tbody-bg: white;
