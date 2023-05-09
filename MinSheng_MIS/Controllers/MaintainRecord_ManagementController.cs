@@ -101,7 +101,7 @@ namespace MinSheng_MIS.Controllers
                 }
             }
             var result = MaintainRecord_Management_ViewModel.Supplement_Submit(formCollection, Server, imgList, fileList);
-            return Content(JsonConvert.SerializeObject(result), "application/json");
+            return Content(result, "application/json");
         }
         #endregion
     }

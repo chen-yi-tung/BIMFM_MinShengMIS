@@ -23,37 +23,48 @@ namespace MinSheng_MIS.Services
         {
             try
             {
-                string RootPath = ser.MapPath("~/");
-
-                string MainDirPath = Path.Combine(RootPath, MainDir); //上層資料夾
-                if (!Directory.Exists(MainDirPath))
+                if (file.Count != 0)
                 {
-                    Directory.CreateDirectory(MainDirPath);
-                }
+                    string RootPath = ser.MapPath("~/");
 
-                string FullPath = Path.Combine(MainDirPath, DirectName); //該專案資料夾
-                if (!Directory.Exists(FullPath))
-                {
-                    Directory.CreateDirectory(FullPath);
-                }
-
-                foreach (var item in file) //上傳檔案
-                {
-                    if (File.Exists(Path.Combine(FullPath, item.FileName))) //檢查是否有相同名稱的資料名稱，不然會壞掉
+                    string MainDirPath = Path.Combine(RootPath, MainDir); //上層資料夾
+                    if (!Directory.Exists(MainDirPath))
                     {
-                        File.Delete(Path.Combine(FullPath, item.FileName));
+                        Directory.CreateDirectory(MainDirPath);
                     }
 
-                    string newFileName = string.Concat(
-                    Path.GetFileNameWithoutExtension(item.FileName),
-                    Path.GetExtension(item.FileName).ToLower()); ;
+                    string FullPath = Path.Combine(MainDirPath, DirectName); //該專案資料夾
+                    if (!Directory.Exists(FullPath))
+                    {
+                        Directory.CreateDirectory(FullPath);
+                    }
+                    else 
+                    {
+                        string[] filePaths = Directory.GetFiles(FullPath);
+                        foreach (string filePath in filePaths)
+                        {
+                            File.Delete(filePath);
+                        }
+                    }
 
-                    string fullFilePath = Path.Combine(FullPath, newFileName);
-                    item.SaveAs(fullFilePath);
+                    foreach (var item in file) //上傳檔案
+                    {
+                        string newFileName = item.FileName;
+                        int count = 1;
+                        while (File.Exists(Path.Combine(FullPath, newFileName)))
+                        {
+                            newFileName = string.Concat(
+                            Path.GetFileNameWithoutExtension(item.FileName) + "_" + count.ToString(),
+                            Path.GetExtension(item.FileName).ToLower());
+                            count++;
+                        }
 
-                    pathlist.Add("/" + Path.Combine(MainDir,DirectName,newFileName));
+                        string fullFilePath = Path.Combine(FullPath, newFileName);
+                        item.SaveAs(fullFilePath);
+
+                        pathlist.Add("/" + MainDir + "/" + DirectName + "/" + newFileName);
+                    }
                 }
-
                 return true;
             }
             catch (Exception)
