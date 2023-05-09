@@ -74,8 +74,8 @@
 <script src="/Scripts/datatable.js"></script>
 <script>
 
-    const SIRSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${SIRSN}`;
+    const POSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${POSN}`;
     let apiUrl = null;
     var selectedIndex = "";
     
@@ -112,7 +112,7 @@
                     return `<input class="form-check-input check-item" type="radio" name="checkbox-POISN" id="checkbox2-${index}"/>`
                 }
             },
-            //{ id: "POISN", title: "採購單項目編號"},
+            //{ id: "POISN", title: "採購單項目編號"}, 
             { id: "Kind", title: "類別" },
             { id: "ItemName", title: "品名" },
             { id: "Size", title: "尺寸" },
@@ -244,7 +244,12 @@
             $(`#POSNItem-${selectedIndex}`).removeClass("d-none");
             console.log(selectedIndex);
         });
-        //3.
+        
+        //3.入庫跳轉畫面
+        $("#StockIn").click(function() {
+            console.log("按下入庫鈕");
+            //StockInToCreate2()
+        })
     }
     
     function readData(url = null) {
@@ -269,12 +274,23 @@
                 table.append(createTableGrid(d.SelectObject, GridOptions2));
                 table.addClass("d-none");
                 $("#POSNItem").append(table);
-            })
+            });
+
+            function StockInToCreate2() {
+                let url = '@Url.Action("CreateStockIn", "StockIn_Management")';
+                window.location.href = url;
+            };
         }
         function onError(res) {
             console.log(res);
         }
     }
+
+    //入庫跳轉到CreateStockin
+    @* function StockInToCreate2() {
+        let url = '@Url.Action("CreateStockIn", "StockIn_Management")';
+        window.location.href = url;
+    }; *@
 
     window.onload = function () {
 

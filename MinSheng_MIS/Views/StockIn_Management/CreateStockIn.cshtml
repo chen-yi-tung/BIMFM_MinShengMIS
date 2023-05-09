@@ -1,7 +1,141 @@
-﻿
-@{
-    ViewBag.Title = "CreateStockIn";
+﻿@{
+    ViewBag.Title = "新增入庫";
 }
 
-<h2>CreateStockIn</h2>
+<h2>@ViewBag.Title</h2>
 
+<div class="datatable mt-5 datatable-table">
+    <input type="text" id="POISN" name="POISN" value="@ViewBag.id" hidden readonly="readonly">
+    <div class="datatable-body" id="POSNItem"></div>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+    const POSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${POSN}`;
+    let apiUrl = null;
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            {
+                id: "_checkbox",
+                title: "",
+                width: "6%",
+                formatter: (data, row, index) => {
+                    return `<input class="form-check-input check-item" type="radio" name="radio-POSN" id="checkbox-${index}"/>`
+                }
+            },
+            { id: "POState", title: "狀態" },
+            { id: "POSN", title: "採購單號" },
+            { id: "PurchaseName", title: "採購人員" },
+            { id: "PurchaseDataTime", title: "採購日期" },
+            { id: "MFRName", title: "廠商" },
+            { id: "Accepter", title: "驗收人員" },
+            { id: "AcceptanceDateTime", title: "驗收日期" },
+            { id: "InquiryName", title: "詢價人員" }
+        ]
+    } 
+
+    const fakeData = {
+
+        EquipmentMaintainItem: [
+            {
+                POState:"部分驗收",
+                POSN: "PO23050201",
+                PurchaseName:"王小明",
+                PurchaseDataTime:"2023/05/02",
+                MFRName:"A廠商",
+                Accepter:"陳大明",
+                AcceptanceDateTime:"2023/05/06",
+                InquiryName:"黃中明",
+                SelectObject:[
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-1",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    }
+                ]
+            },
+            {
+                POState:"部分驗收",
+                POSN: "PO23050201",
+                PurchaseName:"王小明",
+                PurchaseDataTime:"2023/05/02",
+                MFRName:"A廠商",
+                Accepter:"陳大明",
+                AcceptanceDateTime:"2023/05/06",
+                InquiryName:"黃中明",
+                SelectObject:[
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-2",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    },
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-2",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    },
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-2",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    }
+                ]
+            },
+            {
+                POState:"部分驗收",
+                POSN: "PO23050201",
+                PurchaseName:"王小明",
+                PurchaseDataTime:"2023/05/02",
+                MFRName:"A廠商",
+                Accepter:"陳大明",
+                AcceptanceDateTime:"2023/05/06",
+                InquiryName:"黃中明" ,
+                SelectObject:[
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-3",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    },
+                    {
+                        POISN:"PO23050201_01",
+                        Kind:"備料",
+                        ItemName:"藥劑-3",
+                        Size:"1L",
+                        Brand:"A廠牌",
+                        Model:"XMA-56",
+                        Amount:"5",
+                        Packaging:"250g/罐"
+                    }
+                ]
+            }
+        ]
+    }
+</script>
