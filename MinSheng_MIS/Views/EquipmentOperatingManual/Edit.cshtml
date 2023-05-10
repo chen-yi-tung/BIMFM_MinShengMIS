@@ -1,7 +1,172 @@
-﻿
-@{
-    ViewBag.Title = "Edit";
+﻿@{
+    ViewBag.Title = "編輯設備操作手冊";
 }
+<style>
+    @@media (min-width: 992px) {
+        .edit-area .form {
+            grid-template-columns: 250px 250px;
+        }
+    }
+</style>
+<h2>@ViewBag.Title</h2>
+<div class="edit-area edit-area-small">
+    <form class="form pt-0">
+        <div class="form-group required" hidden>
+            <label for="EOMSN" >設備操作手冊編號</label>
+            <input class="form-control" id="EOMSN" name="EOMSN" type="text" maxlength="50" required/>
+        </div>
+        <div class="form-group required">
+            <label for="System">系統別</label>
+            <select class="form-select" name="System" id="System" required disabled>
+                <option value="">請選擇</option>
+            </select>
+            <input class="form-control" id="System" name="System" type="text" hidden />
+        </div>
 
-<h2>Edit</h2>
+        <div class="form-group required">
+            <label for="SubSystem">子系統別</label>
+            <select class="form-select" name="SubSystem" id="SubSystem" required disabled>
+                <option value="">請選擇</option>
+            </select>
+            <input class="form-control" id="SubSystem" name="SubSystem" type="text" hidden />
+        </div>
 
+        <div class="form-group required">
+            <label for="EName">設備名稱</label>
+            <select class="form-select" name="EName" id="EName" required disabled>
+                <option value="">請選擇</option>
+            </select>
+            <input class="form-control" id="EName" name="EName" type="text" hidden />
+        </div>
+
+        <div class="form-group required">
+            <label for="Brand">廠牌</label>
+            <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" required/>
+        </div>
+
+        <div class="form-group required">
+            <label for="Model">型號</label>
+            <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required/>
+        </div>
+
+        <div class="form-group g-col-2 required">
+            <label for="">設備操作手冊檔案</label>
+
+            <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
+                <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
+                    <label for="ManualFile" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
+                        選擇檔案
+                    </label> 
+                </div>
+                <div id="ManualFileGroup"
+                    class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
+                    <div id="ManualFileName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
+                    <button type="button" class="btn-delete-item flex-shrink-0" id="ManualFileDelete"></button>
+                </div>
+            </div>
+            <input id="ManualFile" name="ManualFile" type="file" class="form-file-input">
+            <input type="checkbox" id="_checkFilePath" name="_checkFilePath" class="form-file-input" required oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的使用手冊' : '')">
+        </div>
+
+    </form>
+</div>
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+
+<script src="/Scripts/tool.js"></script>
+<script>
+
+    const ImgNum = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ImgNum}`;
+    let apiUrl = null;
+
+    const fakeData = {
+        System: "BT",
+        SubSystem: "BT-11",
+        EName: "除霧皮帶輸送機",
+        Brand: "A廠牌",
+        Model: "HT-6356",
+        ManualFile: "2023-03-30_B.png",
+    }
+
+    $(async function () {
+        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        addButtonEvent();
+
+        const Systems = document.getElementById('System')
+        Systems.addEventListener("change", function () {
+            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        });
+
+        readData(apiUrl);
+    });
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        async function onSuccess(res) {
+            console.log(res);
+
+            for (const [k, v] of Object.entries(res)) {
+                switch (k) {
+                    case "SubSystem":
+                        await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")?System=' + res.System);
+                        $(`#${k}`).val(v);
+                        break;
+                    case "ManualFile":
+                        $("#ManualFileName").text(v);
+                        $("#ManualFileGroup").removeClass('d-none');
+                        break;
+                    default:
+                        $(`#${k}`).val(v);
+                        break;
+                }
+            }
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("todo save():", isValidity)
+        if (!isValidity) return;
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+
+        $("#ManualFile").change(function (e) {
+            console.log(this.files);
+            if (this.files && this.files.length !== 0) {
+                let file = this.files[0];
+                $("#ManualFileName").text(file.name);
+                $("#ManualFileGroup").removeClass('d-none');
+            }
+        })
+
+        $("#ManualFileDelete").click(function () {
+            $("#ManualFile").val('');
+            $("#ManualFileName").text('');
+            $("#ManualFileGroup").addClass('d-none');
+        })
+
+        $("#submit").click(function () {
+            save();
+        })
+    }
+</script>

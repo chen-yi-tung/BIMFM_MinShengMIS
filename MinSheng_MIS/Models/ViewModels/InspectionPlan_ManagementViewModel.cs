@@ -1,7 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web;
 using System.Web.Http.Results;
@@ -11,7 +14,6 @@ namespace MinSheng_MIS.Models.ViewModels
     public class InspectionPlan_ManagementViewModel
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-
 
         #region 巡檢計畫-詳情 DataGrid
         public string InspectationPlan_Read_Data(string IPSN)
@@ -180,6 +182,229 @@ namespace MinSheng_MIS.Models.ViewModels
 
             string reString = JsonConvert.SerializeObject(Main_jo);
             return reString;
+        }
+        #endregion
+
+        #region 巡檢計畫-編輯 DataGrid
+        public string InspectationPlan_Edit_Data(string IPSN)
+        {
+            var dic_InPlanState = Surfaces.Surface.InspectionPlanState();
+            var dic_Shift = Surfaces.Surface.Shift();
+            var dic_EMFIState = Surfaces.Surface.EquipmentMaintainFormItemState();
+            var dic_EState = Surfaces.Surface.EState();
+            var dic_ERFState = Surfaces.Surface.EquipmentReportFormState();
+            var dic_RL = Surfaces.Surface.ReportLevel();
+
+            #region 巡檢計畫
+            var IP_SourceTable = db.InspectionPlan.Find(IPSN);
+            //string IP_MaintainID = db.AspNetUsers.Where(x => x.UserName == IP_SourceTable.MaintainUserID).Select(x => x.MyName).FirstOrDefault();
+            //string IP_RepairID = db.AspNetUsers.Where(x => x.UserName == IP_SourceTable.RepairUserID).Select(x => x.MyName).FirstOrDefault();
+            //string IP_PlanCreateID = db.AspNetUsers.Where(x => x.UserName == IP_SourceTable.PlanCreateUserID).Select(x => x.MyName).FirstOrDefault();
+            var IPM_SourceTable = db.InspectionPlanMember.Where(x => x.IPSN == IPSN);
+            JArray InsName_ja = new JArray();
+
+            foreach (var IPM_item in IPM_SourceTable)
+            {
+                InsName_ja.Add(IPM_item.UserID);
+            }
+            #endregion
+
+            #region 定期保養項目
+            var IPMaintain_SourceTable = db.InspectionPlanMaintain.Where(x => x.IPSN == IPSN);
+            JArray ME_ja = new JArray();
+
+            foreach (var IPMaintain_item in IPMaintain_SourceTable)
+            {
+                var EMFI_SourceTable = db.EquipmentMaintainFormItem.Find(IPMaintain_item.EMFISN);
+                var EMI_SourceTable = db.EquipmentMaintainItem.Find(EMFI_SourceTable.EMISN);
+                var EI_SourceTable = db.EquipmentInfo.Find(EMI_SourceTable.ESN);
+                var MI_SourceTable = db.MaintainItem.Find(EMI_SourceTable.MISN);
+                JObject ME_jo = new JObject()
+                {
+                    {"StockState", EMFI_SourceTable.StockState? "有":"無"},
+                    {"FormItemState", dic_EMFIState[EMFI_SourceTable.FormItemState] },
+                    {"EMFISN", IPMaintain_item.EMFISN},
+                    {"Period", EMFI_SourceTable.Period},
+                    {"Unit", EMFI_SourceTable.Unit},
+                    {"LastTime", EMFI_SourceTable.LastTime.ToString("yyyy/MM/dd")},
+                    {"Date", EMFI_SourceTable.Date.ToString("yyyy/MM/dd")},
+                    {"EState", dic_EState[EI_SourceTable.EState]},
+                    {"Area", EI_SourceTable.Area},
+                    {"Floor", EI_SourceTable.Floor},
+                    {"ESN", EMI_SourceTable.ESN},
+                    {"EName", EI_SourceTable.EName},
+                    {"MIName", MI_SourceTable.MIName}
+                };
+                ME_ja.Add(ME_jo);
+            }
+
+            #endregion
+
+            #region 維修設備
+            var IPR_SourceTable = db.InspectionPlanRepair.Where(x => x.IPSN == IPSN);
+            JArray RE_ja = new JArray();
+            foreach (var IPR_item in IPR_SourceTable)
+            {
+                var ERF_SourceTable = db.EquipmentReportForm.Find(IPR_item.RSN);
+                var EI_SourceTable = db.EquipmentInfo.Find(ERF_SourceTable.ESN);
+                var ERF_Name = db.AspNetUsers.Where(x => x.UserName == ERF_SourceTable.InformatUserID).Select(x => x.MyName).FirstOrDefault();
+                JObject RE_Row = new JObject()
+                {
+                    { "StockState", ERF_SourceTable.StockState?"有":"無" },
+                    { "ReportState", dic_ERFState[ERF_SourceTable.ReportState] },
+                    { "ESN", ERF_SourceTable.ESN },
+                    { "RSN", IPR_item.RSN },
+                    { "ReportLevel", dic_RL[ERF_SourceTable.ReportLevel] },
+                    { "Date", ERF_SourceTable.Date.ToString("yyyy/MM/dd HH:mm:ss") },
+                    { "ReportContent", ERF_SourceTable.ReportContent },
+                    { "MyName", ERF_Name },
+                    { "EState", dic_EState[EI_SourceTable.EState] },
+                    { "Area", EI_SourceTable.Area },
+                    { "Floor", EI_SourceTable.Floor },
+                    { "EName", EI_SourceTable.EName }
+                };
+                RE_ja.Add(RE_Row);
+            }
+            #endregion
+
+            #region 巡檢路線規劃
+            JArray IP_ja = new JArray();
+
+            var IPP_SourceTable = db.InspectionPlanPath.Where(x => x.IPSN == IPSN);
+
+            foreach (var IPP_item in IPP_SourceTable)
+            {
+                JArray PathSampleOrder_ja = new JArray(); //路徑
+                JArray PathSampleRecord_ja = new JArray(); //座標
+                JArray MaintainEquipment_ja = new JArray(); //沒用到
+                JArray RepairEquipment_ja = new JArray(); //沒用到
+                JArray BothEquipment_ja = new JArray(); //沒用到
+
+                #region 路徑標題
+                var FI_SourceTable = db.Floor_Info.Find(IPP_item.FSN);
+                var AI_SourceTable = db.AreaInfo.Find(FI_SourceTable.ASN);
+
+                JObject PathSample_jo = new JObject()
+                {
+                    {"PSSN", IPP_item.PSN },
+                    {"Area", AI_SourceTable.Area },
+                    {"Floor", FI_SourceTable.FloorName },
+                    {"ASN", FI_SourceTable.ASN },
+                    {"FSN", IPP_item.FSN },
+                    {"PathTitle", IPP_item.PathTitle },
+                    {"BIMPath", FI_SourceTable.BIMPath },
+                    {"Beacon","" }
+                }; //路徑資訊
+                #endregion
+
+                #region 路線順序
+                var IPFP_SourceTable = db.InspectionPlanFloorPath.Where(x => x.PSN == IPP_item.PSN).OrderBy(x => x.FPSN);
+
+                foreach (var IPFP_item in IPFP_SourceTable)
+                {
+                    PathSampleOrder_ja.Add(IPFP_item.DeviceID.ToString());
+                }
+                #endregion
+
+                #region 路線呈現
+                var DIPP_SourceTable = db.DrawInspectionPlanPath.Where(x => x.PSN == IPP_item.PSN);
+
+                foreach (var DIPP_item in DIPP_SourceTable)
+                {
+                    JObject XY_Path = new JObject()
+                    {
+                        { "LocationX", DIPP_item.LocationX },
+                        { "LocationY", DIPP_item.LocationY }
+                    };
+                    PathSampleRecord_ja.Add(XY_Path);
+                }
+                #endregion
+
+                JObject IPP_Row = new JObject()
+                {
+                    { "PathSample", PathSample_jo },
+                    { "PathSampleOrder", PathSampleOrder_ja },
+                    { "PathSampleRecord", PathSampleRecord_ja },
+                    { "MaintainEquipment", MaintainEquipment_ja },
+                    { "RepairEquipment", RepairEquipment_ja },
+                    { "BothEquipment", BothEquipment_ja }
+                };
+                IP_ja.Add(IPP_Row);
+            }
+            #endregion
+
+            JObject Main_jo = new JObject
+            {
+                {"IPSN", IPSN},
+                {"IPName", IP_SourceTable.IPName },
+                {"PlanCreateUserID", IP_SourceTable.PlanCreateUserID },
+                {"PlanDate", IP_SourceTable.PlanDate.ToString("yyyy/MM/dd") },
+                {"PlanState", dic_InPlanState[IP_SourceTable.PlanState] },
+                {"Shift", IP_SourceTable.Shift },
+                {"UserID", InsName_ja },
+                {"MaintainUserID", IP_SourceTable.MaintainUserID },
+                {"RepairUserID", IP_SourceTable.RepairUserID },
+                {"MaintainAmount", IP_SourceTable.MaintainAmount },
+                {"RepairAmount", IP_SourceTable.RepairAmount },
+                {"MaintainEquipment", ME_ja },
+                {"RepairEquipment", RE_ja },
+                {"InspectionPlanPaths", IP_ja }
+            };
+
+            string reString = JsonConvert.SerializeObject(Main_jo);
+            return reString;
+        }
+        #endregion
+
+        #region 巡檢計畫-編輯 update
+        public string InspectationPlan_Edit_Update(System.Web.Mvc.FormCollection form)
+        {
+            /*  前端回傳格式
+            IPName: IPName,
+            PlanCreateUserID: PlanCreateUserID,
+            PlanDate: PlanDate,
+            Shift: Shift,
+            UserID: UserID,
+            MaintainUserID: MaintainUserID,
+            RepairUserID: RepairUserID,
+            MaintainEquipment: MaintainEquipment,
+            RepairEquipment: RepairEquipment,
+            InspectionPlanPaths: InspectionPlanPaths
+            */
+
+            var IP_SourceTable = db.InspectionPlan.Find(form["IPSN"].ToString());
+            IP_SourceTable.IPName = form["IPName"].ToString();
+            IP_SourceTable.PlanDate = DateTime.Parse(form["PlanDate"].ToString());
+            IP_SourceTable.Shift = form["Shift"].ToString();
+            IP_SourceTable.MaintainUserID = form["MaintainUserID"].ToString();
+            IP_SourceTable.RepairUserID = form["RepairUserID"].ToString();
+            JArray ME_ja = (JArray)form["MaintainEquipment"];
+            JArray RE_ja = (JArray)form["RepairEquipment"];
+            IP_SourceTable.MaintainAmount = ME_ja.Count();
+            IP_SourceTable.RepairAmount = RE_ja.Count();
+            IP_SourceTable.PlanState = "1";
+            db.InspectionPlan.AddOrUpdate(IP_SourceTable);
+            db.SaveChanges();
+
+            JArray NameArray = (JArray)form["UserID"];
+            db.InspectionPlanMember.RemoveRange(db.InspectionPlanMember.Where(x => x.IPSN == form["IPSN"].ToString()));//先刪除全部成員
+            for (int i = 0; i < NameArray.Count(); i++)
+            {
+                Models.InspectionPlanMember IPM = new Models.InspectionPlanMember()
+                {
+                    PMSN = form["IPSN"].ToString() + "_" + (i + 1).ToString(),
+                    IPSN = form["IPSN"].ToString(),
+                    UserID = NameArray[i].ToString(),
+                    WatchID = NameArray[i].ToString() //這個之後會需要再換!!!!!
+                };
+                db.InspectionPlanMember.Add(IPM);
+                db.SaveChanges();
+            }
+
+            
+            //IP_SourceTable.MaintainAmount = form["MaintainEquipment"];
+
+            return "";
         }
         #endregion
 

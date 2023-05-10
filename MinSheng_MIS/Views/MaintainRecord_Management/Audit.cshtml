@@ -45,15 +45,15 @@
                 <label class="align-self-center" for="AuditResult">審核結果</label>
                 <div class="d-flex flex-column flex-sm-row" style="gap:0.5em;">
                     <label class="btn btn-delete" for="AuditResult_1">
-                        <input type="radio" class="form-check-input" id="AuditResult_1" name="AuditResult" value="1">
+                        <input type="radio" class="form-check-input" id="AuditResult_1" name="AuditResult" value="2">
                         退件
                     </label>
                     <label class="btn btn-delete" for="AuditResult_2">
-                        <input type="radio" class="form-check-input" id="AuditResult_2" name="AuditResult" value="2">
+                        <input type="radio" class="form-check-input" id="AuditResult_2" name="AuditResult" value="3">
                         補件
                     </label>
                     <label class="btn btn-export" for="AuditResult_3">
-                        <input type="radio" class="form-check-input" id="AuditResult_3" name="AuditResult" value="3">
+                        <input type="radio" class="form-check-input" id="AuditResult_3" name="AuditResult" value="1">
                         通過
                     </label>
                 </div>
@@ -63,8 +63,8 @@
 
     <div class="edit-button-area mb-5">
         <button class="btn btn-back" onclick="history.back()">返回</button>
-        <button class="btn btn-search">暫存草稿</button>
-        <button class="btn btn-export">送出</button>
+        <button class="btn btn-search" onclick="buttonsubmitEvent(1)">暫存草稿</button>
+        <button class="btn btn-export" onclick="buttonsubmitEvent(0)">送出</button>
     </div>
 </section>
 
@@ -194,6 +194,123 @@
         }
     }
 
+    function readData_audit(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            for (const [k, v] of Object.entries(res)) {
+                switch (k) {
+                    case 'AuditResult':
+                        AuditResult(v)
+                        break;
+                    case 'ImgPath':
+                        ImgPath(v);
+                        break;
+                    default:
+                        $("#" + k).val(v);
+                        break;
+                }
+            }
+            function ImgPath(v) {
+                v.length !== 0 && v.forEach((url) => {
+                    let CurFile;
+                    let filename = url.split("/").pop();
+                    fetch(url)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const file = new File([blob], filename, { type: blob.type });
+                            imgFiles.push(file);
+                            CurFile = file
+                        })
+                    let query = $(`
+                            <div class="edit-img-item">
+                                <img src="${url}">
+                                <button class="btn-delete-item"></button>
+                            </div>`);
+                    $(".edit-img-area").append(query);
+                    ImageDisplay(query.children("img"));
+                    query.children("button").click(function (event) {
+                        event.preventDefault();
+                        let index = imgFiles.findIndex((e) => e == CurFile);
+                        imgFiles.splice(index, 1);
+                        $(this).parent().remove();
+                    })
+                })
+            }
+            function AuditResult(v) {
+                switch (v) {
+                    case '審核未過':
+                        $('#AuditResult_1').prop('checked', true);
+                        break;
+                    case '請補件':
+                        $('#AuditResult_2').prop('checked', true);
+                        break;
+                    case '審核通過':
+                        $('#AuditResult_3').prop('checked', true);
+                        break;
+                }
+            }
+        }
+        function onError(res) {
+            console.log(res);
+            $("#AuditUserID").val($("#NavbarUserName").text());
+        }
+    }
+
+    function buttonsubmitEvent(IsBu) {
+        let auditResult = $('input[name="AuditResult"]:checked').val() ?? 0;
+        if (auditResult === 0) {
+            createDialogModal({
+                id: "DialogModal-Error",
+                inner: "請選擇審核結果！",
+            })
+            return;
+        }
+        
+        let ipmsn = IPMSN
+        let auditID = document.getElementById("NavbarUserID").value
+        let auditMemo = document.getElementById("AuditMemo").value
+        var form = new FormData();
+        form.append("IPMSN", ipmsn);
+        form.append("IsBuffer", IsBu);
+        form.append("AuditUserID", auditID);
+        form.append("AuditMemo", auditMemo);
+        form.append("AuditResult", auditResult);
+        for (let i = 0; i < imgFiles.length; i++) {
+            form.append(`Img${i}`, imgFiles[i]);
+        }
+        var settings = {
+            "url": SubmitUrl,
+            "method": "POST",
+            "timeout": 0,
+            "processData": false,
+            "mimeType": "multipart/form-data",
+            "contentType": false,
+            "data": form
+        };
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            createDialogModal({
+                id: "DialogModal-Success",
+                inner: "送出成功！",
+                onHide: () => {
+                    window.location.href = '@Url.Action("Management", "MaintainRecord_Management")';
+                }
+            })
+        });
+    }
+
     function addButtonEvent() {
         $("#ImgPath").change(function (e) {
             console.log(this.files);
@@ -226,24 +343,9 @@
         });
     }
 
-    function createFormData() {
-        let flieList = new DataTransfer();
-        imgFiles.forEach((item) => {
-            flieList.items.add(item);
-        })
-
-        console.log(flieList);
-
-        let fd = new FormData();
-        fd.append('AuditUserID', $("#AuditUserID").val());
-        fd.append('AuditMemo', $("#AuditMemo").val());
-        fd.append('ImgPath', flieList.files);
-        fd.append('AuditResult', $('input[name="AuditResult"]:checked').val() ?? 0);
-    }
-
     window.onload = function () {
         readData(apiUrl);
-        readData_Edit(apiUrl_Edit);
+        readData_audit(GetBufferUrl);
         addButtonEvent();
     }
 

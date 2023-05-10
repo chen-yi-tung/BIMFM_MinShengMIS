@@ -25,8 +25,7 @@ namespace MinSheng_MIS.Controllers
     public class SamplePath_ManagementController : Controller
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-        SamplePath_DataService SP_ds = new SamplePath_DataService();
-
+       
         #region 巡檢路線模板管理
         public ActionResult Management()
         {
@@ -35,7 +34,8 @@ namespace MinSheng_MIS.Controllers
         [System.Web.Mvc.HttpPost]
         public ActionResult SamplePath_Management(FormCollection form)
         {
-            var a = SP_ds.GetJsonForGrid_Management(form);
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_SamplePath(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }

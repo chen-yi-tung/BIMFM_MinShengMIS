@@ -728,8 +728,8 @@
         ]
     }
     const IPSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${IPSN}`;
-    let apiUrl = null;
+    let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
+    //let apiUrl = null;
     function readData(url = null) {
 
         url == null ? onSuccess(EditFakeData) :
