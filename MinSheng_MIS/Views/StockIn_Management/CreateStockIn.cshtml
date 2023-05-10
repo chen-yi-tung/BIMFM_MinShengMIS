@@ -5,137 +5,71 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="datatable mt-5 datatable-table">
+    <input type="text" id="POSN" name="POSN" value="@ViewBag.id" hidden readonly="readonly">
     <input type="text" id="POISN" name="POISN" value="@ViewBag.id" hidden readonly="readonly">
-    <div class="datatable-body" id="POSNItem"></div>
+    <div class="datatable-body" id="POSNItem">
+        <table class="datatable-table" id="SelectObject"></table>
+    </div>
 </div>
 
 <script src="/Scripts/datatable.js"></script>
 <script>
-    const POSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${POSN}`;
-    let apiUrl = null;
+     const POISN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${POISN}`;
+    let apiUrl = null
 
     const GridOptions = {
         thead: true,
         columns: [
-            {
-                id: "_checkbox",
-                title: "",
-                width: "6%",
-                formatter: (data, row, index) => {
-                    return `<input class="form-check-input check-item" type="radio" name="radio-POSN" id="checkbox-${index}"/>`
-                }
-            },
-            { id: "POState", title: "狀態" },
-            { id: "POSN", title: "採購單號" },
-            { id: "PurchaseName", title: "採購人員" },
-            { id: "PurchaseDataTime", title: "採購日期" },
-            { id: "MFRName", title: "廠商" },
-            { id: "Accepter", title: "驗收人員" },
-            { id: "AcceptanceDateTime", title: "驗收日期" },
-            { id: "InquiryName", title: "詢價人員" }
-        ]
-    } 
-
-    const fakeData = {
-
-        EquipmentMaintainItem: [
-            {
-                POState:"部分驗收",
-                POSN: "PO23050201",
-                PurchaseName:"王小明",
-                PurchaseDataTime:"2023/05/02",
-                MFRName:"A廠商",
-                Accepter:"陳大明",
-                AcceptanceDateTime:"2023/05/06",
-                InquiryName:"黃中明",
-                SelectObject:[
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-1",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    }
-                ]
-            },
-            {
-                POState:"部分驗收",
-                POSN: "PO23050201",
-                PurchaseName:"王小明",
-                PurchaseDataTime:"2023/05/02",
-                MFRName:"A廠商",
-                Accepter:"陳大明",
-                AcceptanceDateTime:"2023/05/06",
-                InquiryName:"黃中明",
-                SelectObject:[
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-2",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    },
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-2",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    },
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-2",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    }
-                ]
-            },
-            {
-                POState:"部分驗收",
-                POSN: "PO23050201",
-                PurchaseName:"王小明",
-                PurchaseDataTime:"2023/05/02",
-                MFRName:"A廠商",
-                Accepter:"陳大明",
-                AcceptanceDateTime:"2023/05/06",
-                InquiryName:"黃中明" ,
-                SelectObject:[
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-3",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    },
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-3",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    }
-                ]
-            }
+            { id: "Kind", title: "類別" },
+            { id: "ItemName", title: "品名" },
+            { id: "Size", title: "尺寸" },
+            { id: "Brand", title: "廠牌" },
+            { id: "Model", title: "型號" },
+            { id: "Amount", title: "數量" },
+            { id: "Packaging", title: "包裝型式" },
+            { id: "Memo", title: "備註" },
         ]
     }
+    const fakeData = {
+        SelectObject: [
+            {
+                Kind:"備料",
+                ItemName:"藥劑-1",
+                Size:"1L",
+                Brand:"A廠牌",
+                Model:"XMA-56",
+                Amount:"5",
+                Packaging:"250g/罐",
+                Memo:"已檢查過 都沒問題!"
+            }
+        ]
+    };
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#SelectObject").append(createTableGrid(res.SelectObject, GridOptions))
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+
+        readData(apiUrl);
+    }
+
 </script>
