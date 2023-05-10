@@ -1511,6 +1511,7 @@
     <Content Include="Scripts\dataTable\InspectionPlanMaintain.js" />
     <Content Include="Scripts\dataTable\InspectionPlanRepair.js" />
     <Content Include="Scripts\dataTable\MaintainRecord.js" />
+    <Content Include="Scripts\dataTable\InquiryPlan.js" />
     <Content Include="Scripts\dataTable\RepairRecord.js" />
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
     <Content Include="Scripts\ForgeDraw.js" />
