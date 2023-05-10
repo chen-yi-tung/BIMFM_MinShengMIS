@@ -1,0 +1,33 @@
+﻿{
+  "total": 10,
+  "rows": [
+    {
+      "PRIN": "1120301001",
+      "PRUserName": "王大明",
+      "PRDept": "機電維修部",
+      "PRDate": "2023/03/01",
+      "Kind": "潤滑劑",
+      "ItemName": "軸承潤滑劑",
+      "Size": "1L",
+      "PRAmount": 10,
+      "Unit": "桶",
+      "ApplicationPurpose": "OOXX",
+      "EstimatedDate": "2023/04/01",
+      "PRIState": 1
+    },
+    {
+      "PRIN": "1120301002",
+      "PRUserName": "黃東明",
+      "PRDept": "機電維修部",
+      "PRDate": "2023/03/01",
+      "Kind": "潤滑劑",
+      "ItemName": "軸承潤滑劑",
+      "Size": "1L",
+      "PRAmount": 20,
+      "Unit": "桶",
+      "ApplicationPurpose": "OOXX",
+      "EstimatedDate": "2023/04/01",
+      "PRIState": 1
+    }
+  ]
+}
