@@ -657,13 +657,13 @@ namespace MinSheng_MIS.Models.ViewModels
 
                 #region 維修圖片
                 List<string> ImagePath_Server = new List<string>();
-                if (!ComFunc.UpdateFile(imgList,Sev,ref ImagePath_Server, iprsn))
+                if (!ComFunc.UpdateFile(imgList, Sev, ref ImagePath_Server, iprsn))
                 {
                     Jresult.ResponseCode = 500;
                     Jresult.ResponseMessage = "圖片上傳過程出錯!";
                     return JsonConvert.SerializeObject(Jresult);
                 }
-                
+
                 foreach (string item in ImagePath_Server)
                 {
                     //db存
@@ -717,17 +717,18 @@ namespace MinSheng_MIS.Models.ViewModels
                     SupplementaryContent = form["SupplementaryContent"].ToString()
                 };
                 db.RepairSupplementaryInfo.Add(RSI);
+                db.SaveChanges();
                 #endregion
 
                 #region 補件檔案
                 List<string> FilesPath = new List<string>();
-                if (!ComFunc.UpdateFile(fileList,Sev,ref FilesPath, NewPRSN))
+                if (!ComFunc.UpdateFile(fileList, Sev, ref FilesPath, NewPRSN))
                 {
                     Jresult.ResponseCode = 500;
                     Jresult.ResponseMessage = "檔案上傳過程出錯!";
                     return JsonConvert.SerializeObject(Jresult);
                 }
-                
+
                 foreach (var item in FilesPath)
                 {
                     RepairSupplementaryFile RS = new RepairSupplementaryFile()
@@ -751,6 +752,6 @@ namespace MinSheng_MIS.Models.ViewModels
                 return JsonConvert.SerializeObject(Jresult);
             }
         }
-        #endregion
+#endregion
     }
 }
