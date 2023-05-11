@@ -11,6 +11,14 @@
     font-size: 18px;
 }
 
+.form-control.input-readonly {
+    background-color: #e9ecef;
+}
+.form-control.input-readonly:focus {
+    box-shadow: none !important;
+    border: 0 !important;
+}
+
 .form-file-input{
     position: absolute;
     width: 12rem;
@@ -96,6 +104,11 @@
     padding: 8px 16px;
     align-items: stretch;
     flex-direction: column;
+}
+.edit-area-hr {
+    border-top: 1px solid #6E90B7 !important;
+    opacity: 1 !important;
+    width: 100%;
 }
 
 .form-required {

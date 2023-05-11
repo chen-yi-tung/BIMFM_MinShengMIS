@@ -177,6 +177,10 @@ h2 {
         width: 100px !important;
     }
 
+    .w-lg-134px {
+        width: 134px !important;
+    }
+
     .w-lg-200px {
         width: 200px !important;
     }
@@ -187,6 +191,10 @@ h2 {
 
     .w-lg-250px {
         width: 250px !important;
+    }
+
+    .w-lg-460px {
+        width: 460px !important;
     }
 
     .container.render-body {
