@@ -188,12 +188,14 @@ namespace MinSheng_MIS.Models.ViewModels
         #region 巡檢計畫-編輯 DataGrid
         public string InspectationPlan_Edit_Data(string IPSN)
         {
+            #region 變數宣告
             var dic_InPlanState = Surfaces.Surface.InspectionPlanState();
             var dic_Shift = Surfaces.Surface.Shift();
             var dic_EMFIState = Surfaces.Surface.EquipmentMaintainFormItemState();
             var dic_EState = Surfaces.Surface.EState();
             var dic_ERFState = Surfaces.Surface.EquipmentReportFormState();
             var dic_RL = Surfaces.Surface.ReportLevel();
+            #endregion
 
             #region 巡檢計畫
             var IP_SourceTable = db.InspectionPlan.Find(IPSN);

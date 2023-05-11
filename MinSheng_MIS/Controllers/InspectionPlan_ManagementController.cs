@@ -67,10 +67,10 @@ namespace MinSheng_MIS.Controllers
             db.SaveChanges();
             #endregion
             #region 新增巡檢計畫人員資料 dbo.InspectionPlanMember
-            if(InspectionPlan.UserID != null)
+            if (InspectionPlan.UserID != null)
             {
                 int i = 1;
-                foreach(var member in InspectionPlan.UserID)
+                foreach (var member in InspectionPlan.UserID)
                 {
                     InspectionPlanMember planMember = new InspectionPlanMember();
                     planMember.IPSN = IPSN;
@@ -82,7 +82,7 @@ namespace MinSheng_MIS.Controllers
                 }
             }
             #endregion 巡檢計畫含保養 dbo.InspectionPlanMaintain
-            if(InspectionPlan.MaintainEquipment != null)
+            if (InspectionPlan.MaintainEquipment != null)
             {
                 int i = 1;
                 foreach (var EMFISN in InspectionPlan.MaintainEquipment)
@@ -90,7 +90,7 @@ namespace MinSheng_MIS.Controllers
                     //新增巡檢計畫含保養
                     InspectionPlanMaintain planMaintain = new InspectionPlanMaintain();
                     planMaintain.IPSN = IPSN;
-                    planMaintain.IPMSN = IPSN + "_M" + i.ToString().PadLeft(2,'0');
+                    planMaintain.IPMSN = IPSN + "_M" + i.ToString().PadLeft(2, '0');
                     planMaintain.EMFISN = EMFISN;
                     planMaintain.MaintainState = "1";//已派工
                     db.InspectionPlanMaintain.AddOrUpdate(planMaintain);
@@ -104,10 +104,10 @@ namespace MinSheng_MIS.Controllers
                 }
             }
             #region 巡檢計畫含維修 dbo.InspectionPlanRepair
-            if(InspectionPlan.RepairEquipment != null)
+            if (InspectionPlan.RepairEquipment != null)
             {
                 int i = 1;
-                foreach(var RSN in InspectionPlan.RepairEquipment)
+                foreach (var RSN in InspectionPlan.RepairEquipment)
                 {
                     //巡檢計畫含維修
                     InspectionPlanRepair planRepair = new InspectionPlanRepair();
@@ -127,10 +127,10 @@ namespace MinSheng_MIS.Controllers
             }
             #endregion
             #region 巡檢路線規劃(路徑標題及路徑順序)
-            if(InspectionPlan.InspectionPlanPaths != null)
+            if (InspectionPlan.InspectionPlanPaths != null)
             {
                 var i = 1;
-                foreach(var paths in InspectionPlan.InspectionPlanPaths)
+                foreach (var paths in InspectionPlan.InspectionPlanPaths)
                 {
                     #region 巡檢計畫路徑 dbo.InspectionPlanPath
                     InspectionPlanPath planPath = new InspectionPlanPath();
@@ -143,10 +143,10 @@ namespace MinSheng_MIS.Controllers
                     db.SaveChanges();
                     #endregion
                     #region 巡檢計畫單樓層路徑 dbo.InspectionPlanFloorPath
-                    if(paths.PathSampleOrder != null)
+                    if (paths.PathSampleOrder != null)
                     {
                         int j = 1;
-                        foreach(var DeviceID in paths.PathSampleOrder)
+                        foreach (var DeviceID in paths.PathSampleOrder)
                         {
                             InspectionPlanFloorPath floorPath = new InspectionPlanFloorPath();
                             floorPath.FPSN = PSN + "_" + j.ToString().PadLeft(2, '0');
@@ -307,7 +307,8 @@ namespace MinSheng_MIS.Controllers
                 itemObjects.Add("ESN", item);
                 itemObjects.Add("DBID", deviceinfo.DBID);
                 JObject positionObjects = new JObject();
-                if(deviceinfo.LocationX != null && deviceinfo.LocationY != null){
+                if (deviceinfo.LocationX != null && deviceinfo.LocationY != null)
+                {
                     positionObjects.Add("LocaiotnX", deviceinfo.LocationX);
                     positionObjects.Add("LocaiotnY", deviceinfo.LocationY);
                     itemObjects.Add("Position", positionObjects);
@@ -316,7 +317,7 @@ namespace MinSheng_MIS.Controllers
                 {
                     itemObjects.Add("Position", null);
                 }
-                
+
                 var FSN = deviceinfo.FSN;
                 var ASN = db.Floor_Info.Find(FSN).ASN;
                 itemObjects.Add("ASN", ASN);
@@ -638,7 +639,7 @@ namespace MinSheng_MIS.Controllers
         {
             InspectionPlan_ManagementViewModel IMV = new InspectionPlan_ManagementViewModel();
             string result = IMV.InspectationPlan_Read_Data(id);
-            return Content(result,"application/json");
+            return Content(result, "application/json");
         }
         #endregion
 
@@ -665,7 +666,8 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 刪除巡檢計畫
-        public ActionResult Delete()
+        [HttpDelete]
+        public ActionResult Delete(string id)
         {
             return View();
         }
@@ -678,7 +680,7 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         [HttpGet]
-        public ActionResult Record_Data(string id) 
+        public ActionResult Record_Data(string id)
         {
             var IMV = new InspectionPlan_ManagementViewModel();
             string result = IMV.GetJsonForRecord(id);
