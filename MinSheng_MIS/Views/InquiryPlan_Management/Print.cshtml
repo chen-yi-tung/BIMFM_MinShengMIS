@@ -1,0 +1,146 @@
+﻿
+@{
+    ViewBag.Title = "詢價";
+}
+<div id="PrintScreen">
+    <h2 class="no-print">@ViewBag.Title</h2>
+    <input class="form-control" id="IOISN" name="IOISN" type="text" hidden />
+    <div class="datatable datatable mt-5">
+        <div class="datatable-body">
+            <table class="datatable-table" id="InquiryItemInfo"></table>
+        </div>
+    </div>
+
+    <section id="InquiryPlan"></section>
+</div>
+
+<div class="edit-button-area no-print">
+    <button class="btn btn-export  no-print " id="submit">列印</button>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/dataTable/InquiryPlan.js"></script>
+<script>
+    @*var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
+    eqList = eqList.replace("\r", "").replace("\n", "");
+    var equipmentList = JSON.parse(eqList);
+    console.log(equipmentList);*@
+    addButtonEvent()
+    const apiUrl = null;
+
+
+    const SerializedName = {
+        thead: true,
+        columns: [
+            { id: "Kind", title: "類別" },
+            { id: "ItemName", title: "品名" },
+            { id: "Size", title: "尺寸" },
+            { id: "Amount", title: "數量" },
+            { id: "Unit", title: "單位" },
+        ]
+    }
+
+
+
+    //const fakeData = [
+    //        {
+    //            Kind: "潤滑劑",
+    //            ItemName: "軸承潤滑劑B",
+    //            Size: "1L",
+    //            Amount:"10",
+    //            Unit:"罐",
+    //        },
+    //        {
+    //            Kind: "潤滑劑",
+    //            ItemName: "軸承潤滑劑C",
+    //            Size: "1L",
+    //            Amount: "10",
+    //            Unit: "罐",
+    //        }
+    //]
+
+    const fakeData = {
+        InquiryItemInfo: [
+            {
+                Kind: "潤滑劑",
+                ItemName: "軸承潤滑劑B",
+                Size: "1L",
+                Amount: "10",
+                Unit: "罐",
+            },
+            {
+                Kind: "潤滑劑",
+                ItemName: "軸承潤滑劑C",
+                Size: "1L",
+                Amount: "10",
+                Unit: "罐",
+            },
+        ],
+        InquiryPlan: {
+            InquiryUserNameData: {
+                IOSN: "1120301001",
+                InquiryUserName: "王大明",
+            },
+            MFRInfo: {
+                MFRSN: "1120301001",
+                ContactPerson: "王大明",
+                MFRTelNO: "02-4898888",
+                MFRMBPhone: "0966666666",
+                MFREmail: "vgew@gmail.com",
+                MFRAddress: "gvwsvdxfefwaf",
+                MFRWeb: "fvAWSEF.COM",
+                MFRMainProduct: "TEST"
+            },
+            PaymentInfo: {
+                PaymentMethod: "ATM",
+                DeliveryMethod: "自取",
+                DeliveryDate: "2023/03/23 15:00:00",
+                DeliveryLocation: "OOO公司",
+            }
+        }
+    }
+
+
+
+
+
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :   //fakeData
+            $.ajax({
+                url: url,
+                data: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+
+            $("#InquiryItemInfo").append(createTableGrid(res.InquiryItemInfo, SerializedName));
+            InquiryPlan("#InquiryPlan", res.InquiryPlan);
+
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+    }
+
+
+    function addButtonEvent() {
+        $("#submit").click(function () {
+
+            window.print();
+
+        })
+    }
+</script>
+
