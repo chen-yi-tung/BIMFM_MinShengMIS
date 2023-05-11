@@ -21,10 +21,7 @@ namespace MinSheng_MIS.Controllers
 {
     public class InspectionPlan_ManagementController : Controller
     {
-
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-
-        InspectionPlan_DataService IP_ds = new InspectionPlan_DataService();
 
         #region 巡檢計畫管理
         public ActionResult Management()
@@ -35,7 +32,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult InspectionPlan_Management(FormCollection form)
         {
             var service = new DatagridService();
-            var a = IP_ds.GetJsonForGrid_Management(form);
+            var a = service.GetJsonForGrid_InspectionPlan(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -646,9 +643,24 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯巡檢計畫
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult Edit_Data(string id)
+        {
+            var IMV = new InspectionPlan_ManagementViewModel();
+            string result = IMV.InspectationPlan_Edit_Data(id);
+            return Content(result, "application/json");
+        }
+        [HttpPost]
+        public ActionResult Edit_Update(FormCollection form)
+        {
+            var IMV = new InspectionPlan_ManagementViewModel();
+            string result = IMV.InspectationPlan_Edit_Update(form); //還沒完成
+            return Content("", "application/json");
         }
         #endregion
 

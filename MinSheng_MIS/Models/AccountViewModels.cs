@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using Microsoft.Ajax.Utilities;
+using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Newtonsoft.Json.Linq;
 using System;
@@ -122,6 +123,7 @@ namespace MinSheng_MIS.Models
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
+        #region 取得帳號資料
         public JObject GetCurAccountData(string UserName,bool dicConvert)
         { 
             var data = db.AspNetUsers.Where(x => x.UserName == UserName).FirstOrDefault();
@@ -144,8 +146,10 @@ namespace MinSheng_MIS.Models
                 return null;
             }
         }
+        #endregion
 
-        public string UpdateUserData(System.Web.Mvc.FormCollection form)
+        #region 更新使用者資料
+        public int UpdateUserData(System.Web.Mvc.FormCollection form)
         {
             try
             {
@@ -156,28 +160,27 @@ namespace MinSheng_MIS.Models
                     data.MyName = form["MyName"].ToString();
                     data.Authority = form["Authority"].ToString();
                     data.Email = form["Email"].ToString();
-                    data.PhoneNumber = form["PhoneNumber"].ToString();
-                    data.Apartment = form["Apartment"].ToString();
-                    data.Title = form["Title"].ToString();
+                    data.PhoneNumber = form["PhoneNumber"].IsNullOrWhiteSpace() ? "" : form["PhoneNumber"].ToString();
+                    data.Apartment = form["Apartment"].IsNullOrWhiteSpace() ? "" : form["Apartment"].ToString();
+                    data.Title = form["Title"].IsNullOrWhiteSpace() ? "" : form["Title"].ToString();
                     db.AspNetUsers.AddOrUpdate(data);
                     db.SaveChanges();
-                    return "200";
+                    return 200;
                 }
                 else
                 {
-                    return "400";
+                    return 400;
                 }
             }
-            catch (DbEntityValidationException ex)
+            catch (Exception)
             {
-                var entityError = ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage);
-                var getFullMessage = string.Join("; ", entityError);
-                //var exceptionMessage = string.Concat(ex.Message, "errors are: ", getFullMessage);
-                return getFullMessage;
+                return 500;
             }
         }
+        #endregion
 
-        public string DeleteAccount(string username)
+        #region 刪除使用者
+        public int DeleteAccount(string username)
         {
             try
             {
@@ -187,17 +190,18 @@ namespace MinSheng_MIS.Models
                     data.IsEnabled = false;
                     db.AspNetUsers.AddOrUpdate(data);
                     db.SaveChanges();
-                    return "200"; //刪除成功
+                    return 200; //刪除成功
                 }
                 else
                 {
-                    return "400"; //無此使用者
+                    return 400; //無此使用者
                 }
             }
-            catch (Exception ex) 
+            catch (Exception) 
             { 
-                return ex.Message; 
+                return 500; 
             }
         }
+        #endregion
     }
 }

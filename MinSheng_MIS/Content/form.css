@@ -172,6 +172,12 @@
 .edit-area .form.form-w-100 label.btn{
     color: var(--bs-btn-color);
 }
+.edit-area .title {
+    position: absolute;
+    top: -32px;
+    left: 0;
+    color: white;
+}
 
 .edit-img-area {
     display: flex;

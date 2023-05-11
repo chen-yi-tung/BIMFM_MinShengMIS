@@ -1,16 +1,20 @@
-﻿using MinSheng_MIS.Models;
+﻿using Microsoft.Owin;
+using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
+using static MinSheng_MIS.Controllers.HomeController;
+using FormCollection = System.Web.Mvc.FormCollection;
 
 namespace MinSheng_MIS.Controllers
 {
     public class MaintainRecord_ManagementController : Controller
     {
-
         #region 巡檢保養紀錄管理
         public ActionResult Management()
         {
@@ -99,7 +103,7 @@ namespace MinSheng_MIS.Controllers
                     fileList.Add(Request.Files[item]);
                 }
             }
-            string result = MaintainRecord_Management_ViewModel.Supplement_Submit(formCollection, Server, imgList, fileList);
+            var result = MaintainRecord_Management_ViewModel.Supplement_Submit(formCollection, Server, imgList, fileList);
             return Content(result, "application/json");
         }
         #endregion

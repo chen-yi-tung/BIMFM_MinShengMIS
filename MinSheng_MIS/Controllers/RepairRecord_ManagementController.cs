@@ -44,7 +44,6 @@ namespace MinSheng_MIS.Controllers
         public ActionResult AuditBody(string id) //上方資料顯示
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
-
             string result = repairRecord_Management_ReadViewModel.GetJsonForRead(id);
             return Content(result, "application/json");
         }
@@ -53,7 +52,6 @@ namespace MinSheng_MIS.Controllers
         public ActionResult GetBufferData(string id) //檢查下方審核資料有沒有草稿(isBuffer = 1)，有就帶資料，沒有就空字串
         {
             var repairRecord_Management_ReadViewModel = new RepairRecord_Management_ReadViewModel();
-
             string result = repairRecord_Management_ReadViewModel.AuditCheckBuffer(id);
             return Content(result, "application/json");
         }
@@ -65,7 +63,7 @@ namespace MinSheng_MIS.Controllers
             List<HttpPostedFileBase> fileList = new List<HttpPostedFileBase>();
             foreach (string item in Request.Files)
             {
-                fileList.Add(Request.Files[item] as HttpPostedFileBase);
+                fileList.Add(Request.Files[item]);
             }
             string result = repairRecord_Management_ReadViewModel.CreateAuditData(formCollection,Server, fileList);
             return Content(result, "application/json");

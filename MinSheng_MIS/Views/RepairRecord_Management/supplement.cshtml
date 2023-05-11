@@ -99,6 +99,7 @@
     //let apiUrl = null
 
     let imgFiles = [];
+    let SupFile = [];
 
     const fakeData = {
         EquipmentReportItem: {
@@ -240,7 +241,15 @@
             }
             function ImgPath(v) {
                 v.length !== 0 && v.forEach((url) => {
-                    imgFiles.push(url);
+                    let CurFile;
+                    let filename = url.split("/").pop();
+                    fetch(url)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const file = new File([blob], filename, { type: blob.type });
+                            imgFiles.push(file);
+                            CurFile = file
+                        })
                     let query = $(`
                             <div class="edit-img-item">
                                 <img src="${url}">
@@ -250,7 +259,7 @@
                     ImageDisplay(query.children("img"));
                     query.children("button").click(function (event) {
                         event.preventDefault();
-                        let index = imgFiles.findIndex((e) => e == url);
+                        let index = imgFiles.findIndex((e) => e == CurFile);
                         imgFiles.splice(index, 1);
                         $(this).parent().remove();
                     })
@@ -260,6 +269,38 @@
         function onError(res) {
             console.log(res);
         }
+    }
+
+    function save() {
+        const form = new FormData();
+        form.append("IPRSN", IPRSN);
+        form.append("RepairContent", $("#RepairContent").val());
+        for (let i = 0; i < imgFiles.length; i++) {
+            form.append(`Img${i}`, imgFiles[i]);
+        }
+
+        form.append("SupplementaryUserID", $("#NavbarUserID").val());
+        form.append("SupplementaryContent", $("#SupplementaryContent").val());
+        form.append("File", SupFile[0]);
+
+        $.ajax({
+            "url": SubmitUrl,
+            "method": "POST",
+            "timeout": 0,
+            "processData": false,
+            "mimeType": "multipart/form-data",
+            "contentType": false,
+            "data": form
+        }).done(function (response) {
+            console.log(response);
+            createDialogModal({
+                id: "DialogModal-Success",
+                inner: "送出成功！",
+                onHide: () => {
+                    window.location.href = '@Url.Action("Management", "RepairRecord_Management")';
+                }
+            })
+        });
     }
 
     function addButtonEvent() {
@@ -296,39 +337,9 @@
             console.log(this.files);
             if (this.files && this.files.length !== 0) {
                 $(this).next().text(this.files[0].name);
+                SupFile = [];
+                SupFile.push(this.files[0]);
             }
-        });
-    }
-
-    function save() {
-        const form = new FormData();
-        form.append("IPRSN", IPRSN);
-        form.append("RepairContent", $("#RepairContent").val());
-        for (let i = 0; i < imgFiles.length; i++) {
-            form.append(`Img${i}`, imgFiles[i], `擷取${i}.PNG`);
-        }
-
-        form.append("SupplementaryUserID", $("#NavbarUserID").val());
-        form.append("SupplementaryContent", $("#SupplementaryContent").val());
-        form.append("FilePath", $("#FilePath").val());
-
-        $.ajax({
-            "url": SubmitUrl,
-            "method": "POST",
-            "timeout": 0,
-            "processData": false,
-            "mimeType": "multipart/form-data",
-            "contentType": false,
-            "data": form
-        }).done(function (response) {
-            console.log(response);
-            createDialogModal({
-                id: "DialogModal-Success",
-                inner: "送出成功！",
-                onHide: () => {
-                    window.location.href = '@Url.Action("Management", "RepairRecord_Management")';
-                }
-            })
         });
     }
 

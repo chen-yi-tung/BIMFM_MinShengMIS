@@ -364,10 +364,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Check_EquipmentFormItem.cs" />
     <Compile Include="Services\Check_InspectionPlan.cs" />
+    <Compile Include="Services\ComFunc.cs" />
     <Compile Include="Services\DatagridService.cs" />
-    <Compile Include="Services\EquipmentMaintainForm_DataService.cs" />
-    <Compile Include="Services\InspectionPlan_DataService.cs" />
-    <Compile Include="Services\SamplePath_DataService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Surfaces\Surface.cs" />
   </ItemGroup>
@@ -1513,6 +1511,7 @@
     <Content Include="Scripts\dataTable\InspectionPlanMaintain.js" />
     <Content Include="Scripts\dataTable\InspectionPlanRepair.js" />
     <Content Include="Scripts\dataTable\MaintainRecord.js" />
+    <Content Include="Scripts\dataTable\InquiryPlan.js" />
     <Content Include="Scripts\dataTable\RepairRecord.js" />
     <Content Include="Scripts\easyui-datagrid-client-paging.js" />
     <Content Include="Scripts\ForgeDraw.js" />

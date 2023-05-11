@@ -15,6 +15,7 @@ using System.Web.Http.Results;
 using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Data.Entity.Validation;
+using static MinSheng_MIS.Controllers.ManageController;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -46,6 +47,7 @@ namespace MinSheng_MIS.Controllers
         }
 
         // GET: Account_Management
+
         #region 帳號管理
         public ActionResult Management()
         {
@@ -94,7 +96,7 @@ namespace MinSheng_MIS.Controllers
                 var result = await UserManager.CreateAsync(user, Pd);
                 if (result.Succeeded)
                 {
-                    Response.StatusCode = 201;
+                    Response.StatusCode = 200;
                     return Content("新增成功!");
                 }
                 else
@@ -149,20 +151,27 @@ namespace MinSheng_MIS.Controllers
             #endregion
 
             AccountData accountData = new AccountData();
-            string result = accountData.UpdateUserData(form);
-            switch (result)
+            int resultCode = accountData.UpdateUserData(form);
+
+            JsonResponseViewModel Jresult = new JsonResponseViewModel()
             {
-                case "200":
-                    Response.StatusCode = 200;
-                    return Content("編輯成功!");
-                case "400":
-                    Response.StatusCode = 400;
-                    return Content("無此使用者!");
-                default:
-                    Response.StatusCode = 500;
-                    //return Content(result);
-                    return Content("編輯過程出錯!");
+                ResponseCode = resultCode
+            };
+            
+            switch (resultCode)
+            {
+                case 200:
+                    Jresult.ResponseMessage = "編輯成功!";
+                    break;
+                case 400:
+                    Jresult.ResponseMessage = "無此使用者!";
+                    break;
+                default: //500
+                    Jresult.ResponseMessage = "編輯過程出錯!";
+                    break;
             }
+
+            return Content(JsonConvert.SerializeObject(Jresult), "application/json");
         }
         #endregion
 
@@ -181,27 +190,30 @@ namespace MinSheng_MIS.Controllers
             string result = JsonConvert.SerializeObject(data);
             return Content(result, "application/json");
         }
-        [HttpGet]
-        public ActionResult Delete_Account(string id) //把IsEnable轉為0就是不啟用此帳號了
+        [HttpDelete]
+        public ActionResult Delete_Account(string id)
         {
             AccountData accountData = new AccountData();
-            string result = accountData.DeleteAccount(id);
-            switch (result)
+            int resultCode = accountData.DeleteAccount(id);
+
+            JsonResponseViewModel Jresult = new JsonResponseViewModel()
+            { 
+                ResponseCode = resultCode
+            };
+
+            switch (resultCode)
             {
-                case "200":
-                    Response.StatusCode = 200;
-                    JObject jo = new JObject();
-                    jo.Add("Succeed", true);
-                    string result1 = JsonConvert.SerializeObject(jo);
-                    return Content(result1, "application/json");
-                    //return Content("刪除成功!","application/json");
-                case "400":
-                    Response.StatusCode = 400;
-                    return Content("無此使用者!", "application/json");
-                default:
-                    Response.StatusCode = 500;
-                    return Content("處理過程出錯!", "application/json");
+                case 200:
+                    Jresult.ResponseMessage = "刪除成功!";
+                    break;
+                case 400:
+                    Jresult.ResponseMessage = "無此使用者!";
+                    break;
+                default: //500
+                    Jresult.ResponseMessage = "處理過程出錯!";
+                    break;
             }
+            return Content(JsonConvert.SerializeObject(Jresult), "application/json");
         }
         #endregion
 
@@ -210,27 +222,31 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
+        
         [HttpPost]
-        public async Task<ActionResult> ChangePD_Submit(FormCollection form)
+        public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            string old = form["OldPassword"].ToString().Trim();
-            string newPd = form["NewPassword"].ToString().Trim();
-            string confirm = form["ConfirmPassword"].ToString().Trim();
-            try
+            if (!ModelState.IsValid)
             {
-                var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), old, newPd);
-                if (result.Succeeded)
+                return View(model);
+            }
+            var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+            if (result.Succeeded)
+            {
+                var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+                if (user != null)
                 {
-                    return Content("變更成功!");
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
-                return Content("變更失敗!");
+                ViewBag.Message = "密碼變更成功!";
+                return View();
             }
-            catch (DbEntityValidationException ex)
+
+            foreach (var error in result.Errors)
             {
-                var entityError = ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage);
-                var getFullMessage = string.Join("; ", entityError);
-                return Content(getFullMessage);
+                ModelState.AddModelError("", error);
             }
+            return View(model);
         }
         #endregion
     }

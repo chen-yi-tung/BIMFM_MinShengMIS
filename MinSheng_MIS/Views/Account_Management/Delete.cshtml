@@ -98,7 +98,7 @@
                 $.ajax({
                     url: '@Url.Action("Delete_Account", "Account_Management")' + `/${UserName}`,
                     //data: JSON.stringify(UserName),
-                    type: "GET",
+                    type: "DELETE",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,

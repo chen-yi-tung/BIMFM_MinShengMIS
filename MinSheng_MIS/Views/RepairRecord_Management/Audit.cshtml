@@ -21,7 +21,6 @@
         <form class="form form-w-100" enctype="multipart/form-data">
 
             <input type="hidden" name="AuditUserID">
-            <input type="hidden" name="PRASN">
 
             <div class="form-group d-lg-contents">
                 <label for="AuditUserName">審核人員</label>
@@ -49,15 +48,15 @@
                 <label class="align-self-center" for="AuditResult">審核結果</label>
                 <div class="d-flex flex-column flex-sm-row" style="gap:0.5em;">
                     <label class="btn btn-delete" for="AuditResult_1">
-                        <input type="radio" class="form-check-input" id="AuditResult_1" name="AuditResult" value="1">
+                        <input type="radio" class="form-check-input" id="AuditResult_1" name="AuditResult" value="2">
                         退件
                     </label>
                     <label class="btn btn-delete" for="AuditResult_2">
-                        <input type="radio" class="form-check-input" id="AuditResult_2" name="AuditResult" value="2">
+                        <input type="radio" class="form-check-input" id="AuditResult_2" name="AuditResult" value="3">
                         補件
                     </label>
                     <label class="btn btn-export" for="AuditResult_3">
-                        <input type="radio" class="form-check-input" id="AuditResult_3" name="AuditResult" value="3">
+                        <input type="radio" class="form-check-input" id="AuditResult_3" name="AuditResult" value="1">
                         通過
                     </label>
                 </div>
@@ -82,7 +81,7 @@
     const IPRSN = '@ViewBag.id';
     let apiUrl = '@Url.Action("AuditBody", "RepairRecord_Management")' + `/${IPRSN}`; //這是上方顯示資訊
     let AuditFormUrl = '@Url.Action("GetBufferData", "RepairRecord_Management")' + `/${IPRSN}`;  //這是最下面審核表單暫存資料，在載入此頁面時要先去抓有沒有暫存資料，沒有的話就只顯示審核人員
-    let AuditFormPostUrl = '@Url.Action("CreateDataAudit", "RepairRecord_Management")'; //這是最下面'暫存草稿'&&'送出'按鈕的API (Post)，除了要傳審核表單本身的資料之外，還要再給我IPRSN、PRASN、IsBuffer -> 0為{送出} 、 1為{暫存草稿}
+    let AuditFormPostUrl = '@Url.Action("CreateDataAudit", "RepairRecord_Management")'; //這是最下面'暫存草稿'&&'送出'按鈕的API (Post)，除了要傳審核表單本身的資料之外，還要再給我IPRSN、IsBuffer -> 0為{送出} 、 1為{暫存草稿}
     //let apiUrl = null
 
     let imgFiles = [];
@@ -230,7 +229,15 @@
             }
             function ImgPath(v) {
                 v.length !== 0 && v.forEach((url) => {
-                    imgFiles.push(url);
+                    let CurFile;
+                    let filename = url.split("/").pop();
+                    fetch(url)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const file = new File([blob], filename, { type: blob.type });
+                            imgFiles.push(file);
+                            CurFile = file
+                        })
                     let query = $(`
                             <div class="edit-img-item">
                                 <img src="${url}">
@@ -240,7 +247,7 @@
                     ImageDisplay(query.children("img"));
                     query.children("button").click(function (event) {
                         event.preventDefault();
-                        let index = imgFiles.findIndex((e) => e == url);
+                        let index = imgFiles.findIndex((e) => e == CurFile);
                         imgFiles.splice(index, 1);
                         $(this).parent().remove();
                     })
@@ -251,7 +258,7 @@
                     case '審核未過':
                         $('#AuditResult_1').prop('checked', true);
                         break;
-                    case '待補件':
+                    case '請補件':
                         $('#AuditResult_2').prop('checked', true);
                         break;
                     case '審核通過':
@@ -276,18 +283,16 @@
             return;
         }
         let iprsn = IPRSN
-        let prasn = document.getElementById("PRASN").value
         let auditID = document.getElementById("NavbarUserID").value
         let auditMemo = document.getElementById("AuditMemo").value
         var form = new FormData();
         form.append("IPRSN", iprsn);
-        form.append("PRASN", prasn);
-        form.append("isBuffer", IsBu);
+        form.append("IsBuffer", IsBu);
         form.append("AuditUserID", auditID);
         form.append("AuditMemo", auditMemo);
         form.append("AuditResult", auditResult);
         for (let i = 0; i < imgFiles.length; i++) {
-            form.append(`Img${i}`, imgFiles[i], `擷取${i}.PNG`);
+            form.append(`Img${i}`, imgFiles[i]);
         }
         var settings = {
             "url": AuditFormPostUrl,
