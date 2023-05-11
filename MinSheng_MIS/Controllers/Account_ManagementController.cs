@@ -222,28 +222,7 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-        //[HttpPost]
-        //public async Task<ActionResult> ChangePD_Submit(FormCollection form)
-        //{
-        //    string old = form["OldPassword"].ToString().Trim();
-        //    string newPd = form["NewPassword"].ToString().Trim();
-        //    string confirm = form["ConfirmPassword"].ToString().Trim();
-        //    try
-        //    {
-        //        var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), old, newPd);
-        //        if (result.Succeeded)
-        //        {
-        //            return Content("變更成功!");
-        //        }
-        //        return Content("變更失敗!");
-        //    }
-        //    catch (DbEntityValidationException ex)
-        //    {
-        //        var entityError = ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage);
-        //        var getFullMessage = string.Join("; ", entityError);
-        //        return Content(getFullMessage);
-        //    }
-        //}
+        
         [HttpPost]
         public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
         {
@@ -259,7 +238,13 @@ namespace MinSheng_MIS.Controllers
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
-                return RedirectToAction("ChangePassword", new { Message = ManageMessageId.ChangePasswordSuccess });
+                ViewBag.Message = "密碼變更成功!";
+                return View();
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error);
             }
             return View(model);
         }

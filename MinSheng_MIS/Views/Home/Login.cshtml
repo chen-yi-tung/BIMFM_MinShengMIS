@@ -26,9 +26,9 @@
                 <img class="login-logo w-100" src="/Content/img/logo.png" alt="臺北市政府工務局衛生下水道工程處">
             </div>
             <h1 class="login-title mb-5">BIM智慧管理系統</h1>
-            <input class="form-control mb-4" type="text" id="UserID" name="UserID" placeholder="帳號">
-            <input class="form-control mb-5" type="password" id="UserPW" name="UserPW" placeholder="密碼">
-            <button class="btn btn-login" type="button" onclick="buttomLogin()">登入</button>
+            <input class="form-control mb-4" type="text" id="UserID" name="UserID" value="admin" placeholder="帳號">
+            <input class="form-control mb-5" type="password" id="UserPW" name="UserPW" value="admin" placeholder="密碼">
+            <button class="btn btn-login" type="submit">登入</button>
         </form>
     </div>
 </body>
@@ -36,37 +36,12 @@
 </html>
 
 <script>
-
-    function buttomLogin() {
-        const formElement = document.querySelector('form');
-        console.log(form);
-        const formData = new FormData(formElement);
-        console.log(formData);
-        $.ajax({
-            url: '@Url.Action("Login", "Home")',
-            type: "POST",
-            dataType: "json",
-            contentType: false,
-            data: formData,
-            success: onSuccess,
-            error: onError
-        })
-
-        function onSuccess(res) {
-            console.log('成功');
-            console.log(res);
-        }
-        function onError(res) {
-            console.log(res);
+    window.onload = function () {
+        var message = '@ViewBag.Message';
+        if (message) {
+        alert(message);
         }
     }
-    //document.querySelector(".btn-login").addEventListener("click", onSubmit);
-    //function onSubmit(e) {
-    //    console.log(e);
-    //    e.preventDefault();
-    //    window.open("/InspectionPlan_Management/Management", "_self");
-    //}
-
 </script>
 
 
