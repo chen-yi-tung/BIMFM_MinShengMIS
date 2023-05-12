@@ -108,7 +108,31 @@
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
-        //'@Url.Action("EditMFR", "ManufacturerInfo_Management")'
+
+        let fd = new FormData();
+        fd.append('MFRName', $("#MFRName").val());
+        fd.append('ContactPerson', $("#ContactPerson").val());
+        fd.append('ImgPath', flieList.files);
+        fd.append('AuditResult', $('input[name="AuditResult"]:checked').val() ?? 0);
+
+        $.ajax({
+            url: '@Url.Action("EditMFR", "ManufacturerInfo_Management")',
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: fd,
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            alert("編輯成功!");
+        }
+
+        function onError(res) {
+            console.log(res);
+        }
     }
 
     function addButtonEvent() {
