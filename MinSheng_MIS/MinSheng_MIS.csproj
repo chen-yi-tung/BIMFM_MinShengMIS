@@ -1504,6 +1504,7 @@
     <Content Include="BimModels\Site01\viewable.json" />
     <Content Include="AllFile\2023-03-30_settings.gradle" />
     <Content Include="jsonSamples\inquiryPlan.json" />
+    <Content Include="jsonSamples\QuotationItem.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datagrid-management.js" />
@@ -1524,6 +1525,7 @@
     <Content Include="Scripts\Forge\SortRouteModal.js" />
     <Content Include="Scripts\Forge\UpViewer.js" />
     <Content Include="Scripts\ImageDisplay.js" />
+    <Content Include="Scripts\InquiryPlan\GetjsonResult.js" />
     <Content Include="Scripts\InquiryPlan\CreateDataGrids.js" />
     <Content Include="Scripts\InspectionPlan\Create.js" />
     <Content Include="Scripts\InspectionPlan\CreateDataGrids.js" />

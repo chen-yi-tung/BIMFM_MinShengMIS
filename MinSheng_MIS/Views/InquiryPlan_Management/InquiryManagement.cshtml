@@ -30,24 +30,17 @@
     </div>
 </div>
 
-<div class="datatable datatable-small mt-5">
+<div class="datatable datatable mt-5">
     <div class="datatable-body position-relative">
         <span class="areaTitle">詢價結果</span>
-        <table class="datatable-table" id="InquiryItemInfo">
-            <tr>
+        <table class="datatable-table" id="QuotationItemInfo">
+            <tr id="MFRName_Place">
                 <td class="datatable-table-th">廠商</td>
-                <td class="datatable-table-td" id="">廠商1</td>
             </tr>
-            <tr>
+            <tr id="QSN_Place">
                 <td class="datatable-table-th">詢價單</td>
-                <td class="datatable-table-td" id="">
-                    <div>
-                        <button type="button" class="btn btn-datagrid">編輯</button>
-                        <button type="button" class="btn btn-datagrid">詳情</button>
-                    </div>
-                </td>
             </tr>
-            <tr>
+            @*<tr id="ItemName_Place">
                 <td class="datatable-table-th p-0">
                     <div class="d-flex col-12 align-items-center">
                         <div class="col-7">藥劑-1</div>
@@ -60,43 +53,33 @@
                         </div>
                     </div>
                 </td>
-                <td class="d-flex flex-column" style="gap:0.75rem;">
-                    <input class="form-control" id="" name="" type="text" />
-                    <input class="form-control" id="" name="" type="text" />
-                    <input class="form-control" id="" name="" type="text" />
-                    <input class="form-control" id="" name="" type="text" />
-                    <input class="form-control" id="" name="" type="text" />
-                </td>
-            </tr>
-            <tr>
-                <td class="datatable-table-th">未稅總價</td>
-                <td class="datatable-table-td" id="">
-                    <input class="form-control" id="" name="" type="text" />
-                </td>
-            </tr>
-            <tr>
-                <td class="datatable-table-th">交期</td>
-                <td class="datatable-table-td" id="">
-                    <input class="form-control" id="" name="" type="text" />
-                </td>
-            </tr>
-            <tr>
-                <td class="datatable-table-th">報價單或其他資料</td>
-                <td class="datatable-table-td" id="">
-                    <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
-                        <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                            <label for="ImgPath" type="button" class="btn btn-datagrid w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
-                                檔案上傳
-                            </label>
-                        </div>
-                        <div id="ImgPathGroup"
-                             class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
-                            <div id="ImgPathName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
-                            <button type="button" class="btn-delete-item flex-shrink-0" id="ImgPathDelete"></button>
-                        </div>
+                <td>
+                    <div class="d-flex flex-column" style="gap:0.75rem;">
+                        <input class="form-control" id="" name="" type="text" />
+                        <input class="form-control" id="" name="" type="text" />
+                        <input class="form-control" id="" name="" type="text" />
+                        <input class="form-control" id="" name="" type="text" />
+                        <input class="form-control" id="" name="" type="text" />
                     </div>
-                    <input id="" name="" type="file" class="form-file-input" required>
                 </td>
+                <td>
+                    <div class="d-flex flex-column" style="gap:0.75rem;">
+                        <input class="form-control" id="" name="" type="text" />
+                        <input class="form-control" id="" name="" type="text" />
+                        <input class="form-control" id="" name="" type="text" />
+                        <input class="form-control" id="" name="" type="text" />
+                        <input class="form-control" id="" name="" type="text" />
+                    </div>
+                </td>
+            </tr>*@
+            <tr id="ExcludeTaxTotal_Place">
+                <td class="datatable-table-th">未稅總價</td>
+            </tr>
+            <tr id="DeliveryLocation_Place">
+                <td class="datatable-table-th">交期</td>
+            </tr>
+            <tr id="QuotationFile_Place">
+                <td class="datatable-table-th">報價單或其他資料</td>
             </tr>
         </table>
     </div>
@@ -131,6 +114,7 @@
 
 
 <script src="/Scripts/datatable.js"></script>
+<script src="~/Scripts/InquiryPlan/GetjsonResult.js"></script>
 <script>
     @*var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
     eqList = eqList.replace("\r", "").replace("\n", "");
@@ -196,19 +180,19 @@
         InquiryUserName: "王大明",
         InquiryItem: [
             {
-                Kind: "潤滑劑",
-                ItemName: "軸承潤滑劑B",
+                Kind: "備料",
+                ItemName: "藥劑-1",
                 Size: "1L",
                 Amount:"10",
                 Unit:"罐",
             },
             {
-                Kind: "潤滑劑",
-                ItemName: "軸承潤滑劑C",
+                Kind: "備料",
+                ItemName: "藥劑-2",
                 Size: "1L",
                 Amount: "10",
                 Unit: "罐",
-            }
+            },
         ]
     }
 
@@ -223,6 +207,7 @@
                 Unit: "罐",
                 ApplicationPurpose: "",
                 EstimatedDate: "",
+                IsMerge:1,
                 InquiryItem: [
                     {
                         Kind: "備料",
@@ -326,6 +311,8 @@
         }
 
     }
+    getJSONresult();
+    
 
 </script>
 
