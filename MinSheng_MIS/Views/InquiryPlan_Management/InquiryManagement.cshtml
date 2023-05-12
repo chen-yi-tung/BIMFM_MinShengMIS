@@ -12,6 +12,19 @@
     .datagrid-modal .modal-middle {
         height: calc(100vh - 38em);
     }
+    .datatable-table td{
+        width:178px !important;
+    }
+
+    #QuotationItemInfo td:first-child {
+        background-color: #c6e1ff;
+        position: sticky;
+        left: 0;
+        z-index: 10;
+        width: 200px !important;
+    }
+
+
 
 </style>
 
@@ -33,62 +46,32 @@
 <div class="datatable datatable mt-5">
     <div class="datatable-body position-relative">
         <span class="areaTitle">詢價結果</span>
-        <table class="datatable-table" id="QuotationItemInfo">
-            <tr id="MFRName_Place">
-                <td class="datatable-table-th">廠商</td>
-            </tr>
-            <tr id="QSN_Place">
-                <td class="datatable-table-th">詢價單</td>
-            </tr>
-            @*<tr id="ItemName_Place">
-                <td class="datatable-table-th p-0">
-                    <div class="d-flex col-12 align-items-center">
-                        <div class="col-7">藥劑-1</div>
-                        <div class="col d-flex flex-column inquiryInfo" style="background-color: #d3e8ff;">
-                            <span>廠牌</span>
-                            <span>型號</span>
-                            <span>數量</span>
-                            <span>包裝形式</span>
-                            <span>價格</span>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <div class="d-flex flex-column" style="gap:0.75rem;">
-                        <input class="form-control" id="" name="" type="text" />
-                        <input class="form-control" id="" name="" type="text" />
-                        <input class="form-control" id="" name="" type="text" />
-                        <input class="form-control" id="" name="" type="text" />
-                        <input class="form-control" id="" name="" type="text" />
-                    </div>
-                </td>
-                <td>
-                    <div class="d-flex flex-column" style="gap:0.75rem;">
-                        <input class="form-control" id="" name="" type="text" />
-                        <input class="form-control" id="" name="" type="text" />
-                        <input class="form-control" id="" name="" type="text" />
-                        <input class="form-control" id="" name="" type="text" />
-                        <input class="form-control" id="" name="" type="text" />
-                    </div>
-                </td>
-            </tr>*@
-            <tr id="ExcludeTaxTotal_Place">
-                <td class="datatable-table-th">未稅總價</td>
-            </tr>
-            <tr id="DeliveryLocation_Place">
-                <td class="datatable-table-th">交期</td>
-            </tr>
-            <tr id="QuotationFile_Place">
-                <td class="datatable-table-th">報價單或其他資料</td>
-            </tr>
-        </table>
+        <div class="overflow-auto">
+            <table class="datatable-table" id="QuotationItemInfo" style="table-layout: fixed;">
+                <tr id="MFRName_Place">
+                    <td class="datatable-table-th">廠商</td>
+                </tr>
+                <tr id="QSN_Place">
+                    <td class="datatable-table-th">詢價單</td>
+                </tr>
+                <tr id="ExcludeTaxTotal_Place">
+                    <td class="datatable-table-th">未稅總價</td>
+                </tr>
+                <tr id="DeliveryLocation_Place">
+                    <td class="datatable-table-th">交期</td>
+                </tr>
+                <tr id="QuotationFile_Place">
+                    <td class="datatable-table-th">報價單或其他資料</td>
+                </tr>
+            </table>
+        </div>      
     </div>
 </div>
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-search" id="print">列印</button>
-    <button class="btn btn-export" id="submit">儲存</button>
+    <button class="btn btn-export" id="submit">提交送審</button>
 </div>
 
 <div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal-InquiryPlanGroup">

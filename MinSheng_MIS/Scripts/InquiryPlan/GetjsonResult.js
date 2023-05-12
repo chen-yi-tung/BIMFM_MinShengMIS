@@ -111,6 +111,90 @@
                     "QuotationFile": "報價單8.pdf"
                 }
             ]
+        },
+        {
+            "MFRName": "廠商4",
+            "QSN": "",
+            "ItemObject": [
+                {
+                    "ItemName": "藥劑-1",
+                    "Brand": "4",
+                    "Model": "44",
+                    "Amount": 20,
+                    "Packaging": "220g/罐",
+                    "SubTotal": "12,000",
+                    "ExcludeTaxTotal": "22,000",
+                    "DeliveryLocation": "2023/03/15",
+                    "QuotationFile": "報價單7.pdf"
+                },
+                {
+                    "ItemName": "藥劑-2",
+                    "Brand": "4-1",
+                    "Model": "44-1",
+                    "Amount": 10,
+                    "Packaging": "230g/罐",
+                    "SubTotal": "12,000",
+                    "ExcludeTaxTotal": "22,000",
+                    "DeliveryLocation": "2023/03/15",
+                    "QuotationFile": "報價單8.pdf"
+                }
+            ]
+        },
+        {
+            "MFRName": "廠商4",
+            "QSN": "",
+            "ItemObject": [
+                {
+                    "ItemName": "藥劑-1",
+                    "Brand": "4",
+                    "Model": "44",
+                    "Amount": 20,
+                    "Packaging": "220g/罐",
+                    "SubTotal": "12,000",
+                    "ExcludeTaxTotal": "22,000",
+                    "DeliveryLocation": "2023/03/15",
+                    "QuotationFile": "報價單7.pdf"
+                },
+                {
+                    "ItemName": "藥劑-2",
+                    "Brand": "4-1",
+                    "Model": "44-1",
+                    "Amount": 10,
+                    "Packaging": "230g/罐",
+                    "SubTotal": "12,000",
+                    "ExcludeTaxTotal": "22,000",
+                    "DeliveryLocation": "2023/03/15",
+                    "QuotationFile": "報價單8.pdf"
+                }
+            ]
+        },
+        {
+            "MFRName": "廠商4",
+            "QSN": "",
+            "ItemObject": [
+                {
+                    "ItemName": "藥劑-1",
+                    "Brand": "4",
+                    "Model": "44",
+                    "Amount": 20,
+                    "Packaging": "220g/罐",
+                    "SubTotal": "12,000",
+                    "ExcludeTaxTotal": "22,000",
+                    "DeliveryLocation": "2023/03/15",
+                    "QuotationFile": "報價單7.pdf"
+                },
+                {
+                    "ItemName": "藥劑-2",
+                    "Brand": "4-1",
+                    "Model": "44-1",
+                    "Amount": 10,
+                    "Packaging": "230g/罐",
+                    "SubTotal": "12,000",
+                    "ExcludeTaxTotal": "22,000",
+                    "DeliveryLocation": "2023/03/15",
+                    "QuotationFile": "報價單8.pdf"
+                }
+            ]
         }
     ]
 
@@ -243,7 +327,7 @@ function ItemsObject() {
         console.log("fakeData:", fakeData);
         let ItemNames =
             `<tr id="ItemName_Place_${i}">
-                <td class="datatable-table-th p-0">
+                <td class="datatable-table-th p-0" style="background-color: #c6e1ff;">
                     <div class="d-flex col-12 align-items-center">
                         <div class="col-7">${f.ItemName}</div>
                         <div class="col d-flex flex-column inquiryInfo" style="background-color: #d3e8ff;">
