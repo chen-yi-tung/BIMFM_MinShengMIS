@@ -41,6 +41,10 @@
 <section style="max-width: 855px;margin: auto;">
     <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-center" style="gap: 1rem 2rem;">
         <form class="form d-lg-contents">
+            <div class="form-group w-lg-250px required d-none">
+                <label for="SRSN">領用申請編號</label>
+                <input class="form-control" id="SRSN" name="SRSN" type="text" required />
+            </div>
             <div class="form-group w-lg-250px required">
                 <label for="SRName">申請人</label>
                 <input class="form-control" id="SRName" name="SRName" type="text" required />
@@ -48,7 +52,7 @@
 
             <div class="form-group w-lg-250px">
                 <label for="SRDept">申請部門</label>
-                <input class="form-control" id="SRDept" name="SRDept" type="text" maxlength="20" />
+                <input class="form-control" id="SRDept" name="SRDept" type="text" maxlength="20" required />
             </div>
 
             <div class="form-group w-lg-532px">
@@ -122,19 +126,57 @@
 <script src="/Scripts/datatable.js"></script>
 <script>
 
+    let apiUrl = null;
+    const fakeData = {
+        SRSN: "000001",
+        SRName: "前處理",
+        SRDept: "前處理",
+        SRContent: "除物皮帶輸送機",
+        StoresRequisitionItem: [
+            {
+                StockType: "E00001",
+                StockName: "月",
+                Amount: "1",
+                Unit: "1",
+                Content: "1",
+            }
+        ]
+    }
+
     let sampleTr;
+
+    function readData(url = null) {
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                //data: JSON.stringify(jsonData),
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            });
+
+        function onSuccess(res) {
+            console.log(res);
+            
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
 
     $(async function () {
         addButtonEvent();
         sampleTr = new SampleTr();
-    })
+    });
 
     function SampleTr() {
         this.count = 0;
         this.data = {};
         this.init = async function () {
-            await pushSelect("Kind", '@Url.Action("AllMyName","DropDownList")');
-            await pushSelect("Unit", '@Url.Action("AllMyName","DropDownList")');
+            await pushSelect("StockType", '@Url.Action("AllMyName","DropDownList")');
+            await pushSelect("StockName", '@Url.Action("AllMyName","DropDownList")');
 
             $("#item-area").on("click", ".btn-delete-item", function (e) {
                 $(this).parent().parent().remove();
@@ -171,6 +213,11 @@
         $("#submit").click(function () {
             save();
         });
+    }
+
+    window.onload = function () {
+
+        readData(apiUrl);
     }
 </script>
 
