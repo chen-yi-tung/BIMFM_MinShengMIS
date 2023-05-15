@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNet.Identity;
+@using System.Security.Claims;
+
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -26,20 +29,23 @@
             </a>
 
             <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
-                aria-labelledby="offcanvasNavbarLabel">
+                 aria-labelledby="offcanvasNavbarLabel">
                 <div class="offcanvas-header">
                     <a class="navbar-brand" href="/">
                         <img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
                     </a>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                        aria-label="Close"></button>
+                            aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
                     <span class="navbar-brand-title d-xl-none">BIM智慧管理系統</span>
                     <div class="navbar-end order-xl-last mt-3 mt-xl-0">
-						<input type="text" id="NavbarUserID" value="Admin" hidden>
-                        <span class="navbar-user">您好 <span id="NavbarUserName">Admin</span> ！</span>
-                        <a class="navbar-logout" href="/Home/Login">登出</a>
+                        <form id="logoutForm" method="post" action="/Home/LogOff">
+                            @Html.AntiForgeryToken()
+                            <input type="text" id="NavbarUserID" value="@User.Identity.GetUserName()" hidden>
+                            <span class="navbar-user">您好 <span id="NavbarUserName">@Session["MyName"]</span> ！</span>
+                            <a class="navbar-logout" href="javascript:document.getElementById('logoutForm').submit()">登出</a>
+                        </form>
                     </div>
 					<ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
 						<li class="nav-item dropdown">
@@ -134,7 +140,7 @@
                 </div>
             </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-                aria-controls="offcanvasNavbar">
+                    aria-controls="offcanvasNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>

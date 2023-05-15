@@ -10,13 +10,15 @@ using System.Web.Mvc;
 using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
 using System.Data.Entity.Migrations;
 using Newtonsoft.Json.Linq;
+using System.Web.Services.Description;
+using System.Web.Http.Results;
 
 namespace MinSheng_MIS.Controllers
 {
     public class ManufacturerInfo_ManagementController : Controller
     {
-        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-        DatagridService ds = new DatagridService();
+        ManufacturerInfo_ViewModel ManufacturerInfoVM = new ManufacturerInfo_ViewModel();
+
         // GET: ManufacturerInfo_Management
         #region 廠商管理
         public ActionResult Management()
@@ -27,7 +29,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult ManufacturerInfo_Management(FormCollection form)
         {
             var service = new DatagridService();
-            var a = ds.GetJsonForGrid_ManufacturerInfo_Management(form);
+            var a = service.GetJsonForGrid_ManufacturerInfo_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -37,6 +39,70 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Create()
         {
             return View();
+        }
+        [HttpPost]
+        public ActionResult Create(ManufacturerInfo MFR) 
+        {
+            JsonResponseViewModel Jresult = new JsonResponseViewModel()
+            {
+                ResponseCode = 400
+            };
+            int resultCode = 400;
+
+            #region 基本檢查
+            if (string.IsNullOrEmpty(MFR.MFRName))
+            {
+                Jresult.ResponseMessage = "供應商名稱為必填項目!";
+                Response.StatusCode = resultCode;
+                return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+            }
+            if (MFR.MFRName.Length > 50)
+            {
+                Jresult.ResponseMessage = "供應商名稱過長!";
+                Response.StatusCode = resultCode;
+                return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+            }
+            if (!string.IsNullOrEmpty(MFR.ContactPerson))
+            {
+                if (MFR.ContactPerson.Length > 50)
+                {
+                    Jresult.ResponseMessage = "廠商聯絡人過長!";
+                    Response.StatusCode = resultCode;
+                    return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+                }
+            }
+            if (!string.IsNullOrEmpty(MFR.MFREmail))
+            {
+                if (MFR.MFREmail.Length > 256)
+                {
+                    Jresult.ResponseMessage = "廠商信箱過長!";
+                    Response.StatusCode = resultCode;
+                    return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+                }
+            }
+            if (!string.IsNullOrEmpty(MFR.MFRMainProduct))
+            {
+                if (MFR.MFRMainProduct.Length > 200)
+                {
+                    Jresult.ResponseMessage = "主要商品過長!";
+                    Response.StatusCode = resultCode;
+                    return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+                }
+            }
+            if (!string.IsNullOrEmpty(MFR.Memo))
+            {
+                if (MFR.Memo.Length > 200)
+                {
+                    Jresult.ResponseMessage = "備註過長!";
+                    Response.StatusCode = resultCode;
+                    return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+                }
+            }
+            #endregion
+
+            string result = ManufacturerInfoVM.Manufac_Create(MFR,ref resultCode);
+            Response.StatusCode = resultCode;
+            return Content(result, "application/json");
         }
         #endregion
 
@@ -49,8 +115,9 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult ReadBody(string id)
         {
-            var MFR = db.ManufacturerInfo.Find(id);
-            string result = JsonConvert.SerializeObject(MFR);
+            int resultCode = 200;
+            string result = ManufacturerInfoVM.Manufac_Read_GetData(id, ref resultCode);
+            Response.StatusCode = resultCode;
             return Content(result, "application/json");
         }
         #endregion
@@ -64,21 +131,71 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult EditMFR(ManufacturerInfo MFR)
         {
-            var Manufacturer = db.ManufacturerInfo.Find(MFR.MFRSN);
-            Manufacturer.MFRName = MFR.MFRName;
-            Manufacturer.ContactPerson = MFR.ContactPerson;
-            Manufacturer.MFRTelNO = MFR.MFRTelNO;
-            Manufacturer.MFRMBPhone = MFR.MFRMBPhone;
-            Manufacturer.MFRAddress = MFR.MFRAddress;
-            Manufacturer.MFREmail = MFR.MFREmail;
-            Manufacturer.MFRWeb = MFR.MFRWeb;
-            Manufacturer.MFRMainProduct = MFR.MFRMainProduct;
-            db.ManufacturerInfo.AddOrUpdate(Manufacturer);
-            db.SaveChanges();
+            JsonResponseViewModel Jresult = new JsonResponseViewModel()
+            {
+                ResponseCode = 400
+            };
+            int resultCode = 400;
 
-            JObject jo = new JObject();
-            jo.Add("Succed", true);
-            string result = JsonConvert.SerializeObject(jo);
+            #region 基本檢查
+            if (string.IsNullOrEmpty(MFR.MFRSN))
+            {
+                Jresult.ResponseMessage = "廠商編號為必填項目!";
+                Response.StatusCode = resultCode;
+                return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+            }
+            if (string.IsNullOrEmpty(MFR.MFRName))
+            {
+                Jresult.ResponseMessage = "供應商名稱為必填項目!";
+                Response.StatusCode = resultCode;
+                return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+            }
+            if (MFR.MFRName.Length > 50)
+            {
+                Jresult.ResponseMessage = "供應商名稱過長!";
+                Response.StatusCode = resultCode;
+                return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+            }
+            if (!string.IsNullOrEmpty(MFR.ContactPerson))
+            {
+                if (MFR.ContactPerson.Length > 50)
+                {
+                    Jresult.ResponseMessage = "廠商聯絡人過長!";
+                    Response.StatusCode = resultCode;
+                    return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+                }
+            }
+            if (!string.IsNullOrEmpty(MFR.MFREmail))
+            {
+                if (MFR.MFREmail.Length > 256)
+                {
+                    Jresult.ResponseMessage = "廠商信箱過長!";
+                    Response.StatusCode = resultCode;
+                    return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+                }
+            }
+            if (!string.IsNullOrEmpty(MFR.MFRMainProduct))
+            {
+                if (MFR.MFRMainProduct.Length > 200)
+                {
+                    Jresult.ResponseMessage = "主要商品過長!";
+                    Response.StatusCode = resultCode;
+                    return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+                }
+            }
+            if (!string.IsNullOrEmpty(MFR.Memo))
+            {
+                if (MFR.Memo.Length > 200)
+                {
+                    Jresult.ResponseMessage = "備註過長!";
+                    Response.StatusCode = resultCode;
+                    return Content(JsonConvert.SerializeObject(Jresult), "application/json");
+                }
+            }
+            #endregion
+
+            string result = ManufacturerInfoVM.Manufac_Edit_Update(MFR, ref resultCode);
+            Response.StatusCode = resultCode;
             return Content(result, "application/json");
         }
         #endregion

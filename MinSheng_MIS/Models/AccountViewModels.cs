@@ -123,6 +123,7 @@ namespace MinSheng_MIS.Models
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
+        #region 取得帳號資料
         public JObject GetCurAccountData(string UserName,bool dicConvert)
         { 
             var data = db.AspNetUsers.Where(x => x.UserName == UserName).FirstOrDefault();
@@ -145,6 +146,7 @@ namespace MinSheng_MIS.Models
                 return null;
             }
         }
+        #endregion
 
         #region 更新使用者資料
         public int UpdateUserData(System.Web.Mvc.FormCollection form)

@@ -1,17 +1,20 @@
-﻿using MinSheng_MIS.Models;
+﻿using Microsoft.Owin;
+using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
+using static MinSheng_MIS.Controllers.HomeController;
+using FormCollection = System.Web.Mvc.FormCollection;
 
 namespace MinSheng_MIS.Controllers
 {
     public class MaintainRecord_ManagementController : Controller
     {
-
         #region 巡檢保養紀錄管理
         public ActionResult Management()
         {

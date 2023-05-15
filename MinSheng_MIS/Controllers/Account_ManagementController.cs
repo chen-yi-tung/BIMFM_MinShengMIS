@@ -15,6 +15,7 @@ using System.Web.Http.Results;
 using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Data.Entity.Validation;
+using static MinSheng_MIS.Controllers.ManageController;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -46,6 +47,7 @@ namespace MinSheng_MIS.Controllers
         }
 
         // GET: Account_Management
+
         #region 帳號管理
         public ActionResult Management()
         {
@@ -220,27 +222,31 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
+        
         [HttpPost]
-        public async Task<ActionResult> ChangePD_Submit(FormCollection form)
+        public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            string old = form["OldPassword"].ToString().Trim();
-            string newPd = form["NewPassword"].ToString().Trim();
-            string confirm = form["ConfirmPassword"].ToString().Trim();
-            try
+            if (!ModelState.IsValid)
             {
-                var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), old, newPd);
-                if (result.Succeeded)
+                return View(model);
+            }
+            var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+            if (result.Succeeded)
+            {
+                var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+                if (user != null)
                 {
-                    return Content("變更成功!");
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
-                return Content("變更失敗!");
+                ViewBag.Message = "密碼變更成功!";
+                return View();
             }
-            catch (DbEntityValidationException ex)
+
+            foreach (var error in result.Errors)
             {
-                var entityError = ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage);
-                var getFullMessage = string.Join("; ", entityError);
-                return Content(getFullMessage);
+                ModelState.AddModelError("", error);
             }
+            return View(model);
         }
         #endregion
     }

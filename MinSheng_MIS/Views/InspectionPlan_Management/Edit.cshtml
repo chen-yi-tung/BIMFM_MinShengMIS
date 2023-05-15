@@ -729,6 +729,8 @@
     }
     const IPSN = '@ViewBag.id';
     let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
+    let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
+    let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
     //let apiUrl = null;
     function readData(url = null) {
 
@@ -793,7 +795,7 @@
         if (!data) return;
 
         $.ajax({
-            url: "/InspectionPlan_Management/EditInspectionPlan",
+            url: SubmitUrl,
             data: JSON.stringify(data),
             type: "POST",
             dataType: "json",
@@ -817,8 +819,8 @@
 
     function deleteIP() {
         $.ajax({
-            url: "/InspectionPlan_Management/DeleteInspectionPlan?IPSN=" + IPSN,
-            type: "POST",
+            url: delUrl,
+            type: "DELETE",
             dataType: "json",
             contentType: "application/json;charset=utf-8",
             success: onSuccess,

@@ -108,7 +108,39 @@
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
-        //'@Url.Action("EditMFR", "ManufacturerInfo_Management")'
+
+        let fd = new FormData();
+        fd.append('MFRSN', MFRSN);
+        fd.append('MFRName', $("#MFRName").val());
+        fd.append('ContactPerson', $("#ContactPerson").val());
+        fd.append('MFRTelNO', $("#MFRTelNO").val());
+        fd.append('MFRMBPhone', $("#MFRMBPhone").val());
+        fd.append('MFRAddress', $("#MFRAddress").val());
+        fd.append('MFREmail', $("#MFREmail").val());
+        fd.append('MFRWeb', $("#MFRWeb").val());
+        fd.append('MFRMainProduct', $("#MFRMainProduct").val());
+
+        $.ajax({
+            url: '@Url.Action("EditMFR", "ManufacturerInfo_Management")',
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: fd,
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            alert("編輯成功!");
+            let url = '@Url.Action("Management", "ManufacturerInfo_Management")';
+            window.location.href = url;
+        }
+
+        function onError(res) {
+            console.log(res);
+            alert("編輯失敗!");
+        }
     }
 
     function addButtonEvent() {
