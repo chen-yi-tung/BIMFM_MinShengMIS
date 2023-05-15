@@ -6,6 +6,17 @@
 <script src="/Content/easyui/jquery.min.js"></script>
 <script src="/Content/easyui/jquery.easyui.min.js"></script>
 <script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+<link rel="stylesheet" href="/Content/datagrid-modal.css">
+
+
+<style>
+
+    .datagrid-modal .modal-middle {
+        height: calc(100vh - 10em);
+    }
+
+
+</style>
 
 <h2>@ViewBag.Title</h2>
 
@@ -79,8 +90,45 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal-Order">
+    <div class="modal-dialog modal-fullscreen modal-middle modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <input class="form-control" id="PRIN" name="PRIN" type="text" hidden />
+                <h2 class="mb-4">下單資訊</h2>
+                <div class="col-12 d-flex mx-auto w-75 justify-content-center">
+                    <div class=" mx-1 d-flex align-items-center">
+                        <label for="Kind" class="col-3">採購人員:</label>
+                        <input class="form-control " id="d-Kind" name="d-Kind" type="text" value="" />
+                    </div>
+                </div>
+                <div class="datatable datatable-small mt-3">
+                    <div class="datatable-body">
+                        <table class="datatable-table" id="OrderItemInfo"></table>
+                    </div>
+                </div>
+
+                <div class="datatable datatable mt-5">
+                    <div class="datatable-body">
+                        <table class="datatable-table" id="OrderItem" style="border-top: 1px solid #8A9BA5;">
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button class="btn btn-back" id="back">返回</button>
+                <button class="btn btn-search" id="">列印</button>
+                <button class="btn btn-export" id="">下單</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script src="/Scripts/datagrid-management.js"></script>
 <script src="/Scripts/tool.js"></script>
+<script src="/Scripts/datatable.js"></script>
 <script>
 
     var getGridJSON = '@Url.Action("PurchaseOrder_Management", "PurchaseOrder_Management")';
@@ -111,6 +159,7 @@
     function Initialize_DataGrid(getGridJSON) {
         let dg = new DG();
         let thirdClassName = "btn btn-datagrid btn-datagrid-third";
+        
         DataGrid = dg.init("#DataGrid", {
             //url: getGridJSON,
             data: fakeData,
@@ -120,10 +169,17 @@
             //sortName: 'POSN',
             frozenColumns: [[
                 dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                dg.frozenColumn('_order', (v, row, i) => dg.eventButton(i, "下單", "order")),
+                {
+                    field: '_order', align: 'center',
+                    formatter: (val, row, index) => {
+                        //let disabled = row.MaintainState == "待審核" ? '' : 'disabled';
+                        return `<button class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#DatagridModal-Order">下單</button>`;
+                    }
+                },
                 dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "撤銷", "delete")),
                 dg.frozenColumn('_delivery', (v, row, i) => dg.eventButton(i, "收貨", "delivery", { className: thirdClassName })),
                 dg.frozenColumn('_accept', (v, row, i) => dg.eventButton(i, "驗收", "accept", { className: thirdClassName })),
+                
             ]],
             columns: [[
                 dg.hiddenColumn('QAmount'),
@@ -166,6 +222,104 @@
         $("#search").click(function () {
             DataGrid.datagrid('load', getQueryParams());
         });
+    }
+
+    const apiUrl = null;
+
+    const SerializedName = [
+        { text: "狀態", value: "POState" },
+        { text: "採購單號", value: "POSN" },
+        { text: "詢價單號", value: "IOSN" },
+        { text: "詢價人員", value: "InquiryName" },
+        { text: "詢價單", value: "" },
+        { text: "報價單", value: "StockOutContent" },
+        { text: "廠商", value: "MFRName" },
+        { text: "付款方式", value: "PaymentMethod" },
+        { text: "交貨方式", value: "DeliveryMethod" },
+        { text: "交貨時間", value: "DeliveryDate" },
+        { text: "交貨地點", value: "DeliveryLocation" },
+    ]
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "ExternalRFID", title: "類別", width: 135 },
+            { id: "RFID_StockName", title: "品名", width: 135 },
+            { id: "MName", title: "尺寸", width: 135 },
+            { id: "Size", title: "廠牌", width: 135 },
+            { id: "Brand", title: "型號", width: 135 },
+            { id: "Model", title: "數 量", width: 135 },
+            { id: "OutAmount", title: "包裝形式", width: 135 },
+            { id: "RFID_Unit", title: "金額(未稅)", width: 135 },
+        ]
+    }
+
+    const ModalfakeData = {
+        POState: "2",
+        POStateText:"已採購",
+        POSN: "202302001",
+        IOSN: "202302001",
+        InquiryName: "王大明",
+        StockOutContent: "罐",
+        MFRName: "OOXX",
+        PaymentMethod: "貨到付款",
+        DeliveryMethod: "貨到付款",
+        DeliveryDate: "2022/10/14",
+        DeliveryLocation:"2022/10/14",
+        OrderItem: [
+            {
+                ExternalRFID: "備料",
+                RFID_StockName: "藥劑-1",
+                MName: "1L",
+                Size: "OXO",
+                Brand: "OXO",
+                Model: "10",
+                OutAmount: "250g/罐",
+                RFID_Unit: "10000",
+            },
+            {
+                ExternalRFID: "備料",
+                RFID_StockName: "藥劑-1",
+                MName: "1L",
+                Size: "OXO",
+                Brand: "OXO",
+                Model: "10",
+                OutAmount: "250g/罐",
+                RFID_Unit: "10000",
+            }
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(ModalfakeData) :   //fakeData
+            $.ajax({
+                url: url,
+                data: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#OrderItemInfo").append(createTableInner(res, SerializedName));
+            if (res.OrderItem) {
+                $("#OrderItem").append(createTableGrid(res.OrderItem, GridOptions))
+            }
+            else {
+                $("#OrderItem").parents(".datatable").remove();
+            }
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
     }
 </script>
 
