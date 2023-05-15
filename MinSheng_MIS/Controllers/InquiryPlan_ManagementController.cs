@@ -23,6 +23,13 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 詢價列印
+        public ActionResult Print()
+        {
+            return View();
+        }
+        #endregion
+
         #region 詢價計畫詳情
         public ActionResult Read()
         {

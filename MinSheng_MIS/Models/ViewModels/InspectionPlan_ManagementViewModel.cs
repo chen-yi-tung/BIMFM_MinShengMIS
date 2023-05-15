@@ -188,12 +188,14 @@ namespace MinSheng_MIS.Models.ViewModels
         #region 巡檢計畫-編輯 DataGrid
         public string InspectationPlan_Edit_Data(string IPSN)
         {
+            #region 變數宣告
             var dic_InPlanState = Surfaces.Surface.InspectionPlanState();
             var dic_Shift = Surfaces.Surface.Shift();
             var dic_EMFIState = Surfaces.Surface.EquipmentMaintainFormItemState();
             var dic_EState = Surfaces.Surface.EState();
             var dic_ERFState = Surfaces.Surface.EquipmentReportFormState();
             var dic_RL = Surfaces.Surface.ReportLevel();
+            #endregion
 
             #region 巡檢計畫
             var IP_SourceTable = db.InspectionPlan.Find(IPSN);
@@ -371,40 +373,73 @@ namespace MinSheng_MIS.Models.ViewModels
             RepairEquipment: RepairEquipment,
             InspectionPlanPaths: InspectionPlanPaths
             */
-
-            var IP_SourceTable = db.InspectionPlan.Find(form["IPSN"].ToString());
-            IP_SourceTable.IPName = form["IPName"].ToString();
-            IP_SourceTable.PlanDate = DateTime.Parse(form["PlanDate"].ToString());
-            IP_SourceTable.Shift = form["Shift"].ToString();
-            IP_SourceTable.MaintainUserID = form["MaintainUserID"].ToString();
-            IP_SourceTable.RepairUserID = form["RepairUserID"].ToString();
-            JArray ME_ja = (JArray)form["MaintainEquipment"];
-            JArray RE_ja = (JArray)form["RepairEquipment"];
-            IP_SourceTable.MaintainAmount = ME_ja.Count();
-            IP_SourceTable.RepairAmount = RE_ja.Count();
-            IP_SourceTable.PlanState = "1";
-            db.InspectionPlan.AddOrUpdate(IP_SourceTable);
-            db.SaveChanges();
-
-            JArray NameArray = (JArray)form["UserID"];
-            db.InspectionPlanMember.RemoveRange(db.InspectionPlanMember.Where(x => x.IPSN == form["IPSN"].ToString()));//先刪除全部成員
-            for (int i = 0; i < NameArray.Count(); i++)
-            {
-                Models.InspectionPlanMember IPM = new Models.InspectionPlanMember()
-                {
-                    PMSN = form["IPSN"].ToString() + "_" + (i + 1).ToString(),
-                    IPSN = form["IPSN"].ToString(),
-                    UserID = NameArray[i].ToString(),
-                    WatchID = NameArray[i].ToString() //這個之後會需要再換!!!!!
-                };
-                db.InspectionPlanMember.Add(IPM);
-                db.SaveChanges();
-            }
-
             
-            //IP_SourceTable.MaintainAmount = form["MaintainEquipment"];
+            JsonResponseViewModel Jresult = new JsonResponseViewModel();
+           
+            try
+            {
+                #region 變數宣告
+                string ipsn = form["IPSN"].ToString();
+                #endregion
 
-            return "";
+                #region 主表更新 InspectionPlan
+                var IP_SourceTable = db.InspectionPlan.Find(ipsn);
+                IP_SourceTable.IPName = form["IPName"].ToString();
+                IP_SourceTable.Shift = form["Shift"].ToString();
+                IP_SourceTable.MaintainUserID = form["MaintainUserID"].ToString();
+                IP_SourceTable.RepairUserID = form["RepairUserID"].ToString();
+                JArray ME_ja = (JArray)form["MaintainEquipment"];
+                JArray RE_ja = (JArray)form["RepairEquipment"];
+                IP_SourceTable.MaintainAmount = ME_ja.Count();
+                IP_SourceTable.RepairAmount = RE_ja.Count();
+                IP_SourceTable.PlanState = "1";
+                db.InspectionPlan.AddOrUpdate(IP_SourceTable);
+                db.SaveChanges();
+                #endregion
+
+                #region 巡檢計畫人員名單 Inspection Plan Member
+                JArray NameArray = (JArray)form["UserID"];
+                var DelInsPlanMember = db.InspectionPlanMember.Where(x => x.IPSN == ipsn);
+                db.InspectionPlanMember.RemoveRange(DelInsPlanMember);//先刪除全部成員
+                db.SaveChanges();
+
+                for (int i = 0; i < NameArray.Count(); i++)
+                {
+                    Models.InspectionPlanMember IPM = new Models.InspectionPlanMember()
+                    {
+                        PMSN = ipsn + "_" + (i + 1).ToString(),
+                        IPSN = ipsn,
+                        UserID = NameArray[i].ToString(),
+                        WatchID = ""
+                    };
+                    db.InspectionPlanMember.Add(IPM);
+                    db.SaveChanges();
+                }
+                #endregion
+
+                #region 定期保養項目
+
+                #endregion
+
+                #region 維修設備
+
+                #endregion
+
+                #region 巡檢路線規劃
+
+                #endregion
+
+                Jresult.ResponseCode = 200;
+                Jresult.ResponseMessage = "更新成功!";
+                return JsonConvert.SerializeObject(Jresult);
+            }
+            catch (Exception ex)
+            {
+                Jresult.ResponseCode = 500;
+                Jresult.ResponseMessage = ex.Message;
+                return JsonConvert.SerializeObject(Jresult);
+            }
+            
         }
         #endregion
 

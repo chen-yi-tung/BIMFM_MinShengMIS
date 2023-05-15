@@ -107,6 +107,14 @@ h2 {
 .modal-delete .modal-footer {
     border-top: 0;
 }
+.inquiryInfo span {
+    border-bottom: 1px dashed #ADB8BE;
+    padding:0.5rem;
+}
+.inquiryInfo span:last-child {
+    border-bottom: 0px dashed #ADB8BE;
+
+}
 
 @media print {
     * {

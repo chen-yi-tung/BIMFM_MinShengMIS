@@ -1,7 +1,276 @@
 ﻿
 @{
-    ViewBag.Title = "CreatePlan";
+    ViewBag.Title = "新增詢價計畫";
 }
 
-<h2>CreatePlan</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<link rel="stylesheet" href="/Content/samplepath.css">
+<link rel="stylesheet" href="/Content/tagbox.css">
+<link rel="stylesheet" href="/Content/datagrid-modal.css">
 
+<h2>@ViewBag.Title</h2>
+<div class="search-area bg-transparent">
+    <form class="form justify-content-center">
+        <div class="form-group required">
+            <label for="InquiryUserName">詢價人</label>
+            <input type="text" class="form-control" name="InquiryUserName" id="InquiryUserName" maxlength="50">
+        </div>
+    </form>
+</div>
+
+<div class="edit-area edit-area-middle" style="gap: 1em;">
+    <div class="datatable-easyui w-100 d-none">
+        <table id="InquiryPlan-datagrid"></table>
+    </div>
+    <div class="edit-button-area m-0 w-auto">
+        <button class="btn btn-search" id="InquiryPlan-create" data-bs-toggle="modal" data-bs-target="#DatagridModal-InquiryPlan">+新增項目</button>
+        <button class="btn btn-search d-none" id="InquiryPlan-group" data-bs-toggle="modal" data-bs-target="#DatagridModal-InquiryPlanGroup">合併</button>
+        <button class="btn btn-search d-none" id="InquiryPlan-ungroup">取消合併</button>
+        <button class="btn btn-delete d-none" id="InquiryPlan-delete">刪除</button>
+    </div>
+</div>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal-InquiryPlan">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>新增詢價項目</h2>
+                <div class="search-area mb-3">
+                    <form class="form">
+
+                        <input class="form-control" id="" name="" type="text"
+                               value="" hidden />
+
+                        <div class="form-group">
+                            <label for="PRIN">單號</label>
+                            <select class="form-select" name="PRIN" id="PRIN">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="PRUserName">請購人</label>
+                            <select class="form-select" name="PRUserName" id="PRUserName">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="PRDept">請購單位</label>
+                            <select class="form-select" name="PRDept" id="PRDept">
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Kind">類別</label>
+                            <input class="form-control" id="Kind" name="Kind" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ItemName">品名</label>
+                            <input class="form-control" id="ItemName" name="ItemName" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Size">尺寸</label>
+                            <input class="form-control" id="Size" name="Size" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ApplicationPurpose">申請用途</label>
+                            <input class="form-control" id="ApplicationPurpose" name="ApplicationPurpose" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateSelect">日期選擇</label>
+                            <select class="form-select" name="DateSelect" id="DateSelect">
+                                <option value="1">上次保養日期</option>
+                                <option value="2">最近應保養日期</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateStart">日期(起)</label>
+                            <input class="form-control" id="DateStart" name="DateStart" type="date" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DateEnd">日期(迄)</label>
+                            <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-search" id="search">查詢</button>
+                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="modal-datagrid"></table>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="add-row">新增</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal-InquiryPlanGroup">
+    <div class="modal-dialog modal-fullscreen modal-middle modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <input class="form-control" id="PRIN" name="PRIN" type="text" hidden />
+                <h2 class="mb-5">項目合併</h2>
+                <div class="col-12 d-flex mx-auto w-75 justify-content-center">
+                    <div class="col-3 mx-1">
+                        <label for="Kind">類別</label>
+                        <input class="form-control " id="d-Kind" name="d-Kind" type="text" value="" />
+                    </div>
+                    <div class="col-3 mx-1">
+                        <label for="ItemName">品名</label>
+                        <input class="form-control" id="ItemName" name="ItemName" type="text" value="" />
+                    </div>
+                    <div class="col-3 mx-1">
+                        <label for="Size">尺寸</label>
+                        <input class="form-control" id="Size" name="Size" type="text" value="" />
+                    </div>
+                    <div class="col-2 mx-1">
+                        <label for="PRAmount">數量</label>
+                        <input class="form-control" id="PRAmount" name="PRAmount" type="text" value="" />
+                    </div>
+                    <div class="col-2 mx-1">
+                        <label for="Unit">單位</label>
+                        <input class="form-control" id="Unit" name="Unit" type="text" value="" />
+                    </div>
+                </div>
+                <div class="datatable datatable mt-5">
+                    <div class="datatable-body">
+                        <table class="datatable-table" id="GroupInfo">
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-export" id="add-row">確認</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+
+<script src="/Scripts/tool.js"></script>
+<script src="~/Scripts/InquiryPlan/CreateDataGrids.js"></script>
+<script src="/Scripts/datatable.js"></script>
+
+<script>
+
+    $(async function () {
+
+        //DatagridEvent = addDatagridEvent();
+        inquiryPlanDG_Controller = new IPDG(MDGOptions);
+
+
+        //controlToggle("path-draw", ForgeDraw.Control.DRAW);
+        //sortRouteModal.autoRouteToggle(true);
+
+        //$("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
+
+        //window.addEventListener("beforeunload", (event) => {
+        //    sessionStorage.clear();
+        //});
+
+        //addSaveSamplePathEvent();
+
+        //$(".spinner-area").fadeOut(300, function () { $(this).remove(); });
+    })
+
+    const apiUrl = null;
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "Kind", title: "類別", width: 135 },
+            { id: "ItemName", title: "品名", width: 135 },
+            { id: "Size", title: "尺寸", width: 135 },
+            { id: "PRAmount", title: "數量", width: 135 },
+            { id: "Unit", title: "單位", width: 135 },
+            { id: "ApplicationPurpose", title: "申請用途", width: 135 },
+            { id: "EstimatedDate", title: "預計交期", width: 135 },
+        ]
+    }
+
+    const fakeData = {
+        "total": 10,
+        "rows": [
+            {
+                "PRIN": "1120301001",
+                "PRUserName": "王大明",
+                "PRDept": "機電維修部",
+                "PRDate": "2023/03/01",
+                "Kind": "潤滑劑",
+                "ItemName": "軸承潤滑劑",
+                "Size": "1L",
+                "PRAmount": 10,
+                "Unit": "罐",
+                "ApplicationPurpose": "OOXX",
+                "EstimatedDate": "2023/04/01",
+                "PRIState": 1
+            },
+            {
+                "PRIN": "1120301002",
+                "PRUserName": "黃東明",
+                "PRDept": "機電維修部",
+                "PRDate": "2023/03/01",
+                "Kind": "潤滑劑",
+                "ItemName": "軸承潤滑劑",
+                "Size": "1L",
+                "PRAmount": 20,
+                "Unit": "罐",
+                "ApplicationPurpose": "OOXX",
+                "EstimatedDate": "2023/04/01",
+                "PRIState": 1
+            }
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :   //fakeData
+            $.ajax({
+                url: url,
+                data: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+
+            $("#GroupInfo").append(createTableGrid(res.rows, GridOptions))
+           
+              
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+    }
+
+
+
+</script>

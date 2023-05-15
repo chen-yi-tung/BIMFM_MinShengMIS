@@ -129,7 +129,7 @@
             history.back();
         })
 
-        $("#ImgPath").change(function (e) {
+        $("#DesignDiagrams").change(function (e) {
             console.log(this.files);
             if (this.files && this.files.length !== 0) {
                 let file = this.files[0];
@@ -139,7 +139,7 @@
         })
 
         $("#ImgPathDelete").click(function () {
-            $("#ImgPath").val('');
+            $("#DesignDiagrams").val('');
             $("#ImgPathName").text('');
             $("#ImgPathGroup").addClass('d-none');
         })

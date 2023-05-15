@@ -1,0 +1,86 @@
+﻿[
+  {
+    "MFRName": "廠商1",
+    "QSN": "",
+    "ItemObject": [
+      {
+        "ItemName": "藥劑-1",
+        "Brand": "OOXX",
+        "Model": "OOXX",
+        "Amount": "10",
+        "Packaging": "250g/罐",
+        "SubTotal": "12,000",
+        "ExcludeTaxTotal": "22,000",
+        "DeliveryLocation": "2023/03/15",
+        "QuotationFile": ""
+      },
+      {
+        "ItemName": "藥劑-2",
+        "Brand": "XXOO",
+        "Model": "OOXX",
+        "Amount": 10,
+        "Packaging": "250g/罐",
+        "SubTotal": "12,000",
+        "ExcludeTaxTotal": "22,000",
+        "DeliveryLocation": "2023/03/15",
+        "QuotationFile": ""
+      }
+    ]
+  },
+  {
+    "MFRName": "廠商2",
+    "QSN": "",
+    "ItemObject": [
+      {
+        "ItemName": "藥劑-1",
+        "Brand": "XXXXX",
+        "Model": "OOXX",
+        "Amount": "10",
+        "Packaging": "250g/罐",
+        "SubTotal": "12,000",
+        "ExcludeTaxTotal": "22,000",
+        "DeliveryLocation": "2023/03/15",
+        "QuotationFile": ""
+      },
+      {
+        "ItemName": "藥劑-2",
+        "Brand": "XXOO",
+        "Model": "OOXX",
+        "Amount": 10,
+        "Packaging": "250g/罐",
+        "SubTotal": "12,000",
+        "ExcludeTaxTotal": "22,000",
+        "DeliveryLocation": "2023/03/15",
+        "QuotationFile": ""
+      }
+    ]
+  },
+  {
+    "MFRName": "廠商2",
+    "QSN": "",
+    "ItemObject": [
+      {
+        "ItemName": "藥劑-1",
+        "Brand": "XXXXX",
+        "Model": "OOXX",
+        "Amount": "10",
+        "Packaging": "250g/罐",
+        "SubTotal": "12,000",
+        "ExcludeTaxTotal": "22,000",
+        "DeliveryLocation": "2023/03/15",
+        "QuotationFile": ""
+      },
+      {
+        "ItemName": "藥劑-2",
+        "Brand": "XXOO",
+        "Model": "OOXX",
+        "Amount": 10,
+        "Packaging": "250g/罐",
+        "SubTotal": "12,000",
+        "ExcludeTaxTotal": "22,000",
+        "DeliveryLocation": "2023/03/15",
+        "QuotationFile": ""
+      }
+    ]
+  }
+]
