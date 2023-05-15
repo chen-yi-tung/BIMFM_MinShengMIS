@@ -659,9 +659,11 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Edit_Update(FormCollection form)
         {
+            int resultCode = 400;
             var IMV = new InspectionPlan_ManagementViewModel();
-            //string result = IMV.InspectationPlan_Edit_Update(form); //還沒完成
-            return Content("", "application/json");
+            string result = IMV.InspectationPlan_Edit_Update(form, ref resultCode); 
+            Response.StatusCode = resultCode;
+            return Content(result, "application/json");
         }
         #endregion
 
