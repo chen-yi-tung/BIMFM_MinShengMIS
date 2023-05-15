@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "領用審核";
 }
 
@@ -12,9 +11,9 @@ div class="datatable-body">
     </div>
 </div>
 
-<div class="datatable datatable-grid mt-5 w-auto" style="max-width:1282px;">
+<div class="datatable datatable-grid mt-5 w-auto" style="max-width:982px;">
     <div class="datatable-body overflow-auto">
-        <table class="datatable-table" style="width: max-content;" id="PurchaseRequisitionItem">
+        <table class="datatable-table" style="width: max-content;" id="StoresRequisitionItem">
         </table>
     </div>
 </div>
@@ -38,46 +37,42 @@ div class="datatable-body">
 <script>
     const apiUrl = null;
     const SerializedName = [
-        { text: "單號", value: "PRN" },
-        { text: "請購人", value: "PRUserName" },
-        { text: "請購部門", value: "PRDept" },
+        { text: "領用編號", value: "SRSN" },
+        { text: "領用人員", value: "SRName" },
+        { text: "領用部門", value: "SRDept" },
+        { text: "領用原因", value: "SRContent" }
     ]
 
     const fakeData = {
-        PRN: "PR23041201",
-        PRUserName: "admin0001",
-        PRDept: "機電維修部門",
-        PurchaseRequisitionItem: [
+        SRSN: "SR230502001",
+        SRName: "王大明",
+        SRDept: "機電部門",
+        SRContent: "OOXX",
+        StoresRequisitionItem: [
             {
-                PRIN: "PR23041201_01",
-                Kind: "潤滑劑",
-                ItemName: "軸承潤滑劑B",
-                Size: "1L",
-                PRAmount: "10",
+                SRISN: "PR23041201_01",
+                StockType: "潤滑劑",
+                StockName: "軸承潤滑劑B",
+                Amount: "10",
                 Unit: "罐",
-                EstimatedDate: "2023/04/31",
-                ApplicationPurpose: "OOXX",
+                Content: "OOXX",
             },
             {
-                PRIN: "PR23041201_02",
-                Kind: "潤滑劑",
-                ItemName: "軸承潤滑劑B",
-                Size: "1L",
-                PRAmount: "10",
+                SRISN: "PR23041201_01",
+                StockType: "潤滑劑",
+                StockName: "軸承潤滑劑B",
+                Amount: "10",
                 Unit: "罐",
-                EstimatedDate: "2023/04/31",
-                ApplicationPurpose: "OOXX",
+                Content: "OOXX",
             },
             {
-                PRIN: "PR23041201_03",
-                Kind: "潤滑劑",
-                ItemName: "軸承潤滑劑B",
-                Size: "1L",
-                PRAmount: "10",
+                SRISN: "PR23041201_01",
+                StockType: "潤滑劑",
+                StockName: "軸承潤滑劑B",
+                Amount: "10",
                 Unit: "罐",
-                EstimatedDate: "2023/04/31",
-                ApplicationPurpose: "OOXX",
-            },
+                Content: "OOXX",
+            }
         ]
     }
 
@@ -100,13 +95,11 @@ div class="datatable-body">
                     `
                 }
             },
-            { id: "Kind", title: "類別", width: "150px" },
-            { id: "ItemName", title: "品名", width: "250px" },
-            { id: "Size", title: "尺寸", width: "150px" },
-            { id: "PRAmount", title: "數量", width: "120px" },
+            { id: "StockType", title: "品項", width: "150px" },
+            { id: "StockName", title: "品名", width: "250px" },
+            { id: "Amount", title: "數量", width: "120px" },
             { id: "Unit", title: "單位", width: "100px" },
-            { id: "EstimatedDate", title: "預計交期", width: "150px" },
-            { id: "ApplicationPurpose", title: "申請用途", width: "200px" },
+            { id: "Content", title: "領用原因", width: "200px" },
         ]
     }
 
@@ -115,8 +108,8 @@ div class="datatable-body">
         url == null ? onSuccess(fakeData) :   //fakeData
             $.ajax({
                 url: url,
-                data: JSON.stringify(jsonData),
-                type: "POST",
+                //data: JSON.stringify(jsonData),
+                type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
@@ -126,11 +119,11 @@ div class="datatable-body">
         function onSuccess(res) {
             console.log(res);
             $("#Info").append(createTableInner(res, SerializedName));
-            if (res.PurchaseRequisitionItem) {
-                $("#PurchaseRequisitionItem").append(createTableGrid(res.PurchaseRequisitionItem, GridOptions))
+            if (res.StoresRequisitionItem) {
+                $("#StoresRequisitionItem").append(createTableGrid(res.StoresRequisitionItem, GridOptions))
             }
             else {
-                $("#PurchaseRequisitionItem").parents(".datatable").remove();
+                $("#StoresRequisitionItem").parents(".datatable").remove();
             }
         }
         function onError(res) {

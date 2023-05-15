@@ -1,7 +1,107 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "領用詳情";
 }
 
-<h2>Read</h2>
+<h2>@ViewBag.Title</h2>
+
+<div class="datatable datatable-small mt-5">
+    <div
+div class="datatable-body">
+        <table class="datatable-table" id="Info"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-grid mt-5 w-auto" style="max-width:822px;">
+    <div class="datatable-body overflow-auto">
+        <table class="datatable-table" style="width: max-content;" id="StoresRequisitionItem">
+        </table>
+    </div>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+    const apiUrl = null;
+    const SerializedName = [
+        { text: "領用編號", value: "SRSN" },
+        { text: "領用人員", value: "SRName" },
+        { text: "領用部門", value: "SRDept" },
+        { text: "領用原因", value: "SRContent" }
+    ]
+
+    const fakeData = {
+        SRSN: "SR230502001",
+        SRName: "王大明",
+        SRDept: "機電部門",
+        SRContent: "OOXX",
+        StoresRequisitionItem: [
+            {
+                SRISN: "PR23041201_01",
+                StockType: "潤滑劑",
+                StockName: "軸承潤滑劑B",
+                Amount: "10",
+                Unit: "罐",
+                Content: "OOXX",
+            },
+            {
+                SRISN: "PR23041201_01",
+                StockType: "潤滑劑",
+                StockName: "軸承潤滑劑B",
+                Amount: "10",
+                Unit: "罐",
+                Content: "OOXX",
+            },
+            {
+                SRISN: "PR23041201_01",
+                StockType: "潤滑劑",
+                StockName: "軸承潤滑劑B",
+                Amount: "10",
+                Unit: "罐",
+                Content: "OOXX",
+            }
+        ]
+    }
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "StockType", title: "品項", width: "150px" },
+            { id: "StockName", title: "品名", width: "250px" },
+            { id: "Amount", title: "數量", width: "120px" },
+            { id: "Unit", title: "單位", width: "100px" },
+            { id: "Content", title: "領用原因", width: "200px" },
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :   //fakeData
+            $.ajax({
+                url: url,
+                //data: JSON.stringify(jsonData),
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#Info").append(createTableInner(res, SerializedName));
+            if (res.StoresRequisitionItem) {
+                $("#StoresRequisitionItem").append(createTableGrid(res.StoresRequisitionItem, GridOptions))
+            }
+            else {
+                $("#StoresRequisitionItem").parents(".datatable").remove();
+            }
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+    }
+</script>
 

@@ -54,7 +54,7 @@
 
             <div class="form-group w-lg-532px">
                 <label for="SRContent">領用原因</label>
-                <input class="form-control" id="SRContent" name="SRContent" type="date" />
+                <input class="form-control" id="SRContent" name="SRContent" type="text" />
             </div>
         </form>
     </div>
@@ -71,7 +71,7 @@
                             <tr>
                                 <th class="datatable-header required" style="width:150px"><span>品項</span></th>
                                 <th class="datatable-header required" style="width:250px"><span>品名</span></th>
-                                <th class="datatable-header" style="width:150px"><span>尺寸</span></th>
+                                <th class="datatable-header required" style="width:150px"><span>尺寸</span></th>
                                 <th class="datatable-header required" style="width:120px"><span>數量</span></th>
                                 <th class="datatable-header required" style="width:150px"><span>單位</span></th>
                                 <th class="datatable-header" style="width:200px"><span>領用原因</span></th>
@@ -84,11 +84,10 @@
                                     <select class="form-select" id="StockType" name="StockType" required></select>
                                 </td>
                                 <td id="d-StockName">
-                                    <input class="form-control" type="text" id="StockName" name="StockName" maxlength="50"
-                                        required />
+                                    <select class="form-select" id="StockName" name="StockName" required></select>
                                 </td>
                                 <td id="d-Size">
-                                    <input class="form-control" type="text" id="Size" name="Size" maxlength="50" />
+                                    <input class="form-control" type="text" id="Size" name="Size" maxlength="50" required/>
                                 </td>
                                 <td id="d-Amount">
                                     <input class="form-control" type="number" id="Amount" name="Amount" min="1"
