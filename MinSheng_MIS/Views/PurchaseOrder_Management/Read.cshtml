@@ -1,7 +1,146 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "採購詳情";
 }
 
-<h2>Read</h2>
+<style>
+    .datatable-input-area1 {
+        display: flex;
+        flex-direction: column;
+        max-width: 816px;
+        margin: auto;
+        max-height: calc(100vh - var(--navbar-height));
+        max-height: calc(100dvh - var(--navbar-height));
+        gap: 1rem;
+    }
+    .datatable-input-area2 {
+        display: flex;
+        flex-direction: column;
+        max-width: 1060px;
+        margin: auto;
+        max-height: calc(100vh - var(--navbar-height));
+        max-height: calc(100dvh - var(--navbar-height));
+        gap: 1rem;
+    }
+    .edit-area {
+        background-color: #F3F9FF26 ;
+        margin-top: 0;
+    }
+    .edit-area-title {
+        color: white;
+        font-size: 20px;
+    }
+    .edit-area.edit-area-small {
+        width: 1060px;
+    }
+</style>
 
+<h2>@ViewBag.Title</h2>
+
+<section class="datatable-input-area1 mt-3">
+    <div class="align-self-start edit-area-title">採購相關資訊</div>
+    <div class="edit-area edit-area-small">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table" id="StockInDetail"></table>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="datatable-input-area2 mt-3">
+    <div class="align-self-start edit-area-title">收貨資訊</div>
+    <div class="edit-area edit-area-middle">
+        <div class="datatable datatable-grid mt-5 w-auto" style="max-width:822px;">
+            <div class="datatable-body overflow-auto">
+                <table class="datatable-table" style="width: max-content;" id="StoresRequisitionItem">
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+
+    const SIRSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${SIRSN}`;
+    let apiUrl = null
+    const SerializedName = [
+        { text: "狀態", value: "State" },
+        { text: "採購單號", value: "POSN" },
+        { text: "詢價單號", value: "IOSN" },
+        { text: "詢價人員", value: "InquiryUserName" },
+        { text: "詢價單", value: "StockInName" },
+        { text: "報價單", value: "StockInName" },
+        { text: "廠商", value: "MFRName" },
+        { text: "付款方式", value: "PaymentMethod" },
+        { text: "交貨方式", value: "DeliveryMethod" },
+        { text: "交貨時間", value: "DeliveryDate" },
+        { text: "交貨地點", value: "DeliveryLocation" }
+    ]
+    const fakeData = {
+        "State": "已採購",
+        "POSN": "202303001",
+        "IOSN": "202302001",
+        "InquiryUserName": "王大明",
+        "StockInName": "王大明",
+        "StockInName": "報價單.pdf",
+        "MFRName": "OOXX",
+        "PaymentMethod": "OOXX",
+        "DeliveryMethod": "OOXX",
+        "DeliveryDate": "OOXX",
+        "DeliveryLocation": "OOXX",
+        ExternalRFID: [
+            {
+                ExternalRFID: "A101",
+                StockType: "備料",
+                
+            }
+        ]
+    }
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "ExternalRFID", title: "RFID標籤(外)"},
+            { id: "StockType", title: "品項"},
+            { id: "StockName", title: "品名"},
+            { id: "MName", title: "廠商品名"},
+            { id: "Size", title: "尺寸"},
+            { id: "Brand", title: "廠牌"},
+            { id: "Model", title: "型號"},
+            { id: "Amount", title: "數量"},
+            { id: "Packaging", title: "單位"},
+            { id: "ExpiryDate", title: "到期日"},
+            { id: "Location", title: "擺放位置(貨架,倉庫,排,層,位)"}
+        ]
+    }
+
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#StockInDetail").append(createTableInner(res, SerializedName));
+            $("#ExternalRFID").append(createTableGrid(res.ExternalRFID, GridOptions))
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+
+        readData(apiUrl);
+    }
+
+</script>
