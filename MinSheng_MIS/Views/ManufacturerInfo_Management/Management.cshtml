@@ -11,7 +11,7 @@
 
 <button class="btn btn-create" id="create">新增廠商</button>
 <div class="search-area">
-    <form class="form" method="post" action="">
+    <form class="form" method="post" action="" id="form">
 
         <div class="form-group">
             <label for="MFRName">廠商名稱</label>
@@ -123,7 +123,7 @@
     //search area onClick Function
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
-            $("form")[0].reset();
+            $("#form")[0].reset();
         });
 
         $("#search").click(function () {
