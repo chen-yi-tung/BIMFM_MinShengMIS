@@ -110,10 +110,15 @@
         if (!isValidity) return;
 
         let fd = new FormData();
+        fd.append('MFRSN', MFRSN);
         fd.append('MFRName', $("#MFRName").val());
         fd.append('ContactPerson', $("#ContactPerson").val());
-        fd.append('ImgPath', flieList.files);
-        fd.append('AuditResult', $('input[name="AuditResult"]:checked').val() ?? 0);
+        fd.append('MFRTelNO', $("#MFRTelNO").val());
+        fd.append('MFRMBPhone', $("#MFRMBPhone").val());
+        fd.append('MFRAddress', $("#MFRAddress").val());
+        fd.append('MFREmail', $("#MFREmail").val());
+        fd.append('MFRWeb', $("#MFRWeb").val());
+        fd.append('MFRMainProduct', $("#MFRMainProduct").val());
 
         $.ajax({
             url: '@Url.Action("EditMFR", "ManufacturerInfo_Management")',
@@ -128,10 +133,13 @@
         function onSuccess(res) {
             console.log(res);
             alert("編輯成功!");
+            let url = '@Url.Action("Management", "ManufacturerInfo_Management")';
+            window.location.href = url;
         }
 
         function onError(res) {
             console.log(res);
+            alert("編輯失敗!");
         }
     }
 
