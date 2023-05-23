@@ -85,6 +85,31 @@
           <Property Name="ImgPath" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="IPSN" Type="nchar" MaxLength="9" Nullable="false" />
         </EntityType>
+        <EntityType Name="ComputationalStock">
+          <Key>
+            <PropertyRef Name="SISN" />
+          </Key>
+          <Property Name="SISN" Type="char" MaxLength="4" Nullable="false" />
+          <Property Name="StockType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="StockName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="StockAmount" Type="float" Nullable="false" />
+          <Property Name="MinStockAmount" Type="float" Nullable="false" />
+          <Property Name="ExpiryDate" Type="date" />
+        </EntityType>
+        <EntityType Name="DeliveryRecord">
+          <Key>
+            <PropertyRef Name="DRSN" />
+          </Key>
+          <Property Name="DRSN" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="POSN" Type="char" MaxLength="10" />
+          <Property Name="Consignee" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="Amount" Type="int" Nullable="false" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="DeliveryMemo" Type="nvarchar" MaxLength="200" />
+          <Property Name="CertificateOfReceipt" Type="nvarchar(max)" />
+          <Property Name="DeliveryDateTime" Type="date" Nullable="false" />
+        </EntityType>
         <EntityType Name="DrawInspectionPlanPath">
           <Key>
             <PropertyRef Name="ISN" />
@@ -180,6 +205,42 @@
           <Property Name="ASN" Type="int" Nullable="false" />
           <Property Name="FloorName" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="BIMPath" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InquiryOrder">
+          <Key>
+            <PropertyRef Name="IOSN" />
+          </Key>
+          <Property Name="IOSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="IOState" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="QSN" Type="nchar" MaxLength="14" />
+          <Property Name="InquiryUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="CreatedDate" Type="date" Nullable="false" />
+          <Property Name="AuditUserID" Type="nvarchar" MaxLength="256" />
+          <Property Name="AuditDate" Type="date" />
+          <Property Name="AuditContent" Type="nvarchar" MaxLength="200" />
+          <Property Name="AuditResult" Type="char" MaxLength="1" />
+          <Property Name="QAmount" Type="int" />
+        </EntityType>
+        <EntityType Name="InquiryOrderItem">
+          <Key>
+            <PropertyRef Name="IOISN" />
+          </Key>
+          <Property Name="IOISN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="IOSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="Kind" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ItemName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Size" Type="nvarchar" MaxLength="50" />
+          <Property Name="Amount" Type="float" Nullable="false" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="SubItemAmount" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InquiryOrderSubItem">
+          <Key>
+            <PropertyRef Name="IOSSN" />
+          </Key>
+          <Property Name="IOSSN" Type="nchar" MaxLength="16" Nullable="false" />
+          <Property Name="IOISN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="PRIN" Type="nchar" MaxLength="13" Nullable="false" />
         </EntityType>
         <EntityType Name="InspectionPlan">
           <Key>
@@ -355,6 +416,106 @@
           <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
           <Property Name="BeaconID" Type="char" MaxLength="6" Nullable="false" />
         </EntityType>
+        <EntityType Name="PurchaseOrder">
+          <Key>
+            <PropertyRef Name="POSN" />
+          </Key>
+          <Property Name="POSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="POState" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="IOSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="PurchaseUserName" Type="nvarchar" MaxLength="256" />
+          <Property Name="PurchaseDataTime" Type="date" />
+        </EntityType>
+        <EntityType Name="PurchaseOrderItem">
+          <Key>
+            <PropertyRef Name="POISN" />
+          </Key>
+          <Property Name="POISN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="POSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="Kind" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ItemName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Size" Type="nvarchar" MaxLength="50" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="50" />
+          <Property Name="Model" Type="nvarchar" MaxLength="50" />
+          <Property Name="Amount" Type="float" Nullable="false" />
+          <Property Name="Packaging" Type="nvarchar" MaxLength="50" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="State" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="AcceptResult" Type="char" MaxLength="1" />
+          <Property Name="AcceptRecord" Type="nvarchar(max)" />
+          <Property Name="Memo" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="PurchaseRequisition">
+          <Key>
+            <PropertyRef Name="PRN" />
+          </Key>
+          <Property Name="PRN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="PRUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="PRState" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="PRDept" Type="nvarchar" MaxLength="50" />
+          <Property Name="PRDate" Type="date" Nullable="false" />
+          <Property Name="EstimatedDate" Type="date" />
+          <Property Name="AuditUserID" Type="nvarchar" MaxLength="256" />
+          <Property Name="AuditDate" Type="date" />
+          <Property Name="AuditContent" Type="nvarchar" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="PurchaseRequisitionItem">
+          <Key>
+            <PropertyRef Name="PRIN" />
+          </Key>
+          <Property Name="PRIN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="PRN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="PRIState" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Kind" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ItemName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Size" Type="nvarchar" MaxLength="50" />
+          <Property Name="PRAmount" Type="float" Nullable="false" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="ApplicationPurpose" Type="nvarchar" MaxLength="200" />
+          <Property Name="AuditResult" Type="char" MaxLength="1" />
+        </EntityType>
+        <EntityType Name="Quotation">
+          <Key>
+            <PropertyRef Name="QSN" />
+          </Key>
+          <Property Name="QSN" Type="nchar" MaxLength="14" Nullable="false" />
+          <Property Name="IOSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="ExcludeTaxTotal" Type="int" Nullable="false" />
+          <Property Name="IncludeTaxTotal" Type="int" />
+          <Property Name="MFRName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ContactPerson" Type="nvarchar" MaxLength="50" />
+          <Property Name="MFRTelNO" Type="nvarchar" MaxLength="200" />
+          <Property Name="MFRMBPhone" Type="nvarchar" MaxLength="200" />
+          <Property Name="MFRMainProduct" Type="nvarchar" MaxLength="200" />
+          <Property Name="MFRAddress" Type="nvarchar" MaxLength="200" />
+          <Property Name="MFREmail" Type="nvarchar" MaxLength="256" />
+          <Property Name="MFRWeb" Type="nvarchar" MaxLength="256" />
+          <Property Name="PaymentMethod" Type="nvarchar" MaxLength="200" />
+          <Property Name="DeliveryMethod" Type="nvarchar" MaxLength="200" />
+          <Property Name="DeliveryDate" Type="date" />
+          <Property Name="DeliveryLocation" Type="nvarchar" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="QuotationFiles">
+          <Key>
+            <PropertyRef Name="QFileSN" />
+          </Key>
+          <Property Name="QFileSN" Type="nchar" MaxLength="16" Nullable="false" />
+          <Property Name="QuotationFile" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="QSN" Type="nchar" MaxLength="14" Nullable="false" />
+        </EntityType>
+        <EntityType Name="QuotationItem">
+          <Key>
+            <PropertyRef Name="QISN" />
+          </Key>
+          <Property Name="QISN" Type="nchar" MaxLength="17" Nullable="false" />
+          <Property Name="QSN" Type="nchar" MaxLength="14" Nullable="false" />
+          <Property Name="IOISN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="50" />
+          <Property Name="Model" Type="nvarchar" MaxLength="50" />
+          <Property Name="Amount" Type="float" />
+          <Property Name="Packaging" Type="nvarchar" MaxLength="200" />
+          <Property Name="SubTotal" Type="int" />
+        </EntityType>
         <EntityType Name="RepairAuditImage">
           <Key>
             <PropertyRef Name="ImgPath" />
@@ -404,6 +565,79 @@
           </Key>
           <Property Name="ImgPath" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="RSN" Type="nchar" MaxLength="9" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stock">
+          <Key>
+            <PropertyRef Name="SSN" />
+          </Key>
+          <Property Name="SSN" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="SIRSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="SISN" Type="char" MaxLength="4" Nullable="false" />
+          <Property Name="Location" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ExpiryDate" Type="date" />
+          <Property Name="Amount" Type="float" Nullable="false" />
+          <Property Name="RemianingAmount" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StockInRecord">
+          <Key>
+            <PropertyRef Name="SIRSN" />
+          </Key>
+          <Property Name="SIRSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="POISN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="MName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="50" />
+          <Property Name="Model" Type="nvarchar" MaxLength="50" />
+          <Property Name="Size" Type="nvarchar" MaxLength="50" />
+          <Property Name="StockInDateTime" Type="date" Nullable="false" />
+          <Property Name="StockInUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StockOutItem">
+          <Key>
+            <PropertyRef Name="SOISN" />
+          </Key>
+          <Property Name="SOISN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="SORSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="SSN" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="StockOutDateTime" Type="date" Nullable="false" />
+          <Property Name="Amount" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StockOutRecord">
+          <Key>
+            <PropertyRef Name="SORSN" />
+          </Key>
+          <Property Name="SORSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="SRSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="StockOutUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="ReceiverUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="StockOutContent" Type="nvarchar" MaxLength="200" />
+          <Property Name="StockOutDateTime" Type="date" />
+        </EntityType>
+        <EntityType Name="StoresRequisition">
+          <Key>
+            <PropertyRef Name="SRSN" />
+          </Key>
+          <Property Name="SRSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="SRState" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="SRUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="SRDept" Type="nvarchar" MaxLength="50" />
+          <Property Name="SRDateTime" Type="date" Nullable="false" />
+          <Property Name="SRContent" Type="nvarchar" MaxLength="200" />
+          <Property Name="AuditUserID" Type="nvarchar" MaxLength="256" />
+          <Property Name="AuditDate" Type="date" />
+          <Property Name="AuditContent" Type="nvarchar" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="StoresRequisitionItem">
+          <Key>
+            <PropertyRef Name="SRISN" />
+          </Key>
+          <Property Name="SRISN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="SRSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="SISN" Type="char" MaxLength="4" Nullable="false" />
+          <Property Name="Amount" Type="float" Nullable="false" />
+          <Property Name="TakeAmount" Type="float" Nullable="false" />
+          <Property Name="SRContent" Type="nvarchar" MaxLength="200" />
+          <Property Name="AuditResult" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="PickUpStatus" Type="char" MaxLength="1" Nullable="false" />
         </EntityType>
         <EntityType Name="SubSystemManagement">
           <Key>
@@ -500,6 +734,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_DeliveryRecord_PurchaseOrder">
+          <End Role="PurchaseOrder" Type="Self.PurchaseOrder" Multiplicity="0..1" />
+          <End Role="DeliveryRecord" Type="Self.DeliveryRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseOrder">
+              <PropertyRef Name="POSN" />
+            </Principal>
+            <Dependent Role="DeliveryRecord">
+              <PropertyRef Name="POSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_DrawInspectionPlanPath_InspectionPlanPath">
           <End Role="InspectionPlanPath" Type="Self.InspectionPlanPath" Multiplicity="1" />
           <End Role="DrawInspectionPlanPath" Type="Self.DrawInspectionPlanPath" Multiplicity="*" />
@@ -569,6 +815,54 @@
             </Principal>
             <Dependent Role="InspectionPlanFloorPath">
               <PropertyRef Name="PSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InquiryOrder_Quotation">
+          <End Role="Quotation" Type="Self.Quotation" Multiplicity="0..1" />
+          <End Role="InquiryOrder" Type="Self.InquiryOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Quotation">
+              <PropertyRef Name="QSN" />
+            </Principal>
+            <Dependent Role="InquiryOrder">
+              <PropertyRef Name="QSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InquiryOrderItem_InquiryOrder">
+          <End Role="InquiryOrder" Type="Self.InquiryOrder" Multiplicity="1" />
+          <End Role="InquiryOrderItem" Type="Self.InquiryOrderItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrder">
+              <PropertyRef Name="IOSN" />
+            </Principal>
+            <Dependent Role="InquiryOrderItem">
+              <PropertyRef Name="IOSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InquiryOrderSubItem_InquiryOrderItem">
+          <End Role="InquiryOrderItem" Type="Self.InquiryOrderItem" Multiplicity="1" />
+          <End Role="InquiryOrderSubItem" Type="Self.InquiryOrderSubItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrderItem">
+              <PropertyRef Name="IOISN" />
+            </Principal>
+            <Dependent Role="InquiryOrderSubItem">
+              <PropertyRef Name="IOISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InquiryOrderSubItem_PurchaseRequisitionItem">
+          <End Role="PurchaseRequisitionItem" Type="Self.PurchaseRequisitionItem" Multiplicity="1" />
+          <End Role="InquiryOrderSubItem" Type="Self.InquiryOrderSubItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseRequisitionItem">
+              <PropertyRef Name="PRIN" />
+            </Principal>
+            <Dependent Role="InquiryOrderSubItem">
+              <PropertyRef Name="PRIN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -752,6 +1046,90 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PurchaseOrder_InquiryOrder">
+          <End Role="InquiryOrder" Type="Self.InquiryOrder" Multiplicity="1" />
+          <End Role="PurchaseOrder" Type="Self.PurchaseOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrder">
+              <PropertyRef Name="IOSN" />
+            </Principal>
+            <Dependent Role="PurchaseOrder">
+              <PropertyRef Name="IOSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseOrderItem_PurchaseOrder">
+          <End Role="PurchaseOrder" Type="Self.PurchaseOrder" Multiplicity="1" />
+          <End Role="PurchaseOrderItem" Type="Self.PurchaseOrderItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseOrder">
+              <PropertyRef Name="POSN" />
+            </Principal>
+            <Dependent Role="PurchaseOrderItem">
+              <PropertyRef Name="POSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseRequisitionItem_PurchaseRequisitionItem">
+          <End Role="PurchaseRequisition" Type="Self.PurchaseRequisition" Multiplicity="1" />
+          <End Role="PurchaseRequisitionItem" Type="Self.PurchaseRequisitionItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseRequisition">
+              <PropertyRef Name="PRN" />
+            </Principal>
+            <Dependent Role="PurchaseRequisitionItem">
+              <PropertyRef Name="PRN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Quotation_InquiryOrder">
+          <End Role="InquiryOrder" Type="Self.InquiryOrder" Multiplicity="1" />
+          <End Role="Quotation" Type="Self.Quotation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrder">
+              <PropertyRef Name="IOSN" />
+            </Principal>
+            <Dependent Role="Quotation">
+              <PropertyRef Name="IOSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_QuotationFiles_Quotation">
+          <End Role="Quotation" Type="Self.Quotation" Multiplicity="1" />
+          <End Role="QuotationFiles" Type="Self.QuotationFiles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Quotation">
+              <PropertyRef Name="QSN" />
+            </Principal>
+            <Dependent Role="QuotationFiles">
+              <PropertyRef Name="QSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_QuotationItem_InquiryOrderItem">
+          <End Role="InquiryOrderItem" Type="Self.InquiryOrderItem" Multiplicity="1" />
+          <End Role="QuotationItem" Type="Self.QuotationItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrderItem">
+              <PropertyRef Name="IOISN" />
+            </Principal>
+            <Dependent Role="QuotationItem">
+              <PropertyRef Name="IOISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_QuotationItem_Quotation">
+          <End Role="Quotation" Type="Self.Quotation" Multiplicity="1" />
+          <End Role="QuotationItem" Type="Self.QuotationItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Quotation">
+              <PropertyRef Name="QSN" />
+            </Principal>
+            <Dependent Role="QuotationItem">
+              <PropertyRef Name="QSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RepairAuditImage_RepairAuditInfo">
           <End Role="RepairAuditInfo" Type="Self.RepairAuditInfo" Multiplicity="1" />
           <End Role="RepairAuditImage" Type="Self.RepairAuditImage" Multiplicity="*" />
@@ -812,6 +1190,102 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Stock_ComputationalStock">
+          <End Role="ComputationalStock" Type="Self.ComputationalStock" Multiplicity="1" />
+          <End Role="Stock" Type="Self.Stock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ComputationalStock">
+              <PropertyRef Name="SISN" />
+            </Principal>
+            <Dependent Role="Stock">
+              <PropertyRef Name="SISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Stock_StockInRecord">
+          <End Role="StockInRecord" Type="Self.StockInRecord" Multiplicity="1" />
+          <End Role="Stock" Type="Self.Stock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockInRecord">
+              <PropertyRef Name="SIRSN" />
+            </Principal>
+            <Dependent Role="Stock">
+              <PropertyRef Name="SIRSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInRecord_PurchaseOrderItem">
+          <End Role="PurchaseOrderItem" Type="Self.PurchaseOrderItem" Multiplicity="1" />
+          <End Role="StockInRecord" Type="Self.StockInRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseOrderItem">
+              <PropertyRef Name="POISN" />
+            </Principal>
+            <Dependent Role="StockInRecord">
+              <PropertyRef Name="POISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockOutItem_Stock">
+          <End Role="Stock" Type="Self.Stock" Multiplicity="1" />
+          <End Role="StockOutItem" Type="Self.StockOutItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stock">
+              <PropertyRef Name="SSN" />
+            </Principal>
+            <Dependent Role="StockOutItem">
+              <PropertyRef Name="SSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockOutItem_StockOutRecord">
+          <End Role="StockOutRecord" Type="Self.StockOutRecord" Multiplicity="1" />
+          <End Role="StockOutItem" Type="Self.StockOutItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockOutRecord">
+              <PropertyRef Name="SORSN" />
+            </Principal>
+            <Dependent Role="StockOutItem">
+              <PropertyRef Name="SORSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockOutRecord_StoresRequisition">
+          <End Role="StoresRequisition" Type="Self.StoresRequisition" Multiplicity="1" />
+          <End Role="StockOutRecord" Type="Self.StockOutRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StoresRequisition">
+              <PropertyRef Name="SRSN" />
+            </Principal>
+            <Dependent Role="StockOutRecord">
+              <PropertyRef Name="SRSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StoresRequisitionItem_ComputationalStock">
+          <End Role="ComputationalStock" Type="Self.ComputationalStock" Multiplicity="1" />
+          <End Role="StoresRequisitionItem" Type="Self.StoresRequisitionItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ComputationalStock">
+              <PropertyRef Name="SISN" />
+            </Principal>
+            <Dependent Role="StoresRequisitionItem">
+              <PropertyRef Name="SISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StoresRequisitionItem_StoresRequisitionItem">
+          <End Role="StoresRequisition" Type="Self.StoresRequisition" Multiplicity="1" />
+          <End Role="StoresRequisitionItem" Type="Self.StoresRequisitionItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StoresRequisition">
+              <PropertyRef Name="SRSN" />
+            </Principal>
+            <Dependent Role="StoresRequisitionItem">
+              <PropertyRef Name="SRSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SubSystemManagement_SystemManagement">
           <End Role="SystemManagement" Type="Self.SystemManagement" Multiplicity="1" />
           <End Role="SubSystemManagement" Type="Self.SubSystemManagement" Multiplicity="*" />
@@ -833,6 +1307,8 @@
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompletionReportImage" EntityType="Self.CompletionReportImage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ComputationalStock" EntityType="Self.ComputationalStock" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DeliveryRecord" EntityType="Self.DeliveryRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawInspectionPlanPath" EntityType="Self.DrawInspectionPlanPath" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawPathSample" EntityType="Self.DrawPathSample" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentInfo" EntityType="Self.EquipmentInfo" Schema="dbo" store:Type="Tables" />
@@ -840,6 +1316,9 @@
           <EntitySet Name="EquipmentMaintainItem" EntityType="Self.EquipmentMaintainItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentReportForm" EntityType="Self.EquipmentReportForm" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Floor_Info" EntityType="Self.Floor_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InquiryOrder" EntityType="Self.InquiryOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InquiryOrderItem" EntityType="Self.InquiryOrderItem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InquiryOrderSubItem" EntityType="Self.InquiryOrderSubItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlan" EntityType="Self.InspectionPlan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlanFloorPath" EntityType="Self.InspectionPlanFloorPath" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlanMaintain" EntityType="Self.InspectionPlanMaintain" Schema="dbo" store:Type="Tables" />
@@ -856,12 +1335,25 @@
           <EntitySet Name="ManufacturerInfo" EntityType="Self.ManufacturerInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSample" EntityType="Self.PathSample" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSampleOrder" EntityType="Self.PathSampleOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseOrder" EntityType="Self.PurchaseOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseOrderItem" EntityType="Self.PurchaseOrderItem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseRequisition" EntityType="Self.PurchaseRequisition" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseRequisitionItem" EntityType="Self.PurchaseRequisitionItem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Quotation" EntityType="Self.Quotation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="QuotationFiles" EntityType="Self.QuotationFiles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="QuotationItem" EntityType="Self.QuotationItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairAuditImage" EntityType="Self.RepairAuditImage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairAuditInfo" EntityType="Self.RepairAuditInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairCompletionImage" EntityType="Self.RepairCompletionImage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairSupplementaryFile" EntityType="Self.RepairSupplementaryFile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairSupplementaryInfo" EntityType="Self.RepairSupplementaryInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ReportImage" EntityType="Self.ReportImage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Stock" EntityType="Self.Stock" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StockInRecord" EntityType="Self.StockInRecord" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StockOutItem" EntityType="Self.StockOutItem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StockOutRecord" EntityType="Self.StockOutRecord" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StoresRequisition" EntityType="Self.StoresRequisition" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StoresRequisitionItem" EntityType="Self.StoresRequisitionItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubSystemManagement" EntityType="Self.SubSystemManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SystemManagement" EntityType="Self.SystemManagement" Schema="dbo" store:Type="Tables" />
@@ -884,6 +1376,10 @@
           <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DeliveryRecord_PurchaseOrder" Association="Self.FK_DeliveryRecord_PurchaseOrder">
+            <End Role="PurchaseOrder" EntitySet="PurchaseOrder" />
+            <End Role="DeliveryRecord" EntitySet="DeliveryRecord" />
           </AssociationSet>
           <AssociationSet Name="FK_DrawInspectionPlanPath_InspectionPlanPath" Association="Self.FK_DrawInspectionPlanPath_InspectionPlanPath">
             <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
@@ -908,6 +1404,22 @@
           <AssociationSet Name="FK_ImspectionPlanFloorPath_InspectionPlanPath" Association="Self.FK_ImspectionPlanFloorPath_InspectionPlanPath">
             <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
             <End Role="InspectionPlanFloorPath" EntitySet="InspectionPlanFloorPath" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InquiryOrder_Quotation" Association="Self.FK_InquiryOrder_Quotation">
+            <End Role="Quotation" EntitySet="Quotation" />
+            <End Role="InquiryOrder" EntitySet="InquiryOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InquiryOrderItem_InquiryOrder" Association="Self.FK_InquiryOrderItem_InquiryOrder">
+            <End Role="InquiryOrder" EntitySet="InquiryOrder" />
+            <End Role="InquiryOrderItem" EntitySet="InquiryOrderItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InquiryOrderSubItem_InquiryOrderItem" Association="Self.FK_InquiryOrderSubItem_InquiryOrderItem">
+            <End Role="InquiryOrderItem" EntitySet="InquiryOrderItem" />
+            <End Role="InquiryOrderSubItem" EntitySet="InquiryOrderSubItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InquiryOrderSubItem_PurchaseRequisitionItem" Association="Self.FK_InquiryOrderSubItem_PurchaseRequisitionItem">
+            <End Role="PurchaseRequisitionItem" EntitySet="PurchaseRequisitionItem" />
+            <End Role="InquiryOrderSubItem" EntitySet="InquiryOrderSubItem" />
           </AssociationSet>
           <AssociationSet Name="FK_InspectionPlanMaintain_EquipmentMaintainFormItem" Association="Self.FK_InspectionPlanMaintain_EquipmentMaintainFormItem">
             <End Role="EquipmentMaintainFormItem" EntitySet="EquipmentMaintainFormItem" />
@@ -969,6 +1481,34 @@
             <End Role="PathSample" EntitySet="PathSample" />
             <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
           </AssociationSet>
+          <AssociationSet Name="FK_PurchaseOrder_InquiryOrder" Association="Self.FK_PurchaseOrder_InquiryOrder">
+            <End Role="InquiryOrder" EntitySet="InquiryOrder" />
+            <End Role="PurchaseOrder" EntitySet="PurchaseOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseOrderItem_PurchaseOrder" Association="Self.FK_PurchaseOrderItem_PurchaseOrder">
+            <End Role="PurchaseOrder" EntitySet="PurchaseOrder" />
+            <End Role="PurchaseOrderItem" EntitySet="PurchaseOrderItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseRequisitionItem_PurchaseRequisitionItem" Association="Self.FK_PurchaseRequisitionItem_PurchaseRequisitionItem">
+            <End Role="PurchaseRequisition" EntitySet="PurchaseRequisition" />
+            <End Role="PurchaseRequisitionItem" EntitySet="PurchaseRequisitionItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Quotation_InquiryOrder" Association="Self.FK_Quotation_InquiryOrder">
+            <End Role="InquiryOrder" EntitySet="InquiryOrder" />
+            <End Role="Quotation" EntitySet="Quotation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuotationFiles_Quotation" Association="Self.FK_QuotationFiles_Quotation">
+            <End Role="Quotation" EntitySet="Quotation" />
+            <End Role="QuotationFiles" EntitySet="QuotationFiles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuotationItem_InquiryOrderItem" Association="Self.FK_QuotationItem_InquiryOrderItem">
+            <End Role="InquiryOrderItem" EntitySet="InquiryOrderItem" />
+            <End Role="QuotationItem" EntitySet="QuotationItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuotationItem_Quotation" Association="Self.FK_QuotationItem_Quotation">
+            <End Role="Quotation" EntitySet="Quotation" />
+            <End Role="QuotationItem" EntitySet="QuotationItem" />
+          </AssociationSet>
           <AssociationSet Name="FK_RepairAuditImage_RepairAuditInfo" Association="Self.FK_RepairAuditImage_RepairAuditInfo">
             <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
             <End Role="RepairAuditImage" EntitySet="RepairAuditImage" />
@@ -989,6 +1529,38 @@
             <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
             <End Role="ReportImage" EntitySet="ReportImage" />
           </AssociationSet>
+          <AssociationSet Name="FK_Stock_ComputationalStock" Association="Self.FK_Stock_ComputationalStock">
+            <End Role="ComputationalStock" EntitySet="ComputationalStock" />
+            <End Role="Stock" EntitySet="Stock" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Stock_StockInRecord" Association="Self.FK_Stock_StockInRecord">
+            <End Role="StockInRecord" EntitySet="StockInRecord" />
+            <End Role="Stock" EntitySet="Stock" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInRecord_PurchaseOrderItem" Association="Self.FK_StockInRecord_PurchaseOrderItem">
+            <End Role="PurchaseOrderItem" EntitySet="PurchaseOrderItem" />
+            <End Role="StockInRecord" EntitySet="StockInRecord" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockOutItem_Stock" Association="Self.FK_StockOutItem_Stock">
+            <End Role="Stock" EntitySet="Stock" />
+            <End Role="StockOutItem" EntitySet="StockOutItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockOutItem_StockOutRecord" Association="Self.FK_StockOutItem_StockOutRecord">
+            <End Role="StockOutRecord" EntitySet="StockOutRecord" />
+            <End Role="StockOutItem" EntitySet="StockOutItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockOutRecord_StoresRequisition" Association="Self.FK_StockOutRecord_StoresRequisition">
+            <End Role="StoresRequisition" EntitySet="StoresRequisition" />
+            <End Role="StockOutRecord" EntitySet="StockOutRecord" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StoresRequisitionItem_ComputationalStock" Association="Self.FK_StoresRequisitionItem_ComputationalStock">
+            <End Role="ComputationalStock" EntitySet="ComputationalStock" />
+            <End Role="StoresRequisitionItem" EntitySet="StoresRequisitionItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StoresRequisitionItem_StoresRequisitionItem" Association="Self.FK_StoresRequisitionItem_StoresRequisitionItem">
+            <End Role="StoresRequisition" EntitySet="StoresRequisition" />
+            <End Role="StoresRequisitionItem" EntitySet="StoresRequisitionItem" />
+          </AssociationSet>
           <AssociationSet Name="FK_SubSystemManagement_SystemManagement" Association="Self.FK_SubSystemManagement_SystemManagement">
             <End Role="SystemManagement" EntitySet="SystemManagement" />
             <End Role="SubSystemManagement" EntitySet="SubSystemManagement" />
@@ -1006,6 +1578,8 @@
           <EntitySet Name="AspNetUserLogins" EntityType="Bimfm_MinSheng_MISModel.AspNetUserLogins" />
           <EntitySet Name="AspNetUsers" EntityType="Bimfm_MinSheng_MISModel.AspNetUsers" />
           <EntitySet Name="CompletionReportImage" EntityType="Bimfm_MinSheng_MISModel.CompletionReportImage" />
+          <EntitySet Name="ComputationalStock" EntityType="Bimfm_MinSheng_MISModel.ComputationalStock" />
+          <EntitySet Name="DeliveryRecord" EntityType="Bimfm_MinSheng_MISModel.DeliveryRecord" />
           <EntitySet Name="DrawInspectionPlanPath" EntityType="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath" />
           <EntitySet Name="DrawPathSample" EntityType="Bimfm_MinSheng_MISModel.DrawPathSample" />
           <EntitySet Name="EquipmentInfo" EntityType="Bimfm_MinSheng_MISModel.EquipmentInfo" />
@@ -1013,6 +1587,9 @@
           <EntitySet Name="EquipmentMaintainItem" EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainItem" />
           <EntitySet Name="EquipmentReportForm" EntityType="Bimfm_MinSheng_MISModel.EquipmentReportForm" />
           <EntitySet Name="Floor_Info" EntityType="Bimfm_MinSheng_MISModel.Floor_Info" />
+          <EntitySet Name="InquiryOrder" EntityType="Bimfm_MinSheng_MISModel.InquiryOrder" />
+          <EntitySet Name="InquiryOrderItem" EntityType="Bimfm_MinSheng_MISModel.InquiryOrderItem" />
+          <EntitySet Name="InquiryOrderSubItem" EntityType="Bimfm_MinSheng_MISModel.InquiryOrderSubItem" />
           <EntitySet Name="InspectionPlan" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan" />
           <EntitySet Name="InspectionPlanFloorPath" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanFloorPath" />
           <EntitySet Name="InspectionPlanMaintain" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanMaintain" />
@@ -1029,12 +1606,25 @@
           <EntitySet Name="ManufacturerInfo" EntityType="Bimfm_MinSheng_MISModel.ManufacturerInfo" />
           <EntitySet Name="PathSample" EntityType="Bimfm_MinSheng_MISModel.PathSample" />
           <EntitySet Name="PathSampleOrder" EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" />
+          <EntitySet Name="PurchaseOrder" EntityType="Bimfm_MinSheng_MISModel.PurchaseOrder" />
+          <EntitySet Name="PurchaseOrderItem" EntityType="Bimfm_MinSheng_MISModel.PurchaseOrderItem" />
+          <EntitySet Name="PurchaseRequisition" EntityType="Bimfm_MinSheng_MISModel.PurchaseRequisition" />
+          <EntitySet Name="PurchaseRequisitionItem" EntityType="Bimfm_MinSheng_MISModel.PurchaseRequisitionItem" />
+          <EntitySet Name="Quotation" EntityType="Bimfm_MinSheng_MISModel.Quotation" />
+          <EntitySet Name="QuotationFiles" EntityType="Bimfm_MinSheng_MISModel.QuotationFiles" />
+          <EntitySet Name="QuotationItem" EntityType="Bimfm_MinSheng_MISModel.QuotationItem" />
           <EntitySet Name="RepairAuditImage" EntityType="Bimfm_MinSheng_MISModel.RepairAuditImage" />
           <EntitySet Name="RepairAuditInfo" EntityType="Bimfm_MinSheng_MISModel.RepairAuditInfo" />
           <EntitySet Name="RepairCompletionImage" EntityType="Bimfm_MinSheng_MISModel.RepairCompletionImage" />
           <EntitySet Name="RepairSupplementaryFile" EntityType="Bimfm_MinSheng_MISModel.RepairSupplementaryFile" />
           <EntitySet Name="RepairSupplementaryInfo" EntityType="Bimfm_MinSheng_MISModel.RepairSupplementaryInfo" />
           <EntitySet Name="ReportImage" EntityType="Bimfm_MinSheng_MISModel.ReportImage" />
+          <EntitySet Name="Stock" EntityType="Bimfm_MinSheng_MISModel.Stock" />
+          <EntitySet Name="StockInRecord" EntityType="Bimfm_MinSheng_MISModel.StockInRecord" />
+          <EntitySet Name="StockOutItem" EntityType="Bimfm_MinSheng_MISModel.StockOutItem" />
+          <EntitySet Name="StockOutRecord" EntityType="Bimfm_MinSheng_MISModel.StockOutRecord" />
+          <EntitySet Name="StoresRequisition" EntityType="Bimfm_MinSheng_MISModel.StoresRequisition" />
+          <EntitySet Name="StoresRequisitionItem" EntityType="Bimfm_MinSheng_MISModel.StoresRequisitionItem" />
           <EntitySet Name="SubSystemManagement" EntityType="Bimfm_MinSheng_MISModel.SubSystemManagement" />
           <EntitySet Name="sysdiagrams" EntityType="Bimfm_MinSheng_MISModel.sysdiagrams" />
           <EntitySet Name="SystemManagement" EntityType="Bimfm_MinSheng_MISModel.SystemManagement" />
@@ -1053,6 +1643,18 @@
           <AssociationSet Name="FK_CompletionReportImage_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_CompletionReportImage_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
             <End Role="CompletionReportImage" EntitySet="CompletionReportImage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Stock_ComputationalStock" Association="Bimfm_MinSheng_MISModel.FK_Stock_ComputationalStock">
+            <End Role="ComputationalStock" EntitySet="ComputationalStock" />
+            <End Role="Stock" EntitySet="Stock" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StoresRequisitionItem_ComputationalStock" Association="Bimfm_MinSheng_MISModel.FK_StoresRequisitionItem_ComputationalStock">
+            <End Role="ComputationalStock" EntitySet="ComputationalStock" />
+            <End Role="StoresRequisitionItem" EntitySet="StoresRequisitionItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DeliveryRecord_PurchaseOrder" Association="Bimfm_MinSheng_MISModel.FK_DeliveryRecord_PurchaseOrder">
+            <End Role="PurchaseOrder" EntitySet="PurchaseOrder" />
+            <End Role="DeliveryRecord" EntitySet="DeliveryRecord" />
           </AssociationSet>
           <AssociationSet Name="FK_DrawInspectionPlanPath_InspectionPlanPath" Association="Bimfm_MinSheng_MISModel.FK_DrawInspectionPlanPath_InspectionPlanPath">
             <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
@@ -1081,6 +1683,34 @@
           <AssociationSet Name="FK_ReportImage_EquipmentReportForm" Association="Bimfm_MinSheng_MISModel.FK_ReportImage_EquipmentReportForm">
             <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
             <End Role="ReportImage" EntitySet="ReportImage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InquiryOrder_Quotation" Association="Bimfm_MinSheng_MISModel.FK_InquiryOrder_Quotation">
+            <End Role="Quotation" EntitySet="Quotation" />
+            <End Role="InquiryOrder" EntitySet="InquiryOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InquiryOrderItem_InquiryOrder" Association="Bimfm_MinSheng_MISModel.FK_InquiryOrderItem_InquiryOrder">
+            <End Role="InquiryOrder" EntitySet="InquiryOrder" />
+            <End Role="InquiryOrderItem" EntitySet="InquiryOrderItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseOrder_InquiryOrder" Association="Bimfm_MinSheng_MISModel.FK_PurchaseOrder_InquiryOrder">
+            <End Role="InquiryOrder" EntitySet="InquiryOrder" />
+            <End Role="PurchaseOrder" EntitySet="PurchaseOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Quotation_InquiryOrder" Association="Bimfm_MinSheng_MISModel.FK_Quotation_InquiryOrder">
+            <End Role="InquiryOrder" EntitySet="InquiryOrder" />
+            <End Role="Quotation" EntitySet="Quotation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InquiryOrderSubItem_InquiryOrderItem" Association="Bimfm_MinSheng_MISModel.FK_InquiryOrderSubItem_InquiryOrderItem">
+            <End Role="InquiryOrderItem" EntitySet="InquiryOrderItem" />
+            <End Role="InquiryOrderSubItem" EntitySet="InquiryOrderSubItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuotationItem_InquiryOrderItem" Association="Bimfm_MinSheng_MISModel.FK_QuotationItem_InquiryOrderItem">
+            <End Role="InquiryOrderItem" EntitySet="InquiryOrderItem" />
+            <End Role="QuotationItem" EntitySet="QuotationItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InquiryOrderSubItem_PurchaseRequisitionItem" Association="Bimfm_MinSheng_MISModel.FK_InquiryOrderSubItem_PurchaseRequisitionItem">
+            <End Role="PurchaseRequisitionItem" EntitySet="PurchaseRequisitionItem" />
+            <End Role="InquiryOrderSubItem" EntitySet="InquiryOrderSubItem" />
           </AssociationSet>
           <AssociationSet Name="FK_InspectionPlanMaintain_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
@@ -1146,6 +1776,26 @@
             <End Role="PathSample" EntitySet="PathSample" />
             <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
           </AssociationSet>
+          <AssociationSet Name="FK_PurchaseOrderItem_PurchaseOrder" Association="Bimfm_MinSheng_MISModel.FK_PurchaseOrderItem_PurchaseOrder">
+            <End Role="PurchaseOrder" EntitySet="PurchaseOrder" />
+            <End Role="PurchaseOrderItem" EntitySet="PurchaseOrderItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInRecord_PurchaseOrderItem" Association="Bimfm_MinSheng_MISModel.FK_StockInRecord_PurchaseOrderItem">
+            <End Role="PurchaseOrderItem" EntitySet="PurchaseOrderItem" />
+            <End Role="StockInRecord" EntitySet="StockInRecord" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseRequisitionItem_PurchaseRequisitionItem" Association="Bimfm_MinSheng_MISModel.FK_PurchaseRequisitionItem_PurchaseRequisitionItem">
+            <End Role="PurchaseRequisition" EntitySet="PurchaseRequisition" />
+            <End Role="PurchaseRequisitionItem" EntitySet="PurchaseRequisitionItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuotationFiles_Quotation" Association="Bimfm_MinSheng_MISModel.FK_QuotationFiles_Quotation">
+            <End Role="Quotation" EntitySet="Quotation" />
+            <End Role="QuotationFiles" EntitySet="QuotationFiles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuotationItem_Quotation" Association="Bimfm_MinSheng_MISModel.FK_QuotationItem_Quotation">
+            <End Role="Quotation" EntitySet="Quotation" />
+            <End Role="QuotationItem" EntitySet="QuotationItem" />
+          </AssociationSet>
           <AssociationSet Name="FK_RepairAuditImage_RepairAuditInfo" Association="Bimfm_MinSheng_MISModel.FK_RepairAuditImage_RepairAuditInfo">
             <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
             <End Role="RepairAuditImage" EntitySet="RepairAuditImage" />
@@ -1153,6 +1803,26 @@
           <AssociationSet Name="FK_RepairSupplementaryFile_RepairSupplementaryInfo" Association="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryFile_RepairSupplementaryInfo">
             <End Role="RepairSupplementaryInfo" EntitySet="RepairSupplementaryInfo" />
             <End Role="RepairSupplementaryFile" EntitySet="RepairSupplementaryFile" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Stock_StockInRecord" Association="Bimfm_MinSheng_MISModel.FK_Stock_StockInRecord">
+            <End Role="StockInRecord" EntitySet="StockInRecord" />
+            <End Role="Stock" EntitySet="Stock" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockOutItem_Stock" Association="Bimfm_MinSheng_MISModel.FK_StockOutItem_Stock">
+            <End Role="Stock" EntitySet="Stock" />
+            <End Role="StockOutItem" EntitySet="StockOutItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockOutItem_StockOutRecord" Association="Bimfm_MinSheng_MISModel.FK_StockOutItem_StockOutRecord">
+            <End Role="StockOutRecord" EntitySet="StockOutRecord" />
+            <End Role="StockOutItem" EntitySet="StockOutItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockOutRecord_StoresRequisition" Association="Bimfm_MinSheng_MISModel.FK_StockOutRecord_StoresRequisition">
+            <End Role="StoresRequisition" EntitySet="StoresRequisition" />
+            <End Role="StockOutRecord" EntitySet="StockOutRecord" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StoresRequisitionItem_StoresRequisitionItem" Association="Bimfm_MinSheng_MISModel.FK_StoresRequisitionItem_StoresRequisitionItem">
+            <End Role="StoresRequisition" EntitySet="StoresRequisition" />
+            <End Role="StoresRequisitionItem" EntitySet="StoresRequisitionItem" />
           </AssociationSet>
           <AssociationSet Name="FK_SubSystemManagement_SystemManagement" Association="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement">
             <End Role="SystemManagement" EntitySet="SystemManagement" />
@@ -1242,6 +1912,34 @@
           <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
           <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_CompletionReportImage_InspectionPlan" FromRole="CompletionReportImage" ToRole="InspectionPlan" />
+        </EntityType>
+        <EntityType Name="ComputationalStock">
+          <Key>
+            <PropertyRef Name="SISN" />
+          </Key>
+          <Property Name="SISN" Type="String" Nullable="false" MaxLength="4" FixedLength="true" Unicode="false" />
+          <Property Name="StockType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="StockName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="StockAmount" Type="Double" Nullable="false" />
+          <Property Name="MinStockAmount" Type="Double" Nullable="false" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="Stock" Relationship="Bimfm_MinSheng_MISModel.FK_Stock_ComputationalStock" FromRole="ComputationalStock" ToRole="Stock" />
+          <NavigationProperty Name="StoresRequisitionItem" Relationship="Bimfm_MinSheng_MISModel.FK_StoresRequisitionItem_ComputationalStock" FromRole="ComputationalStock" ToRole="StoresRequisitionItem" />
+        </EntityType>
+        <EntityType Name="DeliveryRecord">
+          <Key>
+            <PropertyRef Name="DRSN" />
+          </Key>
+          <Property Name="DRSN" Type="String" Nullable="false" MaxLength="8" FixedLength="true" Unicode="false" />
+          <Property Name="POSN" Type="String" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="Consignee" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Amount" Type="Int32" Nullable="false" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="DeliveryMemo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="CertificateOfReceipt" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DeliveryDateTime" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="PurchaseOrder" Relationship="Bimfm_MinSheng_MISModel.FK_DeliveryRecord_PurchaseOrder" FromRole="DeliveryRecord" ToRole="PurchaseOrder" />
         </EntityType>
         <EntityType Name="DrawInspectionPlanPath">
           <Key>
@@ -1348,6 +2046,51 @@
           <Property Name="FloorName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="BIMPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AreaInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="Floor_Info" ToRole="AreaInfo" />
+        </EntityType>
+        <EntityType Name="InquiryOrder">
+          <Key>
+            <PropertyRef Name="IOSN" />
+          </Key>
+          <Property Name="IOSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="IOState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="QSN" Type="String" MaxLength="14" FixedLength="true" Unicode="true" />
+          <Property Name="InquiryUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="AuditUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="AuditDate" Type="DateTime" Precision="0" />
+          <Property Name="AuditContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="AuditResult" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="QAmount" Type="Int32" />
+          <NavigationProperty Name="Quotation" Relationship="Bimfm_MinSheng_MISModel.FK_InquiryOrder_Quotation" FromRole="InquiryOrder" ToRole="Quotation" />
+          <NavigationProperty Name="InquiryOrderItem" Relationship="Bimfm_MinSheng_MISModel.FK_InquiryOrderItem_InquiryOrder" FromRole="InquiryOrder" ToRole="InquiryOrderItem" />
+          <NavigationProperty Name="PurchaseOrder" Relationship="Bimfm_MinSheng_MISModel.FK_PurchaseOrder_InquiryOrder" FromRole="InquiryOrder" ToRole="PurchaseOrder" />
+          <NavigationProperty Name="Quotation1" Relationship="Bimfm_MinSheng_MISModel.FK_Quotation_InquiryOrder" FromRole="InquiryOrder" ToRole="Quotation" />
+        </EntityType>
+        <EntityType Name="InquiryOrderItem">
+          <Key>
+            <PropertyRef Name="IOISN" />
+          </Key>
+          <Property Name="IOISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="IOSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="Kind" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Amount" Type="Double" Nullable="false" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="SubItemAmount" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="InquiryOrder" Relationship="Bimfm_MinSheng_MISModel.FK_InquiryOrderItem_InquiryOrder" FromRole="InquiryOrderItem" ToRole="InquiryOrder" />
+          <NavigationProperty Name="InquiryOrderSubItem" Relationship="Bimfm_MinSheng_MISModel.FK_InquiryOrderSubItem_InquiryOrderItem" FromRole="InquiryOrderItem" ToRole="InquiryOrderSubItem" />
+          <NavigationProperty Name="QuotationItem" Relationship="Bimfm_MinSheng_MISModel.FK_QuotationItem_InquiryOrderItem" FromRole="InquiryOrderItem" ToRole="QuotationItem" />
+        </EntityType>
+        <EntityType Name="InquiryOrderSubItem">
+          <Key>
+            <PropertyRef Name="IOSSN" />
+          </Key>
+          <Property Name="IOSSN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <Property Name="IOISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="PRIN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="InquiryOrderItem" Relationship="Bimfm_MinSheng_MISModel.FK_InquiryOrderSubItem_InquiryOrderItem" FromRole="InquiryOrderSubItem" ToRole="InquiryOrderItem" />
+          <NavigationProperty Name="PurchaseRequisitionItem" Relationship="Bimfm_MinSheng_MISModel.FK_InquiryOrderSubItem_PurchaseRequisitionItem" FromRole="InquiryOrderSubItem" ToRole="PurchaseRequisitionItem" />
         </EntityType>
         <EntityType Name="InspectionPlan">
           <Key>
@@ -1558,6 +2301,121 @@
           <Property Name="BeaconID" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
           <NavigationProperty Name="PathSample" Relationship="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" FromRole="PathSampleOrder" ToRole="PathSample" />
         </EntityType>
+        <EntityType Name="PurchaseOrder">
+          <Key>
+            <PropertyRef Name="POSN" />
+          </Key>
+          <Property Name="POSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="POState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="IOSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="PurchaseUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PurchaseDataTime" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="DeliveryRecord" Relationship="Bimfm_MinSheng_MISModel.FK_DeliveryRecord_PurchaseOrder" FromRole="PurchaseOrder" ToRole="DeliveryRecord" />
+          <NavigationProperty Name="InquiryOrder" Relationship="Bimfm_MinSheng_MISModel.FK_PurchaseOrder_InquiryOrder" FromRole="PurchaseOrder" ToRole="InquiryOrder" />
+          <NavigationProperty Name="PurchaseOrderItem" Relationship="Bimfm_MinSheng_MISModel.FK_PurchaseOrderItem_PurchaseOrder" FromRole="PurchaseOrder" ToRole="PurchaseOrderItem" />
+        </EntityType>
+        <EntityType Name="PurchaseOrderItem">
+          <Key>
+            <PropertyRef Name="POISN" />
+          </Key>
+          <Property Name="POISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="POSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="Kind" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Amount" Type="Double" Nullable="false" />
+          <Property Name="Packaging" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="State" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="AcceptResult" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="AcceptRecord" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Memo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PurchaseOrder" Relationship="Bimfm_MinSheng_MISModel.FK_PurchaseOrderItem_PurchaseOrder" FromRole="PurchaseOrderItem" ToRole="PurchaseOrder" />
+          <NavigationProperty Name="StockInRecord" Relationship="Bimfm_MinSheng_MISModel.FK_StockInRecord_PurchaseOrderItem" FromRole="PurchaseOrderItem" ToRole="StockInRecord" />
+        </EntityType>
+        <EntityType Name="PurchaseRequisition">
+          <Key>
+            <PropertyRef Name="PRN" />
+          </Key>
+          <Property Name="PRN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="PRUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PRState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="PRDept" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PRDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EstimatedDate" Type="DateTime" Precision="0" />
+          <Property Name="AuditUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="AuditDate" Type="DateTime" Precision="0" />
+          <Property Name="AuditContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PurchaseRequisitionItem" Relationship="Bimfm_MinSheng_MISModel.FK_PurchaseRequisitionItem_PurchaseRequisitionItem" FromRole="PurchaseRequisition" ToRole="PurchaseRequisitionItem" />
+        </EntityType>
+        <EntityType Name="PurchaseRequisitionItem">
+          <Key>
+            <PropertyRef Name="PRIN" />
+          </Key>
+          <Property Name="PRIN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="PRN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="PRIState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Kind" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PRAmount" Type="Double" Nullable="false" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationPurpose" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="AuditResult" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="InquiryOrderSubItem" Relationship="Bimfm_MinSheng_MISModel.FK_InquiryOrderSubItem_PurchaseRequisitionItem" FromRole="PurchaseRequisitionItem" ToRole="InquiryOrderSubItem" />
+          <NavigationProperty Name="PurchaseRequisition" Relationship="Bimfm_MinSheng_MISModel.FK_PurchaseRequisitionItem_PurchaseRequisitionItem" FromRole="PurchaseRequisitionItem" ToRole="PurchaseRequisition" />
+        </EntityType>
+        <EntityType Name="Quotation">
+          <Key>
+            <PropertyRef Name="QSN" />
+          </Key>
+          <Property Name="QSN" Type="String" Nullable="false" MaxLength="14" FixedLength="true" Unicode="true" />
+          <Property Name="IOSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="ExcludeTaxTotal" Type="Int32" Nullable="false" />
+          <Property Name="IncludeTaxTotal" Type="Int32" />
+          <Property Name="MFRName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ContactPerson" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MFRTelNO" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="MFRMBPhone" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="MFRMainProduct" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="MFRAddress" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="MFREmail" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="MFRWeb" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PaymentMethod" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="DeliveryMethod" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="DeliveryDate" Type="DateTime" Precision="0" />
+          <Property Name="DeliveryLocation" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="InquiryOrder" Relationship="Bimfm_MinSheng_MISModel.FK_InquiryOrder_Quotation" FromRole="Quotation" ToRole="InquiryOrder" />
+          <NavigationProperty Name="InquiryOrder1" Relationship="Bimfm_MinSheng_MISModel.FK_Quotation_InquiryOrder" FromRole="Quotation" ToRole="InquiryOrder" />
+          <NavigationProperty Name="QuotationFiles" Relationship="Bimfm_MinSheng_MISModel.FK_QuotationFiles_Quotation" FromRole="Quotation" ToRole="QuotationFiles" />
+          <NavigationProperty Name="QuotationItem" Relationship="Bimfm_MinSheng_MISModel.FK_QuotationItem_Quotation" FromRole="Quotation" ToRole="QuotationItem" />
+        </EntityType>
+        <EntityType Name="QuotationFiles">
+          <Key>
+            <PropertyRef Name="QFileSN" />
+          </Key>
+          <Property Name="QFileSN" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="true" />
+          <Property Name="QuotationFile" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="QSN" Type="String" Nullable="false" MaxLength="14" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Quotation" Relationship="Bimfm_MinSheng_MISModel.FK_QuotationFiles_Quotation" FromRole="QuotationFiles" ToRole="Quotation" />
+        </EntityType>
+        <EntityType Name="QuotationItem">
+          <Key>
+            <PropertyRef Name="QISN" />
+          </Key>
+          <Property Name="QISN" Type="String" Nullable="false" MaxLength="17" FixedLength="true" Unicode="true" />
+          <Property Name="QSN" Type="String" Nullable="false" MaxLength="14" FixedLength="true" Unicode="true" />
+          <Property Name="IOISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Amount" Type="Double" />
+          <Property Name="Packaging" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="SubTotal" Type="Int32" />
+          <NavigationProperty Name="InquiryOrderItem" Relationship="Bimfm_MinSheng_MISModel.FK_QuotationItem_InquiryOrderItem" FromRole="QuotationItem" ToRole="InquiryOrderItem" />
+          <NavigationProperty Name="Quotation" Relationship="Bimfm_MinSheng_MISModel.FK_QuotationItem_Quotation" FromRole="QuotationItem" ToRole="Quotation" />
+        </EntityType>
         <EntityType Name="RepairAuditImage">
           <Key>
             <PropertyRef Name="ImgPath" />
@@ -1614,6 +2472,92 @@
           <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="RSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
           <NavigationProperty Name="EquipmentReportForm" Relationship="Bimfm_MinSheng_MISModel.FK_ReportImage_EquipmentReportForm" FromRole="ReportImage" ToRole="EquipmentReportForm" />
+        </EntityType>
+        <EntityType Name="Stock">
+          <Key>
+            <PropertyRef Name="SSN" />
+          </Key>
+          <Property Name="SSN" Type="String" Nullable="false" MaxLength="8" FixedLength="true" Unicode="false" />
+          <Property Name="SIRSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="SISN" Type="String" Nullable="false" MaxLength="4" FixedLength="true" Unicode="false" />
+          <Property Name="Location" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="0" />
+          <Property Name="Amount" Type="Double" Nullable="false" />
+          <Property Name="RemianingAmount" Type="Double" Nullable="false" />
+          <NavigationProperty Name="ComputationalStock" Relationship="Bimfm_MinSheng_MISModel.FK_Stock_ComputationalStock" FromRole="Stock" ToRole="ComputationalStock" />
+          <NavigationProperty Name="StockInRecord" Relationship="Bimfm_MinSheng_MISModel.FK_Stock_StockInRecord" FromRole="Stock" ToRole="StockInRecord" />
+          <NavigationProperty Name="StockOutItem" Relationship="Bimfm_MinSheng_MISModel.FK_StockOutItem_Stock" FromRole="Stock" ToRole="StockOutItem" />
+        </EntityType>
+        <EntityType Name="StockInRecord">
+          <Key>
+            <PropertyRef Name="SIRSN" />
+          </Key>
+          <Property Name="SIRSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="POISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="MName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="StockInDateTime" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="StockInUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PurchaseOrderItem" Relationship="Bimfm_MinSheng_MISModel.FK_StockInRecord_PurchaseOrderItem" FromRole="StockInRecord" ToRole="PurchaseOrderItem" />
+          <NavigationProperty Name="Stock" Relationship="Bimfm_MinSheng_MISModel.FK_Stock_StockInRecord" FromRole="StockInRecord" ToRole="Stock" />
+        </EntityType>
+        <EntityType Name="StockOutItem">
+          <Key>
+            <PropertyRef Name="SOISN" />
+          </Key>
+          <Property Name="SOISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="SORSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="SSN" Type="String" Nullable="false" MaxLength="8" FixedLength="true" Unicode="false" />
+          <Property Name="StockOutDateTime" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Amount" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Stock" Relationship="Bimfm_MinSheng_MISModel.FK_StockOutItem_Stock" FromRole="StockOutItem" ToRole="Stock" />
+          <NavigationProperty Name="StockOutRecord" Relationship="Bimfm_MinSheng_MISModel.FK_StockOutItem_StockOutRecord" FromRole="StockOutItem" ToRole="StockOutRecord" />
+        </EntityType>
+        <EntityType Name="StockOutRecord">
+          <Key>
+            <PropertyRef Name="SORSN" />
+          </Key>
+          <Property Name="SORSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="SRSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="StockOutUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ReceiverUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="StockOutContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="StockOutDateTime" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="StockOutItem" Relationship="Bimfm_MinSheng_MISModel.FK_StockOutItem_StockOutRecord" FromRole="StockOutRecord" ToRole="StockOutItem" />
+          <NavigationProperty Name="StoresRequisition" Relationship="Bimfm_MinSheng_MISModel.FK_StockOutRecord_StoresRequisition" FromRole="StockOutRecord" ToRole="StoresRequisition" />
+        </EntityType>
+        <EntityType Name="StoresRequisition">
+          <Key>
+            <PropertyRef Name="SRSN" />
+          </Key>
+          <Property Name="SRSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="SRState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="SRUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="SRDept" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SRDateTime" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="SRContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="AuditUserID" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="AuditDate" Type="DateTime" Precision="0" />
+          <Property Name="AuditContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="StockOutRecord" Relationship="Bimfm_MinSheng_MISModel.FK_StockOutRecord_StoresRequisition" FromRole="StoresRequisition" ToRole="StockOutRecord" />
+          <NavigationProperty Name="StoresRequisitionItem" Relationship="Bimfm_MinSheng_MISModel.FK_StoresRequisitionItem_StoresRequisitionItem" FromRole="StoresRequisition" ToRole="StoresRequisitionItem" />
+        </EntityType>
+        <EntityType Name="StoresRequisitionItem">
+          <Key>
+            <PropertyRef Name="SRISN" />
+          </Key>
+          <Property Name="SRISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="SRSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="SISN" Type="String" Nullable="false" MaxLength="4" FixedLength="true" Unicode="false" />
+          <Property Name="Amount" Type="Double" Nullable="false" />
+          <Property Name="TakeAmount" Type="Double" Nullable="false" />
+          <Property Name="SRContent" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="AuditResult" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="PickUpStatus" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="ComputationalStock" Relationship="Bimfm_MinSheng_MISModel.FK_StoresRequisitionItem_ComputationalStock" FromRole="StoresRequisitionItem" ToRole="ComputationalStock" />
+          <NavigationProperty Name="StoresRequisition" Relationship="Bimfm_MinSheng_MISModel.FK_StoresRequisitionItem_StoresRequisitionItem" FromRole="StoresRequisitionItem" ToRole="StoresRequisition" />
         </EntityType>
         <EntityType Name="SubSystemManagement">
           <Key>
@@ -1693,6 +2637,42 @@
             </Principal>
             <Dependent Role="CompletionReportImage">
               <PropertyRef Name="IPSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Stock_ComputationalStock">
+          <End Type="Bimfm_MinSheng_MISModel.ComputationalStock" Role="ComputationalStock" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.Stock" Role="Stock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ComputationalStock">
+              <PropertyRef Name="SISN" />
+            </Principal>
+            <Dependent Role="Stock">
+              <PropertyRef Name="SISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StoresRequisitionItem_ComputationalStock">
+          <End Type="Bimfm_MinSheng_MISModel.ComputationalStock" Role="ComputationalStock" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.StoresRequisitionItem" Role="StoresRequisitionItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ComputationalStock">
+              <PropertyRef Name="SISN" />
+            </Principal>
+            <Dependent Role="StoresRequisitionItem">
+              <PropertyRef Name="SISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DeliveryRecord_PurchaseOrder">
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseOrder" Role="PurchaseOrder" Multiplicity="0..1" />
+          <End Type="Bimfm_MinSheng_MISModel.DeliveryRecord" Role="DeliveryRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseOrder">
+              <PropertyRef Name="POSN" />
+            </Principal>
+            <Dependent Role="DeliveryRecord">
+              <PropertyRef Name="POSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1777,6 +2757,90 @@
             </Principal>
             <Dependent Role="ReportImage">
               <PropertyRef Name="RSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InquiryOrder_Quotation">
+          <End Type="Bimfm_MinSheng_MISModel.Quotation" Role="Quotation" Multiplicity="0..1" />
+          <End Type="Bimfm_MinSheng_MISModel.InquiryOrder" Role="InquiryOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Quotation">
+              <PropertyRef Name="QSN" />
+            </Principal>
+            <Dependent Role="InquiryOrder">
+              <PropertyRef Name="QSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InquiryOrderItem_InquiryOrder">
+          <End Type="Bimfm_MinSheng_MISModel.InquiryOrder" Role="InquiryOrder" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InquiryOrderItem" Role="InquiryOrderItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrder">
+              <PropertyRef Name="IOSN" />
+            </Principal>
+            <Dependent Role="InquiryOrderItem">
+              <PropertyRef Name="IOSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseOrder_InquiryOrder">
+          <End Type="Bimfm_MinSheng_MISModel.InquiryOrder" Role="InquiryOrder" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseOrder" Role="PurchaseOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrder">
+              <PropertyRef Name="IOSN" />
+            </Principal>
+            <Dependent Role="PurchaseOrder">
+              <PropertyRef Name="IOSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Quotation_InquiryOrder">
+          <End Type="Bimfm_MinSheng_MISModel.InquiryOrder" Role="InquiryOrder" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.Quotation" Role="Quotation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrder">
+              <PropertyRef Name="IOSN" />
+            </Principal>
+            <Dependent Role="Quotation">
+              <PropertyRef Name="IOSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InquiryOrderSubItem_InquiryOrderItem">
+          <End Type="Bimfm_MinSheng_MISModel.InquiryOrderItem" Role="InquiryOrderItem" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InquiryOrderSubItem" Role="InquiryOrderSubItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrderItem">
+              <PropertyRef Name="IOISN" />
+            </Principal>
+            <Dependent Role="InquiryOrderSubItem">
+              <PropertyRef Name="IOISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_QuotationItem_InquiryOrderItem">
+          <End Type="Bimfm_MinSheng_MISModel.InquiryOrderItem" Role="InquiryOrderItem" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.QuotationItem" Role="QuotationItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InquiryOrderItem">
+              <PropertyRef Name="IOISN" />
+            </Principal>
+            <Dependent Role="QuotationItem">
+              <PropertyRef Name="IOISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InquiryOrderSubItem_PurchaseRequisitionItem">
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseRequisitionItem" Role="PurchaseRequisitionItem" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InquiryOrderSubItem" Role="InquiryOrderSubItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseRequisitionItem">
+              <PropertyRef Name="PRIN" />
+            </Principal>
+            <Dependent Role="InquiryOrderSubItem">
+              <PropertyRef Name="PRIN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1972,6 +3036,66 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PurchaseOrderItem_PurchaseOrder">
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseOrder" Role="PurchaseOrder" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseOrderItem" Role="PurchaseOrderItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseOrder">
+              <PropertyRef Name="POSN" />
+            </Principal>
+            <Dependent Role="PurchaseOrderItem">
+              <PropertyRef Name="POSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInRecord_PurchaseOrderItem">
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseOrderItem" Role="PurchaseOrderItem" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.StockInRecord" Role="StockInRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseOrderItem">
+              <PropertyRef Name="POISN" />
+            </Principal>
+            <Dependent Role="StockInRecord">
+              <PropertyRef Name="POISN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseRequisitionItem_PurchaseRequisitionItem">
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseRequisition" Role="PurchaseRequisition" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseRequisitionItem" Role="PurchaseRequisitionItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseRequisition">
+              <PropertyRef Name="PRN" />
+            </Principal>
+            <Dependent Role="PurchaseRequisitionItem">
+              <PropertyRef Name="PRN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_QuotationFiles_Quotation">
+          <End Type="Bimfm_MinSheng_MISModel.Quotation" Role="Quotation" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.QuotationFiles" Role="QuotationFiles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Quotation">
+              <PropertyRef Name="QSN" />
+            </Principal>
+            <Dependent Role="QuotationFiles">
+              <PropertyRef Name="QSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_QuotationItem_Quotation">
+          <End Type="Bimfm_MinSheng_MISModel.Quotation" Role="Quotation" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.QuotationItem" Role="QuotationItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Quotation">
+              <PropertyRef Name="QSN" />
+            </Principal>
+            <Dependent Role="QuotationItem">
+              <PropertyRef Name="QSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RepairAuditImage_RepairAuditInfo">
           <End Type="Bimfm_MinSheng_MISModel.RepairAuditInfo" Role="RepairAuditInfo" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.RepairAuditImage" Role="RepairAuditImage" Multiplicity="*" />
@@ -1993,6 +3117,66 @@
             </Principal>
             <Dependent Role="RepairSupplementaryFile">
               <PropertyRef Name="PRSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Stock_StockInRecord">
+          <End Type="Bimfm_MinSheng_MISModel.StockInRecord" Role="StockInRecord" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.Stock" Role="Stock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockInRecord">
+              <PropertyRef Name="SIRSN" />
+            </Principal>
+            <Dependent Role="Stock">
+              <PropertyRef Name="SIRSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockOutItem_Stock">
+          <End Type="Bimfm_MinSheng_MISModel.Stock" Role="Stock" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.StockOutItem" Role="StockOutItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stock">
+              <PropertyRef Name="SSN" />
+            </Principal>
+            <Dependent Role="StockOutItem">
+              <PropertyRef Name="SSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockOutItem_StockOutRecord">
+          <End Type="Bimfm_MinSheng_MISModel.StockOutRecord" Role="StockOutRecord" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.StockOutItem" Role="StockOutItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockOutRecord">
+              <PropertyRef Name="SORSN" />
+            </Principal>
+            <Dependent Role="StockOutItem">
+              <PropertyRef Name="SORSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockOutRecord_StoresRequisition">
+          <End Type="Bimfm_MinSheng_MISModel.StoresRequisition" Role="StoresRequisition" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.StockOutRecord" Role="StockOutRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StoresRequisition">
+              <PropertyRef Name="SRSN" />
+            </Principal>
+            <Dependent Role="StockOutRecord">
+              <PropertyRef Name="SRSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StoresRequisitionItem_StoresRequisitionItem">
+          <End Type="Bimfm_MinSheng_MISModel.StoresRequisition" Role="StoresRequisition" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.StoresRequisitionItem" Role="StoresRequisitionItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StoresRequisition">
+              <PropertyRef Name="SRSN" />
+            </Principal>
+            <Dependent Role="StoresRequisitionItem">
+              <PropertyRef Name="SRSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2091,6 +3275,33 @@
               <MappingFragment StoreEntitySet="CompletionReportImage">
                 <ScalarProperty Name="IPSN" ColumnName="IPSN" />
                 <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ComputationalStock">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ComputationalStock">
+              <MappingFragment StoreEntitySet="ComputationalStock">
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="MinStockAmount" ColumnName="MinStockAmount" />
+                <ScalarProperty Name="StockAmount" ColumnName="StockAmount" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="StockName" ColumnName="StockName" />
+                <ScalarProperty Name="StockType" ColumnName="StockType" />
+                <ScalarProperty Name="SISN" ColumnName="SISN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DeliveryRecord">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DeliveryRecord">
+              <MappingFragment StoreEntitySet="DeliveryRecord">
+                <ScalarProperty Name="DeliveryDateTime" ColumnName="DeliveryDateTime" />
+                <ScalarProperty Name="CertificateOfReceipt" ColumnName="CertificateOfReceipt" />
+                <ScalarProperty Name="DeliveryMemo" ColumnName="DeliveryMemo" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Consignee" ColumnName="Consignee" />
+                <ScalarProperty Name="POSN" ColumnName="POSN" />
+                <ScalarProperty Name="DRSN" ColumnName="DRSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2194,6 +3405,45 @@
                 <ScalarProperty Name="FloorName" ColumnName="FloorName" />
                 <ScalarProperty Name="ASN" ColumnName="ASN" />
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InquiryOrder">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InquiryOrder">
+              <MappingFragment StoreEntitySet="InquiryOrder">
+                <ScalarProperty Name="QAmount" ColumnName="QAmount" />
+                <ScalarProperty Name="AuditResult" ColumnName="AuditResult" />
+                <ScalarProperty Name="AuditContent" ColumnName="AuditContent" />
+                <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
+                <ScalarProperty Name="AuditUserID" ColumnName="AuditUserID" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="InquiryUserName" ColumnName="InquiryUserName" />
+                <ScalarProperty Name="QSN" ColumnName="QSN" />
+                <ScalarProperty Name="IOState" ColumnName="IOState" />
+                <ScalarProperty Name="IOSN" ColumnName="IOSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InquiryOrderItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InquiryOrderItem">
+              <MappingFragment StoreEntitySet="InquiryOrderItem">
+                <ScalarProperty Name="SubItemAmount" ColumnName="SubItemAmount" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="Kind" ColumnName="Kind" />
+                <ScalarProperty Name="IOSN" ColumnName="IOSN" />
+                <ScalarProperty Name="IOISN" ColumnName="IOISN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InquiryOrderSubItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InquiryOrderSubItem">
+              <MappingFragment StoreEntitySet="InquiryOrderSubItem">
+                <ScalarProperty Name="PRIN" ColumnName="PRIN" />
+                <ScalarProperty Name="IOISN" ColumnName="IOISN" />
+                <ScalarProperty Name="IOSSN" ColumnName="IOSSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2387,6 +3637,113 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseOrder">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PurchaseOrder">
+              <MappingFragment StoreEntitySet="PurchaseOrder">
+                <ScalarProperty Name="PurchaseDataTime" ColumnName="PurchaseDataTime" />
+                <ScalarProperty Name="PurchaseUserName" ColumnName="PurchaseUserName" />
+                <ScalarProperty Name="IOSN" ColumnName="IOSN" />
+                <ScalarProperty Name="POState" ColumnName="POState" />
+                <ScalarProperty Name="POSN" ColumnName="POSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseOrderItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PurchaseOrderItem">
+              <MappingFragment StoreEntitySet="PurchaseOrderItem">
+                <ScalarProperty Name="Memo" ColumnName="Memo" />
+                <ScalarProperty Name="AcceptRecord" ColumnName="AcceptRecord" />
+                <ScalarProperty Name="AcceptResult" ColumnName="AcceptResult" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="Packaging" ColumnName="Packaging" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="Kind" ColumnName="Kind" />
+                <ScalarProperty Name="POSN" ColumnName="POSN" />
+                <ScalarProperty Name="POISN" ColumnName="POISN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseRequisition">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PurchaseRequisition">
+              <MappingFragment StoreEntitySet="PurchaseRequisition">
+                <ScalarProperty Name="AuditContent" ColumnName="AuditContent" />
+                <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
+                <ScalarProperty Name="AuditUserID" ColumnName="AuditUserID" />
+                <ScalarProperty Name="EstimatedDate" ColumnName="EstimatedDate" />
+                <ScalarProperty Name="PRDate" ColumnName="PRDate" />
+                <ScalarProperty Name="PRDept" ColumnName="PRDept" />
+                <ScalarProperty Name="PRState" ColumnName="PRState" />
+                <ScalarProperty Name="PRUserName" ColumnName="PRUserName" />
+                <ScalarProperty Name="PRN" ColumnName="PRN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseRequisitionItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PurchaseRequisitionItem">
+              <MappingFragment StoreEntitySet="PurchaseRequisitionItem">
+                <ScalarProperty Name="AuditResult" ColumnName="AuditResult" />
+                <ScalarProperty Name="ApplicationPurpose" ColumnName="ApplicationPurpose" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="PRAmount" ColumnName="PRAmount" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="Kind" ColumnName="Kind" />
+                <ScalarProperty Name="PRIState" ColumnName="PRIState" />
+                <ScalarProperty Name="PRN" ColumnName="PRN" />
+                <ScalarProperty Name="PRIN" ColumnName="PRIN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Quotation">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.Quotation">
+              <MappingFragment StoreEntitySet="Quotation">
+                <ScalarProperty Name="DeliveryLocation" ColumnName="DeliveryLocation" />
+                <ScalarProperty Name="DeliveryDate" ColumnName="DeliveryDate" />
+                <ScalarProperty Name="DeliveryMethod" ColumnName="DeliveryMethod" />
+                <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
+                <ScalarProperty Name="MFRWeb" ColumnName="MFRWeb" />
+                <ScalarProperty Name="MFREmail" ColumnName="MFREmail" />
+                <ScalarProperty Name="MFRAddress" ColumnName="MFRAddress" />
+                <ScalarProperty Name="MFRMainProduct" ColumnName="MFRMainProduct" />
+                <ScalarProperty Name="MFRMBPhone" ColumnName="MFRMBPhone" />
+                <ScalarProperty Name="MFRTelNO" ColumnName="MFRTelNO" />
+                <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
+                <ScalarProperty Name="MFRName" ColumnName="MFRName" />
+                <ScalarProperty Name="IncludeTaxTotal" ColumnName="IncludeTaxTotal" />
+                <ScalarProperty Name="ExcludeTaxTotal" ColumnName="ExcludeTaxTotal" />
+                <ScalarProperty Name="IOSN" ColumnName="IOSN" />
+                <ScalarProperty Name="QSN" ColumnName="QSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="QuotationFiles">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.QuotationFiles">
+              <MappingFragment StoreEntitySet="QuotationFiles">
+                <ScalarProperty Name="QSN" ColumnName="QSN" />
+                <ScalarProperty Name="QuotationFile" ColumnName="QuotationFile" />
+                <ScalarProperty Name="QFileSN" ColumnName="QFileSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="QuotationItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.QuotationItem">
+              <MappingFragment StoreEntitySet="QuotationItem">
+                <ScalarProperty Name="SubTotal" ColumnName="SubTotal" />
+                <ScalarProperty Name="Packaging" ColumnName="Packaging" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="IOISN" ColumnName="IOISN" />
+                <ScalarProperty Name="QSN" ColumnName="QSN" />
+                <ScalarProperty Name="QISN" ColumnName="QISN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="RepairAuditImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.RepairAuditImage">
               <MappingFragment StoreEntitySet="RepairAuditImage">
@@ -2440,6 +3797,85 @@
               <MappingFragment StoreEntitySet="ReportImage">
                 <ScalarProperty Name="RSN" ColumnName="RSN" />
                 <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Stock">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.Stock">
+              <MappingFragment StoreEntitySet="Stock">
+                <ScalarProperty Name="RemianingAmount" ColumnName="RemianingAmount" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="SISN" ColumnName="SISN" />
+                <ScalarProperty Name="SIRSN" ColumnName="SIRSN" />
+                <ScalarProperty Name="SSN" ColumnName="SSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StockInRecord">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.StockInRecord">
+              <MappingFragment StoreEntitySet="StockInRecord">
+                <ScalarProperty Name="StockInUserName" ColumnName="StockInUserName" />
+                <ScalarProperty Name="StockInDateTime" ColumnName="StockInDateTime" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="MName" ColumnName="MName" />
+                <ScalarProperty Name="POISN" ColumnName="POISN" />
+                <ScalarProperty Name="SIRSN" ColumnName="SIRSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StockOutItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.StockOutItem">
+              <MappingFragment StoreEntitySet="StockOutItem">
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="StockOutDateTime" ColumnName="StockOutDateTime" />
+                <ScalarProperty Name="SSN" ColumnName="SSN" />
+                <ScalarProperty Name="SORSN" ColumnName="SORSN" />
+                <ScalarProperty Name="SOISN" ColumnName="SOISN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StockOutRecord">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.StockOutRecord">
+              <MappingFragment StoreEntitySet="StockOutRecord">
+                <ScalarProperty Name="StockOutDateTime" ColumnName="StockOutDateTime" />
+                <ScalarProperty Name="StockOutContent" ColumnName="StockOutContent" />
+                <ScalarProperty Name="ReceiverUserName" ColumnName="ReceiverUserName" />
+                <ScalarProperty Name="StockOutUserName" ColumnName="StockOutUserName" />
+                <ScalarProperty Name="SRSN" ColumnName="SRSN" />
+                <ScalarProperty Name="SORSN" ColumnName="SORSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StoresRequisition">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.StoresRequisition">
+              <MappingFragment StoreEntitySet="StoresRequisition">
+                <ScalarProperty Name="AuditContent" ColumnName="AuditContent" />
+                <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
+                <ScalarProperty Name="AuditUserID" ColumnName="AuditUserID" />
+                <ScalarProperty Name="SRContent" ColumnName="SRContent" />
+                <ScalarProperty Name="SRDateTime" ColumnName="SRDateTime" />
+                <ScalarProperty Name="SRDept" ColumnName="SRDept" />
+                <ScalarProperty Name="SRUserName" ColumnName="SRUserName" />
+                <ScalarProperty Name="SRState" ColumnName="SRState" />
+                <ScalarProperty Name="SRSN" ColumnName="SRSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StoresRequisitionItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.StoresRequisitionItem">
+              <MappingFragment StoreEntitySet="StoresRequisitionItem">
+                <ScalarProperty Name="PickUpStatus" ColumnName="PickUpStatus" />
+                <ScalarProperty Name="AuditResult" ColumnName="AuditResult" />
+                <ScalarProperty Name="SRContent" ColumnName="SRContent" />
+                <ScalarProperty Name="TakeAmount" ColumnName="TakeAmount" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="SISN" ColumnName="SISN" />
+                <ScalarProperty Name="SRSN" ColumnName="SRSN" />
+                <ScalarProperty Name="SRISN" ColumnName="SRISN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
