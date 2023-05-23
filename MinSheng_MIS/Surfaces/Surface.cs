@@ -171,7 +171,7 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
-        //8 帳號管理-權限對照表
+        //5-2-9 帳號管理-權限對照表
         #region Authority 權限
         public static Dictionary<string,string> Authority() 
         {
@@ -179,6 +179,115 @@ namespace MinSheng_MIS.Surfaces
             ValueOption.Add("1", "管理人員");
             ValueOption.Add("2", "操作人員");
             ValueOption.Add("3", "一般人員");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-10 請購單狀態編碼
+        #region PRState 請購單狀態編碼
+        public static Dictionary<string, string> PRState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待審核");
+            ValueOption.Add("2", "審核完成");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-11 請購單項目狀態
+        #region PRIState 請購單項目狀態
+        public static Dictionary<string, string> PRIState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待審核");
+            ValueOption.Add("2", "審核通過");
+            ValueOption.Add("3", "審核未過");
+            ValueOption.Add("4", "待採購");
+            ValueOption.Add("5", "已下單");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-12 詢價單狀態
+        #region IOState 詢價單狀態
+        public static Dictionary<string, string> IOState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "已建立");
+            ValueOption.Add("2", "待審核");
+            ValueOption.Add("3", "審核通過");
+            ValueOption.Add("4", "審核未過");
+            ValueOption.Add("5", "衝突");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-13 採購單狀態
+        #region POState 採購單狀態
+        public static Dictionary<string, string> POState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待採購");
+            ValueOption.Add("2", "已下單");
+            ValueOption.Add("3", "部分驗收");
+            ValueOption.Add("4", "驗收完成");
+            ValueOption.Add("5", "撤銷");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-14 採購單項目狀態
+        #region State 採購單項目狀態
+        public static Dictionary<string, string> State()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待採購");
+            ValueOption.Add("2", "已下單");
+            ValueOption.Add("3", "待驗收");
+            ValueOption.Add("4", "合格");
+            ValueOption.Add("5", "不合格");
+            ValueOption.Add("6", "已入庫");
+            ValueOption.Add("7", "退貨折讓");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-15 領用申請單狀態
+        #region SRState 領用申請單狀態
+        public static Dictionary<string, string> SRState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待審核");
+            ValueOption.Add("2", "審核完成");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-16 領用申請單項目狀態
+        #region PickUpStatus 領用申請單項目狀態
+        public static Dictionary<string, string> PickUpStatus()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待審核");
+            ValueOption.Add("2", "審核未過");
+            ValueOption.Add("3", "尚未領取");
+            ValueOption.Add("4", "部分領取");
+            ValueOption.Add("5", "已領取");
+            return ValueOption;
+        }
+        #endregion
+
+        //5-2-17 庫存品項編碼
+        #region StockType 庫存品項編碼
+        public static Dictionary<string, string> StockType()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("A", "設備零件");
+            ValueOption.Add("B", "備料");
+            ValueOption.Add("C", "補給品");
+            ValueOption.Add("D", "備品");
+            ValueOption.Add("E", "藥劑");
+            ValueOption.Add("F", "替代料件");
             return ValueOption;
         }
         #endregion
