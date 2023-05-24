@@ -35,6 +35,7 @@
         StoresRequisitionItem: [
             {
                 SRISN: "PR23041201_01",
+                PickUpStatus: "待審核",
                 StockType: "潤滑劑",
                 StockName: "軸承潤滑劑B",
                 Amount: "10",
@@ -43,6 +44,7 @@
             },
             {
                 SRISN: "PR23041201_01",
+                PickUpStatus: "待審核",
                 StockType: "潤滑劑",
                 StockName: "軸承潤滑劑B",
                 Amount: "10",
@@ -51,6 +53,7 @@
             },
             {
                 SRISN: "PR23041201_01",
+                PickUpStatus: "待審核",
                 StockType: "潤滑劑",
                 StockName: "軸承潤滑劑B",
                 Amount: "10",
@@ -63,6 +66,7 @@
     const GridOptions = {
         thead: true,
         columns: [
+            { id: "PickUpStatus", title: "狀態", width: "150px" },
             { id: "StockType", title: "品項", width: "150px" },
             { id: "StockName", title: "品名", width: "250px" },
             { id: "Amount", title: "數量", width: "120px" },

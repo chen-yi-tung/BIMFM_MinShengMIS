@@ -29,6 +29,7 @@ namespace MinSheng_MIS.Models
         public System.DateTime StockInDateTime { get; set; }
         public string StockInUserName { get; set; }
         public string SISN { get; set; }
+        public double TotalAmount { get; set; }
     
         public virtual ComputationalStock ComputationalStock { get; set; }
         public virtual PurchaseOrderItem PurchaseOrderItem { get; set; }

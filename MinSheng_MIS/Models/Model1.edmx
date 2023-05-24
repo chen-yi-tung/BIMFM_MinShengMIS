@@ -590,6 +590,7 @@
           <Property Name="StockInDateTime" Type="date" Nullable="false" />
           <Property Name="StockInUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="SISN" Type="char" MaxLength="4" Nullable="false" />
+          <Property Name="TotalAmount" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="StockOutItem">
           <Key>
@@ -2499,6 +2500,7 @@
           <Property Name="StockInDateTime" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="StockInUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="SISN" Type="String" Nullable="false" MaxLength="4" FixedLength="true" Unicode="false" />
+          <Property Name="TotalAmount" Type="Double" Nullable="false" />
           <NavigationProperty Name="ComputationalStock" Relationship="Bimfm_MinSheng_MISModel.FK_StockInRecord_ComputationalStock" FromRole="StockInRecord" ToRole="ComputationalStock" />
           <NavigationProperty Name="PurchaseOrderItem" Relationship="Bimfm_MinSheng_MISModel.FK_StockInRecord_PurchaseOrderItem" FromRole="StockInRecord" ToRole="PurchaseOrderItem" />
           <NavigationProperty Name="Stock" Relationship="Bimfm_MinSheng_MISModel.FK_Stock_StockInRecord" FromRole="StockInRecord" ToRole="Stock" />
@@ -3815,6 +3817,7 @@
           <EntitySetMapping Name="StockInRecord">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.StockInRecord">
               <MappingFragment StoreEntitySet="StockInRecord">
+                <ScalarProperty Name="TotalAmount" ColumnName="TotalAmount" />
                 <ScalarProperty Name="SISN" ColumnName="SISN" />
                 <ScalarProperty Name="StockInUserName" ColumnName="StockInUserName" />
                 <ScalarProperty Name="StockInDateTime" ColumnName="StockInDateTime" />
