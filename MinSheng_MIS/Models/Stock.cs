@@ -22,13 +22,11 @@ namespace MinSheng_MIS.Models
     
         public string SSN { get; set; }
         public string SIRSN { get; set; }
-        public string SISN { get; set; }
         public string Location { get; set; }
         public Nullable<System.DateTime> ExpiryDate { get; set; }
         public double Amount { get; set; }
         public double RemianingAmount { get; set; }
     
-        public virtual ComputationalStock ComputationalStock { get; set; }
         public virtual StockInRecord StockInRecord { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StockOutItem> StockOutItem { get; set; }

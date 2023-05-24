@@ -28,7 +28,9 @@ namespace MinSheng_MIS.Models
         public string Size { get; set; }
         public System.DateTime StockInDateTime { get; set; }
         public string StockInUserName { get; set; }
+        public string SISN { get; set; }
     
+        public virtual ComputationalStock ComputationalStock { get; set; }
         public virtual PurchaseOrderItem PurchaseOrderItem { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Stock> Stock { get; set; }

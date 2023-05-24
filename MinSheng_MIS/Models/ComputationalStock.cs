@@ -17,7 +17,7 @@ namespace MinSheng_MIS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ComputationalStock()
         {
-            this.Stock = new HashSet<Stock>();
+            this.StockInRecord = new HashSet<StockInRecord>();
             this.StoresRequisitionItem = new HashSet<StoresRequisitionItem>();
         }
     
@@ -30,7 +30,7 @@ namespace MinSheng_MIS.Models
         public Nullable<System.DateTime> ExpiryDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Stock> Stock { get; set; }
+        public virtual ICollection<StockInRecord> StockInRecord { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StoresRequisitionItem> StoresRequisitionItem { get; set; }
     }
