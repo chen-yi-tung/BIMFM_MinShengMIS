@@ -29,7 +29,6 @@ namespace MinSheng_MIS.Models
         public string Model { get; set; }
         public double Amount { get; set; }
         public string Packaging { get; set; }
-        public string Unit { get; set; }
         public string State { get; set; }
         public string AcceptResult { get; set; }
         public string AcceptRecord { get; set; }
