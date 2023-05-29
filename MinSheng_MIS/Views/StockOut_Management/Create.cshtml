@@ -9,18 +9,22 @@
     <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
         <form class="form d-lg-contents">
             <div class="form-group w-lg-250px required">
-                <label for="SRSN">備用單號</label>
+                <label for="SRSN">領用申請單號</label>
                 <input class="form-control" id="SRSN" name="SRSN" type="text" />
             </div>
 
             <div class="form-group w-lg-250px required">
                 <label for="StockOutName">出庫人員</label>
-                <input class="form-control" id="StockOutName" name="StockOutName" type="text" />
+                <select class="form-select" name="StockOutName" id="StockOutName" required>
+                    <option value="">請選擇</option>
+                </select>
             </div>
 
             <div class="form-group w-lg-250px required">
                 <label for="ReceiverName">領取人員</label>
-                <input class="form-control" id="ReceiverName" name="ReceiverName" type="text" />
+                <select class="form-select" name="ReceiverName" id="ReceiverName" required>
+                    <option value="">請選擇</option>
+                </select>
             </div>
 
             <div class="form-group w-lg-100 ">
