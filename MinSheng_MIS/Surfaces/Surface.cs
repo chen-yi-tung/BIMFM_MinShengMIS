@@ -302,5 +302,22 @@ namespace MinSheng_MIS.Surfaces
             return ValueOption;
         }
         #endregion
+
+        //單位
+        #region 單位 Unit
+        public static Dictionary<string, string> Unit()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "個");
+            ValueOption.Add("2", "顆");
+            ValueOption.Add("3", "瓶");
+            ValueOption.Add("4", "片");
+            ValueOption.Add("5", "條");
+            ValueOption.Add("6", "支");
+            ValueOption.Add("7", "根");
+            ValueOption.Add("8", "盒");
+            return ValueOption;
+        }
+        #endregion
     }
 }

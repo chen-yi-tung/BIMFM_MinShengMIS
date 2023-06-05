@@ -531,5 +531,27 @@ namespace MinSheng_MIS.Controllers
             return Content(text, "application/json");
         }
         #endregion
+
+        #region 單位下拉式選單
+        [HttpGet]
+        public ActionResult Unit()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.Unit();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
     }
 }
