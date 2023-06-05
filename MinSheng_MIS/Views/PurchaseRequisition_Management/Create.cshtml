@@ -135,7 +135,8 @@
         this.count = 0;
         this.data = {};
         this.init = async function () {
-            await pushSelect("Kind", '@Url.Action("AllMyName","DropDownList")');
+            await pushSelect("PRUserName", '@Url.Action("AllMyName","DropDownList")');
+            await pushSelect("Kind", '@Url.Action("StockType","DropDownList")');
             await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
 
             $("#item-area").on("click", ".btn-delete-item", function (e) {
