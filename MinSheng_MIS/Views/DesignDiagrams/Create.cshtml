@@ -56,8 +56,9 @@
     $(async function () {
         //await AreaFloorEvent();
         addButtonEvent();
+        await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
         @*await pushSelect("System", '@Url.Action("System", "DropDownList")');
-        
+
 
         const Systems = document.getElementById('System')
         Systems.addEventListener("change", function () {

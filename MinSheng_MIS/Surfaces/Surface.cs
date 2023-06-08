@@ -319,5 +319,17 @@ namespace MinSheng_MIS.Surfaces
             return ValueOption;
         }
         #endregion
+
+        //設計圖說種類
+        #region 設計圖說種類 ImgType
+        public static Dictionary<string, string> ImgType()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "機電類");
+            ValueOption.Add("2", "結構類");
+            ValueOption.Add("3", "OO類");
+            return ValueOption;
+        }
+        #endregion
     }
 }

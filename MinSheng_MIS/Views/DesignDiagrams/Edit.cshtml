@@ -57,7 +57,7 @@
     //let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ImgNum}`;
     let apiUrl = null;
 
-    const fakeData = 
+    const fakeData =
         {
             DDSN: "230502002",
             ImgName: "機電A設計圖",
@@ -65,11 +65,12 @@
             DesignDiagrams: "圖說.jpg",
 
         }
-    
+
 
 
     $(async function () {
         //await AreaFloorEvent();
+        await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
         //await pushSelect("System", '@Url.Action("System", "DropDownList")');
         addButtonEvent();
 
