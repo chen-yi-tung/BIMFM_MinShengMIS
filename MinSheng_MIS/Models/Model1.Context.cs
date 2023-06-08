@@ -34,6 +34,7 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<CompletionReportImage> CompletionReportImage { get; set; }
         public virtual DbSet<ComputationalStock> ComputationalStock { get; set; }
         public virtual DbSet<DeliveryRecord> DeliveryRecord { get; set; }
+        public virtual DbSet<DesignDiagrams> DesignDiagrams { get; set; }
         public virtual DbSet<DrawInspectionPlanPath> DrawInspectionPlanPath { get; set; }
         public virtual DbSet<DrawPathSample> DrawPathSample { get; set; }
         public virtual DbSet<EquipmentInfo> EquipmentInfo { get; set; }

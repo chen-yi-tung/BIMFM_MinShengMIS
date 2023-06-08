@@ -110,6 +110,16 @@
           <Property Name="CertificateOfReceipt" Type="nvarchar(max)" />
           <Property Name="DeliveryDateTime" Type="date" Nullable="false" />
         </EntityType>
+        <EntityType Name="DesignDiagrams">
+          <Key>
+            <PropertyRef Name="DDSN" />
+          </Key>
+          <Property Name="DDSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="ImgName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ImgType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="UplaodDate" Type="date" Nullable="false" />
+          <Property Name="ImgPath" Type="nvarchar" MaxLength="200" Nullable="false" />
+        </EntityType>
         <EntityType Name="DrawInspectionPlanPath">
           <Key>
             <PropertyRef Name="ISN" />
@@ -1309,6 +1319,7 @@
           <EntitySet Name="CompletionReportImage" EntityType="Self.CompletionReportImage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ComputationalStock" EntityType="Self.ComputationalStock" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DeliveryRecord" EntityType="Self.DeliveryRecord" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DesignDiagrams" EntityType="Self.DesignDiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawInspectionPlanPath" EntityType="Self.DrawInspectionPlanPath" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawPathSample" EntityType="Self.DrawPathSample" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentInfo" EntityType="Self.EquipmentInfo" Schema="dbo" store:Type="Tables" />
@@ -1580,6 +1591,7 @@
           <EntitySet Name="CompletionReportImage" EntityType="Bimfm_MinSheng_MISModel.CompletionReportImage" />
           <EntitySet Name="ComputationalStock" EntityType="Bimfm_MinSheng_MISModel.ComputationalStock" />
           <EntitySet Name="DeliveryRecord" EntityType="Bimfm_MinSheng_MISModel.DeliveryRecord" />
+          <EntitySet Name="DesignDiagrams" EntityType="Bimfm_MinSheng_MISModel.DesignDiagrams" />
           <EntitySet Name="DrawInspectionPlanPath" EntityType="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath" />
           <EntitySet Name="DrawPathSample" EntityType="Bimfm_MinSheng_MISModel.DrawPathSample" />
           <EntitySet Name="EquipmentInfo" EntityType="Bimfm_MinSheng_MISModel.EquipmentInfo" />
@@ -1940,6 +1952,16 @@
           <Property Name="CertificateOfReceipt" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DeliveryDateTime" Type="DateTime" Nullable="false" Precision="0" />
           <NavigationProperty Name="PurchaseOrder" Relationship="Bimfm_MinSheng_MISModel.FK_DeliveryRecord_PurchaseOrder" FromRole="DeliveryRecord" ToRole="PurchaseOrder" />
+        </EntityType>
+        <EntityType Name="DesignDiagrams">
+          <Key>
+            <PropertyRef Name="DDSN" />
+          </Key>
+          <Property Name="DDSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="ImgName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ImgType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UplaodDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="DrawInspectionPlanPath">
           <Key>
@@ -3302,6 +3324,17 @@
                 <ScalarProperty Name="Consignee" ColumnName="Consignee" />
                 <ScalarProperty Name="POSN" ColumnName="POSN" />
                 <ScalarProperty Name="DRSN" ColumnName="DRSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DesignDiagrams">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DesignDiagrams">
+              <MappingFragment StoreEntitySet="DesignDiagrams">
+                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
+                <ScalarProperty Name="UplaodDate" ColumnName="UplaodDate" />
+                <ScalarProperty Name="ImgType" ColumnName="ImgType" />
+                <ScalarProperty Name="ImgName" ColumnName="ImgName" />
+                <ScalarProperty Name="DDSN" ColumnName="DDSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

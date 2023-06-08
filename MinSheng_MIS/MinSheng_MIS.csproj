@@ -241,6 +241,9 @@
     <Compile Include="Models\DeliveryRecord.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DesignDiagrams.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\DrawInspectionPlanPath.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
