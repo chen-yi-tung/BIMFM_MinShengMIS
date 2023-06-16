@@ -227,6 +227,8 @@ th.datatable-header,
     --bs-modal-header-padding: 0.6em 1em;
     --bs-modal-padding: 0;
     --bs-modal-border-radius: 0;
+    --datatable-border-width: 1px;
+    --datatable-border-color: #8A9BA5;
 }
 
 .data-detail-modal .datatable-table {

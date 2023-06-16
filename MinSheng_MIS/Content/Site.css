@@ -18,12 +18,13 @@ body {
     background-position: center;
     background-attachment: fixed;
     background-size: cover;
+    overflow: hidden;
+    height: 100vh;
 }
 
 .render-body {
-    margin-top: var(--navbar-height);
-    padding-top: 30px;
-    padding-bottom: 20px;
+    padding: calc(var(--navbar-height) + 30px) 2rem 2rem;
+    overflow: auto;
 }
 
 h2 {

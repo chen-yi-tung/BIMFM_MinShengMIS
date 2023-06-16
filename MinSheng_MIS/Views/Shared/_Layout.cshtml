@@ -5,112 +5,144 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - BIM智慧管理系統</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="/Content/icomoon-v1.0/style.css" rel="stylesheet">
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/Scripts/popper.min.js")
-    @Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewBag.Title - BIM智慧管理系統</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+	<link href="/Content/icomoon-v1.0/style.css" rel="stylesheet">
+	@Styles.Render("~/Content/css")
+	@Scripts.Render("~/bundles/modernizr")
+	@Scripts.Render("~/bundles/jquery")
+	@Scripts.Render("~/Scripts/popper.min.js")
+	@Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
 </head>
 
 <body>
-    <nav class="navbar navbar-light navbar-expand-xxl fixed-top">
-        <div class="container-fluid d-flex">
-            <a class="navbar-brand" href="/">
-                <img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
-                <span class="navbar-brand-title">BIM智慧管理系統</span>
-            </a>
+	<nav class="navbar navbar-light navbar-expand-lg fixed-top">
+		<div class="container-fluid d-flex">
+			<a class="navbar-brand" href="/">
+				<img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
+				<span class="navbar-brand-title">BIM智慧管理系統</span>
+			</a>
 
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
-                 aria-labelledby="offcanvasNavbarLabel">
-                <div class="offcanvas-header">
-                    <a class="navbar-brand" href="/">
-                        <img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
-                    </a>
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                            aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <span class="navbar-brand-title d-xl-none">BIM智慧管理系統</span>
-                    <div class="navbar-end order-xl-last mt-3 mt-xl-0">
-                        <form id="logoutForm" method="post" action="/Home/LogOff">
-                            @Html.AntiForgeryToken()
-                            <input type="text" id="NavbarUserID" value="@User.Identity.GetUserName()" hidden>
-                            <span class="navbar-user">您好 <span id="NavbarUserName">@Session["MyName"]</span> ！</span>
-                            <a class="navbar-logout" href="javascript:document.getElementById('logoutForm').submit()">登出</a>
-                        </form>
-                    </div>
-					<ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
+			<form id="logoutForm" method="post" action="/Home/LogOff" class="d-none d-lg-flex">
+				@Html.AntiForgeryToken()
+				<input type="text" id="NavbarUserID" value="@User.Identity.GetUserName()" hidden>
+				<span class="navbar-user">您好 <span id="NavbarUserName">@Session["MyName"]</span> ！</span>
+				<a class="navbar-logout" href="javascript:document.getElementById('logoutForm').submit()">登出</a>
+			</form>
+
+			<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+				aria-controls="offcanvasNavbar">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+		</div>
+	</nav>
+	<div class="d-flex w-100 h-100">
+
+		<div class="sidebar">
+			<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
+				aria-labelledby="offcanvasNavbarLabel">
+				<div class="offcanvas-header">
+					<a class="navbar-brand" href="/">
+						<img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
+					</a>
+					<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+						aria-label="Close"></button>
+				</div>
+				<div class="offcanvas-body">
+					<span class="navbar-brand-title d-xl-none">BIM智慧管理系統</span>
+					<div class="navbar-end order-xl-last mt-3 mt-xl-0 d-lg-none">
+						<form id="logoutForm" method="post" action="/Home/LogOff">
+							@Html.AntiForgeryToken()
+							<input type="text" id="NavbarUserID" value="@User.Identity.GetUserName()" hidden>
+							<span class="navbar-user">您好 <span id="NavbarUserName">@Session["MyName"]</span> ！</span>
+							<a class="navbar-logout"
+								href="javascript:document.getElementById('logoutForm').submit()">登出</a>
+						</form>
+					</div>
+					<ul class="navbar-nav justify-content-start flex-grow-1 pe-3 pt-lg-0" id="nav-collapse">
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#nav-collapse-1" role="button"
+								data-bs-toggle="collapse" aria-expanded="false">
 								巡檢管理
 							</a>
-							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-								<li><a class="dropdown-item" href="/InspectionPlan_Management/Management">巡檢計畫管理</a></li>
+							<ul class="collapse" id="nav-collapse-1" data-bs-parent="#nav-collapse">
+								<li><a class="dropdown-item" href="/InspectionPlan_Management/Management">巡檢計畫管理</a>
+								</li>
 								<li><a class="dropdown-item" href="/SamplePath_Management/Management">巡檢路線模板管理</a></li>
 								<li><a class="dropdown-item" href="#">巡檢即時位置</a></li>
 								<li><a class="dropdown-item" href="#">巡檢資訊管理</a></li>
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#nav-collapse-2" role="button"
+								data-bs-toggle="collapse" aria-expanded="false">
 								定期保養管理
 							</a>
-							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+							<ul class="collapse" id="nav-collapse-2" data-bs-parent="#nav-collapse">
 								<li><a class="dropdown-item" href="/MaintainForm_Management/Management">定期保養單管理</a></li>
 								<li><a class="dropdown-item" href="/MaintainItem_Management/Management">保養項目管理</a></li>
-								<li><a class="dropdown-item" href="/EquipmentMaintainPeriod_Management/Management">設備保養週期管理</a></li>
-								<li><a class="dropdown-item" href="/MaintainRecord_Management/Management">巡檢保養紀錄管理</a></li>
+								<li><a class="dropdown-item"
+										href="/EquipmentMaintainPeriod_Management/Management">設備保養週期管理</a></li>
+								<li><a class="dropdown-item" href="/MaintainRecord_Management/Management">巡檢保養紀錄管理</a>
+								</li>
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#nav-collapse-3" role="button"
+								data-bs-toggle="collapse" aria-expanded="false">
 								報修管理
 							</a>
-							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+							<ul class="collapse" id="nav-collapse-3" data-bs-parent="#nav-collapse">
 								<li><a class="dropdown-item" href="/Report_Management/Management">報修管理</a></li>
-								<li><a class="dropdown-item" href="/RepairRecord_Management/Management">巡檢維修紀錄管理</a></li>
+								<li><a class="dropdown-item" href="/RepairRecord_Management/Management">巡檢維修紀錄管理</a>
+								</li>
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#nav-collapse-4" role="button"
+								data-bs-toggle="collapse" aria-expanded="false">
 								設備管理
 							</a>
-							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+							<ul class="collapse" id="nav-collapse-4" data-bs-parent="#nav-collapse">
 								<li><a class="dropdown-item" href="/EquipmentInfo_Management/Management">資產管理</a></li>
-								<li><a class="dropdown-item" href="/AsBuiltDrawing_Management/Management">竣工圖說管理</a></li>
+								<li><a class="dropdown-item" href="/AsBuiltDrawing_Management/Management">竣工圖說管理</a>
+								</li>
 								<li><a class="dropdown-item" href="/DesignDiagrams/Management">設計圖說</a></li>
 								<li><a class="dropdown-item" href="/EquipmentOperatingManual/Management">操作手冊</a></li>
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#nav-collapse-5" role="button"
+								data-bs-toggle="collapse" aria-expanded="false">
 								庫存管理
 							</a>
-							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-								<li><a class="dropdown-item" href="/PurchaseRequisition_Management/Management">請購管理</a></li>
-								@*<li><a class="dropdown-item" href="/InquiryPlan_Management/Management">詢價計畫管理</a></li>*@
-								@*<li><a class="dropdown-item" href="/PurchaseOrder_Management/Management">採購管理</a></li>*@
+							<ul class="collapse" id="nav-collapse-5" data-bs-parent="#nav-collapse">
+								<li><a class="dropdown-item" href="/PurchaseRequisition_Management/Management">請購管理</a>
+								</li>
+								@*<li><a class="dropdown-item"
+								href="/InquiryPlan_Management/Management">詢價計畫管理</a></li>*@
+								@*<li><a class="dropdown-item"
+								href="/PurchaseOrder_Management/Management">採購管理</a></li>*@
 								<li><a class="dropdown-item" href="/StockIn_Management/Management">入庫管理</a></li>
 								<li><a class="dropdown-item" href="/StockOut_Management/Management">出庫管理</a></li>
 								<li><a class="dropdown-item" href="/Stock_Management/Management">庫存管理</a></li>
-								<li><a class="dropdown-item" href="/StoresRequisition_Management/Management">領用申請管理</a></li>
+								<li><a class="dropdown-item" href="/StoresRequisition_Management/Management">領用申請管理</a>
+								</li>
 								<li><a class="dropdown-item" href="#">盤點管理</a></li>
 
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#nav-collapse-6" role="button"
+								data-bs-toggle="collapse" aria-expanded="false">
 								實驗室管理
 							</a>
-							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+							<ul class="collapse" id="nav-collapse-6" data-bs-parent="#nav-collapse">
 								<li><a class="dropdown-item" href="#">採驗分析流程建立</a></li>
 								<li><a class="dropdown-item" href="#">實驗室標籤管理</a></li>
 								<li><a class="dropdown-item" href="#">實驗室維護管理</a></li>
@@ -118,44 +150,43 @@
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link" href="#" id="navbarDropdownMenuLink" role="button">
+							<a class="nav-link" href="#" role="button">
 								警示訊息管理
 							</a>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#nav-collapse-7" role="button"
+								data-bs-toggle="collapse" aria-expanded="false">
 								文件管理
 							</a>
-							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+							<ul class="collapse" id="nav-collapse-7" data-bs-parent="#nav-collapse">
 								<li><a class="dropdown-item" href="#">月報管理</a></li>
 								<li><a class="dropdown-item" href="#">會議紀錄管理</a></li>
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#nav-collapse-8" role="button"
+								data-bs-toggle="collapse" aria-expanded="false">
 								系統管理
 							</a>
-							<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+							<ul class="collapse" id="nav-collapse-8" data-bs-parent="#nav-collapse">
 								<li><a class="dropdown-item" href="/Account_Management/Management">帳號管理</a></li>
-								<li><a class="dropdown-item" href="/ManufacturerInfo_Management/Management">廠商管理</a></li>
+								<li><a class="dropdown-item" href="/ManufacturerInfo_Management/Management">廠商管理</a>
+								</li>
 								<li><a class="dropdown-item" href="/Account_Management/ChangePassword">密碼變更</a></li>
 							</ul>
 						</li>
 					</ul>
-                    
-                </div>
-            </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-                    aria-controls="offcanvasNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
 
-    <div class="container render-body">
-        @RenderBody()
-    </div>
-    @RenderSection("scripts", required: false)
+				</div>
+			</div>
+		</div>
+
+		<div class="container-fluid render-body">
+			@RenderBody()
+		</div>
+	</div>
+	@RenderSection("scripts", required: false)
 </body>
 
 </html>
