@@ -112,6 +112,7 @@
             //sortName: 'ImgNum',
             frozenColumns: [[
                 dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
                 //dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit")),
             ]],
             columns: [[
