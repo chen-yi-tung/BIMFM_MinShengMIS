@@ -77,10 +77,10 @@
                             <tr>
                                 <th class="datatable-header required" style="width:150px"><span>品項</span></th>
                                 <th class="datatable-header required" style="width:250px"><span>品名</span></th>
-                                <th class="datatable-header required" style="width:150px"><span>尺寸</span></th>
+                                @*<th class="datatable-header required" style="width:150px"><span>尺寸</span></th>*@
                                 <th class="datatable-header required" style="width:120px"><span>數量</span></th>
                                 <th class="datatable-header required" style="width:150px"><span>單位</span></th>
-                                <th class="datatable-header" style="width:200px"><span>領用原因</span></th>
+                                <th class="datatable-header" style="width:350px"><span>領用原因</span></th>
                                 <th class="datatable-header" style="width:36px"></th>
                             </tr>
                         </thead>
@@ -92,20 +92,22 @@
                                 <td id="d-StockName">
                                     <select class="form-select" id="StockName" name="StockName" required></select>
                                 </td>
+                                @*
                                 <td id="d-Size">
                                     <input class="form-control" type="text" id="Size" name="Size" maxlength="50" required/>
                                 </td>
+                                *@
                                 <td id="d-Amount">
                                     <input class="form-control" type="number" id="Amount" name="Amount" min="1"
-                                        value="1" required />
+                                           value="1" required />
                                 </td>
                                 <td id="d-Unit">
                                     <input class="form-control" type="text" id="Unit" name="Unit" min="1"
-                                        value="1" required />
+                                           value="1" required />
                                 </td>
                                 <td id="d-Content">
                                     <input class="form-control" type="text" id="Content"
-                                        name="Content" maxlength="200" />
+                                           name="Content" maxlength="200" />
                                 </td>
                                 <td id="d-_delete" class="p-1 pt-2">
                                     <button type="button" class="btn-delete-item"></button>

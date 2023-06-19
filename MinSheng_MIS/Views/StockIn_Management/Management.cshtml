@@ -29,12 +29,12 @@ class="search-area">
             <label for="StockName">品名</label>
             <input class="form-control" id="StockName" name="StockName" type="text" />
         </div>
-
+        @*
         <div class="form-group">
             <label for="Size">尺寸</label>
             <input class="form-control" id="Size" name="Size" type="text" />
         </div>
-
+        *@
         <div class="form-group">
             <label for="StockInName">入庫人員</label>
             <input class="form-control" id="StockInName" name="StockInName" type="text" />
@@ -121,7 +121,7 @@ class="search-area">
                 { field: 'SIRSN', title: '入庫編號', align: 'center', width: 200, sortable: true },
                 { field: 'StockType', title: '品項', align: 'center', width: 200, sortable: true },
                 { field: 'StockName', title: '品名', align: 'center', width: 200, sortable: true },
-                { field: 'Size', title: '尺寸', align: 'center', width: 160, sortable: true },
+                //{ field: 'Size', title: '尺寸', align: 'center', width: 160, sortable: true },
                 { field: 'TotalAmount', title: '總數量', align: 'center', width: 160, sortable: true },
                 { field: 'Unit', title: '單位', align: 'center', width: 180, sortable: true },
                 { field: 'StockInDateTime', title: '入庫時間', align: 'center', width: 240, sortable: true },
@@ -165,7 +165,7 @@ class="search-area">
         });
 
         $("#create").click(function () {
-            let url = baseUrl + 'Create';
+            let url = baseUrl + 'CreateStockIn';
             window.open(url, "_self");
         });
     }

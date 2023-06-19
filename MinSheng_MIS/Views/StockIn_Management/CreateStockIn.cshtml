@@ -10,6 +10,7 @@
         text-align: left;
         color: #CCFCFF;
     }
+
     .paths-btn {
         width: 40px;
         height: 40px;
@@ -24,16 +25,17 @@
 
 <h2>@ViewBag.Title</h2>
 
-<div class="datatable mt-5 mb-5 datatable-table">
-    <input type="text" id="POSN" name="POSN" value="@ViewBag.id" hidden readonly="readonly">
-    <input type="text" id="POISN" name="POISN" value="@ViewBag.id" hidden readonly="readonly">
-    <div class="datatable-body" id="POSNItem">
-        <table class="datatable-table" id="SelectObject"></table>
+@*
+    <div class="datatable mt-5 mb-5 datatable-table">
+        <input type="text" id="POSN" name="POSN" value="@ViewBag.id" hidden readonly="readonly">
+        <input type="text" id="POISN" name="POISN" value="@ViewBag.id" hidden readonly="readonly">
+        <div class="datatable-body" id="POSNItem">
+            <table class="datatable-table" id="SelectObject"></table>
+        </div>
     </div>
-</div>
-
+*@
 <section style="max-width: 855px;margin: auto;">
-    
+
     <div class="edit-area flex-wrap flex-md-row justify-content-lg-start" style="gap: 1rem 2rem;">
         <div class="w-100 edit-area-title">1.資料確認</div>
         <form class="form d-lg-contents">
@@ -44,7 +46,7 @@
                 <div>
                     <button class="paths-btn" id="path-search" data-bs-toggle="modal" data-bs-target="#DatagridModal-Repair"><i class="icon-search"></i></button>
                 </div>
-               
+
             </div>
             <div class="form-group w-lg-250px required">
                 <label for="StockType">品項</label>
@@ -62,12 +64,12 @@
                 <label for="MName">廠商品名</label>
                 <input class="form-control" id="MName" name="MName" type="text" maxlength="50" />
             </div>
-            
-            <div class="form-group w-lg-250px">
-                <label for="Size">尺寸</label>
-                <input class="form-control" id="Size" name="Size" type="text" maxlength="50" />
-            </div>
-
+            @*
+                <div class="form-group w-lg-250px">
+                    <label for="Size">尺寸</label>
+                    <input class="form-control" id="Size" name="Size" type="text" maxlength="50" />
+                </div>
+            *@
             <div class="form-group w-lg-250px">
                 <label for="Brand">廠牌</label>
                 <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" />
@@ -96,20 +98,7 @@
             </div>
         </form>
         <hr class="edit-area-hr">
-        <div class="w-100 edit-area-title">2.RFID標籤</div>
-        <form class="form d-lg-contents">
-            @*<div class="form-group w-lg-250px required">
-                <label for="RFIDStart">標籤編碼(起始值)</label>
-                <input class="form-control input-readonly" id="RFIDStart" name="RFIDStart" type="text" maxlength="50" readonly="readonly" />
-            </div>*@
-
-            <div class="form-group w-lg-250px required">
-                <label for="RFIDAmount">標籤張數</label>
-                <input class="form-control" id="RFIDAmount" name="RFIDAmount" type="text" maxlength="50" required />
-            </div>
-        </form>
-        <hr class="edit-area-hr">
-        <div class="w-100 edit-area-title">3.存放位置</div>
+        <div class="w-100 edit-area-title">2.存放位置</div>
         <form class="form d-lg-contents">
             <div class="d-flex flex-wrap w-100 align-items-center" style="gap: 1rem 2rem;">
                 <div class="w-100" style="font-size:18px; color:white;">擺放位置(倉庫,貨架,排,層,區)</div>
@@ -138,6 +127,19 @@
                         <option value="">區</option>
                     </select>
                 </div>
+            </div>
+        </form>
+        <hr class="edit-area-hr">
+        <div class="w-100 edit-area-title">3.RFID標籤</div>
+        <form class="form d-lg-contents">
+            @*<div class="form-group w-lg-250px required">
+                    <label for="RFIDStart">標籤編碼(起始值)</label>
+                    <input class="form-control input-readonly" id="RFIDStart" name="RFIDStart" type="text" maxlength="50" readonly="readonly" />
+                </div>*@
+
+            <div class="form-group w-lg-250px required">
+                <label for="RFIDAmount">標籤張數</label>
+                <input class="form-control" id="RFIDAmount" name="RFIDAmount" type="text" maxlength="50" required />
             </div>
         </form>
         <div class="w-100 d-flex justify-content-center" style="margin-top:2rem; margin-bottom:1rem;">
@@ -176,22 +178,22 @@
     const GridOptions2 = {
         thead: true,
         columns: [
-            { id: "ExternalRFID", title: "RFID標籤(外)", width: "8.4%" },
+            //{ id: "ExternalRFID", title: "RFID標籤(外)", width: "8.4%" },
             { id: "RFID_StockType", title: "品項" },
             { id: "RFID_StockName", title: "品名" },
             { id: "RFID_MName", title: "廠商品名" },
-            { id: "RFID_Size", title: "尺寸" },
+            //{ id: "RFID_Size", title: "尺寸" },
             { id: "RFID_Brand", title: "廠牌" },
             { id: "RFID_Model", title: "型號" },
-            { id: "RFID_Amount", title: "庫存數量", width: "4.5%" },
+            { id: "RFID_Amount", title: "庫存數量", width: "5%" },
             { id: "RFID_Packaging", title: "庫存單位", width: "5.6%" },
-            { 
+            {
                 id: "RFID_ExpiryDate", title: "到期日", width: "10%",
                 formatter: (data, row, index) => {
                     return `<input type="date" class="form-control" value="2023-05-12"/>`
                 }
             },
-            { 
+            {
                 id: "RFID_Packaging", title: "擺放位置(倉庫,貨架,排,層,區)",
                 formatter: (data, row, index) => {
                     return `
@@ -273,7 +275,7 @@
 
         function onSuccess(res) {
             console.log(res);
-            $("#SelectObject").append(createTableGrid(res.SelectObject, GridOptions))
+            //$("#SelectObject").append(createTableGrid(res.SelectObject, GridOptions))
             $("#SelectObject2").append(createTableGrid(res.SelectObject2, GridOptions2))
         }
         function onError(res) {
