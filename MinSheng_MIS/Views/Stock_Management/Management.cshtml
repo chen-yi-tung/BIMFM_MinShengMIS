@@ -14,19 +14,19 @@
 
         <div class="form-group">
             <label for="ImgNum">庫存編號</label>
-            <input class="form-control" id="ImgName" name="ImgName" type="text" />
+            <input class="form-control" id="SISN" name="SISN" type="text" />
         </div>
 
         <div class="form-group">
             <label for="ImgType">品項</label>
-            <select class="form-select" name="ImgType" id="ImgType">
+            <select class="form-select" name="StockType" id="StockType">
                 <option value="">請選擇</option>
             </select>
         </div>
 
         <div class="form-group">
             <label for="ImgNum">品名</label>
-            <input class="form-control" id="ImgName" name="ImgName" type="text" />
+            <input class="form-control" id="StockName" name="StockName" type="text" />
         </div>
 
         <div class="button-group">
@@ -65,7 +65,7 @@
 
     $(async function () {
         //await AreaFloorEvent();
-        //await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
         Initialize_DataGrid();
         addSearchAreaClickEvent();
 

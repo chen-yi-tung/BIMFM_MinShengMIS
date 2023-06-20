@@ -140,6 +140,8 @@
             await pushSelect("Kind", '@Url.Action("AllMyName","DropDownList")');
             await pushSelect("Unit", '@Url.Action("AllMyName", "DropDownList")');
 
+            await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+
             $("#item-area").on("click", ".btn-delete-item", function (e) {
                 $(this).parent().parent().remove();
             })
