@@ -1,5 +1,6 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Services;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using System;
@@ -19,6 +20,14 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Management()
         {
             return View();
+        }
+        [HttpPost]
+        public ActionResult InspectionPlan_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_EquipmentInfo(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
         }
         #endregion
 

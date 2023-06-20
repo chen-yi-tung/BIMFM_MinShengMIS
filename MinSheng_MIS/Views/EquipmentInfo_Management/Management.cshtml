@@ -100,7 +100,7 @@
 <script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
 
-    var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
+    var getGridJSON = '@Url.Action("InspectionPlan_Management", "EquipmentInfo_Management")';
     var DataGrid;
     var baseUrl = '/' + window.location.pathname.split('/')[1] + '/';
 
@@ -124,6 +124,7 @@
 
     $(async function () {
         await AreaFloorEvent();
+        await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
         await pushSelect("System", '@Url.Action("System", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
@@ -137,8 +138,8 @@
     function Initialize_DataGrid(getGridJSON) {
         let dg = new DG();
         DataGrid = dg.init("#DataGrid", {
-            //url: getGridJSON,
-            data: fakeData,
+            url: getGridJSON,
+            //data: fakeData,
             method: 'POST',
             queryParams: getQueryParams(),
             idField: 'PSSN',
@@ -200,8 +201,11 @@
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $("form")[0].reset();
+            pushSelect("ASN", '@Url.Action("ASN", "DropDownList")');
             pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            pushSelect("System", '@Url.Action("System", "DropDownList")');
             pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+            pushSelect("EState", '@Url.Action("EState", "EState")');
         });
 
         $("#search").click(function () {

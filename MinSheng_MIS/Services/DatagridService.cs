@@ -1996,5 +1996,175 @@ namespace MinSheng_MIS.Services
             return jo;
         }
         #endregion
+
+        #region 資產管理
+        public JObject GetJsonForGrid_EquipmentInfo(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+
+            #region 塞來自formdata的資料
+            //設備狀態
+            string EState = form["EState"]?.ToString();
+            //棟別
+            string ASN = form["ASN"]?.ToString();
+            string Area = form["Area"]?.ToString();
+            //樓層
+            string FSN = form["FSN"]?.ToString();
+            string Floor = form["Floor"]?.ToString();
+            //空間名稱
+            string RoomName = form["RoomName"]?.ToString();
+            //系統別
+            string System = form["System"]?.ToString();
+            //子系統別
+            string SubSystem = form["SubSystem"]?.ToString();
+            //設備編號
+            string ESN = form["ESN"]?.ToString();
+            //設備名稱
+            string EName = form["EName"]?.ToString();
+            //廠牌
+            string Brand = form["Brand"]?.ToString();
+            //型號
+            string Model = form["Model"]?.ToString();
+            //國有財產編碼
+            string PropertyCode = form["PropertyCode"]?.ToString();
+            #endregion
+
+            #region 依據查詢字串檢索資料表
+            var Data = from x1 in db.EquipmentInfo
+                       join x2 in db.Floor_Info on x1.FSN equals x2.FSN
+                       select new { x1.EState,x2.ASN, x1.Area, x1.FSN, x1.Floor, x1.RoomName, x1.System, x1.SubSystem, x1.ESN, x1.EName, x1.Brand, x1.Model, x1.PropertyCode};
+
+            if (!string.IsNullOrEmpty(EState))
+            {
+                Data = Data.Where(x => x.EState == EState);
+            }
+            if (!string.IsNullOrEmpty(ASN))
+            {
+                int intasn = Convert.ToInt32(ASN);
+                Data = Data.Where(x => x.ASN == intasn);
+            }
+            if (!string.IsNullOrEmpty(Area))
+            {
+                Data = Data.Where(x => x.Area == Area);
+            }
+            if (!string.IsNullOrEmpty(FSN))
+            {
+                Data = Data.Where(x => x.FSN == FSN);
+            }
+            if (!string.IsNullOrEmpty(Floor))
+            {
+                Data = Data.Where(x => x.Floor == Floor);
+            }
+            if (!string.IsNullOrEmpty(RoomName))
+            {
+                Data = Data.Where(x => x.RoomName.Contains(RoomName));
+            }
+            if (!string.IsNullOrEmpty(System))
+            {
+                Data = Data.Where(x => x.System == System);
+            }
+            if (!string.IsNullOrEmpty(SubSystem))
+            {
+                Data = Data.Where(x => x.SubSystem == SubSystem);
+            }
+            if (!string.IsNullOrEmpty(ESN))
+            {
+                Data = Data.Where(x => x.ESN == ESN);
+            }
+            if (!string.IsNullOrEmpty(EName))
+            {
+                Data = Data.Where(x => x.EName.Contains(EName));
+            }
+            if (!string.IsNullOrEmpty(Brand))
+            {
+                Data = Data.Where(x => x.Brand.Contains(Brand));
+            }
+            if (!string.IsNullOrEmpty(Model))
+            {
+                Data = Data.Where(x => x.Model.Contains(Model));
+            }
+            if (!string.IsNullOrEmpty(PropertyCode))
+            {
+                Data = Data.Where(x => x.PropertyCode == PropertyCode);
+            }
+            #endregion
+
+            var result = Data.OrderByDescending(x => x.ESN).AsQueryable();
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = result.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            result = result.Skip((page - 1) * rows).Take(rows);
+
+            var Dic = Surfaces.Surface.Authority();
+
+            foreach (var item in result)
+            {
+                var itemObjects = new JObject();
+                
+                itemObjects.Add("ESN", item.ESN);
+                if (!string.IsNullOrEmpty(item.EState))
+                {
+                    var dic = Surface.EState();
+                    itemObjects.Add("EState", dic[item.EState]);
+                }
+                if (!string.IsNullOrEmpty(item.Area))
+                {
+                    itemObjects.Add("Area", item.Area);
+                }
+                if (!string.IsNullOrEmpty(item.Floor))
+                {
+                    itemObjects.Add("Floor", item.Floor);
+                }
+                if (!string.IsNullOrEmpty(item.RoomName))
+                {
+                    itemObjects.Add("RoomName", item.RoomName);
+                }
+                if (!string.IsNullOrEmpty(item.System))
+                {
+                    itemObjects.Add("System", item.System);
+                }
+                if (!string.IsNullOrEmpty(item.SubSystem))
+                {
+                    itemObjects.Add("SubSystem", item.SubSystem);
+                }
+                if (!string.IsNullOrEmpty(item.EName))
+                {
+                    itemObjects.Add("EName", item.EName);
+                }
+                if (!string.IsNullOrEmpty(item.Brand))
+                {
+                    itemObjects.Add("Brand", item.Brand);
+                }
+                if (!string.IsNullOrEmpty(item.Model))
+                {
+                    itemObjects.Add("Model", item.Model);
+                }
+                if (!string.IsNullOrEmpty(item.PropertyCode))
+                {
+                    itemObjects.Add("PropertyCode", item.PropertyCode);
+                }
+
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            return jo;
+        }
+#endregion
     }
 }
