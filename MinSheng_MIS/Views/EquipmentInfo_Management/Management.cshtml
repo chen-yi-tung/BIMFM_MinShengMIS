@@ -200,7 +200,7 @@
     //search area onClick Function
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
-            $("form")[0].reset();
+            $(".search-area form")[0].reset();
             pushSelect("ASN", '@Url.Action("ASN", "DropDownList")');
             pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
             pushSelect("System", '@Url.Action("System", "DropDownList")');

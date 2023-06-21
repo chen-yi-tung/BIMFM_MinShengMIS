@@ -123,7 +123,7 @@
     //search area onClick Function
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
-            $("form")[0].reset();
+            $(".search-area form")[0].reset();
             pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
             pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
         });
