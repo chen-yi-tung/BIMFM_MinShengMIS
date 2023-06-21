@@ -44,10 +44,10 @@
         {
             text: "設備操作手冊檔案", value: "ManualFile", formatter: (v) => {
                 if (v.split('.').at(-1).toLowerCase() === "pdf") {
-                    return `<a href="${v}" target="_blank">${v.split('/').at(-1)}</a>`;
+                    return `<a href="/Files/EquipmentOperatingManual${v}" target="_blank">${v.split('/').at(-1)}</a>`;
                 }
                 else {
-                    return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="${v}"/></div></div>`;
+                    return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="/Files/EquipmentOperatingManual${v}"/></div></div>`;
                 }
             }
         },
