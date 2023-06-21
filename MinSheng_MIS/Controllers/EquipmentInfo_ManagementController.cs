@@ -22,7 +22,7 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult InspectionPlan_Management(FormCollection form)
+        public ActionResult EquipmentInfo_Management(FormCollection form)
         {
             var service = new DatagridService();
             var a = service.GetJsonForGrid_EquipmentInfo(form);

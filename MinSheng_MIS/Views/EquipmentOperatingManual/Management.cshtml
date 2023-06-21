@@ -40,7 +40,7 @@
             <label for="Model">型號</label>
             <input class="form-control" id="Model" name="Model" type="text" />
         </div>
-
+        @*
         <div class="form-group">
             <label for="DateStart">上傳日期(起)</label>
             <input class="form-control" id="DateStart" name="DateStart" type="date" />
@@ -50,7 +50,7 @@
             <label for="DateEnd">上傳日期(迄)</label>
             <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
         </div>
-
+        *@
         <div class="button-group">
             <button type="button" class="btn btn-search" id="search">查詢</button>
             <button type="button" class="btn btn-clear" id="clear">清除</button>
@@ -59,13 +59,15 @@
     </form>
 </div>
 
+<script src="/Scripts/tool.js"></script>
+
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
 <script src="/Scripts/datagrid-management.js"></script>
 <script src="../../Scripts/tool.js"></script>
 <script>
-    var getGridJSON = '@Url.Action("EquipmentOperatingManual", "Datagrid")';
+    var getGridJSON = '@Url.Action("EquipmentOperatingManual_Management", "EquipmentOperatingManual")';
     var DataGrid;
     var baseUrl = "/EquipmentOperatingManual/";
 
@@ -93,6 +95,13 @@
     ]
 
     $(async function () {
+        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+
+        const Systems = document.getElementById('System')
+        Systems.addEventListener("change", function () {
+            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        });
+
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
     });
@@ -101,8 +110,8 @@
         let dg = new DG();
         DataGrid = dg.init("#DataGrid", {
             url: getGridJSON,
-            data: fakedata,
-            method: 'GET',
+            //data: fakedata,
+            method: 'POST',
             queryParams: getQueryParams(),
             rownumbers: true,
             idField: 'EOMSN',
@@ -117,17 +126,17 @@
             ]],
             columns: [[
                 { field: 'EOMSN', title: '設備操作手冊編號', align: 'center', width: 180, sortable: true, hidden: true },
-                { field: 'Filepath', title: '設備操作手冊路徑', align: 'center', width: 300, sortable: true, hidden: true },
+                { field: 'FilePath', title: '設備操作手冊路徑', align: 'center', width: 300, sortable: true, hidden: true },
                 { field: 'System', title: '系統別', align: 'center', width: 180, sortable: true },
                 { field: 'SubSystem', title: '子系統別', align: 'center', width: 180, sortable: true },
                 { field: 'EName', title: '設備名稱', align: 'center', width: 240, sortable: true },
                 { field: 'Brand', title: '廠牌', align: 'center', width: 200, sortable: true },
                 { field: 'Model', title: '型號', align: 'center', width: 180, sortable: true },
-                { field: 'UploadDate', title: '上傳時間', align: 'center', width: 240, sortable: true }
+                //{ field: 'UploadDate', title: '上傳時間', align: 'center', width: 240, sortable: true }
             ]]
         })
         dg.addEvent("view", function (row, i) {
-            window.open(`/AllImage/${row.ManualFile}`, "_blank")
+            window.open(`${row.FilePath}`, "_blank")
         })
         dg.addEvent("edit", function (row, i) {
             window.open(`${baseUrl}/Edit/${row.EOMSN}`, "_self")
