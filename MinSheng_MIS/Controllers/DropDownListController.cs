@@ -598,5 +598,33 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 設備名稱下拉式選單
+        [HttpGet]
+        public ActionResult EName(string System = "", string SubSystem = "")
+        {
+            List<JObject> list = new List<JObject>();
+            var ENamelist = new List<string>();
+            if (!string.IsNullOrEmpty(System) && !string.IsNullOrEmpty(SubSystem))
+            {
+                ENamelist = db.EquipmentInfo.Where(x => x.System == System && x.SubSystem == SubSystem).Select(x => x.EName).Distinct().ToList();
+            }
+            else
+            {
+                ENamelist = db.EquipmentInfo.Select(x => x.EName).Distinct().ToList();
+            }
+            foreach (var item in ENamelist)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", item },
+                    { "Value", item }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
     }
 }

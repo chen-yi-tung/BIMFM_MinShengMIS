@@ -70,7 +70,7 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增</button>
 </div>
-
+<script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 
 <script>
@@ -83,12 +83,48 @@
         Systems.addEventListener("change", function () {
             pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
         });
+
+        const SubSystems = document.getElementById('SubSystem')
+        SubSystems.addEventListener("change", function () {
+            pushSelect("EName", `@Url.Action("EName", "DropDownList")?System=${$('#System').val()}&SubSystem=${$('#SubSystem').val()}`);
+        });
     });
 
     function save() {
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
+
+        var form = new FormData();
+        form.append("System", document.getElementById("System").value);
+        form.append("SubSystem", document.getElementById("SubSystem").value);
+        form.append("EName", document.getElementById("EName").value);
+        form.append("Brand", document.getElementById("Brand").value);
+        form.append("Model", document.getElementById("Model").value);
+        form.append("ManualFile", document.getElementById("ManualFile").files[0]);
+        console.log(Object.fromEntries(form.entries()));
+
+        $.ajax({
+            url: "/EquipmentOperatingManual/Create",
+            data: form,
+            type: "POST",
+            contentType: false,       
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/EquipmentOperatingManual/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` })
+        }
     }
 
     function addButtonEvent() {
@@ -102,6 +138,7 @@
                 let file = this.files[0];
                 $("#ManualFileName").text(file.name);
                 $("#ManualFileGroup").removeClass('d-none');
+                $("#_checkFilePath").prop("checked", true);
             }
         })
 
@@ -109,6 +146,7 @@
             $("#ManualFile").val('');
             $("#ManualFileName").text('');
             $("#ManualFileGroup").addClass('d-none');
+            $("#_checkFilePath").prop("checked", false);
         })
 
         $("#submit").click(function () {
