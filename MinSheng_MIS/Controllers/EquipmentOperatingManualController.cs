@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Http.Results;
 using System.Web.Mvc;
 using System.Data.Entity.Migrations;
+using MinSheng_MIS.Services;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -37,10 +38,10 @@ namespace MinSheng_MIS.Controllers
             var isexist = db.EquipmentOperatingManual.Where(x => x.System == eom.System && x.SubSystem == eom.SubSystem && x.EName == eom.EName && x.Brand == eom.Brand && x.Model == eom.Model);
             if(isexist.Count() > 0)
             {
-                return Content("此操作手冊已存在", "application/json");
+                return Content("此操作手冊已存在!", "application/json");
             }
             #endregion
-            #region 新增設備操作手冊
+            #region 存設備操作手冊
             string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
             if (!Directory.Exists(Folder))
             {
@@ -48,7 +49,7 @@ namespace MinSheng_MIS.Controllers
             }
             var lastEOMSN = db.EquipmentOperatingManual.OrderByDescending(x => x.EOMSN).FirstOrDefault();
             var num = 1;
-            if(lastEOMSN != null)
+            if (lastEOMSN != null)
             {
                 num = Convert.ToInt32(lastEOMSN.EOMSN) + 1;
             }
@@ -58,18 +59,10 @@ namespace MinSheng_MIS.Controllers
             System.IO.Directory.CreateDirectory(FolderPath);
             string filefullpath = Path.Combine(FolderPath, Filename);
             eom.ManualFile.SaveAs(filefullpath);
-
-            var eomitem = new EquipmentOperatingManual();
-            eomitem.EOMSN = newEOMSN;
-            eomitem.System = eom.System;
-            eomitem.SubSystem = eom.SubSystem;
-            eomitem.EName = eom.EName;
-            eomitem.Brand = eom.Brand;
-            eomitem.Model = eom.Model;
-            eomitem.FilePath = "/" + Filename;
-
-            db.EquipmentOperatingManual.AddOrUpdate(eomitem);
-            db.SaveChanges();
+            #endregion
+            #region 新增設備操作手冊至資料庫
+            var addeom = new EquipmentOperatingManualService();
+            addeom.AddEquipmentOperatingManual(eom, newEOMSN, Filename);
             #endregion
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);
