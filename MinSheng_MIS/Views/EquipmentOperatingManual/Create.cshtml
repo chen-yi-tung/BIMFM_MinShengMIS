@@ -101,7 +101,11 @@
         form.append("EName", document.getElementById("EName").value);
         form.append("Brand", document.getElementById("Brand").value);
         form.append("Model", document.getElementById("Model").value);
-        form.append("ManualFile", document.getElementById("ManualFile").files[0]);
+        var files = $("#ManualFile").get(0).files;
+        if (files.length > 0) {
+            form.append("ManualFile", files[0]);
+        }
+        //form.append("ManualFile", document.getElementById("ManualFile").files[0]);
         console.log(Object.fromEntries(form.entries()));
 
         $.ajax({
@@ -123,7 +127,7 @@
         }
         function onError(res) {
             console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` })
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！`+`${res.responseText}`})
         }
     }
 

@@ -37,9 +37,7 @@ namespace MinSheng_MIS.Controllers
             var isexist = db.EquipmentOperatingManual.Where(x => x.System == eom.System && x.SubSystem == eom.SubSystem && x.EName == eom.EName && x.Brand == eom.Brand && x.Model == eom.Model);
             if(isexist.Count() > 0)
             {
-                jo.Add("Failed", false);
-                string resultfaild = JsonConvert.SerializeObject(jo);
-                return Content(resultfaild, "application/json");
+                return Content("此操作手冊已存在", "application/json");
             }
             #endregion
             #region 新增設備操作手冊
