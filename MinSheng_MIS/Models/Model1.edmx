@@ -120,6 +120,23 @@
           <Property Name="UploadDate" Type="date" Nullable="false" />
           <Property Name="ImgPath" Type="nvarchar" MaxLength="200" Nullable="false" />
         </EntityType>
+        <EntityType Name="DrawingSubSystemManagement">
+          <Key>
+            <PropertyRef Name="DSubSystemID" />
+          </Key>
+          <Property Name="DSubSystemID" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="DSystemID" Type="int" Nullable="false" />
+          <Property Name="DSubSystem" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SubSystemIsEnable" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DrawingSystemManagement">
+          <Key>
+            <PropertyRef Name="DSystemID" />
+          </Key>
+          <Property Name="DSystemID" Type="int" Nullable="false" />
+          <Property Name="DSystem" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SystemIsEnable" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="DrawInspectionPlanPath">
           <Key>
             <PropertyRef Name="ISN" />
@@ -192,6 +209,18 @@
           <Property Name="Period" Type="int" Nullable="false" />
           <Property Name="IsEnable" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="IsCreate" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EquipmentOperatingManual">
+          <Key>
+            <PropertyRef Name="EOMSN" />
+          </Key>
+          <Property Name="EOMSN" Type="char" MaxLength="6" Nullable="false" />
+          <Property Name="System" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="SubSystem" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="EName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="50" />
+          <Property Name="Model" Type="nvarchar" MaxLength="50" />
+          <Property Name="FilePath" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="EquipmentReportForm">
           <Key>
@@ -753,6 +782,18 @@
             </Principal>
             <Dependent Role="DeliveryRecord">
               <PropertyRef Name="POSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DrawingSubSystemManagement_DrawingSystemManagement">
+          <End Role="DrawingSystemManagement" Type="Self.DrawingSystemManagement" Multiplicity="1" />
+          <End Role="DrawingSubSystemManagement" Type="Self.DrawingSubSystemManagement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DrawingSystemManagement">
+              <PropertyRef Name="DSystemID" />
+            </Principal>
+            <Dependent Role="DrawingSubSystemManagement">
+              <PropertyRef Name="DSystemID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1320,11 +1361,14 @@
           <EntitySet Name="ComputationalStock" EntityType="Self.ComputationalStock" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DeliveryRecord" EntityType="Self.DeliveryRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DesignDiagrams" EntityType="Self.DesignDiagrams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DrawingSubSystemManagement" EntityType="Self.DrawingSubSystemManagement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DrawingSystemManagement" EntityType="Self.DrawingSystemManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawInspectionPlanPath" EntityType="Self.DrawInspectionPlanPath" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawPathSample" EntityType="Self.DrawPathSample" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentInfo" EntityType="Self.EquipmentInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentMaintainFormItem" EntityType="Self.EquipmentMaintainFormItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentMaintainItem" EntityType="Self.EquipmentMaintainItem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EquipmentOperatingManual" EntityType="Self.EquipmentOperatingManual" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentReportForm" EntityType="Self.EquipmentReportForm" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Floor_Info" EntityType="Self.Floor_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InquiryOrder" EntityType="Self.InquiryOrder" Schema="dbo" store:Type="Tables" />
@@ -1391,6 +1435,10 @@
           <AssociationSet Name="FK_DeliveryRecord_PurchaseOrder" Association="Self.FK_DeliveryRecord_PurchaseOrder">
             <End Role="PurchaseOrder" EntitySet="PurchaseOrder" />
             <End Role="DeliveryRecord" EntitySet="DeliveryRecord" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DrawingSubSystemManagement_DrawingSystemManagement" Association="Self.FK_DrawingSubSystemManagement_DrawingSystemManagement">
+            <End Role="DrawingSystemManagement" EntitySet="DrawingSystemManagement" />
+            <End Role="DrawingSubSystemManagement" EntitySet="DrawingSubSystemManagement" />
           </AssociationSet>
           <AssociationSet Name="FK_DrawInspectionPlanPath_InspectionPlanPath" Association="Self.FK_DrawInspectionPlanPath_InspectionPlanPath">
             <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
@@ -1592,11 +1640,14 @@
           <EntitySet Name="ComputationalStock" EntityType="Bimfm_MinSheng_MISModel.ComputationalStock" />
           <EntitySet Name="DeliveryRecord" EntityType="Bimfm_MinSheng_MISModel.DeliveryRecord" />
           <EntitySet Name="DesignDiagrams" EntityType="Bimfm_MinSheng_MISModel.DesignDiagrams" />
+          <EntitySet Name="DrawingSubSystemManagement" EntityType="Bimfm_MinSheng_MISModel.DrawingSubSystemManagement" />
+          <EntitySet Name="DrawingSystemManagement" EntityType="Bimfm_MinSheng_MISModel.DrawingSystemManagement" />
           <EntitySet Name="DrawInspectionPlanPath" EntityType="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath" />
           <EntitySet Name="DrawPathSample" EntityType="Bimfm_MinSheng_MISModel.DrawPathSample" />
           <EntitySet Name="EquipmentInfo" EntityType="Bimfm_MinSheng_MISModel.EquipmentInfo" />
           <EntitySet Name="EquipmentMaintainFormItem" EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainFormItem" />
           <EntitySet Name="EquipmentMaintainItem" EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainItem" />
+          <EntitySet Name="EquipmentOperatingManual" EntityType="Bimfm_MinSheng_MISModel.EquipmentOperatingManual" />
           <EntitySet Name="EquipmentReportForm" EntityType="Bimfm_MinSheng_MISModel.EquipmentReportForm" />
           <EntitySet Name="Floor_Info" EntityType="Bimfm_MinSheng_MISModel.Floor_Info" />
           <EntitySet Name="InquiryOrder" EntityType="Bimfm_MinSheng_MISModel.InquiryOrder" />
@@ -1667,6 +1718,10 @@
           <AssociationSet Name="FK_DeliveryRecord_PurchaseOrder" Association="Bimfm_MinSheng_MISModel.FK_DeliveryRecord_PurchaseOrder">
             <End Role="PurchaseOrder" EntitySet="PurchaseOrder" />
             <End Role="DeliveryRecord" EntitySet="DeliveryRecord" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DrawingSubSystemManagement_DrawingSystemManagement" Association="Bimfm_MinSheng_MISModel.FK_DrawingSubSystemManagement_DrawingSystemManagement">
+            <End Role="DrawingSystemManagement" EntitySet="DrawingSystemManagement" />
+            <End Role="DrawingSubSystemManagement" EntitySet="DrawingSubSystemManagement" />
           </AssociationSet>
           <AssociationSet Name="FK_DrawInspectionPlanPath_InspectionPlanPath" Association="Bimfm_MinSheng_MISModel.FK_DrawInspectionPlanPath_InspectionPlanPath">
             <End Role="InspectionPlanPath" EntitySet="InspectionPlanPath" />
@@ -1963,6 +2018,25 @@
           <Property Name="UploadDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="DrawingSubSystemManagement">
+          <Key>
+            <PropertyRef Name="DSubSystemID" />
+          </Key>
+          <Property Name="DSubSystemID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="DSystemID" Type="Int32" Nullable="false" />
+          <Property Name="DSubSystem" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SubSystemIsEnable" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="DrawingSystemManagement" Relationship="Bimfm_MinSheng_MISModel.FK_DrawingSubSystemManagement_DrawingSystemManagement" FromRole="DrawingSubSystemManagement" ToRole="DrawingSystemManagement" />
+        </EntityType>
+        <EntityType Name="DrawingSystemManagement">
+          <Key>
+            <PropertyRef Name="DSystemID" />
+          </Key>
+          <Property Name="DSystemID" Type="Int32" Nullable="false" />
+          <Property Name="DSystem" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SystemIsEnable" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="DrawingSubSystemManagement" Relationship="Bimfm_MinSheng_MISModel.FK_DrawingSubSystemManagement_DrawingSystemManagement" FromRole="DrawingSystemManagement" ToRole="DrawingSubSystemManagement" />
+        </EntityType>
         <EntityType Name="DrawInspectionPlanPath">
           <Key>
             <PropertyRef Name="ISN" />
@@ -2041,6 +2115,18 @@
           <Property Name="IsEnable" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="IsCreate" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="EquipmentMaintainFormItem" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentMaintainFormItem_EquipmentMaintainItem" FromRole="EquipmentMaintainItem" ToRole="EquipmentMaintainFormItem" />
+        </EntityType>
+        <EntityType Name="EquipmentOperatingManual">
+          <Key>
+            <PropertyRef Name="EOMSN" />
+          </Key>
+          <Property Name="EOMSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="System" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="SubSystem" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="EName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FilePath" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="EquipmentReportForm">
           <Key>
@@ -2698,6 +2784,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_DrawingSubSystemManagement_DrawingSystemManagement">
+          <End Type="Bimfm_MinSheng_MISModel.DrawingSystemManagement" Role="DrawingSystemManagement" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.DrawingSubSystemManagement" Role="DrawingSubSystemManagement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DrawingSystemManagement">
+              <PropertyRef Name="DSystemID" />
+            </Principal>
+            <Dependent Role="DrawingSubSystemManagement">
+              <PropertyRef Name="DSystemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_DrawInspectionPlanPath_InspectionPlanPath">
           <End Type="Bimfm_MinSheng_MISModel.InspectionPlanPath" Role="InspectionPlanPath" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath" Role="DrawInspectionPlanPath" Multiplicity="*" />
@@ -3338,6 +3436,25 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="DrawingSubSystemManagement">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DrawingSubSystemManagement">
+              <MappingFragment StoreEntitySet="DrawingSubSystemManagement">
+                <ScalarProperty Name="SubSystemIsEnable" ColumnName="SubSystemIsEnable" />
+                <ScalarProperty Name="DSubSystem" ColumnName="DSubSystem" />
+                <ScalarProperty Name="DSystemID" ColumnName="DSystemID" />
+                <ScalarProperty Name="DSubSystemID" ColumnName="DSubSystemID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DrawingSystemManagement">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DrawingSystemManagement">
+              <MappingFragment StoreEntitySet="DrawingSystemManagement">
+                <ScalarProperty Name="SystemIsEnable" ColumnName="SystemIsEnable" />
+                <ScalarProperty Name="DSystem" ColumnName="DSystem" />
+                <ScalarProperty Name="DSystemID" ColumnName="DSystemID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="DrawInspectionPlanPath">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DrawInspectionPlanPath">
               <MappingFragment StoreEntitySet="DrawInspectionPlanPath">
@@ -3413,6 +3530,19 @@
                 <ScalarProperty Name="MISN" ColumnName="MISN" />
                 <ScalarProperty Name="ESN" ColumnName="ESN" />
                 <ScalarProperty Name="EMISN" ColumnName="EMISN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EquipmentOperatingManual">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.EquipmentOperatingManual">
+              <MappingFragment StoreEntitySet="EquipmentOperatingManual">
+                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="EName" ColumnName="EName" />
+                <ScalarProperty Name="SubSystem" ColumnName="SubSystem" />
+                <ScalarProperty Name="System" ColumnName="System" />
+                <ScalarProperty Name="EOMSN" ColumnName="EOMSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

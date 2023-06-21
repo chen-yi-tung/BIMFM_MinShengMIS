@@ -35,11 +35,14 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<ComputationalStock> ComputationalStock { get; set; }
         public virtual DbSet<DeliveryRecord> DeliveryRecord { get; set; }
         public virtual DbSet<DesignDiagrams> DesignDiagrams { get; set; }
+        public virtual DbSet<DrawingSubSystemManagement> DrawingSubSystemManagement { get; set; }
+        public virtual DbSet<DrawingSystemManagement> DrawingSystemManagement { get; set; }
         public virtual DbSet<DrawInspectionPlanPath> DrawInspectionPlanPath { get; set; }
         public virtual DbSet<DrawPathSample> DrawPathSample { get; set; }
         public virtual DbSet<EquipmentInfo> EquipmentInfo { get; set; }
         public virtual DbSet<EquipmentMaintainFormItem> EquipmentMaintainFormItem { get; set; }
         public virtual DbSet<EquipmentMaintainItem> EquipmentMaintainItem { get; set; }
+        public virtual DbSet<EquipmentOperatingManual> EquipmentOperatingManual { get; set; }
         public virtual DbSet<EquipmentReportForm> EquipmentReportForm { get; set; }
         public virtual DbSet<Floor_Info> Floor_Info { get; set; }
         public virtual DbSet<InquiryOrder> InquiryOrder { get; set; }
