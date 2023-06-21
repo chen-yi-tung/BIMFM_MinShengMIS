@@ -75,12 +75,13 @@
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
+<script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 <script>
 
-    const ImgNum = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ImgNum}`;
-    let apiUrl = null;
+    const EOMSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("ReadBody", "EquipmentOperatingManual")' + `/${EOMSN}`;
+    //let apiUrl = null;
 
     const fakeData = {
         System: "BT",
@@ -92,12 +93,18 @@
     }
 
     $(async function () {
+        $("#_checkFilePath").prop("checked", true);
         await pushSelect("System", '@Url.Action("System", "DropDownList")');
         addButtonEvent();
 
         const Systems = document.getElementById('System')
         Systems.addEventListener("change", function () {
             pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        });
+
+        const SubSystems = document.getElementById('SubSystem')
+        SubSystems.addEventListener("change", function () {
+            pushSelect("EName", `@Url.Action("EName", "DropDownList")?System=${$('#System').val()}&SubSystem=${$('#SubSystem').val()}`);
         });
 
         readData(apiUrl);
@@ -124,6 +131,10 @@
                         await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")?System=' + res.System);
                         $(`#${k}`).val(v);
                         break;
+                    case "EName":
+                        await pushSelect("EName", '@Url.Action("EName", "DropDownList")?System=' + res.System + '&SubSystem=' + res.SubSystem);
+                        $(`#${k}`).val(v);
+                        break;
                     case "ManualFile":
                         $("#ManualFileName").text(v);
                         $("#ManualFileGroup").removeClass('d-none');
@@ -143,6 +154,39 @@
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
+
+        var form = new FormData();
+        form.append("EOMSN", document.getElementById("EOMSN").value);
+        form.append("Brand", document.getElementById("Brand").value);
+        form.append("Model", document.getElementById("Model").value);
+        var files = $("#ManualFile").get(0).files;
+        if (files.length > 0) {
+            form.append("ManualFile", files[0]);
+        }
+
+        console.log(Object.fromEntries(form.entries()));
+
+        $.ajax({
+            url: "/EquipmentOperatingManual/Edit",
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/EquipmentOperatingManual/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+        }
     }
 
     function addButtonEvent() {
@@ -156,6 +200,7 @@
                 let file = this.files[0];
                 $("#ManualFileName").text(file.name);
                 $("#ManualFileGroup").removeClass('d-none');
+                $("#_checkFilePath").prop("checked", true);
             }
         })
 
@@ -163,6 +208,7 @@
             $("#ManualFile").val('');
             $("#ManualFileName").text('');
             $("#ManualFileGroup").addClass('d-none');
+            $("#_checkFilePath").prop("checked", false);
         })
 
         $("#submit").click(function () {

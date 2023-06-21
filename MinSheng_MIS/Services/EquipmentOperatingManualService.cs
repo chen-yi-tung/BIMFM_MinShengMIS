@@ -29,5 +29,21 @@ namespace MinSheng_MIS.Services
             db.SaveChanges();
             #endregion
         }
+        public void EditEquipmentOperatingManual(EquipmentOperatingManualViewModel eom, string newEOMSN, string Filename)
+        {
+            #region 新增設備操作手冊
+
+            var eomitem = db.EquipmentOperatingManual.Find(newEOMSN);
+            eomitem.Brand = eom.Brand;
+            eomitem.Model = eom.Model;
+            if (!string.IsNullOrEmpty(Filename))
+            {
+                eomitem.FilePath = "/" + Filename;
+            }
+
+            db.EquipmentOperatingManual.AddOrUpdate(eomitem);
+            db.SaveChanges();
+            #endregion
+        }
     }
 }

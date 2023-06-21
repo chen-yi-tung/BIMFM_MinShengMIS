@@ -78,16 +78,70 @@ namespace MinSheng_MIS.Controllers
         }
         
         #endregion
-        #region  設備操作手冊詳情
+        #region  設備操作手冊詳情->檢視
         public ActionResult Read()
         {
             return View();
         }
         #endregion
         #region 編輯設備操作手冊
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult Readbody(string id)
+        {
+            JObject jo = new JObject();
+            var item = db.EquipmentOperatingManual.Find(id);
+            jo["EOMSN"] = item.EOMSN;
+            jo["System"] = item.System;
+            jo["SubSystem"] = item.SubSystem;
+            jo["EName"] = item.EName;
+            jo["Brand"] = item.Brand;
+            jo["Model"] = item.Model;
+            jo["ManualFile"] = item.FilePath;
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+
+            return Content(result, "application/json");
+        }
+        [HttpPost]
+        public ActionResult Edit(EquipmentOperatingManualViewModel eom)
+        {
+            JObject jo = new JObject();
+            #region 先檢查是否有同系統&子系統&設備名稱&廠牌&型號 之操作手冊存在
+            var isexist = db.EquipmentOperatingManual.Where(x => x.System == eom.System && x.SubSystem == eom.SubSystem && x.EName == eom.EName && x.Brand == eom.Brand && x.Model == eom.Model && x.EOMSN != eom.EOMSN);
+            if (isexist.Count() > 0)
+            {
+                return Content("此操作手冊已存在!", "application/json");
+            }
+            #endregion
+            string Filename = "";
+            #region 存設備操作手冊
+            if(eom.ManualFile != null)
+            {
+                string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
+                if (!Directory.Exists(Folder))
+                {
+                    System.IO.Directory.CreateDirectory(Folder);
+                }
+                string FolderPath = Server.MapPath("~/Files/EquipmentOperatingManual");
+                Filename = eom.EOMSN + Path.GetExtension(eom.ManualFile.FileName);
+                System.IO.Directory.CreateDirectory(FolderPath);
+                string filefullpath = Path.Combine(FolderPath, Filename);
+                eom.ManualFile.SaveAs(filefullpath);
+            }
+            
+            #endregion
+            #region 編輯設備操作手冊至資料庫
+            var addeom = new EquipmentOperatingManualService();
+            addeom.EditEquipmentOperatingManual(eom, eom.EOMSN, Filename);
+            #endregion
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
         }
         #endregion
         #region 刪除設備操作手冊

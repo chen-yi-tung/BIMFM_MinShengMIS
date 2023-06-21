@@ -8,6 +8,7 @@ namespace MinSheng_MIS.Models.ViewModels
 {
     public class EquipmentOperatingManualViewModel
     {
+        public string EOMSN { get; set; }
         public string System { get; set;}
         public string SubSystem { get; set; }
         public string EName { get; set; }
