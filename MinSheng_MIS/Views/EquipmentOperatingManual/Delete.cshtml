@@ -21,8 +21,8 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
     const EOMSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ImgNum}`;
-    let apiUrl = null;
+    let apiUrl = '@Url.Action("ReadBody", "EquipmentOperatingManual")' + `/${EOMSN}`;
+    //let apiUrl = null;
 
     const fakeData = {
         EOMSN: "A棟",
@@ -108,8 +108,8 @@
                 $(this).append(spinner);
 
                 $.ajax({
-                    url: '@Url.Action("Delete", "AsBuiltDrawing_Management")?ImgNum=' + ImgNum,
-                    data: JSON.stringify(ImgNum),
+                    url: '@Url.Action("DeleteEOM", "EquipmentOperatingManual")/' + EOMSN,
+                    data: JSON.stringify(EOMSN),
                     type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",

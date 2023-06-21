@@ -151,9 +151,32 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
         #region 刪除設備操作手冊
-        public ActionResult Delete()
+        public ActionResult Delete(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpPost]
+        public ActionResult DeleteEOM(string id)
+        {
+            JObject jo = new JObject();
+
+            #region 刪除設備操作手冊
+            var eom = db.EquipmentOperatingManual.Find(id);
+            string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{eom.FilePath}");
+            if (System.IO.File.Exists(fillfullpath))
+            {
+                System.IO.File.Delete(fillfullpath);
+            }
+
+            #endregion
+            #region 刪除設備操作手冊至資料庫
+            db.EquipmentOperatingManual.Remove(eom);
+            db.SaveChanges();
+            #endregion
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
         }
         #endregion
     }
