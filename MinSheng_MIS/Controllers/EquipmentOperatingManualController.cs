@@ -122,6 +122,12 @@ namespace MinSheng_MIS.Controllers
             #region 存設備操作手冊
             if(eom.ManualFile != null)
             {
+                string file = db.EquipmentOperatingManual.Find(eom.EOMSN).FilePath.ToString();
+                string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{file}");
+                if (System.IO.File.Exists(fillfullpath))
+                {
+                    System.IO.File.Delete(fillfullpath);
+                }
                 string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
                 if (!Directory.Exists(Folder))
                 {
