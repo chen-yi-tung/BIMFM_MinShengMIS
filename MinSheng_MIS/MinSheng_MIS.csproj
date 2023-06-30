@@ -1738,6 +1738,7 @@
     <Content Include="Views\StockOut_Management\Read.cshtml" />
     <Content Include="Views\StockIn_Management\CreateStockIn.cshtml" />
     <Content Include="Views\InquiryPlan_Management\Print.cshtml" />
+    <Content Include="Views\Report_Management\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -9,6 +9,8 @@
 
 <h2>@ViewBag.Title</h2>
 
+<button class="btn btn-create" id="create">新增報修</button>
+
 <div class="search-area">
     <form class="form" method="post" action="" id="ReportManagementForm">
 
@@ -289,6 +291,11 @@
 
         $("#export").click(function () {
             let url = baseUrl + 'Export';
+            window.open(url, "_self");
+        });
+
+        $("#create").click(function () {
+            let url = baseUrl + 'Create';
             window.open(url, "_self");
         });
     }

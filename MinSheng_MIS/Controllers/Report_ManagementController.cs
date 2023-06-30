@@ -77,5 +77,12 @@ namespace MinSheng_MIS.Controllers
             return Content(result, "application/json");
         }
         #endregion
+
+        #region 新增報修
+        public ActionResult Create()
+        {
+            return View();
+        }
+        #endregion
     }
 }
