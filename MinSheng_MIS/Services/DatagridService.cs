@@ -2280,5 +2280,99 @@ namespace MinSheng_MIS.Services
             return jo;
         }
         #endregion
+
+        #region 設計圖說管理
+        public JObject GetJsonForGrid_DesignDiagrams(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+            //string propertyName = "DDSN";
+            //string order = "asc";
+
+            #region 塞來自formdata的資料
+            //圖名
+            string ImgName = form["ImgName"]?.ToString();
+            //圖說種類
+            string ImgType = form["ImgType"]?.ToString();
+            //上傳日期(起)
+            string DateStart = form["DateStart"]?.ToString();
+            //上傳日期(迄)
+            string DateEnd = form["DateEnd"]?.ToString();
+            #endregion
+
+
+            #region 依據查詢字串檢索資料表
+            var SourceTable = db.DesignDiagrams.AsQueryable();
+
+            //圖名
+            if (!string.IsNullOrEmpty(ImgName))
+            {
+                SourceTable = SourceTable.Where(x => x.ImgName.Contains(ImgName));
+            }
+            //圖說種類
+            if (!string.IsNullOrEmpty(ImgType))
+            {
+                SourceTable = SourceTable.Where(x => x.ImgType == ImgType);
+            }
+            //上傳日期(起)
+            if (!string.IsNullOrEmpty(DateStart))
+            {
+                var datestart = DateTime.Parse(DateStart);
+                SourceTable = SourceTable.Where(x => x.UploadDate >= datestart);
+            }
+            //上傳日期(迄)
+            if (!string.IsNullOrEmpty(DateEnd))
+            {
+                var dateend = DateTime.Parse(DateEnd).AddDays(1);
+                SourceTable = SourceTable.Where(x => x.UploadDate < dateend);
+            }
+            #endregion
+
+            SourceTable = SourceTable.OrderByDescending(x => x.DDSN);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = SourceTable.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            SourceTable = SourceTable.Skip((page - 1) * rows).Take(rows);
+
+            foreach (var item in SourceTable)
+            {
+                var itemObjects = new JObject();
+                itemObjects.Add("DDSN", item.DDSN);
+                itemObjects.Add("ImgPath", "/Files/DesignDiagrams" + item.ImgPath);
+                itemObjects.Add("ImgName", item.ImgName);
+                //圖說種類
+                if (!string.IsNullOrEmpty(item.ImgType))
+                {
+                    var dic = Surface.ImgType();
+                    itemObjects.Add("ImgType", dic[item.ImgType]);
+                }
+                //上傳日期
+                if (item.UploadDate != DateTime.MinValue && item.UploadDate != null)
+                {
+                    itemObjects.Add("UploadDate", item.UploadDate.ToString("yyyy/MM/dd"));
+                }
+
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            return jo;
+        }
+        #endregion
     }
 }
