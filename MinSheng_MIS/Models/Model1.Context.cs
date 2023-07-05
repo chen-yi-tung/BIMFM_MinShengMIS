@@ -27,6 +27,7 @@ namespace MinSheng_MIS.Models
     
         public virtual DbSet<C__MigrationHistory> C__MigrationHistory { get; set; }
         public virtual DbSet<AreaInfo> AreaInfo { get; set; }
+        public virtual DbSet<AsBuiltDrawing> AsBuiltDrawing { get; set; }
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
         public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }

@@ -22,6 +22,19 @@
           <Property Name="ASN" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Area" Type="nvarchar" MaxLength="20" />
         </EntityType>
+        <EntityType Name="AsBuiltDrawing">
+          <Key>
+            <PropertyRef Name="ADSN" />
+          </Key>
+          <Property Name="ADSN" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="ImgPath" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
+          <Property Name="DSubSystem" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="ImgNum" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="ImgName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ImgVersion" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="UploadDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
@@ -218,8 +231,8 @@
           <Property Name="System" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="SubSystem" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="EName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Brand" Type="nvarchar" MaxLength="50" />
-          <Property Name="Model" Type="nvarchar" MaxLength="50" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Model" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="FilePath" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="EquipmentReportForm">
@@ -1352,6 +1365,7 @@
         <EntityContainer Name="Bimfm_MinSheng_MISModelStoreContainer">
           <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AreaInfo" EntityType="Self.AreaInfo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AsBuiltDrawing" EntityType="Self.AsBuiltDrawing" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaims" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
@@ -1632,6 +1646,7 @@
         <EntityContainer Name="Bimfm_MinSheng_MISEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="C__MigrationHistory" EntityType="Bimfm_MinSheng_MISModel.C__MigrationHistory" />
           <EntitySet Name="AreaInfo" EntityType="Bimfm_MinSheng_MISModel.AreaInfo" />
+          <EntitySet Name="AsBuiltDrawing" EntityType="Bimfm_MinSheng_MISModel.AsBuiltDrawing" />
           <EntitySet Name="AspNetRoles" EntityType="Bimfm_MinSheng_MISModel.AspNetRoles" />
           <EntitySet Name="AspNetUserClaims" EntityType="Bimfm_MinSheng_MISModel.AspNetUserClaims" />
           <EntitySet Name="AspNetUserLogins" EntityType="Bimfm_MinSheng_MISModel.AspNetUserLogins" />
@@ -1918,6 +1933,19 @@
           <Property Name="Area" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="AreaInfo" ToRole="Floor_Info" />
         </EntityType>
+        <EntityType Name="AsBuiltDrawing">
+          <Key>
+            <PropertyRef Name="ADSN" />
+          </Key>
+          <Property Name="ADSN" Type="String" Nullable="false" MaxLength="8" FixedLength="true" Unicode="false" />
+          <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="DSubSystem" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ImgNum" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="ImgName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ImgVersion" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="UploadDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
@@ -2124,8 +2152,8 @@
           <Property Name="System" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="SubSystem" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="EName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Brand" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="FilePath" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="EquipmentReportForm">
@@ -3337,6 +3365,20 @@
               <MappingFragment StoreEntitySet="AreaInfo">
                 <ScalarProperty Name="Area" ColumnName="Area" />
                 <ScalarProperty Name="ASN" ColumnName="ASN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AsBuiltDrawing">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.AsBuiltDrawing">
+              <MappingFragment StoreEntitySet="AsBuiltDrawing">
+                <ScalarProperty Name="UploadDate" ColumnName="UploadDate" />
+                <ScalarProperty Name="ImgVersion" ColumnName="ImgVersion" />
+                <ScalarProperty Name="ImgName" ColumnName="ImgName" />
+                <ScalarProperty Name="ImgNum" ColumnName="ImgNum" />
+                <ScalarProperty Name="DSubSystem" ColumnName="DSubSystem" />
+                <ScalarProperty Name="FSN" ColumnName="FSN" />
+                <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
+                <ScalarProperty Name="ADSN" ColumnName="ADSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
