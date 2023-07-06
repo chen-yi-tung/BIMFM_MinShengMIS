@@ -57,8 +57,8 @@
 <script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
 
-   // var getGridJSON = '@Url.Action("AsBuiltDrawing_Management", "Datagrid")';
-    var DataGrid;
+    var getGridJSON = '@Url.Action("DesignDiagrams_Management", "DesignDiagrams")';
+    // var DataGrid;
     var baseUrl = '/' + window.location.pathname.split('/')[1];
 
     const fakeData = [
@@ -75,11 +75,11 @@
     $(async function () {
         //await AreaFloorEvent();
         await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
-        Initialize_DataGrid();
+        Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
 
-        const Systems = document.getElementById('System')
-        @*Systems.addEventListener("change", function () {
+        @*const Systems = document.getElementById('System')
+        Systems.addEventListener("change", function () {
             pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
         });*@
     });
@@ -87,9 +87,9 @@
     function Initialize_DataGrid(getGridJSON) {
         let dg = new DG();
         DataGrid = dg.init("#DataGrid", {
-            //url: getGridJSON,
-            data: fakeData,
-            method: 'GET',
+            url: getGridJSON,
+            // data: fakeData,
+            method: 'POST',
             queryParams: getQueryParams(),
             idField: 'DDSN',
             //sortName: 'ImgNum',
@@ -107,7 +107,7 @@
             ]]
         })
         dg.addEvent("view", function (row, i) {
-            window.open(`/AllImage/${row.ImgPath}`, "_blank")
+            window.open(`${row.ImgPath}`, "_blank")
         })
         dg.addEvent("edit", function (row, i) {
             window.open(`${baseUrl}/Edit/${row.DDSN}`, "_self")
@@ -121,8 +121,7 @@
     function addSearchAreaClickEvent() {
         $("#clear").click(function () {
             $(".search-area form")[0].reset();
-            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
-            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+            Initialize_DataGrid(getGridJSON);
         });
 
         $("#search").click(function () {

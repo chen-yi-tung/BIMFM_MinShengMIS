@@ -179,7 +179,7 @@
         if (!data) return;
 
         $.ajax({
-            url: "/InspectionPlan_Management/CreateInspectionPlan",
+            url: "/EquipmentInfo_Management/CreateEquipment",
             data: JSON.stringify(data),
             type: "POST",
             dataType: "json",
@@ -192,7 +192,7 @@
             console.log(res);
             createDialogModal({
                 id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
             });
         }
         function onError(res) {

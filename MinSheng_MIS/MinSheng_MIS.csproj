@@ -357,6 +357,8 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\AddInspectionPlan.cs" />
+    <Compile Include="Models\ViewModels\DesignDiagramsViewModel.cs" />
+    <Compile Include="Models\ViewModels\EquipmentInfo_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\EquipmentOperatingManualViewModel.cs" />
     <Compile Include="Models\ViewModels\InspectionPlan_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\JsonResponseViewModel.cs" />
@@ -437,6 +439,8 @@
     <Compile Include="Services\Check_InspectionPlan.cs" />
     <Compile Include="Services\ComFunc.cs" />
     <Compile Include="Services\DatagridService.cs" />
+    <Compile Include="Services\EquipmentInfo_ManagementService.cs" />
+    <Compile Include="Services\DesignDiagramsService.cs" />
     <Compile Include="Services\EquipmentOperatingManualService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Surfaces\Surface.cs" />

@@ -4,7 +4,7 @@
 
 <h2>@ViewBag.Title</h2>
 
-<input type="text" id="ImgNum" name="ImgNum" value="@ViewBag.id" hidden>
+<input type="text" id="DDSN" name="DDSN" value="@ViewBag.id" hidden>
 
 <div class="datatable datatable-small mt-5">
     <div class="datatable-body">
@@ -21,8 +21,8 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
     const DDSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ImgNum}`;
-    let apiUrl = null;
+    let apiUrl = '@Url.Action("ReadbodyForDelete", "DesignDiagrams")' + `/${DDSN}`;
+    // let apiUrl = null;
 
     const fakeData = {
             DDSN: "230502002",
@@ -40,10 +40,10 @@
         {
             text: "設計圖說檔案", value: "DesignDiagrams", formatter: (v) => {
                 if (v.split('.').at(-1).toLowerCase() === "pdf") {
-                    return `<a href="${v}" target="_blank">${v.split('/').at(-1)}</a>`;
+                    return `<a href="/Files/DesignDiagrams${v}" target="_blank">${v.split('/').at(-1)}</a>`;
                 }
                 else {
-                    return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="${v}"/></div></div>`;
+                    return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="/Files/DesignDiagrams${v}"/></div></div>`;
                 }
             }
         },
@@ -104,8 +104,8 @@
                 $(this).append(spinner);
 
                 $.ajax({
-                    url: '@Url.Action("Delete", "AsBuiltDrawing_Management")?ImgNum=' + ImgNum,
-                    data: JSON.stringify(ImgNum),
+                    url: '@Url.Action("DeleteDesignDiagrams", "DesignDiagrams")/' + DDSN,
+                    data: JSON.stringify(DDSN),
                     type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
@@ -121,7 +121,7 @@
                         id: "DialogModal-Success",
                         inner: "刪除成功！",
                         onHide: () => {
-                            let url = '@Url.Action("Management", "AsBuiltDrawing_Management")';
+                            let url = '@Url.Action("Management", "DesignDiagrams")';
                             window.location.href = url;
                         }
                     })
