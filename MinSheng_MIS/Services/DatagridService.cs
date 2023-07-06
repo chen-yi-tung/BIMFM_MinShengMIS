@@ -2478,8 +2478,6 @@ namespace MinSheng_MIS.Services
             //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
             result = result.Skip((page - 1) * rows).Take(rows);
 
-            var Dic = Surfaces.Surface.Authority();
-
             foreach (var item in result)
             {
                 var itemObjects = new JObject();
