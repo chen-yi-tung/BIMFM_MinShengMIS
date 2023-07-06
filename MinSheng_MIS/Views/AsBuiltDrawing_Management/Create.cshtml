@@ -29,14 +29,14 @@
 
         <div class="form-group required">
             <label for="System">系統別</label>
-            <select class="form-select" name="System" id="System" required>
+            <select class="form-select" name="DSystemID" id="DSystemID" required>
                 <option value="">請選擇</option>
             </select>
         </div>
 
         <div class="form-group required">
             <label for="SubSystem">子系統別</label>
-            <select class="form-select" name="SubSystem" id="SubSystem" required>
+            <select class="form-select" name="DSubSystemID" id="DSubSystemID" required>
                 <option value="">請選擇</option>
             </select>
         </div>
@@ -87,12 +87,12 @@
 
     $(async function () {
         await AreaFloorEvent();
-        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
         addButtonEvent();
 
-        const Systems = document.getElementById('System')
+        const Systems = document.getElementById('DSystemID')
         Systems.addEventListener("change", function () {
-            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+            pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?DSystemID=${$('#DSystemID').val()}`);
         });
     });
 
