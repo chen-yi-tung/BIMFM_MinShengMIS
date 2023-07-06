@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Models;
+using System.Web.Services.Description;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -88,6 +89,16 @@ namespace MinSheng_MIS.Controllers
         {
             var service = new DatagridService();
             string result = service.GetJsonForGrid_InspectationPlan_Record_EquipRepair(form);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region AsBuiltDrawing_Management 竣工圖說管理
+        [HttpPost]
+        public ActionResult AsBuiltDrawing_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            string result = service.GetJsonForGrid_AsBuiltDrawing(form);
             return Content(result, "application/json");
         }
         #endregion

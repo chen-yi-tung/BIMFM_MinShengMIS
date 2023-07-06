@@ -2374,5 +2374,136 @@ namespace MinSheng_MIS.Services
             return jo;
         }
         #endregion
+
+        #region 竣工圖說管理
+        public String GetJsonForGrid_AsBuiltDrawing(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+
+            #region 塞來自formdata的資料
+            //棟別名稱
+            string Area = form["Area"]?.ToString();
+            //棟別編號
+            string ASN = form["ASN"]?.ToString();
+            //樓層名稱
+            string Floor = form["Floor"]?.ToString();
+            //樓層編號
+            string FSN = form["FSN"]?.ToString();
+            //系統別
+            string DSystemID = form["DSystemID"]?.ToString();
+            //子系統別
+            string DSubSystemID = form["DSubSystemID"]?.ToString();
+            //圖號
+            string ImgNum = form["ImgNum"]?.ToString();
+            //圖名
+            string ImgName = form["ImgName"]?.ToString();
+            //版本
+            string ImgVersion = form["ImgVersion"]?.ToString();
+            //日期起
+            string DateStart = form["DateFrom"]?.ToString();
+            //日期迄
+            string DateEnd = form["DateTo"]?.ToString();
+            #endregion
+
+            #region 依據查詢字串檢索資料表
+            var SourceTable = from x1 in db.AsBuiltDrawing
+                              join x2 in db.Floor_Info on x1.FSN equals x2.FSN
+                              join x3 in db.DrawingSubSystemManagement on x1.DSubSystem equals x3.DSubSystemID
+                              join x4 in db.AreaInfo on x2.ASN equals x4.ASN
+                              join x5 in db.DrawingSystemManagement on x3.DSystemID equals x5.DSystemID
+                              select new { x1.ADSN, x1.ImgPath, x2.ASN, x1.FSN, x3.DSystemID, DSubSystemID = x1.DSubSystem, x1.ImgNum, x1.ImgName, x1.ImgVersion, x1.UploadDate, x4.Area, x2.FloorName, x3.DSubSystem, x5.DSystem};
+
+
+            if (!string.IsNullOrEmpty(ASN))
+            {
+                var asn = Convert.ToInt32(ASN);
+                SourceTable = SourceTable.Where(x => x.ASN == asn);
+            }
+            if (!string.IsNullOrEmpty(FSN))
+            {
+                SourceTable = SourceTable.Where(x => x.FSN == FSN);
+            }
+            if (!string.IsNullOrEmpty(DSystemID))
+            {
+                var dsystemid = Convert.ToInt32(DSystemID);
+                SourceTable = SourceTable.Where(x => x.DSystemID == dsystemid);
+            }
+            if (!string.IsNullOrEmpty(DSubSystemID))
+            {
+                SourceTable = SourceTable.Where(x => x.DSubSystemID == DSubSystemID);
+            }
+            if (!string.IsNullOrEmpty(ImgNum))
+            {
+                SourceTable = SourceTable.Where(x => x.ImgNum.Contains(ImgNum));
+            }
+            if (!string.IsNullOrEmpty(ImgName))
+            {
+                SourceTable = SourceTable.Where(x => x.ImgName.Contains(ImgName));
+            }
+            if (!string.IsNullOrEmpty(ImgVersion))
+            {
+                SourceTable = SourceTable.Where(x => x.ImgVersion.Contains(ImgVersion));
+            }
+            //日期(起)
+            if (!string.IsNullOrEmpty(DateStart))
+            {
+                var datefrom = DateTime.Parse(DateStart);
+                SourceTable = SourceTable.Where(x => x.UploadDate >= datefrom);
+            }
+            //日期(迄)
+            if (!string.IsNullOrEmpty(DateEnd))
+            {
+                var dateto = DateTime.Parse(DateEnd).AddDays(1);
+                SourceTable = SourceTable.Where(x => x.UploadDate < dateto);
+            }
+            
+            #endregion
+
+            var result = SourceTable.OrderByDescending(x => x.ADSN).AsQueryable();
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = result.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            result = result.Skip((page - 1) * rows).Take(rows);
+
+            var Dic = Surfaces.Surface.Authority();
+
+            foreach (var item in result)
+            {
+                var itemObjects = new JObject();
+
+                itemObjects.Add("Area", item.Area);
+                itemObjects.Add("Floor", item.FloorName);
+                itemObjects.Add("System", item.DSystem);
+                itemObjects.Add("SubSystem", item.DSubSystem);
+                itemObjects.Add("ImgNum", item.ImgNum);
+                itemObjects.Add("ImgName", item.ImgName);
+                itemObjects.Add("UploadDate", item.UploadDate.ToString("yyyy/MM/dd"));
+                itemObjects.Add("ImgVersion", item.ImgVersion);
+                itemObjects.Add("ImgPath", item.ImgPath);
+
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+
+            string reString = JsonConvert.SerializeObject(jo);
+            return reString;
+        }
+        #endregion
     }
 }

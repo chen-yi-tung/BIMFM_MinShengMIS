@@ -35,14 +35,14 @@
 
         <div class="form-group">
             <label for="System">系統別</label>
-            <select class="form-select" name="System" id="System">
+            <select class="form-select" name="DSystemID" id="DSystemID">
                 <option value="">請選擇</option>
             </select>
         </div>
 
         <div class="form-group">
             <label for="SubSystem">子系統別</label>
-            <select class="form-select" name="SubSystem" id="SubSystem">
+            <select class="form-select" name="DSubSystemID" id="DSubSystemID">
                 <option value="">請選擇</option>
             </select>
         </div>
@@ -108,21 +108,21 @@
 
     $(async function () {
         await AreaFloorEvent();
-        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
 
-        const Systems = document.getElementById('System')
+        const Systems = document.getElementById('DSystemID')
         Systems.addEventListener("change", function () {
-            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+            pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?DSystemID=${$('#DSystemID').val()}`);
         });
     });
 
     function Initialize_DataGrid(getGridJSON) {
         let dg = new DG();
         DataGrid = dg.init("#DataGrid", {
-            //url: getGridJSON,
-            data: fakeData,
+            url: getGridJSON,
+            //data: fakeData,
             method: 'POST',
             queryParams: getQueryParams(),
             idField: 'ImgNum',
@@ -144,7 +144,7 @@
             ]]
         })
         dg.addEvent("view", function (row, i) {
-            window.open(`/AllImage/${row.ImgPath}`, "_blank")
+            window.open(`${row.ImgPath}`, "_blank")
         })
         dg.addEvent("edit", function (row, i) {
             window.open(`${baseUrl}/Edit/${row.ImgNum}`, "_self")
@@ -159,7 +159,7 @@
         $("#clear").click(function () {
             $(".search-area form")[0].reset();
             pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
-            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+            pushSelect("DSubSystemID", '@Url.Action("DSubSystem", "DropDownList")');
         });
 
         $("#search").click(function () {
