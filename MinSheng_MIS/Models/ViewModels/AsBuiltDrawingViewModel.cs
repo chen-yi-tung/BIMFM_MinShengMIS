@@ -7,6 +7,7 @@ namespace MinSheng_MIS.Models.ViewModels
 {
     public class AsBuiltDrawingViewModel
     {
+        public string ADSN { get; set; }
         public int ASN { get; set; }
         public string FSN { get; set; }
         public int DSystemID { get; set; }

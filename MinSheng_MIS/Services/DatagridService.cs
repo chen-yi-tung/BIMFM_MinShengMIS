@@ -2482,6 +2482,7 @@ namespace MinSheng_MIS.Services
             {
                 var itemObjects = new JObject();
 
+                itemObjects.Add("ADSN", item.ADSN);
                 itemObjects.Add("Area", item.Area);
                 itemObjects.Add("Floor", item.FloorName);
                 itemObjects.Add("System", item.DSystem);

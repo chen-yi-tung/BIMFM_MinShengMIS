@@ -24,8 +24,9 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 新增竣工圖
-        public ActionResult Create()
+        public ActionResult Create(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         [HttpPost]
@@ -78,16 +79,78 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯竣工圖
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
         }
-        #endregion
+        [HttpPost]
+        public ActionResult Edit(AsBuiltDrawingViewModel drawing)
+        {
+            JObject jo = new JObject();
+
+            string Filename = "";
+            #region 存竣工圖
+            if (drawing.ImgPath != null)
+            {
+                string file = db.AsBuiltDrawing.Find(drawing.ADSN).ImgPath.ToString();
+                string fillfullpath = Server.MapPath($"~/Files/AsBuiltDrawing{file}");
+                if (System.IO.File.Exists(fillfullpath))
+                {
+                    System.IO.File.Delete(fillfullpath);
+                }
+                string Folder = Server.MapPath("~/Files/AsBuiltDrawing");
+                if (!Directory.Exists(Folder))
+                {
+                    System.IO.Directory.CreateDirectory(Folder);
+                }
+                string FolderPath = Server.MapPath("~/Files/AsBuiltDrawing");
+                Filename = drawing.ADSN + Path.GetExtension(drawing.ImgPath.FileName);
+                System.IO.Directory.CreateDirectory(FolderPath);
+                string filefullpath = Path.Combine(FolderPath, Filename);
+                drawing.ImgPath.SaveAs(filefullpath);
+            }
+
+            #endregion
+            #region 編輯設備操作手冊至資料庫
+            var adddrawing = new AsBuiltDrawingService();
+            adddrawing.EditAsBuiltDrawing(drawing, Filename);
+            #endregion
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
+        }
+#endregion
+
 
         #region 刪除竣工圖
         public ActionResult Delete()
         {
             return View();
+        }
+        #endregion
+
+        #region 指定竣工圖資訊
+        [HttpGet]
+        public ActionResult Readbody(string id)
+        {
+            JObject jo = new JObject();
+            var item = db.AsBuiltDrawing.Find(id);
+            var ASN = db.Floor_Info.Find(item.FSN).ASN.ToString();
+            jo["ADSN"] = item.ADSN;
+            jo["ASN"] = ASN;
+            jo["FSN"] = item.FSN;
+            var DSystemID = db.DrawingSubSystemManagement.Find(item.DSubSystemID).DSystemID;
+            jo["DSystemID"] = DSystemID;
+            jo["DSubSystemID"] = item.DSubSystemID;
+            jo["ImgNum"] = item.ImgNum;
+            jo["ImgName"] = item.ImgName;
+            jo["ImgVersion"] = item.ImgVersion;
+            jo["ImgPath"] = item.ImgPath;
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+
+            return Content(result, "application/json");
         }
         #endregion
     }

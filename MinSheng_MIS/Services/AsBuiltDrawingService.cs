@@ -12,6 +12,7 @@ using System.Web.Http.Results;
 using System.Web.Mvc;
 using System.Web.Services.Protocols;
 using System.Data.Entity.Migrations;
+using Microsoft.Owin.Security;
 
 namespace MinSheng_MIS.Services
 {
@@ -24,7 +25,7 @@ namespace MinSheng_MIS.Services
         {
             var drawing = new AsBuiltDrawing();
             drawing.ADSN = ADSN;
-            drawing.ImgPath = FileName;
+            drawing.ImgPath = "/"+FileName;
             drawing.FSN = info.FSN;
             drawing.DSubSystemID = info.DSubSystemID;
             drawing.ImgNum = info.ImgNum;
@@ -36,5 +37,25 @@ namespace MinSheng_MIS.Services
             db.SaveChanges();
         }
         #endregion
+
+        #region 編輯竣工圖
+        public void EditAsBuiltDrawing(AsBuiltDrawingViewModel info, string FileName)
+        {
+            var drawing = db.AsBuiltDrawing.Find(info.ADSN);
+            if (!string.IsNullOrEmpty(FileName))
+            {
+                drawing.ImgPath = "/" + FileName;
+            }
+            drawing.ImgNum = info.ImgNum;
+            drawing.ImgName = info.ImgName;
+            drawing.ImgVersion = info.ImgVersion;
+            drawing.UploadDate = DateTime.Today;
+
+            db.AsBuiltDrawing.AddOrUpdate(drawing);
+            db.SaveChanges();
+        }
+        #endregion
+
+
     }
 }

@@ -34,14 +34,14 @@
         </div>
 
         <div class="form-group">
-            <label for="System">系統別</label>
+            <label for="DSystemID">系統別</label>
             <select class="form-select" name="DSystemID" id="DSystemID">
                 <option value="">請選擇</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="SubSystem">子系統別</label>
+            <label for="DSubSystemID">子系統別</label>
             <select class="form-select" name="DSubSystemID" id="DSubSystemID">
                 <option value="">請選擇</option>
             </select>
@@ -133,6 +133,7 @@
                 dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete")),
             ]],
             columns: [[
+                dg.column('ADSN', 'ADSN', 130),
                 dg.column('Area', '棟別', 130),
                 dg.column('Floor', '樓層', 80),
                 dg.column('System', '系統別', 200),
@@ -147,10 +148,10 @@
             window.open(`${row.ImgPath}`, "_blank")
         })
         dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/Edit/${row.ImgNum}`, "_self")
+            window.open(`${baseUrl}/Edit/${row.ADSN}`, "_self")
         })
         dg.addEvent("delete", function (row, i) {
-            window.open(`${baseUrl}/Delete/${row.ImgNum}`, "_self")
+            window.open(`${baseUrl}/Delete/${row.ADSN}`, "_self")
         })
     }
 

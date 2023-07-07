@@ -11,6 +11,10 @@
 <h2>@ViewBag.Title</h2>
 <div class="edit-area edit-area-small">
     <form class="form pt-0">
+        <div class="form-group required" hidden>
+            <label for="ADSN">竣工圖編號</label>
+            <input class="form-control" id="ADSN" name="ADSN" type="text" maxlength="50" required />
+        </div>
         <div class="form-group required">
             <label for="ASN">棟別</label>
             <select class="form-select" name="ASN" id="ASN" required disabled>
@@ -24,36 +28,36 @@
             <select class="form-select" name="FSN" id="FSN" required disabled>
                 <option value="">請選擇</option>
             </select>
-            <input class="form-control" id="Floor" name="Floor" type="text" hidden/>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
         </div>
 
         <div class="form-group required">
-            <label for="System">系統別</label>
-            <select class="form-select" name="System" id="System" required disabled>
+            <label for="DSystemID">系統別</label>
+            <select class="form-select" name="DSystemID" id="DSystemID" required disabled>
                 <option value="">請選擇</option>
             </select>
         </div>
 
         <div class="form-group required">
-            <label for="SubSystem">子系統別</label>
-            <select class="form-select" name="SubSystem" id="SubSystem" required readonly disabled>
+            <label for="DSubSystemID">子系統別</label>
+            <select class="form-select" name="DSubSystemID" id="DSubSystemID" required readonly disabled>
                 <option value="">請選擇</option>
             </select>
         </div>
 
         <div class="form-group">
             <label for="ImgNum">圖號</label>
-            <input class="form-control" id="ImgNum" name="ImgNum" type="text" maxlength="200"/>
+            <input class="form-control" id="ImgNum" name="ImgNum" type="text" maxlength="200" />
         </div>
 
         <div class="form-group required">
             <label for="ImgName">圖名</label>
-            <input class="form-control" id="ImgName" name="ImgName" type="text" maxlength="200" required/>
+            <input class="form-control" id="ImgName" name="ImgName" type="text" maxlength="200" required />
         </div>
 
         <div class="form-group">
             <label for="ImgVersion">版本</label>
-            <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" maxlength="50"/>
+            <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" maxlength="50" />
         </div>
 
         <div class="form-group g-col-2 required">
@@ -67,7 +71,8 @@
                     <button type="button" class="btn-delete-item flex-shrink-0" id="ImgPathDelete"></button>
                 </div>
             </div>
-            <input id="ImgPath" name="ImgPath" type="file" class="form-file-input" required>
+            <input id="ImgPath" name="ImgPath" type="file" class="form-file-input">
+            <input type="checkbox" id="_checkFilePath" name="_checkFilePath" class="form-file-input" required oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的竣工圖' : '')">
         </div>
 
     </form>
@@ -76,14 +81,14 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增</button>
 </div>
-
+<script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 <script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
 
-    const ImgNum = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ImgNum}`;
-    let apiUrl = null;
+    const ADSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ADSN}`;
+    //let apiUrl = null;
 
     const fakeData = {
         ASN: "1",
@@ -99,13 +104,14 @@
 
 
     $(async function () {
+        $("#_checkFilePath").prop("checked", true);
         await AreaFloorEvent();
-        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
         addButtonEvent();
 
-        const Systems = document.getElementById('System')
+        const Systems = document.getElementById('DSystemID')
         Systems.addEventListener("change", function () {
-            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+            pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?System=${$('#System').val()}`);
         });
 
         readData(apiUrl);
@@ -132,8 +138,8 @@
                         await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")?ASN=' + res.ASN);
                         $(`#${k}`).val(v);
                         break;
-                    case "SubSystem":
-                        await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")?System=' + res.System);
+                    case "DSubSystemID":
+                        await pushSelect("DSubSystemID", '@Url.Action("DSubSystem", "DropDownList")?DSystemID=' + res.DSystemID);
                         $(`#${k}`).val(v);
                         break;
                     case "ImgPath":
@@ -155,6 +161,40 @@
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
+
+        var form = new FormData();
+        form.append("ADSN", document.getElementById("ADSN").value);
+        form.append("ImgNum", document.getElementById("ImgNum").value);
+        form.append("ImgName", document.getElementById("ImgName").value);
+        form.append("ImgVersion", document.getElementById("ImgVersion").value);
+        var files = $("#ImgPath").get(0).files;
+        if (files.length > 0) {
+            form.append("ImgPath", files[0]);
+        }
+
+        console.log(Object.fromEntries(form.entries()));
+
+        $.ajax({
+            url: "/AsBuiltDrawing_Management/Edit",
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/AsBuiltDrawing_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+        }
     }
 
     function addButtonEvent() {
@@ -168,6 +208,7 @@
                 let file = this.files[0];
                 $("#ImgPathName").text(file.name);
                 $("#ImgPathGroup").removeClass('d-none');
+                $("#_checkFilePath").prop("checked", true);
             }
         })
 
@@ -175,6 +216,7 @@
             $("#ImgPath").val('');
             $("#ImgPathName").text('');
             $("#ImgPathGroup").addClass('d-none');
+            $("#_checkFilePath").prop("checked", false);
         })
 
         $("#submit").click(function () {
