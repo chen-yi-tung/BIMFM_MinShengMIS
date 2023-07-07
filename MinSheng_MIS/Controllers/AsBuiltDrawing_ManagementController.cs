@@ -1,5 +1,8 @@
-﻿using System;
+﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -8,6 +11,7 @@ namespace MinSheng_MIS.Controllers
 {
     public class AsBuiltDrawing_ManagementController : Controller
     {
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         // GET: AsBuiltDrawing_Management
         #region 竣工圖管理
         public ActionResult Management()
@@ -19,6 +23,42 @@ namespace MinSheng_MIS.Controllers
         #region 新增竣工圖
         public ActionResult Create()
         {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult Create(AsBuiltDrawingViewModel info)
+        {
+            #region 編訂ADSN
+            var newestADSN = db.AsBuiltDrawing.Where(x => x.UploadDate == DateTime.Today.Date).OrderByDescending(x => x.ADSN).FirstOrDefault().ADSN.ToString();
+            var ADSN = "";
+            if (string.IsNullOrEmpty(newestADSN))
+            {
+                ADSN = DateTime.Today.Date.ToString("YYMMdd") + "01";
+            }
+            else
+            {
+                var intADSN = Convert.ToInt32(newestADSN);
+                ADSN = (intADSN + 1).ToString();
+            }
+            #endregion
+
+            #region 存竣工圖至指定路徑
+            string Folder = Server.MapPath("~/Files/AsBuiltDrawing");
+            if (!Directory.Exists(Folder))
+            {
+                System.IO.Directory.CreateDirectory(Folder);
+            }
+            string FolderPath = Server.MapPath("~/Files/AsBuiltDrawing");
+            string Filename = ADSN + Path.GetExtension(info.ImgPath.FileName);
+            System.IO.Directory.CreateDirectory(FolderPath);
+            string filefullpath = Path.Combine(FolderPath, Filename);
+            info.ImgPath.SaveAs(filefullpath);
+            #endregion
+
+            #region 存竣工圖資料進資料庫
+
+            #endregion
+
             return View();
         }
         #endregion
