@@ -112,8 +112,8 @@
                 $(this).append(spinner);
 
                 $.ajax({
-                    url: '@Url.Action("Delete", "AsBuiltDrawing_Management")?ImgNum=' + ImgNum,
-                    data: JSON.stringify(ImgNum),
+                    url: '@Url.Action("DeleteAsBuiltDrawing", "AsBuiltDrawing_Management")/' + ADSN,
+                    data: JSON.stringify(ADSN),
                     type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",

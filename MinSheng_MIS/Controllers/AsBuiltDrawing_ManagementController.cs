@@ -129,6 +129,28 @@ namespace MinSheng_MIS.Controllers
             ViewBag.id = id;
             return View();
         }
+        [HttpPost]
+        public ActionResult DeleteAsBuiltDrawing(string id)
+        {
+            JObject jo = new JObject();
+
+            #region 刪除竣工圖
+            var drawing = db.AsBuiltDrawing.Find(id);
+            string fillfullpath = Server.MapPath($"~/Files/AsBuiltDrawing{drawing.ImgPath}");
+            if (System.IO.File.Exists(fillfullpath))
+            {
+                System.IO.File.Delete(fillfullpath);
+            }
+
+            #endregion
+            #region 刪除設備操作手冊至資料庫
+            db.AsBuiltDrawing.Remove(drawing);
+            db.SaveChanges();
+            #endregion
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region 指定竣工圖資訊
