@@ -29,7 +29,7 @@
           <Property Name="ADSN" Type="char" MaxLength="8" Nullable="false" />
           <Property Name="ImgPath" Type="nvarchar(max)" Nullable="false" />
           <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
-          <Property Name="DSubSystem" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="DSubSystemID" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="ImgNum" Type="nvarchar" MaxLength="30" Nullable="false" />
           <Property Name="ImgName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="ImgVersion" Type="nvarchar" MaxLength="20" Nullable="false" />
@@ -1940,7 +1940,7 @@
           <Property Name="ADSN" Type="String" Nullable="false" MaxLength="8" FixedLength="true" Unicode="false" />
           <Property Name="ImgPath" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
-          <Property Name="DSubSystem" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="DSubSystemID" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="ImgNum" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="ImgName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ImgVersion" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
@@ -3375,7 +3375,7 @@
                 <ScalarProperty Name="ImgVersion" ColumnName="ImgVersion" />
                 <ScalarProperty Name="ImgName" ColumnName="ImgName" />
                 <ScalarProperty Name="ImgNum" ColumnName="ImgNum" />
-                <ScalarProperty Name="DSubSystem" ColumnName="DSubSystem" />
+                <ScalarProperty Name="DSubSystemID" ColumnName="DSubSystemID" />
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
                 <ScalarProperty Name="ADSN" ColumnName="ADSN" />

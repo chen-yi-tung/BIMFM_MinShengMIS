@@ -17,7 +17,7 @@ namespace MinSheng_MIS.Models
         public string ADSN { get; set; }
         public string ImgPath { get; set; }
         public string FSN { get; set; }
-        public string DSubSystem { get; set; }
+        public string DSubSystemID { get; set; }
         public string ImgNum { get; set; }
         public string ImgName { get; set; }
         public string ImgVersion { get; set; }

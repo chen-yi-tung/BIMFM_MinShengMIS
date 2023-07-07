@@ -2419,10 +2419,10 @@ namespace MinSheng_MIS.Services
             #region 依據查詢字串檢索資料表
             var SourceTable = from x1 in db.AsBuiltDrawing
                               join x2 in db.Floor_Info on x1.FSN equals x2.FSN
-                              join x3 in db.DrawingSubSystemManagement on x1.DSubSystem equals x3.DSubSystemID
+                              join x3 in db.DrawingSubSystemManagement on x1.DSubSystemID equals x3.DSubSystemID
                               join x4 in db.AreaInfo on x2.ASN equals x4.ASN
                               join x5 in db.DrawingSystemManagement on x3.DSystemID equals x5.DSystemID
-                              select new { x1.ADSN, x1.ImgPath, x2.ASN, x1.FSN, x3.DSystemID, DSubSystemID = x1.DSubSystem, x1.ImgNum, x1.ImgName, x1.ImgVersion, x1.UploadDate, x4.Area, x2.FloorName, x3.DSubSystem, x5.DSystem};
+                              select new { x1.ADSN, x1.ImgPath, x2.ASN, x1.FSN, x3.DSystemID, x1.DSubSystemID, x1.ImgNum, x1.ImgName, x1.ImgVersion, x1.UploadDate, x4.Area, x2.FloorName, x3.DSubSystem, x5.DSystem};
 
 
             if (!string.IsNullOrEmpty(ASN))

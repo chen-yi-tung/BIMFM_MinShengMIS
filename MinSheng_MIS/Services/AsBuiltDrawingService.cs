@@ -26,7 +26,7 @@ namespace MinSheng_MIS.Services
             drawing.ADSN = ADSN;
             drawing.ImgPath = FileName;
             drawing.FSN = info.FSN;
-            drawing.DSubSystem = info.DSubSystemID;
+            drawing.DSubSystemID = info.DSubSystemID;
         }
 
         #endregion
