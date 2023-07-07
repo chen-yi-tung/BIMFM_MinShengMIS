@@ -31,7 +31,7 @@ namespace MinSheng_MIS.Services
         }
         public void EditEquipmentOperatingManual(EquipmentOperatingManualViewModel eom, string newEOMSN, string Filename)
         {
-            #region 新增設備操作手冊
+            #region 編輯設備操作手冊
 
             var eomitem = db.EquipmentOperatingManual.Find(newEOMSN);
             eomitem.Brand = eom.Brand;

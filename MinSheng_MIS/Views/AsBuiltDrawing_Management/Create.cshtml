@@ -80,7 +80,7 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增</button>
 </div>
-
+<script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 <script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
@@ -100,6 +100,43 @@
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
+
+        var form = new FormData();
+        form.append("ASN", document.getElementById("ASN").value);
+        form.append("FSN", document.getElementById("FSN").value);
+        form.append("DSystemID", document.getElementById("DSystemID").value);
+        form.append("DSubSystemID", document.getElementById("DSubSystemID").value);
+        form.append("ImgNum", document.getElementById("ImgNum").value);
+        form.append("ImgName", document.getElementById("ImgName").value);
+        form.append("ImgVersion", document.getElementById("ImgVersion").value);
+        var files = $("#ImgPath").get(0).files;
+        if (files.length > 0) {
+            form.append("ImgPath", files[0]);
+        }
+        //form.append("ManualFile", document.getElementById("ManualFile").files[0]);
+        console.log(Object.fromEntries(form.entries()));
+
+        $.ajax({
+            url: "/AsBuiltDrawing_Management/Create",
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/AsBuiltDrawing_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+        }
     }
 
     function addButtonEvent() {

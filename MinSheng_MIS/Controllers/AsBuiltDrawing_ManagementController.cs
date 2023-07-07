@@ -1,5 +1,8 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,15 +32,15 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Create(AsBuiltDrawingViewModel info)
         {
             #region 編訂ADSN
-            var newestADSN = db.AsBuiltDrawing.Where(x => x.UploadDate == DateTime.Today.Date).OrderByDescending(x => x.ADSN).FirstOrDefault().ADSN.ToString();
+            var newestADSN = db.AsBuiltDrawing.Where(x => x.UploadDate == DateTime.Today).OrderByDescending(x => x.ADSN).FirstOrDefault();
             var ADSN = "";
-            if (string.IsNullOrEmpty(newestADSN))
+            if (newestADSN == null)
             {
-                ADSN = DateTime.Today.Date.ToString("YYMMdd") + "01";
+                ADSN = DateTime.Today.Date.ToString("yyMMdd") + "01";
             }
             else
             {
-                var intADSN = Convert.ToInt32(newestADSN);
+                var intADSN = Convert.ToInt32(newestADSN.ADSN.ToString());
                 ADSN = (intADSN + 1).ToString();
             }
             #endregion
@@ -56,10 +59,14 @@ namespace MinSheng_MIS.Controllers
             #endregion
 
             #region 存竣工圖資料進資料庫
-
+            var adddrawing = new AsBuiltDrawingService();
+            adddrawing.AddAsBuiltDrawing(info, ADSN, Filename);
             #endregion
 
-            return View();
+            JObject jo = new JObject();
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
         }
         #endregion
 

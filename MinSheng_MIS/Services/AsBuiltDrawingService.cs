@@ -27,8 +27,14 @@ namespace MinSheng_MIS.Services
             drawing.ImgPath = FileName;
             drawing.FSN = info.FSN;
             drawing.DSubSystemID = info.DSubSystemID;
-        }
+            drawing.ImgNum = info.ImgNum;
+            drawing.ImgName = info.ImgName;
+            drawing.ImgVersion = info.ImgVersion;
+            drawing.UploadDate = DateTime.Today;
 
+            db.AsBuiltDrawing.AddOrUpdate(drawing);
+            db.SaveChanges();
+        }
         #endregion
     }
 }
