@@ -120,12 +120,13 @@ namespace MinSheng_MIS.Controllers
             string result = JsonConvert.SerializeObject(jo);
             return Content(result, "application/json");
         }
-#endregion
+        #endregion
 
 
         #region 刪除竣工圖
-        public ActionResult Delete()
+        public ActionResult Delete(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         #endregion
@@ -147,6 +148,33 @@ namespace MinSheng_MIS.Controllers
             jo["ImgName"] = item.ImgName;
             jo["ImgVersion"] = item.ImgVersion;
             jo["ImgPath"] = item.ImgPath;
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 指定竣工圖資訊
+        [HttpGet]
+        public ActionResult ReadAsBuiltDrawingbody(string id)
+        {
+            JObject jo = new JObject();
+            var item = db.AsBuiltDrawing.Find(id);
+            var ASN = db.Floor_Info.Find(item.FSN).ASN;
+            var Area = db.AreaInfo.Find(ASN).Area.ToString();
+            jo["Area"] = Area;
+            var Floor = db.Floor_Info.Find(item.FSN).FloorName.ToString();
+            jo["Floor"] = Floor;
+            var SystemInfo = db.DrawingSubSystemManagement.Find(item.DSubSystemID);
+            var DSystem = db.DrawingSystemManagement.Find(SystemInfo.DSystemID).DSystem.ToString();
+            jo["DSystem"] = DSystem;
+            jo["DSubSystem"] = SystemInfo.DSubSystem;
+            jo["ImgNum"] = item.ImgNum;
+            jo["ImgName"] = item.ImgName;
+            jo["ImgVersion"] = item.ImgVersion;
+            jo["UploadDate"] = item.ImgPath;
+            jo["ImgPath"] = "/Files/AsBuiltDrawing" + item.ImgPath;
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);
 

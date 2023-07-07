@@ -20,15 +20,15 @@
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/ImageDisplay.js"></script>
 <script>
-    const ImgNum = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ImgNum}`;
-    let apiUrl = null;
+    const ADSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("ReadAsBuiltDrawingbody", "AsBuiltDrawing_Management")' + `/${ADSN}`;
+    //let apiUrl = null;
 
     const fakeData = {
         Area: "A棟",
         Floor: "1F",
-        System: "BT",
-        SubSystem: "BT-11",
+        DSystem: "BT",
+        DSubSystem: "BT-11",
         ImgNum: "M7-126",
         ImgName: "空調控制配置平面圖",
         UploadDate: "2023/04/11 10:30:26",
@@ -39,8 +39,8 @@
     const sn = [
         { text: "棟別", value: "Area" },
         { text: "樓層", value: "Floor" },
-        { text: "系統", value: "System" },
-        { text: "子系統", value: "SubSystem" },
+        { text: "系統", value: "DSystem" },
+        { text: "子系統", value: "DSubSystem" },
         { text: "圖號", value: "ImgNum" },
         { text: "圖名", value: "ImgName" },
         { text: "版本", value: "ImgVersion" },
