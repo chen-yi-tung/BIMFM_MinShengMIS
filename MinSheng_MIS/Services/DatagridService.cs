@@ -2491,7 +2491,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("ImgName", item.ImgName);
                 itemObjects.Add("UploadDate", item.UploadDate.ToString("yyyy/MM/dd"));
                 itemObjects.Add("ImgVersion", item.ImgVersion);
-                itemObjects.Add("ImgPath", item.ImgPath);
+                itemObjects.Add("ImgPath", "/Files/AsBuiltDrawing"+item.ImgPath);
 
                 ja.Add(itemObjects);
             }
