@@ -1488,6 +1488,12 @@
     <Content Include="Content\samplepath.css" />
     <Content Include="Content\tagbox.css" />
     <Content Include="favicon.ico" />
+    <Content Include="Files\AsBuiltDrawing\23070701.jpg" />
+    <Content Include="Files\AsBuiltDrawing\YY070701.jpg" />
+    <Content Include="Files\DesignDiagrams\23062704.gif" />
+    <Content Include="Files\EquipmentOperatingManual\000002.gif" />
+    <Content Include="Files\EquipmentOperatingManual\000003.gif" />
+    <Content Include="Files\EquipmentOperatingManual\000004.gif" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -1584,6 +1590,7 @@
     <Content Include="AllFile\2023-03-30_settings.gradle" />
     <Content Include="jsonSamples\inquiryPlan.json" />
     <Content Include="jsonSamples\QuotationItem.json" />
+    <Content Include="Files\EquipmentOperatingManual\000005.pdf" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datagrid-management.js" />

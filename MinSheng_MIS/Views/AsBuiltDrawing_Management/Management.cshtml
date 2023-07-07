@@ -133,7 +133,7 @@
                 dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete")),
             ]],
             columns: [[
-                dg.column('ADSN', 'ADSN', 130),
+                dg.hiddenColumn('ADSN', 'ADSN', 130),
                 dg.column('Area', '棟別', 130),
                 dg.column('Floor', '樓層', 80),
                 dg.column('System', '系統別', 200),
