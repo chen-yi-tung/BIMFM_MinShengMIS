@@ -32,25 +32,29 @@ function DeviceFileModal() {
     this.create = function (search) {
         console.log(search)
 
-        this.ModalBs.show();
-
-        onSuccess([
+        /*onSuccess([
             { text: "url-1", value: "1" },
             { text: "localhost_44303_SystemManagement_AuthorityManagement.png", value: "2" },
             { text: "url-3", value: "3" }
-        ])
+        ])*/
 
-        /* $.ajax({
-            url: "/",
+        $.ajax({
+            url: "/EquipmentInfo_Management/CheckManual",
             data: JSON.stringify(search),
             type: "POST",
             dataType: "json",
             contentType: "application/json;charset=utf-8",
             success: onSuccess,
             error: (err) => { console.log(err) }
-        }) */
+        })
 
         function onSuccess(res) {
+            console.log(res);
+            if (res[0].error) {
+                createDialogModal({ id: "DialogModal-Error", inner: "無此設備操作手冊！<br>請上傳操作手冊！" })
+                return;
+            }
+            this.ModalBs.show();
             let listGroup = self.ModalJQ.find(".list-group");
             listGroup.empty();
             res.forEach(e => {
@@ -82,7 +86,7 @@ function DeviceFileModal() {
         $("#_checkFilePath").prop('checked', true);
         $("#_checkFilePath")[0].setCustomValidity('');
         $("#FilePathName").text(name);
-        $("#FilePathDelete").removeClass('d-none');
+        $("#FilePathGroup").removeClass('d-none');
     }
 
     this.ModalJQ.one("hidden.bs.modal", () => {
@@ -142,7 +146,11 @@ function addButtonEvent() {
 
         let check = arr.map(e => document.getElementById(e).reportValidity()).every(e => e);
         if (check) {
-            deviceFileModal.create(arr.map(e => document.getElementById(e).value));
+            let search = {};
+            arr.forEach((e) => {
+                search[e] = document.getElementById(e).value;
+            })
+            deviceFileModal.create(search);
         }
     })
 
@@ -156,6 +164,7 @@ function addButtonEvent() {
     })
 
     $("#FilePathDelete").click(function () {
+        $("#_checkFilePath").prop('checked', false);
         $("#FilePath").val('');
         $("#FilePathName").text('');
         $("#FilePathGroup").addClass('d-none');

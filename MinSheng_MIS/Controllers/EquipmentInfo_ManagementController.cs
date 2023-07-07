@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Security.Permissions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -76,13 +77,13 @@ namespace MinSheng_MIS.Controllers
             var num = 1;
             if (lastESN != null)
             {
-                num = Convert.ToInt32(lastESN.ESN) + 1;
+                num = Convert.ToInt32(lastESN.ESN.Remove(0,1)) + 1;
             }
             var newESN = 'E' + num.ToString().PadLeft(5, '0');
 
             #region 存設備操作手冊
             string Filename = "";
-            if (eim.ManualFile != null)
+            if (eim.FilePath != null)
             {
                 var lastEOMSN = db.EquipmentOperatingManual.OrderByDescending(x => x.EOMSN).FirstOrDefault();
                 var EOMSNnum = 1;
@@ -111,10 +112,10 @@ namespace MinSheng_MIS.Controllers
                     System.IO.Directory.CreateDirectory(Folder);
                 }
                 string FolderPath = Server.MapPath("~/Files/EquipmentOperatingManual");
-                Filename = EOMSN + Path.GetExtension(eim.ManualFile.FileName);
+                Filename = EOMSN + Path.GetExtension(eim.FilePath.FileName);
                 System.IO.Directory.CreateDirectory(FolderPath);
                 string filefullpath = Path.Combine(FolderPath, Filename);
-                eim.ManualFile.SaveAs(filefullpath);
+                eim.FilePath.SaveAs(filefullpath);
                 #endregion
 
                 #region 新增設備操作手冊至資料庫
@@ -127,11 +128,11 @@ namespace MinSheng_MIS.Controllers
                 var addeom = new EquipmentOperatingManualService();
                 if (manualexist.Count() > 0)
                 {
-                    addeom.AddEquipmentOperatingManual(eom, EOMSN, Filename);
+                    addeom.EditEquipmentOperatingManual(eom, EOMSN, Filename);
                 }
                 else
                 {
-                    addeom.EditEquipmentOperatingManual(eom, EOMSN, Filename);
+                    addeom.AddEquipmentOperatingManual(eom, EOMSN, Filename);
                 }
                 #endregion
 
@@ -147,6 +148,33 @@ namespace MinSheng_MIS.Controllers
             return Content(result, "application/json");
         }
 
+        #endregion
+
+        #region 檢查設備手冊
+        [HttpPost]
+        public ActionResult CheckManual(EquipmentOperatingManualViewModel eom)
+        {
+            JArray ja = new JArray();
+            
+            #region 檢查是否有同系統&子系統&設備名稱&廠牌&型號 之操作手冊
+            var isexist = db.EquipmentOperatingManual.Where(e => e.System == eom.System && e.SubSystem == eom.SubSystem && e.EName == eom.EName && e.Brand == eom.Brand && e.Model == eom.Model).FirstOrDefault();
+            if (isexist != null)
+            {
+                JObject jo = new JObject();
+                jo["text"] = isexist.FilePath;
+                jo["value"] = "/Files/EquipmentOperatingManual" + isexist.FilePath;
+                ja.Add(jo);
+            }
+            else
+            {
+                JObject jo = new JObject();
+                jo["error"] = true;
+                ja.Add(jo);
+            }
+            #endregion
+            string result = JsonConvert.SerializeObject(ja);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region 設備屬性

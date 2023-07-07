@@ -18,8 +18,7 @@ namespace MinSheng_MIS.Services
 
             var eiitem = new EquipmentInfo();
             eiitem.ESN = newESN;
-            eiitem.Area = eim.ASN;
-            eiitem.Floor = eim.FSN;
+            eiitem.FSN = eim.FSN;
             eiitem.RoomName = eim.RoomName;
             eiitem.System = eim.System;
             eiitem.SubSystem = eim.SubSystem;
@@ -29,6 +28,9 @@ namespace MinSheng_MIS.Services
             eiitem.Model = eim.Model;
             eiitem.LocationX = eim.LocationX;
             eiitem.LocationY = eim.LocationY;
+            eiitem.EState = "1";
+            eiitem.Area = db.AreaInfo.Where(a => a.ASN == eim.ASN).FirstOrDefault().Area;
+            eiitem.Floor = db.Floor_Info.Where(f => f.FSN == eim.FSN).FirstOrDefault().FloorName;
 
             db.EquipmentInfo.AddOrUpdate(eiitem);
             db.SaveChanges();
