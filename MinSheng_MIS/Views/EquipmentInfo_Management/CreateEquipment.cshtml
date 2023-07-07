@@ -152,8 +152,7 @@
         addButtonEvent();
     });
 
-    function save(data) {
-
+    function save() {
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
@@ -174,16 +173,18 @@
         fd.append("LocationY", $("#LocationY").val())
         fd.append("FilePath", deviceFileModal.file)
 
-        console.log(data);
+        console.log(Object.fromEntries(fd.entries()));
 
-        if (!data) return;
+        if (!fd) return;
 
         $.ajax({
-            url: "/EquipmentInfo_Management/CreateEquipment",
-            data: JSON.stringify(data),
+            url: "/EquipmentInfo_Management/Create",
+            data: fd,//JSON.stringify(fd),
             type: "POST",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
+            contentType: false,
+            processData: false,
+            //dataType: "json",
+            //contentType: "application/json;charset=utf-8",
             success: onSuccess,
             error: onError
         })
@@ -197,7 +198,7 @@
         }
         function onError(res) {
             console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` })
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
         }
     }
 </script>

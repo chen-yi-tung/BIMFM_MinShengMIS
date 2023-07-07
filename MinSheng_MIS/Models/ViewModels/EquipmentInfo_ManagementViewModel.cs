@@ -9,7 +9,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class EquipmentInfo_ManagementViewModel
     {
         public string ESN { get; set; }
-        public string ASN { get; set;}
+        public int ASN { get; set;}
         public string FSN { get; set; }
         public string RoomName { get; set; }
         public string System { get; set; }
@@ -20,6 +20,6 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Model { get; set; }
         public decimal LocationX { get; set; }
         public decimal LocationY { get; set; }
-        public HttpPostedFileBase ManualFile { get; set; }
+        public HttpPostedFileBase FilePath { get; set; }
     }
 }
