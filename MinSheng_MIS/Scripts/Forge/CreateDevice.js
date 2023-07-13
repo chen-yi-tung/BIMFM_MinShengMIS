@@ -54,7 +54,7 @@ function DeviceFileModal() {
                 createDialogModal({ id: "DialogModal-Error", inner: "無此設備操作手冊！<br>請上傳操作手冊！" })
                 return;
             }
-            this.ModalBs.show();
+            self.ModalBs.show();
             let listGroup = self.ModalJQ.find(".list-group");
             listGroup.empty();
             res.forEach(e => {
