@@ -127,8 +127,11 @@
                 //dg.column('AuditContent', '審核意見', 400),
             ]]
         })
-        dg.addEvent("audit", function (row, i) {
-            window.open(`${baseUrl}/Audit/${row.PRN}`, "_self")
+        dg.addEvent("read", function (row, i) {
+            window.open(`${baseUrl}/Read/${row.PRN}`, "_self")
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(`${baseUrl}/Edit/${row.PRN}`, "_self")
         })
     }
 

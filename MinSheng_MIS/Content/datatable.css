@@ -57,6 +57,10 @@ th.datatable-header,
     background: var(--datatable-body-bg);
 }
 
+.datatable-body.overflow-auto .datatable-table{
+    min-width: max-content;
+}
+
 .datatable-table {
     color: #3D3D3D;
     text-align: center;
@@ -279,10 +283,17 @@ th.datatable-header,
 
 @media (min-width: 992px) {
     .datatable {
+        max-width: 100%;
         width: 914px;
     }
 
+    .datatable-grid {
+        max-width: 914px;
+        width: auto;
+    }
+
     .datatable-fill {
+        max-width: 100%;
         width: 100%;
     }
 
@@ -309,5 +320,9 @@ th.datatable-header,
 
     .datatable-img-item {
         width: 97px;
+    }
+
+    .edit-area .datatable-grid{
+        max-width: 100%;
     }
 }

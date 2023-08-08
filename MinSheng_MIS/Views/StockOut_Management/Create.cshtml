@@ -8,26 +8,26 @@
 <section style="max-width: 855px;margin: auto;">
     <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
         <form class="form d-lg-contents">
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-100 w-xl-250px required">
                 <label for="SRSN">領用申請單號</label>
                 <input class="form-control" id="SRSN" name="SRSN" type="text" />
             </div>
 
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="StockOutName">出庫人員</label>
                 <select class="form-select" name="StockOutName" id="StockOutName" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
 
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="ReceiverName">領取人員</label>
                 <select class="form-select" name="ReceiverName" id="ReceiverName" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
 
-            <div class="form-group w-lg-100 ">
+            <div class="form-group w-lg-100">
                 <label for="StockOutContent">說明</label>
                 <input class="form-control" id="StockOutContent" name="StockOutContent" type="text" />
             </div>
@@ -36,14 +36,14 @@
 </section>
 
 <div class="datatable datatable mt-5">
-    <div class="datatable-body">
+    <div class="datatable-body overflow-auto">
         <table class="datatable-table" id="StockItemInfo"></table>
     </div>
 </div>
 
 <div class="edit-area mt-5">
     <div class="datatable datatable-fill">
-        <div class="datatable-body">
+        <div class="datatable-body overflow-auto">
             <table class="datatable-table" id="StockOutItem">
             </table>
         </div>

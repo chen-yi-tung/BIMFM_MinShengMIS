@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "警戒值設定";
 }
 
@@ -20,7 +19,8 @@
         </div>
         <div class="form-group d-lg-contents required">
             <label for="StockAmount">數量</label>
-            <input class="form-control" type="number" name="MinStockAmount" id="MinStockAmount" max="365" min="1" value="" required>
+            <input class="form-control" type="number" name="MinStockAmount" id="MinStockAmount" max="365" min="1"
+                value="" required>
         </div>
     </form>
 </div>
@@ -33,9 +33,9 @@
 <script src="/Scripts/datatable.js"></script>
 <script>
     @*var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
-    eqList = eqList.replace("\r", "").replace("\n", "");
-    var equipmentList = JSON.parse(eqList);
-    console.log(equipmentList);*@
+        eqList = eqList.replace("\r", "").replace("\n", "");
+        var equipmentList = JSON.parse(eqList);
+        console.log(equipmentList);*@
 
     const apiUrl = null;
 
@@ -50,9 +50,9 @@
         thead: true,
         columns: [
             { id: "SISN", title: "庫存編號" },
-            { id: "StockType", title: "品項"},
+            { id: "StockType", title: "品項" },
             { id: "StockName", title: "品名" },
-            { id: "Unit", title: "單位"},
+            { id: "Unit", title: "單位" },
         ]
     }
 
@@ -101,37 +101,37 @@
     }
 
     function save(e) {
-    let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
-    console.log("isValidity:", isValidity);
+        let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
+        console.log("isValidity:", isValidity);
 
-    let jsonData = {
-        EMISN: $("#EMISN").val(),
-        Unit: $("#Unit").val(),
-        Period: $("#Period").val(),
-        IsEnable: $("#IsEnable").val(),
-    }
+        let jsonData = {
+            EMISN: $("#EMISN").val(),
+            Unit: $("#Unit").val(),
+            Period: $("#Period").val(),
+            IsEnable: $("#IsEnable").val(),
+        }
 
-    console.log("jsonData:", jsonData);
-    console.log("A", JSON.stringify(jsonData))
-    if (!isValidity) { return }
-    e.preventDefault();
-    $.ajax({
-        url: '@Url.Action("EditBodySave", "EquipmentMaintainPeriod_Management")',
-        data: JSON.stringify(jsonData),
-        type: "post",
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-        success: onSuccess,
-        error: onError
-    })
-    function onSuccess(res) {
-        console.log(res);
-        window.open('@Url.Action("Management", "EquipmentMaintainPeriod_Management")',"_self")
+        console.log("jsonData:", jsonData);
+        console.log("A", JSON.stringify(jsonData))
+        if (!isValidity) { return }
+        e.preventDefault();
+        $.ajax({
+            url: '@Url.Action("EditBodySave", "EquipmentMaintainPeriod_Management")',
+            data: JSON.stringify(jsonData),
+            type: "post",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            console.log(res);
+            window.open('@Url.Action("Management", "EquipmentMaintainPeriod_Management")', "_self")
+        }
+        function onError(res) {
+            console.log(res);
+        }
     }
-    function onError(res) {
-        console.log(res);
-    }
-}
 
     window.onload = function () {
         readData(apiUrl);

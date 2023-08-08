@@ -10,8 +10,8 @@
     </div>
 </div>
 
-<div class="datatable datatable-fill mt-5">
-    <div class="datatable-body">
+<div class="datatable datatable-grid datatable-fill mt-5">
+    <div class="datatable-body overflow-auto">
         <table class="datatable-table" id="ExternalRFID">
         </table>
     </div>
@@ -76,17 +76,17 @@
     const GridOptions = {
         thead: true,
         columns: [
-            { id: "ExternalRFID", title: "RFID標籤(外)"},
-            { id: "StockType", title: "品項"},
-            { id: "StockName", title: "品名"},
-            { id: "MName", title: "廠商品名"},
+            { id: "ExternalRFID", title: "RFID標籤(外)" },
+            { id: "StockType", title: "品項" },
+            { id: "StockName", title: "品名" },
+            { id: "MName", title: "廠商品名" },
             //{ id: "Size", title: "尺寸"},
-            { id: "Brand", title: "廠牌"},
-            { id: "Model", title: "型號"},
-            { id: "Amount", title: "數量"},
-            { id: "Packaging", title: "單位"},
-            { id: "ExpiryDate", title: "到期日"},
-            { id: "Location", title: "擺放位置(貨架,倉庫,排,層,位)"}
+            { id: "Brand", title: "廠牌" },
+            { id: "Model", title: "型號" },
+            { id: "Amount", title: "數量" },
+            { id: "Packaging", title: "單位" },
+            { id: "ExpiryDate", title: "到期日" },
+            { id: "Location", title: "擺放位置(貨架,倉庫,排,層,位)" }
         ]
     }
 
