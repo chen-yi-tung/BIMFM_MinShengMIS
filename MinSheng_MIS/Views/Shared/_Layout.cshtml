@@ -41,12 +41,12 @@
 			</button>
 		</div>
 	</nav>
-	<div class="d-flex w-100 h-100">
+	<div class="d-flex w-100 h-100" style="padding-top: var(--navbar-height);">
 
 		<div class="sidebar">
 			<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
 				aria-labelledby="offcanvasNavbarLabel">
-				<div class="offcanvas-header">
+				<div class="offcanvas-header d-lg-none">
 					<a class="navbar-brand" href="/">
 						<img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
 					</a>
@@ -54,7 +54,7 @@
 						aria-label="Close"></button>
 				</div>
 				<div class="offcanvas-body">
-					<span class="navbar-brand-title d-xl-none">BIM智慧管理系統</span>
+					<span class="navbar-brand-title d-lg-none">BIM智慧管理系統</span>
 					<div class="navbar-end order-xl-last mt-3 mt-xl-0 d-lg-none">
 						<form id="logoutForm" method="post" action="/Home/LogOff">
 							@Html.AntiForgeryToken()

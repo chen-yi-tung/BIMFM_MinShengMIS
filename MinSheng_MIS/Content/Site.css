@@ -23,7 +23,7 @@ body {
 }
 
 .render-body {
-    padding: calc(var(--navbar-height) + 30px) 2rem 2rem;
+    padding: calc(var(--navbar-height)) 2rem 2rem;
     overflow: auto;
 }
 
