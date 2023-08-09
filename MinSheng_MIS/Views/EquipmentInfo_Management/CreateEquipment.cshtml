@@ -8,7 +8,7 @@
 <section style="max-width: 855px;margin: auto;">
     <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
         <form class="form d-lg-contents">
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="ASN">棟別</label>
                 <select class="form-select" name="ASN" id="ASN" required>
                     <option value="">請選擇</option>
@@ -16,7 +16,7 @@
                 <input class="form-control" id="Area" name="Area" type="text" hidden />
             </div>
 
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="FSN">樓層</label>
                 <select class="form-select" name="FSN" id="FSN" required>
                     <option value="">請選擇</option>
@@ -24,26 +24,26 @@
                 <input class="form-control" id="Floor" name="Floor" type="text" hidden />
             </div>
 
-            <div class="form-group w-lg-250px">
+            <div class="form-group w-lg-320px w-xl-250px">
                 <label for="RoomName">空間名稱</label>
                 <input class="form-control" id="RoomName" name="RoomName" type="text" maxlength="50" />
             </div>
 
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="System">系統別</label>
                 <select class="form-select" name="System" id="System" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
 
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="SubSystem">子系統別</label>
                 <select class="form-select" name="SubSystem" id="SubSystem" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
 
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="PropertyCode">國有財產編碼</label>
                 <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" required />
             </div>
@@ -52,23 +52,23 @@
 
     <div class="edit-area flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
         <form class="form d-lg-contents">
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="EName">設備名稱</label>
                 <input class="form-control" id="EName" name="EName" type="text" maxlength="50" required />
             </div>
 
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="Brand">廠牌</label>
                 <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" required />
             </div>
 
-            <div class="form-group w-lg-250px required">
+            <div class="form-group w-lg-320px w-xl-250px required">
                 <label for="Model">型號</label>
                 <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required />
             </div>
-            <div class="form-group mb-2">
+            <div class="form-group w-100 mb-2">
                 <label for="">設備使用手冊</label>
-                <div class="edit-button-area mt-1 flex-wrap">
+                <div class="edit-button-area mt-1 flex-wrap justify-content-start">
                     <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
                         <button type="button" class="btn btn-search w-lg-auto w-100" id="checkFilePath">檢查</button>
                         <label for="FilePath" type="button" class="btn btn-search w-lg-auto w-100 mt-0">上傳</label>
@@ -112,7 +112,7 @@
         <div class="w-100 position-relative">
             <div class="viewer3Dcontainer">
                 <div id="viewer3d" style="margin:0;">
-                    <div id="current-path-areafloor">AF</div>
+                    <div id="current-path-areafloor"></div>
                 </div>
                 <canvas id="PathCanvas"></canvas>
             </div>

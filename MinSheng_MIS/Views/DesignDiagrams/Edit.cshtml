@@ -32,15 +32,18 @@
             <label for="">設計圖說檔案</label>
             <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
                 <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                    <label for="DesignDiagrams" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">選擇檔案</label>
+                    <label for="DesignDiagrams" type="button"
+                        class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">選擇檔案</label>
                 </div>
-                <div id="ImgPathGroup" class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
+                <div id="ImgPathGroup"
+                    class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
                     <div id="ImgPathName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
                     <button type="button" class="btn-delete-item flex-shrink-0" id="ImgPathDelete"></button>
                 </div>
             </div>
             <input id="DesignDiagrams" name="DesignDiagrams" type="file" class="form-file-input">
-            <input type="checkbox" id="_checkImgPath" name="_checkImgPath" class="form-file-input" required oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的設計圖說' : '')">
+            <input type="checkbox" id="_checkImgPath" name="_checkImgPath" class="form-file-input" required
+                oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的設計圖說' : '')">
         </div>
 
     </form>
@@ -58,15 +61,12 @@
     // let apiUrl = null;
 
     const fakeData =
-        {
-            DDSN: "230502002",
-            ImgName: "機電A設計圖",
-            ImgType: "機電類",
-            DesignDiagrams: "圖說.jpg",
-
-        }
-
-
+    {
+        DDSN: "230502002",
+        ImgName: "機電A設計圖",
+        ImgType: "機電類",
+        DesignDiagrams: "圖說.jpg",
+    }
 
     $(async function () {
         $("#_checkImgPath").prop("checked", true);

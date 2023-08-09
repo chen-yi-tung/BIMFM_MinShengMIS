@@ -41,13 +41,20 @@ async function initializeViewer(callback) {
 
             viewer.impl.controls.handleKeyDown = () => {}
 
-            viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, ON_GEOMETRY_LOADED);
+            Promise.all([
+                new Promise((resolve) => { viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, resolve, { once: true }); }),
+                new Promise((resolve) => { viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, resolve, { once: true }); })
+            ]).then(() => {
+                console.log("%c載入模型完成，可以開始操作",'color: green; font-size: 18px; padding: 6px;');
+                ON_GEOMETRY_LOADED();
+            })
+            
             viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, ON_EXTENSION_LOADED);
         }
         function onError() { console.log("onError"); }
     });
 
-    function ON_GEOMETRY_LOADED(e) {
+    function ON_GEOMETRY_LOADED() {
         console.log("GEOMETRY_LOADED_EVENT");
         let eventName = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
         let extName = 'Autodesk.Viewing.Wireframes';

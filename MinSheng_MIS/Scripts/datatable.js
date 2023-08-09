@@ -3,6 +3,8 @@
  * @property {string} text - use to th
  * @property {string} value - use to td
  * @property {function (value):string?} formatter - use to formatter td data
+ * @property {boolean} image - set true if value is image
+ * @property {boolean} url - set true if value is url
  */
 
 
@@ -45,20 +47,34 @@ function createTableInner(data, sn) {
                 <td class="datatable-table-td" id="d-${e.value}">${e.formatter(data[e.value])}</td>
             </tr>`;
         }
+        else if (e.image == true){
+            html = `
+            <tr>
+                <td class="datatable-table-th">${e.text}</td>
+                <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putImage(data[e.value]) : nullString}</td>
+            </tr>`;
+        }
+        else if (e.url == true){
+            html = `
+            <tr>
+                <td class="datatable-table-th">${e.text}</td>
+                <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putFile(data[e.value]) : nullString}</td>
+            </tr>`;
+        }
         else {
             switch (e.value) {
                 case "ImgPath":
                     html = `
                         <tr>
                             <td class="datatable-table-th">${e.text}</td>
-                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putImage(data[e.value]) : nullString}</td>
+                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putImage(data[e.value]) : nullString}</td>
                         </tr>`;
                     break;
                 case "FilePath":
                     html = `
                         <tr>
                             <td class="datatable-table-th">${e.text}</td>
-                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] && data[e.value].length !== 0 ? putFile(data[e.value]) : nullString}</td>
+                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putFile(data[e.value]) : nullString}</td>
                         </tr>`;
                     break;
                 default:
@@ -74,16 +90,24 @@ function createTableInner(data, sn) {
     }).join("");
 
     function putImage(imgs) {
-        let div = `<div class="datatable-img-area">${imgs.map(img => {
-            return `<div class="datatable-img-item"><img src="${img}"/></div>`;
-        }).join("")}
-        </div>`;
-        return div;
+        if (Array.isArray(imgs) && imgs.length !== 0) {
+            return `<div class="datatable-img-area">${imgs.map(img => {
+                return `<div class="datatable-img-item"><img src="${img}"/></div>`;
+            }).join("")}</div>`
+        }
+        else if (typeof imgs === 'string' || imgs instanceof String) {
+            return `<div class="datatable-img-area"><div class="datatable-img-item"><img src="${imgs}"/></div></div>`;
+        }
     }
 
     function putFile(urls) {
-        let div = urls.map(url => { return `<a href="${url}" target="_blank">${url.split('/').at(-1)}</a>` }).join("<br>");
-        return div;
+        if (Array.isArray(urls) && urls.length !== 0) {
+            return urls.map(url => { return `<a href="${url}" target="_blank">${url.split('/').at(-1)}</a>` }).join("<br>");
+        }
+        else if (typeof urls === 'string' || urls instanceof String) {
+            return `<a href="${urls}" target="_blank">${urls.split('/').at(-1)}</a>`;
+        }
+        return nullString;
     }
 }
 

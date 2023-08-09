@@ -82,7 +82,7 @@ function DeviceFileModal() {
         this.validityAndShow(name);
     };
 
-    this.validityAndShow = (name)=>{
+    this.validityAndShow = (name) => {
         $("#_checkFilePath").prop('checked', true);
         $("#_checkFilePath")[0].setCustomValidity('');
         $("#FilePathName").text(name);
@@ -90,8 +90,8 @@ function DeviceFileModal() {
     }
 
     this.ModalJQ.one("hidden.bs.modal", () => {
-        self.ModalBs.dispose();
-        self.ModalJQ.remove();
+        //self.ModalBs.dispose();
+        self.ModalJQ.detach();
     })
 
     function listItem(data) {
@@ -107,7 +107,7 @@ function DeviceFileModal() {
     return this;
 }
 
-function initDrawerLocate() {
+function initDrawerLocate(callback = () => { }) {
     var view = document.querySelector("#PathCanvas");
     var app;
     app = ForgeDraw.init(view, viewer, function () {
@@ -127,7 +127,41 @@ function initDrawerLocate() {
 
             }
         });
+        callback();
     });
+}
+
+async function LocateClickEvent(callback = () => { }) {
+    if (!getAreaFloor()) return;
+
+    let data = {
+        ASN: $("#ASN").val(),
+        FSN: $("#FSN").val(),
+        PathTitle: ''
+    };
+
+    $.ajax({
+        url: "/InspectionPlan_Management/AddPlanPath",
+        data: JSON.stringify(data),
+        type: "POST",
+        dataType: "json",
+        contentType: "application/json;charset=utf-8",
+        success: (res) => {
+            console.log(res);
+            toggleLocateState(true);
+            viewerUrl = window.location.origin + res.PathSample.BIMPath;
+            if (viewer) {
+                viewer.loadModel(viewerUrl, { keepCurrentModels: false },
+                    (res) => { console.log(res) },
+                    (err) => { console.log(err) }
+                );
+            }
+            else {
+                initializeViewer(initDrawerLocate.bind(null, callback));
+            }
+        },
+        error: (err) => { console.log(err) }
+    })
 }
 
 function addButtonEvent() {
@@ -171,38 +205,8 @@ function addButtonEvent() {
     })
 
     $("#locate").click(function () {
-
-        if (!getAreaFloor()) return;
-
-        let data = {
-            ASN: $("#ASN").val(),
-            FSN: $("#FSN").val(),
-            PathTitle: ''
-        };
-
-        $.ajax({
-            url: "/InspectionPlan_Management/AddPlanPath",
-            data: JSON.stringify(data),
-            type: "POST",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: (res) => {
-                console.log(res);
-                toggleLocateState(true);
-                viewerUrl = window.location.origin + res.PathSample.BIMPath;
-                if (viewer) {
-                    viewer.loadModel(viewerUrl, { keepCurrentModels: false },
-                        (res) => { console.log(res) },
-                        (err) => { console.log(err) }
-                    );
-                }
-                else {
-                    initializeViewer(initDrawerLocate);
-                }
-            },
-            error: (err) => { console.log(err) }
-        })
-    })
+        LocateClickEvent();
+    });
 
     $("#submit").click(function () {
         save();

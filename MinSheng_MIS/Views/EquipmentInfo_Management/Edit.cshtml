@@ -1,7 +1,272 @@
-﻿
-@{
-    ViewBag.Title = "Edit";
+﻿@{
+    ViewBag.Title = "編輯設備";
 }
+<link rel="stylesheet" href="/Content/samplepath.css">
 
-<h2>Edit</h2>
+<h2>@ViewBag.Title</h2>
 
+<section style="max-width: 855px;margin: auto;">
+    <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
+        <form class="form d-lg-contents">
+            <div class="form-group w-lg-320px w-xl-250px required">
+                <label for="ASN">棟別</label>
+                <select class="form-select" name="ASN" id="ASN" required>
+                    <option value="">請選擇</option>
+                </select>
+                <input class="form-control" id="Area" name="Area" type="text" hidden />
+            </div>
+
+            <div class="form-group w-lg-320px w-xl-250px required">
+                <label for="FSN">樓層</label>
+                <select class="form-select" name="FSN" id="FSN" required>
+                    <option value="">請選擇</option>
+                </select>
+                <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+            </div>
+
+            <div class="form-group w-lg-320px w-xl-250px">
+                <label for="RoomName">空間名稱</label>
+                <input class="form-control" id="RoomName" name="RoomName" type="text" maxlength="50" />
+            </div>
+
+            <div class="form-group w-lg-320px w-xl-250px required">
+                <label for="System">系統別</label>
+                <select class="form-select" name="System" id="System" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+
+            <div class="form-group w-lg-320px w-xl-250px required">
+                <label for="SubSystem">子系統別</label>
+                <select class="form-select" name="SubSystem" id="SubSystem" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+
+            <div class="form-group w-lg-320px w-xl-250px required">
+                <label for="PropertyCode">國有財產編碼</label>
+                <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" required />
+            </div>
+        </form>
+    </div>
+
+    <div class="edit-area flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
+        <form class="form d-lg-contents">
+            <div class="form-group w-lg-320px w-xl-250px required">
+                <label for="EName">設備名稱</label>
+                <input class="form-control" id="EName" name="EName" type="text" maxlength="50" required />
+            </div>
+
+            <div class="form-group w-lg-320px w-xl-250px required">
+                <label for="Brand">廠牌</label>
+                <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" required />
+            </div>
+
+            <div class="form-group w-lg-320px w-xl-250px required">
+                <label for="Model">型號</label>
+                <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required />
+            </div>
+            <div class="form-group w-100 mb-2">
+                <label for="">設備使用手冊</label>
+                <div class="edit-button-area mt-1 flex-wrap justify-content-start">
+                    <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
+                        <button type="button" class="btn btn-search w-lg-auto w-100" id="checkFilePath">檢查</button>
+                        <label for="FilePath" type="button" class="btn btn-search w-lg-auto w-100 mt-0">上傳</label>
+                    </div>
+                    <div id="FilePathGroup"
+                        class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
+                        <div id="FilePathName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
+                        <button type="button" class="btn-delete-item flex-shrink-0" id="FilePathDelete"></button>
+                    </div>
+                </div>
+                <input id="FilePath" name="FilePath" type="file" class="form-file-input">
+                <input type="checkbox" id="_checkFilePath" name="_checkFilePath" class="form-file-input" required
+                    oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的使用手冊' : '')">
+            </div>
+        </form>
+    </div>
+
+
+    <div class="edit-area bg-transparent mt-2 align-items-start">
+        <div style="color: white;margin-top: 0.5rem;">設備定位</div>
+        <button type="button" class="btn btn-search w-lg-auto w-100 mt-3" id="locate">新增定位點</button>
+    </div>
+
+    <div class="edit-area mt-0 d-none" id="locate-draw-area">
+        <input type="text" id="current-path-asn" name="current-path-asn" hidden>
+        <input type="text" id="current-path-fsn" name="current-path-fsn" hidden>
+        <div class="w-100 mb-3 d-flex flex-wrap text-light" style="gap: 1rem;">
+
+            <div class="form-group d-inline-block readonly">
+                <label style="color: #C1DDFF;">X座標：</label>
+                <input class="form-control readonly d-inline-block w-auto pe-none" tabindex="-1" type="number"
+                    id="LocationX" name="LocationX" placeholder="0" required>
+            </div>
+            <div class="form-group d-inline-block readonly">
+                <label style="color: #C1DDFF;">Y座標：</label>
+                <input class="form-control readonly d-inline-block w-auto pe-none" tabindex="-1" type="number"
+                    id="LocationY" name="LocationY" placeholder="0" required>
+            </div>
+
+        </div>
+        <div class="w-100 position-relative">
+            <div class="viewer3Dcontainer">
+                <div id="viewer3d" style="margin:0;">
+                    <div id="current-path-areafloor"></div>
+                </div>
+                <canvas id="PathCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+
+<!-- Autodesk Forge -->
+<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
+    type="text/css">
+<script language="JavaScript"
+    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
+<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
+<!-- PIXI Draw -->
+<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
+<script src="/Scripts/ForgeDraw.js"></script>
+<!-- Event -->
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
+<script src="/Scripts/Forge/CreateDevice.js"></script>
+<script>
+    const ESN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
+    let apiUrl = null;
+
+    const fakeData = {
+        ASN: 1,
+        Area: "進流抽水站",
+        FSN: "1_1",
+        Floor: "B1F",
+        RoomName: "A",
+        System: "BT",
+        SubSystem: "BT-11",
+        PropertyCode: "A",
+        EName: "Test",
+        Brand: "111",
+        Model: "112",
+        FilePath: "/000007.gif",
+        LocationX: 0,
+        LocationY: 20
+    }
+
+    $(async function () {
+        await AreaFloorEvent();
+        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        const Systems = document.getElementById('System')
+        Systems.addEventListener("change", function () {
+            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        });
+        addButtonEvent();
+
+        readData(apiUrl);
+    });
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        async function onSuccess(res) {
+            console.log(res);
+
+            await pushSelect("FSN", `@Url.Action("Floor", "DropDownList")?ASN=${res.ASN}`);
+            await pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${res.System}`);
+
+            $("#Area").val(res.Area);
+            $("#Floor").val(res.Floor);
+
+            for (const [k, v] of Object.entries(res)) {
+                switch (k) {
+                    case "FilePath":
+                        $("#FilePathName").text(v);
+                        $("#FilePathGroup").removeClass('d-none');
+                        break;
+                    default:
+                        $(`#${k}`).val(v);
+                        break;
+                }
+            }
+
+            LocateClickEvent(() => {
+                let forgePos = new THREE.Vector3(res.LocationX, res.LocationY, 0);
+                let pos = viewer.worldToClient(forgePos);
+                let position = new PIXI.Point(pos.x, pos.y);
+                ForgeDraw.readLineData([{ position, forgePos }]);
+            });
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("todo save():", isValidity)
+        if (!isValidity) return;
+        if (!$("#LocationX").val() || !$("#LocationX").val()) return;
+
+        const fd = new FormData();
+
+        fd.append("ASN", $("#ASN").val())
+        fd.append("FSN", $("#FSN").val())
+        fd.append("RoomName", $("#RoomName").val())
+        fd.append("System", $("#System").val())
+        fd.append("SubSystem", $("#SubSystem").val())
+        fd.append("PropertyCode", $("#PropertyCode").val())
+        fd.append("EName", $("#EName").val())
+        fd.append("Brand", $("#Brand").val())
+        fd.append("Model", $("#Model").val())
+        fd.append("LocationX", $("#LocationX").val())
+        fd.append("LocationY", $("#LocationY").val())
+        fd.append("FilePath", deviceFileModal.file)
+
+        console.log(Object.fromEntries(fd.entries()));
+
+        if (!fd) return;
+
+        $.ajax({
+            url: "/EquipmentInfo_Management/Create",
+            data: fd,//JSON.stringify(fd),
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //dataType: "json",
+            //contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
+
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+        }
+    }
+</script>
