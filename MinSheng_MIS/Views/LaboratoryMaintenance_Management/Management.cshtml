@@ -1,7 +1,110 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "實驗室維護管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="EMType">維護類型</label>
+            <select class="form-select" name="EMType" id="EMType">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="EMTitle">標題</label>
+            <input class="form-control" id="EMTitle" name="EMTitle" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EMDescription">說明</label>
+            <input class="form-control" id="EMDescription" name="EMDescription" type="text" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="/Scripts/datagrid-management.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script>
+
+    var getGridJSON = '@Url.Action("MonthlyReport_Management", "MonthlyReport_Management")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+    const fakeData = [
+        {
+            EMSN: "1",
+            EMType: "人員維護",
+            EMTitle: "水質分析室緊急逃生路線",
+            EMDescription: "緊急逃生說明"
+        }
+    ]
+
+    $(async function () {
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
+            //url: getGridJSON,
+            data: fakeData,
+            method: 'POST',
+            queryParams: getQueryParams(),
+            idField: 'EMSN',
+            //sortName: 'EMSN',
+            frozenColumns: [[
+                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+            ]],
+            columns: [[
+                dg.hiddenColumn('EMSN'),
+                dg.column('EMType', '維護類型', 200),
+                dg.column('EMTitle', '標題', 400),
+                dg.column('EMDescription', '說明', 200),
+            ]]
+        })
+        dg.addEvent("detail", function (row, i) {
+            window.open(`${baseUrl}/Read/${row.EMSN}`, "_blank")
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(`${baseUrl}/Edit/${row.EMSN}`, "_self")
+        })
+
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $(".search-area form")[0].reset();
+        });
+
+        $("#search").click(function () {
+            DataGrid.datagrid('load', getQueryParams());
+        });
+
+        $("#create").click(function () {
+            window.open(`${baseUrl}/Create`, "_self");
+        });
+    }
+</script>
 

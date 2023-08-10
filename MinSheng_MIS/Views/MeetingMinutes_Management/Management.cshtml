@@ -1,7 +1,136 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "會議記錄管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增會議記錄</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="MMTitle">會議主題</label>
+            <input class="form-control" id="MMTitle" name="MMTitle" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="MMChairperson">會議主席</label>
+            <input class="form-control" id="MMChairperson" name="MMChairperson" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="MMVenue">會議地點</label>
+            <input class="form-control" id="MMVenue" name="MMVenue" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateFrom">日期(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateTo">日期(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="/Scripts/datagrid-management.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script>
+
+    var getGridJSON = '@Url.Action("MonthlyReport_Management", "MonthlyReport_Management")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+    const fakeData = [
+        {
+            MMSN: "1",
+            MMTitle: "水質分析",
+            MMDate: "2023/06/08",
+            MMTime: "10:00 - 12:00",
+            MMVenue: "會議室",
+            MMChairperson: "王大明",
+            MMAttendees: "王大明",
+            AttendanceStatus: "出:53 缺:0",
+            MMName: "王大明",
+            AgendaOrder: "1.OOXXOXO 2.OXX",
+            MMDescription: "ooxoxooxox"
+        }
+    ]
+
+    $(async function () {
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
+            //url: getGridJSON,
+            data: fakeData,
+            method: 'POST',
+            queryParams: getQueryParams(),
+            idField: 'MMSN',
+            //sortName: 'MMSN',
+            frozenColumns: [[
+                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
+            ]],
+            columns: [[
+                dg.hiddenColumn('MMSN'),
+                dg.column('MMTitle', '會議主題', 200),
+                dg.column('MMDate', '會議日期', 200),
+                dg.column('MMTime', '會議時間', 200),
+                dg.column('MMVenue', '會議地點', 200),
+                dg.column('MMChairperson', '會議主席', 110),
+                dg.column('MMAttendees', '與會者', 110),
+                dg.column('AttendanceStatus', '出席狀況', 200),
+                dg.column('MMName', '會議記錄負責人', 150),
+                dg.column('AgendaOrder', '議題順序', 200),
+                dg.column('MMDescription', '會議內容', 300)
+            ]]
+        })
+        dg.addEvent("detail", function (row, i) {
+            window.open(`${baseUrl}/Read/${row.MMSN}`, "_blank")
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(`${baseUrl}/Edit/${row.MMSN}`, "_self")
+        })
+        dg.addEvent("delete", function (row, i) {
+            window.open(`${baseUrl}/Delete/${row.MMSN}`, "_self")
+        })
+
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $(".search-area form")[0].reset();
+        });
+
+        $("#search").click(function () {
+            DataGrid.datagrid('load', getQueryParams());
+        });
+
+        $("#create").click(function () {
+            window.open(`${baseUrl}/Create`, "_self");
+        });
+    }
+</script>
 

@@ -1,7 +1,67 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "實驗室維護管理詳情";
 }
+<link rel="stylesheet" href="/Content/samplepath.css">
 
-<h2>Read</h2>
+<h2>@ViewBag.Title</h2>
+<div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
+    <div class="datatable-body">
+        <table class="datatable-table"></table>
+    </div>
+</div>
 
+<script src="/Scripts/datatable.js"></script>
+
+<script>
+    const MRSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
+    let apiUrl = null;
+
+    const fakeData = {
+        EMSN: "1",
+        EMType: "人員維護",
+        EMTitle: "水質分析室緊急逃生路線",
+        EMDescription: "緊急逃生說明",
+        FilePath: "/Files/a.pdf"
+    }
+
+    const sn = [
+        { text: "維護類型", value: "EMType" },
+        { text: "標題", value: "EMTitle" },
+        { text: "說明", value: "EMDescription" },
+        { text: "維護檔案", value: "FilePath" },
+    ]
+
+
+    $(function () {
+        addButtonEvent();
+        readData(apiUrl);
+    })
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        async function onSuccess(res) {
+            console.log(res);
+            $(".datatable-table").append(createTableInner(res, sn))
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+    }
+</script>

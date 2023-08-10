@@ -114,7 +114,7 @@
         }
         console.log(Object.fromEntries(form.entries()));
         $.ajax({
-            url: '@Url.Action("CreateMonthlyReport", "MonthlyReport_Management")',
+            url: '@Url.Action("EditMonthlyReport", "MonthlyReport_Management")',
             data: form,
             type: "POST",
             contentType: false,
