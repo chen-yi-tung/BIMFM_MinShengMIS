@@ -152,10 +152,10 @@
 								實驗室管理
 							</a>
 							<ul class="collapse" id="nav-collapse-6" data-bs-parent="#nav-collapse">
-								<li><a class="dropdown-item" href="#">採驗分析流程建立</a></li>
-								<li><a class="dropdown-item" href="#">實驗室標籤管理</a></li>
-								<li><a class="dropdown-item" href="#">實驗室維護管理</a></li>
-								<li><a class="dropdown-item" href="#">實驗數據管理</a></li>
+								<li><a class="dropdown-item" href="/InspectionAnalysisWorkflow/Management">採驗分析流程建立</a></li>
+								<li><a class="dropdown-item" href="/LaboratoryLabel_Management/Management">實驗室標籤管理</a></li>
+								<li><a class="dropdown-item" href="/LaboratoryMaintenance_Management/Management">實驗室維護管理</a></li>
+								<li><a class="dropdown-item" href="/ExperimentData_Management/Management">實驗數據管理</a></li>
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
@@ -169,8 +169,8 @@
 								文件管理
 							</a>
 							<ul class="collapse" id="nav-collapse-7" data-bs-parent="#nav-collapse">
-								<li><a class="dropdown-item" href="#">月報管理</a></li>
-								<li><a class="dropdown-item" href="#">會議紀錄管理</a></li>
+								<li><a class="dropdown-item" href="/MonthlyReport_Management/Management">月報管理</a></li>
+								<li><a class="dropdown-item" href="/MeetingMinutes_Management/Management">會議紀錄管理</a></li>
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
@@ -232,8 +232,18 @@
 				$("#nav-collapse-5").addClass('show');
 				break;
 			//實驗室管理
+			case 'InspectionAnalysisWorkflow':
+			case 'LaboratoryLabel_Management':
+			case 'LaboratoryMaintenance_Management':
+			case 'ExperimentData_Management':
+				$("#nav-collapse-6").addClass('show');
+				break;
 			//警示訊息管理
 			//文件管理
+			case 'MonthlyReport_Management':
+			case 'MeetingMinutes_Management':
+				$("#nav-collapse-7").addClass('show');
+				break;
 			//系統管理
 			case 'Account_Management':
 			case 'ManufacturerInfo_Management':
