@@ -1,7 +1,69 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "月報詳情";
 }
+<link rel="stylesheet" href="/Content/samplepath.css">
 
-<h2>Read</h2>
+<h2>@ViewBag.Title</h2>
+<div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
+    <div class="datatable-body">
+        <table class="datatable-table"></table>
+    </div>
+</div>
 
+<script src="/Scripts/datatable.js"></script>
+
+<script>
+    const MRSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
+    let apiUrl = null;
+
+    const fakeData = {
+        MRSN: "1",
+        MRTitle: "2023-5月月報",
+        MRName: "王大明",
+        MRDate: "2023/5/22",
+        MRDescription: "OOXX",
+        FilePath: "/Files/a.pdf"
+    }
+
+    const sn = [
+        { text: "月報名稱", value: "MRTitle" },
+        { text: "上傳者", value: "MRName" },
+        { text: "上傳日期", value: "MRDate" },
+        { text: "內容說明", value: "MRDescription" },
+        { text: "月報檔案", value: "FilePath" },
+    ]
+
+
+    $(function () {
+        addButtonEvent();
+        readData(apiUrl);
+    })
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        async function onSuccess(res) {
+            console.log(res);
+            $(".datatable-table").append(createTableInner(res, sn))
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+    }
+</script>

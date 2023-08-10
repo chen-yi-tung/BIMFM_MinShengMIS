@@ -1,7 +1,122 @@
-﻿
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = "新增月報";
 }
+<style>
+    @@media (min-width: 992px) {
+        .edit-area .form {
+            grid-template-columns: 250px 250px;
+        }
+    }
+</style>
+<h2>@ViewBag.Title</h2>
+<div class="edit-area edit-area-small">
+    <form class="form pt-0">
+        <div class="form-group required">
+            <label for="MRTitle">月報名稱</label>
+            <input class="form-control" id="MRTitle" name="MRTitle" type="text" required>
+        </div>
 
-<h2>Create</h2>
+        <div class="form-group">
+            <label for="MRName">上傳者</label>
+            <input class="form-control" id="MRName" name="MRName" type="text" readonly disabled>
+        </div>
+
+        <div class="form-group" style="grid-column: auto/span 2;">
+            <label for="MRDescription">內容說明</label>
+            <textarea class="form-control" name="MRDescription" id="MRDescription" rows="1" style="resize: vertical;"></textarea>
+        </div>
+
+        <div class="form-group g-col-2 required">
+            <label for="">月報檔案</label>
+
+            <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
+                <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
+                    <label for="MRFile" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
+                        選擇檔案
+                    </label>
+                </div>
+                <div id="MRFileGroup"
+                     class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
+                    <div id="MRFileName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
+                    <button type="button" class="btn-delete-item flex-shrink-0" id="MRFileDelete"></button>
+                </div>
+            </div>
+            <input id="MRFile" name="MRFile" type="file" class="form-file-input" required>
+        </div>
+
+    </form>
+</div>
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script>
+
+    $(async function () {
+        addButtonEvent();
+    });
+
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("isValidity():", isValidity)
+        if (!isValidity) return;
+
+        var form = new FormData();
+        form.append("MRTitle", document.getElementById("MRTitle").value);
+        form.append("MRName", document.getElementById("MRName").value);
+        form.append("MRDescription", document.getElementById("MRDescription").value);
+        var files = $("#MRFile").get(0).files;
+        if (files.length > 0) {
+            form.append("MRFile", files[0]);
+        }
+        console.log(Object.fromEntries(form.entries()));
+        $.ajax({
+            url: '@Url.Action("CreateMonthlyReport", "MonthlyReport_Management")',
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+        }
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+
+        $("#MRFile").change(function (e) {
+            console.log(this.files);
+            if (this.files && this.files.length !== 0) {
+                let file = this.files[0];
+                $("#MRFileName").text(file.name);
+                $("#MRFileGroup").removeClass('d-none');
+            }
+        })
+
+        $("#MRFileDelete").click(function () {
+            $("#MRFile").val('');
+            $("#MRFileName").text('');
+            $("#MRFileGroup").addClass('d-none');
+        })
+
+        $("#submit").click(function () {
+            save();
+        })
+    }
+</script>
 
