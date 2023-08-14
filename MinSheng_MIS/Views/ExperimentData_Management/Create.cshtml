@@ -105,6 +105,11 @@
         if (files.length > 0) {
             form.append("EDFile", files[0]);
         }
+        dataItems.calc().forEach((item, i) => {
+            form.append(`DatalItem_${i}_DataName`, item.DataName);
+            form.append(`DatalItem_${i}_Data`, item.Data);
+        })
+
         console.log(Object.fromEntries(form.entries()));
         $.ajax({
             url: '@Url.Action("CreateLaboratoryLabel", "LaboratoryLabel_Management")',

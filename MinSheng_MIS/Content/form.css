@@ -26,6 +26,16 @@
     opacity: 0;
 }
 
+.form-file-name,
+.form-file-name:hover{
+    text-decoration: none;
+    color: #fff;
+}
+
+.form-file-name[href]:hover{
+    color: #44BCC2;
+}
+
 /* management */
 .search-area {
     background: rgba(26, 80, 133, 0.75);
@@ -240,6 +250,12 @@
 
     .edit-img-area {
         gap: 3em;
+    }
+
+    .edit-area.edit-area-xsmall {
+        max-width: 576px;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 

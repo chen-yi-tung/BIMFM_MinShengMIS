@@ -105,31 +105,6 @@ function createTable(tableId, data, setting) {
     });
 };
 
-/**
- * 
- * @param {string} name 
- * @param {number} i 
- * @returns {string}
- */
-function itemId(name, i) {
-    if (String.prototype.padStart) {
-        return name + "_" + i.toString().padStart(3, "0");
-    }
-    else {
-        if (num < 10) {
-            return name + "_00" + i;
-        } else if (num < 100) {
-            return name + "_0" + i;
-        } else {
-            return name + "_" + i;
-        }
-    }
-}
-
-function filterIt(arr, objKey, searchKey) {
-    return arr.filter(obj => obj[objKey] == searchKey);
-}
-
 function getQueryParams(selector = null) {
     const searchParams = $(selector ?? "form")
         .find("input:not([type='button']):not([type='submit']):not([type='reset']), select")
@@ -140,6 +115,84 @@ function getQueryParams(selector = null) {
         total[c] = $(selector ? `${selector} #${c}` : `#${c}`).val()
         return total;
     }, {})
-    console.log("queryParams",queryParams)
+    console.log("queryParams", queryParams)
     return queryParams;
+}
+
+function FileUploader({
+    container,
+    className = "form-group required g-col-2",
+    label = "",
+    id = "File",
+    template = null,
+    required = true,
+    customValidity = false
+}) {
+    const temp = () => {
+        return `
+        <div class="${className}">
+            <label for="${id}">${label}</label>
+            <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
+                <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
+                    <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">選擇檔案</label>
+                </div>
+                <div id="FileGroup" class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
+                    <a id="FileName" class="form-file-name d-inline-block text-break me-2" style="margin: 0.375rem;"></a>
+                    <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
+                </div>
+            </div>
+            <input id="${id}" name="${id}" type="file" class="form-file-input" ${required && !customValidity ? 'required' : ''}>
+            ${required && customValidity ? `
+            <input type="checkbox" id="_checkFile" name="_checkFile" class="form-file-input" required
+                oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇檔案' : '')">
+            ` : ''}
+        </div>`
+    }
+    this.element = $(template ? template() : temp())
+    this.input = this.element.find("#File")
+
+    const fileName = this.element.find("#FileName")
+    const fileGroup = this.element.find("#FileGroup")
+    const deleteBtn = this.element.find("#FileDelete")
+
+    if (customValidity) {
+        this.check = this.element.find("#_checkFile")
+    }
+    this.hasFile = ()=>{
+        let input = this.input.get(0)
+        return input.files && input.files.length !== 0
+    }
+    this.setFile = (path) => {
+        fileName.text(path.split("/").at(-1));
+        fileName.attr("href", path);
+        fileGroup.removeClass('d-none');
+        this.check && this.check.prop("checked", true);
+    }
+    this.getFile = (index = 0) => {
+        return this.input.get(0).files[index];
+    }
+    this.init = () => {
+        $(container).after(this.element);
+        $(container).remove();
+        console.log(fileName)
+        this.input.change((e) => {
+            let input = this.input.get(0)
+            if (input.files && input.files.length !== 0) {
+                let file = this.getFile();
+                fileName.text(file.name);
+                fileName.removeAttr("href");
+                fileGroup.removeClass('d-none');
+                this.check && this.check.prop("checked", true);
+            }
+        })
+        deleteBtn.click(() => {
+            this.input.val('');
+            fileName.text('');
+            fileName.removeAttr("href");
+            fileGroup.addClass('d-none');
+            this.check && this.check.prop("checked", false);
+        })
+    }
+    this.init();
+    return this
 }
