@@ -11,6 +11,7 @@
 <h2>@ViewBag.Title</h2>
 <div class="edit-area edit-area-small">
     <form class="form pt-0">
+        <input type="text" id="LMSN" name="LMSN" hidden>
         <div class="form-group required">
             <label for="MType">維護類型</label>
             <select class="form-select" name="MType" id="MType" required>
@@ -61,7 +62,7 @@
 <script>
     const apiUrl = null;
     const fakeData = {
-        EMSN: "1",
+        LMSN: "1",
         MType: "人員維護",
         MTitle: "水質分析室緊急逃生路線",
         MContent: "緊急逃生說明",
@@ -106,6 +107,7 @@
         if (!isValidity) return;
 
         var form = new FormData();
+        form.append("LMSN", document.getElementById("LMSN").value);
         form.append("MType", document.getElementById("MType").value);
         form.append("MTitle", document.getElementById("MTitle").value);
         form.append("MContent", document.getElementById("MContent").value);

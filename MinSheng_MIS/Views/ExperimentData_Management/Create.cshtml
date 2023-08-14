@@ -1,7 +1,202 @@
-﻿
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = "新增實驗數據紀錄";
 }
 
-<h2>Create</h2>
+<style>
+    .edit-title {
+        font-size: 16px;
+        color: #fff;
+        margin-top: 12px;
+    }
 
+    .datatable-table td:has(.form-select, .form-control) {
+        padding: 0.5rem;
+    }
+
+    .datatable-table td:nth-child(2) {
+        background: #C6E1FF;
+    }
+
+    @@media (max-width: 576px) {
+        .datatable-table tr {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<h2>@ViewBag.Title</h2>
+
+
+<section style="max-width: 855px;margin: auto;">
+    <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-center" style="gap: 1rem 2rem;">
+        <form class="form d-lg-contents">
+            <div class="form-group w-lg-250px required">
+                <label for="EDate">實驗日期</label>
+                <input class="form-control" id="EDate" name="EDate" type="date" required />
+            </div>
+
+            <div class="form-group w-lg-250px required">
+                <label for="ExperimentType">實驗類型</label>
+                <select class="form-select" name="ExperimentType" id="ExperimentType" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+
+            <div class="form-group w-lg-532px required">
+                <label for="ExperimentName">實驗名稱</label>
+                <select class="form-select" name="ExperimentName" id="ExperimentName" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+
+            <div class="form-group w-lg-532px required">
+                <label for="File">實驗數據上傳</label>
+                <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
+                    <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
+                        <label for="File" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
+                            選擇檔案
+                        </label>
+                    </div>
+                    <div id="FileGroup"
+                        class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
+                        <div id="FileName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
+                        <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
+                    </div>
+                </div>
+                <input id="File" name="File" type="file" class="form-file-input" required>
+            </div>
+        </form>
+    </div>
+</section>
+<section class="w-lg-532px m-auto">
+    <h3 class="edit-title">數據填寫</h3>
+    <div class="edit-area flex-wrap flex-md-row justify-content-lg-center mt-2 p-4" style="gap: 1rem 2rem;">
+        <form class="form d-lg-contents p-0" id="item-list"></form>
+        <button class="btn btn-create-item w-100" id="create-item">+新增</button>
+    </div>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">新增</button>
+</div>
+
+<script src="/Scripts/tool.js"></script>
+<script src="/Scripts/datatable.js"></script>
+<script>
+
+    var dataItems = new DataItems()
+    $(async function () {
+        addButtonEvent();
+        dataItems.create()
+    });
+
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("isValidity():", isValidity)
+        if (!isValidity) return;
+
+        var form = new FormData();
+        form.append("EDate", document.getElementById("EDate").value);
+        form.append("ExperimentType", document.getElementById("ExperimentType").value);
+        form.append("ExperimentName", document.getElementById("ExperimentName").value);
+        var files = $("#File").get(0).files;
+        if (files.length > 0) {
+            form.append("EDFile", files[0]);
+        }
+        console.log(Object.fromEntries(form.entries()));
+        $.ajax({
+            url: '@Url.Action("CreateLaboratoryLabel", "LaboratoryLabel_Management")',
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+        }
+    }
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+
+        $("#submit").click(function () {
+            save();
+        })
+
+        $("#File").change(function (e) {
+            console.log(this.files);
+            if (this.files && this.files.length !== 0) {
+                let file = this.files[0];
+                $("#FileName").text(file.name);
+                $("#FileGroup").removeClass('d-none');
+            }
+        })
+
+        $("#FileDelete").click(function () {
+            $("#File").val('');
+            $("#FileName").text('');
+            $("#FileGroup").addClass('d-none');
+        })
+    }
+
+    function DataItems() {
+        this.list = $("#item-list")
+        this.count = 0
+        const temp_item = (count) => {
+            return `<div class="d-flex w-100 gap-3" id="item-${count}">
+                <input type="text" id="EDSN" name="EDSN" hidden>
+                <table class="datatable datatable-body datatable-table">
+                    <tbody>
+                        <tr>
+                            <td><input class="form-control" placeholder="數據標題" id="DataName" name="DataName" type="text" minlength="1" maxlength="200" required/></td>
+                            <td><input class="form-control" placeholder="數據" id="Data" name="Data" type="text" minlength="1" required/></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn-delete-item align-self-center flex-shrink-0" onclick="dataItems.delete(${count})"></button>
+            </div>`
+        }
+        this.create = (data = null) => {
+            let item = $(temp_item(this.count))
+            if (data) {
+                item.children("#EDSN").val(data.EDSN)
+                item.children("#DataName").val(data.DataName)
+                item.children("#Data").val(data.Data)
+            }
+            this.list.append(item)
+            this.count++
+        }
+        this.delete = (count) => {
+            $(`#item-${count}`).remove()
+        }
+        this.calc = () => {
+            return this.list.children().toArray().map((e) => {
+                return {
+                    EDSN: $(e).find("#EDSN").val(),
+                    DataName: $(e).find("#DataName").val(),
+                    Data: $(e).find("#Data").val()
+                }
+            })
+        }
+        this.init = () => {
+            $("#create-item").click(() => {
+                this.create()
+            })
+        }
+        this.init()
+        return this
+    }
+</script>

@@ -196,7 +196,7 @@
     <Compile Include="Controllers\ExperimentData_ManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InquiryPlan_ManagementController.cs" />
-    <Compile Include="Controllers\InspectionAnalysisWorkflowController.cs" />
+    <Compile Include="Controllers\TestingAndAnalysisWorkflowController.cs" />
     <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
     <Compile Include="Controllers\LaboratoryLabel_ManagementController.cs" />
     <Compile Include="Controllers\LaboratoryMaintenance_ManagementController.cs" />
@@ -216,6 +216,7 @@
     <Compile Include="Controllers\StockOut_ManagementController.cs" />
     <Compile Include="Controllers\Stock_ManagementController.cs" />
     <Compile Include="Controllers\StoresRequisition_ManagementController.cs" />
+    <Compile Include="Controllers\WarningMessage_ManagementController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -1773,10 +1774,10 @@
     <Content Include="Views\ExperimentData_Management\Create.cshtml" />
     <Content Include="Views\ExperimentData_Management\Edit.cshtml" />
     <Content Include="Views\ExperimentData_Management\Read.cshtml" />
-    <Content Include="Views\InspectionAnalysisWorkflow\Management.cshtml" />
-    <Content Include="Views\InspectionAnalysisWorkflow\Create.cshtml" />
-    <Content Include="Views\InspectionAnalysisWorkflow\Edit.cshtml" />
-    <Content Include="Views\InspectionAnalysisWorkflow\Read.cshtml" />
+    <Content Include="Views\TestingAndAnalysisWorkflow\Management.cshtml" />
+    <Content Include="Views\TestingAndAnalysisWorkflow\Create.cshtml" />
+    <Content Include="Views\TestingAndAnalysisWorkflow\Edit.cshtml" />
+    <Content Include="Views\TestingAndAnalysisWorkflow\Read.cshtml" />
     <Content Include="Views\MonthlyReport_Management\Management.cshtml" />
     <Content Include="Views\MonthlyReport_Management\Create.cshtml" />
     <Content Include="Views\MonthlyReport_Management\Edit.cshtml" />
@@ -1787,6 +1788,7 @@
     <Content Include="Views\MeetingMinutes_Management\Edit.cshtml" />
     <Content Include="Views\MeetingMinutes_Management\Read.cshtml" />
     <Content Include="Views\MeetingMinutes_Management\Delete.cshtml" />
+    <Content Include="Views\WarningMessage_Management\Management.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -89,6 +89,11 @@
         form.append("ExperimentType", document.getElementById("ExperimentType").value);
         form.append("ExperimentName", document.getElementById("ExperimentName").value);
 
+        labelItems.calc().forEach((item, i) => {
+            form.append(`LabelItem_${i}_ELISN`, item.ELISN);
+            form.append(`LabelItem_${i}_LabelName`, item.LabelName);
+        })
+
         console.log(Object.fromEntries(form.entries()));
         $.ajax({
             url: '@Url.Action("CreateLaboratoryLabel", "LaboratoryLabel_Management")',
@@ -128,7 +133,7 @@
             return `<div class="d-flex w-100 gap-3" id="item-${count}">
                 <input id="ELISN" name="ELISN" hidden>
                 <input class="form-control" id="LabelName" name="LabelName" type="text" minlength="1" maxlength="200" required/>
-                <button class="btn-delete-item align-self-center" onclick="labelItems.delete(${count})"></button>
+                <button class="btn-delete-item align-self-center flex-shrink-0" onclick="labelItems.delete(${count})"></button>
             </div>`
         }
         this.create = (data = null) => {
@@ -145,7 +150,10 @@
         }
         this.calc = () => {
             return this.list.children().toArray().map((e) => {
-                return $(e).children("#LabelName").val()
+                return {
+                    ELISN: $(e).children("#ELISN").val(),
+                    LabelName: $(e).children("#LabelName").val()
+                }
             })
         }
         this.init = () => {

@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
 {
-	public class InspectionAnalysisWorkflowController : Controller
+	public class TestingAndAnalysisWorkflowController : Controller
 	{
-		// GET: InspectionAnalysisWorkflow
+		// GET: TestingAndAnalysisWorkflow
 		#region 採驗分析流程建立
 		public ActionResult Management()
 		{
