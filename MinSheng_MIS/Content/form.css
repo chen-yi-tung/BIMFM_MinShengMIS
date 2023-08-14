@@ -301,7 +301,7 @@
     }
 
     .edit-area.edit-area-middle {
-        width: 1060px;
+        max-width: 1060px;
         margin-left: auto;
         margin-right: auto;
     }
