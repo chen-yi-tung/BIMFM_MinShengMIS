@@ -12,20 +12,20 @@
 <div class="edit-area edit-area-small">
     <form class="form pt-0">
         <div class="form-group required">
-            <label for="EMType">維護類型</label>
-            <select class="form-select" name="EMType" id="EMType" required>
+            <label for="MType">維護類型</label>
+            <select class="form-select" name="MType" id="MType" required>
                 <option value="">請選擇</option>
             </select>
         </div>
 
         <div class="form-group required">
-            <label for="EMTitle">標題</label>
-            <input class="form-control" id="EMTitle" name="EMTitle" type="text" required>
+            <label for="MTitle">標題</label>
+            <input class="form-control" id="MTitle" name="MTitle" type="text" required>
         </div>
 
         <div class="form-group" style="grid-column: auto/span 2;">
-            <label for="EMDescription">說明</label>
-            <textarea class="form-control" name="EMDescription" id="EMDescription" rows="1" style="resize: vertical;"></textarea>
+            <label for="MContent">說明</label>
+            <textarea class="form-control" name="MContent" id="MContent" rows="1" style="resize: vertical;"></textarea>
         </div>
 
         <div class="form-group g-col-2 required">
@@ -66,12 +66,12 @@
         if (!isValidity) return;
 
         var form = new FormData();
-        form.append("EMType", document.getElementById("EMType").value);
-        form.append("EMTitle", document.getElementById("EMTitle").value);
-        form.append("EMDescription", document.getElementById("EMDescription").value);
+        form.append("MType", document.getElementById("MType").value);
+        form.append("MTitle", document.getElementById("MTitle").value);
+        form.append("MContent", document.getElementById("MContent").value);
         var files = $("#File").get(0).files;
         if (files.length > 0) {
-            form.append("File", files[0]);
+            form.append("MFile", files[0]);
         }
         console.log(Object.fromEntries(form.entries()));
         $.ajax({
