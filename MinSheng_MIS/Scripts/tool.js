@@ -137,7 +137,7 @@ function FileUploader({
                     <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">選擇檔案</label>
                 </div>
                 <div id="FileGroup" class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
-                    <a id="FileName" class="form-file-name d-inline-block text-break me-2" style="margin: 0.375rem;"></a>
+                    <a id="FileName" class="form-file-name d-inline-block text-break me-2" style="margin: 0.375rem;" target="_blank"></a>
                     <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
                 </div>
             </div>

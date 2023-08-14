@@ -28,25 +28,7 @@
                 style="resize: vertical;"></textarea>
         </div>
 
-        <div class="form-group g-col-2 required">
-            <label for="File">月報檔案</label>
-
-            <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
-                <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                    <label for="File" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
-                        選擇檔案
-                    </label>
-                </div>
-                <div id="FileGroup"
-                    class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
-                    <div id="FileName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
-                    <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
-                </div>
-            </div>
-            <input id="File" name="File" type="file" class="form-file-input">
-            <input type="checkbox" id="_checkFile" name="_checkFile" class="form-file-input" required
-                oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇檔案' : '')">
-        </div>
+        <div id="FileUploader"></div>
 
     </form>
 </div>
@@ -67,9 +49,17 @@
         YearMonth: "2023-05",
         FilePath: "/Files/a.pdf"
     }
-
+    
+    var fileUploader
     $(async function () {
         addButtonEvent();
+        fileUploader = new FileUploader({
+            container: "#FileUploader",
+            className: "form-group g-col-2 required",
+            label: "月報檔案",
+            id: "File",
+            customValidity: true
+        })
         readData(apiUrl);
     });
 
@@ -91,9 +81,7 @@
             for (const [k, v] of Object.entries(res)) {
                 $("#" + k).val(v);
             }
-            $("#FileName").text(res.FilePath.split("/").at(-1));
-            $("#FileGroup").removeClass('d-none');
-            $("#_checkFile").prop("checked", true);
+            fileUploader.setFile(res.FilePath)
         }
         function onError(res) {
             console.log(res);
@@ -109,9 +97,8 @@
         fd.append("ReportTitle", document.getElementById("ReportTitle").value);
         fd.append("ReportContent", document.getElementById("ReportContent").value);
         fd.append("YearMonth", document.getElementById("YearMonth").value);
-        var files = $("#File").get(0).files;
-        if (files.length > 0) {
-            fd.append("ReportFile", files[0]);
+        if (fileUploader.hasFile()) {
+            form.append("ReportFile", fileUploader.getFile());
         }
         console.log(Object.fromEntries(fd.entries()));
         $.ajax({
@@ -139,23 +126,6 @@
     function addButtonEvent() {
         $("#back").click(function () {
             history.back();
-        })
-
-        $("#File").change(function (e) {
-            console.log(this.files);
-            if (this.files && this.files.length !== 0) {
-                let file = this.files[0];
-                $("#FileName").text(file.name);
-                $("#FileGroup").removeClass('d-none');
-                $("#_checkFile").prop("checked", true);
-            }
-        })
-
-        $("#FileDelete").click(function () {
-            $("#File").val('');
-            $("#FileName").text('');
-            $("#FileGroup").addClass('d-none');
-            $("#_checkFile").prop("checked", false);
         })
 
         $("#submit").click(function () {
