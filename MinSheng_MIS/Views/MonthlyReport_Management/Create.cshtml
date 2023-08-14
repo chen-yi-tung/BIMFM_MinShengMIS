@@ -12,36 +12,36 @@
 <div class="edit-area edit-area-small">
     <form class="form pt-0">
         <div class="form-group required">
-            <label for="MRTitle">月報名稱</label>
-            <input class="form-control" id="MRTitle" name="MRTitle" type="text" required>
+            <label for="ReportTitle">月報名稱</label>
+            <input class="form-control" id="ReportTitle" name="ReportTitle" type="text" required>
         </div>
 
-        <div class="form-group">
-            <label for="MRName">上傳者</label>
-            <input class="form-control" id="MRName" name="MRName" type="text" readonly disabled>
+        <div class="form-group required">
+            <label for="YearMonth">年月份</label>
+            <input class="form-control" id="YearMonth" name="YearMonth" type="month" required>
         </div>
 
         <div class="form-group" style="grid-column: auto/span 2;">
-            <label for="MRDescription">內容說明</label>
-            <textarea class="form-control" name="MRDescription" id="MRDescription" rows="1" style="resize: vertical;"></textarea>
+            <label for="ReportContent">內容說明</label>
+            <textarea class="form-control" name="ReportContent" id="ReportContent" rows="1" style="resize: vertical;"></textarea>
         </div>
 
         <div class="form-group g-col-2 required">
-            <label for="">月報檔案</label>
+            <label for="File">月報檔案</label>
 
             <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
                 <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                    <label for="MRFile" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
+                    <label for="File" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
                         選擇檔案
                     </label>
                 </div>
-                <div id="MRFileGroup"
+                <div id="FileGroup"
                      class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
-                    <div id="MRFileName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
-                    <button type="button" class="btn-delete-item flex-shrink-0" id="MRFileDelete"></button>
+                    <div id="FileName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
+                    <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
                 </div>
             </div>
-            <input id="MRFile" name="MRFile" type="file" class="form-file-input" required>
+            <input id="File" name="File" type="file" class="form-file-input" required>
         </div>
 
     </form>
@@ -63,18 +63,18 @@
         console.log("isValidity():", isValidity)
         if (!isValidity) return;
 
-        var form = new FormData();
-        form.append("MRTitle", document.getElementById("MRTitle").value);
-        form.append("MRName", document.getElementById("MRName").value);
-        form.append("MRDescription", document.getElementById("MRDescription").value);
-        var files = $("#MRFile").get(0).files;
+        var fd = new FormData();
+        fd.append("ReportTitle", document.getElementById("ReportTitle").value);
+        fd.append("ReportContent", document.getElementById("ReportContent").value);
+        fd.append("YearMonth", document.getElementById("YearMonth").value);
+        var files = $("#File").get(0).files;
         if (files.length > 0) {
-            form.append("MRFile", files[0]);
+            fd.append("ReportFile", files[0]);
         }
-        console.log(Object.fromEntries(form.entries()));
+        console.log(Object.fromEntries(fd.entries()));
         $.ajax({
             url: '@Url.Action("CreateMonthlyReport", "MonthlyReport_Management")',
-            data: form,
+            data: fd,
             type: "POST",
             contentType: false,
             processData: false,
@@ -99,19 +99,19 @@
             history.back();
         })
 
-        $("#MRFile").change(function (e) {
+        $("#File").change(function (e) {
             console.log(this.files);
             if (this.files && this.files.length !== 0) {
                 let file = this.files[0];
-                $("#MRFileName").text(file.name);
-                $("#MRFileGroup").removeClass('d-none');
+                $("#FileName").text(file.name);
+                $("#FileGroup").removeClass('d-none');
             }
         })
 
-        $("#MRFileDelete").click(function () {
-            $("#MRFile").val('');
-            $("#MRFileName").text('');
-            $("#MRFileGroup").addClass('d-none');
+        $("#FileDelete").click(function () {
+            $("#File").val('');
+            $("#FileName").text('');
+            $("#FileGroup").addClass('d-none');
         })
 
         $("#submit").click(function () {

@@ -1,7 +1,170 @@
-﻿
-@{
-    ViewBag.Title = "Management";
+﻿@{
+    ViewBag.Title = "警示訊息管理";
 }
 
-<h2>Management</h2>
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+
+<h2>@ViewBag.Title</h2>
+
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="WMType">事件等級</label>
+            <select class="form-select" name="WMType" id="WMType">
+                <option value="">請選擇</option>
+                <option value="一般">一般</option>
+                <option value="緊急">緊急</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="WMState">事件處理狀況</label>
+            <select class="form-select" name="WMState" id="WMState">
+                <option value="">請選擇</option>
+                <option value="未處理">未處理</option>
+                <option value="處理中">處理中</option>
+                <option value="已處理">已處理</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN">
+                <option value="">請選擇</option>
+            </select>
+            <input id="Area" name="Area" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN">
+                <option value="">請選擇</option>
+            </select>
+            <input id="Floor" name="Floor" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="Message">事件內容</label>
+            <input class="form-control" id="Message" name="Message" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="PSN">巡檢計畫編碼</label>
+            <input class="form-control" id="PSN" name="PSN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="MyName">人員姓名</label>
+            <input class="form-control" id="MyName" name="MyName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateFrom">發生時間(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="datetime-local" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateTo">發生時間(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="datetime-local" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+<script src="/Scripts/datagrid-management.js"></script>
+<script src="/Scripts/tool.js"></script>
+<script src="/Scripts/AreaFloorEvent.js"></script>
+<script>
+
+    var getGridJSON = '@Url.Action("MonthlyReport_Management", "MonthlyReport_Management")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+    const fakeData = [
+        {
+            WMSN: "230101001",
+            PMSN: "1",
+            WMType: "一般",
+            WMState: "已處理",
+            TimeofOccurrence: "2023-01-01T06:30:27",
+            Location: "進流抽水站 B2F",
+            Message: "廁所水龍頭未關閉",
+            PSN: "P23050301",
+            MyName: "王八蛋"
+        }
+    ]
+
+    $(async function () {
+        await AreaFloorEvent();
+        
+        if (window.location.search) {
+            let params = new URL(document.location).searchParams;
+            params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
+        }
+
+        Initialize_DataGrid(getGridJSON);
+        addSearchAreaClickEvent();
+    });
+
+    function Initialize_DataGrid(getGridJSON) {
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
+            //url: getGridJSON,
+            data: fakeData,
+            method: 'POST',
+            queryParams: getQueryParams(),
+            idField: 'IAWSN',
+            //sortName: 'IAWSN',
+            frozenColumns: [[
+                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                dg.frozenColumn('_locate', (v, row, i) => dg.eventButton(i, "定位", "locate"))
+            ]],
+            columns: [[
+                dg.hiddenColumn('WMSN'),
+                dg.hiddenColumn('PMSN'),
+                dg.column('WMType', '事件等級', 120),
+                dg.column('WMState', '事件處理狀況', 150),
+                dg.column('TimeofOccurrence', '發生時間', 200),
+                dg.column('Location', '發生地點', 250),
+                dg.column('Message', '事件內容', 250),
+                dg.column('PSN', '巡檢計畫編碼', 150),
+                dg.column('MyName', '人員姓名', 150),
+            ]]
+        })
+        dg.addEvent("detail", function (row, i) {
+            window.open(`${baseUrl}/Read/${row.IAWSN}`, "_blank")
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(`${baseUrl}/Edit/${row.IAWSN}`, "_self")
+        })
+        dg.addEvent("locate", function (row, i) {
+            //window.open(`${baseUrl}/Edit/${row.IAWSN}`, "_self")
+        })
+
+    }
+
+    //search area onClick Function
+    function addSearchAreaClickEvent() {
+        $("#clear").click(function () {
+            $(".search-area form")[0].reset();
+        });
+
+        $("#search").click(function () {
+            DataGrid.datagrid('load', getQueryParams());
+        });
+    }
+</script>
 

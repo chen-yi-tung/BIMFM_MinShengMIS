@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "警示訊息詳情";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="MaintainItemInfo"></table>
+    </div>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-search" id="SearchPSN">本巡檢計畫其他警示訊息</button>
+    <button class="btn btn-back" id="ReadPSN">查看巡檢計畫</button>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+
+    const apiUrl = null;
+
+    const SerializedName = [
+        { text: "事件等級", value: "WMType" },
+        { text: "事件處理狀況", value: "WMState" },
+        { text: "發生時間", value: "TimeofOccurrence" },
+        { text: "發生地點", value: "Location" },
+        { text: "事件內容", value: "Message" },
+        { text: "巡檢計畫編碼", value: "PSN" },
+        { text: "人員姓名", value: "MyName" },
+    ]
+
+    const fakeData = {
+        WMSN: "230101001",
+        PMSN: "1",
+        WMType: "一般",
+        WMState: "已處理",
+        TimeofOccurrence: "2023-01-01T06:30:27",
+        Location: "進流抽水站 B2F",
+        Message: "廁所水龍頭未關閉",
+        PSN: "P23050301",
+        MyName: "王八蛋"
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
+            $("#ReadPSN").click(() => {
+                window.open(`/InspectionPlan_Management/Read/${res.PSN}`, "_blank")
+            })
+            $("#SearchPSN").click(() => {
+                window.open(`/WarningMessage_Management/Management?PSN=${res.PSN}`, "_blank")
+            })
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+    }
+</script>
+

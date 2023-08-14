@@ -14,23 +14,23 @@
     <form class="form" method="post" action="">
 
         <div class="form-group">
-            <label for="MRTitle">月報名稱</label>
-            <input class="form-control" id="MRTitle" name="MRTitle" type="text" />
+            <label for="ReportTitle">月報名稱</label>
+            <input class="form-control" id="ReportTitle" name="ReportTitle" type="text" />
         </div>
 
         <div class="form-group">
-            <label for="MRName">上傳者</label>
-            <input class="form-control" id="MRName" name="MRName" type="text" />
+            <label for="UploadUserName">上傳者</label>
+            <input class="form-control" id="UploadUserName" name="UploadUserName" type="text" />
         </div>
 
         <div class="form-group">
-            <label for="DateFrom">日期(起)</label>
-            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+            <label for="DateFrom">年月份(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="month" />
         </div>
 
         <div class="form-group">
-            <label for="DateTo">日期(迄)</label>
-            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+            <label for="DateTo">年月份(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="month" />
         </div>
 
         <div class="button-group">
@@ -55,10 +55,11 @@
     const fakeData = [
         {
             MRSN: "1",
-            MRTitle: "2023-5月月報",
-            MRName: "王大明",
-            MRDate: "2023/5/22",
-            MRDescription: "OOXX",
+            ReportTitle: "2023-5月月報",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023/5/22",
+            ReportContent: "OOXX",
+            YearMonth: "2023-05",
         }
     ]
 
@@ -83,10 +84,11 @@
             ]],
             columns: [[
                 dg.hiddenColumn('MRSN'),
-                dg.column('MRTitle', '月報名稱', 200),
-                dg.column('MRName', '上傳者', 110),
-                dg.column('MRDate', '上傳日期', 200),
-                dg.column('MRDescription', '內容說明', 300)
+                dg.column('YearMonth', '年月份', 150),
+                dg.column('ReportTitle', '月報名稱', 200),
+                dg.column('UploadUserName', '上傳者', 110),
+                dg.column('UploadDateTime', '上傳日期', 200),
+                dg.column('ReportContent', '內容說明', 300)
             ]]
         })
         dg.addEvent("detail", function (row, i) {

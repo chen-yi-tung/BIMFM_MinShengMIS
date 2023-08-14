@@ -13,5 +13,13 @@ namespace MinSheng_MIS.Controllers
 		{
 			return View();
 		}
+		public ActionResult Edit()
+		{
+			return View();
+		}
+		public ActionResult Read()
+		{
+			return View();
+		}
 	}
 }

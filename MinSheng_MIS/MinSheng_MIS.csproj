@@ -1789,6 +1789,8 @@
     <Content Include="Views\MeetingMinutes_Management\Read.cshtml" />
     <Content Include="Views\MeetingMinutes_Management\Delete.cshtml" />
     <Content Include="Views\WarningMessage_Management\Management.cshtml" />
+    <Content Include="Views\WarningMessage_Management\Edit.cshtml" />
+    <Content Include="Views\WarningMessage_Management\Read.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
