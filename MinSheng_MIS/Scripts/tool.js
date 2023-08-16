@@ -126,26 +126,29 @@ function FileUploader({
     id = "File",
     template = null,
     required = true,
-    customValidity = false
+    customValidity = false,
+    customValidityText = '請選擇檔案'
 }) {
     const temp = () => {
         return `
         <div class="${className}">
             <label for="${id}">${label}</label>
-            <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
+            <div class="edit-button-area position-relative justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
                 <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                    <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">選擇檔案</label>
+                    <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
+                        <span>選擇檔案</span>
+                        <input id="${id}" name="${id}" type="file" class="form-file-input" ${required && !customValidity ? 'required' : ''}>
+                        ${required && customValidity ? `
+                        <input type="checkbox" id="_checkFile" name="_checkFile" class="form-file-input" required
+                            oninvalid="this.setCustomValidity(this.validity.valueMissing ? ${customValidityText} : '')">
+                        ` : ''}
+                    </label>
                 </div>
                 <div id="FileGroup" class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
                     <a id="FileName" class="form-file-name d-inline-block text-break me-2" style="margin: 0.375rem;" target="_blank"></a>
                     <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
                 </div>
             </div>
-            <input id="${id}" name="${id}" type="file" class="form-file-input" ${required && !customValidity ? 'required' : ''}>
-            ${required && customValidity ? `
-            <input type="checkbox" id="_checkFile" name="_checkFile" class="form-file-input" required
-                oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇檔案' : '')">
-            ` : ''}
         </div>`
     }
     this.element = $(template ? template() : temp())
