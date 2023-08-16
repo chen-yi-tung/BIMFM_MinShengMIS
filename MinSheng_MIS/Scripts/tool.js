@@ -119,81 +119,159 @@ function getQueryParams(selector = null) {
     return queryParams;
 }
 
+function getAllParams(selector = null) {
+    return $(selector ?? "form")
+        .find("input:not([type='button']):not([type='submit']):not([type='reset']):not([name^='_']), select")
+        .toArray();
+}
+
 function FileUploader({
     container,
     className = "form-group required g-col-2",
     label = "",
     id = "File",
-    template = null,
+    accept = [".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".csv"],
     required = true,
-    customValidity = false,
+    multiple = false,
+    customValidity = true,
     customValidityText = '請選擇檔案'
 }) {
     const temp = () => {
         return `
         <div class="${className}">
             <label for="${id}">${label}</label>
-            <div class="edit-button-area position-relative justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
+            <div class="edit-button-area position-relative justify-content-start align-items-start mt-1 flex-wrap flex-lg-nowrap">
                 <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                    <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
+                    <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0 align-self-start">
                         <span>選擇檔案</span>
-                        <input id="${id}" name="${id}" type="file" class="form-file-input" ${required && !customValidity ? 'required' : ''}>
+                        <input id="${id}" name="${id}" type="file" class="form-file-input" 
+                        ${accept && Array.isArray(accept) && accept.length > 0 ? `accept="${accept.join(",")}"` : ''}
+                        ${required && !customValidity ? 'required' : ''}
+                        ${multiple ? 'multiple' : ''}>
                         ${required && customValidity ? `
                         <input type="checkbox" id="_checkFile" name="_checkFile" class="form-file-input" required
-                            oninvalid="this.setCustomValidity(this.validity.valueMissing ? ${customValidityText} : '')">
+                            oninvalid="this.setCustomValidity(this.validity.valueMissing ? '${customValidityText}' : '')">
                         ` : ''}
                     </label>
                 </div>
-                <div id="FileGroup" class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
-                    <a id="FileName" class="form-file-name d-inline-block text-break me-2" style="margin: 0.375rem;" target="_blank"></a>
-                    <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
-                </div>
+                <div id="FileGroup" class="form-file-list"></div>
             </div>
         </div>`
     }
-    this.element = $(template ? template() : temp())
+    const temp_item = (name) => {
+        return `<div class="form-file-item" data-file-name="${name}">
+                    <a id="FileName" class="form-file-name" target="_blank"></a>
+                    <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
+                </div>`
+    }
+    this.element = $(temp())
     this.input = this.element.find("#File")
+    this.items = []
 
-    const fileName = this.element.find("#FileName")
-    const fileGroup = this.element.find("#FileGroup")
-    const deleteBtn = this.element.find("#FileDelete")
+    const list = this.element.find(".form-file-list")
 
     if (customValidity) {
         this.check = this.element.find("#_checkFile")
     }
-    this.hasFile = ()=>{
-        let input = this.input.get(0)
-        return input.files && input.files.length !== 0
+    this.hasFile = () => {
+        return this.items.length !== 0
     }
     this.setFile = (path) => {
+        if (!multiple) { this.clearAllFile() }
+        let container = $(temp_item())
+        list.append(container);
+        this.items.push({ container, file })
+
+        let fileName = container.find("#FileName")
         fileName.text(path.split("/").at(-1));
         fileName.attr("href", path);
-        fileGroup.removeClass('d-none');
+
         this.check && this.check.prop("checked", true);
     }
     this.getFile = (index = 0) => {
-        return this.input.get(0).files[index];
+        return this.items[index].file;
+    }
+    this.getAllFile = () => {
+        return this.items.map((item) => item.file)
+    }
+    this.getFileCount = () => {
+        return this.items.length
+    }
+    this.clearAllFile = () => {
+        this.items.forEach((item) => { item.container.remove() })
+        this.items.length = 0
+    }
+    this.checkExtension = (index = null) => {
+        if (index == null) {
+            return this.items.map((item) => {
+                let c = check(item)
+                console.log(item.file.name, c)
+                return c
+            })
+        }
+        else {
+            return check(this.items[index])[0]
+        }
+
+        function check({ file }) {
+            const dotIndex = file.name.lastIndexOf('.');
+            let ext = dotIndex ? file.name.slice(dotIndex).toLowerCase() : '';
+            for (const a of accept) {
+                if (a[0] === ".") {
+                    if (a.toLowerCase() === ext) {
+                        console.log(a + ":", ext)
+                        return true;
+                    }
+                }
+                else if (file.type.match(a)) {
+                    console.log(a + ":", file.type.match(a))
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+    this.checkAllExtension = () => {
+        return this.checkExtension().every(e => e)
+    }
+    this.setCustomValidity = (text) => {
+        this.input.get(0).setCustomValidity(text ?? '')
     }
     this.init = () => {
         $(container).after(this.element);
         $(container).remove();
-        console.log(fileName)
         this.input.change((e) => {
             let input = this.input.get(0)
+            if (!multiple) { this.clearAllFile() }
             if (input.files && input.files.length !== 0) {
-                let file = this.getFile();
-                fileName.text(file.name);
-                fileName.removeAttr("href");
-                fileGroup.removeClass('d-none');
-                this.check && this.check.prop("checked", true);
+                for (let i = 0; i < input.files.length; i++) {
+                    let file = input.files[i];
+                    let container = $(temp_item(file.name))
+
+                    list.append(container);
+                    this.items.push({ container, file })
+
+                    let fileName = container.find("#FileName")
+                    fileName.text(file.name);
+                    fileName.removeAttr("href");
+
+                    this.check && this.check.prop("checked", true);
+                }
             }
+            input.value = null
         })
-        deleteBtn.click(() => {
-            this.input.val('');
-            fileName.text('');
-            fileName.removeAttr("href");
-            fileGroup.addClass('d-none');
-            this.check && this.check.prop("checked", false);
+
+        list.on("click", "#FileDelete", (event) => {
+            let container = $(event.currentTarget).parent()
+            let index = this.items.findIndex(e => e.container.data("fileName") == container.data("fileName"))
+            if (index != -1) {
+                this.items[index].container.remove()
+                this.items.splice(index, 1)
+            }
+            if (this.items.length == 0) {
+                this.check && this.check.prop("checked", false);
+            }
         })
     }
     this.init();

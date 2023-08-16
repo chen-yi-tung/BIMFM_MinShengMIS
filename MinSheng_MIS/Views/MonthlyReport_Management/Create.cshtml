@@ -50,6 +50,14 @@
     });
 
     function save() {
+        //重置自訂驗證錯誤訊息
+        getAllParams().forEach((e) => {
+            e.setCustomValidity('');
+        })
+        //自訂驗證錯誤
+        if (!fileUploader.checkAllExtension()) {
+            fileUploader.setCustomValidity("請上傳指定格式")
+        }
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("isValidity():", isValidity)
         if (!isValidity) return;
@@ -59,9 +67,10 @@
         fd.append("ReportContent", document.getElementById("ReportContent").value);
         fd.append("YearMonth", document.getElementById("YearMonth").value);
         if (fileUploader.hasFile()) {
-            form.append("ReportFile", fileUploader.getFile());
+            fd.append("ReportFile", fileUploader.getFile());
         }
         console.log(Object.fromEntries(fd.entries()));
+
         $.ajax({
             url: '@Url.Action("CreateMonthlyReport", "MonthlyReport_Management")',
             data: fd,
