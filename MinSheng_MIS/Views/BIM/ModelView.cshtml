@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "ModelView";
+}
+<style>
+    .adsk-viewing-viewer {
+        background: none !important;
+    }
+
+    .viewer3Dcontainer {
+        position: absolute;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        background-color: #F0F8FF;
+    }
+</style>
+<!-- Autodesk Forge -->
+<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+    type="text/css">
+<script language="JavaScript"
+    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60"></script>
+
+<div class="viewer3Dcontainer">
+    <div id="viewer3d"></div>
+</div>
+
+<script>
+    var viewer;
+    var vid = '@ViewBag.id' == '' ? '進流抽水站B1F' : '@ViewBag.id';
+    window.addEventListener("load", () => {
+        $("nav").addClass("d-none")
+        let url = `${window.location.origin}/BimModels/01/Resource/3D 視圖/${vid}/0.svf`
+        let burl = `${window.location.origin}/BimModels/02/Resource/3D 視圖/${vid}_Beacon/0.svf`
+        initializeViewer(url, burl)
+    })
+    function initializeViewer(url, burl) {
+        Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
+        var myViewerDiv = document.getElementById('viewer3d');
+        viewer = new Autodesk.Viewing.GuiViewer3D(myViewerDiv);
+        var options = {
+            env: "Local",
+            document: url, //svf檔路徑
+            globalOffset: { x: 0, y: 0, z: 0 }
+        };
+        Autodesk.Viewing.Initializer(options, function () {
+            viewer.start(options.document, options, onSuccessCallback, onErrorCallback);
+            function onSuccessCallback() {
+                console.log("onSuccessCallback");
+                viewer.setBackgroundOpacity(0);
+                viewer.setBackgroundColor();
+                viewer.setLightPreset(16); //設定環境光源 = 雪地
+
+                viewer.loadModel(
+                    burl,
+                    {
+                        keepCurrentModels: true,
+                        globalOffset: { x: 0, y: 0, z: 0 }
+                    },
+                    (model) => {
+                        console.log("success", model.getData())
+                        Promise.all([
+                            new Promise((resolve) => { viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, resolve, { once: true }); }),
+                            new Promise((resolve) => { viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, resolve, { once: true }); }),
+                        ]).then(() => {
+                            console.log("%c載入模型完成，可以開始操作", 'color: green; font-size: 18px; padding: 6px;');
+                            //TODO
+                            viewer.addEventListener(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, () => {
+                                changeColor(viewer, model, model.getRootId(), 0x0000ff, 1)
+                            }, { once: true })
+                        })
+
+                    },
+                    (err) => { console.log(err) }
+                );
+            }
+            function onErrorCallback() { console.log("onErrorCallback"); }
+        });
+    }
+
+    function changeColor(viewer, model, dbid, color, alpha) {
+        model.getObjectTree((it) => {
+            const fl = it.fragList
+            console.log("getInstanceTree", it)
+            //it.enumNodeChildren(dbid,getChildNode)
+            it.enumNodeFragments(dbid, (fragId) => {
+                var updatedM = null
+                var cloneM_name = 'model:' + model.id.toString() + '|frag:' + fragId.toString();
+
+                if (cloneM_name in viewer.impl.matman()._materials) {
+                    updatedM = viewer.impl.matman()._materials[cloneM_name];
+                    updatedM = changeMaterial(updatedM);
+                } else {
+                    updatedM = fl.getMaterial(fragId).clone();
+                    updatedM = changeMaterial(updatedM);
+                    viewer.impl.matman().addMaterial(cloneM_name, updatedM, true);
+                }
+                fl.setMaterial(fragId, updatedM);
+                viewer.impl.invalidate(true, true, true);
+            })
+        })
+
+        function getChildNode() {
+
+        }
+
+        function changeMaterial(m) {
+            m.opacity = alpha;
+            m.transparent = alpha < 1 ? true : false;
+            m.color = new THREE.Color(color);
+            m.depthWrite = alpha < 1 ? false : true;
+            m.needsUpdate = true;
+            return m;
+        }
+    }
+</script>
