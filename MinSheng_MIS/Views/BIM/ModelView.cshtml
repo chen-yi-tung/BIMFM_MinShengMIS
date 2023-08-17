@@ -27,11 +27,11 @@
 
 <script>
     var viewer;
-    var vid = '@ViewBag.id' == '' ? '進流抽水站B1F' : '@ViewBag.id';
+    var vid = '@ViewBag.id' == '' ? '進抽站B1F' : '@ViewBag.id';
     window.addEventListener("load", () => {
         $("nav").addClass("d-none")
-        let url = `${window.location.origin}/BimModels/01/Resource/3D 視圖/${vid}/0.svf`
-        let burl = `${window.location.origin}/BimModels/02/Resource/3D 視圖/${vid}_Beacon/0.svf`
+        let url = `${window.location.origin}/BimModels/01/Resource/3D View/${vid}/0.svf`
+        let burl = `${window.location.origin}/BimModels/02/Resource/3D View/${vid}_Beacon/0.svf`
         initializeViewer(url, burl)
     })
     function initializeViewer(url, burl) {
