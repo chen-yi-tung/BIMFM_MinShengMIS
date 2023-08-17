@@ -256,7 +256,9 @@
           <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
           <Property Name="ASN" Type="int" Nullable="false" />
           <Property Name="FloorName" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="BIMPath" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BIMPath" Type="nvarchar" MaxLength="100" />
+          <Property Name="BeaconPath" Type="nvarchar" MaxLength="100" />
+          <Property Name="ViewName" Type="nchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="InquiryOrder">
           <Key>
@@ -2180,7 +2182,9 @@
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
           <Property Name="ASN" Type="Int32" Nullable="false" />
           <Property Name="FloorName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="BIMPath" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BIMPath" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="BeaconPath" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ViewName" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
           <NavigationProperty Name="AreaInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="Floor_Info" ToRole="AreaInfo" />
         </EntityType>
         <EntityType Name="InquiryOrder">
@@ -3606,6 +3610,8 @@
           <EntitySetMapping Name="Floor_Info">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.Floor_Info">
               <MappingFragment StoreEntitySet="Floor_Info">
+                <ScalarProperty Name="ViewName" ColumnName="ViewName" />
+                <ScalarProperty Name="BeaconPath" ColumnName="BeaconPath" />
                 <ScalarProperty Name="BIMPath" ColumnName="BIMPath" />
                 <ScalarProperty Name="FloorName" ColumnName="FloorName" />
                 <ScalarProperty Name="ASN" ColumnName="ASN" />

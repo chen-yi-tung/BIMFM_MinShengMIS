@@ -18,6 +18,8 @@ namespace MinSheng_MIS.Models
         public int ASN { get; set; }
         public string FloorName { get; set; }
         public string BIMPath { get; set; }
+        public string BeaconPath { get; set; }
+        public string ViewName { get; set; }
     
         public virtual AreaInfo AreaInfo { get; set; }
     }
