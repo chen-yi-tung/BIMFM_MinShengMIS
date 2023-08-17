@@ -1663,7 +1663,6 @@
     <Content Include="BimModels\01\Resource\objects_offs.json.gz" />
     <Content Include="BimModels\01\Resource\objects_vals.json.gz" />
     <Content Include="BimModels\01\Resource\objects_viewables.json.gz" />
-    <Content Include="BimModels\01\Thumbs.db" />
     <Content Include="BimModels\01\viewable.json" />
     <Content Include="BimModels\02\Resource\3D View\進抽站B1F_Beacon\0.pf" />
     <Content Include="BimModels\02\Resource\3D View\進抽站B1F_Beacon\CameraDefinitions.bin" />
@@ -1697,7 +1696,6 @@
     <Content Include="BimModels\02\Resource\objects_offs.json.gz" />
     <Content Include="BimModels\02\Resource\objects_vals.json.gz" />
     <Content Include="BimModels\02\Resource\objects_viewables.json.gz" />
-    <Content Include="BimModels\02\Thumbs.db" />
     <Content Include="BimModels\02\viewable.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
