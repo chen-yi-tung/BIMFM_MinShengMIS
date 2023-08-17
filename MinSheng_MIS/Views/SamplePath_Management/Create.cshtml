@@ -188,9 +188,13 @@
 
                 function onSuccess(res) {
                     console.log(res);
+                    let { BIMPath, BeaconPath } = res;
                     fakeData = res;
-                    viewerUrl = window.location.origin + res.BIMPath;
-                    initializeViewer(initializeDrawer);
+                    initializeViewer({
+                        BIMPath,
+                        BeaconPath,
+                        callback: initializeDrawer
+                    });
 
                     $("#path-create").off();
                     $('#ASN').attr("disabled", '');

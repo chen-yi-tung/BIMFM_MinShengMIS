@@ -1,6 +1,6 @@
 ﻿//import "https://pixijs.download/v7.2.2/pixi.js";
 
-var ForgeDraw = (function (e) {
+function ForgeDrawController() {
     var app;
     var view;
     var stage;
@@ -188,7 +188,7 @@ var ForgeDraw = (function (e) {
 
         addViewerSelectEvent();
 
-        stage = new ForgeDraw.Stage();
+        stage = new Stage();
         exports.stage = stage;
 
         let bg = new PIXI.Graphics()
@@ -1154,4 +1154,6 @@ var ForgeDraw = (function (e) {
         "stage": stage
     }
     return exports;
-})()
+}
+
+var ForgeDraw = ForgeDrawController()

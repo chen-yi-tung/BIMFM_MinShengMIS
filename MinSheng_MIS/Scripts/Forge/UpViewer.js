@@ -1,14 +1,16 @@
 ﻿var viewer; //GuiViewer3D
-var viewerUrl;
-//var viewerUrl = "BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf"; //svf檔路徑
-async function initializeViewer(callback) {
-    const myProfileSettings_up = {
+async function initializeViewer({
+    BIMPath,
+    BeaconPath,
+    callback
+}) {
+    const profileSettings = {
         name: "mySettings_up",
         description: "My personal settings.",
         settings: {
             viewType: 1, //orthographic
         },
-        persistent: [],
+        persistent: ["Viewer.Toolkit"],
         extensions: {
             load: [],
             unload: [
@@ -21,38 +23,65 @@ async function initializeViewer(callback) {
             ]
         }
     }
+    viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('viewer3d'), { profileSettings });
     Autodesk.Viewing.Private.InitParametersSetting.alpha = true;
+    const options = {
+        keepCurrentModels: true,
+        globalOffset: { x: 0, y: 0, z: 0 }
+    };
+    const urns = [BIMPath, BeaconPath];
 
-    viewer = new Autodesk.Viewing.GuiViewer3D(
-        document.getElementById('viewer3d'),
-        { profileSettings: myProfileSettings_up }
-    );
-    const options = { 'env': "Local", 'document': viewerUrl };
-    Autodesk.Viewing.Initializer(options, function () {
-        viewer.start(options.document, options, onSuccess, onError);
-        async function onSuccess() {
-            console.log("onSuccess");
-            viewer.setBackgroundOpacity(0);
-            viewer.setBackgroundColor();
-            viewer.setLightPreset(16);
+    Autodesk.Viewing.Initializer(options, async function () {
+        viewer.start();
+        viewer.setBackgroundOpacity(0);
+        viewer.setBackgroundColor();
+        viewer.setLightPreset(16);
 
-            viewer.toolbar.removeControl("navTools");
-            viewer.toolbar.removeControl("settingsTools");
+        viewer.toolbar.removeControl("navTools");
+        viewer.toolbar.removeControl("settingsTools");
+        viewer.impl.controls.handleKeyDown = () => { }
 
-            viewer.impl.controls.handleKeyDown = () => {}
+        await viewer.loadExtension("Viewer.Toolkit")
 
-            Promise.all([
-                new Promise((resolve) => { viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, resolve, { once: true }); }),
-                new Promise((resolve) => { viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, resolve, { once: true }); })
-            ]).then(() => {
-                console.log("%c載入模型完成，可以開始操作",'color: green; font-size: 18px; padding: 6px;');
-                ON_GEOMETRY_LOADED();
-            })
-            
-            viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, ON_EXTENSION_LOADED);
-        }
-        function onError() { console.log("onError"); }
+        //load urns
+        urns.forEach(async (url) => {
+            if (url == null || url == undefined || url == "") return;
+            viewer.loadModel(
+                window.location.origin + url,
+                options,
+                async (model) => { await viewer.waitForLoadDone(); onLoadDone(model); }
+            )
+        })
+
+        const ViewCubeUi = await viewer.loadExtension("Autodesk.ViewCubeUi")
+        ViewCubeUi.setVisible(false);
+        let pos = new THREE.Vector3(0, 0, 160);
+        let tg = new THREE.Vector3(0, 0, 0);
+        viewer.navigation.setView(pos, tg);
+        viewer.navigation.setCameraUpVector(new THREE.Vector3(-1, 0, 0));
+
+        const Wireframes = await viewer.loadExtension("Autodesk.Viewing.Wireframes")
+        Wireframes.activate();
+        Wireframes.showSolidMaterial(false);
+        Wireframes.setLinesMaterial(new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 0.2 }));
+        Wireframes.setLightPreset(16);
+        console.log("wfExt run end");
     });
+
+    async function onLoadDone(model) {
+        console.log("Model LoadDone", model.loader.basePath.split("/").at(-1));
+
+        if (model.loader.basePath.includes("Beacon")) {
+            const newmat = new THREE.MeshPhongMaterial({
+                color: 0x1010ff,
+                emissive: 0x001061,
+                reflectivity: 0,
+                shininess: 0
+            })
+            await viewer.toolkit.changeMaterial(model, model.getRootId(), newmat)
+            console.log("顏色變更完畢")
+        }
+    }
 
     function ON_GEOMETRY_LOADED() {
         console.log("GEOMETRY_LOADED_EVENT");
@@ -66,32 +95,6 @@ async function initializeViewer(callback) {
                 viewer.loadExtension(extName).then(callback);
                 viewer.removeEventListener(eventName, loadWireFrame);
             }
-        }
-    }
-
-    function ON_EXTENSION_LOADED(e) {
-        console.log("EXTENSION_LOADED_EVENT = " + e.extensionId);
-        switch (e.extensionId) {
-            case "Autodesk.ViewCubeUi":
-                const vcExt = viewer.getExtension(e.extensionId);
-                vcExt.setVisible(false);
-                let pos = new THREE.Vector3(0, 0, 160);
-                let tg = new THREE.Vector3(0, 0, 0);
-                viewer.navigation.setView(pos, tg);
-                viewer.navigation.setCameraUpVector(new THREE.Vector3(-1, 0, 0));
-                break;
-            case 'Autodesk.Viewing.Wireframes':
-                const wfExt = viewer.getExtension(e.extensionId);
-                wfExt.activate();
-                wfExt.showSolidMaterial(false);
-                let lineMaterial = new THREE.LineBasicMaterial({
-                    color: 0x000000,
-                    linewidth: 0.2
-                });
-                wfExt.setLinesMaterial(lineMaterial);
-                wfExt.setLightPreset(16);
-                console.log("wfExt run end");
-                break;
         }
     }
 }

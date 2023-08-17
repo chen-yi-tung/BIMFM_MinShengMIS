@@ -1718,6 +1718,7 @@
     <Content Include="Scripts\Forge\SamplePathReadOnly.js" />
     <Content Include="Scripts\Forge\SortRouteModal.js" />
     <Content Include="Scripts\Forge\UpViewer.js" />
+    <Content Include="Scripts\Forge\Viewer.Toolkit.js" />
     <Content Include="Scripts\ImageDisplay.js" />
     <Content Include="Scripts\InquiryPlan\GetjsonResult.js" />
     <Content Include="Scripts\InquiryPlan\CreateDataGrids.js" />
