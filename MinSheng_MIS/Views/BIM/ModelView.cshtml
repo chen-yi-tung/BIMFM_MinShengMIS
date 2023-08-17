@@ -65,9 +65,17 @@
                         ]).then(() => {
                             console.log("%c載入模型完成，可以開始操作", 'color: green; font-size: 18px; padding: 6px;');
                             //TODO
-                            viewer.addEventListener(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, () => {
-                                changeColor(viewer, model, model.getRootId(), 0x0000ff, 1)
-                            }, { once: true })
+                            model.getObjectTree(async (it) => {
+                                //await changeColor(viewer, model, model.getRootId(), 0x0000ff)
+                                const newmat = new THREE.MeshPhongMaterial({
+                                    color: 0x0000ff,
+                                    emissive: 0x001061,
+                                    reflectivity: 0,
+                                    shininess: 0
+                                })
+                                await changeMaterial(viewer, model, model.getRootId(), newmat)
+                                console.log("顏色變更完畢")
+                            })
                         })
 
                     },
@@ -78,39 +86,84 @@
         });
     }
 
-    function changeColor(viewer, model, dbid, color, alpha) {
-        model.getObjectTree((it) => {
-            const fl = it.fragList
-            console.log("getInstanceTree", it)
-            //it.enumNodeChildren(dbid,getChildNode)
-            it.enumNodeFragments(dbid, (fragId) => {
-                var updatedM = null
-                var cloneM_name = 'model:' + model.id.toString() + '|frag:' + fragId.toString();
+    async function changeColor(viewer, model, dbid, color, alpha = 1) {
+        return new Promise((resolve) => {
+            model.getObjectTree(async (it) => {
+                const fl = it.fragList
+                //console.log("getInstanceTree", it)
+                const alldbId = await getAlldbIds(it, dbid)
+                alldbId.forEach((node) => {
+                    it.enumNodeFragments(node, (fragId) => {
+                        var updatedM = null
+                        var cloneM_name = 'model:' + model.id.toString() + '|frag:' + fragId.toString();
+                        console.log("cloneM_name", cloneM_name)
 
-                if (cloneM_name in viewer.impl.matman()._materials) {
-                    updatedM = viewer.impl.matman()._materials[cloneM_name];
-                    updatedM = changeMaterial(updatedM);
-                } else {
-                    updatedM = fl.getMaterial(fragId).clone();
-                    updatedM = changeMaterial(updatedM);
-                    viewer.impl.matman().addMaterial(cloneM_name, updatedM, true);
-                }
-                fl.setMaterial(fragId, updatedM);
-                viewer.impl.invalidate(true, true, true);
+                        if (cloneM_name in viewer.impl.matman()._materials) {
+                            updatedM = viewer.impl.matman()._materials[cloneM_name];
+                            updatedM = changeMat(updatedM);
+                        } else {
+                            updatedM = fl.getMaterial(fragId).clone();
+                            updatedM = changeMat(updatedM);
+                            viewer.impl.matman().addMaterial(cloneM_name, updatedM, true);
+                        }
+                        fl.setMaterial(fragId, updatedM);
+                        viewer.impl.invalidate(true, true, true);
+                    })
+                })
+                resolve(true)
             })
         })
-
-        function getChildNode() {
-
-        }
-
-        function changeMaterial(m) {
+        function changeMat(m) {
             m.opacity = alpha;
             m.transparent = alpha < 1 ? true : false;
             m.color = new THREE.Color(color);
             m.depthWrite = alpha < 1 ? false : true;
             m.needsUpdate = true;
+            m.shininess = 0;
+            m.specular = new THREE.Color(0x000000)
             return m;
         }
+    }
+    async function changeMaterial(viewer, model, dbid, material) {
+        return new Promise((resolve) => {
+            model.getObjectTree(async (it) => {
+                const fl = it.fragList
+                const alldbId = await getAlldbIds(it, dbid)
+                alldbId.forEach((node) => {
+                    it.enumNodeFragments(node, (fragId) => {
+                        var matName = 'model:' + model.id.toString() + '|frag:' + fragId.toString();
+                        console.log("matName", matName)
+
+                        if (matName in viewer.impl.matman()._materials) {
+                            viewer.impl.matman()._materials[matName] = material;
+                        } else {
+                            viewer.impl.matman().addMaterial(matName, material, true);
+                        }
+                        fl.setMaterial(fragId, material);
+                        viewer.impl.invalidate(true, true, true);
+                    }, true)
+                })
+                resolve(true)
+            })
+        })
+    }
+    async function getAlldbIds(it, rootId) {
+        //開始取得所有DbId
+        return new Promise((resolve) => {
+            var alldbId = [];
+            if (!rootId) { return alldbId; }
+            var queue = [];
+            queue.push(rootId);
+            while (queue.length > 0) {
+                var node = queue.shift();
+                if (it.getChildCount(node) == 0) //根據需求自行增加篩選條件，此為只取得最底層dbId
+                    alldbId.push(node);
+                it.enumNodeChildren(node, (childNode) => {
+                    childNode && queue.push(childNode);
+                });
+            }
+            //console.log("alldbId", alldbId)
+            resolve(alldbId);
+        })
     }
 </script>

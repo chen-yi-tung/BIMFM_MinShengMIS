@@ -85,6 +85,14 @@
     }
 
     function save() {
+        //重置自訂驗證錯誤訊息
+        getAllParams().forEach((e) => {
+            e.setCustomValidity('');
+        })
+        //自訂驗證錯誤
+        if (!fileUploader.checkAllExtension()) {
+            fileUploader.setCustomValidity("請上傳指定格式")
+        }
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("isValidity():", isValidity)
         if (!isValidity) return;
