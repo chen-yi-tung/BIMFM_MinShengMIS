@@ -52,8 +52,11 @@ namespace MinSheng_MIS.Controllers
         {
             JObject obj = new JObject();
             //找出BimPath
-            var BimPath = db.Floor_Info.Where(x => x.FSN == id).Select(x => x.BIMPath).FirstOrDefault().ToString();
+            var BimPath = db.Floor_Info.Find(id).BIMPath.ToString();
             obj.Add("BIMPath", BimPath);
+            //找出BeaconPath
+            var BeaconPath = db.Floor_Info.Find(id).BeaconPath.ToString();
+            obj.Add("BeaconPath", BeaconPath);
             //找出該樓層所有藍芽
             var BeaconList = db.EquipmentInfo.Where(x => x.FSN == id && x.EName == "藍芽").ToList();
             JArray ja = new JArray();
