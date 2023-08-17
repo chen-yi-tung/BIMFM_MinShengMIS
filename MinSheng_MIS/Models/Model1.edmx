@@ -172,7 +172,7 @@
           <Key>
             <PropertyRef Name="ESN" />
           </Key>
-          <Property Name="ESN" Type="char" MaxLength="6" Nullable="false" />
+          <Property Name="ESN" Type="nvarchar" MaxLength="8" Nullable="false" />
           <Property Name="System" Type="nvarchar" MaxLength="20" />
           <Property Name="SubSystem" Type="nvarchar" MaxLength="20" />
           <Property Name="EName" Type="nvarchar" MaxLength="50" />
@@ -240,7 +240,7 @@
             <PropertyRef Name="RSN" />
           </Key>
           <Property Name="RSN" Type="nchar" MaxLength="9" Nullable="false" />
-          <Property Name="ESN" Type="char" MaxLength="6" Nullable="false" />
+          <Property Name="ESN" Type="nvarchar" MaxLength="8" Nullable="false" />
           <Property Name="Date" Type="datetime" Nullable="false" />
           <Property Name="ReportLevel" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="ReportContent" Type="nvarchar" MaxLength="200" Nullable="false" />
@@ -2089,7 +2089,7 @@
           <Key>
             <PropertyRef Name="ESN" />
           </Key>
-          <Property Name="ESN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="ESN" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
           <Property Name="System" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="SubSystem" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="EName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
@@ -2161,7 +2161,7 @@
             <PropertyRef Name="RSN" />
           </Key>
           <Property Name="RSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
-          <Property Name="ESN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="ESN" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
           <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ReportLevel" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="ReportContent" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
