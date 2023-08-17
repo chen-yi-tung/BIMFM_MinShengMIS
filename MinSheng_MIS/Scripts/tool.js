@@ -176,14 +176,17 @@ function FileUploader({
     this.hasFile = () => {
         return this.items.length !== 0
     }
-    this.setFile = (path) => {
+    this.setFile = (path, file = null) => {
         if (!multiple) { this.clearAllFile() }
         let container = $(temp_item())
         list.append(container);
+        if (file == null) {
+            file = { name: path.split("/").at(-1) }
+        }
         this.items.push({ container, file })
 
         let fileName = container.find("#FileName")
-        fileName.text(path.split("/").at(-1));
+        fileName.text(file.name);
         fileName.attr("href", path);
 
         this.check && this.check.prop("checked", true);
