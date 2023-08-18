@@ -1699,6 +1699,7 @@
     <Content Include="BimModels\02\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\02\Thumbs.db" />
     <Content Include="BimModels\02\viewable.json" />
+    <Content Include="Scripts\Forge\Viewer.Loading.js" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datagrid-management.js" />

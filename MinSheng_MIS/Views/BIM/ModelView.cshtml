@@ -2,6 +2,7 @@
     ViewBag.Title = "ModelView";
 }
 @section styles{
+    <link rel="stylesheet" href="/Content/samplepath.css">
     <style>
         .adsk-viewing-viewer {
             background: none !important;
@@ -15,18 +16,35 @@
             margin: 0;
             background-color: #F0F8FF;
         }
+
+        .forge-spinner {
+            display: none !important;
+        }
     </style>
     <!-- Autodesk Forge -->
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
         type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
     <script language="JavaScript"
         src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
     <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
+
+    <!-- PIXI Draw -->
+    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
+    <script src="/Scripts/ForgeDraw.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
+
+    <!-- Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
+    <script src="/Scripts/Forge/SortRouteModal.js" defer></script>
 }
 
 <div class="viewer3Dcontainer">
     <div id="viewer3d"></div>
+    <canvas id="PathCanvas"></canvas>
     <div class="d-flex gap-3 position-absolute top-0 start-0 p-4" style="z-index: 1030;">
         <div class="form-group required">
             <label for="ASN">棟別</label>
@@ -44,121 +62,162 @@
     </div>
 </div>
 
-<script>
-    var viewer;
-    var vid = '@ViewBag.id' == '' ? '進抽站B1F' : '@ViewBag.id';
-    document.addEventListener("DOMContentLoaded", () => {
-        $("nav").addClass("d-none");
-    })
-    window.addEventListener("load", () => {
-        addAreaFloorEvent();
-        $("#Submit").click(() => {
-            let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val();
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: (res) => {
-                    if (viewer != null) {
-                        viewer.tearDown()
-                        viewer.finish()
-                        viewer = null
-                        $("#viewer3d").empty();
-                    }
-                    initializeViewer(res)
+@section scripts{
+    <script>
+        var viewer;
+        function initializeViewer({ BIMPath, BeaconPath, callback = () => { } }) {
+            const clientContainer = document.getElementById('viewer3d')
+            const profileSettings = {
+                name: "customSettings",
+                description: "My personal settings.",
+                settings: {}, //API:https://aps.autodesk.com/en/docs/viewer/v7/reference/globals/TypeDefs/Settings/
+                persistent: [],
+                extensions: {
+                    load: ["Viewer.Toolkit"],
+                    unload: [/* "Autodesk.Section", "Autodesk.Measure", "Autodesk.Explode" */]
                 }
+            }
+            const options = {
+                keepCurrentModels: true,
+                globalOffset: { x: 0, y: 0, z: 0 }
+            };
+            const urns = [BIMPath, BeaconPath];
+
+            Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
+            viewer = new Autodesk.Viewing.GuiViewer3D(clientContainer, { profileSettings });
+            viewer.loadExtension("Viewer.Loading", {
+                loader: `<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>`
+            })
+
+            Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
+                viewer.start();
+
+                await viewer.loadExtension("Viewer.Toolkit")
+
+                //load urns
+                const models = await Promise.all(urns.map((url) => {
+                    return new Promise(async (resolve) => {
+                        if (url == null || url == undefined || url == "") return;
+                        viewer.loadModel(window.location.origin + url, options,
+                            async (model) => { await viewer.waitForLoadDone(); resolve(model); })
+                    })
+                }))
+                console.log(models)
+
+                //setting 3d view env
+                viewer.setBackgroundOpacity(0);
+                viewer.setBackgroundColor();
+                viewer.setLightPreset(16); //設定環境光源 = 雪地
+
+                const ViewCubeUi = await viewer.loadExtension("Autodesk.ViewCubeUi")
+                ViewCubeUi.setVisible(false);
+
+                await viewer.toolkit.autoFitModelsTop(models, 2, true)
+                for (const model of models) {
+                    await onLoadDone(model)
+                }
+                viewer.loading.hide()
+
+                setTimeout(() => {
+                    callback()
+                }, 500)
+            });
+
+            async function onLoadDone(model) {
+                console.log("Model LoadDone", model.loader.basePath.split("/").at(-2));
+
+                if (model.loader.basePath.includes("Beacon")) {
+
+                    const newmat = new THREE.MeshPhongMaterial({
+                        color: 0x1010ff,
+                        emissive: 0x001061,
+                        reflectivity: 0,
+                        shininess: 0
+                    })
+                    await viewer.toolkit.changeMaterial(model, model.getRootId(), newmat)
+                    let AllBeacons = await viewer.toolkit.getAlldbIds(model.getInstanceTree(), model.getRootId())
+                    console.log("AllBeacons", AllBeacons)
+                    console.log("顏色變更完畢")
+                }
+            }
+        }
+    </script>
+    <script>
+        var sortRouteModal;
+
+        function initializeDrawer(data) {
+            const pathCanvas = document.querySelector("#PathCanvas");
+            ForgeDraw.init(pathCanvas, viewer, function () {
+                pathCanvas.addEventListener("fd.point.detecterror", function (event) {
+                    console.log("view => fd.point.detecterror");
+                    createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
+                });
+                pathCanvas.addEventListener("fd.linedata.change", function (event) {
+                    console.log("view => fd.linedata.change");
+                    updatePathDisplay(calcPath());
+                });
+                pathCanvas.addEventListener("fd.linedata.detail", function (event) {
+                    console.log("view => fd.linedata.detail", event.detail);
+                    if (event.detail instanceof ForgeDraw.DevicePoint) {
+                        createDevicePointDetailModal(event.detail);
+                    }
+                    else {
+                        createPointDetailModal(event.detail);
+                    }
+                });
+                pathCanvas.addEventListener("fd.devicepoint.ignore", function (event) {
+                    console.log("view => fd.devicepoint.ignore");
+                    updatePathDisplay(calcPath());
+                });
+
+                createBeacons(data.BIMDevices);
+
+                addToolbarEvent();
+                addTooltip(true);
+            });
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            $("nav").addClass("d-none");
+        })
+        window.addEventListener("load", () => {
+            sortRouteModal = new SortRouteModal({
+                onSave: updatePathDisplay
+            });
+            addAreaFloorEvent();
+            $("#Submit").click(() => {
+                let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val();
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: (res) => {
+                        if (viewer != null) {
+                            viewer.tearDown()
+                            viewer.finish()
+                            viewer = null
+                            $("#viewer3d").empty();
+
+                            ForgeDraw.destroy();
+                            ForgeDraw = null;
+                            ForgeDraw = ForgeDrawController();
+
+                            document.getElementById('viewer3d').insertAdjacentHTML('afterend', `<canvas id="PathCanvas"></canvas>`)
+                        }
+                        let { BIMPath, BeaconPath } = res
+                        initializeViewer({ BIMPath, BeaconPath, callback() { initializeDrawer(res) } })
+                    }
+                })
             })
         })
-    })
-    async function addAreaFloorEvent() {
-        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-        let ASN = document.getElementById("ASN");
-        ASN.addEventListener("change", async function () {
-            await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
-        });
-    }
-    function initializeViewer({ BIMPath, BeaconPath }) {
-        const clientContainer = document.getElementById('viewer3d')
-        clientContainer.style.visibility = 'hidden'
-        
-        const profileSettings = {
-            name: "customSettings",
-            description: "My personal settings.",
-            settings: {}, //API:https://aps.autodesk.com/en/docs/viewer/v7/reference/globals/TypeDefs/Settings/
-            persistent: [],
-            extensions: {
-                load: ["Viewer.Toolkit"],
-                unload: [/* "Autodesk.Section", "Autodesk.Measure", "Autodesk.Explode" */]
-            }
+        async function addAreaFloorEvent() {
+            await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+            let ASN = document.getElementById("ASN");
+            ASN.addEventListener("change", async function () {
+                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
+            });
         }
-        const options = {
-            keepCurrentModels: true,
-            globalOffset: { x: 0, y: 0, z: 0 }
-        };
-        const urns = [BIMPath, BeaconPath];
-
-        Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
-        viewer = new Autodesk.Viewing.GuiViewer3D(clientContainer, { profileSettings });
-        Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
-            viewer.start();
-            //setting 3d view env
-            viewer.setBackgroundOpacity(0);
-            viewer.setBackgroundColor();
-            viewer.setLightPreset(16); //設定環境光源 = 雪地
-
-            await viewer.loadExtension("Viewer.Toolkit")
-
-
-            //load urns
-            const models = await Promise.all(urns.map((url) => {
-                return new Promise(async (resolve) => {
-                    if (url == null || url == undefined || url == "") return;
-                    viewer.loadModel(window.location.origin + url, options,
-                        async (model) => { await viewer.waitForLoadDone(); resolve(model); })
-                })
-            }))
-            console.log(models)
-
-            const ViewCubeUi = await viewer.loadExtension("Autodesk.ViewCubeUi")
-            //ViewCubeUi.setVisible(false);
-            let box = new THREE.Box3()
-            models.forEach((model) => {
-                let b = model.getBoundingBox()
-                box.union(b)
-            })
-
-            let w = box.getCenter()
-            viewer.navigation.setView(
-                new THREE.Vector3(w.x, w.y, Math.abs(w.z * 2)),
-                new THREE.Vector3(w.x, w.y, 0)
-            )
-            viewer.navigation.setCameraUpVector(new THREE.Vector3(0, 1, 0));
-
-            viewer.clientContainer.style.visibility = 'visible'
-
-            /*const Wireframes = await viewer.loadExtension("Autodesk.Viewing.Wireframes")
-            Wireframes.activate();
-            Wireframes.showSolidMaterial(false);
-            Wireframes.setLinesMaterial(new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 0.2 }));
-            Wireframes.setLightPreset(16);
-            console.log("wfExt run end");*/
-
-        });
-
-        async function onLoadDone(model) {
-            console.log("Model LoadDone", model.loader.basePath.split("/").at(-1));
-
-            if (model.loader.basePath.includes("Beacon")) {
-                const newmat = new THREE.MeshPhongMaterial({
-                    color: 0x1010ff,
-                    emissive: 0x001061,
-                    reflectivity: 0,
-                    shininess: 0
-                })
-                await viewer.toolkit.changeMaterial(model, model.getRootId(), newmat)
-                console.log("顏色變更完畢")
-            }
-        }
-    }
-</script>
+    </script>
+}

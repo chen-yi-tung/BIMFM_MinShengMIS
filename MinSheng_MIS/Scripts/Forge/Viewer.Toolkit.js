@@ -1,8 +1,16 @@
 AutodeskNamespace("Autodesk.Viewer.Extension");
-Autodesk.Viewer.Extension.Toolkit = function (viewer, options) {
+Autodesk.Viewer.Extension.Loading = function (viewer, options) {
     Autodesk.Viewing.Extension.call(this, viewer, options);
     this.name = "Viewer.Toolkit";
 
+    /**
+     * 根據模型目錄 (basePath) 尋找指定模型
+     * @param {string} search 搜尋字串
+     * @returns {Autodesk.Viewing.Model | undefined}
+     */
+    this.findModel = function (search) {
+        return viewer.getAllModels().find((model) => model.loader.basePath.includes(search))
+    }
     /**
      * 根據rootId獲得所有子dbId
      * @param {Autodesk.Viewing.Private.InstanceTree} it 
@@ -107,16 +115,33 @@ Autodesk.Viewer.Extension.Toolkit = function (viewer, options) {
      * 返回指定dbid模型的邊界
      * @param {Autodesk.Viewing.Model} model 
      * @param {number} dbid 
+     * @returns {THREE.Box3}
+     */
+    this.getBoundingBox = function (model, dbid) {
+        const bounds = new THREE.Box3()
+        const it = model.getInstanceTree()
+        const fl = it.fragList
+        it.enumNodeFragments(dbid, (fragId) => {
+            let box = new THREE.Box3();
+            fl.getWorldBounds(fragId, box);
+            bounds.union(box);
+        }, true);
+        return bounds
+    }
+    /**
+     * 返回指定dbid模型的邊界
+     * @param {Autodesk.Viewing.Model} model 
+     * @param {number} dbid 
      * @returns {Promise<THREE.Box3>}
      */
-    this.getBoundingBox = async function (model, dbid) {
+    this.getBoundingBoxAsync = async function (model, dbid) {
         return new Promise((resolve) => {
             const bounds = new THREE.Box3()
             model.getObjectTree((it) => {
                 const fl = it.fragList
                 it.enumNodeFragments(dbid, (fragId) => {
                     let box = new THREE.Box3();
-                    fragList.getWorldBounds(fragId, box);
+                    fl.getWorldBounds(fragId, box);
                     bounds.union(box);
                 }, true);
                 resolve(bounds)
@@ -130,16 +155,59 @@ Autodesk.Viewer.Extension.Toolkit = function (viewer, options) {
      * @param {boolean} [immediate=false] 立即縮放
      */
     this.fitToView = async function (dbId, scale = 1, immediate = false) {
-        dbId = parseInt(input.value);
-        // THREE.Box3.expandByScalar(scale) => 縮放距離，1為最近
-        let bounds = await getBoundingBox(dbId);
-        bounds.expandByScalar(scale)
-        await viewer.navigation.fitBounds(immediate, bounds, true, false)
+        return new Promise(async (resolve, reject) => {
+            dbId = parseInt(input.value);
+            // THREE.Box3.expandByScalar(scale) => 縮放距離，1為最近
+            let bounds = await getBoundingBox(dbId);
+            bounds.expandByScalar(scale)
+            viewer.navigation.fitBounds(immediate, bounds, true, false)
+
+            if (immediate == true) {
+                resolve(true)
+            }
+            else {
+                viewer.addEventListener(Autodesk.Viewing.CAMERA_TRANSITION_COMPLETED, () => { resolve(true) }, { once: true })
+            }
+        })
+    }
+    /**
+     * 
+     * @param {Autodesk.Viewing.Model[]} [models=[]] 
+     * @param {number} [scale=2] 
+     * @param {boolean} [immediate=true] 
+     * @param {boolean} [reorient=false] 
+     * @returns {Promise<boolean>}
+     */
+    this.autoFitModelsTop = async function (models = [], scale = 2, immediate = true, reorient = false) {
+        return new Promise((resolve, reject) => {
+            if (!Array.isArray(models) || models.length == 0) { reject() }
+
+            let box = new THREE.Box3()
+            models.forEach((model) => {
+                let b = model.getBoundingBox()
+                box.union(b)
+            })
+
+            let w = box.getCenter()
+            viewer.navigation.setView(
+                new THREE.Vector3(w.x, w.y, w.z + (box.getSize().z ** 2)),
+                new THREE.Vector3(w.x, w.y, 0)
+            )
+            viewer.navigation.setCameraUpVector(new THREE.Vector3(0, 1, 0))
+            viewer.navigation.fitBounds(immediate, box.clone().expandByScalar(scale), reorient, false)
+
+            if (immediate == true) {
+                resolve(true)
+            }
+            else {
+                viewer.addEventListener(Autodesk.Viewing.CAMERA_TRANSITION_COMPLETED, () => { resolve(true) }, { once: true })
+            }
+        })
     }
 }
-Autodesk.Viewer.Extension.Toolkit.prototype = Object.create(Autodesk.Viewing.Extension.prototype);
-Autodesk.Viewer.Extension.Toolkit.prototype.constructor = Autodesk.Viewer.Extension.Toolkit;
-Autodesk.Viewer.Extension.Toolkit.prototype.load = function () {
+Autodesk.Viewer.Extension.Loading.prototype = Object.create(Autodesk.Viewing.Extension.prototype);
+Autodesk.Viewer.Extension.Loading.prototype.constructor = Autodesk.Viewer.Extension.Loading;
+Autodesk.Viewer.Extension.Loading.prototype.load = function () {
     delete this.activate;
     delete this.activeStatus;
     delete this.deactivate;
@@ -148,4 +216,4 @@ Autodesk.Viewer.Extension.Toolkit.prototype.load = function () {
     this.viewer.toolkit = this;
     return this.viewer && !0;
 };
-Autodesk.Viewing.theExtensionManager.registerExtension('Viewer.Toolkit', Autodesk.Viewer.Extension.Toolkit);
+Autodesk.Viewing.theExtensionManager.registerExtension('Viewer.Toolkit', Autodesk.Viewer.Extension.Loading);

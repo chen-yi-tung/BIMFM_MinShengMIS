@@ -144,7 +144,6 @@ function updatePathDisplay(path = undefined, pathID = null, selector = "#current
 function loadModel(url, pathID, onload) {
     ForgeDraw.removeAllDevice();
     ForgeDraw.removeAllData();
-    ForgeDraw.clearSelectPos();
 
     //開啟forge顯示
     $(".sample-path-draw-area").removeClass('d-none')

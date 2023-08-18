@@ -10,7 +10,6 @@ function ForgeDrawController() {
     var devices = [];
 
     var forgeViewer;
-    var selectPos = {};
     var layer = {
         stage: new PIXI.Container(),
         line: new PIXI.Container(),
@@ -180,13 +179,9 @@ function ForgeDrawController() {
         view.addEventListener("contextmenu", preventDefaultEvent);
         $(document.body).on("contextmenu", ".contextMenu", preventDefaultEvent);
 
-        window.addEventListener("resize", function () {
-            resize();
-        })
+        window.addEventListener("resize", resize)
 
         forgeViewer = forgeGuiViewer3D;
-
-        addViewerSelectEvent();
 
         stage = new Stage();
         exports.stage = stage;
@@ -210,24 +205,6 @@ function ForgeDrawController() {
         );
     }
 
-    function addViewerSelectEvent() {
-
-        forgeViewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT, function (e) {
-            //console.log("AGGREGATE_SELECTION_CHANGED_EVENT:", e)
-            e.selections.length !== 0 && getDeviceCenterPosition(e.selections[0].dbIdArray[0])
-        });
-
-        function getDeviceCenterPosition(dbId) {
-            //console.log("getDeviceCenterPosition:", dbId)
-            let box = viewer.utilities.getBoundingBox(); //THREE.Box3
-            selectPos[dbId] = box.center(); //獲取 target 中心點座標並記錄於selectPos
-        }
-    }
-
-    function clearSelectPos() {
-        selectPos = {};
-    }
-
     function resize() {
         lineData.forEach((d) => {
             let w = forgeViewer.worldToClient(d.forgePos)
@@ -241,7 +218,26 @@ function ForgeDrawController() {
     }
 
     function destroy() {
-        app.destroy(false, true);
+        removeAllDevice();
+        removeAllData();
+
+        view.removeEventListener("contextmenu", preventDefaultEvent);
+        $(document.body).off("contextmenu", ".contextMenu", preventDefaultEvent);
+        window.removeEventListener("resize", resize)
+        app.destroy(true, true);
+
+        app = null;
+        view = null;
+        stage = null;
+        lineData = null;
+        points = null;
+        lines = null;
+        devices = null;
+        forgeViewer = null;
+        selectPos = null;
+        layer = null;
+        currentControl = null;
+        exports = null;
     }
 
     function preventDefaultEvent(event) {
@@ -769,8 +765,9 @@ function ForgeDrawController() {
             const self = this;
             console.log(`${this.name} => create`, this.dbId);
             if (this.dbId) {
-                forgeViewer.select(this.dbId);
-                this.forgePos = selectPos[this.dbId];
+                let beaconModel = forgeViewer.toolkit.findModel("Beacon")
+                let box = forgeViewer.toolkit.getBoundingBox(beaconModel, this.dbId)
+                this.forgePos = box.getCenter();
                 this.forgePos && (this.position = forgeViewer.worldToClient(this.forgePos));
             }
             console.log(`${this.name} => position`, this.position);
@@ -1140,8 +1137,6 @@ function ForgeDrawController() {
         "getDrawSetting": getDrawSetting,
         "setDrawSetting": setDrawSetting,
         "setForgeViewer": setForgeViewer,
-        "addViewerSelectEvent": addViewerSelectEvent,
-        "clearSelectPos": clearSelectPos,
         "getScreenShot": getScreenShot,
         "Control": Control,
         "EventMode": EventMode,
