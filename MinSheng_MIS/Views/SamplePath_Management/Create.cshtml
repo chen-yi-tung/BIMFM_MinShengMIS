@@ -1,7 +1,29 @@
 ﻿@{
     ViewBag.Title = "新增巡檢路線模板";
 }
-<link rel="stylesheet" href="/Content/samplepath.css">
+@section styles{
+    <link rel="stylesheet" href="/Content/samplepath.css">
+    <!-- Autodesk Forge -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+        type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
+    <script language="JavaScript"
+        src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
+    <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
+    <script src="/Scripts/Forge/UpViewer.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+
+    <!-- PIXI Draw -->
+    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
+    <script src="/Scripts/ForgeDraw.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
+
+    <!-- Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
+    <script src="/Scripts/Forge/SortRouteModal.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -79,26 +101,10 @@
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
-
-<!-- Autodesk Forge -->
-<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
-    type="text/css">
-<script language="JavaScript"
-    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
-<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
-
-<!-- PIXI Draw -->
-<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
-<script src="/Scripts/ForgeDraw.js"></script>
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/Forge/ForgeDrawFunction.js"></script>
 <script>
-    var view = document.querySelector("#PathCanvas");
-    var app;
-    var stage;
-
-    function initializeDrawer() {
-        app = ForgeDraw.init(view, viewer, function () {
+    function initializeDrawer(data) {
+        const view = document.querySelector("#PathCanvas");
+        ForgeDraw.init(view, viewer, function () {
             view.addEventListener("fd.point.detecterror", function (event) {
                 console.log("view => fd.point.detecterror");
                 createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
@@ -121,7 +127,7 @@
                 updatePathDisplay(calcPath());
             });
 
-            createBeacons(fakeData.BIMDevices);
+            createBeacons(data.BIMDevices);
 
             addToolbarEvent();
             addTooltip(true);
@@ -129,21 +135,12 @@
     }
 </script>
 
-<!-- Drag and Drop -->
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="/Scripts/Forge/SortRouteModal.js"></script>
 <script>
-    const sortRouteModal = new SortRouteModal({
-        onSave: updatePathDisplay
-    });
-</script>
-
-<!-- EVENT -->
-<script src="../../Scripts/tool.js"></script>
-<script>
-    let fakeData;
-
+    let sortRouteModal;
     $(async function () {
+        sortRouteModal = new SortRouteModal({
+            onSave: updatePathDisplay
+        });
         addAreaFloorEvent();
         addButtonEvent();
         controlToggle("path-draw", ForgeDraw.Control.DRAW);
@@ -189,11 +186,10 @@
                 function onSuccess(res) {
                     console.log(res);
                     let { BIMPath, BeaconPath } = res;
-                    fakeData = res;
                     initializeViewer({
                         BIMPath,
                         BeaconPath,
-                        callback: initializeDrawer
+                        callback() { initializeDrawer(res) }
                     });
 
                     $("#path-create").off();
@@ -205,7 +201,6 @@
                 }
             }
         })
-
         $("#submit").click(function () {
             //!!棟別樓層巡檢路線模板巡檢路線規劃 需有資料才傳!!
             let pt = $("#PathTitle").val();

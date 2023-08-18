@@ -3,6 +3,11 @@ Autodesk.Viewer.Extension.Loading = function (viewer, options) {
     Autodesk.Viewing.Extension.call(this, viewer, options);
     this.name = "Viewer.Toolkit";
 
+    this.removeAllToolbarControl = function(){
+        viewer.toolbar.removeControl('navTools')
+        viewer.toolbar.removeControl('modelTools')
+        viewer.toolbar.removeControl('settingsTools')
+    }
     /**
      * 根據模型目錄 (basePath) 尋找指定模型
      * @param {string} search 搜尋字串

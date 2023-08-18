@@ -108,9 +108,8 @@ function DeviceFileModal() {
 }
 
 function initDrawerLocate(callback = () => { }) {
-    var view = document.querySelector("#PathCanvas");
-    var app;
-    app = ForgeDraw.init(view, viewer, function () {
+    const view = document.querySelector("#PathCanvas");
+    ForgeDraw.init(view, viewer, function () {
         ForgeDraw.setControl(ForgeDraw.Control.DEVICE);
         view.addEventListener("fd.devicepoint.change", function (event) {
             let fos = event.detail;
@@ -150,15 +149,20 @@ async function LocateClickEvent(callback = () => { }) {
             console.log(res);
             toggleLocateState(true);
             viewerUrl = window.location.origin + res.PathSample.BIMPath;
-            if (viewer) {
-                viewer.loadModel(viewerUrl, { keepCurrentModels: false },
+            if (viewer != null) {
+                /*viewer.loadModel(viewerUrl, { keepCurrentModels: false },
                     (res) => { console.log(res) },
                     (err) => { console.log(err) }
-                );
+                );*/
+                DestroyViewerAndForgeDraw()
             }
-            else {
-                initializeViewer(initDrawerLocate.bind(null, callback));
-            }
+
+            initializeViewer({
+                BIMPath: res.BIMPath,
+                BeaconPath: null,
+                callback: () => { initDrawerLocate(callback) }
+            });
+
         },
         error: (err) => { console.log(err) }
     })

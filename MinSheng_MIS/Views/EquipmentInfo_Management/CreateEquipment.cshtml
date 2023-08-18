@@ -1,7 +1,28 @@
 ﻿@{
     ViewBag.Title = "新增設備";
 }
-<link rel="stylesheet" href="/Content/samplepath.css">
+@section styles{
+    <link rel="stylesheet" href="/Content/samplepath.css">
+    <!-- Autodesk Forge -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+        type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
+    <script language="JavaScript"
+        src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
+    <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
+    <script language="JavaScript" src="/Scripts/Forge/UpViewer.js" defer></script>
+
+    <!-- PIXI Draw -->
+    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
+    <script src="/Scripts/ForgeDraw.js" defer></script>
+    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
+
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+    <script src="/Scripts/Forge/CreateDevice.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -130,78 +151,66 @@
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
-<!-- Autodesk Forge -->
-<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
-    type="text/css">
-<script language="JavaScript"
-    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
-<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
-<!-- PIXI Draw -->
-<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
-<script src="/Scripts/ForgeDraw.js"></script>
-<!-- Event -->
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/AreaFloorEvent.js"></script>
-<script src="/Scripts/Forge/CreateDevice.js"></script>
-<script>
-    $(async function () {
-        await AreaFloorEvent();
-        await pushSelect("System", '@Url.Action("System", "DropDownList")');
-        const Systems = document.getElementById('System')
-        Systems.addEventListener("change", function () {
-            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-        });
-        addButtonEvent();
-    });
-
-    function save() {
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("todo save():", isValidity)
-        if (!isValidity) return;
-        if (!$("#LocationX").val() || !$("#LocationX").val()) return;
-
-        const fd = new FormData();
-
-        fd.append("ASN", $("#ASN").val())
-        fd.append("FSN", $("#FSN").val())
-        fd.append("RoomName", $("#RoomName").val())
-        fd.append("System", $("#System").val())
-        fd.append("SubSystem", $("#SubSystem").val())
-        fd.append("PropertyCode", $("#PropertyCode").val())
-        fd.append("EName", $("#EName").val())
-        fd.append("Brand", $("#Brand").val())
-        fd.append("Model", $("#Model").val())
-        fd.append("LocationX", $("#LocationX").val())
-        fd.append("LocationY", $("#LocationY").val())
-        fd.append("FilePath", deviceFileModal.file)
-
-        console.log(Object.fromEntries(fd.entries()));
-
-        if (!fd) return;
-
-        $.ajax({
-            url: "/EquipmentInfo_Management/Create",
-            data: fd,//JSON.stringify(fd),
-            type: "POST",
-            contentType: false,
-            processData: false,
-            //dataType: "json",
-            //contentType: "application/json;charset=utf-8",
-            success: onSuccess,
-            error: onError
-        })
-
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+@section scripts{
+    <script>
+        $(async function () {
+            await AreaFloorEvent();
+            await pushSelect("System", '@Url.Action("System", "DropDownList")');
+            const Systems = document.getElementById('System')
+            Systems.addEventListener("change", function () {
+                pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
             });
+            addButtonEvent();
+        });
+
+        function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
+            if (!$("#LocationX").val() || !$("#LocationX").val()) return;
+
+            const fd = new FormData();
+
+            fd.append("ASN", $("#ASN").val())
+            fd.append("FSN", $("#FSN").val())
+            fd.append("RoomName", $("#RoomName").val())
+            fd.append("System", $("#System").val())
+            fd.append("SubSystem", $("#SubSystem").val())
+            fd.append("PropertyCode", $("#PropertyCode").val())
+            fd.append("EName", $("#EName").val())
+            fd.append("Brand", $("#Brand").val())
+            fd.append("Model", $("#Model").val())
+            fd.append("LocationX", $("#LocationX").val())
+            fd.append("LocationY", $("#LocationY").val())
+            fd.append("FilePath", deviceFileModal.file)
+
+            console.log(Object.fromEntries(fd.entries()));
+
+            if (!fd) return;
+
+            $.ajax({
+                url: "/EquipmentInfo_Management/Create",
+                data: fd,//JSON.stringify(fd),
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //dataType: "json",
+                //contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+            }
         }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
-        }
-    }
-</script>
+    </script>
+}

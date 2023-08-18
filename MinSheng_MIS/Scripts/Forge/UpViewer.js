@@ -24,6 +24,10 @@ async function initializeViewer({
         }
     }
     viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('viewer3d'), { profileSettings });
+    viewer.loadExtension("Viewer.Loading", {
+        loader: `<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>`
+    })
+
     Autodesk.Viewing.Private.InitParametersSetting.alpha = true;
     const options = {
         keepCurrentModels: true,
@@ -50,6 +54,7 @@ async function initializeViewer({
         viewer.setBackgroundOpacity(0);
         viewer.setBackgroundColor();
         viewer.setLightPreset(16); //設定環境光源 = 雪地
+        viewer.toolkit.removeAllToolbarControl()
 
         const ViewCubeUi = await viewer.loadExtension("Autodesk.ViewCubeUi")
         ViewCubeUi.setVisible(false);
@@ -59,10 +64,11 @@ async function initializeViewer({
         for (const model of models) {
             await onLoadDone(model)
         }
-
         viewer.loading.hide()
 
-        callback()
+        setTimeout(() => {
+            callback()
+        }, 500)
 
         /* const Wireframes = await viewer.loadExtension("Autodesk.Viewing.Wireframes")
         Wireframes.activate();

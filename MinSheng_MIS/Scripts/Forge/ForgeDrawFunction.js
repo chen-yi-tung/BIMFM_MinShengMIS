@@ -162,6 +162,19 @@ function loadModel(url, pathID, onload) {
     );
 }
 
+function DestroyViewerAndForgeDraw() {
+    viewer.tearDown()
+    viewer.finish()
+    viewer = null
+    $("#viewer3d").empty();
+
+    ForgeDraw.destroy();
+    ForgeDraw = null;
+    ForgeDraw = ForgeDrawController();
+
+    document.getElementById('viewer3d').insertAdjacentHTML('afterend', `<canvas id="PathCanvas"></canvas>`)
+}
+
 /**
  * 根據資料生成藍芽資料點
  * @param {object[]} data 

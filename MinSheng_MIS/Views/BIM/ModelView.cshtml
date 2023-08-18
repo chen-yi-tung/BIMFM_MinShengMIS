@@ -195,16 +195,7 @@
                     contentType: "application/json;charset=utf-8",
                     success: (res) => {
                         if (viewer != null) {
-                            viewer.tearDown()
-                            viewer.finish()
-                            viewer = null
-                            $("#viewer3d").empty();
-
-                            ForgeDraw.destroy();
-                            ForgeDraw = null;
-                            ForgeDraw = ForgeDrawController();
-
-                            document.getElementById('viewer3d').insertAdjacentHTML('afterend', `<canvas id="PathCanvas"></canvas>`)
+                            DestroyViewerAndForgeDraw()
                         }
                         let { BIMPath, BeaconPath } = res
                         initializeViewer({ BIMPath, BeaconPath, callback() { initializeDrawer(res) } })

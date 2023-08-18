@@ -193,6 +193,10 @@
     background: none !important;
 }
 
+.forge-spinner{
+    display: none !important;
+}
+
 .viewer3Dcontainer {
     position: relative;
     margin: 0;

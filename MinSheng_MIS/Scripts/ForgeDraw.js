@@ -1042,7 +1042,7 @@ function ForgeDrawController() {
                 self.off("pointerup", self.onUpEvent);
 
                 let w = forgeViewer.clientToWorld(movingPoint.position.x, movingPoint.position.y);
-
+                //need debug: maybe models error
                 if (!(w && w.point)) {
                     layer.point.removeChild(movingPoint.container)
                     if (lineData.length !== 0) { layer.line.removeChild(movingLine.container) }
