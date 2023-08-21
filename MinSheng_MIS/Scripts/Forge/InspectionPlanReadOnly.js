@@ -1,4 +1,4 @@
-﻿function initializeDrawer() {
+﻿function initializeDrawer(pathID = 1, firstLoad = true) {
     const view = document.querySelector("#PathCanvas");
     ForgeDraw.setDrawSetting("point.contextMenu.button", [{
         name: "詳細",
@@ -20,11 +20,11 @@
         let pathData = JSON.parse(sessionStorage.getItem(`P1_pathData`))
 
         createBeacons(pathData.PathSample.Beacon);
-        createDevices(1);
+        createDevices(pathID);
         createLinePath(pathData.PathSampleRecord);
-        updatePathDisplay(pathData.PathSampleOrder, 1);
+        updatePathDisplay(pathData.PathSampleOrder, pathID);
 
-        addTooltip(true);
+        firstLoad && addTooltip(true);
     });
 }
 

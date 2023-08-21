@@ -146,6 +146,7 @@ namespace MinSheng_MIS.Models.ViewModels
 					{"FSN", IPP_item.FSN },
 					{"PathTitle", IPP_item.PathTitle },
 					{"BIMPath", FI_SourceTable.BIMPath },
+					{"BeaconPath", FI_SourceTable.BeaconPath },
 					{"Beacon",Beacon_ja }
 				}; //路徑資訊
 				#endregion
