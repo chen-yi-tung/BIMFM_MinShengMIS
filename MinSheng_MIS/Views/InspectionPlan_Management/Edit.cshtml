@@ -1,13 +1,41 @@
 ﻿@{
     ViewBag.Title = "編輯巡檢計畫";
 }
+@section styles{
+    @Styles.Render("~/Content/easyui/themes/default/easyui.css")
+    <link rel="stylesheet" href="/Content/samplepath.css">
+    <link rel="stylesheet" href="/Content/tagbox.css">
+    <link rel="stylesheet" href="/Content/datagrid-modal.css">
+    <!-- Autodesk Forge -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+        type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<link rel="stylesheet" href="/Content/samplepath.css">
-<link rel="stylesheet" href="/Content/tagbox.css">
-<link rel="stylesheet" href="/Content/datagrid-modal.css">
+    <script src="/Content/easyui/jquery.min.js" defer></script>
+    <script src="/Content/easyui/jquery.easyui.min.js" defer></script>
+
+    <script language="JavaScript"
+        src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
+    <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
+    <script src="/Scripts/Forge/UpViewer.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+
+    <!-- PIXI Draw -->
+    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
+    <script src="/Scripts/ForgeDraw.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
+
+    <!-- Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
+    <script src="/Scripts/Forge/SortRouteModal.js" defer></script>
+
+
+    <script src="/Scripts/Forge/InspectionPlan.js" defer></script>
+    <script src="/Scripts/InspectionPlan/CreateDataGrids.js" defer></script>
+    <script src="/Scripts/InspectionPlan/Create.js" defer></script>
+}
 
 <div class="spinner-area">
     <div class="spinner-border" role="status">
@@ -425,8 +453,8 @@
                         </div>
                         <div class="form-group w-lg-250px">
                             <label for="SaveSamplePathForm_PathTitle">模板名稱</label>
-                            <input class="form-control" id="SaveSamplePathForm_PathTitle" name="PathTitle"
-                                type="text" maxlength="50"/>
+                            <input class="form-control" id="SaveSamplePathForm_PathTitle" name="PathTitle" type="text"
+                                maxlength="50" />
                         </div>
                     </form>
                 </div>
@@ -448,30 +476,6 @@
         </div>
     </div>
 </div>
-
-<!-- Autodesk Forge -->
-<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
-    type="text/css">
-<script language="JavaScript"
-    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
-<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
-
-<!-- PIXI Draw -->
-<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
-<script src="/Scripts/ForgeDraw.js"></script>
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/Forge/ForgeDrawFunction.js"></script>
-
-<!-- Drag and Drop -->
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="/Scripts/Forge/SortRouteModal.js"></script>
-
-<script src="/Scripts/Forge/InspectionPlan.js"></script>
-
-<!-- EVENT -->
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/InspectionPlan/CreateDataGrids.js"></script>
-<script src="/Scripts/InspectionPlan/Create.js"></script>
 
 <!-- Edit readData -->
 <script>
@@ -779,8 +783,13 @@
             $(".sample-path-draw-area").removeClass('d-none');
 
             $("#current-path-id").val(1);
-            viewerUrl = window.location.origin + res.InspectionPlanPaths[0].PathSample.BIMPath;
-            initializeViewer(initializeDrawer);
+
+            let { BIMPath, BeaconPath } = res.InspectionPlanPaths[0].PathSample
+
+            initializeViewer({
+                BIMPath, BeaconPath,
+                callback: () => { initializeDrawer(1, true) }
+            });
         }
         function onError(res) {
             console.log(res);

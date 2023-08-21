@@ -141,7 +141,7 @@ function updatePathDisplay(path = undefined, pathID = null, selector = "#current
  * @param {string | number} pathID 
  * @param {function(pathID)} onload 
  */
-function loadModel(url, pathID, onload) {
+function loadModel(BIMPath, BeaconPath, pathID, onload) {
     ForgeDraw.removeAllDevice();
     ForgeDraw.removeAllData();
 
@@ -149,7 +149,9 @@ function loadModel(url, pathID, onload) {
     $(".sample-path-draw-area").removeClass('d-none')
     togglePointerEvent(false);
 
-    viewer.loadModel(url, { keepCurrentModels: false },
+    initializeViewer({ BIMPath, BeaconPath, callback() { initializeDrawer(res) } })
+
+    /*viewer.loadModel(url, { keepCurrentModels: false },
         () => {
             $(viewer).one(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, () => {
                 $(viewer).one(Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT, () => {
@@ -159,9 +161,12 @@ function loadModel(url, pathID, onload) {
             })
         },
         (err) => { console.log(err) }
-    );
+    );*/
 }
 
+/**
+ * 摧毀Viewer跟ForgeDraw
+ */
 function DestroyViewerAndForgeDraw() {
     viewer.tearDown()
     viewer.finish()
@@ -383,13 +388,22 @@ function createPath(selector) {
 
                     sessionStorage.setItem(`P${pathID}_pathData`, JSON.stringify(res));
 
-                    viewerUrl = window.location.origin + res.PathSample.BIMPath;
-                    if (viewer) {
-                        loadModel(viewerUrl, pathID, loadPath);
+                    let firstLoad = true
+
+                    if (viewer != null) {
+                        firstLoad = false
+                        DestroyViewerAndForgeDraw()
                     }
-                    else {
-                        initializeViewer(initializeDrawer);
-                    }
+
+                    const { BIMPath, BeaconPath } = res.PathSample
+
+                    initializeViewer({
+                        BIMPath, BeaconPath,
+                        callback: () => {
+                            initializeDrawer(pathID, firstLoad)
+                        }
+                    });
+
                 },
                 error: (err) => { console.log(err) }
             })
@@ -723,7 +737,7 @@ function addSaveSamplePathEvent() {
 
         function putImageToModal() {
             const canvas = document.querySelector("#screenshot-canvas");
-            let rect = view.getBoundingClientRect();
+            let rect = document.getElementById("PathCanvas").getBoundingClientRect();
             canvas.width = rect.width;
             canvas.height = rect.height;
             const ctx = canvas.getContext('2d');

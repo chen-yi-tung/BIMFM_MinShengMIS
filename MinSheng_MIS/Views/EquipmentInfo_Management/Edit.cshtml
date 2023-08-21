@@ -1,7 +1,28 @@
 ﻿@{
     ViewBag.Title = "編輯設備";
 }
-<link rel="stylesheet" href="/Content/samplepath.css">
+@section styles{
+    <link rel="stylesheet" href="/Content/samplepath.css">
+    <!-- Autodesk Forge -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+        type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
+    <script language="JavaScript"
+        src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
+    <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
+    <script language="JavaScript" src="/Scripts/Forge/UpViewer.js" defer></script>
+
+    <!-- PIXI Draw -->
+    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
+    <script src="/Scripts/ForgeDraw.js" defer></script>
+    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
+
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+    <script src="/Scripts/Forge/CreateDevice.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -115,10 +136,9 @@
         </div>
         <div class="w-100 position-relative">
             <div class="viewer3Dcontainer">
-                <div id="viewer3d" style="margin:0;">
-                    <div id="current-path-areafloor"></div>
-                </div>
+                <div id="viewer3d" style="margin:0;"></div>
                 <canvas id="PathCanvas"></canvas>
+                <div id="current-path-areafloor"></div>
             </div>
         </div>
     </div>
@@ -131,20 +151,6 @@
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
-<!-- Autodesk Forge -->
-<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
-    type="text/css">
-<script language="JavaScript"
-    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
-<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
-<!-- PIXI Draw -->
-<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
-<script src="/Scripts/ForgeDraw.js"></script>
-<!-- Event -->
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/AreaFloorEvent.js"></script>
-<script src="/Scripts/Forge/CreateDevice.js"></script>
 <script>
     const ESN = '@ViewBag.id';
     //let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
@@ -213,10 +219,7 @@
             }
 
             LocateClickEvent(() => {
-                let forgePos = new THREE.Vector3(res.LocationX, res.LocationY, 0);
-                let pos = viewer.worldToClient(forgePos);
-                let position = new PIXI.Point(pos.x, pos.y);
-                ForgeDraw.readLineData([{ position, forgePos }]);
+                ForgeDraw.readDevicePos(res);
             });
         }
         function onError(res) {

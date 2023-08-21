@@ -1,7 +1,5 @@
-﻿var view = document.querySelector("#PathCanvas");
-var app;
-
-function initializeDrawer() {
+﻿function initializeDrawer() {
+    const view = document.querySelector("#PathCanvas");
     ForgeDraw.setDrawSetting("point.contextMenu.button", [{
         name: "詳細",
         onClick: function (event, point) {
@@ -17,7 +15,7 @@ function initializeDrawer() {
         }
     }]);
 
-    app = ForgeDraw.init(view, viewer, function () {
+    ForgeDraw.init(view, viewer, function () {
         ForgeDraw.setControl(ForgeDraw.Control.READONLY);
         let pathData = JSON.parse(sessionStorage.getItem(`P1_pathData`))
 
@@ -40,10 +38,20 @@ window.addEventListener('load', function () {
                 let pathID = $(e.target).closest(".sample-path-group").attr("data-path-id");
                 let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
                 $("#current-path-title").val(pathData.PathSample.PathTitle);
-                loadModel(
-                    window.location.origin + pathData.PathSample.BIMPath,
-                    pathID,
-                    loadPath)
+
+                let firstLoad = true
+                if (viewer != null) {
+                    firstLoad = false
+                    DestroyViewerAndForgeDraw()
+                }
+
+                const { BIMPath, BeaconPath } = pathData.PathSample
+                initializeViewer({
+                    BIMPath, BeaconPath,
+                    callback: () => {
+                        initializeDrawer(pathID, firstLoad)
+                    }
+                });
             }
         }
     })

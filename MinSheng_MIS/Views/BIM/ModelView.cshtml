@@ -2,7 +2,7 @@
     ViewBag.Title = "ModelView";
 }
 @section styles{
-    <link rel="stylesheet" href="/Content/samplepath.css">
+    @* <link rel="stylesheet" href="/Content/samplepath.css"> *@
     <style>
         .adsk-viewing-viewer {
             background: none !important;
@@ -44,7 +44,7 @@
 
 <div class="viewer3Dcontainer">
     <div id="viewer3d"></div>
-    <canvas id="PathCanvas"></canvas>
+    @* <canvas id="PathCanvas"></canvas> *@
     <div class="d-flex gap-3 position-absolute top-0 start-0 p-4" style="z-index: 1030;">
         <div class="form-group required">
             <label for="ASN">棟別</label>
@@ -118,9 +118,9 @@
                 }
                 viewer.loading.hide()
 
-                setTimeout(() => {
+                @* setTimeout(() => {
                     callback()
-                }, 500)
+                }, 500) *@
             });
 
             async function onLoadDone(model) {
@@ -146,17 +146,17 @@
         var sortRouteModal;
 
         function initializeDrawer(data) {
-            const pathCanvas = document.querySelector("#PathCanvas");
-            ForgeDraw.init(pathCanvas, viewer, function () {
-                pathCanvas.addEventListener("fd.point.detecterror", function (event) {
+            const view = document.querySelector("#PathCanvas");
+            ForgeDraw.init(view, viewer, function () {
+                view.addEventListener("fd.point.detecterror", function (event) {
                     console.log("view => fd.point.detecterror");
                     createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
                 });
-                pathCanvas.addEventListener("fd.linedata.change", function (event) {
+                view.addEventListener("fd.linedata.change", function (event) {
                     console.log("view => fd.linedata.change");
                     updatePathDisplay(calcPath());
                 });
-                pathCanvas.addEventListener("fd.linedata.detail", function (event) {
+                view.addEventListener("fd.linedata.detail", function (event) {
                     console.log("view => fd.linedata.detail", event.detail);
                     if (event.detail instanceof ForgeDraw.DevicePoint) {
                         createDevicePointDetailModal(event.detail);
@@ -165,7 +165,7 @@
                         createPointDetailModal(event.detail);
                     }
                 });
-                pathCanvas.addEventListener("fd.devicepoint.ignore", function (event) {
+                view.addEventListener("fd.devicepoint.ignore", function (event) {
                     console.log("view => fd.devicepoint.ignore");
                     updatePathDisplay(calcPath());
                 });

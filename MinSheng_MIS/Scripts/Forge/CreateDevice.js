@@ -148,17 +148,12 @@ async function LocateClickEvent(callback = () => { }) {
         success: (res) => {
             console.log(res);
             toggleLocateState(true);
-            viewerUrl = window.location.origin + res.PathSample.BIMPath;
             if (viewer != null) {
-                /*viewer.loadModel(viewerUrl, { keepCurrentModels: false },
-                    (res) => { console.log(res) },
-                    (err) => { console.log(err) }
-                );*/
                 DestroyViewerAndForgeDraw()
             }
 
             initializeViewer({
-                BIMPath: res.BIMPath,
+                BIMPath: res.PathSample.BIMPath,
                 BeaconPath: null,
                 callback: () => { initDrawerLocate(callback) }
             });

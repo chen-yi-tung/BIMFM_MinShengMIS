@@ -1,7 +1,26 @@
 ﻿@{
     ViewBag.Title = "巡檢路線模板刪除";
 }
-<link rel="stylesheet" href="/Content/samplepath.css">
+@section styles{
+    <link rel="stylesheet" href="/Content/samplepath.css">
+    <!-- Autodesk Forge -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+        type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
+    <script language="JavaScript"
+        src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
+    <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
+    <script src="/Scripts/Forge/UpViewer.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+
+    <!-- PIXI Draw -->
+    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
+    <script src="/Scripts/ForgeDraw.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
+    <script src="/Scripts/Forge/SamplePathReadOnly.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -42,22 +61,6 @@
     <button class="btn btn-delete" id="delete">刪除</button>
 </div>
 
-<!-- Autodesk Forge -->
-<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
-    type="text/css">
-<script language="JavaScript"
-    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
-<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
-
-<!-- PIXI Draw -->
-<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
-<script src="/Scripts/ForgeDraw.js"></script>
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/Forge/ForgeDrawFunction.js"></script>
-<script src="/Scripts/Forge/SamplePathReadOnly.js"></script>
-
-<!-- EVENT -->
-<script src="../../Scripts/tool.js"></script>
 <script>
     const PSSN = '@ViewBag.PSSN';
     let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
@@ -84,7 +87,7 @@
         async function onSuccess(res) {
             console.log(res);
             fakeData = res;
-            let ps = res.PathSample;
+            const ps = res.PathSample;
 
             $("#PSSN").val(ps.PSSN);
 
@@ -97,9 +100,11 @@
             )
 
             $("#current-path-title").text(ps.PathTitle);
-
-            viewerUrl = window.location.origin + ps.BIMPath;
-            initializeViewer(initializeDrawer);
+            const { BIMPath, BeaconPath } = ps;
+            initializeViewer({
+                BIMPath, BeaconPath,
+                callback: () => { initializeDrawer(res) }
+            });
         }
         function onError(res) {
             console.log(res);

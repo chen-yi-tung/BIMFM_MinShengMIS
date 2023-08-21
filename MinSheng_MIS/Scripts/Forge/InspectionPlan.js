@@ -1,11 +1,8 @@
-﻿var view = document.querySelector("#PathCanvas");
-var app;
-var stage;
+﻿let sortRouteModal;
 
-const sortRouteModal = new SortRouteModal({ onSave: updatePathDisplay });
-
-function initializeDrawer() {
-    app = ForgeDraw.init(view, viewer, function () {
+function initializeDrawer(pathID = 1, firstLoad = true) {
+    const view = document.querySelector("#PathCanvas");
+    ForgeDraw.init(view, viewer, function () {
         view.addEventListener("fd.point.detecterror", function (event) {
             console.log("view => fd.point.detecterror");
             createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
@@ -28,20 +25,23 @@ function initializeDrawer() {
             updatePathDisplay(calcPath());
         });
 
-        let pathData = JSON.parse(sessionStorage.getItem(`P1_pathData`))
+        let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
 
         createBeacons(pathData.PathSample.Beacon);
-        createDevices(1);
+        createDevices(pathID);
         createLinePath(pathData.PathSampleRecord);
-        updatePathDisplay(pathData.PathSampleOrder, 1);
+        updatePathDisplay(pathData.PathSampleOrder, pathID);
 
-        addToolbarEvent();
-        addTooltip(true);
+        if (firstLoad){
+            addToolbarEvent();
+            addTooltip(true);
+        }
         togglePointerEvent(true);
     });
 }
 
 window.addEventListener('load', function () {
+    sortRouteModal = new SortRouteModal({ onSave: updatePathDisplay });
     pathGroup.setSetting({
         delete: true,
         sortable: true,
@@ -62,11 +62,23 @@ window.addEventListener('load', function () {
                     let pathID = $(e.target).closest(".sample-path-group").attr("data-path-id");
                     let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
                     $("#current-path-title").val(pathData.PathSample.PathTitle);
+
+                    $(".sample-path-draw-area").removeClass("d-none");
                     sortRouteModal.autoRouteToggle(false);
-                    loadModel(
-                        window.location.origin + pathData.PathSample.BIMPath,
-                        pathID,
-                        loadPath)
+
+                    let firstLoad = true
+                    if (viewer != null) {
+                        firstLoad = false
+                        DestroyViewerAndForgeDraw()
+                    }
+
+                    const { BIMPath, BeaconPath } = pathData.PathSample
+                    initializeViewer({
+                        BIMPath, BeaconPath,
+                        callback: () => {
+                            initializeDrawer(pathID, firstLoad)
+                        }
+                    });
                 }
 
             }

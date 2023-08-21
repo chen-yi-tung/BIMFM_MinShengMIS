@@ -42,8 +42,11 @@ async function initializeViewer({
 
         //load urns
         const models = await Promise.all(urns.map((url) => {
-            return new Promise(async (resolve) => {
-                if (url == null || url == undefined || url == "") return;
+            return new Promise(async (resolve, reject) => {
+                if (url == null || url == undefined || url == "") {
+                    resolve(null)
+                    return
+                };
                 viewer.loadModel(window.location.origin + url, options,
                     async (model) => { await viewer.waitForLoadDone(); resolve(model); })
             })
@@ -51,6 +54,7 @@ async function initializeViewer({
         console.log(models)
 
         //setting 3d view env
+        viewer.setGroundShadow(false);
         viewer.setBackgroundOpacity(0);
         viewer.setBackgroundColor();
         viewer.setLightPreset(16); //設定環境光源 = 雪地
@@ -59,7 +63,7 @@ async function initializeViewer({
         const ViewCubeUi = await viewer.loadExtension("Autodesk.ViewCubeUi")
         ViewCubeUi.setVisible(false);
 
-        viewer.toolkit.autoFitModelsTop(models, 2, true)
+        viewer.toolkit.autoFitModelsTop(models.filter(e=>e), 2, true)
 
         for (const model of models) {
             await onLoadDone(model)
@@ -79,6 +83,7 @@ async function initializeViewer({
     });
 
     async function onLoadDone(model) {
+        if (model == null) return
         console.log("Model LoadDone", model.loader.basePath.split("/").at(-2));
 
         if (model.loader.basePath.includes("Beacon")) {

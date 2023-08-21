@@ -3,11 +3,9 @@
 //import '/Scripts/Forge/UpViewer.js'
 //import '/Scripts/Forge/ForgeDrawFunction.js'
 
-var view = document.querySelector("#PathCanvas");
-var app;
-var stage;
 
-function initializeDrawer() {
+function initializeDrawer(data) {
+    var view = document.querySelector("#PathCanvas");
     ForgeDraw.setDrawSetting("point.contextMenu.button", [{
         name: "詳細",
         onClick: function (event, point) {
@@ -23,18 +21,12 @@ function initializeDrawer() {
         }
     }]);
 
-    app = ForgeDraw.init(view, viewer, function () {
+    ForgeDraw.init(view, viewer, function () {
         ForgeDraw.setControl(ForgeDraw.Control.READONLY);
-
-        createBeacons(fakeData.PathSample.BIMDevices)
-
-        createLinePath(fakeData.PathSampleRecord);
-
-
-        updatePathDisplay(fakeData.PathSampleOrder);
+        createBeacons(data.PathSample.BIMDevices)
+        createLinePath(data.PathSampleRecord);
+        updatePathDisplay(data.PathSampleOrder);
     });
 
-    window.addEventListener("resize",function () {
-        ForgeDraw.resize();
-    })
+    window.addEventListener("resize", function () { ForgeDraw.resize(); })
 }

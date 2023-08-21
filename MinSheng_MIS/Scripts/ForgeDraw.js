@@ -258,6 +258,18 @@ function ForgeDrawController() {
         updatePoints();
     }
 
+    function readDevicePos({ LocationX = 0, LocationY = 0 }) {
+        let forgePos = new THREE.Vector3(LocationX, LocationY, 0);
+        let pos = viewer.worldToClient(forgePos);
+        let position = new PIXI.Point(pos.x, pos.y);
+
+        stage.onDownEvent.call(
+            ForgeDraw.stage.container,
+            { global: position }
+        )
+        stage.onDeviceUpEvent.call(ForgeDraw.stage.container);
+    }
+
     function updatePoints() {
         lineData.forEach((e, i, arr) => {
             if (i == 0) {
@@ -308,7 +320,9 @@ function ForgeDrawController() {
     }
 
     function getRoute() {
-        const fvd = getForgeVectorDistance();
+        const detectionDistance = 20;
+        const fvd = getForgeVectorDistance() * detectionDistance;
+
         let result = lineData.map((e, i, arr) => {
             if (arr.length - 1 == i) { return []; }
             let a = e.position;
@@ -316,7 +330,7 @@ function ForgeDrawController() {
             return devices.map((d) => {
                 let p = findNearest(d.position, a, b);
                 let r = twoPointDistance(d.position, p);
-                if (r < 20 * fvd) {
+                if (r < fvd) {
                     return {
                         name: d.name,
                         line: i,
@@ -362,8 +376,9 @@ function ForgeDrawController() {
             return Math.sqrt(Math.pow((p1.x - p2.x), 2) + Math.pow((p1.y - p2.y), 2));
         }
         function getForgeVectorDistance() {
+            let s = viewer.model.getUnitScale();
             let a = viewer.worldToClient(new THREE.Vector3(0, 0, 0));
-            let b = viewer.worldToClient(new THREE.Vector3(1, 0, 0));
+            let b = viewer.worldToClient(new THREE.Vector3(s, 0, 0));
             let pa = new PIXI.Point(a.x, a.y);
             let pb = new PIXI.Point(b.x, b.y);
             return twoPointDistance(pa, pb);
@@ -717,6 +732,7 @@ function ForgeDrawController() {
             this.sprite = this.options.sprite;
             this.position = data.position ?? new PIXI.Point(0, 0);
             this.forgePos = data.forgePos ?? new THREE.Vector3(0, 0, 0);
+            this.detectionDistance = 20;
             this.isUpdate = true;
             this.result = undefined;
             this.create();
@@ -853,7 +869,7 @@ function ForgeDrawController() {
                 let b = arr[i + 1].position;
                 let p = this.findNearest(this.position, a, b);
                 let r = this.twoPointDistance(this.position, p);
-                if (result.r > r && r < 20 * this.getForgeVectorDistance()) {
+                if (result.r > r && r < this.detectionDistance * this.getForgeVectorDistance()) {
                     result = {
                         i: i,
                         r: r,
@@ -925,8 +941,9 @@ function ForgeDrawController() {
             return Math.sqrt(Math.pow((p1.x - p2.x), 2) + Math.pow((p1.y - p2.y), 2));
         }
         getForgeVectorDistance() {
+            let s = viewer.model.getUnitScale();
             let a = viewer.worldToClient(new THREE.Vector3(0, 0, 0));
-            let b = viewer.worldToClient(new THREE.Vector3(1, 0, 0));
+            let b = viewer.worldToClient(new THREE.Vector3(s, 0, 0));
             let pa = new PIXI.Point(a.x, a.y);
             let pb = new PIXI.Point(b.x, b.y);
             return this.twoPointDistance(pa, pb);
@@ -1128,6 +1145,7 @@ function ForgeDrawController() {
         "resize": resize,
         "destroy": destroy,
         "readLineData": readLineData,
+        "readDevicePos": readDevicePos,
         "removeAllData": removeAllData,
         "removeAllDevice": removeAllDevice,
         "getRoute": getRoute,

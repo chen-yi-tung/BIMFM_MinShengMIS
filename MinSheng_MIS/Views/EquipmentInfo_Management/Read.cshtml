@@ -1,7 +1,25 @@
 ﻿@{
     ViewBag.Title = "設備詳情";
 }
-<link rel="stylesheet" href="/Content/samplepath.css">
+@section styles{
+    <link rel="stylesheet" href="/Content/samplepath.css">
+    <!-- Autodesk Forge -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+        type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
+    <script language="JavaScript"
+        src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
+    <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
+    <script language="JavaScript" src="/Scripts/Forge/UpViewer.js" defer></script>
+
+    <!-- PIXI Draw -->
+    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
+    <script src="/Scripts/ForgeDraw.js" defer></script>
+
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 <div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
@@ -9,18 +27,6 @@
         <table class="datatable-table"></table>
     </div>
 </div>
-
-<script src="/Scripts/datatable.js"></script>
-
-<!-- Autodesk Forge -->
-<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.4"
-    type="text/css">
-<script language="JavaScript"
-    src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.4"></script>
-<script language="JavaScript" src="/Scripts/Forge/UpViewer.js"></script>
-<!-- PIXI Draw -->
-<script src="https://pixijs.download/v7.2.2/pixi.js"></script>
-<script src="/Scripts/ForgeDraw.js"></script>
 
 <script>
     const ESN = '@ViewBag.id';
@@ -61,10 +67,9 @@
             text: "設備定位", value: "HasLocation", formatter: (v) => {
                 return v != null ? `
                 <div class="viewer3Dcontainer">
-                    <div id="viewer3d" style="margin:0;">
-                        <div id="current-path-areafloor"></div>
-                    </div>
+                    <div id="viewer3d" style="margin:0;"></div>
                     <canvas id="PathCanvas"></canvas>
+                    <div id="current-path-areafloor"></div>
                 </div>
                 `: '';
             }
@@ -110,22 +115,10 @@
                 contentType: "application/json;charset=utf-8",
                 success: (PathData) => {
                     console.log(PathData);
-                    viewerUrl = window.location.origin + PathData.PathSample.BIMPath;
-                    initializeViewer(() => {
-                        var view = document.querySelector("#PathCanvas");
-                        ForgeDraw.init(view, viewer, function () {
-                            ForgeDraw.setControl(ForgeDraw.Control.READONLY);
-
-                            let forgePos = new THREE.Vector3(res.LocationX, res.LocationY, 0);
-                            let pos = viewer.worldToClient(forgePos);
-                            let position = new PIXI.Point(pos.x, pos.y);
-                            ForgeDraw.readLineData([{ position, forgePos }]);
-                            ForgeDraw.setDrawSetting("point.contextMenu.button", []);
-                        });
-
-                        window.addEventListener("resize", function () {
-                            ForgeDraw.resize();
-                        })
+                    initializeViewer({
+                        BIMPath: PathData.PathSample.BIMPath,
+                        BeaconPath: null,
+                        callback: () => { initDrawView(res) }
                     });
                 },
                 error: (err) => { console.log(err) }
@@ -134,6 +127,22 @@
         }
         function onError(res) {
             console.log(res);
+        }
+        function initDrawView(res) {
+            const view = document.querySelector("#PathCanvas");
+            ForgeDraw.init(view, viewer, function () {
+                ForgeDraw.setControl(ForgeDraw.Control.READONLY);
+
+                let forgePos = new THREE.Vector3(res.LocationX, res.LocationY, 0);
+                let pos = viewer.worldToClient(forgePos);
+                let position = new PIXI.Point(pos.x, pos.y);
+                ForgeDraw.readLineData([{ position, forgePos }]);
+                ForgeDraw.setDrawSetting("point.contextMenu.button", []);
+            });
+
+            window.addEventListener("resize", function () {
+                ForgeDraw.resize();
+            })
         }
     }
 
