@@ -33,8 +33,6 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<CompletionReportImage> CompletionReportImage { get; set; }
-        public virtual DbSet<ComputationalStock> ComputationalStock { get; set; }
-        public virtual DbSet<DeliveryRecord> DeliveryRecord { get; set; }
         public virtual DbSet<DesignDiagrams> DesignDiagrams { get; set; }
         public virtual DbSet<DrawingSubSystemManagement> DrawingSubSystemManagement { get; set; }
         public virtual DbSet<DrawingSystemManagement> DrawingSystemManagement { get; set; }
@@ -46,9 +44,6 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<EquipmentOperatingManual> EquipmentOperatingManual { get; set; }
         public virtual DbSet<EquipmentReportForm> EquipmentReportForm { get; set; }
         public virtual DbSet<Floor_Info> Floor_Info { get; set; }
-        public virtual DbSet<InquiryOrder> InquiryOrder { get; set; }
-        public virtual DbSet<InquiryOrderItem> InquiryOrderItem { get; set; }
-        public virtual DbSet<InquiryOrderSubItem> InquiryOrderSubItem { get; set; }
         public virtual DbSet<InspectionPlan> InspectionPlan { get; set; }
         public virtual DbSet<InspectionPlanFloorPath> InspectionPlanFloorPath { get; set; }
         public virtual DbSet<InspectionPlanMaintain> InspectionPlanMaintain { get; set; }
@@ -65,25 +60,12 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<ManufacturerInfo> ManufacturerInfo { get; set; }
         public virtual DbSet<PathSample> PathSample { get; set; }
         public virtual DbSet<PathSampleOrder> PathSampleOrder { get; set; }
-        public virtual DbSet<PurchaseOrder> PurchaseOrder { get; set; }
-        public virtual DbSet<PurchaseOrderItem> PurchaseOrderItem { get; set; }
-        public virtual DbSet<PurchaseRequisition> PurchaseRequisition { get; set; }
-        public virtual DbSet<PurchaseRequisitionItem> PurchaseRequisitionItem { get; set; }
-        public virtual DbSet<Quotation> Quotation { get; set; }
-        public virtual DbSet<QuotationFiles> QuotationFiles { get; set; }
-        public virtual DbSet<QuotationItem> QuotationItem { get; set; }
         public virtual DbSet<RepairAuditImage> RepairAuditImage { get; set; }
         public virtual DbSet<RepairAuditInfo> RepairAuditInfo { get; set; }
         public virtual DbSet<RepairCompletionImage> RepairCompletionImage { get; set; }
         public virtual DbSet<RepairSupplementaryFile> RepairSupplementaryFile { get; set; }
         public virtual DbSet<RepairSupplementaryInfo> RepairSupplementaryInfo { get; set; }
         public virtual DbSet<ReportImage> ReportImage { get; set; }
-        public virtual DbSet<Stock> Stock { get; set; }
-        public virtual DbSet<StockInRecord> StockInRecord { get; set; }
-        public virtual DbSet<StockOutItem> StockOutItem { get; set; }
-        public virtual DbSet<StockOutRecord> StockOutRecord { get; set; }
-        public virtual DbSet<StoresRequisition> StoresRequisition { get; set; }
-        public virtual DbSet<StoresRequisitionItem> StoresRequisitionItem { get; set; }
         public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<SystemManagement> SystemManagement { get; set; }
