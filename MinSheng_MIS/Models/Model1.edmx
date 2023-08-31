@@ -189,7 +189,7 @@
             <PropertyRef Name="EMISN" />
           </Key>
           <Property Name="EMISN" Type="nchar" MaxLength="13" Nullable="false" />
-          <Property Name="ESN" Type="char" MaxLength="6" Nullable="false" />
+          <Property Name="ESN" Type="nvarchar" MaxLength="8" Nullable="false" />
           <Property Name="MISN" Type="char" MaxLength="6" Nullable="false" />
           <Property Name="LastTime" Type="datetime" />
           <Property Name="NextTime" Type="datetime" />
@@ -261,7 +261,7 @@
           </Key>
           <Property Name="FPSN" Type="nchar" MaxLength="15" Nullable="false" />
           <Property Name="PSN" Type="nchar" MaxLength="12" Nullable="false" />
-          <Property Name="DeviceID" Type="char" MaxLength="6" Nullable="false" />
+          <Property Name="DeviceID" Type="nvarchar" MaxLength="8" Nullable="false" />
         </EntityType>
         <EntityType Name="InspectionPlanMaintain">
           <Key>
@@ -407,7 +407,7 @@
           </Key>
           <Property Name="FPSSN" Type="nchar" MaxLength="9" Nullable="false" />
           <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
-          <Property Name="BeaconID" Type="char" MaxLength="6" Nullable="false" />
+          <Property Name="BeaconID" Type="nvarchar" MaxLength="8" Nullable="false" />
         </EntityType>
         <EntityType Name="RepairAuditImage">
           <Key>
@@ -1438,7 +1438,7 @@
             <PropertyRef Name="EMISN" />
           </Key>
           <Property Name="EMISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
-          <Property Name="ESN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="ESN" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
           <Property Name="MISN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
           <Property Name="LastTime" Type="DateTime" Precision="3" />
           <Property Name="NextTime" Type="DateTime" Precision="3" />
@@ -1521,7 +1521,7 @@
           </Key>
           <Property Name="FPSN" Type="String" Nullable="false" MaxLength="15" FixedLength="true" Unicode="true" />
           <Property Name="PSN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="true" />
-          <Property Name="DeviceID" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="DeviceID" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="InspectionPlanPath" Relationship="Bimfm_MinSheng_MISModel.FK_ImspectionPlanFloorPath_InspectionPlanPath" FromRole="InspectionPlanFloorPath" ToRole="InspectionPlanPath" />
         </EntityType>
         <EntityType Name="InspectionPlanMaintain">
@@ -1695,7 +1695,7 @@
           </Key>
           <Property Name="FPSSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
           <Property Name="PSSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
-          <Property Name="BeaconID" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="BeaconID" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="PathSample" Relationship="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" FromRole="PathSampleOrder" ToRole="PathSample" />
         </EntityType>
         <EntityType Name="RepairAuditImage">
