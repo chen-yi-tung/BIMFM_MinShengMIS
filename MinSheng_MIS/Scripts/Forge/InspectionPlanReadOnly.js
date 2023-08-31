@@ -17,7 +17,7 @@
 
     ForgeDraw.init(view, viewer, function () {
         ForgeDraw.setControl(ForgeDraw.Control.READONLY);
-        let pathData = JSON.parse(sessionStorage.getItem(`P1_pathData`))
+        let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
 
         createBeacons(pathData.PathSample.Beacon);
         createDevices(pathID);
