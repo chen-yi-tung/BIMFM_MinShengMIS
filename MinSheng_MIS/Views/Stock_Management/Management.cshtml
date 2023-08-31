@@ -77,7 +77,7 @@
         },
         {
             MinStockAmount: "50",
-            SISN: "S0001",
+            SISN: "S0002",
             StockType: "備料",
             StockName: "軸承潤滑劑",
             StockAmount: "70",
@@ -87,7 +87,7 @@
         },
         {
             MinStockAmount: "50",
-            SISN: "S0001",
+            SISN: "S0003",
             StockType: "備料",
             StockName: "軸承潤滑劑",
             StockAmount: "50",
@@ -116,20 +116,20 @@
             data: fakeData,
             method: 'GET',
             queryParams: getQueryParams(),
-            idField: 'DDSN',
+            idField: 'SISN',
             //sortName: 'ImgNum',
             frozenColumns: [[
                 dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                 dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "警戒值設定", "edit")),
             ]],
             columns: [[
-                dg.column('MinStockAmount', '警戒值數量', 180),
-                dg.column('SISN', '庫存編號', 200),
-                dg.column('StockType', '品項', 180),
-                dg.column('StockName', '品名', 180),
-                dg.column('StockAmount', '庫存實際量', 180),
-                dg.column('StockAvaliableAmount', '庫存可用數量', 180),
-                dg.column('Unit', '單位', 180),
+                dg.column('MinStockAmount', '警戒值數量', 150),
+                dg.column('SISN', '庫存編號', 160),
+                dg.column('StockType', '品項', 120),
+                dg.column('StockName', '品名', 250),
+                dg.column('StockAmount', '庫存實際量', 150),
+                dg.column('StockAvaliableAmount', '庫存可用數量', 160),
+                dg.column('Unit', '單位', 120),
             ]],
             rowStyler: (i, row) => row.StockAvaliableAmount < row.MinStockAmount ? { class: 'isMinStock' } : undefined
         })
