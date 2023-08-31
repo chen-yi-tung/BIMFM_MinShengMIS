@@ -764,14 +764,16 @@
             $("#MaintainUserID").val(res.MaintainUserID);
             $("#RepairUserID").val(res.RepairUserID);
 
-            maintainDG_Controller.changeEditAreaCss()
-            repairDG_Controller.changeEditAreaCss()
-
-            maintainDG_Controller.initResultDatagrid(maintainDG_Controller.edg)
-            repairDG_Controller.initResultDatagrid(repairDG_Controller.edg)
-
-            maintainDG_Controller.edg.datagrid('loadData', res.MaintainEquipment);
-            repairDG_Controller.edg.datagrid('loadData', res.RepairEquipment);
+            if (res.MaintainEquipment.length > 0) {
+                maintainDG_Controller.changeEditAreaCss()
+                maintainDG_Controller.initResultDatagrid(maintainDG_Controller.edg)
+                maintainDG_Controller.edg.datagrid('loadData', res.MaintainEquipment);
+            }
+            if (res.RepairEquipment.length > 0) {
+                repairDG_Controller.changeEditAreaCss()
+                repairDG_Controller.initResultDatagrid(repairDG_Controller.edg)
+                repairDG_Controller.edg.datagrid('loadData', res.RepairEquipment);
+            }
 
             getDeviceData([...res.MaintainEquipment.map(e => e.ESN), ...res.RepairEquipment.map(e => e.ESN)]);
 
@@ -797,7 +799,7 @@
     }
 
     function save() {
-        let data = getCreateSaveData();
+        let data = getCreateSaveData(IPSN);
 
         console.log(data);
 

@@ -93,7 +93,7 @@ function addButtonEvent() {
     })
 }
 
-function getCreateSaveData() {
+function getCreateSaveData(IPSN = undefined) {
 
     let IPName = $("#IPName").val(),
         PlanCreateUserID = $("#NavbarUserID").val(),
@@ -176,6 +176,10 @@ function getCreateSaveData() {
         InspectionPlanPaths: InspectionPlanPaths
     }
 
+    if (IPSN !== '' || IPSN !== undefined || IPSN !== null) {
+        data.IPSN = IPSN
+    }
+
     console.log(data);
 
     return data;
@@ -250,7 +254,6 @@ function getCreateSaveData() {
         }
         return dgc.edg.datagrid('getRows');
     }
-
     function dialogError(inner) {
         createDialogModal({ id: "DialogModal-Error", inner: inner })
     }
