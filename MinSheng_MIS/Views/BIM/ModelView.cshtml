@@ -4,6 +4,12 @@
 @section styles{
     @* <link rel="stylesheet" href="/Content/samplepath.css"> *@
     <style>
+        nav{
+            display: none !important;
+        }
+        .sidebar{
+            display: none !important;
+        }
         .adsk-viewing-viewer {
             background: none !important;
         }
@@ -14,7 +20,7 @@
             width: 100vw;
             height: 100vh;
             margin: 0;
-            background-color: #F0F8FF;
+            @* background-color: #F0F8FF; *@
         }
 
         .forge-spinner {
@@ -41,7 +47,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
     <script src="/Scripts/Forge/SortRouteModal.js" defer></script>
 }
-
+@* <div class="position-absolute pe-none p-5" style="inset:0;z-index: 1030;">
+    <h2>模型瀏覽</h2>
+</div> *@
 <div class="viewer3Dcontainer">
     <div id="viewer3d"></div>
     @* <canvas id="PathCanvas"></canvas> *@
@@ -110,9 +118,10 @@
                 viewer.setLightPreset(16); //設定環境光源 = 雪地
 
                 const ViewCubeUi = await viewer.loadExtension("Autodesk.ViewCubeUi")
-                ViewCubeUi.setVisible(false);
+                //ViewCubeUi.setVisible(false);
 
-                await viewer.toolkit.autoFitModelsTop(models, 2, true)
+                //await viewer.toolkit.autoFitModelsTop(models, 2, true)
+                viewer.fitToView()
                 for (const model of models) {
                     await onLoadDone(model)
                 }
@@ -178,9 +187,6 @@
         }
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            $("nav").addClass("d-none");
-        })
         window.addEventListener("load", () => {
             sortRouteModal = new SortRouteModal({
                 onSave: updatePathDisplay
