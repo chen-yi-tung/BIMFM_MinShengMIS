@@ -2,14 +2,18 @@
     ViewBag.Title = "ModelView";
 }
 @section styles{
-    @* <link rel="stylesheet" href="/Content/samplepath.css"> *@
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+        type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
     <style>
-        nav{
+        nav {
             display: none !important;
         }
-        .sidebar{
+
+        .sidebar {
             display: none !important;
         }
+
         .adsk-viewing-viewer {
             background: none !important;
         }
@@ -20,21 +24,89 @@
             width: 100vw;
             height: 100vh;
             margin: 0;
-            @* background-color: #F0F8FF; *@
         }
 
         .forge-spinner {
             display: none !important;
         }
+
+        .pin-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 4 !important;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .pin {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .pin[id^='pin_bluetooth-'] img {
+            transform: scale(0.6);
+        }
+
+        .pin-popover {
+            position: absolute;
+            font-size: 12px;
+            transform: translate(0%, -50%);
+            width: max-content;
+            display: block;
+
+            cursor: auto;
+            border-radius: 1.25rem;
+            background: rgba(49, 81, 147, 0.60);
+            box-shadow: 0px 5px 16px 0px rgba(0, 0, 0, 0.28);
+        }
+
+        .pin-popover:not([data-show]) {
+            display: none;
+        }
+
+        .pin-popover .popover-header {
+            border-radius: 1.25rem 1.25rem 0 0;
+            background-color: rgba(49, 81, 147, 0.60);
+            border-bottom: 2px solid #4465A3;
+            color: #fff;
+            font-size: 16px;
+            padding: 0.75em 0.75em;
+
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .pin-popover .popover-body {
+            width: 100%;
+            color: lightgray;
+            padding: 0.5rem 1rem;
+        }
+
+        .bluetooth-name {
+            background-color: #2750B9;
+            color: #fff;
+            position: absolute;
+            left: 50%;
+            top: 100%;
+            width: max-content;
+            transform: translate(-50%, -20%);
+            padding: 1px 3px;
+            border-radius: 2px;
+        }
     </style>
     <!-- Autodesk Forge -->
-    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
-        type="text/css">
-    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
     <script language="JavaScript"
         src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.meshline/1.4.0/THREE.MeshLine.min.js" defer></script>
     <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
     <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
+    <script src="/Scripts/Forge/ForgePin.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
 
     <!-- PIXI Draw -->
@@ -47,12 +119,15 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
     <script src="/Scripts/Forge/SortRouteModal.js" defer></script>
 }
-@* <div class="position-absolute pe-none p-5" style="inset:0;z-index: 1030;">
+<!-- 
+<div class="position-absolute pe-none p-5" style="inset:0;z-index: 1030;">
     <h2>模型瀏覽</h2>
-</div> *@
+</div> 
+-->
 <div class="viewer3Dcontainer">
-    <div id="viewer3d"></div>
-    @* <canvas id="PathCanvas"></canvas> *@
+    <div id="viewer3d">
+        <div class="pin-area"></div>
+    </div>
     <div class="d-flex gap-3 position-absolute top-0 start-0 p-4" style="z-index: 1030;">
         <div class="form-group required">
             <label for="ASN">棟別</label>
@@ -94,7 +169,7 @@
             Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
             viewer = new Autodesk.Viewing.GuiViewer3D(clientContainer, { profileSettings });
             viewer.loadExtension("Viewer.Loading", {
-                loader: `<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>`
+                loader: `<div class="lds-default">${Array(12).fill('<div></div>').join('')}</div>`
             })
 
             Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
@@ -117,19 +192,12 @@
                 viewer.setBackgroundColor();
                 viewer.setLightPreset(16); //設定環境光源 = 雪地
 
-                const ViewCubeUi = await viewer.loadExtension("Autodesk.ViewCubeUi")
-                //ViewCubeUi.setVisible(false);
-
-                //await viewer.toolkit.autoFitModelsTop(models, 2, true)
                 viewer.fitToView()
                 for (const model of models) {
                     await onLoadDone(model)
                 }
                 viewer.loading.hide()
-
-                @* setTimeout(() => {
-                    callback()
-                }, 500) *@
+                callback()
             });
 
             async function onLoadDone(model) {
@@ -152,62 +220,116 @@
         }
     </script>
     <script>
-        var sortRouteModal;
+        function createBeaconPoint(data) {
+            //console.log(data)
+            const model = viewer.getAllModels().find((model) => model.loader.basePath.includes("Beacon"));
+            const pins = []
+            data.forEach((d) => {
+                let position = viewer.toolkit.getBoundingBox(model, d.dbId).getCenter()
+                let pin = new ForgePin({
+                    viewer,
+                    position,
+                    data: {},
+                    img: "/Content/img/bluetooth.svg",
+                    id: `bluetooth-${d.dbId}`
+                })
 
-        function initializeDrawer(data) {
-            const view = document.querySelector("#PathCanvas");
-            ForgeDraw.init(view, viewer, function () {
-                view.addEventListener("fd.point.detecterror", function (event) {
-                    console.log("view => fd.point.detecterror");
-                    createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
-                });
-                view.addEventListener("fd.linedata.change", function (event) {
-                    console.log("view => fd.linedata.change");
-                    updatePathDisplay(calcPath());
-                });
-                view.addEventListener("fd.linedata.detail", function (event) {
-                    console.log("view => fd.linedata.detail", event.detail);
-                    if (event.detail instanceof ForgeDraw.DevicePoint) {
-                        createDevicePointDetailModal(event.detail);
-                    }
-                    else {
-                        createPointDetailModal(event.detail);
-                    }
-                });
-                view.addEventListener("fd.devicepoint.ignore", function (event) {
-                    console.log("view => fd.devicepoint.ignore");
-                    updatePathDisplay(calcPath());
-                });
+                $(pin.e).append(`<div class="bluetooth-name">${d.deviceName}</div>`)
 
-                createBeacons(data.BIMDevices);
+                pin.show()
+                pin.update()
+                pins.push(pin)
+            })
+            viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
+                pins.forEach((pin) => { pin.update() })
+            })
+        }
+        async function createSamplePath() {
+            const scene = 'SamplePath'
+            const { PathSampleRecord: data } = await getDataAsync(`/jsonSamples/samplePath_test.json`)
+            //console.log(data)
+            const box = viewer.getAllModels().reduce((total, model) => {
+                total.union(model.getBoundingBox())
+                return total
+            }, new THREE.Box3())
+            const z = box.getCenter().z - (box.getSize().z / 2) + 3
+            viewer.overlays.addScene(scene)
 
-                addToolbarEvent();
-                addTooltip(true);
+            const geometry = new THREE.Geometry();
+            const material = new THREE.LineBasicMaterial({
+                color: 0x29B6F6,
+                linewidth: 3
             });
+            data.forEach(({ LocationX: x, LocationY: y }, i) => {
+                geometry.vertices.push(new THREE.Vector3(x, y, z));
+                if (i != 0) {
+                    let { LocationX: x2, LocationY: y2 } = data[i - 1]
+                    testExtrudeGeometry(
+                        new THREE.Vector3(x2, y2, z),
+                        new THREE.Vector3(x, y, z),
+                    )
+                }
+            })
+            viewer.overlays.addMesh(new THREE.Line(geometry, material), scene)
+        }
+        async function createPathRecord() {
+            const scene = 'PathRecord'
+            const data = await getDataAsync(`/jsonSamples/pathRecord_test.json`)
+            //console.log(data)
+            viewer.overlays.addScene(scene)
+        }
+        function testExtrudeGeometry(v1, v2) {
+            const radius = 0.1
+            const shape = new THREE.Shape()
+            shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
+
+            const material = new THREE.MeshBasicMaterial({ color: 0x29B6F6 })
+            const path = new THREE.LineCurve3(v1, v2)
+
+            const geometry = new THREE.ExtrudeGeometry(shape, {
+                steps: 1,
+                depth: 1,
+                bevelEnabled: true,
+                bevelThickness: 5,
+                bevelSize: 5,
+                bevelOffset: 0,
+                bevelSegments: 3,
+                extrudePath: path
+            })
+            const mesh = new THREE.Mesh(geometry, material)
+            console.log(mesh)
+            viewer.overlays.addMesh(mesh, 'SamplePath')
         }
     </script>
     <script>
-        window.addEventListener("load", () => {
+        window.addEventListener("load", async () => {
             sortRouteModal = new SortRouteModal({
                 onSave: updatePathDisplay
             });
-            addAreaFloorEvent();
-            $("#Submit").click(() => {
-                let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val();
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: (res) => {
-                        if (viewer != null) {
-                            DestroyViewerAndForgeDraw()
-                        }
-                        let { BIMPath, BeaconPath } = res
-                        initializeViewer({ BIMPath, BeaconPath, callback() { initializeDrawer(res) } })
+            await addAreaFloorEvent();
+            $("#Submit").click(async () => {
+                let res = await getDataAsync('@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val())
+                if (viewer != null) {
+                    DestroyViewerAndForgeDraw()
+                }
+                let { BIMPath, BeaconPath } = res
+                initializeViewer({
+                    BIMPath, BeaconPath, callback() {
+                        createBeaconPoint(res.BIMDevices)
+                        createSamplePath()
+                        createPathRecord()
                     }
                 })
             })
+
+            await autoSelectModel('1', '1_2')
+
+            async function autoSelectModel(ASN, FSN) {
+                $("#ASN").val(ASN)
+                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN}`);
+                $("#FSN").val(FSN)
+                $("#Submit").click()
+            }
         })
         async function addAreaFloorEvent() {
             await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
@@ -215,6 +337,20 @@
             ASN.addEventListener("change", async function () {
                 await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
             });
+        }
+    </script>
+    <script>
+        function getDataAsync(url) {
+            return new Promise((success, error) => {
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success,
+                    error
+                })
+            })
         }
     </script>
 }

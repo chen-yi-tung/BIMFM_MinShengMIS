@@ -1643,7 +1643,10 @@
     <Content Include="BimModels\02\Resource\objects_vals.json.gz" />
     <Content Include="BimModels\02\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\02\viewable.json" />
+    <Content Include="Scripts\Forge\ForgePin.js" />
     <Content Include="Scripts\Forge\Viewer.Loading.js" />
+    <Content Include="jsonSamples\pathRecord_test.json" />
+    <Content Include="jsonSamples\samplePath_test.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datagrid-management.js" />
