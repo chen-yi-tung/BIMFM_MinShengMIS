@@ -1,7 +1,154 @@
-﻿
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = "新增報修";
 }
+<style>
+    .edit-area {
+        row-gap: 1rem;
+    }
 
-<h2>Create</h2>
+    .form-group {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+</style>
+<h2>@ViewBag.Title</h2>
 
+<section class="m-auto">
+    <div class="edit-area edit-area-xsmall flex-lg-row flex-wrap justify-content-lg-start px-4 py-4">
+        <form class="form d-lg-contents p-0">
+            <div class="form-group w-lg-50 required">
+                <label for="ASN">棟別</label>
+                <select class="form-select" name="ASN" id="ASN" required>
+                    <option value="">請選擇</option>
+                </select>
+                <input class="form-control" id="Area" name="Area" type="text" hidden />
+            </div>
+
+            <div class="form-group w-lg-50 required">
+                <label for="FSN">樓層</label>
+                <select class="form-select" name="FSN" id="FSN" required>
+                    <option value="">請選擇</option>
+                </select>
+                <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+            </div>
+
+            <div class="form-group w-lg-50 required">
+                <label for="ESN">設備編號</label>
+                <select class="form-select" name="ESN" id="ESN" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+
+            <div class="form-group w-100">
+                <label for="ReportContent">報修內容</label>
+                <textarea class="form-control" id="ReportContent" name="ReportContent"></textarea>
+            </div>
+
+            <div id="FileUploader"></div>
+
+        </form>
+    </div>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">新增</button>
+</div>
+
+<script src="/Scripts/tool.js"></script>
+<script src="/Scripts/datatable.js"></script>
+<script>
+
+    var fileUploader;
+    $(async function () {
+        await AreaFloorEvent();
+
+        addButtonEvent();
+        fileUploader = new FileUploader({
+            container: "#FileUploader",
+            className: "form-group w-100",
+            label: "報修照片",
+            id: "File"
+        })
+    });
+    async function AreaFloorEvent() {
+        const ASN = document.getElementById("ASN");
+        ASN.addEventListener("change", function () {
+            if (ASN.value != "") {
+                $('#Area').val($("#ASN option:selected").text());
+            }
+            else {
+                $('#Area').val('');
+            }
+            pushSelect("FSN", `/DropDownList/Floor?ASN=${ASN.value}`);
+            $('#Floor').val('');
+        });
+        const FSN = document.getElementById("FSN");
+        FSN.addEventListener("change", function () {
+            if (FSN.value != "") {
+                $('#Floor').val($("#FSN option:selected").text());
+            }
+            else {
+                $('#Floor').val('');
+            }
+            //pushSelect("ESN", `/DropDownList/Equipment?ASN=${ASN.value}>FSN=${FSN.value}`);
+        });
+        await pushSelect("ASN", '/DropDownList/Area');
+    }
+
+    function save() {
+        //重置自訂驗證錯誤訊息
+        getAllParams().forEach((e) => {
+            e.setCustomValidity('');
+        })
+        //自訂驗證錯誤
+        if (!fileUploader.checkAllExtension()) {
+            fileUploader.setCustomValidity("請上傳指定格式")
+        }
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("isValidity():", isValidity)
+        if (!isValidity) return;
+
+        var form = new FormData();
+        form.append("ASN", document.getElementById("ASN").value);
+        form.append("FSN", document.getElementById("FSN").value);
+        form.append("ESN", document.getElementById("ESN").value);
+        form.append("ReportContent", document.getElementById("ReportContent").value);
+
+        if (fileUploader.hasFile()) {
+            form.append("WorkflowFile", fileUploader.getFile());
+        }
+
+        console.log(Object.fromEntries(form.entries()));
+
+        $.ajax({
+            url: '@Url.Action("CreateLaboratoryLabel", "LaboratoryLabel_Management")',
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+        }
+    }
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+
+        $("#submit").click(function () {
+            save();
+        })
+    }
+</script>

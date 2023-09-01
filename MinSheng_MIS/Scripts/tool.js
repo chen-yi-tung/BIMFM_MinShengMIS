@@ -208,12 +208,12 @@ function FileUploader({
         if (index == null) {
             return this.items.map((item) => {
                 let c = check(item)
-                console.log(item.file.name, c)
+                //console.log(item.file.name, c)
                 return c
             })
         }
         else {
-            return check(this.items[index])[0]
+            return check(this.items[index])
         }
 
         function check({ file }) {
@@ -222,12 +222,12 @@ function FileUploader({
             for (const a of accept) {
                 if (a[0] === ".") {
                     if (a.toLowerCase() === ext) {
-                        console.log(a + ":", ext)
+                        //console.log(a + ":", ext)
                         return true;
                     }
                 }
                 else if (file.type.match(a)) {
-                    console.log(a + ":", file.type.match(a))
+                    //console.log(a + ":", file.type.match(a))
                     return true;
                 }
             }
