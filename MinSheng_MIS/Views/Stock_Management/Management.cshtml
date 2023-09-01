@@ -124,11 +124,11 @@
             ]],
             columns: [[
                 dg.column('MinStockAmount', '警戒值數量', 150),
+                dg.column('StockAvaliableAmount', '庫存可用數量', 160),
                 dg.column('SISN', '庫存編號', 160),
                 dg.column('StockType', '品項', 120),
                 dg.column('StockName', '品名', 250),
                 dg.column('StockAmount', '庫存實際量', 150),
-                dg.column('StockAvaliableAmount', '庫存可用數量', 160),
                 dg.column('Unit', '單位', 120),
             ]],
             rowStyler: (i, row) => row.StockAvaliableAmount < row.MinStockAmount ? { class: 'isMinStock' } : undefined
