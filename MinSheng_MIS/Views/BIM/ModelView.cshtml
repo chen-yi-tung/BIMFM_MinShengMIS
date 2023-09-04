@@ -2,7 +2,7 @@
     ViewBag.Title = "ModelView";
 }
 @section styles{
-    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css"
         type="text/css">
     <link rel="stylesheet" href="/Content/loading.css" type="text/css">
     <style>
@@ -52,17 +52,20 @@
             transform: scale(0.6);
         }
 
+        .pin[id^='pin_person'] {
+            transform: translate(-50%, -80%);
+        }
+
         .pin-popover {
             position: absolute;
-            font-size: 12px;
-            transform: translate(0%, -50%);
+            transform: translate(-50%, -50%);
             width: max-content;
             display: block;
 
             cursor: auto;
-            border-radius: 1.25rem;
-            background: rgba(49, 81, 147, 0.60);
-            box-shadow: 0px 5px 16px 0px rgba(0, 0, 0, 0.28);
+            border-radius: 0.31rem;
+            background: rgba(236, 246, 255, 0.95);
+            box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.50);
         }
 
         .pin-popover:not([data-show]) {
@@ -70,12 +73,10 @@
         }
 
         .pin-popover .popover-header {
-            border-radius: 1.25rem 1.25rem 0 0;
-            background-color: rgba(49, 81, 147, 0.60);
-            border-bottom: 2px solid #4465A3;
-            color: #fff;
-            font-size: 16px;
-            padding: 0.75em 0.75em;
+            color: #454A5B;
+            font-size: 1.25rem;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem 0;
 
             display: flex;
             align-items: center;
@@ -85,7 +86,20 @@
         .pin-popover .popover-body {
             width: 100%;
             color: lightgray;
-            padding: 0.5rem 1rem;
+            padding: 0 1rem 0.5rem;
+        }
+
+        .pin[id^='pin_person'] .label {
+            color: #909090;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .pin[id^='pin_person'] .value,
+        .pin[id^='pin_person'] .unit {
+            color: #606060;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
         .bluetooth-name {
@@ -101,8 +115,8 @@
         }
     </style>
     <!-- Autodesk Forge -->
-    <script language="JavaScript"
-        src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script language="JavaScript" src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js"
+        defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.meshline/1.4.0/THREE.MeshLine.min.js" defer></script>
     <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
     <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
@@ -220,7 +234,7 @@
         }
     </script>
     <script>
-        function createBeaconPoint(data) {
+        async function createBeaconPoint(data) {
             //console.log(data)
             const model = viewer.getAllModels().find((model) => model.loader.basePath.includes("Beacon"));
             const pins = []
@@ -246,8 +260,6 @@
         }
         async function createSamplePath() {
             const scene = 'SamplePath'
-            const { PathSampleRecord: data } = await getDataAsync(`/jsonSamples/samplePath_test.json`)
-            //console.log(data)
             const box = viewer.getAllModels().reduce((total, model) => {
                 total.union(model.getBoundingBox())
                 return total
@@ -256,50 +268,153 @@
             viewer.overlays.addScene(scene)
 
             const geometry = new THREE.Geometry();
-            const material = new THREE.LineBasicMaterial({
-                color: 0x29B6F6,
-                linewidth: 3
-            });
+            const material = new THREE.MeshBasicMaterial({ color: 0x29B6F6 })
+
+            const { PathSampleRecord: data } = await getDataAsync(`/jsonSamples/samplePath_test.json`)
+            //console.log(data)
+
             data.forEach(({ LocationX: x, LocationY: y }, i) => {
-                geometry.vertices.push(new THREE.Vector3(x, y, z));
+                let p = createPoint(new THREE.Vector3(x, y, z))
+                geometry.mergeMesh(p)
                 if (i != 0) {
                     let { LocationX: x2, LocationY: y2 } = data[i - 1]
-                    testExtrudeGeometry(
+                    let eg = createExtrude(
                         new THREE.Vector3(x2, y2, z),
                         new THREE.Vector3(x, y, z),
                     )
+                    geometry.mergeMesh(eg)
                 }
             })
-            viewer.overlays.addMesh(new THREE.Line(geometry, material), scene)
+            viewer.overlays.addMesh(new THREE.Mesh(geometry, material), scene)
+
+            function createExtrude(v1, v2) {
+                const radius = 0.1
+                const shape = new THREE.Shape()
+                shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
+
+                const path = new THREE.LineCurve3(v1, v2)
+
+                const geometry = new THREE.ExtrudeGeometry(shape, {
+                    steps: 1,
+                    extrudePath: path
+                })
+                const mesh = new THREE.Mesh(geometry)
+                return mesh
+                //viewer.overlays.addMesh(mesh, 'SamplePath')
+            }
+
+            function createPoint(pos) {
+                const geometry = new THREE.SphereGeometry(0.1, 16, 12);
+                const mesh = new THREE.Mesh(geometry)
+                mesh.position.copy(pos)
+                return mesh
+                //viewer.overlays.addMesh(mesh, 'SamplePath')
+            }
         }
         async function createPathRecord() {
             const scene = 'PathRecord'
-            const data = await getDataAsync(`/jsonSamples/pathRecord_test.json`)
-            //console.log(data)
             viewer.overlays.addScene(scene)
-        }
-        function testExtrudeGeometry(v1, v2) {
-            const radius = 0.1
-            const shape = new THREE.Shape()
-            shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
 
-            const material = new THREE.MeshBasicMaterial({ color: 0x29B6F6 })
-            const path = new THREE.LineCurve3(v1, v2)
-
-            const geometry = new THREE.ExtrudeGeometry(shape, {
-                steps: 1,
-                depth: 1,
-                bevelEnabled: true,
-                bevelThickness: 5,
-                bevelSize: 5,
-                bevelOffset: 0,
-                bevelSegments: 3,
-                extrudePath: path
+            const pin = new ForgePin({
+                viewer,
+                position: new THREE.Vector3(),
+                img: "/Content/img/pin.svg",
+                id: "person-" + Math.random().toString(36).slice(2, 7)
+            });
+            pin.addPopover({
+                offset: ['0%', '140%'],
+                html: `<div class="pin-popover">
+                        <div class="popover-header">
+                            <span class="num">Pt01</span>
+                            <span class="name">王大明</span>
+                        </div>
+                        <div class="popover-body">
+                            <span class="label">心律：</span>
+                            <span class="value">110</span>
+                            <span class="unit">下/分</span>
+                        </div>
+                    </div>`,
+                setContent: function (data) {
+                    //the function to set html content
+                    //"this" is popover
+                    const $e = $(this.e);
+                    $e.find(".value").text(data.value);
+                },
+                clickEvent: function (event) {
+                    //"this" is pin
+                    !this.popover.isShow()
+                        ? (this.popover.show(), this.setZIndex(100))
+                        : (this.popover.hide(), this.setZIndex());
+                },
             })
-            const mesh = new THREE.Mesh(geometry, material)
-            console.log(mesh)
-            viewer.overlays.addMesh(mesh, 'SamplePath')
+            pin.popover.show()
+
+            viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
+                pin.update()
+            })
+
+            const material = new THREE.MeshBasicMaterial({ color: 0xD9C832 })
+            let count = 0
+
+            const data = await getDataAsync(`/jsonSamples/pathRecord_test.json`)
+
+            const len = data.length
+            let timer = setInterval(() => { animate(data) }, 100)
+
+            function animate(data) {
+                let { x, y, z } = data[count].position
+                let p = createPoint(new THREE.Vector3(x, y, z), material)
+                viewer.overlays.addMesh(p, scene)
+
+                pin.position.set(x, y, z)
+                pin.show()
+
+                if (count != 0) {
+                    let { x: x2, y: y2, z: z2 } = data[count - 1].position
+                    let eg = createExtrude(
+                        new THREE.Vector3(x2, y2, z2),
+                        new THREE.Vector3(x, y, z),
+                        material
+                    )
+                    viewer.overlays.addMesh(eg, scene)
+                }
+                viewer.impl.sceneUpdated(true)
+                if (count <= len - 2) {
+                    count++
+                    console.log('animate running')
+                }
+                else {
+                    console.log('animate end')
+                    count = 0
+                    clearInterval(timer)
+                }
+            }
+
+            function createExtrude(v1, v2, mat) {
+                const radius = 0.1
+                const shape = new THREE.Shape()
+                shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
+
+                const path = new THREE.LineCurve3(v1, v2)
+
+                const geometry = new THREE.ExtrudeGeometry(shape, {
+                    steps: 1,
+                    extrudePath: path
+                })
+                const mesh = new THREE.Mesh(geometry, mat)
+                return mesh
+                //viewer.overlays.addMesh(mesh, 'SamplePath')
+            }
+
+            function createPoint(pos, mat) {
+                const geometry = new THREE.SphereGeometry(0.1, 16, 12);
+                const mesh = new THREE.Mesh(geometry, mat)
+                mesh.position.copy(pos)
+                return mesh
+                //viewer.overlays.addMesh(mesh, 'SamplePath')
+            }
         }
+
     </script>
     <script>
         window.addEventListener("load", async () => {

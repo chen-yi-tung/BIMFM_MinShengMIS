@@ -1464,6 +1464,7 @@
     <Content Include="Content\img\loginBG.png" />
     <Content Include="Content\img\logo.png" />
     <Content Include="Content\img\new_bg.png" />
+    <Content Include="Content\img\pin.svg" />
     <Content Include="Content\img\Search.svg" />
     <Content Include="Content\login.css" />
     <Content Include="Content\navbar.css" />
