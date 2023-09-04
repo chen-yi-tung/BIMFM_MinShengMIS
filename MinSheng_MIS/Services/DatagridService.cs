@@ -2156,7 +2156,13 @@ namespace MinSheng_MIS.Services
                 {
                     itemObjects.Add("PropertyCode", item.PropertyCode);
                 }
-
+                //FilePath
+                //查設備操作手冊
+                var filename = db.EquipmentOperatingManual.Where(x => x.System == item.System && x.SubSystem == item.SubSystem && x.EName == item.EName && x.Brand == item.Brand && x.Model == item.Model).Select(x => x.FilePath).FirstOrDefault();
+                if (!string.IsNullOrEmpty(filename))
+                {
+                    itemObjects.Add("FilePath", "/Files/EquipmentOperatingManual" + filename);
+                }
                 ja.Add(itemObjects);
             }
 
