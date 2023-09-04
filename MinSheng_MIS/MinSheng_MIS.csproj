@@ -449,6 +449,23 @@
     <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\林口%28一%291.png" />
     <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\林口%28一%292.png" />
     <Content Include="BimModels\Site01\Resource\3D View\林口%28一%29\林口%28一%294.png" />
+    <Content Include="BimModels\民生整棟Forge\preview1.png" />
+    <Content Include="BimModels\民生整棟Forge\preview2.png" />
+    <Content Include="BimModels\民生整棟Forge\preview4.png" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\3\mats\102.png" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\3\mats\andiroba_natural.png" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\3\mats\concrete.cast-in-place.flat.grey.1.jpg" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\3\mats\concrete.cast-in-place.flat.grey.1_svf_tex_mod.jpg" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\3\mats\granite_black_refl.jpg" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\3\mats\granite_black_refl_svf_tex_mod.jpg" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\3\mats\granite_black_rough.jpg" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\3\mats\woods &amp; plastics.finish carpentry.wood.red birch.png" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\c\program files %28x86%29\common files\autodesk shared\materials\textures\3\mats\pattern06.png" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\mats\concrete\external.dependency\simple_concrete_mtl_broomcurved_pattern.jpg" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\mats\concrete\external.dependency\simple_concrete_mtl_broomstraight_pattern.jpg" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站1.png" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站2.png" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站4.png" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.rtl.css" />
@@ -1461,6 +1478,7 @@
     <Content Include="Content\icomoon-v1.0\style.css" />
     <Content Include="Content\img\bg.png" />
     <Content Include="Content\img\bluetooth.svg" />
+    <Content Include="Content\img\heart.svg" />
     <Content Include="Content\img\loginBG.png" />
     <Content Include="Content\img\logo.png" />
     <Content Include="Content\img\new_bg.png" />
@@ -1648,6 +1666,27 @@
     <Content Include="Scripts\Forge\Viewer.Loading.js" />
     <Content Include="jsonSamples\pathRecord_test.json" />
     <Content Include="jsonSamples\samplePath_test.json" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\0.pf" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\1.pf" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\CameraDefinitions.bin" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\CameraList.bin" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\FragmentList.pack" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\GeometryMetadata.pf" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\InstanceTree.bin" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\LightDefinitions.bin" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\LightList.bin" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\Materials.json.gz" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\ProteinMaterials.json.gz" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\Set.bin" />
+    <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站.svf" />
+    <Content Include="BimModels\民生整棟Forge\Resource\model.sdb" />
+    <Content Include="BimModels\民生整棟Forge\Resource\objects_attrs.json.gz" />
+    <Content Include="BimModels\民生整棟Forge\Resource\objects_avs.json.gz" />
+    <Content Include="BimModels\民生整棟Forge\Resource\objects_ids.json.gz" />
+    <Content Include="BimModels\民生整棟Forge\Resource\objects_offs.json.gz" />
+    <Content Include="BimModels\民生整棟Forge\Resource\objects_vals.json.gz" />
+    <Content Include="BimModels\民生整棟Forge\Resource\objects_viewables.json.gz" />
+    <Content Include="BimModels\民生整棟Forge\viewable.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datagrid-management.js" />
@@ -1843,6 +1882,7 @@
     <Content Include="Views\WarningMessage_Management\Edit.cshtml" />
     <Content Include="Views\WarningMessage_Management\Read.cshtml" />
     <Content Include="Views\BIM\ModelView.cshtml" />
+    <Content Include="Views\BIM\FloorModelView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

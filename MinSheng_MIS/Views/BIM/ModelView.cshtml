@@ -122,16 +122,6 @@
     <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
     <script src="/Scripts/Forge/ForgePin.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
-
-    <!-- PIXI Draw -->
-    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
-    <script src="/Scripts/ForgeDraw.js" defer></script>
-    <script src="/Scripts/datatable.js" defer></script>
-    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
-
-    <!-- Drag and Drop -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
-    <script src="/Scripts/Forge/SortRouteModal.js" defer></script>
 }
 <!-- 
 <div class="position-absolute pe-none p-5" style="inset:0;z-index: 1030;">
@@ -196,7 +186,9 @@
                     return new Promise(async (resolve) => {
                         if (url == null || url == undefined || url == "") return;
                         viewer.loadModel(window.location.origin + url, options,
-                            async (model) => { await viewer.waitForLoadDone(); resolve(model); })
+                            async (model) => { await viewer.waitForLoadDone(); resolve(model); },
+                            async (model) => { await viewer.waitForLoadDone(); resolve(model); }
+                        )
                     })
                 }))
                 console.log(models)
@@ -208,6 +200,7 @@
 
                 viewer.fitToView()
                 for (const model of models) {
+                    console.log(model)
                     await onLoadDone(model)
                 }
                 viewer.loading.hide()
@@ -234,224 +227,27 @@
         }
     </script>
     <script>
-        async function createBeaconPoint(data) {
-            //console.log(data)
-            const model = viewer.getAllModels().find((model) => model.loader.basePath.includes("Beacon"));
-            const pins = []
-            data.forEach((d) => {
-                let position = viewer.toolkit.getBoundingBox(model, d.dbId).getCenter()
-                let pin = new ForgePin({
-                    viewer,
-                    position,
-                    data: {},
-                    img: "/Content/img/bluetooth.svg",
-                    id: `bluetooth-${d.dbId}`
-                })
-
-                $(pin.e).append(`<div class="bluetooth-name">${d.deviceName}</div>`)
-
-                pin.show()
-                pin.update()
-                pins.push(pin)
-            })
-            viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
-                pins.forEach((pin) => { pin.update() })
-            })
-        }
-        async function createSamplePath() {
-            const scene = 'SamplePath'
-            const box = viewer.getAllModels().reduce((total, model) => {
-                total.union(model.getBoundingBox())
-                return total
-            }, new THREE.Box3())
-            const z = box.getCenter().z - (box.getSize().z / 2) + 3
-            viewer.overlays.addScene(scene)
-
-            const geometry = new THREE.Geometry();
-            const material = new THREE.MeshBasicMaterial({ color: 0x29B6F6 })
-
-            const { PathSampleRecord: data } = await getDataAsync(`/jsonSamples/samplePath_test.json`)
-            //console.log(data)
-
-            data.forEach(({ LocationX: x, LocationY: y }, i) => {
-                let p = createPoint(new THREE.Vector3(x, y, z))
-                geometry.mergeMesh(p)
-                if (i != 0) {
-                    let { LocationX: x2, LocationY: y2 } = data[i - 1]
-                    let eg = createExtrude(
-                        new THREE.Vector3(x2, y2, z),
-                        new THREE.Vector3(x, y, z),
-                    )
-                    geometry.mergeMesh(eg)
-                }
-            })
-            viewer.overlays.addMesh(new THREE.Mesh(geometry, material), scene)
-
-            function createExtrude(v1, v2) {
-                const radius = 0.1
-                const shape = new THREE.Shape()
-                shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
-
-                const path = new THREE.LineCurve3(v1, v2)
-
-                const geometry = new THREE.ExtrudeGeometry(shape, {
-                    steps: 1,
-                    extrudePath: path
-                })
-                const mesh = new THREE.Mesh(geometry)
-                return mesh
-                //viewer.overlays.addMesh(mesh, 'SamplePath')
-            }
-
-            function createPoint(pos) {
-                const geometry = new THREE.SphereGeometry(0.1, 16, 12);
-                const mesh = new THREE.Mesh(geometry)
-                mesh.position.copy(pos)
-                return mesh
-                //viewer.overlays.addMesh(mesh, 'SamplePath')
-            }
-        }
-        async function createPathRecord() {
-            const scene = 'PathRecord'
-            viewer.overlays.addScene(scene)
-
-            const pin = new ForgePin({
-                viewer,
-                position: new THREE.Vector3(),
-                img: "/Content/img/pin.svg",
-                id: "person-" + Math.random().toString(36).slice(2, 7)
-            });
-            pin.addPopover({
-                offset: ['0%', '140%'],
-                html: `<div class="pin-popover">
-                        <div class="popover-header">
-                            <span class="num">Pt01</span>
-                            <span class="name">王大明</span>
-                        </div>
-                        <div class="popover-body">
-                            <span class="label">心律：</span>
-                            <span class="value">110</span>
-                            <span class="unit">下/分</span>
-                        </div>
-                    </div>`,
-                setContent: function (data) {
-                    //the function to set html content
-                    //"this" is popover
-                    const $e = $(this.e);
-                    $e.find(".value").text(data.value);
-                },
-                clickEvent: function (event) {
-                    //"this" is pin
-                    !this.popover.isShow()
-                        ? (this.popover.show(), this.setZIndex(100))
-                        : (this.popover.hide(), this.setZIndex());
-                },
-            })
-            pin.popover.show()
-
-            viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
-                pin.update()
-            })
-
-            const material = new THREE.MeshBasicMaterial({ color: 0xD9C832 })
-            let count = 0
-
-            const data = await getDataAsync(`/jsonSamples/pathRecord_test.json`)
-
-            const len = data.length
-            let timer = setInterval(() => { animate(data) }, 100)
-
-            function animate(data) {
-                let { x, y, z } = data[count].position
-                let p = createPoint(new THREE.Vector3(x, y, z), material)
-                viewer.overlays.addMesh(p, scene)
-
-                pin.position.set(x, y, z)
-                pin.show()
-
-                if (count != 0) {
-                    let { x: x2, y: y2, z: z2 } = data[count - 1].position
-                    let eg = createExtrude(
-                        new THREE.Vector3(x2, y2, z2),
-                        new THREE.Vector3(x, y, z),
-                        material
-                    )
-                    viewer.overlays.addMesh(eg, scene)
-                }
-                viewer.impl.sceneUpdated(true)
-                if (count <= len - 2) {
-                    count++
-                    console.log('animate running')
-                }
-                else {
-                    console.log('animate end')
-                    count = 0
-                    clearInterval(timer)
-                }
-            }
-
-            function createExtrude(v1, v2, mat) {
-                const radius = 0.1
-                const shape = new THREE.Shape()
-                shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
-
-                const path = new THREE.LineCurve3(v1, v2)
-
-                const geometry = new THREE.ExtrudeGeometry(shape, {
-                    steps: 1,
-                    extrudePath: path
-                })
-                const mesh = new THREE.Mesh(geometry, mat)
-                return mesh
-                //viewer.overlays.addMesh(mesh, 'SamplePath')
-            }
-
-            function createPoint(pos, mat) {
-                const geometry = new THREE.SphereGeometry(0.1, 16, 12);
-                const mesh = new THREE.Mesh(geometry, mat)
-                mesh.position.copy(pos)
-                return mesh
-                //viewer.overlays.addMesh(mesh, 'SamplePath')
-            }
-        }
-
-    </script>
-    <script>
         window.addEventListener("load", async () => {
-            sortRouteModal = new SortRouteModal({
-                onSave: updatePathDisplay
-            });
             await addAreaFloorEvent();
             $("#Submit").click(async () => {
-                let res = await getDataAsync('@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val())
+                let BIMPath = `/BimModels/民生整棟Forge/Resource/3D 視圖/進抽站/進抽站.svf`
                 if (viewer != null) {
                     DestroyViewerAndForgeDraw()
                 }
-                let { BIMPath, BeaconPath } = res
                 initializeViewer({
-                    BIMPath, BeaconPath, callback() {
-                        createBeaconPoint(res.BIMDevices)
-                        createSamplePath()
-                        createPathRecord()
-                    }
+                    BIMPath, BeaconPath: null, callback() { }
                 })
             })
 
-            await autoSelectModel('1', '1_2')
+            await autoSelectModel('1')
 
-            async function autoSelectModel(ASN, FSN) {
+            async function autoSelectModel(ASN) {
                 $("#ASN").val(ASN)
-                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN}`);
-                $("#FSN").val(FSN)
                 $("#Submit").click()
             }
         })
         async function addAreaFloorEvent() {
             await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-            let ASN = document.getElementById("ASN");
-            ASN.addEventListener("change", async function () {
-                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
-            });
         }
     </script>
     <script>

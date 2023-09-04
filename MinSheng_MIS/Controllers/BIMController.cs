@@ -9,6 +9,12 @@ namespace MinSheng_MIS.Controllers
 	public class BIMController : Controller
 	{
 		// GET: BIM
+		public ActionResult FloorModelView(string id)
+		{
+			ViewBag.id = id;
+			return View();
+		}
+
 		public ActionResult ModelView(string id)
 		{
 			ViewBag.id = id;
