@@ -91,6 +91,7 @@
             color: #909090;
             font-size: 0.75rem;
             font-weight: 500;
+            margin-left: 0.3rem;
         }
 
         .pin[id^='pin_person'] .value,
@@ -322,18 +323,7 @@
             });
             pin.addPopover({
                 offset: ['0%', '140%'],
-                html: `<div class="pin-popover">
-                                            <div class="popover-header">
-                                                <span class="num">Pt01</span>
-                                                <span class="name">王大明</span>
-                                            </div>
-                                            <div class="popover-body">
-                                                <img src="/Content/img/heart.svg" width="14">
-                                                <span class="label">心律：</span>
-                                                <span class="value">110</span>
-                                                <span class="unit">下/分</span>
-                                            </div>
-                                        </div>`,
+                html: `<div class="pin-popover"><div class="popover-header"><span class="num">Pt01</span><span class="name">王大明</span></div><div class="popover-body"><img src="/Content/img/heart.svg" height="14"><span class="label">心律：</span><span class="value">110</span><span class="unit">下/分</span></div></div>`,
                 setContent: function (data) {
                     //the function to set html content
                     //"this" is popover
@@ -362,6 +352,10 @@
             let timer = null
             this.start = () => {
                 if (timer === null) {
+                    if (viewer.overlays.hasScene(scene)) {
+                        viewer.overlays.removeScene(scene)
+                        viewer.overlays.addScene(scene)
+                    }
                     timer = setInterval(() => { animate(data) }, 100)
                     pin.popover.show()
                 }
@@ -388,7 +382,7 @@
                     )
                     viewer.overlays.addMesh(eg, scene)
                 }
-                viewer.impl.sceneUpdated(true)
+                //viewer.impl.sceneUpdated(true)
                 if (count <= len - 2) {
                     count++
                     console.log('animate running')
@@ -425,7 +419,40 @@
                 //viewer.overlays.addMesh(mesh, 'SamplePath')
             }
         }
+        async function hideWall() {
+            const box = viewer.getAllModels().reduce((total, model) => {
+                total.union(model.getBoundingBox())
+                return total
+            }, new THREE.Box3())
+            const z = box.getCenter().z + (box.getSize().z / 2)
+            const intersectBox = new THREE.Box3(
+                new THREE.Vector3().copy(box.min).setZ(z - 1),
+                new THREE.Vector3().copy(box.max).setZ(z + 1)
+            )
 
+            const allDbids = await new Promise(async (resolve) => {
+                const arr = []
+                const models = viewer.getAllModels()
+                for (const model of models) {
+                    let dbIds = await viewer.toolkit.getAlldbIds(model.getInstanceTree(), model.getRootId())
+                    arr.push({ model, dbIds })
+                }
+                resolve(arr)
+            })
+
+            allDbids.forEach(({ model, dbIds }) => {
+                dbIds.forEach((dbId) => {
+                    let bbox = viewer.toolkit.getBoundingBox(model, dbId)
+                    if (intersectBox.isIntersectionBox(bbox)) {
+                        viewer.hide(dbId)
+                    }
+                })
+            })
+
+            viewer.search("M_混凝土", (res) => {
+                res.forEach((dbId) => { viewer.hide(dbId) })
+            })
+        }
     </script>
     <script>
         var pathRecord
@@ -442,6 +469,7 @@
                 let { BIMPath, BeaconPath } = res
                 initializeViewer({
                     BIMPath, BeaconPath, async callback() {
+                        hideWall()
                         createBeaconPoint(res.BIMDevices)
                         createSamplePath()
                         pathRecord = await createPathRecord()
