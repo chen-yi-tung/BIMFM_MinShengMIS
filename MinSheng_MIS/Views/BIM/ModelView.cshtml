@@ -152,7 +152,7 @@
 @section scripts{
     <script>
         var viewer;
-        function initializeViewer({ BIMPath, BeaconPath, callback = () => { } }) {
+        function initializeViewer({ BIMPath, callback = () => { } }) {
             const clientContainer = document.getElementById('viewer3d')
             const profileSettings = {
                 name: "customSettings",
@@ -168,7 +168,6 @@
                 keepCurrentModels: true,
                 globalOffset: { x: 0, y: 0, z: 0 }
             };
-            const urns = [BIMPath, BeaconPath];
 
             Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
             viewer = new Autodesk.Viewing.GuiViewer3D(clientContainer, { profileSettings });
@@ -182,16 +181,14 @@
                 await viewer.loadExtension("Viewer.Toolkit")
 
                 //load urns
-                const models = await Promise.all(urns.map((url) => {
-                    return new Promise(async (resolve) => {
-                        if (url == null || url == undefined || url == "") return;
-                        viewer.loadModel(window.location.origin + url, options,
-                            async (model) => { await viewer.waitForLoadDone(); resolve(model); },
-                            async (model) => { await viewer.waitForLoadDone(); resolve(model); }
-                        )
-                    })
-                }))
-                console.log(models)
+                const model = await new Promise(async (resolve, reject) => {
+                    viewer.loadModel(window.location.origin + BIMPath, options,
+                        async (model) => { await viewer.waitForLoadDone(); resolve(model); },
+                        async (model) => { reject(model); }
+                    )
+                })
+
+                //console.log(model)
 
                 //setting 3d view env
                 viewer.setBackgroundOpacity(0);
@@ -199,30 +196,15 @@
                 viewer.setLightPreset(16); //設定環境光源 = 雪地
 
                 viewer.fitToView()
-                for (const model of models) {
-                    console.log(model)
-                    await onLoadDone(model)
-                }
+                await onLoadDone(model)
                 viewer.loading.hide()
                 callback()
             });
 
             async function onLoadDone(model) {
-                console.log("Model LoadDone", model.loader.basePath.split("/").at(-2));
-
-                if (model.loader.basePath.includes("Beacon")) {
-
-                    const newmat = new THREE.MeshPhongMaterial({
-                        color: 0x1010ff,
-                        emissive: 0x001061,
-                        reflectivity: 0,
-                        shininess: 0
-                    })
-                    await viewer.toolkit.changeMaterial(model, model.getRootId(), newmat)
-                    let AllBeacons = await viewer.toolkit.getAlldbIds(model.getInstanceTree(), model.getRootId())
-                    console.log("AllBeacons", AllBeacons)
-                    console.log("顏色變更完畢")
-                }
+                console.log("onLoadDone",model)
+                //console.log("Model LoadDone", model.loader.basePath.split("/").at(-2));
+                return
             }
         }
     </script>
@@ -230,12 +212,16 @@
         window.addEventListener("load", async () => {
             await addAreaFloorEvent();
             $("#Submit").click(async () => {
+                if ($("#ASN").val() != '' && $("#FSN").val() != ''){
+                    window.open("/BIM/FloorModelView","_self")
+                    return
+                }
                 let BIMPath = `/BimModels/民生整棟Forge/Resource/3D 視圖/進抽站/進抽站.svf`
                 if (viewer != null) {
                     DestroyViewerAndForgeDraw()
                 }
                 initializeViewer({
-                    BIMPath, BeaconPath: null, callback() { }
+                    BIMPath, callback() { }
                 })
             })
 
@@ -243,11 +229,16 @@
 
             async function autoSelectModel(ASN) {
                 $("#ASN").val(ASN)
+                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN}`);
                 $("#Submit").click()
             }
         })
         async function addAreaFloorEvent() {
             await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+            let ASN = document.getElementById("ASN");
+            ASN.addEventListener("change", async function () {
+                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
+            });
         }
     </script>
     <script>
