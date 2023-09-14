@@ -179,14 +179,14 @@
                         let disabled = (row.EState != "停用") && (row.ReportState == "待派工" || row.ReportState == "未完成" || row.ReportState == "審核未過") ? '' : 'disabled';
                         return `<button class="btn btn-datagrid" onclick="onDispatch(${index})" ${disabled}>派工</button>`;
                     }
-                },
+                },/*
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
                         let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
                         return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
                     }
-                },
+                },*/
                 {
                     field: '_cancel', align: 'center',
                     formatter: (val, row, index) => {

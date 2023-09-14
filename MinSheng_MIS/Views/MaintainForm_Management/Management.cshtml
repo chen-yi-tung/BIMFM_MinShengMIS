@@ -129,14 +129,14 @@
                     formatter: (val, row, index) => {
                         return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
                     }
-                },
+                },/*
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
                         let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
                         return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
                     }
-                },
+                },*/
                 {
                     field: '_cancel', align: 'center',
                     formatter: (val, row, index) => {

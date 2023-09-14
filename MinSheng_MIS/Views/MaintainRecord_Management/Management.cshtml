@@ -179,14 +179,14 @@
                         let disabled = row.MaintainState == "待補件" ? '' : 'disabled';
                         return `<button class="btn btn-datagrid" onclick="onSupplement(${index})" ${disabled}>補件</button>`;
                     }
-                },
+                }/*,
                 {
                     field: '_locate', align: 'center',
                     formatter: (val, row, index) => {
                         let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
                         return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
                     }
-                },
+                },*/
             ]],
             columns: [[
                 { field: 'IPMSN', hidden: true },
