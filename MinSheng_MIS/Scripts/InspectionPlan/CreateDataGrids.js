@@ -44,13 +44,13 @@
                 return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="detail">詳情</button>`;
             }
         },
-        {
+        /*{
             field: '_locate', align: 'center', width: 71,
             formatter: (val, row, index) => {
                 let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
                 return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="locate" ${disabled}>定位</button>`;
             }
-        }
+        }*/
     ]],
     pageOptions: {
         pageSize: 10,
@@ -109,13 +109,13 @@ const RDGOptions = {
                 return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="detail">詳情</button>`;
             }
         },
-        {
+        /*{
             field: '_locate', align: 'center', width: 71,
             formatter: (val, row, index) => {
                 let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
                 return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="locate" ${disabled}>定位</button>`;
             }
-        }
+        }*/
     ]],
     pageOptions: {
         pageSize: 10,
