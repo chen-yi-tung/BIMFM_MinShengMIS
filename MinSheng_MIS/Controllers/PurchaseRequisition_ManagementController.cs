@@ -23,11 +23,19 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 請購審核
-        public ActionResult Audit()
+        #region 請購詳情
+        public ActionResult Read()
         {
             return View();
         }
         #endregion
+
+        #region 請購編輯
+        public ActionResult Edit()
+        {
+            return View();
+        }
+        #endregion
+
     }
 }

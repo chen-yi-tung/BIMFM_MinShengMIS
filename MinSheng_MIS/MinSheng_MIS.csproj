@@ -1821,7 +1821,6 @@
     <Content Include="Views\AsBuiltDrawing_Management\Delete.cshtml" />
     <Content Include="Views\PurchaseRequisition_Management\Management.cshtml" />
     <Content Include="Views\PurchaseRequisition_Management\Create.cshtml" />
-    <Content Include="Views\PurchaseRequisition_Management\Audit.cshtml" />
     <Content Include="Views\InquiryPlan_Management\Management.cshtml" />
     <Content Include="Views\InquiryPlan_Management\CreatePlan.cshtml" />
     <Content Include="Views\InquiryPlan_Management\Read.cshtml" />
@@ -1889,6 +1888,8 @@
     <Content Include="Views\WarningMessage_Management\Read.cshtml" />
     <Content Include="Views\BIM\ModelView.cshtml" />
     <Content Include="Views\BIM\FloorModelView.cshtml" />
+    <Content Include="Views\PurchaseRequisition_Management\Read.cshtml" />
+    <Content Include="Views\PurchaseRequisition_Management\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
