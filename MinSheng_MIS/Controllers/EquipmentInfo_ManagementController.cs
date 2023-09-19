@@ -65,7 +65,7 @@ namespace MinSheng_MIS.Controllers
         {
             JObject jo = new JObject();
 
-            #region 先檢查是否有同國有財產編碼 之設備存在
+            #region 先檢查是否有同財產編碼 之設備存在
             var isexist = db.EquipmentInfo.Where(x => x.PropertyCode == eim.PropertyCode);
             if (isexist.Count() > 0)
             {

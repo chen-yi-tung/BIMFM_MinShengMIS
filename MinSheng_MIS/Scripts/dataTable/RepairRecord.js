@@ -8,7 +8,7 @@
             { text: "報修人員", value: "MyName" },
             { text: "區域", value: "Area" },
             { text: "樓層", value: "Floor" },
-            { text: "國有財產編碼", value: "PorpertyCode" },
+            { text: "財產編碼", value: "PorpertyCode" },
             { text: "設備編號", value: "ESN" },
             { text: "設備名稱", value: "EName" },
             {

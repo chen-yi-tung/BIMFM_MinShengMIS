@@ -54,7 +54,7 @@ namespace MinSheng_MIS.Services
             string ESN = form["ESN"]?.ToString();
             //設備名稱
             string EName = form["EName"]?.ToString();
-            //國有財產編碼
+            //財產編碼
             string PropertyCode = form["PropertyCode"]?.ToString();
             //報修說明
             string ReportContent = form["ReportContent"]?.ToString();
@@ -198,7 +198,7 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("Date", a.Date.ToString("yyyy/MM/dd HH:mm:ss"));                                //保養週期
 
                 if (itemObjects["PropertyCode"] == null)
-                    itemObjects.Add("PropertyCode", a.PropertyCode);    //國有財產編碼
+                    itemObjects.Add("PropertyCode", a.PropertyCode);    //財產編碼
                 if (itemObjects["ESN"] == null)
                     itemObjects.Add("ESN", a.ESN);    //設備編號
                 if (itemObjects["EName"] == null)
@@ -273,7 +273,7 @@ namespace MinSheng_MIS.Services
             string IPName = form["IPName"]?.ToString();
             //保養單狀態
             string MaintainState = form["MaintainState"]?.ToString();
-            //國有財產編碼
+            //財產編碼
             string PropertyCode = form["PropertyCode"]?.ToString();
             //設備編號
             string ESN = form["ESN"]?.ToString();
@@ -342,7 +342,7 @@ namespace MinSheng_MIS.Services
                 }
                 IPMSNlist = templist;
             }
-            if (!string.IsNullOrEmpty(PropertyCode)) //國有財產編碼
+            if (!string.IsNullOrEmpty(PropertyCode)) //財產編碼
             {
                 var ESNlist = db.EquipmentInfo.Where(x => x.PropertyCode == PropertyCode).Select(x => x.ESN).ToList();
                 var EMISNlist = db.EquipmentMaintainItem.Where(x => ESNlist.Contains(x.ESN)).Select(x => x.EMISN).ToList();
@@ -652,7 +652,7 @@ namespace MinSheng_MIS.Services
             string ESN = form["ESN"]?.ToString();
             //設備名稱
             string EName = form["EName"]?.ToString();
-            //國有財產編碼
+            //財產編碼
             string PropertyCode = form["PropertyCode"]?.ToString();
             //報修說明
             string ReportContent = form["ReportContent"]?.ToString();
@@ -749,7 +749,7 @@ namespace MinSheng_MIS.Services
                 }
                 RSNlist = templist;
             }
-            if (!string.IsNullOrEmpty(PropertyCode)) //國有財產編碼
+            if (!string.IsNullOrEmpty(PropertyCode)) //財產編碼
             {
                 var ESNlist = db.EquipmentInfo.Where(x => x.PropertyCode == PropertyCode).Select(x => x.ESN).ToList();
                 var rSNlist = db.EquipmentReportForm.Where(x => ESNlist.Contains(x.ESN)).Select(x => x.RSN).ToList();
@@ -1469,7 +1469,7 @@ namespace MinSheng_MIS.Services
             string FSN = form["FSN"]?.ToString();
             //保養項目狀態
             string FormItemState = form["FormItemState"]?.ToString();
-            //國有財產編碼
+            //財產編碼
             string PropertyCode = form["PropertyCode"]?.ToString();
             //設備編號
             string ESN = form["ESN"]?.ToString();
@@ -1527,7 +1527,7 @@ namespace MinSheng_MIS.Services
             {
                 SourceTable = SourceTable.Where(x => x.FormItemState == FormItemState);
             }
-            //查詢國有財產編碼
+            //查詢財產編碼
             if (!string.IsNullOrEmpty(PropertyCode))
             {
                 SourceTable = SourceTable.Where(x => x.PropertyCode == PropertyCode);
@@ -1635,7 +1635,7 @@ namespace MinSheng_MIS.Services
                 {
                     itemObjects.Add("Floor", item.FloorName);
                 }
-                //國有財產編碼
+                //財產編碼
                 if (!string.IsNullOrEmpty(item.PropertyCode))
                 {
                     itemObjects.Add("PropertyCode", item.PropertyCode);
@@ -2036,7 +2036,7 @@ namespace MinSheng_MIS.Services
             string Brand = form["Brand"]?.ToString();
             //型號
             string Model = form["Model"]?.ToString();
-            //國有財產編碼
+            //財產編碼
             string PropertyCode = form["PropertyCode"]?.ToString();
             #endregion
 

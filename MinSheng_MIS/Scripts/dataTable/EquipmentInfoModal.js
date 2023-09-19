@@ -8,7 +8,7 @@ function EquipmentInfoModal(url) {
         { text: "區域", value: "Area" },
         { text: "樓層", value: "Floor" },
         { text: "空間名稱", value: "RoomName" },
-        { text: "國有財產編碼", value: "PropertyCode" },
+        { text: "財產編碼", value: "PropertyCode" },
         { text: "廠牌", value: "Brand" },
         { text: "DBID", value: "DBID" },
         { text: "RFID", value: "RFID" },
