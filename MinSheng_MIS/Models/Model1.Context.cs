@@ -58,6 +58,8 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<MaintainSupplementaryFile> MaintainSupplementaryFile { get; set; }
         public virtual DbSet<MaintainSupplementaryInfo> MaintainSupplementaryInfo { get; set; }
         public virtual DbSet<ManufacturerInfo> ManufacturerInfo { get; set; }
+        public virtual DbSet<MeetingMinutes> MeetingMinutes { get; set; }
+        public virtual DbSet<MonthlyReport> MonthlyReport { get; set; }
         public virtual DbSet<PathSample> PathSample { get; set; }
         public virtual DbSet<PathSampleOrder> PathSampleOrder { get; set; }
         public virtual DbSet<RepairAuditImage> RepairAuditImage { get; set; }

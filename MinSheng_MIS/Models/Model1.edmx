@@ -393,6 +393,41 @@
           <Property Name="MFRMainProduct" Type="nvarchar" MaxLength="200" />
           <Property Name="Memo" Type="nvarchar" MaxLength="200" />
         </EntityType>
+        <EntityType Name="MeetingMinutes">
+          <Key>
+            <PropertyRef Name="MMSN" />
+          </Key>
+          <Property Name="MMSN" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="MeetingTopic" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="MeetingDate" Type="datetime" Nullable="false" />
+          <Property Name="MeetingDateStart" Type="datetime" Nullable="false" />
+          <Property Name="MeetingDateEnd" Type="datetime" Nullable="false" />
+          <Property Name="MeetingVenue" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Chairperson" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Participant" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ExpectedAttendence" Type="int" Nullable="false" />
+          <Property Name="ActualAttendence" Type="int" Nullable="false" />
+          <Property Name="AbsenteeList" Type="int" Nullable="false" />
+          <Property Name="TakeTheMinutes" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Agenda" Type="nvarchar" MaxLength="256" />
+          <Property Name="MeetingContent" Type="nvarchar(max)" />
+          <Property Name="MeetingFiles" Type="nvarchar" MaxLength="20" />
+          <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="UploadDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MonthlyReport">
+          <Key>
+            <PropertyRef Name="MRSN" />
+          </Key>
+          <Property Name="MRSN" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="ReportTitle" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="ReportContent" Type="nvarchar(max)" />
+          <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="UploadDateTime" Type="datetime" Nullable="false" />
+          <Property Name="ReportFile" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Year" Type="char" MaxLength="4" Nullable="false" />
+          <Property Name="Month" Type="char" MaxLength="2" Nullable="false" />
+        </EntityType>
         <EntityType Name="PathSample">
           <Key>
             <PropertyRef Name="PSSN" />
@@ -925,6 +960,8 @@
           <EntitySet Name="MaintainSupplementaryFile" EntityType="Self.MaintainSupplementaryFile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaintainSupplementaryInfo" EntityType="Self.MaintainSupplementaryInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ManufacturerInfo" EntityType="Self.ManufacturerInfo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MeetingMinutes" EntityType="Self.MeetingMinutes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MonthlyReport" EntityType="Self.MonthlyReport" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSample" EntityType="Self.PathSample" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSampleOrder" EntityType="Self.PathSampleOrder" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairAuditImage" EntityType="Self.RepairAuditImage" Schema="dbo" store:Type="Tables" />
@@ -1107,6 +1144,8 @@
           <EntitySet Name="MaintainSupplementaryFile" EntityType="Bimfm_MinSheng_MISModel.MaintainSupplementaryFile" />
           <EntitySet Name="MaintainSupplementaryInfo" EntityType="Bimfm_MinSheng_MISModel.MaintainSupplementaryInfo" />
           <EntitySet Name="ManufacturerInfo" EntityType="Bimfm_MinSheng_MISModel.ManufacturerInfo" />
+          <EntitySet Name="MeetingMinutes" EntityType="Bimfm_MinSheng_MISModel.MeetingMinutes" />
+          <EntitySet Name="MonthlyReport" EntityType="Bimfm_MinSheng_MISModel.MonthlyReport" />
           <EntitySet Name="PathSample" EntityType="Bimfm_MinSheng_MISModel.PathSample" />
           <EntitySet Name="PathSampleOrder" EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" />
           <EntitySet Name="RepairAuditImage" EntityType="Bimfm_MinSheng_MISModel.RepairAuditImage" />
@@ -1678,6 +1717,41 @@
           <Property Name="MFRWeb" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="MFRMainProduct" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="MeetingMinutes">
+          <Key>
+            <PropertyRef Name="MMSN" />
+          </Key>
+          <Property Name="MMSN" Type="String" Nullable="false" MaxLength="8" FixedLength="true" Unicode="false" />
+          <Property Name="MeetingTopic" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="MeetingDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="MeetingDateStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="MeetingDateEnd" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="MeetingVenue" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Chairperson" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Participant" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ExpectedAttendence" Type="Int32" Nullable="false" />
+          <Property Name="ActualAttendence" Type="Int32" Nullable="false" />
+          <Property Name="AbsenteeList" Type="Int32" Nullable="false" />
+          <Property Name="TakeTheMinutes" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Agenda" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="MeetingContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MeetingFiles" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="UploadUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="UploadDateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="MonthlyReport">
+          <Key>
+            <PropertyRef Name="MRSN" />
+          </Key>
+          <Property Name="MRSN" Type="String" Nullable="false" MaxLength="8" FixedLength="true" Unicode="false" />
+          <Property Name="ReportTitle" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ReportContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UploadUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="UploadDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ReportFile" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Year" Type="String" Nullable="false" MaxLength="4" FixedLength="true" Unicode="false" />
+          <Property Name="Month" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
         </EntityType>
         <EntityType Name="PathSample">
           <Key>
@@ -2577,6 +2651,43 @@
                 <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
                 <ScalarProperty Name="MFRName" ColumnName="MFRName" />
                 <ScalarProperty Name="MFRSN" ColumnName="MFRSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MeetingMinutes">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MeetingMinutes">
+              <MappingFragment StoreEntitySet="MeetingMinutes">
+                <ScalarProperty Name="UploadDateTime" ColumnName="UploadDateTime" />
+                <ScalarProperty Name="UploadUserName" ColumnName="UploadUserName" />
+                <ScalarProperty Name="MeetingFiles" ColumnName="MeetingFiles" />
+                <ScalarProperty Name="MeetingContent" ColumnName="MeetingContent" />
+                <ScalarProperty Name="Agenda" ColumnName="Agenda" />
+                <ScalarProperty Name="TakeTheMinutes" ColumnName="TakeTheMinutes" />
+                <ScalarProperty Name="AbsenteeList" ColumnName="AbsenteeList" />
+                <ScalarProperty Name="ActualAttendence" ColumnName="ActualAttendence" />
+                <ScalarProperty Name="ExpectedAttendence" ColumnName="ExpectedAttendence" />
+                <ScalarProperty Name="Participant" ColumnName="Participant" />
+                <ScalarProperty Name="Chairperson" ColumnName="Chairperson" />
+                <ScalarProperty Name="MeetingVenue" ColumnName="MeetingVenue" />
+                <ScalarProperty Name="MeetingDateEnd" ColumnName="MeetingDateEnd" />
+                <ScalarProperty Name="MeetingDateStart" ColumnName="MeetingDateStart" />
+                <ScalarProperty Name="MeetingDate" ColumnName="MeetingDate" />
+                <ScalarProperty Name="MeetingTopic" ColumnName="MeetingTopic" />
+                <ScalarProperty Name="MMSN" ColumnName="MMSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MonthlyReport">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.MonthlyReport">
+              <MappingFragment StoreEntitySet="MonthlyReport">
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="ReportFile" ColumnName="ReportFile" />
+                <ScalarProperty Name="UploadDateTime" ColumnName="UploadDateTime" />
+                <ScalarProperty Name="UploadUserName" ColumnName="UploadUserName" />
+                <ScalarProperty Name="ReportContent" ColumnName="ReportContent" />
+                <ScalarProperty Name="ReportTitle" ColumnName="ReportTitle" />
+                <ScalarProperty Name="MRSN" ColumnName="MRSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
