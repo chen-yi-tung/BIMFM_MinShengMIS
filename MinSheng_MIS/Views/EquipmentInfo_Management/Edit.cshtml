@@ -148,7 +148,7 @@
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-export" id="submit">新增</button>
+    <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
 <script>
@@ -211,6 +211,7 @@
                     case "FilePath":
                         $("#FilePathName").text(v);
                         $("#FilePathGroup").removeClass('d-none');
+                        $("#_checkFilePath").prop("checked", true)
                         break;
                     default:
                         $(`#${k}`).val(v);
@@ -267,13 +268,13 @@
         function onSuccess(res) {
             console.log(res);
             createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
+                id: "DialogModal-Success", inner: "修改成功！",
                 onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
             });
         }
         function onError(res) {
             console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+            createDialogModal({ id: "DialogModal-Error", inner: `修改失敗！` + `${res.responseText}` })
         }
     }
 </script>

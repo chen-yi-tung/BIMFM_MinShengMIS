@@ -35,15 +35,17 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         #endregion
 
         #region 編輯
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         #endregion

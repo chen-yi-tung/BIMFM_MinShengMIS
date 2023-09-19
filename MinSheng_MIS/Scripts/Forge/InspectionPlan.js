@@ -62,6 +62,7 @@ window.addEventListener('load', function () {
                     let pathID = $(e.target).closest(".sample-path-group").attr("data-path-id");
                     let pathData = JSON.parse(sessionStorage.getItem(`P${pathID}_pathData`))
                     $("#current-path-title").val(pathData.PathSample.PathTitle);
+                    $("#current-path-id").val(pathID)
 
                     $(".sample-path-draw-area").removeClass("d-none");
                     sortRouteModal.autoRouteToggle(false);
