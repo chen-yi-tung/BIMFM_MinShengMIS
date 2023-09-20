@@ -1,7 +1,123 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "會議記錄詳情";
 }
 
-<h2>Read</h2>
+<style>
+    .datatable-table .datatable-table-th {
+        background: var(--datatable-header-bg);
+    }
+</style>
+<h2>@ViewBag.Title</h2>
 
+<div class="datatable mt-5">
+    @*<div class="datatable-header">保養項目資料</div>*@
+    <div class="datatable-body">
+        <table class="datatable-table" id="FormDetail"></table>
+    </div>
+</div>
+
+@*<section id="InspectionPlanMaintainList"></section>*@
+
+<script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/dataTable/InspectionPlanMaintain.js"></script>
+<script src="/Scripts/ImageDisplay.js"></script>
+<script src="/Scripts/dataTable/EquipmentInfoModal.js"></script>
+<script>
+    const EMFISN = '@ViewBag.EMFISN';
+    @*let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;*@
+    let apiUrl = null;
+
+    const SerializedName = [
+        { text: "會議主題", value: "MeetingTopic" },
+        { text: "會議日期", value: "MeetingDate" },
+        { text: "會議時間", value: "MeetingTime" },
+        { text: "會議地點", value: "MeetingVenue" },
+        { text: "會議主席", value: "Chairperson" },
+        { text: "興會者", value: "Participant" },
+        { text: "出席狀況", value: "ExpectedAttendence" },
+        { text: "會議記錄負責人", value: "TakeTheMinutes" },
+        { text: "議題順序", value: "Agenda" },
+        { text: "會議內容", value: "MeetingContent" },
+        { text: "會議資料", value: "FilePath" }
+    ]
+
+    const fakeData = {
+        MeetingTopic: "修改日期指定",
+        MeetingDate: "2024/01/01",
+        MeetingTime: "10:00-11:00",
+        MeetingVenue: "會議室3B",
+        Chairperson: "李助理",
+        Participant: "全體人員",
+        ExpectedAttendence: "應到:53位  出席:53位  缺席:0位",
+        TakeTheMinutes: "助理",
+        Agenda: "文字內容",
+        MeetingContent: "電腦筆記",
+        FilePath: "5月主題.pdf",
+        //InspectionPlanList: [
+        //    {
+        //        "InspectionPlan": {
+        //            "IPSN": "P23022203",
+        //            "IPName": "維修設備E00003",
+        //            "PlanDate": "2023/2/22",
+        //            "PlanState": "巡檢完成",
+        //            "Shift": "2",
+        //            "MyName": "賈皓麟、羅紹齊"
+        //        },
+        //        "InspectionPlanMaintain": {
+        //            "MaintainState": "審核未過",
+        //            "MaintainContent": "好了",
+        //            "MyName": "賈皓麟",
+        //            "MaintainDate": "2023/2/22",
+        //            "ImgPath": []
+        //        },
+        //        "RepairSupplementaryInfo": [
+        //            {
+        //                "MyName": "王大明",
+        //                "SupplementaryDate": "2023/1/15",
+        //                "SupplementaryContent": "OOXX",
+        //                "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
+        //            }
+        //        ],
+        //        "RepairAuditInfo": [
+        //            {
+        //                "MyName": "陳進國",
+        //                "AuditDate": "2023/2/22",
+        //                "AuditResult": "審核未過",
+        //                "AuditMemo": "沒修好",
+        //                "ImgPath": []
+        //            }
+        //        ]
+        //    },
+        //]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#FormDetail").append(createTableInner(res, SerializedName));
+            InspectionPlanMaintain("#InspectionPlanMaintainList", res.InspectionPlanList);
+
+            ImageDisplay(".datatable-img-item>img");
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+
+    window.onload = function () {
+
+        readData(apiUrl);
+    }
+</script>
