@@ -48,7 +48,7 @@
 <script src="/Scripts/tool.js"></script>
 <script>
 
-    var getGridJSON = '@Url.Action("MonthlyReport_Management", "MonthlyReport_Management")';
+    var getGridJSON = '@Url.Action("GetData", "MonthlyReport_Management")';
     var DataGrid;
     var baseUrl = '/' + window.location.pathname.split('/')[1];
 
@@ -71,8 +71,8 @@
     function Initialize_DataGrid(getGridJSON) {
         let dg = new DG();
         DataGrid = dg.init("#DataGrid", {
-            //url: getGridJSON,
-            data: fakeData,
+            url: getGridJSON,
+            //data: fakeData,
             method: 'POST',
             queryParams: getQueryParams(),
             idField: 'MRSN',
