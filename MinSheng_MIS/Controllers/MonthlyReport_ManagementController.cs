@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using MinSheng_MIS.Models;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
+using System.IO;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -33,27 +37,14 @@ namespace MinSheng_MIS.Controllers
                 var mr = db.MonthlyReport.ToList();
                 List<ReportData> data = mr.Select(s => new ReportData { MRSN = s.MRSN, ReportTitle = s.ReportTitle, UploadUserName = s.UploadUserName, UploadDateTime = s.UploadDateTime.ToString("yyyy/MM/dd"), ReportContent = s.ReportContent, YearMonth = $"{s.Year}-{s.Month}" }).ToList();
 
-
-
                 return Content(JsonConvert.SerializeObject(data), "application/json");
-
-                return null;
-                //return Content(JsonConvert.SerializeObject(resultPM), "application/json");
             }
             catch (Exception ex)
             {
-                return null;
-                //FileManagmentJSON.Row errorRow = new() { Button2 = "", Button3 = "", P_ID = ex.Message ?? "Error", P_Name = ex.StackTrace ?? "Error", F_Type = "", P_F_Name = "", P_F_Date = "" };
-                //FileManagmentJSON.Rootobject result = new() { total = 1, rows = new[] { errorRow } };
-                //return Content(JsonConvert.SerializeObject(result), "application/json");
+                return Content(JsonConvert.SerializeObject(new List<ReportData> { new ReportData { ReportTitle = ex.Message, YearMonth = "ERROR" } }), "application/json");
             }
 
         }
-
-
-
-
-
 
 
         #region 新增月報
@@ -61,6 +52,70 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
+
+
+        public class CreateData
+        {
+            public string ReportTitle { get; set; }
+            public string YearMonth { get; set; }
+            public string ReportContent { get; set; }
+            public HttpPostedFileBase ReportFile { get; set; }
+        }
+
+        [HttpPost]
+        public ActionResult CreateMonthlyReport(CreateData createData)
+        {
+            try
+            {
+                string[] yearMonthParts = createData.YearMonth.Split('-');
+                if (yearMonthParts.Length != 2) return Content("YearMonth ERROR", "application/json");
+
+                Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+                string lastMRSN = db.MonthlyReport.OrderByDescending(mr => mr.MRSN).FirstOrDefault().MRSN;
+                string lastMrDate = lastMRSN.Substring(0, 6);
+                string dateNow = DateTime.Now.ToString("yyMMdd");
+                int parsedValue = 1;
+                if (lastMrDate == dateNow)
+                {
+                    string lastMrSerial = lastMRSN.Substring(6);
+                    if (int.TryParse(lastMrSerial, out parsedValue) == false) return Content($" lastMrDate is {lastMrDate} and lastMrSerial is {lastMrSerial}  Failed to parse as an integer", "application/json");
+                    parsedValue++;
+                    lastMRSN = dateNow + parsedValue.ToString("00");
+                }
+                else lastMRSN = dateNow + parsedValue.ToString("00");
+
+
+                string fileName = "";
+                if (createData.ReportFile != null && createData.ReportFile.ContentLength > 0)
+                {
+                    string folderPath = Path.Combine(System.Web.Hosting.HostingEnvironment.MapPath("~"), "Files", "MonthlyReport");
+                    if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+                    fileName = lastMRSN + Path.GetExtension(createData.ReportFile.FileName);
+                    createData.ReportFile.SaveAs(Path.Combine(folderPath, fileName));
+                }
+
+                MonthlyReport newReport = new MonthlyReport
+                {
+                    ReportTitle = createData.ReportTitle,
+                    ReportContent = createData.ReportContent,
+                    Year = yearMonthParts[0],
+                    Month = yearMonthParts[1],
+                    MRSN = lastMRSN,
+                    ReportFile = fileName,
+                    UploadDateTime = DateTime.Now,
+                    UploadUserName = User.Identity.Name,
+                };
+                db.MonthlyReport.Add(newReport);
+                db.SaveChanges();
+                return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message, "application/json");
+            }
+        }
+
+
         #endregion
 
         #region 編輯月報
@@ -94,6 +149,14 @@ namespace MinSheng_MIS.Controllers
             public string ReportContent { get; set; }
             public string YearMonth { get; set; }
         }
+
+
+
+
+
+
+
+
 
     }
 }
