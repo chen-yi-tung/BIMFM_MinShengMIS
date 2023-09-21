@@ -35,11 +35,36 @@
             max-height: calc(100vh - var(--navbar-height) - 7rem);
         }
     }
+
+    @@media only screen and (min-width:1200px) {
+        .edit-area {
+            padding: 16px 0;
+        }
+
+        .input_area {
+            max-width: 1100px !important;
+            display: flex;
+            justify-content: left;
+        }
+    }
+
+    @@media only screen and (min-width:768px) and (max-width:1199px) {
+        .edit-area {
+            padding: 16px 0;
+        }
+
+        .input_area {
+            max-width: 1100px !important;
+            display: flex;
+            justify-content: left;
+        }
+    }
+
 </style>
 
 <h2>@ViewBag.Title</h2>
 
-<section style="max-width: 855px;margin: auto;">
+<section class="input_area" style="max-width: 855px;margin: auto;">
     <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
         <form class="form d-lg-contents">
             <div class="form-group w-lg-250px required">
