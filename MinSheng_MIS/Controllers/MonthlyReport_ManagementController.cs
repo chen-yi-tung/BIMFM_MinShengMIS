@@ -119,11 +119,45 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯月報
-        public ActionResult Edit()
+        public ActionResult Edit(string id = "")
         {
+            ViewBag.id = id;
+            Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+            var mr = db.MonthlyReport.Where(m => m.MRSN == id).FirstOrDefault();
             return View();
         }
         #endregion
+
+
+
+        [HttpGet]
+        public ActionResult Readbody(string id)
+        {
+            JObject jo = new JObject();
+            Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+            var item = db.MonthlyReport.Find(id);
+            if (item == null ) return Content(JsonConvert.SerializeObject(new JObject { { "Failed", false } }), "application/json");
+            jo["MRSN"] = item.MRSN;
+            jo["ReportTitle"] = item.ReportTitle;
+            jo["UploadUserName"] = item.UploadUserName;
+            jo["UploadDateTime"] = item.UploadDateTime.ToString("yyyy/M/d"); ;
+            jo["ReportContent"] = item.ReportContent;
+            jo["YearMonth"] = item.Year + "-" + item.Month;
+            jo["FilePath"] = string.IsNullOrEmpty(item.ReportFile) ? null : "\\Files\\MonthlyReport\\" + item.ReportFile;
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
+        }
+
+
+
+
+
+
+
+
+
+
 
         #region 月報詳情
         public ActionResult Read()
