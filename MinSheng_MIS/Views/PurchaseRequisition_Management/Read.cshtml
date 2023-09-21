@@ -1,7 +1,135 @@
 ﻿
 @{
-    ViewBag.Title = "Read";
+    ViewBag.Title = "請購詳情";
 }
 
-<h2>Read</h2>
+<style>
+    .demTable {
+        margin-top:3%;
+        width: 100%;
+        border: 1px solid #ffffff;
+        border-collapse: collapse;
+        padding: 5px;
+    }
 
+        .demTable th {
+            text-align:center;
+            border: 1px solid #ffffff;
+            padding: 5px;
+            background: #bdd3df;
+        }
+
+        .demTable td {
+            border: 1px solid #ffffff;
+            text-align: center;
+            padding: 5px;
+            background: #e5edf1;
+            color: #313030;
+        }
+</style>
+
+<h2>請購詳情</h2>
+
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="MaintainItemInfo"></table>
+    </div>
+</div>
+
+<table class="demTable">
+    <thead>
+        <tr>
+            <th class="Kind">類別</th>
+            <th class="ItemName">品名</th>
+            <th class="Size">尺寸</th>
+            <th class="PRAmount">數量</th>
+            <th class="Unit">單位</th>
+            <th class="ApplicationPurpose">申請用途</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>電子</td>
+            <td>LG手機</td>
+            <td>12寸</td>
+            <td>4</td>
+            <td>台</td>
+            <td>測試</td>
+        </tr>
+        <tr>
+            <td>電子</td>
+            <td>LG手機</td>
+            <td>12寸</td>
+            <td>4</td>
+            <td>台</td>
+            <td>測試</td>
+        </tr>
+        <tr>
+            <td>耗材</td>
+            <td>螺絲</td>
+            <td>12cm</td>
+            <td>4</td>
+            <td>包</td>
+            <td>修補破損</td>
+        </tr>
+    </tbody>
+    <script src="/Scripts/datatable.js"></script>
+
+    <script>
+
+        const apiUrl = null;
+
+        const SerializedName = [
+            { text: "請購單號", value: "PRN" },
+            { text: "請購人", value: "PRUserName" },
+            { text: "請購單狀態", value: "PRState" },
+            { text: "請購部門", value: "PRDept" },
+            { text: "請購申請日", value: "PRDate" },
+            { text: "審核日期", value: "AuditDate" },
+            { text: "審核結果說明", value: "AuditResult" },
+            { text: "相關文件", value: "FileName" },
+        ]
+
+        const fakeData = {
+            PRN: "230101001",
+            PMSN: "1",
+            PRUserName: "黃助理",
+            PRState: "已處理",
+            PRDept: "人資部",
+            PRDate: "2021-12-10 05:01:10",
+            AuditDate: "2022-01-01",
+            AuditResult: '審核通過',
+            FileName: "test.pdf",
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
+                $("#ReadPSN").click(() => {
+                    window.open(`/InspectionPlan_Management/Read/${res.PSN}`, "_blank")
+                })
+                $("#SearchPSN").click(() => {
+                    window.open(`/WarningMessage_Management/Management?PSN=${res.PSN}`, "_blank")
+                })
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        window.onload = function () {
+            readData(apiUrl);
+        }
+    </script>
