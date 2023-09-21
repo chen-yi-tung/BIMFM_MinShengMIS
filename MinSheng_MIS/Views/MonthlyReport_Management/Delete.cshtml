@@ -18,9 +18,8 @@
 
 <script>
     const MRSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
-    let apiUrl = null;
-
+    let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
+    debugger;
     const fakeData = {
         MRSN: "1",
         ReportTitle: "2023-5月月報",
@@ -45,7 +44,7 @@
     })
 
     function readData(url = null) {
-
+        debugger;
         url == null ? onSuccess(fakeData) :
             $.ajax({
                 url: url,
@@ -70,6 +69,7 @@
             history.back();
         })
         $("#delete").click(function () {
+            debugger;
             let modal = createDialogModal({
                 id: "DialogModal-Delete",
                 inner: `
@@ -94,9 +94,9 @@
 
                 //setTimeout(onSuccess, 1000);
 
-                
+                debugger;
                 $.ajax({
-                    url: '@Url.Action("Delete_MonthlyReport", "MonthlyReport_Management")' + `/${UserName}`,
+                    url: '@Url.Action("Delete_MonthlyReport", "MonthlyReport_Management")' + `?MRSN=${MRSN}`,
                     //data: JSON.stringify(UserName),
                     type: "DELETE",
                     dataType: "json",
@@ -104,7 +104,7 @@
                     success: onSuccess,
                     error: onError
                 })
-                
+
 
                 function onSuccess(res) {
                     console.log("Success");

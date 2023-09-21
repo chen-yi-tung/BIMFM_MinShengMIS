@@ -25,7 +25,7 @@
         <div class="form-group" style="grid-column: auto/span 2;">
             <label for="ReportContent">內容說明</label>
             <textarea class="form-control" name="ReportContent" id="ReportContent" rows="1"
-                style="resize: vertical;"></textarea>
+                      style="resize: vertical;"></textarea>
         </div>
 
         <div id="FileUploader"></div>
@@ -39,7 +39,6 @@
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 <script>
-    debugger;
     const DDSN = '@ViewBag.id';
     const apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${DDSN}`;
     const fakeData = {
@@ -51,7 +50,6 @@
         YearMonth: "2023-05",
         FilePath: "/Files/a.pdf"
     }
-    debugger;
     var fileUploader
     $(async function () {
         addButtonEvent();
@@ -66,7 +64,6 @@
     });
 
     function readData(url = null) {
-        debugger;
         url == null ? onSuccess(fakeData) :   //res
             $.ajax({
                 url: url,
@@ -103,12 +100,20 @@
         if (!isValidity) return;
 
         var fd = new FormData();
+        fd.append("MRSN", '@ViewBag.id');
         fd.append("ReportTitle", document.getElementById("ReportTitle").value);
         fd.append("ReportContent", document.getElementById("ReportContent").value);
         fd.append("YearMonth", document.getElementById("YearMonth").value);
         if (fileUploader.hasFile()) {
-            form.append("ReportFile", fileUploader.getFile());
+            let file = fileUploader.getFile()
+            if (file.size) {
+                fd.append("ReportFile", file);
+            }
+            else {
+                fd.append("ReportFileStr", file.name);
+            }
         }
+        console.log(fileUploader.getFile())
         console.log(Object.fromEntries(fd.entries()));
         $.ajax({
             url: '@Url.Action("EditMonthlyReport", "MonthlyReport_Management")',
@@ -120,11 +125,17 @@
             error: onError
         })
         function onSuccess(res) {
+            debugger;
             console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
-            });
+            if (res.success == false) {
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+            }
+            else {
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
+                });
+            }
         }
         function onError(res) {
             console.log(res);
@@ -134,12 +145,10 @@
 
     function addButtonEvent() {
         $("#back").click(function () {
-            debugger;
             history.back();
         })
 
         $("#submit").click(function () {
-            debugger;
             save();
         })
     }
