@@ -81,13 +81,24 @@ namespace MinSheng_MIS.Controllers
                 mr = mr.Skip((page - 1) * rows).Take(rows).ToList();
                 foreach (var item in mr)
                 {
-                    var itemObjects = new JObject();
-                    itemObjects.Add("MRSN", item.MRSN);
-                    itemObjects.Add("ReportTitle", item.ReportTitle);
-                    itemObjects.Add("UploadUserName", item.UploadUserName);
-                    if (item.UploadDateTime != DateTime.MinValue && item.UploadDateTime != null) itemObjects.Add("UploadDateTime", item.UploadDateTime.ToString("yyyy/MM/dd"));
-                    itemObjects.Add("ReportContent", item.ReportContent);
-                    itemObjects.Add("YearMonth", $"{item.Year}-{item.Month}");
+                    //var itemObjects = new JObject();
+                    //itemObjects.Add("MRSN", item.MRSN);
+                    //itemObjects.Add("ReportTitle", item.ReportTitle);
+                    //itemObjects.Add("UploadUserName", item.UploadUserName);
+                    //if (item.UploadDateTime != DateTime.MinValue && item.UploadDateTime != null) itemObjects.Add("UploadDateTime", item.UploadDateTime.ToString("yyyy/MM/dd"));
+                    //itemObjects.Add("ReportContent", item.ReportContent);
+                    //itemObjects.Add("YearMonth", $"{item.Year}-{item.Month}");
+                    //ja.Add(itemObjects);
+
+                    var itemObjects = new JObject
+                    {
+                        { "MRSN", item.MRSN },
+                        { "ReportTitle", item.ReportTitle },
+                        { "UploadUserName", item.UploadUserName },
+                        { "ReportContent", item.ReportContent },
+                        { "YearMonth", $"{item.Year}-{item.Month}" },
+                        { "UploadDateTime", (item.UploadDateTime != DateTime.MinValue && item.UploadDateTime != null) ? item.UploadDateTime.ToString("yyyy/MM/dd") : null }
+                    };
                     ja.Add(itemObjects);
                 }
                 JObject jo = new JObject();
