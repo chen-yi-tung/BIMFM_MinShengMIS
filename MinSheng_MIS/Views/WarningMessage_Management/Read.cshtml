@@ -59,8 +59,8 @@
         { text: "發生時間", value: "TimeofOccurrence" },
         { text: "發生地點", value: "Location" },
         { text: "事件內容", value: "Message" },
-        { text: "巡檢計畫編碼", value: "PSN" },
-        { text: "人員姓名", value: "MyName" },
+        { text: "警報來源", value: "WMSource" },
+
     ]
 
     const fakeData = {
@@ -71,8 +71,7 @@
         TimeofOccurrence: "2023-01-01T06:30:27",
         Location: "進流抽水站 B2F",
         Message: "巡檢路徑偏移",
-        PSN: "P23050301",
-        MyName: "王OO"
+        WMSource: "文字內容",
     }
 
     function readData(url = null) {
