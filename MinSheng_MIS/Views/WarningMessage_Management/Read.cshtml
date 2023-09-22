@@ -2,6 +2,20 @@
     ViewBag.Title = "警示訊息詳情";
 }
 
+<script type="text/javascript" src="/Content/easyui/jquery.min.js" defer></script>
+<link rel="stylesheet" type="text/css" href="/Content/easyui/themes/default/easyui.css" />
+<script type="text/javascript" src="/Content/easyui/jquery.easyui.min.js" defer></script>
+
+
+
+
+<style>
+    @@media only screen and (min-width:1200px) {
+        .datatable {
+            max-width: 700px;
+        }
+    }
+</style>
 <h2>@ViewBag.Title</h2>
 
 <div class="datatable datatable-small mt-5">
@@ -10,12 +24,31 @@
     </div>
 </div>
 
-@*<div class="edit-button-area">
-    <button class="btn btn-search" id="SearchPSN">本巡檢計畫其他警示訊息</button>
-    <button class="btn btn-back" id="ReadPSN">查看巡檢計畫</button>
-</div>*@
+<div class="datatable mt-5">
+    <div class="datatable-header">填報記錄</div>
+    <div class="datatable-body datatable-easyui">
+        <table class="WM_datagrid easyui-datagrid"
+               data-options="singleSelect:true,collapsible:true,method:'get'" id="record_datagrid">
+            <thead>
+                <tr>
+                    <th data-options="field:'FillinDateTime',width:120,align:'center'" sortable="true">填報時間</th>
+                    <th data-options="field:'FillinUserName',width:120,align:'center'" sortable="true">填報人員</th>
+                    <th data-options="field:'WMState',width:150,align:'center'" sortable="true">事件處理狀況</th>
+                    <th data-options="field:'Memo',resizable:true,align:'center'" sortable="true">備註</th>
+                </tr>
+            </thead>
+        </table>
 
-<script src="/Scripts/datatable.js"></script>
+    </div>
+</div>
+
+@*<div class="edit-button-area">
+        <button class="btn btn-search" id="SearchPSN">本巡檢計畫其他警示訊息</button>
+        <button class="btn btn-back" id="ReadPSN">查看巡檢計畫</button>
+    </div>*@
+<!-- jQuery CDN -->
+
+<script src="/Scripts/datatable.js" defer></script>
 <script>
 
     const apiUrl = null;
@@ -73,4 +106,35 @@
         readData(apiUrl);
     }
 </script>
+<script>
+    // ... (your existing code)
 
+    // Function to generate random data
+    function generateRandomData() {
+        const randomData = [];
+        for (let i = 0; i < 10; i++) { // You can adjust the number of rows as needed
+            randomData.push({
+                FillinDateTime: new Date().toLocaleString(),
+                FillinUserName: "User " + (i + 1),
+                WMState: Math.random() > 0.5 ? "已處理" : "未處理",
+                Memo: "Random Memo " + (i + 1)
+            });
+        }
+        return randomData;
+    }
+
+    // Function to initialize the datagrid with random data
+    function initDatagrid() {
+        const randomData = generateRandomData();
+
+        $('#record_datagrid').datagrid({
+            data: randomData
+        });
+    }
+
+    // Call the initialization function
+    window.onload = function () {
+        readData(apiUrl); // Load your initial data
+        initDatagrid();   // Add random data to the datagrid
+    }
+</script>
