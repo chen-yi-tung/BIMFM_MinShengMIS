@@ -472,6 +472,7 @@
     <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站1.png" />
     <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站2.png" />
     <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站4.png" />
+    <Content Include="Content\BigScreen.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.rtl.css" />
@@ -1484,12 +1485,14 @@
     <Content Include="Content\icomoon-v1.0\style.css" />
     <Content Include="Content\img\bg.png" />
     <Content Include="Content\img\bluetooth.svg" />
+    <Content Include="Content\img\bs-logo.png" />
     <Content Include="Content\img\heart.svg" />
     <Content Include="Content\img\loginBG.png" />
     <Content Include="Content\img\logo.png" />
     <Content Include="Content\img\new_bg.png" />
     <Content Include="Content\img\pin.svg" />
     <Content Include="Content\img\Search.svg" />
+    <Content Include="Content\img\weather\heavy-rain.png" />
     <Content Include="Content\login.css" />
     <Content Include="Content\navbar.css" />
     <Content Include="Content\samplepath.css" />
@@ -1890,10 +1893,10 @@
     <Content Include="Views\BIM\FloorModelView.cshtml" />
     <Content Include="Views\PurchaseRequisition_Management\Read.cshtml" />
     <Content Include="Views\PurchaseRequisition_Management\Edit.cshtml" />
+    <Content Include="Views\BigScreen\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\BigScreen\" />
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
   </ItemGroup>
