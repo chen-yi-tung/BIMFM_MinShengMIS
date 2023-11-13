@@ -19,8 +19,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="/Content/icomoon-v1.0/style.css" rel="stylesheet">
     @Styles.Render("~/Content/css")
-    @Styles.Render("~/Content/BigScreen.css")
     @Styles.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css")
+    @Styles.Render("~/Content/BigScreen.css")
 
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
@@ -139,12 +139,54 @@
                 <button class="btn btn-alert" data-bs-toggle="collapse" data-bs-target="#AlertCollapse">
                     <i class="icon-ring"></i>
                     <span class="badge">5</span>
+                    <div class="collapse alert-collapse" id="AlertCollapse">
+                        <div class="collapse-body">
+                            <a class="alert-item" target="_blank" data-level="1" data-process-state="1">
+                                <i class="icon-alert"></i>
+                                <span class="road">進流抽水站2F</span>
+                                <span class="time">13:05:20</span>
+                                <span class="title">進流抽水站2F火災</span>
+                                <span class="process-state"></span>
+                            </a>
+                            <a class="alert-item" target="_blank" data-level="1" data-process-state="1">
+                                <i class="icon-alert"></i>
+                                <span class="road">進流抽水站2F</span>
+                                <span class="time">13:05:20</span>
+                                <span class="title">進流抽水站2F火災</span>
+                                <span class="process-state"></span>
+                            </a>
+                            <a class="alert-item" target="_blank" data-level="2" data-process-state="2">
+                                <i class="icon-alert"></i>
+                                <span class="road">進流抽水站2F</span>
+                                <span class="time">13:05:20</span>
+                                <span class="title">進流抽水站2F火災</span>
+                                <span class="process-state"></span>
+                            </a>
+                            <a class="alert-item" target="_blank" data-level="2" data-process-state="3">
+                                <i class="icon-alert"></i>
+                                <span class="road">進流抽水站2F</span>
+                                <span class="time">13:05:20</span>
+                                <span class="title">進流抽水站2F火災</span>
+                                <span class="process-state"></span>
+                            </a>
+                            <a class="alert-item" target="_blank" data-level="2" data-process-state="3">
+                                <i class="icon-alert"></i>
+                                <span class="road">進流抽水站2F</span>
+                                <span class="time">13:05:20</span>
+                                <span class="title">進流抽水站2F火災</span>
+                                <span class="process-state"></span>
+                            </a>
+                        </div>
+                    </div>
                 </button>
-                <div class="collapse alert-collapse" id="AlertCollapse">
-
-                </div>
             </div>
-            <div class="marquee">跑馬燈</div>
+            <div class="marquee">
+                <ul>
+                    <li>1.跑馬燈</li>
+                    <li>2.跑馬燈跑馬燈跑馬燈</li>
+                    <li>3.跑馬燈跑馬燈跑馬燈跑馬燈跑馬燈跑馬燈跑馬燈跑馬燈跑馬燈</li>
+                </ul>
+            </div>
         </section>
         <section class="end-area">
             <div class="header-area">
@@ -338,7 +380,8 @@
             </div>
         </section>
     </div>
-    @Scripts.Render("~/Scripts/BigScreen.js")
+    @Scripts.Render("~/Scripts/BigScreen/ChartPlugin.js")
+    @Scripts.Render("~/Scripts/BigScreen/BigScreen.js")
 </body>
 
 </html>

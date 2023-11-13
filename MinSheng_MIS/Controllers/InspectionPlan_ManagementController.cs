@@ -711,5 +711,12 @@ namespace MinSheng_MIS.Controllers
 			return View();
 		}
 		#endregion
+
+		#region 巡檢資訊管理
+		public ActionResult InformationManagement()
+		{
+			return View();
+		}
+		#endregion
 	}
 }

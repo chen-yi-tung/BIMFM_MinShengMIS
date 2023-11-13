@@ -1493,6 +1493,7 @@
     <Content Include="Content\img\pin.svg" />
     <Content Include="Content\img\Search.svg" />
     <Content Include="Content\img\weather\heavy-rain.png" />
+    <Content Include="Content\InformationManagement.css" />
     <Content Include="Content\login.css" />
     <Content Include="Content\navbar.css" />
     <Content Include="Content\samplepath.css" />
@@ -1518,7 +1519,8 @@
       <LastGenOutput>Model1.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\AreaFloorEvent.js" />
-    <Content Include="Scripts\BigScreen.js" />
+    <Content Include="Scripts\BigScreen\BigScreen.js" />
+    <Content Include="Scripts\BigScreen\ChartPlugin.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.css.map" />
@@ -1722,6 +1724,7 @@
     <Content Include="Scripts\InquiryPlan\CreateDataGrids.js" />
     <Content Include="Scripts\InspectionPlan\Create.js" />
     <Content Include="Scripts\InspectionPlan\CreateDataGrids.js" />
+    <Content Include="Scripts\InspectionPlan\InformationManagement.js" />
     <Content Include="Scripts\InspectionPlan\ReadDataGrids.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -1895,6 +1898,7 @@
     <Content Include="Views\PurchaseRequisition_Management\Read.cshtml" />
     <Content Include="Views\PurchaseRequisition_Management\Edit.cshtml" />
     <Content Include="Views\BigScreen\Index.cshtml" />
+    <Content Include="Views\InspectionPlan_Management\InformationManagement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

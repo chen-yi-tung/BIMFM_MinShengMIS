@@ -1,0 +1,204 @@
+.date-search-area {
+    padding-top: 0.72rem;
+    padding-bottom: 1.22rem;
+
+    .form-group {
+        display: inline-block;
+        margin-right: 1.06rem;
+
+        label {
+            display: inline-block;
+            color: #9CF0F4;
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .form-select {
+            display: inline-block;
+            padding: 0.3125rem 0.625rem;
+            border-radius: 6.25rem;
+            border: 2px solid #9CF0F4;
+            background-color: #FFF;
+            width: 6rem;
+        }
+    }
+}
+
+.info-area {
+    display: grid;
+    grid-template-columns: 8fr 3fr 3fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-areas:
+        "main side1 side1"
+        "main side2 side2"
+        "main minx1 minx2";
+    gap: 1rem;
+
+    .info-box {
+        border-radius: 0.3125rem;
+        border: 1px solid #5CE2FF;
+        background: #22365ee6;
+        color: #fff;
+        padding: 1.5rem 0rem;
+
+        h5 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        &.main {
+            grid-area: main;
+            padding: 0;
+
+            .hstack {
+                padding: 2.5rem 0;
+            }
+
+            .legend-container {
+
+                .legend-statistics {
+
+                    .value {
+                        color: #5CE2FF;
+                    }
+                }
+            }
+
+            .table {
+                color: #fff;
+                text-align: center;
+                margin-bottom: 0;
+                border-bottom-left-radius: 0.325rem;
+                border-bottom-right-radius: 0.325rem;
+                overflow: hidden;
+
+                .text-success {
+                    color: #72E998 !important;
+                }
+
+                .row {
+                    --bs-gutter-x: 0rem !important;
+
+                    &>.col {
+                        padding-top: 0.25rem;
+                        padding-bottom: 0.25rem;
+                    }
+
+                }
+
+                .thead {
+                    background: rgba(18, 184, 255, 0.30);
+                    font-size: 1.125rem;
+                    font-weight: 500;
+                    padding-left: 2.75rem;
+                    padding-right: 2.75rem;
+                }
+
+                .tbody {
+                    height: 30rem;
+
+                    .simplebar-content {
+                        padding-right: 2.75rem !important;
+                    }
+
+                    .row {
+                        padding-left: 2.75rem !important;
+
+                        &:nth-of-type(odd) {
+                            background: rgba(46, 75, 111, 0.60);
+                        }
+                    }
+                }
+
+                .simplebar-track {
+                    background: #828282;
+                    border-radius: 3.5rem;
+                    right: 1rem;
+                    bottom: 1rem;
+
+                    &.simplebar-vertical {
+                        top: 1rem;
+                    }
+
+                    .simplebar-scrollbar {
+                        padding: 0 !important;
+
+                        &:before {
+                            background: #fff;
+                            opacity: 1;
+                            border-radius: 3.5rem;
+                            inset: 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.side1 {
+            grid-area: side1;
+
+            .hstack {
+                gap: 2.5rem;
+                padding-left: 2.5rem;
+                padding-right: 2.5rem;
+                align-items: start;
+            }
+        }
+
+        &.side2 {
+            grid-area: side2;
+        }
+
+        &.minx1 {
+            grid-area: minx1;
+        }
+
+        &.minx2 {
+            grid-area: minx2;
+        }
+    }
+
+    [role='chart'] {
+
+        .legend-container {
+            color: inherit;
+
+            .legend-catalog {
+                gap: 0.75rem;
+
+                .value {
+                    font-size: 1rem;
+                }
+
+                .label {
+                    font-size: 0.875rem;
+                }
+            }
+
+            .legend-statistics {
+                margin-bottom: .75rem;
+            }
+        }
+
+        .horizontal {
+            height: auto;
+            gap: 1.5rem;
+
+            &#Inspection_Aberrant_Level {
+                width: auto !important;
+            }
+        }
+
+        .catalog-line {
+            .legend-catalog {
+                gap: 1.25rem;
+            }
+        }
+
+        &>.vr {
+            color: rgba(255, 255, 255, 0.40);
+        }
+
+    }
+}
