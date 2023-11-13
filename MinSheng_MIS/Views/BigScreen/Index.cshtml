@@ -135,6 +135,15 @@
             <div class="viewerContainer">
                 <div id="viewer3d"></div>
             </div>
+            <div class="position-absolute top-0 end-0 p-4">
+                <button class="btn btn-alert" data-bs-toggle="collapse" data-bs-target="#AlertCollapse">
+                    <i class="icon-ring"></i>
+                    <span class="badge">5</span>
+                </button>
+                <div class="collapse alert-collapse" id="AlertCollapse">
+
+                </div>
+            </div>
             <div class="marquee">跑馬燈</div>
         </section>
         <section class="end-area">
@@ -172,27 +181,135 @@
                 </div>
                 <div class="info-box">
                     <div class="info-box-header">空間人員即時位置</div>
-                    <div class="info-box-body" use-simplebar>
+                    <div class="info-box-body" style="height: 12.5rem;" data-simplebar data-simplebar-auto-hide="false"
+                        data-simplebar-force-visible="y">
                         <div class="accordion plan-accordion" id="Inspection_Current_Pos">
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#Inspection_Current_Pos_P1">
-                                        <span>第一計畫</span><i class="icon-people"></i><span>12</span><span>人</span>
+                                    <button class="accordion-button" data-bs-toggle="collapse"
+                                        data-bs-target="#Inspection_Current_Pos_P1">
+                                        <span class="name">第一計畫</span>
+                                        <i class="icon-people"></i>
+                                        <span class="value">3</span>
+                                        <span class="unit">人</span>
                                     </button>
                                 </h2>
-                                <div id="Inspection_Current_Pos_P1" class="accordion-collapse collapse show" data-bs-parent="#Inspection_Current_Pos">
+                                <div id="Inspection_Current_Pos_P1" class="accordion-collapse collapse show"
+                                    data-bs-parent="#Inspection_Current_Pos">
                                     <div class="accordion-body">
                                         <div class="plan-people">
-                                            <div class="human"><i class="icon-human"></i></div>
-                                            <div class="d-flex flex-column gap-1">
-                                                <div>
-                                                    <span>Pt01 王大明</span>
-                                                    <div>
-                                                        <i class="icon-heart"></i>
-                                                        <span>心率：</span>
-                                                        <span>110</span>
-                                                        <span>下/分</span>
-                                                    </div>
+                                            <!--<div class="human"><i class="icon-human"></i></div>-->
+                                            <div class="plan-people-group">
+                                                <div class="plan-people-info">
+                                                    <span class="name">Pt01 王大明</span>
+                                                    <i class="icon-heart"></i>
+                                                    <span class="label">心率：</span>
+                                                    <span class="value">110</span>
+                                                    <span class="unit">下/分</span>
+                                                </div>
+                                                <div class="plan-people-info">
+                                                    <span class="name">Pt02 任趙仁</span>
+                                                    <i class="icon-heart"></i>
+                                                    <span class="label">心率：</span>
+                                                    <span class="value">96</span>
+                                                    <span class="unit">下/分</span>
+                                                </div>
+                                                <div class="plan-people-locate">
+                                                    <span class="label">即時位置：</span>
+                                                    <span class="value">A區2F</span>
+                                                    <button class="btn" id="goToLocation"><i
+                                                            class="icon-arrow-right"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="plan-people">
+                                            <!--<div class="human"><i class="icon-human"></i></div>-->
+                                            <div class="plan-people-group">
+                                                <div class="plan-people-info">
+                                                    <span class="name">Pt01 王大明</span>
+                                                    <i class="icon-heart"></i>
+                                                    <span class="label">心率：</span>
+                                                    <span class="value">110</span>
+                                                    <span class="unit">下/分</span>
+                                                </div>
+                                                <div class="plan-people-info">
+                                                    <span class="name">Pt02 任趙仁</span>
+                                                    <i class="icon-heart"></i>
+                                                    <span class="label">心率：</span>
+                                                    <span class="value">96</span>
+                                                    <span class="unit">下/分</span>
+                                                </div>
+                                                <div class="plan-people-locate">
+                                                    <span class="label">即時位置：</span>
+                                                    <span class="value">A區2F</span>
+                                                    <button class="btn" id="goToLocation"><i
+                                                            class="icon-arrow-right"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" data-bs-toggle="collapse"
+                                        data-bs-target="#Inspection_Current_Pos_P2">
+                                        <span class="name">第二計畫</span>
+                                        <i class="icon-people"></i>
+                                        <span class="value">12</span>
+                                        <span class="unit">人</span>
+                                    </button>
+                                </h2>
+                                <div id="Inspection_Current_Pos_P2" class="accordion-collapse collapse show"
+                                    data-bs-parent="#Inspection_Current_Pos">
+                                    <div class="accordion-body">
+                                        <div class="plan-people">
+                                            <!--<div class="human"><i class="icon-human"></i></div>-->
+                                            <div class="plan-people-group">
+                                                <div class="plan-people-info">
+                                                    <span class="name">Pt01 王大明</span>
+                                                    <i class="icon-heart"></i>
+                                                    <span class="label">心率：</span>
+                                                    <span class="value">110</span>
+                                                    <span class="unit">下/分</span>
+                                                </div>
+                                                <div class="plan-people-info">
+                                                    <span class="name">Pt02 任趙仁</span>
+                                                    <i class="icon-heart"></i>
+                                                    <span class="label">心率：</span>
+                                                    <span class="value">96</span>
+                                                    <span class="unit">下/分</span>
+                                                </div>
+                                                <div class="plan-people-locate">
+                                                    <span class="label">即時位置：</span>
+                                                    <span class="value">A區2F</span>
+                                                    <button class="btn" id="goToLocation"><i
+                                                            class="icon-arrow-right"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="plan-people">
+                                            <!--<div class="human"><i class="icon-human"></i></div>-->
+                                            <div class="plan-people-group">
+                                                <div class="plan-people-info">
+                                                    <span class="name">Pt01 王大明</span>
+                                                    <i class="icon-heart"></i>
+                                                    <span class="label">心率：</span>
+                                                    <span class="value">110</span>
+                                                    <span class="unit">下/分</span>
+                                                </div>
+                                                <div class="plan-people-info">
+                                                    <span class="name">Pt02 任趙仁</span>
+                                                    <i class="icon-heart"></i>
+                                                    <span class="label">心率：</span>
+                                                    <span class="value">96</span>
+                                                    <span class="unit">下/分</span>
+                                                </div>
+                                                <div class="plan-people-locate">
+                                                    <span class="label">即時位置：</span>
+                                                    <span class="value">A區2F</span>
+                                                    <button class="btn" id="goToLocation"><i
+                                                            class="icon-arrow-right"></i></button>
                                                 </div>
                                             </div>
                                         </div>

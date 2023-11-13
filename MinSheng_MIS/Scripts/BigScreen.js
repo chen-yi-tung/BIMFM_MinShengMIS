@@ -256,8 +256,8 @@ window.addEventListener('load', () => {
             { label: "軌跡偏離", value: 15 },
             { label: "緊急", value: 15 }
         ]
-        ctx.width = 140
-        ctx.height = 140
+        ctx.width = 138
+        ctx.height = 138
         new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -310,8 +310,8 @@ window.addEventListener('load', () => {
             { label: "處理中", value: 15 },
             { label: "待處理", value: 15 }
         ]
-        ctx.width = 140
-        ctx.height = 140
+        ctx.width = 138
+        ctx.height = 138
         new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -375,8 +375,8 @@ window.addEventListener('load', () => {
             { label: "維修中", value: 7 },
             { label: "異常", value: 3 },
         ]
-        ctx.width = 140
-        ctx.height = 140
+        ctx.width = 138
+        ctx.height = 138
         new Chart(ctx, {
             type: 'doughnut',
             data: {
