@@ -50,6 +50,7 @@
     Inspection_All_Members()
     Inspection_Aberrant_Level()
     Inspection_Aberrant_Resolve()
+    Equipment_Maintain_And_Repair_Statistics()
     Equipment_Level_Rate()
     Equipment_Type_Rate()
     // #endregion
@@ -129,7 +130,7 @@
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '設備總妥善率',
+                    label: '巡檢總設備狀態',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -169,7 +170,14 @@
             ]
         })
     }
-    //巡檢異常狀態 等級占比
+    //巡檢人員表格
+    function Inspection_All_Members() {
+        const row = $("#Inspection_All_Members .row")
+        for (let i = 0; i < 20; i++) {
+            $("#Inspection_All_Members .simplebar-content").append(row.clone())
+        }
+    }
+    //緊急事件 等級占比
     function Inspection_Aberrant_Level() {
         const container = document.getElementById('Inspection_Aberrant_Level');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -185,7 +193,7 @@
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '設備總妥善率',
+                    label: '緊急事件等級占比',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -218,7 +226,7 @@
             ]
         })
     }
-    //巡檢異常狀態 處理狀況
+    //緊急事件 處理狀況
     function Inspection_Aberrant_Resolve() {
         const container = document.getElementById('Inspection_Aberrant_Resolve');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -234,7 +242,7 @@
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '設備總妥善率',
+                    label: '緊急事件處理狀況',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -279,6 +287,55 @@
             ]
         })
     }
+    //設備保養及維修進度統計
+    function Equipment_Maintain_And_Repair_Statistics() {
+        const container = document.getElementById('Equipment_Maintain_And_Repair_Statistics');
+        const ctx = getOrCreateElement(container, 'canvas')
+        const backgroundColor = ["#4269AC", "#72BEE9", "#BC72E9", "#FFAB2E", "#B7B7B7", "#72E998", "#E77272"]
+        const data = [
+            { label: "已派工", value: { Maintain: 7, Repair: 8 } },
+            { label: "施工中", value: { Maintain: 8, Repair: 5 } },
+            { label: "待審核", value: { Maintain: 12, Repair: 8 } },
+            { label: "未完成", value: { Maintain: 15, Repair: 10 } },
+            { label: "待補件", value: { Maintain: 3, Repair: 1 } },
+            { label: "完成", value: { Maintain: 20, Repair: 12 } },
+            { label: "審核未過", value: { Maintain: 2, Repair: 3 } }
+        ]
+
+        ctx.width = 585
+        ctx.height = 96
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["設備保養", "設備維修"],
+                datasets: data.map(({ label, value: { Maintain, Repair } }, i) => {
+                    return {
+                        label,
+                        data: [Maintain, Repair],
+                        backgroundColor: backgroundColor[i],
+                        borderWidth: 0
+                    }
+                })
+            },
+            options: {
+                responsive: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true
+                    }
+                },
+                plugins: {
+                    legend, tooltip,
+                    htmlLegend: { value: false }
+                }
+            },
+            plugins: [chartPlugins.htmlLegend]
+        })
+    }
     //設備故障等級分布
     function Equipment_Level_Rate() {
         const container = document.getElementById('Equipment_Level_Rate');
@@ -297,7 +354,7 @@
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '設備總妥善率',
+                    label: '設備故障等級分布',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -340,7 +397,7 @@
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '設備總妥善率',
+                    label: '設備故障類型占比',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -364,12 +421,4 @@
         })
     }
     // #endregion
-
-    //表格
-    function Inspection_All_Members() {
-        const row = $("#Inspection_All_Members .row")
-        for (let i = 0; i < 20; i++) {
-            $("#Inspection_All_Members .simplebar-content").append(row.clone())
-        }
-    }
 })
