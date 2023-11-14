@@ -472,6 +472,7 @@
     <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站1.png" />
     <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站2.png" />
     <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站4.png" />
+    <Content Include="Content\ArcGIS\arcgis.css" />
     <Content Include="Content\BigScreen.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.min.css" />
@@ -1486,6 +1487,7 @@
     <Content Include="Content\img\bg.png" />
     <Content Include="Content\img\bluetooth.svg" />
     <Content Include="Content\img\bs-logo.png" />
+    <Content Include="Content\img\gis-marker.png" />
     <Content Include="Content\img\heart.svg" />
     <Content Include="Content\img\loginBG.png" />
     <Content Include="Content\img\logo.png" />
@@ -1518,6 +1520,20 @@
       <DependentUpon>Model1.edmx</DependentUpon>
       <LastGenOutput>Model1.cs</LastGenOutput>
     </Content>
+    <Content Include="Scripts\ArcGIS\loadArcgis.js" />
+    <Content Include="Scripts\ArcGIS\utils\customWidgetUtils.js" />
+    <Content Include="Scripts\ArcGIS\utils\sceneLayerUtils.js" />
+    <Content Include="Scripts\ArcGIS\widgets.js" />
+    <Content Include="Scripts\ArcGIS\widget\basemapGalleryWidget.js" />
+    <Content Include="Scripts\ArcGIS\widget\daylightWidget.js" />
+    <Content Include="Scripts\ArcGIS\widget\elevationProfileWidget.js" />
+    <Content Include="Scripts\ArcGIS\widget\featureTableWidget.js" />
+    <Content Include="Scripts\ArcGIS\widget\fullscreenWidget.js" />
+    <Content Include="Scripts\ArcGIS\widget\homeWidget.js" />
+    <Content Include="Scripts\ArcGIS\widget\measureExpandWidget.js" />
+    <Content Include="Scripts\ArcGIS\widget\searchWidget.js" />
+    <Content Include="Scripts\ArcGIS\widget\selectWidget.js" />
+    <Content Include="Scripts\ArcGIS\widget\settingWidget.js" />
     <Content Include="Scripts\AreaFloorEvent.js" />
     <Content Include="Scripts\BigScreen\BigScreen.js" />
     <Content Include="Scripts\BigScreen\ChartPlugin.js" />

@@ -20,6 +20,8 @@
     <link href="/Content/icomoon-v1.0/style.css" rel="stylesheet">
     @Styles.Render("~/Content/css")
     @Styles.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css")
+    @Styles.Render("https://js.arcgis.com/4.27/esri/themes/light/main.css")
+    @Styles.Render("~/Content/ArcGIS/arcgis.css")
     @Styles.Render("~/Content/BigScreen.css")
 
     @Scripts.Render("~/bundles/modernizr")
@@ -42,6 +44,9 @@
                     <div class="col">
                         <select class="form-select marker" name="Factory" id="Factory">
                             <option value="">請選擇廠區</option>
+                            <option value="民生廠">民生廠</option>
+                            <option value="新竹廠">新竹廠</option>
+                            <option value="大里廠">大里廠</option>
                         </select>
                         <i class="icon-marker"></i>
                     </div>
@@ -62,8 +67,8 @@
                     </div>
                 </div>
             </div>
-            <div class="info-area">
-                <div class="info-box" id="Sewage">
+            <div class="info-area" data-mode="home">
+                <div class="info-box" id="box-Sewage">
                     <div class="info-box-header">當日汙水處理量</div>
                     <div class="info-box-body">
                         <div class="d-flex flex-column gap-3 ms-auto me-auto" style="width: 20rem;">
@@ -82,19 +87,18 @@
                                 </div>
                             </div>
                             <div class="progress" id="Sewage_Progress">
-                                <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25"
-                                    aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="info-box">
+                <div class="info-box" id="box-Electricity_Usage_Information">
                     <div class="info-box-header">用電資訊</div>
                     <div class="info-box-body" role="chart">
                         <div id="Electricity_Usage_Information"></div>
                     </div>
                 </div>
-                <div class="info-box">
+                <div class="info-box" id="box-Environment">
                     <div class="info-box-header">環境資訊</div>
                     <div class="info-box-body d-flex flex-column gap-2">
                         <div class="d-flex gap-2">
@@ -133,7 +137,8 @@
         </section>
         <section class="center-area">
             <div class="viewerContainer">
-                <div id="viewer3d"></div>
+                <div id="GIS"></div>
+                <div id="BIM"></div>
             </div>
             <div class="position-absolute top-0 end-0 p-4">
                 <button class="btn btn-alert" data-bs-toggle="collapse" data-bs-target="#AlertCollapse">
@@ -202,7 +207,7 @@
                 </div>
             </div>
             <div class="info-area" data-mode="home">
-                <div class="info-box">
+                <div class="info-box" id="box-Inspection_Current_Status">
                     <div class="info-box-header">當前巡檢狀況</div>
                     <div class="info-box-body">
                         <div class="d-flex" style="gap: 0.75rem;">
@@ -221,7 +226,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="info-box">
+                <div class="info-box" id="box-Inspection_Current_Pos">
                     <div class="info-box-header">空間人員即時位置</div>
                     <div class="info-box-body" style="height: 12.5rem;" data-simplebar data-simplebar-auto-hide="false"
                         data-simplebar-force-visible="y">
@@ -361,7 +366,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="info-box">
+                <div class="info-box" id="box-Inspection_Aberrant">
                     <div class="info-box-header">巡檢異常狀態</div>
                     <div class="info-box-body">
                         <div class="hstack gap-3 align-items-start" role="chart">
@@ -371,7 +376,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="info-box">
+                <div class="info-box" id="box-Equipment_Availability_Rate">
                     <div class="info-box-header">設備總妥善率</div>
                     <div class="info-box-body" role="chart">
                         <div id="Equipment_Availability_Rate" class="horizontal catalog-line"></div>
@@ -380,6 +385,11 @@
             </div>
         </section>
     </div>
+
+    @Scripts.Render("https://js.arcgis.com/4.27/")
+    @Scripts.Render("~/Scripts/ArcGIS/loadArcgis.js")
+    @Scripts.Render("~/Scripts/ArcGIS/widgets.js")
+
     @Scripts.Render("~/Scripts/BigScreen/ChartPlugin.js")
     @Scripts.Render("~/Scripts/BigScreen/BigScreen.js")
 </body>
