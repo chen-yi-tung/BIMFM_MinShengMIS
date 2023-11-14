@@ -28,6 +28,32 @@ const chartPlugins = {
             ctx.restore()
         }
     },
+    shadowPlugin: {
+        id: "shadowPlugin",
+        beforeDraw(chart, args, options) {
+            const { chartArea: { left, top, right, bottom }, ctx } = chart;
+            const { color = 'rgba(0,0,0,0.25)', blur = 4, offset = { x: 4, y: 4 } } = options;
+            const x = (left + right) / 2;
+            const y = (top + bottom) / 2;
+            const r = Math.min(right - left, bottom - top) / 2;
+            let cutout = 1
+            if (chart.config.type == "doughnut") {
+                cutout = chart.config.data.datasets[0].cutout
+                if (typeof cutout == 'string') {
+                    cutout = cutout.match(/(\d)+(?=%)/g)?.[0] / 100
+                    cutout = r * cutout
+                }
+            }
+            ctx.save()
+            ctx.beginPath()
+            ctx.arc(x + offset.x, y + offset.y, r, 0, Math.PI * 2, false);
+            ctx.arc(x + offset.x, y + offset.y, cutout, 0, Math.PI * 2, true);
+            ctx.fillStyle = color
+            ctx.filter = `blur(${blur}px)`
+            ctx.fill();
+            ctx.restore()
+        }
+    },
     centerText: {
         id: "centerText",
         beforeDatasetsDraw(chart, args, options) {

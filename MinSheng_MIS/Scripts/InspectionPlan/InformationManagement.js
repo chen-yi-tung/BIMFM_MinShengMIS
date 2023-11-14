@@ -17,29 +17,10 @@
         backgroundColor: "#fff",
         shadow: { color: "rgba(0, 0, 0, 0.25)", blur: 4, offset: { x: 0, y: 4 } }
     }
-    const chartOpt_Bar = (data) => {
-        const axisOpt = {
-            ticks: {
-                color: "#1D3156",
-                font: { family, size: 16 }
-            },
-            border: {
-                color: "transparent",
-                dash: [4, 4]
-            },
-            grid: {
-                color: "#696969",
-                tickWidth: 0
-            }
-        }
-        return {
-            data, type: 'bar', options: {
-                indexAxis: 'y',
-                responsive: false,
-                scales: { x: axisOpt, y: axisOpt },
-                plugins: { legend, tooltip }
-            }
-        }
+    const shadowPlugin = {
+        color: 'rgba(0,0,0,0.25)',
+        blur: 4,
+        offset: { x: 0, y: 4 }
     }
 
     // #endregion
@@ -84,7 +65,7 @@
                 responsive: false,
                 layout: { padding: 4 },
                 plugins: {
-                    legend, tooltip,
+                    legend, tooltip, shadowPlugin,
                     centerText: {
                         text: [
                             {
@@ -108,6 +89,7 @@
                 }
             },
             plugins: [
+                chartPlugins.shadowPlugin,
                 chartPlugins.centerText,
                 chartPlugins.htmlLegend
             ]
@@ -141,7 +123,7 @@
                 responsive: false,
                 layout: { padding: 4 },
                 plugins: {
-                    legend, tooltip,
+                    legend, tooltip,shadowPlugin,
                     centerText: {
                         text: [
                             {
@@ -165,6 +147,7 @@
                 }
             },
             plugins: [
+                chartPlugins.shadowPlugin,
                 chartPlugins.centerText,
                 chartPlugins.htmlLegend
             ]
@@ -303,7 +286,7 @@
         ]
 
         ctx.width = 585
-        ctx.height = 96
+        ctx.height = 100
         new Chart(ctx, {
             type: 'bar',
             data: {
@@ -313,7 +296,9 @@
                         label,
                         data: [Maintain, Repair],
                         backgroundColor: backgroundColor[i],
-                        borderWidth: 0
+                        borderWidth: 0,
+                        barPercentage: 0.4,
+                        categoryPercentage: 1,
                     }
                 })
             },
@@ -323,9 +308,34 @@
                 scales: {
                     x: {
                         stacked: true,
+                        ticks: {
+                            color: "#DDDCDC",
+                            font: { family, size: 14 }
+                        },
+                        border: {
+                            color: "#DADADA"
+                        },
+                        grid: {
+                            color: "#DADADA",
+                            drawTicks: false
+                        }
                     },
                     y: {
-                        stacked: true
+                        stacked: true,
+                        ticks: {
+                            color: "#EFEFEF",
+                            font: { family, size: 14 }
+                        },
+                        grid: {
+                            color(context) {
+                                console.log(context)
+                                if (context.type == "tick" && context.index == 0) {
+                                    return "#DADADA"
+                                }
+                                return "transparent"
+                            },
+                            drawTicks: false
+                        }
                     }
                 },
                 plugins: {
