@@ -25,7 +25,7 @@
 
     // #endregion
 
-    // #region chart function
+    // #region chart
     Inspection_Complete_State()
     Inspection_Equipment_State()
     Inspection_All_Members()

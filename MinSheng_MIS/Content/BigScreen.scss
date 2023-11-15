@@ -236,24 +236,6 @@ body {
             }
         }
     }
-
-    .simplebar-track {
-        background: #828282;
-        border-radius: 3.5rem;
-        right: 1rem;
-        bottom: 1rem;
-
-        &.simplebar-vertical {
-            top: 1rem;
-        }
-
-        .simplebar-scrollbar:before {
-            background: #fff;
-            opacity: 1;
-            border-radius: 3.5rem;
-            inset: 0;
-        }
-    }
 }
 
 %bigscreen-area {
@@ -378,6 +360,35 @@ body {
             }
         }
     }
+
+    #Current_Location {
+        margin-top: 2.5rem;
+        margin-left: 1rem;
+        display: inline-flex;
+        padding: 0.5rem 1.5rem 0.5rem 1rem;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 6.25rem;
+        border: 3px solid #FFF;
+        background: #D4E6FF;
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+
+        .icon-marker {
+            font-size: 2.25rem;
+            color: #FC0E0E;
+        }
+
+        span {
+            color: #565E6D;
+            font-size: 2.25rem;
+            font-weight: 500;
+            line-height: 1.25;
+
+            &:empty {
+                display: none;
+            }
+        }
+    }
 }
 
 .end-area {
@@ -460,6 +471,111 @@ body {
             width: 0%;
             border-radius: var(--bs-progress-border-radius);
             transition: width .5s;
+        }
+    }
+}
+
+#box-Environment {
+    &[data-mode=""] {
+        .color-card {
+            display: none;
+        }
+    }
+
+    &[data-mode="Home"] .info-box-body,
+    &[data-mode="Factory"] .info-box-body {
+        grid-template-columns: 1fr 1fr;
+
+        .color-card:not(#Environment_Weather, #Environment_Temp, #Environment_Hum, #Environment_RainRate) {
+            display: none;
+        }
+    }
+
+    &[data-mode="Area"] .info-box-body {
+        grid-template-columns: 1fr 1fr;
+
+        .color-card:not(#Environment_Temp, #Environment_Hum, #Environment_CO2, #Environment_PM25) {
+            display: none;
+        }
+    }
+
+    &[data-mode="Floor"] .info-box-body {
+        grid-template-columns: repeat(6, 1fr);
+
+        .color-card:not(.c-2fr, .c-3fr) {
+            display: none;
+        }
+
+        .color-card:is(.c-2fr, .c-3fr) {
+            border-top: 15px solid var(--c);
+            border-left: none;
+        }
+
+        .color-card.c-2fr {
+            grid-column: auto / span 2;
+        }
+
+        .color-card.c-3fr {
+            grid-column: auto / span 3;
+        }
+    }
+}
+
+#box-Inspection_Current_Pos {
+    .simplebar-track {
+        background: #828282;
+        border-radius: 3.5rem;
+        right: 1rem;
+        bottom: 1rem;
+
+        &.simplebar-vertical {
+            top: 1rem;
+        }
+
+        .simplebar-scrollbar:before {
+            background: #fff;
+            opacity: 1;
+            border-radius: 3.5rem;
+            inset: 0;
+        }
+    }
+}
+
+#Equipment_Operating_State {
+    height: 10.3rem;
+
+    .item {
+        display: flex;
+        padding: 0.75rem 1rem;
+        align-items: center;
+        gap: 0.5rem;
+        align-self: stretch;
+        border-bottom: 1px solid #989898;
+        background: #fff;
+
+        &:hover {
+            background: #ffffff93;
+        }
+
+        .name {
+            color: #616161;
+            font-size: 1rem;
+        }
+
+        .m-light {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.5rem;
+            color: #00EF26;
+            background-color: currentColor;
+
+            &.normal {
+                color: #00EF26;
+            }
+
+            &.danger {
+                color: #DF3232;
+            }
         }
     }
 }
@@ -565,6 +681,10 @@ body {
 
         .legend-container {
             order: 6;
+        }
+
+        .legend-catalog {
+            gap: 0.75rem;
         }
     }
 
