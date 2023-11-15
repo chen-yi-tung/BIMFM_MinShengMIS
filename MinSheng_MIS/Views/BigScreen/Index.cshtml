@@ -18,10 +18,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="/Content/icomoon-v1.0/style.css" rel="stylesheet">
+
     @Styles.Render("~/Content/css")
     @Styles.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css")
+
     @Styles.Render("https://js.arcgis.com/4.27/esri/themes/light/main.css")
     @Styles.Render("~/Content/ArcGIS/arcgis.css")
+
+    @Styles.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css")
+    @Styles.Render("~/Content/loading.css")
+
     @Styles.Render("~/Content/BigScreen.css")
 
     @Scripts.Render("~/bundles/modernizr")
@@ -71,9 +77,9 @@
                 <div class="info-box" id="box-Sewage">
                     <div class="info-box-header">當日汙水處理量</div>
                     <div class="info-box-body">
-                        <div class="d-flex flex-column gap-3 ms-auto me-auto" style="width: 20rem;">
+                        <div class="sewage">
                             <div class="hstack justify-content-center gap-3">
-                                <div>
+                                <div class="main">
                                     <span class="value" id="Sewage_Treated">3215</span>
                                     <span class="unit">ml</span>
                                 </div>
@@ -93,10 +99,41 @@
                         </div>
                     </div>
                 </div>
+                <div class="info-box" id="box-Sewage_Factory">
+                    <div class="info-box-header">當日總進水量 (民生廠)</div>
+                    <div class="info-box-body">
+                        <div class="sewage">
+                            <div class="hstack justify-content-center gap-3">
+                                <div class="main">
+                                    <span class="value" id="Sewage_Factory_Treated">3215</span>
+                                    <span class="unit">ml</span>
+                                </div>
+                                <div class="vr"></div>
+                                <div class="text-center">
+                                    <div class="label">剩餘水量：</div>
+                                    <div class="value">
+                                        <span id="Sewage_Factory_Last">6123</span>
+                                        <span class="unit">ml</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="progress" id="Sewage_Factory_Progress">
+                                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="info-box" id="box-Electricity_Usage_Information">
                     <div class="info-box-header">用電資訊</div>
                     <div class="info-box-body" role="chart">
                         <div id="Electricity_Usage_Information"></div>
+                    </div>
+                </div>
+                <div class="info-box" id="box-Electricity_Usage_Factory">
+                    <div class="info-box-header">當日總用電量 (民生廠)</div>
+                    <div class="info-box-body" role="chart">
+                        <div id="Electricity_Usage_Factory" class="horizontal catalog-line"></div>
                     </div>
                 </div>
                 <div class="info-box" id="box-Environment" data-mode="Home">
@@ -152,6 +189,68 @@
                     </div>
                 </div>
             </div>
+            <div class="info-area d-none" data-mode="equip">
+                <div class="info-box" id="box-Today_Repair_List">
+                    <div class="info-box-header">本日報修狀況</div>
+                    <div class="info-box-body p-0">
+                        <div class="today-repair">
+                            <div class="today-repair-total">
+                                <div class="label">本日報修總數</div>
+                                <div class="value">93</div>
+                            </div>
+                            <div class="today-repair-list white-track" id="Today_Repair_List" style="height: 22.5vh;" data-simplebar>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>項目名稱</th>
+                                            <th>隸屬單位</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>項目A</td>
+                                            <td>單位A</td>
+                                        </tr>
+                                        <tr>
+                                            <td>項目A</td>
+                                            <td>單位A</td>
+                                        </tr>
+                                        <tr>
+                                            <td>項目A</td>
+                                            <td>單位A</td>
+                                        </tr>
+                                        <tr>
+                                            <td>項目A</td>
+                                            <td>單位A</td>
+                                        </tr>
+                                        <tr>
+                                            <td>項目A</td>
+                                            <td>單位A</td>
+                                        </tr>
+                                        <tr>
+                                            <td>項目A</td>
+                                            <td>單位A</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box" id="box-Repair_State">
+                    <div class="info-box-header">維修狀況</div>
+                    <div class="info-box-body" role="chart">
+                        <div id="Repair_State" class="horizontal"></div>
+                    </div>
+                </div>
+                <div class="info-box" id="box-Maintain_State">
+                    <div class="info-box-header">保養狀況</div>
+                    <div class="info-box-body" role="chart">
+                        <div id="Maintain_State" class="horizontal"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-area d-none" data-mode="walk"></div>
         </section>
         <section class="center-area">
             <div class="viewerContainer">
@@ -254,7 +353,7 @@
                 </div>
                 <div class="info-box" id="box-Inspection_Current_Pos">
                     <div class="info-box-header">空間人員即時位置</div>
-                    <div class="info-box-body" style="height: 12.5rem;" data-simplebar data-simplebar-auto-hide="false"
+                    <div class="info-box-body white-big-track" style="height: 12.5rem;" data-simplebar data-simplebar-auto-hide="false"
                         data-simplebar-force-visible="y">
                         <div class="accordion plan-accordion" id="Inspection_Current_Pos">
                             <div class="accordion-item">
@@ -395,7 +494,7 @@
                 <div class="info-box" id="box-Equipment_Operating_State">
                     <div class="info-box-header">設備運轉狀態</div>
                     <div class="info-box-body p-0">
-                        <div id="Equipment_Operating_State" data-simplebar>
+                        <div id="Equipment_Operating_State" style="height: 10.3rem;" data-simplebar>
                             <div class="item">
                                 <i class="m-light normal"></i>
                                 <span class="name">進流污水閘門</span>
@@ -438,12 +537,130 @@
                     </div>
                 </div>
             </div>
+            <div class="info-area d-none" data-mode="equip">
+                <div class="info-box" id="box-Equipment_Maintain_State">
+                    <div class="info-box-header">設備運轉狀態</div>
+                    <div class="info-box-body p-0">
+                        <div id="Equipment_Maintain_State" style="height: 30.75vh;" data-simplebar>
+                            <div class="item">
+                                <span class="name">浸沒式流量計</span>
+                                <span class="state">保養完成</span>
+                                <i class="icon-marker"></i>
+                                <span class="locate">1F</span>
+                                <button class="btn"><i class="icon-arrow-right"></i></button>
+                            </div>
+                            <div class="item">
+                                <span class="name">進流污水閘門</span>
+                                <span class="state">維修中</span>
+                                <i class="icon-marker"></i>
+                                <span class="locate">2F</span>
+                                <button class="btn"><i class="icon-arrow-right"></i></button>
+                            </div>
+                            <div class="item">
+                                <span class="name">濕井進流水閘門</span>
+                                <span class="state">待維修</span>
+                                <i class="icon-marker"></i>
+                                <span class="locate">2F</span>
+                                <button class="btn"><i class="icon-arrow-right"></i></button>
+                            </div>
+                            <div class="item">
+                                <span class="name">浸沒式流量計</span>
+                                <span class="state">保養完成</span>
+                                <i class="icon-marker"></i>
+                                <span class="locate">1F</span>
+                                <button class="btn"><i class="icon-arrow-right"></i></button>
+                            </div>
+                            <div class="item">
+                                <span class="name">進流污水閘門</span>
+                                <span class="state">維修中</span>
+                                <i class="icon-marker"></i>
+                                <span class="locate">2F</span>
+                                <button class="btn"><i class="icon-arrow-right"></i></button>
+                            </div>
+                            <div class="item">
+                                <span class="name">濕井進流水閘門</span>
+                                <span class="state">待維修</span>
+                                <i class="icon-marker"></i>
+                                <span class="locate">2F</span>
+                                <button class="btn"><i class="icon-arrow-right"></i></button>
+                            </div>
+                            <div class="item">
+                                <span class="name">浸沒式流量計</span>
+                                <span class="state">保養完成</span>
+                                <i class="icon-marker"></i>
+                                <span class="locate">1F</span>
+                                <button class="btn"><i class="icon-arrow-right"></i></button>
+                            </div>
+                            <div class="item">
+                                <span class="name">進流污水閘門</span>
+                                <span class="state">維修中</span>
+                                <i class="icon-marker"></i>
+                                <span class="locate">2F</span>
+                                <button class="btn"><i class="icon-arrow-right"></i></button>
+                            </div>
+                            <div class="item">
+                                <span class="name">濕井進流水閘門</span>
+                                <span class="state">待維修</span>
+                                <i class="icon-marker"></i>
+                                <span class="locate">2F</span>
+                                <button class="btn"><i class="icon-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box" id="box-Equipment_Operating_State">
+                    <div class="info-box-header">設備運轉狀態</div>
+                    <div class="info-box-body p-0">
+                        <div id="Equipment_Operating_State" style="height: 30.75vh;" data-simplebar>
+                            <div class="item">
+                                <i class="m-light normal"></i>
+                                <span class="name">進流污水閘門</span>
+                            </div>
+                            <div class="item">
+                                <i class="m-light normal"></i>
+                                <span class="name">濕井進流水閘門</span>
+                            </div>
+                            <div class="item">
+                                <i class="m-light danger"></i>
+                                <span class="name">浸沒式流量計</span>
+                            </div>
+                            <div class="item">
+                                <i class="m-light normal"></i>
+                                <span class="name">沉砂池空壓機</span>
+                            </div>
+                            <div class="item">
+                                <i class="m-light normal"></i>
+                                <span class="name">渦流沉砂池攪拌機</span>
+                            </div>
+                            <div class="item">
+                                <i class="m-light normal"></i>
+                                <span class="name">渦流沉砂池攪拌機</span>
+                            </div>
+                            <div class="item">
+                                <i class="m-light normal"></i>
+                                <span class="name">渦流沉砂池攪拌機</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box" id="box-Equipment_Operating_Chart">
+                    <div class="info-box-header">運轉狀況</div>
+                    <div class="info-box-body" role="chart">
+                        <div id="Equipment_Operating_Chart" class="horizontal catalog-line"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-area d-none" data-mode="walk"></div>
         </section>
     </div>
 
     @Scripts.Render("https://js.arcgis.com/4.27/")
     @Scripts.Render("~/Scripts/ArcGIS/loadArcgis.js")
     @Scripts.Render("~/Scripts/ArcGIS/widgets.js")
+
+    @Scripts.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js")
+    @Scripts.Render("~/Scripts/Forge/Viewer.Loading.js")
+    @Scripts.Render("~/Scripts/Forge/Viewer.Toolkit.js")
 
     @Scripts.Render("~/Scripts/BigScreen/ChartPlugin.js")
     @Scripts.Render("~/Scripts/BigScreen/BigScreen.js")

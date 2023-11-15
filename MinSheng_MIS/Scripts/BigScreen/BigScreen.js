@@ -1,4 +1,5 @@
 ﻿const chartCreator = new ChartCreator()
+const bim = new BIM()
 
 window.addEventListener('load', async () => {
     // #region GIS function
@@ -354,12 +355,6 @@ window.addEventListener('load', async () => {
     }
     // #endregion
 
-    // #region BIM function
-    async function BIM() {
-        
-    }
-    // #endregion
-
     // #region header select method
     const boxList = {
         "Home": [
@@ -381,10 +376,22 @@ window.addEventListener('load', async () => {
             "Equipment_Level_Rate",
         ],
         "Area": [
-
+            "Sewage",
+            "Electricity_Usage_Information",
+            "Environment",
+            "Equipment_Operating_State",
+            "Inspection_Aberrant",
+            "Equipment_Availability_Rate",
+            "Equipment_Level_Rate",
         ],
         "Floor": [
-
+            "Sewage_Factory",
+            "Electricity_Usage_Factory",
+            "Environment",
+            "Equipment_Operating_State",
+            "Inspection_Aberrant",
+            "Equipment_Availability_Rate",
+            "Equipment_Level_Rate",
         ]
     }
     setup()
@@ -395,7 +402,7 @@ window.addEventListener('load', async () => {
         pushSelect(`Area`, "/DropDownList/Area", "請選擇棟別", "Text", "Text");
 
         Area.on("change", async function () {
-            await pushSelect(`Floor`, "/DropDownList/Floor" + `?ASN=${Area.val()}`, "請選擇樓層", "Text", "Text");
+            await pushSelect(`Floor`, "/DropDownList/Floor" + `?ASN=${this.selectedIndex}`, "請選擇樓層", "Text", "Text");
             Floor.val('');
         });
 
@@ -405,36 +412,38 @@ window.addEventListener('load', async () => {
                 Area.val(),
                 Floor.val()
             ]
-            if (vals[0] != '' && vals[1] != '' && vals[2] != '') {
-                changeFloor(...vals)
-            }
-            if (vals[0] != '' && vals[1] != '') {
-                changeArea(...vals)
-            }
-            if (vals[0] != '') {
-                changeFactory(...vals)
-            }
-            else {
-                goHome()
+            switch (true) {
+                case (vals[2] != ''):
+                    changeFloor(...vals)
+                    break;
+                case (vals[1] != ''):
+                    changeArea(...vals)
+                    break;
+                case (vals[0] != ''):
+                    changeFactory(...vals)
+                    break;
+                default:
+                    goHome()
+                    break;
             }
         })
+
+        goHome()
 
         $(".info-area[data-mode='home']").each((i, e) => {
             $(e).removeClass("d-none")
         })
 
-        goHome()
+        $("input[name='Mode_Switch']").on("change", () => {
+            let mode = $("input[name='Mode_Switch']:checked").val()
+            $(`.info-area[data-mode]`).addClass("d-none")
+            $(`.info-area[data-mode='${mode}']`).removeClass("d-none")
 
-        async function pushSelect(selectId, jsonUrl, defaultText = "請選擇", name = "Text", value = "Value") {
-            const $select = $("#" + selectId);
-            await $.getJSON(jsonUrl, function (data) {
-                $select.empty();
-                $select.append('<option value="">' + defaultText + '</option>');
-                $.each(data, function (i, e) {
-                    $select.append('<option value="' + e[value] + '">' + e[name] + '</option>')
-                })
-            });
-        }
+            chartCreator.Repair_State()
+            chartCreator.Maintain_State()
+            chartCreator.Equipment_Operating_Chart()
+        })
+
     }
     function goHome() {
         changeLocation()
@@ -458,11 +467,16 @@ window.addEventListener('load', async () => {
     function changeArea(Factory, Area) {
         if (Area !== "進流抽水站") { return }
         changeLocation("Area", { Factory, Area })
+        bim.destroy()
+        bim.setup([`/BimModels/民生整棟Forge/Resource/3D 視圖/進抽站/進抽站.svf`])
     }
     function changeFloor(Factory, Area, Floor) {
+        if (Floor !== "B1F" && Floor !== "B2F") { return }
         changeLocation("Floor", { Factory, Area, Floor })
+        bim.destroy()
+        bim.setup([`/BimModels/01/Resource/3D View/進抽站${Floor}/進抽站${Floor}.svf`])
     }
-    function changeLocation(mode = "Home", { Factory = '', Area = '', Floor = '' } = {}) {
+    async function changeLocation(mode = "Home", { Factory = '', Area = '', Floor = '' } = {}) {
         console.log("changeLocation", mode, Factory, Area, Floor)
         if (Factory + Area + Floor == '') {
             $("#Current_Location").addClass("d-none")
@@ -476,10 +490,6 @@ window.addEventListener('load', async () => {
 
         $("#box-Environment").attr("data-mode", mode)
 
-        $("#Factory").val(Factory)
-        $("#Area").val(Area)
-        $("#Floor").val(Floor)
-
         switch (true) {
             case Floor !== '':
             case Area !== '':
@@ -490,16 +500,31 @@ window.addEventListener('load', async () => {
             default:
                 $("#GIS").removeClass("d-none")
                 $("#BIM").addClass("d-none")
+                bim.destroy()
                 break;
         }
 
-        $(".info-box").each((i, e) => {
+        if (Floor != '') {
+            $("#Mode_Equip").attr("disabled", false)
+            //$("#Mode_Walk").attr("disabled", false)
+        }
+        else {
+            $("#Mode_Equip").attr("disabled", true)
+            $("#Mode_Walk").attr("disabled", true)
+        }
+
+        $(".info-area[data-mode='home'] .info-box").each((i, e) => {
             $(e).addClass("d-none")
         })
         boxList?.[mode]?.forEach((e) => {
-            $("#box-" + e).removeClass("d-none")
+            $(".info-area[data-mode='home'] #box-" + e).removeClass("d-none")
             eval(`chartCreator?.${e}?.()`)
         })
+
+        $("#Factory").val(Factory)
+        $("#Area").val(Area)
+        await pushSelect(`Floor`, "/DropDownList/Floor" + `?ASN=${$("#Area")[0].selectedIndex}`, "請選擇樓層", "Text", "Text");
+        $("#Floor").val(Floor)
     }
     // #endregion
 })
@@ -542,7 +567,13 @@ function ChartCreator() {
     // #region chart create function
     //當日汙水處理量
     this.Sewage = function () {
-        const progress = document.querySelector('#Sewage_Progress [role="progressbar"]')
+        const progress = document.querySelector('#box-Sewage #Sewage_Progress [role="progressbar"]')
+        progress.ariaValueNow = 25
+        progress.style.width = "25%"
+    }
+    //當日總進水量(民生廠)
+    this.Sewage_Factory = function () {
+        const progress = document.querySelector('#box-Sewage_Factory #Sewage_Factory_Progress [role="progressbar"]')
         progress.ariaValueNow = 25
         progress.style.width = "25%"
     }
@@ -572,8 +603,8 @@ function ChartCreator() {
                 { label: "環境教育館", value: 259 },
             ],
             "Area": [
-                { label: "1F", value: 10 },
-                { label: "2F", value: 12 },
+                { label: "1F", value: 120 },
+                { label: "2F", value: 137 },
                 { label: "B1F", value: 247 },
                 { label: "B2F", value: 253 },
             ]
@@ -663,6 +694,79 @@ function ChartCreator() {
                 })
                 break;
         }
+    }
+    //用電資訊
+    this.Electricity_Usage_Factory = function () {
+        const container = document.getElementById('Electricity_Usage_Factory');
+        const ctx = getOrCreateElement(container, 'canvas')
+        const data = [
+            { label: "1F", value: 120 },
+            { label: "2F", value: 137 },
+            { label: "B1F", value: 247 },
+            { label: "B2F", value: 253 },
+        ]
+        ctx.width = 138
+        ctx.height = 138
+
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.datasets[0].data = data.map(x => x.value)
+            chart.update()
+            return
+        }
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.map(x => x.label),
+                datasets: [{
+                    label: '設備總妥善率',
+                    data: data.map(x => x.value),
+                    backgroundColor(context) {
+                        if (data[context.dataIndex].label == $("#Floor option:selected").text()) {
+                            return "#FF9900"
+                        }
+                        return "#E9CD68"
+                    },
+                    borderWidth: 0,
+                    cutout: "60%"
+                }]
+            },
+            options: {
+                responsive: false,
+                layout: { padding: 4 },
+                plugins: {
+                    legend, tooltip, pieBackground,
+                    centerText: {
+                        inline: true,
+                        text: [
+                            {
+                                string: (() => {
+                                    let value = data.find(x => x.label == $("#Floor option:selected").text()).value
+                                    let total = data.reduce((t, e) => t + e.value, 0)
+                                    return Math.floor(value / total * 100)
+                                })(),
+                                color: "#000",
+                                font: { family, weight: 500, size: 32 }
+                            },
+                            {
+                                string: "%",
+                                color: "#000",
+                                font: { family, weight: 500, size: 14 }
+                            }
+                        ]
+                    },
+                    htmlLegend: {
+                        percentage: true
+                    }
+                }
+            },
+            plugins: [
+                chartPlugins.pieBackground,
+                chartPlugins.centerText,
+                chartPlugins.htmlLegend
+            ]
+        })
     }
     //巡檢異常狀態
     this.Inspection_Aberrant = function () {
@@ -891,7 +995,6 @@ function ChartCreator() {
         if (chart) {
             chart.data.datasets[0].data = data.map(x => x.value)
             chart.update()
-            console.log(chart)
             return
         }
 
@@ -934,6 +1037,285 @@ function ChartCreator() {
     this.Equipment_Operating_State = function () {
         const container = document.getElementById('Equipment_Operating_State');
     }
+
+    //維修狀況
+    this.Repair_State = function () {
+        const container = document.getElementById('Repair_State');
+        const ctx = getOrCreateElement(container, 'canvas')
+        const backgroundColor = ["#4269AC", "#72BEE9", "#BC72E9", "#FFAB2E", "#B7B7B7", "#72E998", "#E77272"]
+        const data = [
+            { label: "已派工", value: 8 },
+            { label: "施工中", value: 5 },
+            { label: "待審核", value: 8 },
+            { label: "未完成", value: 10 },
+            { label: "待補件", value: 1 },
+            { label: "完成", value: 12 },
+            { label: "審核未過", value: 3 }
+        ]
+        ctx.width = 138
+        ctx.height = 138
+
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.datasets[0].data = data.map(x => x.value)
+            chart.update()
+            return
+        }
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.map(x => x.label),
+                datasets: [{
+                    label: '維修狀況',
+                    data: data.map(x => x.value),
+                    backgroundColor,
+                    borderWidth: 0,
+                    cutout: "60%"
+                }]
+            },
+            options: {
+                responsive: false,
+                layout: { padding: 4 },
+                plugins: {
+                    legend, tooltip, pieBackground,
+                    centerText: {
+                        text: [
+                            {
+                                string: data.reduce((t, x) => t + x.value, 0),
+                                color: "#E77272",
+                                font: { family, weight: 500, size: 20 }
+                            },
+                            {
+                                string: "單總數",
+                                color: "#000",
+                                font: { family, weight: 500, size: 16, lineHeight: 1.25 }
+                            }
+                        ]
+                    },
+                    htmlLegend: {
+                        percentage: true
+                    }
+                }
+            },
+            plugins: [
+                chartPlugins.pieBackground,
+                chartPlugins.centerText,
+                chartPlugins.htmlLegend
+            ]
+        })
+    }
+    //保養狀況
+    this.Maintain_State = function () {
+        const container = document.getElementById('Maintain_State');
+        const ctx = getOrCreateElement(container, 'canvas')
+        const backgroundColor = ["#4269AC", "#72BEE9", "#BC72E9", "#FFAB2E", "#B7B7B7", "#72E998", "#E77272"]
+        const data = [
+            { label: "已派工", value: 7 },
+            { label: "施工中", value: 8 },
+            { label: "待審核", value: 12 },
+            { label: "未完成", value: 15 },
+            { label: "待補件", value: 3 },
+            { label: "完成", value: 20 },
+            { label: "審核未過", value: 2 }
+        ]
+        ctx.width = 138
+        ctx.height = 138
+
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.datasets[0].data = data.map(x => x.value)
+            chart.update()
+            return
+        }
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.map(x => x.label),
+                datasets: [{
+                    label: '保養狀況',
+                    data: data.map(x => x.value),
+                    backgroundColor,
+                    borderWidth: 0,
+                    cutout: "60%"
+                }]
+            },
+            options: {
+                responsive: false,
+                layout: { padding: 4 },
+                plugins: {
+                    legend, tooltip, pieBackground,
+                    centerText: {
+                        text: [
+                            {
+                                string: data.reduce((t, x) => t + x.value, 0),
+                                color: "#E77272",
+                                font: { family, weight: 500, size: 20 }
+                            },
+                            {
+                                string: "單總數",
+                                color: "#000",
+                                font: { family, weight: 500, size: 16, lineHeight: 1.25 }
+                            }
+                        ]
+                    },
+                    htmlLegend: {
+                        percentage: true
+                    }
+                }
+            },
+            plugins: [
+                chartPlugins.pieBackground,
+                chartPlugins.centerText,
+                chartPlugins.htmlLegend
+            ]
+        })
+    }
+    //運轉狀態
+    this.Equipment_Operating_Chart = function () {
+        const container = document.getElementById('Equipment_Operating_Chart');
+        const ctx = getOrCreateElement(container, 'canvas')
+
+        const backgroundColor = ["#72E998", "#E9CD68", "#E77272"]
+        const data = [
+            { label: "正常", value: 10 },
+            { label: "維修中", value: 16 },
+            { label: "異常", value: 15 },
+        ]
+        ctx.width = 138
+        ctx.height = 138
+
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.datasets[0].data = data.map(x => x.value)
+            chart.update()
+            return
+        }
+
+        chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.map(x => x.label),
+                datasets: [{
+                    label: '運轉狀況',
+                    data: data.map(x => x.value),
+                    backgroundColor,
+                    borderWidth: 0,
+                    cutout: "60%"
+                }]
+            },
+            options: {
+                responsive: false,
+                layout: { padding: 4 },
+                plugins: {
+                    legend, tooltip, pieBackground,
+                    centerText: {
+                        text: [
+                            {
+                                string: (() => {
+                                    let value = data.find(x => x.label == "正常").value
+                                    let total = data.reduce((t, e) => t + e.value, 0)
+                                    return Math.floor(value / total * 1000) / 10 + "%"
+                                })(),
+                                color: "#000",
+                                font: { family, weight: 500, size: 20 }
+                            }
+                        ]
+                    },
+                    htmlLegend: {
+                        statistics: {
+                            value: data.reduce((t, x) => t + x.value, 0)
+                            , unit: "總設備數"
+                        },
+                        percentage: true
+                    }
+                }
+            },
+            plugins: [
+                chartPlugins.pieBackground,
+                chartPlugins.centerText,
+                chartPlugins.htmlLegend
+            ]
+        })
+    }
     // #endregion
     return this;
+}
+
+function BIM() {
+    Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
+    const clientContainer = document.getElementById('BIM')
+    const profileSettings = {
+        name: "customSettings",
+        description: "My personal settings.",
+        settings: {}, //API:https://aps.autodesk.com/en/docs/viewer/v7/reference/globals/TypeDefs/Settings/
+        persistent: [],
+        extensions: {
+            load: ["Viewer.Toolkit"],
+            unload: [/* "Autodesk.Section", "Autodesk.Measure", "Autodesk.Explode" */]
+        }
+    }
+    const options = {
+        keepCurrentModels: true,
+        globalOffset: { x: 0, y: 0, z: 0 }
+    };
+    this.viewer = null;
+    this.setup = function setup(urls) {
+        this.viewer = new Autodesk.Viewing.GuiViewer3D(clientContainer, { profileSettings });
+        this.viewer.loadExtension("Viewer.Loading", { loader: `<div class="lds-default">${Array(12).fill('<div></div>').join('')}</div>` })
+
+        return new Promise((resolve, reject) => {
+            Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
+                this.viewer.start();
+                await this.viewer.loadExtension("Viewer.Toolkit")
+
+                //load urns
+                const models = await Promise.all(urls.map((url) => {
+                    return new Promise(async (resolve, _) => {
+                        this.viewer.loadModel(window.location.origin + url, options,
+                            async (model) => { await this.viewer.waitForLoadDone(); resolve(model); },
+                            async (model) => { reject(model); }
+                        )
+                    })
+                }))
+
+                //setting 3d view env
+                this.viewer.setBackgroundOpacity(0);
+                this.viewer.setBackgroundColor();
+                this.viewer.setLightPreset(16); //設定環境光源 = 雪地
+
+                await onLoadDone(models)
+                this.viewer.loading.hide()
+                this.viewer.fitToView()
+                resolve(true)
+            });
+        })
+
+        async function onLoadDone(models) {
+            console.log("onLoadDone", models)
+            //console.log("Model LoadDone", model.loader.basePath.split("/").at(-2));
+            return
+        }
+    }
+    this.destroy = function destroy() {
+        if (this.viewer == null) { return }
+        this.viewer.tearDown()
+        this.viewer.finish()
+        this.viewer = null
+        $(clientContainer).empty();
+    }
+
+    return this
+}
+
+async function pushSelect(selectId, jsonUrl, defaultText = "請選擇", name = "Text", value = "Value") {
+    const $select = $("#" + selectId);
+    await $.getJSON(jsonUrl, function (data) {
+        $select.empty();
+        $select.append('<option value="">' + defaultText + '</option>');
+        $.each(data, function (i, e) {
+            $select.append('<option value="' + e[value] + '">' + e[name] + '</option>')
+        })
+    });
 }
