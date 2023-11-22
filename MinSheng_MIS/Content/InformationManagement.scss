@@ -1,3 +1,45 @@
+@mixin min-1800 () {
+    @media (min-width: 1800px) {
+        @content;
+    }
+}
+
+@mixin min-1600 () {
+    @media (min-width: 1600px) {
+        @content;
+    }
+}
+
+@mixin min-1400 () {
+    @media (min-width: 1400px) {
+        @content;
+    }
+}
+
+@mixin min-1200 () {
+    @media (min-width: 1200px) {
+        @content;
+    }
+}
+
+@mixin min-992 () {
+    @media (min-width: 992px) {
+        @content;
+    }
+}
+
+@mixin min-768 () {
+    @media (min-width: 768px) {
+        @content;
+    }
+}
+
+@mixin min-576 () {
+    @media (min-width: 576px) {
+        @content;
+    }
+}
+
 .date-search-area {
     padding-top: 0.72rem;
     padding-bottom: 1.22rem;
@@ -27,13 +69,38 @@
 
 .info-area {
     display: grid;
-    grid-template-columns: 8fr 3fr 3fr;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 100%;
+    grid-template-rows: repeat(5, max-content);
     grid-template-areas:
-        "main side1 side1"
-        "main side2 side2"
-        "main minx1 minx2";
+            "main"
+            "side1"
+            "side2"
+            "minx1"
+            "minx2";
     gap: 1rem;
+
+    @include min-1400 {
+        grid-template-columns: 1fr 30vw;
+        grid-template-rows: repeat(3, max-content);
+        grid-template-areas:
+            "main main"
+            "side1 minx1"
+            "side2 minx2";
+    }
+
+    @include min-1600 {
+        grid-template-columns: 42vw 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-areas:
+            "main side1 side1"
+            "main side2 side2"
+            "main minx1 minx2";
+    }
+
+    @include min-1800 {
+        grid-template-columns: 48vw 1fr 1fr;
+    }
+
 
     .info-box {
         border-radius: 0.3125rem;
