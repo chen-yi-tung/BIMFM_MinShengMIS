@@ -175,7 +175,7 @@ const chartPlugins = {
                         chart.toggleDataVisibility(s.index)
                     }
                     else {
-                        chart.setDataVisibility(s.datasetIndex, !chart.isDatasetVisible(s.datasetIndex))
+                        chart.setDatasetVisibility(s.datasetIndex, !chart.isDatasetVisible(s.datasetIndex))
                     }
                     chart.update()
                 }

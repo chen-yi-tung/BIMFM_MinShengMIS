@@ -123,7 +123,7 @@
                 responsive: false,
                 layout: { padding: 4 },
                 plugins: {
-                    legend, tooltip,shadowPlugin,
+                    legend, tooltip, shadowPlugin,
                     centerText: {
                         text: [
                             {
@@ -284,10 +284,7 @@
             { label: "完成", value: { Maintain: 20, Repair: 12 } },
             { label: "審核未過", value: { Maintain: 2, Repair: 3 } }
         ]
-
-        ctx.width = 585
-        ctx.height = 100
-        new Chart(ctx, {
+        const options = (indexAxis = 'y') => ({
             type: 'bar',
             data: {
                 labels: ["設備保養", "設備維修"],
@@ -303,8 +300,9 @@
                 })
             },
             options: {
+                maintainAspectRatio: false,
                 responsive: false,
-                indexAxis: 'y',
+                indexAxis,
                 scales: {
                     x: {
                         stacked: true,
@@ -328,7 +326,6 @@
                         },
                         grid: {
                             color(context) {
-                                console.log(context)
                                 if (context.type == "tick" && context.index == 0) {
                                     return "#DADADA"
                                 }
@@ -345,6 +342,35 @@
             },
             plugins: [chartPlugins.htmlLegend]
         })
+
+        ctx.width = 585
+        ctx.height = 100
+        new Chart(ctx,)
+
+        window.matchMedia("(max-width:700px)").addEventListener("change", (e) => {
+            console.log("(max-width:700px)", e.matches)
+            onMediaChange(e.matches)
+        })
+
+        onMediaChange(window.matchMedia("(max-width:700px)").matches)
+
+        function onMediaChange(matches) {
+            let chart = Chart.getChart(ctx)
+            if (chart) {
+                chart.destroy();
+            }
+
+            if (matches) {
+                ctx.width = 200
+                ctx.height = 400
+                new Chart(ctx, options('x'))
+            }
+            else {
+                ctx.width = 585
+                ctx.height = 100
+                new Chart(ctx, options('y'))
+            }
+        }
     }
     //設備故障等級分布
     function Equipment_Level_Rate() {
