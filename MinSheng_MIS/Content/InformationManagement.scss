@@ -1,41 +1,41 @@
-@mixin min-1800 () {
-    @media (min-width: 1800px) {
+@mixin max-1800 () {
+    @media (max-width: 1800px) {
         @content;
     }
 }
 
-@mixin min-1600 () {
-    @media (min-width: 1600px) {
+@mixin max-1600 () {
+    @media (max-width: 1600px) {
         @content;
     }
 }
 
-@mixin min-1400 () {
-    @media (min-width: 1400px) {
+@mixin max-1400 () {
+    @media (max-width: 1400px) {
         @content;
     }
 }
 
-@mixin min-1200 () {
-    @media (min-width: 1200px) {
+@mixin max-1200 () {
+    @media (max-width: 1200px) {
         @content;
     }
 }
 
-@mixin min-992 () {
-    @media (min-width: 992px) {
+@mixin max-992 () {
+    @media (max-width: 992px) {
         @content;
     }
 }
 
-@mixin min-768 () {
-    @media (min-width: 768px) {
+@mixin max-768 () {
+    @media (max-width: 768px) {
         @content;
     }
 }
 
-@mixin min-576 () {
-    @media (min-width: 576px) {
+@mixin max-576 () {
+    @media (max-width: 576px) {
         @content;
     }
 }
@@ -44,9 +44,23 @@
     padding-top: 0.72rem;
     padding-bottom: 1.22rem;
 
+    @include max-768 {
+        .btn-alert {
+            float: unset !important;
+            position: absolute;
+            top: var(--navbar-height);
+            right: 0;
+            margin: 2rem;
+        }
+    }
+
     .form-group {
         display: inline-block;
         margin-right: 1.06rem;
+
+        @include max-992 {
+            margin-right: 0.5rem;
+        }
 
         label {
             display: inline-block;
@@ -69,38 +83,79 @@
 
 .info-area {
     display: grid;
-    grid-template-columns: 100%;
-    grid-template-rows: repeat(5, max-content);
+    grid-template-columns: 48vw 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
-            "main"
-            "side1"
-            "side2"
-            "minx1"
-            "minx2";
+        "main side1 side1"
+        "main side2 side2"
+        "main minx1 minx2";
     gap: 1rem;
 
-    @include min-1400 {
+    @include max-1800 {
+        grid-template-columns: 42vw 1fr 1fr;
+    }
+
+    @include max-1600 {
         grid-template-columns: 1fr 30vw;
         grid-template-rows: repeat(3, max-content);
         grid-template-areas:
             "main main"
             "side1 minx1"
             "side2 minx2";
+
+        :is(.minx1, .minx2) {
+            .horizontal {
+                width: max-content !important;
+            }
+
+            .legend-container {
+                width: max-content;
+                flex: 0 0 auto;
+            }
+        }
     }
 
-    @include min-1600 {
-        grid-template-columns: 42vw 1fr 1fr;
-        grid-template-rows: 1fr 1fr 1fr;
+    @include max-1400 {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(4, max-content);
         grid-template-areas:
-            "main side1 side1"
-            "main side2 side2"
-            "main minx1 minx2";
+            "main main"
+            "side1 side1"
+            "side2 side2"
+            "minx1 minx2";
+
+        .side1 {
+            #Inspection_Aberrant_Level {
+                width: max-content !important;
+            }
+
+            #Inspection_Aberrant_Resolve {
+                width: max-content !important;
+                min-width: 20rem !important;
+            }
+        }
     }
 
-    @include min-1800 {
-        grid-template-columns: 48vw 1fr 1fr;
+    @include max-992 {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(4, max-content);
+        grid-template-areas:
+            "main main"
+            "side1 side1"
+            "side2 side2"
+            "minx1 minx2";
     }
 
+    @include max-768 {
+        grid-template-columns: 100%;
+        grid-template-rows: repeat(5, max-content);
+        grid-template-areas:
+            "main"
+            "side1"
+            "side2"
+            "minx1"
+            "minx2";
+    }
 
     .info-box {
         border-radius: 0.3125rem;
