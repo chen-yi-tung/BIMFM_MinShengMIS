@@ -257,8 +257,8 @@ body {
         padding: 0.5rem 0;
 
         .header-img {
-            width: 19.48588rem;
-            height: 5.30963rem;
+            width: 22.4375rem;
+            height: 3.625rem;
             flex-shrink: 0;
 
             img {
@@ -685,6 +685,7 @@ body {
 
         table {
             width: 100%;
+
             tr {
                 &:nth-child(odd) {
                     background: rgba(46, 75, 111, 0.60);

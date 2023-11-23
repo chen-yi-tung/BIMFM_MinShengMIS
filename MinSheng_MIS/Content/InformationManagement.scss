@@ -45,12 +45,29 @@
     padding-bottom: 1.22rem;
 
     @include max-768 {
+        display: grid;
+        grid-template-columns: repeat(3, max-content);
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+
+
         .btn-alert {
             float: unset !important;
             position: absolute;
             top: var(--navbar-height);
             right: 0;
             margin: 2rem;
+            z-index: 5;
+        }
+    }
+
+    @include max-576 {
+        grid-template-columns: max-content;
+        justify-items: center;
+
+        .btn-alert {
+            margin: 1rem;
         }
     }
 
@@ -90,72 +107,6 @@
         "main side2 side2"
         "main minx1 minx2";
     gap: 1rem;
-
-    @include max-1800 {
-        grid-template-columns: 42vw 1fr 1fr;
-    }
-
-    @include max-1600 {
-        grid-template-columns: 1fr 30vw;
-        grid-template-rows: repeat(3, max-content);
-        grid-template-areas:
-            "main main"
-            "side1 minx1"
-            "side2 minx2";
-
-        :is(.minx1, .minx2) {
-            .horizontal {
-                width: max-content !important;
-            }
-
-            .legend-container {
-                width: max-content;
-                flex: 0 0 auto;
-            }
-        }
-    }
-
-    @include max-1400 {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: repeat(4, max-content);
-        grid-template-areas:
-            "main main"
-            "side1 side1"
-            "side2 side2"
-            "minx1 minx2";
-
-        .side1 {
-            #Inspection_Aberrant_Level {
-                width: max-content !important;
-            }
-
-            #Inspection_Aberrant_Resolve {
-                width: max-content !important;
-                min-width: 20rem !important;
-            }
-        }
-    }
-
-    @include max-992 {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: repeat(4, max-content);
-        grid-template-areas:
-            "main main"
-            "side1 side1"
-            "side2 side2"
-            "minx1 minx2";
-    }
-
-    @include max-768 {
-        grid-template-columns: 100%;
-        grid-template-rows: repeat(5, max-content);
-        grid-template-areas:
-            "main"
-            "side1"
-            "side2"
-            "minx1"
-            "minx2";
-    }
 
     .info-box {
         border-radius: 0.3125rem;
@@ -234,13 +185,25 @@
                 }
 
                 .simplebar-track {
-                    background: #828282;
-                    border-radius: 3.5rem;
-                    right: 1rem;
-                    bottom: 1rem;
+                    @media (min-width: 768px) {
+                        background: #828282;
+                        border-radius: 3.5rem;
+                        right: 1rem;
+                        bottom: 1rem;
 
-                    &.simplebar-vertical {
-                        top: 1rem;
+                        &.simplebar-vertical {
+                            top: 1rem;
+                        }
+
+                        .simplebar-scrollbar {
+
+                            &:before {
+                                background: #fff;
+                                opacity: 1;
+                                border-radius: 3.5rem;
+                                inset: 0;
+                            }
+                        }
                     }
 
                     .simplebar-scrollbar {
@@ -248,9 +211,24 @@
 
                         &:before {
                             background: #fff;
-                            opacity: 1;
-                            border-radius: 3.5rem;
-                            inset: 0;
+                        }
+                    }
+
+                }
+
+                @include max-768 {
+                    .thead {
+                        padding-left: 0rem;
+                        padding-right: 0rem;
+                    }
+
+                    .tbody {
+                        .simplebar-content {
+                            padding-right: 0rem !important;
+                        }
+
+                        .row {
+                            padding-left: 0rem !important;
                         }
                     }
                 }
@@ -337,5 +315,132 @@
             color: rgba(255, 255, 255, 0.40);
         }
 
+    }
+
+    @include max-1800 {
+        grid-template-columns: 42vw 1fr 1fr;
+    }
+
+    @include max-1600 {
+        grid-template-columns: 1fr 30vw;
+        grid-template-rows: repeat(3, max-content);
+        grid-template-areas:
+            "main main"
+            "side1 minx1"
+            "side2 minx2";
+
+        :is(.minx1, .minx2) {
+            .horizontal {
+                width: max-content !important;
+            }
+
+            .legend-container {
+                width: max-content;
+                flex: 0 0 auto;
+            }
+        }
+    }
+
+    @include max-1400 {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(4, max-content);
+        grid-template-areas:
+            "main main"
+            "side1 side1"
+            "side2 side2"
+            "minx1 minx2";
+
+        .side1 {
+            #Inspection_Aberrant_Level {
+                width: max-content !important;
+            }
+
+            #Inspection_Aberrant_Resolve {
+                width: max-content !important;
+                min-width: 20rem !important;
+            }
+        }
+    }
+
+    @include max-992 {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(4, max-content);
+        grid-template-areas:
+            "main main"
+            "side1 side1"
+            "side2 side2"
+            "minx1 minx2";
+    }
+
+    @include max-768 {
+        grid-template-columns: 100%;
+        grid-template-rows: repeat(5, max-content);
+        grid-template-areas:
+            "main"
+            "side1"
+            "side2"
+            "minx1"
+            "minx2";
+
+        .main {
+            .hstack {
+                flex-direction: column;
+                gap: 2rem;
+                padding: 2.5rem !important;
+
+                .vr {
+                    min-height: unset;
+                    height: 1px;
+                    width: 100%;
+                }
+            }
+        }
+
+        .side1 {
+            .hstack {
+                flex-direction: column;
+                gap: 2rem;
+
+                .vr {
+                    min-height: unset;
+                    height: 1px;
+                    width: 100%;
+                }
+            }
+
+            #Inspection_Aberrant_Level {
+                width: max-content !important;
+                min-width: 20rem !important;
+            }
+        }
+    }
+
+    @include max-576 {
+        [role=chart] {
+            .horizontal {
+                flex-direction: column;
+                gap: 0.5rem;
+
+                &.catalog-line {
+                    .legend-container {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+
+        .side1 {
+            .hstack[role='chart'] {
+                padding-left: 1rem;
+                padding-right: 1rem;
+
+                #Inspection_Aberrant_Level,
+                #Inspection_Aberrant_Resolve {
+                    min-width: max-content !important;
+                    max-width: 20rem !important;
+                    width: 100% !important;
+                }
+            }
+        }
     }
 }
