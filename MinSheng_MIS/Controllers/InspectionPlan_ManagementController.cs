@@ -718,5 +718,12 @@ namespace MinSheng_MIS.Controllers
 			return View();
 		}
 		#endregion
+
+		#region 巡檢即時位置
+		public ActionResult CurrentPositionInformation()
+		{
+			return View();
+		}
+		#endregion
 	}
 }

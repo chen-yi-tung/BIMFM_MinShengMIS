@@ -26,9 +26,9 @@
     // #endregion
 
     // #region chart
+    Plan_People_List()
     Inspection_Complete_State()
-    Inspection_Equipment_State()
-    Inspection_All_Members()
+    Inspection_Plan_List()
     Inspection_Aberrant_Level()
     Inspection_Aberrant_Resolve()
     Equipment_Maintain_And_Repair_Statistics()
@@ -37,7 +37,14 @@
     // #endregion
 
     // #region chart function
-    //巡檢總計畫完成狀態
+    //本日巡檢計畫列表
+    function Plan_People_List() {
+        const row = $("#Plan_People_List .plan-people")
+        for (let i = 0; i < 20; i++) {
+            $("#Plan_People_List .simplebar-content").append(row.clone())
+        }
+    }
+    //本日巡檢計畫進度
     function Inspection_Complete_State() {
         const container = document.getElementById('Inspection_Complete_State');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -95,72 +102,14 @@
             ]
         })
     }
-    //巡檢總設備狀態
-    function Inspection_Equipment_State() {
-        const container = document.getElementById('Inspection_Equipment_State');
-        const ctx = getOrCreateElement(container, 'canvas')
-        const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
-        const data = [
-            { label: "運轉", value: 128 },
-            { label: "維修", value: 19 },
-            { label: "保養", value: 15 }
-        ]
-        ctx.width = 160
-        ctx.height = 160
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: data.map(x => x.label),
-                datasets: [{
-                    label: '巡檢總設備狀態',
-                    data: data.map(x => x.value),
-                    backgroundColor,
-                    borderWidth: 0,
-                    cutout: "60%"
-                }]
-            },
-            options: {
-                responsive: false,
-                layout: { padding: 4 },
-                plugins: {
-                    legend, tooltip, shadowPlugin,
-                    centerText: {
-                        text: [
-                            {
-                                string: (() => {
-                                    let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label == "運轉").value
-                                    return (Math.floor(value / total * 1000) / 10) + "%"
-                                })(),
-                                color: "#fff",
-                                font: { family, weight: 500, size: 20 }
-                            }
-                        ]
-                    },
-                    htmlLegend: {
-                        statistics: {
-                            value: data.reduce((t, e) => t + e.value, 0),
-                            unit: "總設備數"
-                        },
-                        percentage: false
-                    }
-                }
-            },
-            plugins: [
-                chartPlugins.shadowPlugin,
-                chartPlugins.centerText,
-                chartPlugins.htmlLegend
-            ]
-        })
-    }
-    //巡檢人員表格
-    function Inspection_All_Members() {
-        const row = $("#Inspection_All_Members .row")
-        for (let i = 0; i < 20; i++) {
-            $("#Inspection_All_Members .simplebar-content").append(row.clone())
+    //本日巡檢計畫列表
+    function Inspection_Plan_List() {
+        const row = $("#Inspection_Plan_List .row")
+        for (let i = 0; i < 3; i++) {
+            $("#Inspection_Plan_List .simplebar-content").append(row.clone())
         }
     }
-    //緊急事件 等級占比
+    //本日緊急事件 等級占比
     function Inspection_Aberrant_Level() {
         const container = document.getElementById('Inspection_Aberrant_Level');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -209,7 +158,7 @@
             ]
         })
     }
-    //緊急事件 處理狀況
+    //本日緊急事件 處理狀況
     function Inspection_Aberrant_Resolve() {
         const container = document.getElementById('Inspection_Aberrant_Resolve');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -270,7 +219,7 @@
             ]
         })
     }
-    //設備保養及維修進度統計
+    //本日設備保養及維修進度統計
     function Equipment_Maintain_And_Repair_Statistics() {
         const container = document.getElementById('Equipment_Maintain_And_Repair_Statistics');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -294,7 +243,7 @@
                         data: [Maintain, Repair],
                         backgroundColor: backgroundColor[i],
                         borderWidth: 0,
-                        barPercentage: 0.4,
+                        barPercentage: 0.3,
                         categoryPercentage: 1,
                     }
                 })
@@ -307,7 +256,7 @@
                     x: {
                         stacked: true,
                         ticks: {
-                            color: "#DDDCDC",
+                            color: "#DADADA",
                             font: { family, size: 14 }
                         },
                         border: {
@@ -321,16 +270,14 @@
                     y: {
                         stacked: true,
                         ticks: {
-                            color: "#EFEFEF",
+                            color: "#DADADA",
                             font: { family, size: 14 }
                         },
+                        border: {
+                            color: "#DADADA"
+                        },
                         grid: {
-                            color(context) {
-                                if (context.type == "tick" && context.index == 0) {
-                                    return "#DADADA"
-                                }
-                                return "transparent"
-                            },
+                            color: "#DADADA",
                             drawTicks: false
                         }
                     }
@@ -343,32 +290,11 @@
             plugins: [chartPlugins.htmlLegend]
         })
 
-        window.matchMedia("(max-width:700px)").addEventListener("change", (e) => {
-            //console.log("(max-width:700px)", e.matches)
-            onMediaChange(e.matches)
-        })
-
-        onMediaChange(window.matchMedia("(max-width:700px)").matches)
-
-        function onMediaChange(matches) {
-            let chart = Chart.getChart(ctx)
-            if (chart) {
-                chart.destroy();
-            }
-
-            if (matches) {
-                ctx.width = 200
-                ctx.height = 400
-                new Chart(ctx, options('x'))
-            }
-            else {
-                ctx.width = 585
-                ctx.height = 100
-                new Chart(ctx, options('y'))
-            }
-        }
+        ctx.width = 200
+        ctx.height = 400
+        new Chart(ctx, options('x'))
     }
-    //設備故障等級分布
+    //本日設備故障等級分布
     function Equipment_Level_Rate() {
         const container = document.getElementById('Equipment_Level_Rate');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -409,7 +335,7 @@
             ]
         })
     }
-    //設備故障類型占比
+    //本日設備故障類型占比
     function Equipment_Type_Rate() {
         const container = document.getElementById('Equipment_Type_Rate');
         const ctx = getOrCreateElement(container, 'canvas')

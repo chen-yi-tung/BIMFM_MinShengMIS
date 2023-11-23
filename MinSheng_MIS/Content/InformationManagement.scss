@@ -51,7 +51,6 @@
         justify-content: center;
         gap: 1rem;
 
-
         .btn-alert {
             float: unset !important;
             position: absolute;
@@ -259,6 +258,10 @@
                 padding-left: 2.5rem;
                 padding-right: 2.5rem;
                 align-items: start;
+
+                #Inspection_Aberrant_Level {
+                    width: auto !important;
+                }
             }
         }
 
@@ -300,10 +303,6 @@
         .horizontal {
             height: auto;
             gap: 1.5rem;
-
-            &#Inspection_Aberrant_Level {
-                width: auto !important;
-            }
         }
 
         .catalog-line {
@@ -329,6 +328,7 @@
 
         &>.vr {
             color: rgba(255, 255, 255, 0.40);
+            opacity: 1;
         }
 
     }

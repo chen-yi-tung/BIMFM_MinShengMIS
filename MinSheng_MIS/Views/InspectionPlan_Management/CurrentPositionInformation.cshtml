@@ -1,0 +1,170 @@
+﻿@{
+    ViewBag.Title = "巡檢即時位置";
+}
+@section styles {
+    @Styles.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css")
+    @Styles.Render("~/Content/BigScreen.css")
+    @Styles.Render("~/Content/CurrentPositionInformation.css")
+
+    @Scripts.Render("https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js")
+    @Scripts.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js")
+}
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-alert" data-bs-toggle="collapse" data-bs-target="#AlertCollapse">
+    <i class="icon-ring"></i>
+    <span class="badge">5</span>
+    <div class="collapse alert-collapse" id="AlertCollapse">
+        <div class="collapse-body">
+            <a class="alert-item" target="_blank" data-level="1" data-process-state="1">
+                <i class="icon-alert"></i>
+                <span class="road">進流抽水站2F</span>
+                <span class="time">13:05:20</span>
+                <span class="title">進流抽水站2F火災</span>
+                <span class="process-state"></span>
+            </a>
+            <a class="alert-item" target="_blank" data-level="1" data-process-state="1">
+                <i class="icon-alert"></i>
+                <span class="road">進流抽水站2F</span>
+                <span class="time">13:05:20</span>
+                <span class="title">進流抽水站2F火災</span>
+                <span class="process-state"></span>
+            </a>
+            <a class="alert-item" target="_blank" data-level="2" data-process-state="2">
+                <i class="icon-alert"></i>
+                <span class="road">進流抽水站2F</span>
+                <span class="time">13:05:20</span>
+                <span class="title">進流抽水站2F火災</span>
+                <span class="process-state"></span>
+            </a>
+            <a class="alert-item" target="_blank" data-level="2" data-process-state="3">
+                <i class="icon-alert"></i>
+                <span class="road">進流抽水站2F</span>
+                <span class="time">13:05:20</span>
+                <span class="title">進流抽水站2F火災</span>
+                <span class="process-state"></span>
+            </a>
+            <a class="alert-item" target="_blank" data-level="2" data-process-state="3">
+                <i class="icon-alert"></i>
+                <span class="road">進流抽水站2F</span>
+                <span class="time">13:05:20</span>
+                <span class="title">進流抽水站2F火災</span>
+                <span class="process-state"></span>
+            </a>
+        </div>
+    </div>
+</button>
+<div class="info-container">
+    <div class="info-list">
+        <select class="form-select" name="SelectIPlan" id="SelectIPlan">
+            <option value="">選擇計畫</option>
+        </select>
+        <div class="plan-people-list" id="Plan_People_List" data-simplebar>
+            <div class="plan-people">
+                <div class="plan-people-group">
+                    <div class="plan-people-info">
+                        <span class="name">Pt01 王大明</span>
+                    </div>
+                    <div class="plan-people-locate">
+                        <span class="label">即時位置：</span>
+                        <span class="value">A區2F</span>
+                    </div>
+                    <div class="plan-people-heart">
+                        <i class="icon-heart"></i>
+                        <span class="label">心率：</span>
+                        <span class="value">110</span>
+                        <span class="unit">下/分</span>
+                    </div>
+                    <button class="btn" id="goToLocation"><i class="icon-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="info-area">
+        <div class="info-box hori">
+            <h5>本日緊急事件等級占比 / 處理狀況</h5>
+            <div class="hstack" role="chart">
+                <div id="Inspection_Aberrant_Level" class="horizontal"></div>
+                <div class="vr"></div>
+                <div id="Inspection_Aberrant_Resolve" class="horizontal catalog-line"></div>
+            </div>
+        </div>
+        <div class="info-box vert" role="chart">
+            <h5>本日設備保養及維修進度統計</h5>
+            <div id="Equipment_Maintain_And_Repair_Statistics" class="bar"></div>
+        </div>
+        <div class="info-box minx1" role="chart">
+            <h5>本日巡檢計畫進度</h5>
+            <div id="Inspection_Complete_State" class="horizontal catalog-line"></div>
+        </div>
+        <div class="info-box minx2">
+            <h5>當前巡檢狀況</h5>
+            <div class="d-flex">
+                <div class="color-card h shadow" style="--c: #40D1FF;">
+                    <div class="label" style="--c: #0088D4;">目前巡檢人數</div>
+                    <div class="value" id="Inspection_Members_All">10</div>
+                </div>
+                <div class="color-card h shadow" style="--c: #FFCD1D;">
+                    <div class="label" style="--c: #FF891D;">偏離路線人數</div>
+                    <div class="value" id="Inspection_Members_Notice">5</div>
+                </div>
+                <div class="color-card h shadow" style="--c: #FF6F6F;">
+                    <div class="label" style="--c: #FF3838;">狀態異常人數</div>
+                    <div class="value" id="Inspection_Members_Alert">2</div>
+                </div>
+            </div>
+        </div>
+        <div class="info-box minx3">
+            <h5>本日巡檢計畫列表</h5>
+            <div class="table w-100 text-start">
+                <div class="row thead">
+                    <div class="col">狀態</div>
+                    <div class="col col-7">計畫名稱</div>
+                    <div class="col">班別</div>
+                </div>
+                <div class="tbody" id="Inspection_Plan_List" data-simplebar data-simplebar-auto-hide="false"
+                    data-simplebar-force-visible="y">
+                    <div class="row">
+                        <div class="col text-success">已完成</div>
+                        <div class="col col-7">AC區巡檢計畫</div>
+                        <div class="col">早A班</div>
+                    </div>
+                    <div class="row">
+                        <div class="col text-success">已完成</div>
+                        <div class="col col-7">A區OOXX巡檢計畫</div>
+                        <div class="col">早A班</div>
+                    </div>
+                    <div class="row">
+                        <div class="col text-info">待執行</div>
+                        <div class="col col-7">A區特殊OOXX巡檢計畫</div>
+                        <div class="col">早A班</div>
+                    </div>
+                    <div class="row">
+                        <div class="col text-warning">執行中</div>
+                        <div class="col col-7">A區特殊OOXX巡檢計畫</div>
+                        <div class="col">早A班</div>
+                    </div>
+                    <div class="row">
+                        <div class="col text-warning">執行中</div>
+                        <div class="col col-7">A區特殊OOXX巡檢計畫</div>
+                        <div class="col">早A班</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="info-box minx4" role="chart">
+            <h5>本日設備故障等級分布</h5>
+            <div id="Equipment_Level_Rate" class="horizontal"></div>
+        </div>
+        <div class="info-box minx5" role="chart">
+            <h5>本日設備故障類型占比</h5>
+            <div id="Equipment_Type_Rate" class="horizontal"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/Scripts/BigScreen/ChartPlugin.js")
+    @Scripts.Render("~/Scripts/InspectionPlan/CurrentPositionInformation.js")
+}
