@@ -1,0 +1,112 @@
+.render-body {
+    height: calc(100vh - var(--navbar-height));
+    padding: 0;
+
+    .viewbag-title {
+        position: absolute;
+        top: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+    }
+}
+
+.bigscreen-container {
+    height: calc(100vh - var(--navbar-height));
+}
+
+#BIM {
+    position: absolute;
+    .adsk-viewing-viewer{
+        .adsk-toolbar {
+            bottom: 1rem;
+        }
+    }
+}
+
+.start-area {
+    width: 21.8rem;
+
+    [role=chart] {
+        .horizontal {
+            width: 100% !important;
+        }
+    }
+}
+
+.center-area {
+
+    #Current_Location {
+        margin-top: 5rem;
+    }
+}
+
+.end-area {
+    width: 24.9rem;
+
+    .plan-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        .form-select {
+            border-radius: 6.25rem;
+            border: 1px solid #C6C6C6;
+            background-color: #FFF;
+            color: #7E7E7E;
+            font-size: 1.125rem;
+            font-weight: 500;
+            padding: 0.35rem 1rem;
+        }
+    }
+}
+
+#box-Environment {
+    flex: 1 0 0;
+
+    .info-box-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .item {
+        display: flex;
+        background: #FFF;
+        padding: 0.25rem 1rem;
+
+        .label {
+            color: #616161;
+            font-weight: 500;
+
+            &::after {
+                content: "：";
+            }
+        }
+
+        .value {
+            color: #616161;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .unit {
+            color: #616161;
+            margin-left: 0.25rem;
+        }
+
+
+    }
+}
+
+#box-Inspection_Current_Pos {
+    flex: 1 0 0;
+    .info-box-body {
+        height: 27.75rem;
+    }
+}
+
+#Equipment_Operating_State {
+    height: 8rem;
+}

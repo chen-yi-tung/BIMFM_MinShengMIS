@@ -41,8 +41,12 @@
     function Plan_People_List() {
         const row = $("#Plan_People_List .plan-people")
         for (let i = 0; i < 20; i++) {
-            $("#Plan_People_List .simplebar-content").append(row.clone())
+            let r = row.clone()
+            $("#Plan_People_List .simplebar-content").append(r)
         }
+        $("#Plan_People_List .simplebar-content").on("click", ".plan-people", () => {
+            window.open("/InspectionPlan_Management/CurrentPosition", "_self")
+        })
     }
     //本日巡檢計畫進度
     function Inspection_Complete_State() {

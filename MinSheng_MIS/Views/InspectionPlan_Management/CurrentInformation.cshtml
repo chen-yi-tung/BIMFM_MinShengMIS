@@ -1,10 +1,10 @@
 ﻿@{
-    ViewBag.Title = "巡檢即時位置";
+    ViewBag.Title = "巡檢即時資訊";
 }
 @section styles {
     @Styles.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css")
     @Styles.Render("~/Content/BigScreen.css")
-    @Styles.Render("~/Content/CurrentPositionInformation.css")
+    @Styles.Render("~/Content/CurrentInformation.css")
 
     @Scripts.Render("https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js")
     @Scripts.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js")
@@ -68,7 +68,7 @@
                     </div>
                     <div class="plan-people-locate">
                         <span class="label">即時位置：</span>
-                        <span class="value">A區2F</span>
+                        <span class="value">進流抽水站B2F</span>
                     </div>
                     <div class="plan-people-heart">
                         <i class="icon-heart"></i>
@@ -166,5 +166,5 @@
 
 @section scripts {
     @Scripts.Render("~/Scripts/BigScreen/ChartPlugin.js")
-    @Scripts.Render("~/Scripts/InspectionPlan/CurrentPositionInformation.js")
+    @Scripts.Render("~/Scripts/InspectionPlan/CurrentInformation.js")
 }

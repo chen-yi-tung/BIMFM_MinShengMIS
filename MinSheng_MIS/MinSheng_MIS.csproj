@@ -501,7 +501,8 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\button.css" />
-    <Content Include="Content\CurrentPositionInformation.css" />
+    <Content Include="Content\CurrentInformation.css" />
+    <Content Include="Content\CurrentPosition.css" />
     <Content Include="Content\datagrid-modal.css" />
     <Content Include="Content\datagrid.css" />
     <Content Include="Content\datatable.css" />
@@ -1741,7 +1742,8 @@
     <Content Include="Scripts\InquiryPlan\CreateDataGrids.js" />
     <Content Include="Scripts\InspectionPlan\Create.js" />
     <Content Include="Scripts\InspectionPlan\CreateDataGrids.js" />
-    <Content Include="Scripts\InspectionPlan\CurrentPositionInformation.js" />
+    <Content Include="Scripts\InspectionPlan\CurrentInformation.js" />
+    <Content Include="Scripts\InspectionPlan\CurrentPosition.js" />
     <Content Include="Scripts\InspectionPlan\InformationManagement.js" />
     <Content Include="Scripts\InspectionPlan\ReadDataGrids.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
@@ -1917,7 +1919,8 @@
     <Content Include="Views\PurchaseRequisition_Management\Edit.cshtml" />
     <Content Include="Views\BigScreen\Index.cshtml" />
     <Content Include="Views\InspectionPlan_Management\InformationManagement.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\CurrentPositionInformation.cshtml" />
+    <Content Include="Views\InspectionPlan_Management\CurrentInformation.cshtml" />
+    <Content Include="Views\InspectionPlan_Management\CurrentPosition.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
