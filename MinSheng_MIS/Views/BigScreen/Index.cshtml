@@ -198,7 +198,8 @@
                                 <div class="label">本日報修總數</div>
                                 <div class="value">93</div>
                             </div>
-                            <div class="today-repair-list white-track" id="Today_Repair_List" style="height: 22.5vh;" data-simplebar>
+                            <div class="today-repair-list white-track" id="Today_Repair_List" style="height: 25vh;"
+                                data-simplebar>
                                 <table>
                                     <thead>
                                         <tr>
@@ -250,7 +251,68 @@
                     </div>
                 </div>
             </div>
-            <div class="info-area d-none" data-mode="walk"></div>
+            <div class="info-area d-none" data-mode="walk">
+                <div class="info-box" id="box-Inspection_Aberrant_Factory">
+                    <div class="info-box-header">巡檢異常狀態</div>
+                    <div class="info-box-body">
+                        <div class="hstack gap-3 align-items-start" role="chart">
+                            <div id="Inspection_Aberrant_Level_Factory" class="vertical"></div>
+                            <div class="vr"></div>
+                            <div id="Inspection_Aberrant_Resolve_Factory" class="vertical"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box" id="box-Repair_Maintain_State">
+                    <div class="info-box-header">本日保養/維修單統計</div>
+                    <div class="info-box-body">
+                        <div class="hstack gap-3 align-items-start" role="chart">
+                            <div id="Repair_State_Factory" class="vertical"></div>
+                            <div class="vr"></div>
+                            <div id="Maintain_State_Factory" class="vertical"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box" id="box-Inspection_Plan_List">
+                    <div class="info-box-header">本日巡檢計畫列表</div>
+                    <div class="info-box-body p-0">
+                        <div class="table w-100 text-start">
+                            <div class="row thead">
+                                <div class="col">狀態</div>
+                                <div class="col col-7">計畫名稱</div>
+                                <div class="col">班別</div>
+                            </div>
+                            <div class="tbody" id="Inspection_Plan_List" data-simplebar data-simplebar-auto-hide="false"
+                                data-simplebar-force-visible="y">
+                                <div class="row">
+                                    <div class="col text-success">已完成</div>
+                                    <div class="col col-7">AC區巡檢計畫</div>
+                                    <div class="col">早A班</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-success">已完成</div>
+                                    <div class="col col-7">A區OOXX巡檢計畫</div>
+                                    <div class="col">早A班</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-info">待執行</div>
+                                    <div class="col col-7">A區特殊OOXX巡檢計畫</div>
+                                    <div class="col">早A班</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-warning">執行中</div>
+                                    <div class="col col-7">A區特殊OOXX巡檢計畫</div>
+                                    <div class="col">早A班</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-warning">執行中</div>
+                                    <div class="col col-7">A區特殊OOXX巡檢計畫</div>
+                                    <div class="col">早A班</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
         <section class="center-area">
             <div class="viewerContainer">
@@ -351,8 +413,8 @@
                 </div>
                 <div class="info-box" id="box-Inspection_Current_Pos">
                     <div class="info-box-header">空間人員即時位置</div>
-                    <div class="info-box-body white-big-track" style="height: 12.5rem;" data-simplebar data-simplebar-auto-hide="false"
-                        data-simplebar-force-visible="y">
+                    <div class="info-box-body white-big-track" style="height: 12.5rem;" data-simplebar
+                        data-simplebar-auto-hide="false" data-simplebar-force-visible="y">
                         <div class="accordion plan-accordion" id="Inspection_Current_Pos">
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
@@ -648,7 +710,136 @@
                     </div>
                 </div>
             </div>
-            <div class="info-area d-none" data-mode="walk"></div>
+            <div class="info-area d-none" data-mode="walk">
+                <div class="info-box" id="box-Inspection_Current_Status_Factory">
+                    <div class="info-box-header">當前巡檢狀況</div>
+                    <div class="info-box-body">
+                        <div class="d-flex" style="gap: 0.75rem;">
+                            <div class="color-card h shadow" style="--c: #40D1FF;">
+                                <div class="label" style="--c: #0088D4;">目前巡檢人數</div>
+                                <div class="value" id="Inspection_Members_All">10</div>
+                            </div>
+                            <div class="color-card h shadow" style="--c: #FFCD1D;">
+                                <div class="label" style="--c: #FF891D;">偏離路線人數</div>
+                                <div class="value" id="Inspection_Members_Notice">5</div>
+                            </div>
+                            <div class="color-card h shadow" style="--c: #FF6F6F;">
+                                <div class="label" style="--c: #FF3838;">狀態異常人數</div>
+                                <div class="value" id="Inspection_Members_Alert">2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box" id="box-Inspection_Current_Pos_Factory">
+                    <div class="info-box-header">空間人員即時位置</div>
+                    <div class="info-box-body white-big-track" data-simplebar data-simplebar-auto-hide="false"
+                        data-simplebar-force-visible="y">
+                        <div class="plan-accordion" id="Inspection_Current_Pos">
+                            <select class="form-select" name="SelectIPlan" id="SelectIPlan">
+                                <option value="">選擇計畫</option>
+                            </select>
+                            <div class="plan-people">
+                                <div class="human"><i class="icon-human"></i></div>
+                                <div class="plan-people-group">
+                                    <div class="plan-people-info">
+                                        <span class="name">Pt01 王大明</span>
+                                        <i class="icon-heart"></i>
+                                        <span class="label">心率：</span>
+                                        <span class="value">110</span>
+                                        <span class="unit">下/分</span>
+                                    </div>
+                                    <div class="plan-people-info">
+                                        <span class="name">Pt02 任趙仁</span>
+                                        <i class="icon-heart"></i>
+                                        <span class="label">心率：</span>
+                                        <span class="value">96</span>
+                                        <span class="unit">下/分</span>
+                                    </div>
+                                    <div class="plan-people-locate">
+                                        <span class="label">即時位置：</span>
+                                        <span class="value">A區2F</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="plan-people">
+                                <div class="human"><i class="icon-human"></i></div>
+                                <div class="plan-people-group">
+                                    <div class="plan-people-info">
+                                        <span class="name">Pt01 王大明</span>
+                                        <i class="icon-heart"></i>
+                                        <span class="label">心率：</span>
+                                        <span class="value">110</span>
+                                        <span class="unit">下/分</span>
+                                    </div>
+                                    <div class="plan-people-info">
+                                        <span class="name">Pt02 任趙仁</span>
+                                        <i class="icon-heart"></i>
+                                        <span class="label">心率：</span>
+                                        <span class="value">96</span>
+                                        <span class="unit">下/分</span>
+                                    </div>
+                                    <div class="plan-people-locate">
+                                        <span class="label">即時位置：</span>
+                                        <span class="value">A區2F</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="plan-people">
+                                <div class="human"><i class="icon-human"></i></div>
+                                <div class="plan-people-group">
+                                    <div class="plan-people-info">
+                                        <span class="name">Pt01 王大明</span>
+                                        <i class="icon-heart"></i>
+                                        <span class="label">心率：</span>
+                                        <span class="value">110</span>
+                                        <span class="unit">下/分</span>
+                                    </div>
+                                    <div class="plan-people-info">
+                                        <span class="name">Pt02 任趙仁</span>
+                                        <i class="icon-heart"></i>
+                                        <span class="label">心率：</span>
+                                        <span class="value">96</span>
+                                        <span class="unit">下/分</span>
+                                    </div>
+                                    <div class="plan-people-locate">
+                                        <span class="label">即時位置：</span>
+                                        <span class="value">A區2F</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="plan-people">
+                                <div class="human"><i class="icon-human"></i></div>
+                                <div class="plan-people-group">
+                                    <div class="plan-people-info">
+                                        <span class="name">Pt01 王大明</span>
+                                        <i class="icon-heart"></i>
+                                        <span class="label">心率：</span>
+                                        <span class="value">110</span>
+                                        <span class="unit">下/分</span>
+                                    </div>
+                                    <div class="plan-people-info">
+                                        <span class="name">Pt02 任趙仁</span>
+                                        <i class="icon-heart"></i>
+                                        <span class="label">心率：</span>
+                                        <span class="value">96</span>
+                                        <span class="unit">下/分</span>
+                                    </div>
+                                    <div class="plan-people-locate">
+                                        <span class="label">即時位置：</span>
+                                        <span class="value">A區2F</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box" id="box-BIM_Current_Pos">
+                    <div class="info-box-header">人員即時定位顯示</div>
+                    <div class="info-box-body p-0">
+                        <div id="UPBIM"></div>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 
@@ -659,6 +850,7 @@
     @Scripts.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js")
     @Scripts.Render("~/Scripts/Forge/Viewer.Loading.js")
     @Scripts.Render("~/Scripts/Forge/Viewer.Toolkit.js")
+    @Scripts.Render("~/Scripts/Forge/ForgePin.js")
 
     @Scripts.Render("~/Scripts/BigScreen/ChartPlugin.js")
     @Scripts.Render("~/Scripts/BigScreen/BigScreen.js")

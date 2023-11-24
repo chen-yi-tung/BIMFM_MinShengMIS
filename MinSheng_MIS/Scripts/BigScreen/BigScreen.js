@@ -1,5 +1,6 @@
 ﻿const chartCreator = new ChartCreator()
 const bim = new BIM()
+const Upbim = new UPBIM()
 
 window.addEventListener('load', async () => {
     // #region GIS function
@@ -434,14 +435,43 @@ window.addEventListener('load', async () => {
             $(e).removeClass("d-none")
         })
 
-        $("input[name='Mode_Switch']").on("change", () => {
+        $("input[name='Mode_Switch']").on("change", async () => {
             let mode = $("input[name='Mode_Switch']:checked").val()
             $(`.info-area[data-mode]`).addClass("d-none")
             $(`.info-area[data-mode='${mode}']`).removeClass("d-none")
 
-            chartCreator.Repair_State()
-            chartCreator.Maintain_State()
-            chartCreator.Equipment_Operating_Chart()
+            switch (mode) {
+                case 'equip':
+                    chartCreator.Repair_State()
+                    chartCreator.Maintain_State()
+                    chartCreator.Equipment_Operating_Chart()
+                    break;
+                case 'walk':
+                    chartCreator.Inspection_Aberrant_Factory()
+                    chartCreator.Repair_Maintain_State()
+                    if (Upbim.viewer) {
+                        Upbim.destroy()
+                    }
+                    let f = "B2F"
+                    await Upbim.setup([
+                        `/BimModels/01/Resource/3D View/進抽站${f}/進抽站${f}.svf`,
+                        `/BimModels/02/Resource/3D View/進抽站${f}_Beacon/進抽站${f}_Beacon.svf`
+                    ])
+                    Upbim.hideWall()
+                    Upbim.createBeaconPoint()
+                    Upbim.createSamplePath()
+                    const pathRecord = await Upbim.createPathRecord()
+                    const keyMng = Upbim.viewer.getHotkeyManager()
+                    const handleKeyDown = keyMng.handleKeyDown
+                    keyMng.handleKeyDown = function (e) {
+                        handleKeyDown(e)
+                        console.log("keydown", e.code)
+                        if (e.code === 'Space') {
+                            pathRecord.start()
+                        }
+                    }
+                    break;
+            }
         })
 
     }
@@ -504,14 +534,14 @@ window.addEventListener('load', async () => {
                 break;
         }
 
-        if (Floor != '') {
+        /* if (Floor != '') {
             $("#Mode_Equip").attr("disabled", false)
-            //$("#Mode_Walk").attr("disabled", false)
+            $("#Mode_Walk").attr("disabled", false)
         }
         else {
             $("#Mode_Equip").attr("disabled", true)
             $("#Mode_Walk").attr("disabled", true)
-        }
+        } */
 
         $(".info-area[data-mode='home'] .info-box").each((i, e) => {
             $(e).addClass("d-none")
@@ -774,8 +804,8 @@ function ChartCreator() {
         this.Inspection_Aberrant_Resolve()
     }
     //巡檢異常狀態 等級占比
-    this.Inspection_Aberrant_Level = function () {
-        const container = document.getElementById('Inspection_Aberrant_Level');
+    this.Inspection_Aberrant_Level = function (id) {
+        const container = document.getElementById(id ?? 'Inspection_Aberrant_Level');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#4269AC", "#E77272"]
         const data = [
@@ -835,8 +865,8 @@ function ChartCreator() {
         })
     }
     //巡檢異常狀態 處理狀況
-    this.Inspection_Aberrant_Resolve = function () {
-        const container = document.getElementById('Inspection_Aberrant_Resolve');
+    this.Inspection_Aberrant_Resolve = function (id) {
+        const container = document.getElementById(id ?? 'Inspection_Aberrant_Resolve');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#72E998", "#4269AC", "#E77272"]
         const data = [
@@ -1038,9 +1068,9 @@ function ChartCreator() {
         const container = document.getElementById('Equipment_Operating_State');
     }
 
-    //維修狀況
-    this.Repair_State = function () {
-        const container = document.getElementById('Repair_State');
+    //設備-維修狀況
+    this.Repair_State = function (id) {
+        const container = document.getElementById(id ?? 'Repair_State');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#4269AC", "#72BEE9", "#BC72E9", "#FFAB2E", "#B7B7B7", "#72E998", "#E77272"]
         const data = [
@@ -1105,9 +1135,9 @@ function ChartCreator() {
             ]
         })
     }
-    //保養狀況
-    this.Maintain_State = function () {
-        const container = document.getElementById('Maintain_State');
+    //設備-保養狀況
+    this.Maintain_State = function (id) {
+        const container = document.getElementById(id ?? 'Maintain_State');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#4269AC", "#72BEE9", "#BC72E9", "#FFAB2E", "#B7B7B7", "#72E998", "#E77272"]
         const data = [
@@ -1172,7 +1202,7 @@ function ChartCreator() {
             ]
         })
     }
-    //運轉狀態
+    //設備-運轉狀態
     this.Equipment_Operating_Chart = function () {
         const container = document.getElementById('Equipment_Operating_Chart');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -1239,6 +1269,17 @@ function ChartCreator() {
             ]
         })
     }
+
+    //巡檢-巡檢異常狀態
+    this.Inspection_Aberrant_Factory = function () {
+        this.Inspection_Aberrant_Level("Inspection_Aberrant_Level_Factory")
+        this.Inspection_Aberrant_Resolve("Inspection_Aberrant_Resolve_Factory")
+    }
+    //巡檢-本日保養/維修單統計
+    this.Repair_Maintain_State = function () {
+        this.Repair_State("Repair_State_Factory")
+        this.Maintain_State("Maintain_State_Factory")
+    }
     // #endregion
     return this;
 }
@@ -1304,6 +1345,329 @@ function BIM() {
         this.viewer.finish()
         this.viewer = null
         $(clientContainer).empty();
+    }
+
+    return this
+}
+
+function UPBIM() {
+    const self = this
+    Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
+    const clientContainer = document.getElementById('UPBIM')
+    const profileSettings = {
+        name: "customSettings",
+        description: "My personal settings.",
+        settings: {}, //API:https://aps.autodesk.com/en/docs/viewer/v7/reference/globals/TypeDefs/Settings/
+        persistent: [],
+        extensions: {
+            load: ["Viewer.Toolkit"],
+            unload: [/* "Autodesk.Section", "Autodesk.Measure", "Autodesk.Explode" */]
+        }
+    }
+    const options = {
+        keepCurrentModels: true,
+        globalOffset: { x: 0, y: 0, z: 0 }
+    };
+    this.viewer = null;
+    this.setup = function setup(urls) {
+        this.viewer = new Autodesk.Viewing.Viewer3D(clientContainer, { profileSettings });
+        this.viewer.loadExtension("Viewer.Loading", { loader: `<div class="lds-default">${Array(12).fill('<div></div>').join('')}</div>` })
+
+        return new Promise((resolve, reject) => {
+            Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
+                this.viewer.start();
+                await this.viewer.loadExtension("Viewer.Toolkit")
+
+                //load urns
+                const models = await Promise.all(urls.map((url) => {
+                    return new Promise(async (resolve, _) => {
+                        this.viewer.loadModel(window.location.origin + url, options,
+                            async (model) => { await this.viewer.waitForLoadDone(); resolve(model); },
+                            async (model) => { reject(model); }
+                        )
+                    })
+                }))
+
+                //setting 3d view env
+                this.viewer.setBackgroundOpacity(0);
+                this.viewer.setBackgroundColor();
+                this.viewer.setLightPreset(16); //設定環境光源 = 雪地
+
+                for (const model of models) {
+                    await onLoadDone(model)
+                }
+                this.viewer.loading.hide()
+                this.viewer.toolkit.autoFitModelsTop(models.filter(e => e), 2, true)
+                resolve(true)
+            });
+        })
+
+        async function onLoadDone(model) {
+            console.log("onLoadDone", model)
+            if (model.loader.basePath.includes("Beacon")) {
+
+                const newmat = new THREE.MeshPhongMaterial({
+                    color: 0x1010ff,
+                    emissive: 0x001061,
+                    reflectivity: 0,
+                    shininess: 0
+                })
+                await self.viewer.toolkit.changeMaterial(model, model.getRootId(), newmat)
+                let AllBeacons = await self.viewer.toolkit.getAlldbIds(model.getInstanceTree(), model.getRootId())
+                console.log("AllBeacons", AllBeacons)
+                console.log("顏色變更完畢")
+            }
+            return
+        }
+    }
+    this.destroy = function destroy() {
+        if (this.viewer == null) { return }
+        this.viewer.tearDown()
+        this.viewer.finish()
+        this.viewer = null
+        $(clientContainer).empty();
+    }
+    this.createBeaconPoint = async () => {
+        const FSN = "1_1"
+        let res = await getDataAsync(`/SamplePath_Management/ReadBimPathDevices/${FSN}`)
+        createBeaconPoint(res.BIMDevices)
+    }
+    this.createSamplePath = createSamplePath
+    this.createPathRecord = createPathRecord
+    this.hideWall = hideWall
+
+    async function createBeaconPoint(data) {
+        console.log(data)
+        const model = self.viewer.getAllModels().find((model) => model.loader.basePath.includes("Beacon"));
+        const pins = []
+        data.forEach((d) => {
+            let position = self.viewer.toolkit.getBoundingBox(model, d.dbId).getCenter()
+            let pin = new ForgePin({
+                viewer: self.viewer,
+                position,
+                data: {},
+                img: "/Content/img/bluetooth.svg",
+                id: `bluetooth-${d.dbId}`
+            })
+
+            $(pin.e).append(`<div class="bluetooth-name">${d.deviceName}</div>`)
+
+            pin.show()
+            pin.update()
+            pins.push(pin)
+        })
+        self.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
+            pins.forEach((pin) => { pin.update() })
+        })
+    }
+    async function createSamplePath() {
+        const scene = 'SamplePath'
+        const box = self.viewer.getAllModels().reduce((total, model) => {
+            total.union(model.getBoundingBox())
+            return total
+        }, new THREE.Box3())
+        const z = box.getCenter().z - (box.getSize().z / 2) + 3
+        self.viewer.overlays.addScene(scene)
+
+        const geometry = new THREE.Geometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x29B6F6 })
+
+        const { PathSampleRecord: data } = await getDataAsync(`/jsonSamples/samplePath_test.json`)
+        //console.log(data)
+
+        data.forEach(({ LocationX: x, LocationY: y }, i) => {
+            let p = createPoint(new THREE.Vector3(x, y, z))
+            geometry.mergeMesh(p)
+            if (i != 0) {
+                let { LocationX: x2, LocationY: y2 } = data[i - 1]
+                let eg = createExtrude(
+                    new THREE.Vector3(x2, y2, z),
+                    new THREE.Vector3(x, y, z),
+                )
+                geometry.mergeMesh(eg)
+            }
+        })
+        self.viewer.overlays.addMesh(new THREE.Mesh(geometry, material), scene)
+
+        function createExtrude(v1, v2) {
+            const radius = 0.1
+            const shape = new THREE.Shape()
+            shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
+
+            const path = new THREE.LineCurve3(v1, v2)
+
+            const geometry = new THREE.ExtrudeGeometry(shape, {
+                steps: 1,
+                extrudePath: path
+            })
+            const mesh = new THREE.Mesh(geometry)
+            return mesh
+            //self.viewer.overlays.addMesh(mesh, 'SamplePath')
+        }
+
+        function createPoint(pos) {
+            const geometry = new THREE.SphereGeometry(0.1, 16, 12);
+            const mesh = new THREE.Mesh(geometry)
+            mesh.position.copy(pos)
+            return mesh
+            //self.viewer.overlays.addMesh(mesh, 'SamplePath')
+        }
+    }
+    async function createPathRecord() {
+        const scene = 'PathRecord'
+        self.viewer.overlays.addScene(scene)
+
+        const pin = new ForgePin({
+            viewer: self.viewer,
+            position: new THREE.Vector3(),
+            img: "/Content/img/pin.svg",
+            id: "person-" + Math.random().toString(36).slice(2, 7)
+        });
+        pin.addPopover({
+            offset: ['0%', '140%'],
+            html: `<div class="pin-popover"><div class="popover-header"><span class="num">Pt01</span><span class="name">王大明</span></div><div class="popover-body"><img src="/Content/img/heart.svg" height="14"><span class="label">心律：</span><span class="value">110</span><span class="unit">下/分</span></div></div>`,
+            setContent: function (data) {
+                //the function to set html content
+                //"this" is popover
+                const $e = $(this.e);
+                $e.find(".value").text(data.value);
+            },
+            clickEvent: function (event) {
+                //"this" is pin
+                !this.popover.isShow()
+                    ? (this.popover.show(), this.setZIndex(100))
+                    : (this.popover.hide(), this.setZIndex());
+            },
+        })
+        pin.setZIndex(1)
+        pin.hide()
+
+        self.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
+            pin.update()
+        })
+
+        const material = new THREE.MeshBasicMaterial({ color: 0xD9C832 })
+        let count = 0
+
+        const data = await getDataAsync(`/jsonSamples/pathRecord_test.json`)
+        const height = 5
+        const len = data.length
+        let timer = null
+        this.start = () => {
+            if (timer === null) {
+                if (self.viewer.overlays.hasScene(scene)) {
+                    self.viewer.overlays.removeScene(scene)
+                    self.viewer.overlays.addScene(scene)
+                }
+                timer = setInterval(() => { animate(data) }, 100)
+                pin.show()
+                pin.popover.show()
+            }
+        }
+        $("#Play").click(this.start.bind(this))
+        return this
+
+        function animate(data) {
+            let { x, y, z } = data[count].position
+            z = z - height
+            let p = createPoint(new THREE.Vector3(x, y, z), material)
+            self.viewer.overlays.addMesh(p, scene)
+
+            pin.position.set(x, y, z)
+            pin.show()
+
+            if (count != 0) {
+                let { x: x2, y: y2, z: z2 } = data[count - 1].position
+                z2 = z2 - height
+                let eg = createExtrude(
+                    new THREE.Vector3(x2, y2, z2),
+                    new THREE.Vector3(x, y, z),
+                    material
+                )
+                self.viewer.overlays.addMesh(eg, scene)
+            }
+            //self.viewer.impl.sceneUpdated(true)
+            if (count <= len - 2) {
+                count++
+                console.log('animate running')
+            }
+            else {
+                console.log('animate end')
+                count = 0
+                clearInterval(timer)
+                timer = null
+            }
+        }
+
+        function createExtrude(v1, v2, mat) {
+            const radius = 0.1
+            const shape = new THREE.Shape()
+            shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
+
+            const path = new THREE.LineCurve3(v1, v2)
+
+            const geometry = new THREE.ExtrudeGeometry(shape, {
+                steps: 1,
+                extrudePath: path
+            })
+            const mesh = new THREE.Mesh(geometry, mat)
+            return mesh
+            //self.viewer.overlays.addMesh(mesh, 'SamplePath')
+        }
+
+        function createPoint(pos, mat) {
+            const geometry = new THREE.SphereGeometry(0.1, 16, 12);
+            const mesh = new THREE.Mesh(geometry, mat)
+            mesh.position.copy(pos)
+            return mesh
+            //self.viewer.overlays.addMesh(mesh, 'SamplePath')
+        }
+    }
+    async function hideWall() {
+        const box = self.viewer.getAllModels().reduce((total, model) => {
+            total.union(model.getBoundingBox())
+            return total
+        }, new THREE.Box3())
+        const z = box.getCenter().z + (box.getSize().z / 2)
+        const intersectBox = new THREE.Box3(
+            new THREE.Vector3().copy(box.min).setZ(z - 1),
+            new THREE.Vector3().copy(box.max).setZ(z + 1)
+        )
+
+        const allDbids = await new Promise(async (resolve) => {
+            const arr = []
+            const models = self.viewer.getAllModels()
+            for (const model of models) {
+                let dbIds = await self.viewer.toolkit.getAlldbIds(model.getInstanceTree(), model.getRootId())
+                arr.push({ model, dbIds })
+            }
+            resolve(arr)
+        })
+
+        allDbids.forEach(({ model, dbIds }) => {
+            dbIds.forEach((dbId) => {
+                let bbox = self.viewer.toolkit.getBoundingBox(model, dbId)
+                if (intersectBox.isIntersectionBox(bbox)) {
+                    self.viewer.hide(dbId)
+                }
+            })
+        })
+
+        self.viewer.search("M_混凝土", (res) => {
+            res.forEach((dbId) => { self.viewer.hide(dbId) })
+        })
+    }
+    function getDataAsync(url) {
+        return new Promise((success, error) => {
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success,
+                error
+            })
+        })
     }
 
     return this

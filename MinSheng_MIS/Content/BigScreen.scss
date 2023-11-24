@@ -1040,26 +1040,7 @@ body {
     }
 }
 
-#BIM {
-    width: 100%;
-    height: 100%;
-
-    .adsk-viewing-viewer {
-        background: none !important;
-
-        .adsk-toolbar {
-            bottom: 3rem;
-        }
-    }
-
-    .forge-spinner {
-        display: none !important;
-    }
-
-    .viewcubeWrapper {
-        top: 3rem;
-    }
-
+@mixin ForgePin {
     .pin-area {
         position: absolute;
         left: 0;
@@ -1143,5 +1124,164 @@ body {
         transform: translate(-50%, -20%);
         padding: 1px 3px;
         border-radius: 2px;
+    }
+}
+
+#BIM {
+    width: 100%;
+    height: 100%;
+
+    .adsk-viewing-viewer {
+        background: none !important;
+
+        .adsk-toolbar {
+            bottom: 3rem;
+        }
+    }
+
+    .forge-spinner {
+        display: none !important;
+    }
+
+    .viewcubeWrapper {
+        top: 3rem;
+    }
+
+    @include ForgePin;
+}
+
+#UPBIM {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    @include ForgePin;
+}
+
+
+#box-Inspection_Current_Status_Factory {
+    height: 12rem;
+    flex: 0 0 auto;
+}
+
+#box-Inspection_Current_Pos_Factory {
+    height: 0rem;
+
+    .info-box-body {
+        height: calc(100% - 3.375rem);
+    }
+
+    .plan-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        .form-select {
+            border-radius: 6.25rem;
+            border: 1px solid #C6C6C6;
+            background-color: #FFF;
+            color: #7E7E7E;
+            font-size: 1.125rem;
+            font-weight: 500;
+            padding: 0.35rem 1rem;
+        }
+    }
+}
+
+#box-BIM_Current_Pos {
+    height: 24.3rem;
+    flex: 0 0 auto;
+}
+
+#box-Inspection_Aberrant_Factory,
+#box-Repair_Maintain_State {
+    flex: 0 0 auto;
+}
+
+#box-Inspection_Plan_List {
+    height: 0rem;
+    .info-box-body {
+        background: rgba(29, 49, 86, 0.90);
+        height: calc(100% - 3.375rem);
+    }
+    .table {
+        color: #fff;
+        text-align: center;
+        margin-bottom: 0;
+        overflow: hidden;
+        height: 100%;
+
+        .text-success {
+            color: #72E998 !important;
+        }
+
+        .row {
+            --bs-gutter-x: 0rem !important;
+        }
+
+        .thead {
+            background: rgba(18, 184, 255, 0.30);
+            font-size: 1.125rem;
+            font-weight: 500;
+            padding-left: 2.5rem;
+            padding-right: 2.5rem;
+
+            &>.col {
+                padding-top: 0.25rem;
+                padding-bottom: 0.25rem;
+
+                &:last-of-type {
+                    padding-left: 0.5rem;
+                }
+            }
+        }
+
+        .tbody {
+            height: calc(100% - 2.1875rem);
+
+            .simplebar-content {
+                padding-right: 2.5rem !important;
+            }
+
+            .row {
+                padding-left: 2.5rem;
+
+                &:nth-of-type(odd) {
+                    background: rgba(46, 75, 111, 0.60);
+                }
+
+                &>.col {
+                    padding-top: 0.5rem;
+                    padding-bottom: 0.5rem;
+
+                    &:last-of-type {
+                        padding-left: 0.5rem;
+                    }
+                }
+            }
+        }
+
+        .simplebar-track {
+
+            background: #828282;
+            border-radius: 3.5rem;
+            right: 1rem;
+            bottom: 1rem;
+
+            &.simplebar-vertical {
+                top: 1rem;
+            }
+
+            .simplebar-scrollbar {
+
+                &:before {
+                    background: #fff;
+                    opacity: 1;
+                    border-radius: 3.5rem;
+                    inset: 0;
+                }
+            }
+
+        }
     }
 }
