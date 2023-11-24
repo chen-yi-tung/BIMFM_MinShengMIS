@@ -1059,4 +1059,89 @@ body {
     .viewcubeWrapper {
         top: 3rem;
     }
+
+    .pin-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 4 !important;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .pin {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        pointer-events: auto;
+        cursor: pointer;
+
+        &[id^='pin_bluetooth-'] {
+            img {
+                transform: scale(0.6);
+            }
+        }
+
+        &[id^='pin_person'] {
+            transform: translate(-50%, -80%);
+
+            .label {
+                color: #909090;
+                font-size: 0.75rem;
+                font-weight: 500;
+                margin-left: 0.3rem;
+            }
+
+            .value,
+            .unit {
+                color: #606060;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .pin-popover {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        width: max-content;
+        display: block;
+        cursor: auto;
+        border-radius: 0.31rem;
+        background: rgba(236, 246, 255, 0.95);
+        box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.50);
+
+        &:not([data-show]) {
+            display: none;
+        }
+
+        .popover-header {
+            color: #454A5B;
+            font-size: 1.25rem;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .popover-body {
+            width: 100%;
+            color: lightgray;
+            padding: 0 1rem 0.5rem;
+        }
+    }
+
+    .bluetooth-name {
+        background-color: #2750B9;
+        color: #fff;
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        width: max-content;
+        transform: translate(-50%, -20%);
+        padding: 1px 3px;
+        border-radius: 2px;
+    }
 }

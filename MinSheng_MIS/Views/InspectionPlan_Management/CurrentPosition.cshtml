@@ -84,7 +84,9 @@
     </section>
     <section class="center-area">
         <div class="viewerContainer">
-            <div id="BIM"></div>
+            <div id="BIM">
+                <div class="pin-area"></div>
+            </div>
             <h2 class="viewbag-title">@ViewBag.Title</h2>
         </div>
         <div class="position-absolute top-0 end-0 p-4">
@@ -266,6 +268,7 @@
     @Scripts.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js")
     @Scripts.Render("~/Scripts/Forge/Viewer.Loading.js")
     @Scripts.Render("~/Scripts/Forge/Viewer.Toolkit.js")
+    @Scripts.Render("~/Scripts/Forge/ForgePin.js")
 
     @Scripts.Render("~/Scripts/BigScreen/ChartPlugin.js")
     @Scripts.Render("~/Scripts/InspectionPlan/CurrentPosition.js")
