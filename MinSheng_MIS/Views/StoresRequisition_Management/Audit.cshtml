@@ -2,11 +2,18 @@
     ViewBag.Title = "領用審核";
 }
 
+<style>
+    @@media (min-width: 992px) {
+        .edit-area .form {
+            align-items: flex-start;
+        }
+    }
+</style>
+
 <h2>@ViewBag.Title</h2>
 
 <div class="datatable datatable-small mt-5">
-    <div
-div class="datatable-body">
+    <div div class="datatable-body">
         <table class="datatable-table" id="Info"></table>
     </div>
 </div>
@@ -19,18 +26,21 @@ div class="datatable-body">
 </div>
 
 <div class="edit-area edit-area-small mt-5" style="gap: 1rem 2rem;">
-    <form class="form d-lg-contents">
-        <div class="d-flex flex-wrap w-100 gap-4">
-            <div class="form-group w-lg-100 mx-5 d-flex align-items-center">
-                <label for="AuditUserID" class="col-2">審核人員:</label>
-                <span style="color: white;">王OO</span>
-            </div>
-            <div class="form-group w-lg-100 mx-5 d-flex ">
-                <label for="AuditContent" class="col-2">審核意見:</label>
-                <input class="form-control col" id="AuditContent" name="AuditContent" type="text" required="">
-            </div>
+    <form class="form">
+        <div class="form-group d-lg-contents">
+            <label for="AuditUserID">審核人員</label>
+            <input class="form-control readonly" id="AuditUserID" name="AuditUserID" type="text" readonly value="王OO">
+        </div>
+        <div class="form-group d-lg-contents">
+            <label for="AuditContent">審核意見</label>
+            <textarea class="w-100" name="AuditContent" id="AuditContent" rows="5" maxlength="256"></textarea>
         </div>
     </form>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">送出</button>
 </div>
 
 <script src="/Scripts/datatable.js"></script>
@@ -131,7 +141,52 @@ div class="datatable-body">
         }
     }
 
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("isValidity():", isValidity)
+        if (!isValidity) return;
+
+        var form = new FormData();
+        form.append("AuditUserID", document.getElementById("AuditUserID").value);
+        form.append("AuditContent", document.getElementById("AuditContent").value);
+
+        console.log(Object.fromEntries(form.entries()));
+
+        return;
+        $.ajax({
+            url: '@Url.Action("AuditStoresRequisition", "StoresRequisition_Management")',
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "修改成功！",
+                onHide: () => { window.location.href = "/StoresRequisition_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `修改失敗！` + `${res.responseText}` })
+        }
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        });
+
+        $("#submit").click(function () {
+            save();
+        });
+    }
+
     window.onload = function () {
+        addButtonEvent();
         readData(apiUrl);
     }
 </script>
