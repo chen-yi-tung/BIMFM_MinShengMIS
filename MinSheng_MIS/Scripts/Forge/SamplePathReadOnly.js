@@ -27,6 +27,4 @@ function initializeDrawer(data) {
         createLinePath(data.PathSampleRecord);
         updatePathDisplay(data.PathSampleOrder);
     });
-
-    window.addEventListener("resize", function () { ForgeDraw.resize(); })
 }

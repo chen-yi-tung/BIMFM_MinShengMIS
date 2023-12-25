@@ -142,6 +142,7 @@ function IPDG(options) {
     this.createBtn = $(`#${this.options.type}-create`);
     this.deleteBtn = $(`#${this.options.type}-delete`);
     this.event = this.options.evnet;
+    this.observer = null;
     this.appendData = function () {
         let data = self.mdg.datagrid("getChecked");
         console.log("appendData POST", data);
@@ -236,7 +237,13 @@ function IPDG(options) {
                 frozenColumns: self.options.frozenColumns,
                 columns: self.options.columns,
             }))
-        window.addEventListener("resize", (event) => { dg.datagrid('resize'); });
+
+        if (this.observer == null) {
+            this.observer = new ResizeObserver((entries) => {
+                dg.datagrid('resize');
+            });
+            this.observer.observe(dg.closest(".datatable-easyui")[0]);
+        }
         self.addButtonEvent(dg);
     }
 

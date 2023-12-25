@@ -2,50 +2,27 @@
     ViewBag.Title = "警示訊息詳情";
 }
 
-<script type="text/javascript" src="/Content/easyui/jquery.min.js" defer></script>
-<link rel="stylesheet" type="text/css" href="/Content/easyui/themes/default/easyui.css" />
-<script type="text/javascript" src="/Content/easyui/jquery.easyui.min.js" defer></script>
-
-
-
-
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js"></script>
+<script src="/Content/easyui/jquery.easyui.min.js"></script>
 <style>
-    @@media only screen and (min-width:1200px) {
-        .datatable {
-            max-width: 700px;
-        }
-    }
+    @*.datatable-easyui.datagrid-wrap{height:100px!important;}*@
 </style>
+
 <h2>@ViewBag.Title</h2>
 
 <div class="datatable datatable-small mt-5">
     <div class="datatable-body">
-        <table class="datatable-table" id="MaintainItemInfo"></table>
+        <table class="datatable-table" id="ItemInfo"></table>
     </div>
 </div>
 
 <div class="datatable mt-5">
     <div class="datatable-header">填報記錄</div>
     <div class="datatable-body datatable-easyui">
-        <table class="WM_datagrid easyui-datagrid"
-               data-options="singleSelect:true,collapsible:true,method:'get'" id="record_datagrid">
-            <thead>
-                <tr>
-                    <th data-options="field:'FillinDateTime',width:120,align:'center'" sortable="true">填報時間</th>
-                    <th data-options="field:'FillinUserName',width:120,align:'center'" sortable="true">填報人員</th>
-                    <th data-options="field:'WMState',width:150,align:'center'" sortable="true">事件處理狀況</th>
-                    <th data-options="field:'Memo',resizable:true,align:'center'" sortable="true">備註</th>
-                </tr>
-            </thead>
-        </table>
-
+        <table id="DataGrid"></table>
     </div>
 </div>
-
-@*<div class="edit-button-area">
-        <button class="btn btn-search" id="SearchPSN">本巡檢計畫其他警示訊息</button>
-        <button class="btn btn-back" id="ReadPSN">查看巡檢計畫</button>
-    </div>*@
 <!-- jQuery CDN -->
 
 <script src="/Scripts/datatable.js" defer></script>
@@ -88,13 +65,7 @@
 
         function onSuccess(res) {
             console.log(res);
-            $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
-            $("#ReadPSN").click(() => {
-                window.open(`/InspectionPlan_Management/Read/${res.PSN}`, "_blank")
-            })
-            $("#SearchPSN").click(() => {
-                window.open(`/WarningMessage_Management/Management?PSN=${res.PSN}`, "_blank")
-            })
+            $("#ItemInfo").append(createTableInner(res, SerializedName));
         }
         function onError(res) {
             console.log(res);
@@ -126,9 +97,28 @@
     function initDatagrid() {
         const randomData = generateRandomData();
 
-        $('#record_datagrid').datagrid({
-            data: randomData
+        $('#DataGrid').datagrid({
+            data: randomData,
+            method: 'GET',
+            remoteSort: false,
+            sortOrder: 'asc',
+            //fit: true,
+            singleSelect: true,
+            selectOnCheck: true,
+            checkOnSelect: false,
+            columns: [[
+                { field: 'FillinDateTime', title: '填報時間', align: 'center', width: 220, sortable: true },
+                { field: 'FillinUserName', title: '填報人員', align: 'center', width: 120, sortable: true },
+                { field: 'WMState', title: '事件處理狀況', align: 'center', width: 150, sortable: true },
+                { field: 'Memo', title: '備註', align: 'center', sortable: true },
+            ]]
         });
+
+        const observer = new ResizeObserver((e) => {
+            $('#DataGrid').datagrid("resize")
+        });
+        observer.observe(document.querySelector(".datatable-easyui"));
+
     }
 
     // Call the initialization function

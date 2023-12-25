@@ -130,7 +130,6 @@
             frozenColumns: [[
                 dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                 dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "填報", "edit")),
-                //dg.frozenColumn('_locate', (v, row, i) => dg.eventButton(i, "定位", "locate"))
             ]],
             columns: [[
                 dg.hiddenColumn('WMSN'),
@@ -145,13 +144,10 @@
             ]]
         })
         dg.addEvent("detail", function (row, i) {
-            window.open(`${baseUrl}/Read/${row.IAWSN}`, "_blank")
+            window.open(`${baseUrl}/Read/${row.WMSN}`, "_blank")
         })
         dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/Edit/${row.IAWSN}`, "_self")
-        })
-        dg.addEvent("locate", function (row, i) {
-            //window.open(`${baseUrl}/Edit/${row.IAWSN}`, "_self")
+            window.open(`${baseUrl}/Edit/${row.WMSN}`, "_self")
         })
 
     }

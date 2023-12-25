@@ -239,13 +239,13 @@
     // datagrid onClick Function
     function onMaintainDetail(index) {
         let row = $('#DataGrid-Maintain').datagrid('getRows')[index];
-        let url = '@Url.Action("Read","MaintainRecord_Management")/' + row.IPMSN;
+        let url = '@Url.Action("Read", "MaintainRecord_Management")/' + row.IPMSN;
         window.open(url, "_blank");
     }
 
     function onRepairDetail(index) {
         let row = $('#DataGrid-Repair').datagrid('getRows')[index];
-        let url = '@Url.Action("Read","RepairRecord_Management")/' + row.IPRSN;
+        let url = '@Url.Action("Read", "RepairRecord_Management")/' + row.IPRSN;
         window.open(url, "_blank");
     }
 
@@ -265,10 +265,10 @@
         readData(apiUrl);
         initDatagrid_Maintain(apiUrl_Maintain);
         initDatagrid_Repair(apiUrl_Repair);
-    }
-
-    window.onresize = function () {
-        $('#DataGrid-Maintain').datagrid('resize');
-        $('#DataGrid-Repair').datagrid('resize');
+        const observer = new ResizeObserver((e) => {
+            $('#DataGrid-Maintain').datagrid('resize');
+            $('#DataGrid-Repair').datagrid('resize');
+        });
+        observer.observe(document.querySelector(".datatable-easyui"));
     }
 </script>

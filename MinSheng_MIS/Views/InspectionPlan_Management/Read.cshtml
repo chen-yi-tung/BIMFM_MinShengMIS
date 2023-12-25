@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "巡檢計畫詳情";
 }
-@section styles{
+@section styles {
     @Styles.Render("~/Content/easyui/themes/default/easyui.css")
     <link rel="stylesheet" href="/Content/samplepath.css">
     <!-- Autodesk Forge -->
@@ -359,10 +359,11 @@
             initDatagrid_Maintain(res.MaintainEquipment);
             initDatagrid_Repair(res.RepairEquipment);
 
-            window.addEventListener("resize", function () {
+            const observer = new ResizeObserver((e) => {
                 $('#DataGrid-Maintain').datagrid('resize');
                 $('#DataGrid-Repair').datagrid('resize');
-            })
+            });
+            observer.observe(document.querySelector(".datatable-easyui"));
 
             res.InspectionPlanPaths.forEach((e, i, arr) => {
                 sessionStorage.setItem(`P${i + 1}_pathData`, JSON.stringify(e));
@@ -387,4 +388,3 @@
     })
 
 </script>
-

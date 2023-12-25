@@ -206,6 +206,18 @@
     border-color: #fff;
 }
 
+.edit-area textarea {
+    resize: vertical;
+    color: #7E7E7E;
+    padding: 0.375rem 0.75rem;
+}
+
+.edit-area textarea:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}
+
 .hr-dashed {
     width: 100%;
     border: 2px dashed #A6D0FC;

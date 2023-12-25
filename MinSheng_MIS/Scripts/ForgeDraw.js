@@ -16,6 +16,7 @@ function ForgeDrawController() {
         point: new PIXI.Container(),
         device: new PIXI.Container(),
     }
+    var observer = new ResizeObserver(resize);
 
     /* control */
     const Control = Object.freeze({
@@ -179,7 +180,7 @@ function ForgeDrawController() {
         view.addEventListener("contextmenu", preventDefaultEvent);
         $(document.body).on("contextmenu", ".contextMenu", preventDefaultEvent);
 
-        window.addEventListener("resize", resize)
+        observer.observe(view);
 
         forgeViewer = forgeGuiViewer3D;
 
@@ -223,7 +224,7 @@ function ForgeDrawController() {
 
         view.removeEventListener("contextmenu", preventDefaultEvent);
         $(document.body).off("contextmenu", ".contextMenu", preventDefaultEvent);
-        window.removeEventListener("resize", resize)
+        observer.disconnect();
         app.destroy(true, true);
 
         app = null;

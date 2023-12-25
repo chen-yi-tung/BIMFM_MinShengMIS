@@ -1,96 +1,53 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "警示訊息填報";
 }
 
 <style>
-    .status_section {
-        background: linear-gradient(180deg, #E9F7FF 0%, #DCE6FF 100%);
-        .col-form-label
-
-    {
-        color: #5B5B5B;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
+    .edit-area .form label.btn {
+        margin-top: 0;
     }
 
-    .radio_section {
-        .status_radio
-
-    {
-        margin: 0 5px
+    .edit-area .form label.btn:hover {
+        color: #fff;
     }
-
-    }
-    }
-
-    @@media only screen and (min-width:1200px) {
-        .status_section {
-            max-width: 700px;
-            margin: 3% auto;
-            padding: 3%;
-        }
-        .col-form-label {
-            justify-content: end;
-            padding: 0;
-            align-self: self-start;
+    @@media (min-width: 992px) {
+        .edit-area .form {
+            align-items: flex-start;
         }
     }
-
-    @@media only screen and (min-width:768px) and (max-width:1199px) {
-        .status_section {
-            margin: 3% auto;
-            padding: 3%;
-        }
-        .col-form-label {
-            justify-content: end;
-            padding: 0;
-        }
-    }
-
-    @@media only screen and (max-width: 767px) {
-        .status_section {
-            margin: 3% auto;
-            padding: 3%;
-        }
-        .col-form-label {
-            padding: 0 0 5px 16px;
-        }
-    }
-
 </style>
 
 <h2>警示訊息填報</h2>
 
 <div class="datatable datatable-small mt-5">
     <div class="datatable-body">
-        <table class="datatable-table" id="MaintainItemInfo"></table>
+        <table class="datatable-table" id="ItemInfo"></table>
     </div>
 </div>
 
-<form class="status_section">
-        <div class="form-group row mb-3">
-        <label class="col-xl-4 col-lg-4 col-md-4 col-12 col-form-label ">處理狀態</label>
-        <div class="col-xl-8 col-lg-8 col-md-8 col-12  d-flex radio_section">
-            <div class="custom-control status_radio">
-                <input name="WMState" id="process" type="radio" class="custom-control-input" value="processing">
-                <label for="WMState_0" class="custom-control-label">處理中</label>
-            </div>
-            <div class="custom-control status_radio">
-                <input name="WMState" id="done" type="radio" class="custom-control-input" value="done">
-                <label for="WMState_1" class="custom-control-label">已處理</label>
+<div class="edit-area edit-area-small">
+    <form class="form">
+        <div class="form-group d-lg-contents required">
+            <label for="">處理狀態</label>
+            <div class="d-flex flex-column flex-sm-row" style="gap:0.5em;">
+                <label class="btn" for="WMState_1">
+                    <input type="radio" class="form-check-input" id="WMState_1" name="WMState" value="1" required>
+                    處理中
+                </label>
+                <label class="btn" for="WMState_2">
+                    <input type="radio" class="form-check-input" id="WMState_2" name="WMState" value="2" required>
+                    已處理
+                </label>
             </div>
         </div>
-    </div>
-    <div class="form-group row">
-        <label for="AuditResult" class="col-xl-4 col-lg-4 col-md-4 col-12 col-form-label">備註</label>
-        <div class="col-xl-8 col-lg-8 col-md-8 col-12 ">
-            <textarea id="AuditResult" name="AuditResult" cols="40" rows="5" class="form-control"></textarea>
+        <div class="form-group d-lg-contents">
+            <label for="Memo">備註</label>
+            <textarea class="w-100" name="Memo" id="Memo" rows="5"></textarea>
         </div>
-    </div>
+        <div id="FileUploader"></div>
+    </form>
+</div>
 
-</form>
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-submit" id="submit">新增</button>
@@ -107,25 +64,20 @@
         { text: "發生時間", value: "TimeofOccurrence" },
         { text: "發生地點", value: "Location" },
         { text: "時間內容", value: "Message" },
-        { text: "警示來源", value: "WMSource" },
-        //{ text: "審核結果說明", value: "AuditResult" },
-        //{ text: "相關文件", value: "FileName" },
+        { text: "警示來源", value: "WMSource" }
     ]
 
     const fakeData = {
         WMSN: "1",
         WMType: "緊急",
         WMState: "待處理",
-        TimeofOccurrence: "2022/02/01 11:col-xl-4 col-lg-4 col-md-4 col-120:10",
+        TimeofOccurrence: "2022/02/01 11:20:10",
         Location: "B1儲藏室",
         Message: "電力失常",
-        WMSource: "文字內容",
-        //AuditResult: '審核通過',
-        //FileName: "test.pdf",
+        WMSource: "文字內容"
     }
 
     function readData(url = null) {
-
         url == null ? onSuccess(fakeData) :
             $.ajax({
                 url: url,
@@ -138,21 +90,17 @@
 
         function onSuccess(res) {
             console.log(res);
-            $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
-            $("#ReadPSN").click(() => {
-                window.open(`/InspectionPlan_Management/Read/${res.PSN}`, "_blank")
-            })
-            $("#SearchPSN").click(() => {
-                window.open(`/WarningMessage_Management/Management?PSN=${res.PSN}`, "_blank")
-            })
+            $("#ItemInfo").append(createTableInner(res, SerializedName));
         }
         function onError(res) {
             console.log(res);
         }
     }
 
-    window.onload = function () {
-        readData(apiUrl);
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("todo save():", isValidity)
+        if (!isValidity) return;
     }
 
     function addButtonEvent() {
@@ -162,5 +110,10 @@
         $("#submit").click(function () {
             save();
         });
+    }
+
+    window.onload = function () {
+        addButtonEvent();
+        readData(apiUrl);
     }
 </script>
