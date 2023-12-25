@@ -310,6 +310,12 @@
     <Compile Include="Models\MonthlyReport.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PurchaseRequisition.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PurchaseRequisitionItem.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SubSystemManagement.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

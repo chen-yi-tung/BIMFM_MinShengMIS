@@ -62,6 +62,8 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<MonthlyReport> MonthlyReport { get; set; }
         public virtual DbSet<PathSample> PathSample { get; set; }
         public virtual DbSet<PathSampleOrder> PathSampleOrder { get; set; }
+        public virtual DbSet<PurchaseRequisition> PurchaseRequisition { get; set; }
+        public virtual DbSet<PurchaseRequisitionItem> PurchaseRequisitionItem { get; set; }
         public virtual DbSet<RepairAuditImage> RepairAuditImage { get; set; }
         public virtual DbSet<RepairAuditInfo> RepairAuditInfo { get; set; }
         public virtual DbSet<RepairCompletionImage> RepairCompletionImage { get; set; }

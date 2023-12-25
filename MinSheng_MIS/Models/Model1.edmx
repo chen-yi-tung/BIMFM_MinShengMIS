@@ -444,6 +444,33 @@
           <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
           <Property Name="BeaconID" Type="nvarchar" MaxLength="8" Nullable="false" />
         </EntityType>
+        <EntityType Name="PurchaseRequisition">
+          <Key>
+            <PropertyRef Name="PRN" />
+          </Key>
+          <Property Name="PRN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="PRUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="PRState" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="PRDept" Type="nvarchar" MaxLength="50" />
+          <Property Name="PRDate" Type="date" Nullable="false" />
+          <Property Name="AuditDate" Type="date" />
+          <Property Name="AuditResult" Type="nvarchar(max)" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="PurchaseRequisitionItem">
+          <Key>
+            <PropertyRef Name="PRIN" />
+          </Key>
+          <Property Name="PRIN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="PRN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="PRIState" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Kind" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ItemName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Size" Type="nvarchar" MaxLength="50" />
+          <Property Name="PRAmount" Type="float" Nullable="false" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="ApplicationPurpose" Type="nvarchar" MaxLength="200" />
+        </EntityType>
         <EntityType Name="RepairAuditImage">
           <Key>
             <PropertyRef Name="ImgPath" />
@@ -853,6 +880,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PurchaseRequisitionItem_PurchaseRequisition">
+          <End Role="PurchaseRequisition" Type="Self.PurchaseRequisition" Multiplicity="1" />
+          <End Role="PurchaseRequisitionItem" Type="Self.PurchaseRequisitionItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseRequisition">
+              <PropertyRef Name="PRN" />
+            </Principal>
+            <Dependent Role="PurchaseRequisitionItem">
+              <PropertyRef Name="PRN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RepairAuditImage_RepairAuditInfo">
           <End Role="RepairAuditInfo" Type="Self.RepairAuditInfo" Multiplicity="1" />
           <End Role="RepairAuditImage" Type="Self.RepairAuditImage" Multiplicity="*" />
@@ -964,6 +1003,8 @@
           <EntitySet Name="MonthlyReport" EntityType="Self.MonthlyReport" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSample" EntityType="Self.PathSample" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PathSampleOrder" EntityType="Self.PathSampleOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseRequisition" EntityType="Self.PurchaseRequisition" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseRequisitionItem" EntityType="Self.PurchaseRequisitionItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairAuditImage" EntityType="Self.RepairAuditImage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairAuditInfo" EntityType="Self.RepairAuditInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RepairCompletionImage" EntityType="Self.RepairCompletionImage" Schema="dbo" store:Type="Tables" />
@@ -1081,6 +1122,10 @@
             <End Role="PathSample" EntitySet="PathSample" />
             <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
           </AssociationSet>
+          <AssociationSet Name="FK_PurchaseRequisitionItem_PurchaseRequisition" Association="Self.FK_PurchaseRequisitionItem_PurchaseRequisition">
+            <End Role="PurchaseRequisition" EntitySet="PurchaseRequisition" />
+            <End Role="PurchaseRequisitionItem" EntitySet="PurchaseRequisitionItem" />
+          </AssociationSet>
           <AssociationSet Name="FK_RepairAuditImage_RepairAuditInfo" Association="Self.FK_RepairAuditImage_RepairAuditInfo">
             <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
             <End Role="RepairAuditImage" EntitySet="RepairAuditImage" />
@@ -1148,6 +1193,8 @@
           <EntitySet Name="MonthlyReport" EntityType="Bimfm_MinSheng_MISModel.MonthlyReport" />
           <EntitySet Name="PathSample" EntityType="Bimfm_MinSheng_MISModel.PathSample" />
           <EntitySet Name="PathSampleOrder" EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" />
+          <EntitySet Name="PurchaseRequisition" EntityType="Bimfm_MinSheng_MISModel.PurchaseRequisition" />
+          <EntitySet Name="PurchaseRequisitionItem" EntityType="Bimfm_MinSheng_MISModel.PurchaseRequisitionItem" />
           <EntitySet Name="RepairAuditImage" EntityType="Bimfm_MinSheng_MISModel.RepairAuditImage" />
           <EntitySet Name="RepairAuditInfo" EntityType="Bimfm_MinSheng_MISModel.RepairAuditInfo" />
           <EntitySet Name="RepairCompletionImage" EntityType="Bimfm_MinSheng_MISModel.RepairCompletionImage" />
@@ -1268,6 +1315,10 @@
           <AssociationSet Name="FK_PathSampleOrder_PathSample" Association="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample">
             <End Role="PathSample" EntitySet="PathSample" />
             <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseRequisitionItem_PurchaseRequisition" Association="Bimfm_MinSheng_MISModel.FK_PurchaseRequisitionItem_PurchaseRequisition">
+            <End Role="PurchaseRequisition" EntitySet="PurchaseRequisition" />
+            <End Role="PurchaseRequisitionItem" EntitySet="PurchaseRequisitionItem" />
           </AssociationSet>
           <AssociationSet Name="FK_RepairAuditImage_RepairAuditInfo" Association="Bimfm_MinSheng_MISModel.FK_RepairAuditImage_RepairAuditInfo">
             <End Role="RepairAuditInfo" EntitySet="RepairAuditInfo" />
@@ -1772,6 +1823,35 @@
           <Property Name="BeaconID" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="PathSample" Relationship="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" FromRole="PathSampleOrder" ToRole="PathSample" />
         </EntityType>
+        <EntityType Name="PurchaseRequisition">
+          <Key>
+            <PropertyRef Name="PRN" />
+          </Key>
+          <Property Name="PRN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="PRUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="PRState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="PRDept" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PRDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="AuditDate" Type="DateTime" Precision="0" />
+          <Property Name="AuditResult" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FileName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PurchaseRequisitionItem" Relationship="Bimfm_MinSheng_MISModel.FK_PurchaseRequisitionItem_PurchaseRequisition" FromRole="PurchaseRequisition" ToRole="PurchaseRequisitionItem" />
+        </EntityType>
+        <EntityType Name="PurchaseRequisitionItem">
+          <Key>
+            <PropertyRef Name="PRIN" />
+          </Key>
+          <Property Name="PRIN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="PRN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="PRIState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Kind" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PRAmount" Type="Double" Nullable="false" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationPurpose" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PurchaseRequisition" Relationship="Bimfm_MinSheng_MISModel.FK_PurchaseRequisitionItem_PurchaseRequisition" FromRole="PurchaseRequisitionItem" ToRole="PurchaseRequisition" />
+        </EntityType>
         <EntityType Name="RepairAuditImage">
           <Key>
             <PropertyRef Name="ImgPath" />
@@ -2195,6 +2275,18 @@
             </Principal>
             <Dependent Role="PathSampleOrder">
               <PropertyRef Name="PSSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PurchaseRequisitionItem_PurchaseRequisition">
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseRequisition" Role="PurchaseRequisition" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.PurchaseRequisitionItem" Role="PurchaseRequisitionItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PurchaseRequisition">
+              <PropertyRef Name="PRN" />
+            </Principal>
+            <Dependent Role="PurchaseRequisitionItem">
+              <PropertyRef Name="PRN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2706,6 +2798,35 @@
                 <ScalarProperty Name="BeaconID" ColumnName="BeaconID" />
                 <ScalarProperty Name="PSSN" ColumnName="PSSN" />
                 <ScalarProperty Name="FPSSN" ColumnName="FPSSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseRequisition">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PurchaseRequisition">
+              <MappingFragment StoreEntitySet="PurchaseRequisition">
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="AuditResult" ColumnName="AuditResult" />
+                <ScalarProperty Name="AuditDate" ColumnName="AuditDate" />
+                <ScalarProperty Name="PRDate" ColumnName="PRDate" />
+                <ScalarProperty Name="PRDept" ColumnName="PRDept" />
+                <ScalarProperty Name="PRState" ColumnName="PRState" />
+                <ScalarProperty Name="PRUserName" ColumnName="PRUserName" />
+                <ScalarProperty Name="PRN" ColumnName="PRN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseRequisitionItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PurchaseRequisitionItem">
+              <MappingFragment StoreEntitySet="PurchaseRequisitionItem">
+                <ScalarProperty Name="ApplicationPurpose" ColumnName="ApplicationPurpose" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="PRAmount" ColumnName="PRAmount" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="Kind" ColumnName="Kind" />
+                <ScalarProperty Name="PRIState" ColumnName="PRIState" />
+                <ScalarProperty Name="PRN" ColumnName="PRN" />
+                <ScalarProperty Name="PRIN" ColumnName="PRIN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
