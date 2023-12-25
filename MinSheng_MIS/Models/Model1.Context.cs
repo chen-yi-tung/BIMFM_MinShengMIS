@@ -33,6 +33,7 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<CompletionReportImage> CompletionReportImage { get; set; }
+        public virtual DbSet<ComputationalStock> ComputationalStock { get; set; }
         public virtual DbSet<DesignDiagrams> DesignDiagrams { get; set; }
         public virtual DbSet<DrawingSubSystemManagement> DrawingSubSystemManagement { get; set; }
         public virtual DbSet<DrawingSystemManagement> DrawingSystemManagement { get; set; }
@@ -70,6 +71,12 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<RepairSupplementaryFile> RepairSupplementaryFile { get; set; }
         public virtual DbSet<RepairSupplementaryInfo> RepairSupplementaryInfo { get; set; }
         public virtual DbSet<ReportImage> ReportImage { get; set; }
+        public virtual DbSet<Stock> Stock { get; set; }
+        public virtual DbSet<StockInRecord> StockInRecord { get; set; }
+        public virtual DbSet<StockOutItem> StockOutItem { get; set; }
+        public virtual DbSet<StockOutRecord> StockOutRecord { get; set; }
+        public virtual DbSet<StoresRequisition> StoresRequisition { get; set; }
+        public virtual DbSet<StoresRequisitionItem> StoresRequisitionItem { get; set; }
         public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<SystemManagement> SystemManagement { get; set; }
