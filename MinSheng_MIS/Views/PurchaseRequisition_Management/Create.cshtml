@@ -35,70 +35,26 @@
             max-height: calc(100vh - var(--navbar-height) - 7rem);
         }
     }
-
-    @@media only screen and (min-width:1200px) {
-        .edit-area {
-            padding: 16px 0;
-            .form
-
-    {
-        display: flex !important;
-        flex-direction: row;
-        padding: 16px 0;
-    }
-
-    }
-
-    .input_area {
-        max-width: 1100px !important;
-        display: flex;
-        justify-content: left;
-    }
-
-    }
-
-    @@media only screen and (min-width:768px) and (max-width:1199px) {
-        .edit-area {
-            padding: 16px 0;
-            .form
-
-    {
-        display: flex !important;
-        flex-direction: row;
-        padding: 16px 0;
-    }
-
-    }
-
-    .input_area {
-        max-width: 1100px !important;
-        display: flex;
-        justify-content: left;
-    }
-
-    }
 </style>
 
 <h2>@ViewBag.Title</h2>
 
-<section class="input_area" style="max-width: 855px;margin: auto;">
-    <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
-        <form class="form d-lg-contents">
-            <div class="form-group w-lg-250px required">
-                <label for="PRUserName">請購人</label>
-                <select class="form-select" name="PRUserName" id="PRUserName" required>
-                    <option value="">請選擇</option>
-                </select>
-            </div>
+<div class="edit-area bg-transparent flex-md-row" style="gap: 1rem 2rem;">
+    <form class="form d-lg-contents">
+        <div class="form-group w-lg-45 w-xl-250px required">
+            <label for="PRUserName">請購人</label>
+            <select class="form-select" name="PRUserName" id="PRUserName" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
 
-            <div class="form-group w-lg-250px">
-                <label for="PRDept">請購部門</label>
-                <input class="form-control" id="PRDept" name="PRDept" type="text" maxlength="20" />
-            </div>
-        </form>
-    </div>
+        <div class="form-group w-lg-45 w-xl-250px">
+            <label for="PRDept">請購部門</label>
+            <input class="form-control" id="PRDept" name="PRDept" type="text" maxlength="20" />
+        </div>
+    </form>
+</div>
 
-</section>
 <section class="datatable-input-area mt-3">
     <button type="button" class="btn btn-search align-self-start" id="create-item">+ 新增</button>
     <form class="d-contents">
@@ -172,8 +128,8 @@
         this.count = 0;
         this.data = {};
         this.init = async function () {
-            await pushSelect("PRUserName", '@Url.Action("AllMyName","DropDownList")');
-            await pushSelect("Kind", '@Url.Action("StockType","DropDownList")');
+            await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
+            await pushSelect("Kind", '@Url.Action("StockType", "DropDownList")');
             await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
 
             $("#item-area").on("click", ".btn-delete-item", function (e) {

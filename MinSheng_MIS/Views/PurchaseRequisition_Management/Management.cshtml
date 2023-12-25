@@ -104,16 +104,15 @@
     function Initialize_DataGrid(getGridJSON) {
         let dg = new DG();
         DataGrid = dg.init("#DataGrid", {
-            //url: getGridJSON,
+            url: getGridJSON,
             data: fakeData,
             method: 'POST',
             queryParams: getQueryParams(),
-            idField: 'ImgNum',
-            //sortName: 'ImgNum',
+            idField: 'PRN',
+            //sortName: 'PRN',
             frozenColumns: [[
                 dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
-                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                //dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "審核", "edit")),
             ]],
             columns: [[
                 dg.column('PRState', '請購單狀態', 130),
@@ -128,7 +127,7 @@
             ]]
         })
         dg.addEvent("read", function (row, i) {
-            window.open(`${baseUrl}/Read/${row.PRN}`, "_self")
+            window.open(`${baseUrl}/Read/${row.PRN}`, "_blank")
         })
         dg.addEvent("edit", function (row, i) {
             window.open(`${baseUrl}/Edit/${row.PRN}`, "_self")

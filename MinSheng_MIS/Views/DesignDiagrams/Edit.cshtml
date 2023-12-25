@@ -33,7 +33,12 @@
             <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
                 <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
                     <label for="DesignDiagrams" type="button"
-                        class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">選擇檔案</label>
+                        class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
+                        選擇檔案
+                        <input id="DesignDiagrams" name="DesignDiagrams" type="file" class="form-file-input">
+                        <input type="checkbox" id="_checkImgPath" name="_checkImgPath" class="form-file-input" required
+                            oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的設計圖說' : '')">
+                    </label>
                 </div>
                 <div id="ImgPathGroup"
                     class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
@@ -41,9 +46,7 @@
                     <button type="button" class="btn-delete-item flex-shrink-0" id="ImgPathDelete"></button>
                 </div>
             </div>
-            <input id="DesignDiagrams" name="DesignDiagrams" type="file" class="form-file-input">
-            <input type="checkbox" id="_checkImgPath" name="_checkImgPath" class="form-file-input" required
-                oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的設計圖說' : '')">
+
         </div>
 
     </form>
@@ -176,4 +179,3 @@
         })
     }
 </script>
-

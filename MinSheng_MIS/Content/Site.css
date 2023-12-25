@@ -169,8 +169,28 @@ h2 {
         width: 33% !important;
     }
 
+    .w-lg-40 {
+        width: 40% !important;
+    }
+
+    .w-lg-45 {
+        width: 45% !important;
+    }
+
+    .w-lg-48 {
+        width: 48% !important;
+    }
+
     .w-lg-50 {
         width: 50% !important;
+    }
+
+    .w-lg-60 {
+        width: 60% !important;
+    }
+
+    .w-lg-64 {
+        width: 64% !important;
     }
 
     .w-lg-75 {
@@ -183,14 +203,6 @@ h2 {
 
     .w-lg-auto {
         width: auto !important;
-    }
-
-    .w-lg-60 {
-        width: 60% !important;
-    }
-
-    .w-lg-40 {
-        width: 40% !important;
     }
 
     .w-lg-90px {

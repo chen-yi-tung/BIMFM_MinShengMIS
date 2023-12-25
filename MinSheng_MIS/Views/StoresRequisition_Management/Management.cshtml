@@ -69,13 +69,14 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
+<script src="/Scripts/datagrid-management.js"></script>
 <script src="../../Scripts/tool.js"></script>
 <script>
     var getGridJSON = '@Url.Action("StoresRequisition_Management", "Datagrid")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    var baseUrl = "/StoresRequisition_Management/";
-
-    const fakedata = [
+    const fakeData = [
         {
             SRState: "1",
             SRStateName: "待審核",
@@ -104,87 +105,39 @@
     });
 
     function Initialize_DataGrid(getGridJSON) {
-
-        $('#DataGrid').datagrid({
-
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
             url: getGridJSON,
-            data: fakedata,
-            method: 'GET',
+            data: fakeData,
+            method: 'POST',
             queryParams: getQueryParams(),
-            rownumbers: true,
-            idField: 'SRState',
-            //sortName: 'SRState',
-            remoteSort: false,
-            sortOrder: 'asc',
-            fit: true,
+            idField: 'SRSN',
+            //sortName: 'SRSN',
             frozenColumns: [[
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_edit', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
-                    }
-                },
-                {
-                    field: '_audit', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = row.MaintainState == "待審核" ? '' : 'disabled';
-                        return `<button class="btn btn-datagrid" onclick="onAudit(${index})" ${disabled}>審核</button>`;
-                    }
-                }
+                dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit", { disabled: row.MaintainState != "待審核" })),
             ]],
             columns: [[
-                { field: 'SRState', title: '狀態編碼', align: 'center', width: 180, sortable: true, hidden: true },
-                { field: 'SRStateName', title: '狀態', align: 'center', width: 160, sortable: true },
-                { field: 'SRSN', title: '單號', align: 'center', width: 180, sortable: true },
-                { field: 'SRDateTime', title: '申請日期', align: 'center', width: 240, sortable: true },
-                { field: 'SRName', title: '申請人員', align: 'center', width: 180, sortable: true },
-                { field: 'SRDept', title: '申請部門', align: 'center', width: 200, sortable: true },
-                { field: 'AuditName', title: '審核人員', align: 'center', width: 180, sortable: true },
-                { field: 'AuditDate', title: '審核日期', align: 'center', width: 240, sortable: true }
-            ]],
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-
-            pagination: true,
-            pagePosition: 'bottom',
-            pageSize: 10
-        });
-        //------------Pager --------------------------------------------------
-        var pager = $('#DataGrid').datagrid('getPager');
-        $(pager).pagination({
-            pageSize: 10,
-            showPageList: true,
-            pageList: [10, 20, 50],
-            beforePageText: '第',
-            afterPageText: '頁，共 {pages} 頁',
-            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-        });
-    }
-
-    // datagrid onClick Function
-    function onDetail(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + `/${row.SRSN}`;
-        window.open(url, "_self");
-    }
-
-    function onEdit(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit' + `/${row.SRSN}`;
-        window.open(url, "_self");
-    }
-
-    function onAudit(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Audit' + `/${row.SRSN}`;
-        window.open(url, "_self");
+                dg.column('SRState', '狀態編碼', 180),
+                dg.column('SRStateName', '狀態', 160),
+                dg.column('SRSN', '單號', 180),
+                dg.column('SRDateTime', '申請日期', 240),
+                dg.column('SRName', '申請人員', 180),
+                dg.column('SRDept', '申請部門', 200),
+                dg.column('AuditName', '審核人員', 180),
+                dg.column('AuditDate', '審核日期', 240),
+            ]]
+        })
+        dg.addEvent("read", function (row, i) {
+            window.open(`${baseUrl}/Read/${row.SRSN}`, "_blank")
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(`${baseUrl}/Edit/${row.SRSN}`, "_self")
+        })
+        dg.addEvent("audit", function (row, i) {
+            window.open(`${baseUrl}/Audit/${row.SRSN}`, "_self")
+        })
     }
 
     //search area onClick Function
@@ -194,13 +147,11 @@
         });
 
         $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
+            DataGrid.datagrid('load', getQueryParams());
         });
 
         $("#create").click(function () {
-            let url = baseUrl + 'Create';
-            window.open(url, "_self");
+            window.open(`${baseUrl}/Create`, "_self");
         });
     }
 </script>
-

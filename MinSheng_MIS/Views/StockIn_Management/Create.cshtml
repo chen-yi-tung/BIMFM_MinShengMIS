@@ -69,6 +69,10 @@
     </div>
 </form>
 
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增及列印</button>
+</div>
 
 
 <script src="/Scripts/datatable.js"></script>
@@ -250,6 +254,14 @@
             console.log("按下入庫鈕");
             //StockInToCreate2()
         })
+
+        $("#back").click(function () {
+            history.back();
+        })
+
+        $("#submit").click(function () {
+            save();
+        })
     }
     
     function readData(url = null) {
@@ -286,14 +298,13 @@
         }
     }
 
-    //入庫跳轉到CreateStockin
-    @* function StockInToCreate2() {
-        let url = '@Url.Action("CreateStockIn", "StockIn_Management")';
-        window.location.href = url;
-    }; *@
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("todo save():", isValidity)
+        if (!isValidity) return;
+    }
 
     window.onload = function () {
-
         readData(apiUrl);
     }
 

@@ -1,18 +1,8 @@
 ﻿@{
-    ViewBag.Title = "編輯請購";
+    ViewBag.Title = "請購審核";
 }
 
 <style>
-    #ImgPathName{
-        color:black
-    }
-    h2 {
-        text-align: center;
-        color: white;
-        font-weight: 500;
-        font-size: 46px;
-    }
-
     .datatable-input-area {
         display: flex;
         flex-direction: column;
@@ -23,58 +13,16 @@
         gap: 1rem;
     }
 
-        .datatable-input-area .edit-area {
-            max-height: 30rem;
-            padding: 1rem;
-            display: block;
-        }
-
-        .datatable-input-area .datatable, .datatable-input-area .datatable-body {
-            max-height: 28rem;
-            margin: 0;
-        }
-
-    .status_section {
-        background: linear-gradient(180deg, #E9F7FF 0%, #DCE6FF 100%);
-        .col-form-label
-
-    {
-        color: #5B5B5B;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
- 
+    .datatable-input-area .edit-area {
+        max-height: 30rem;
+        padding: 1rem;
+        display: block;
     }
 
-    .custom-select {
-        border: 1px solid #ced4da;
-        border-radius: 5px;
-        height:38px
-    }
-
-    .radio_section {
-        .status_radio
-
-    {
-        margin: 0 5px
-    }
-
-    }
-
-    .upload_btn {
-        border: none;
-        background: #44BCC2;
-        color: white;
-        height: 40px;
-        border-radius: 5px;
-        width: 100px !important;
-
-
-    }
-        .upload_btn:hover {
-            background: #3daaaf;
-            color: white;
-        }
+    .datatable-input-area .datatable,
+    .datatable-input-area .datatable-body {
+        max-height: 28rem;
+        margin: 0;
     }
 
     @@media (max-width:991.98px) {
@@ -82,105 +30,37 @@
             max-height: calc(100vh - var(--navbar-height) - 5rem);
         }
 
-        .datatable-input-area .datatable, .datatable-input-area .datatable-body {
+        .datatable-input-area .datatable,
+        .datatable-input-area .datatable-body {
             max-height: calc(100vh - var(--navbar-height) - 7rem);
         }
     }
 
-    @@media only screen and (min-width:1200px) {
-        .status_section {
-            max-width: 700px;
-            margin: 3% auto;
-            padding: 3%;
-        }
-        .col-form-label {
-            justify-content: end;
-            padding: 0;
-            align-self: self-start;
-        }
-        .edit-area {
-            padding: 16px 0;
-            .form
-
-    {
-        display: flex !important;
-        flex-direction: row;
-        padding: 16px 0;
-    }
-
-    }
-
-    .input_area {
-        max-width: 1100px !important;
-        display: flex;
-        justify-content: left;
-    }
-
-    }
-
-    @@media only screen and (min-width:768px) and (max-width:1199px) {
-        .status_section {
-            margin: 3% auto;
-            padding: 3%;
-        }
-        .col-form-label {
-            justify-content: end;
-            padding: 0;
-        }
-        .edit-area {
-            padding: 16px 0;
-            .form
-
-    {
-        display: flex !important;
-        flex-direction: row;
-        padding: 16px 0;
-    }
-
-    }
-
-    .input_area {
-        max-width: 1100px !important;
-        display: flex;
-        justify-content: left;
-    }
-
-    }
-
-    @@media only screen and (max-width: 767px) {
-        .status_section {
-            margin: 3% auto;
-            padding: 3%;
-        }
-        .col-form-label {
-            padding: 0 0 5px 16px;
+    @@media (min-width: 992px) {
+        .edit-area .form {
+            align-items: flex-start;
         }
     }
 </style>
-@*<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">*@
-
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <h2>@ViewBag.Title</h2>
 
-<section class="input_area" style="max-width: 855px;margin: auto;">
-    <div class="edit-area bg-transparent flex-wrap  justify-content-lg-between" style="gap: 1rem 2rem;">
-        <form class="form d-lg-contents">
-            <div class="form-group w-lg-250px col required">
-                <label for="PRUserName">請購人</label>
-                <select class="form-select" name="PRUserName" id="PRUserName" required>
-                    <option value="">請選擇</option>
-                </select>
-            </div>
+<div class="edit-area bg-transparent flex-md-row" style="gap: 1rem 2rem;">
+    <form class="form d-lg-contents">
+        <div class="form-group w-lg-45 w-xl-250px required">
+            <label for="PRUserName">請購人</label>
+            <select class="form-select" name="PRUserName" id="PRUserName" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
 
-            <div class="form-group w-lg-250px col">
-                <label for="PRDept">請購部門</label>
-                <input class="form-control" id="PRDept" name="PRDept" type="text" maxlength="20" />
-            </div>
-        </form>
-    </div>
+        <div class="form-group w-lg-45 w-xl-250px">
+            <label for="PRDept">請購部門</label>
+            <input class="form-control" id="PRDept" name="PRDept" type="text" maxlength="20" />
+        </div>
+    </form>
+</div>
 
-</section>
 <section class="datatable-input-area mt-3">
     <button type="button" class="btn btn-search align-self-start" id="create-item">+ 新增</button>
     <form class="d-contents">
@@ -206,21 +86,21 @@
                                 </td>
                                 <td id="d-ItemName">
                                     <input class="form-control" type="text" id="ItemName" name="ItemName" maxlength="50"
-                                           required />
+                                        required />
                                 </td>
                                 <td id="d-Size">
                                     <input class="form-control" type="text" id="Size" name="Size" maxlength="50" />
                                 </td>
                                 <td id="d-PRAmount">
                                     <input class="form-control" type="number" id="PRAmount" name="PRAmount" min="1"
-                                           value="1" required />
+                                        value="1" required />
                                 </td>
                                 <td id="d-Unit">
                                     <select class="form-select" id="Unit" name="Unit" required></select>
                                 </td>
                                 <td id="d-ApplicationPurpose">
                                     <input class="form-control" type="text" id="ApplicationPurpose"
-                                           name="ApplicationPurpose" maxlength="200" />
+                                        name="ApplicationPurpose" maxlength="200" />
                                 </td>
                                 <td id="d-_delete" class="p-1 pt-2">
                                     <button type="button" class="btn-delete-item"></button>
@@ -234,57 +114,27 @@
     </form>
 </section>
 
-
-<form class="status_section">
-    <div class="form-group row mb-3">
-        <label class="col-xl-4 col-lg-4 col-md-4 col-12 col-form-label" for="PRState">請購單狀態</label>
-        <div class="col-xl-8 col-lg-8 col-md-8col-12 ">
-            <select id="PRState" name="PRState" class="custom-select">
+<div class="edit-area edit-area-small">
+    <form class="form">
+        <div class="form-group d-lg-contents">
+            <label for="PRState">請購單狀態</label>
+            <select id="PRState" name="PRState" class="form-select">
                 <option value="wait">待送審</option>
                 <option value="sent">已送審</option>
                 <option value="done">審核完成</option>
             </select>
         </div>
-    </div>
-    <div class="form-group row mb-3">
-        <label for="AuditDate" class="col-xl-4 col-lg-4 col-md-4 col-12  col-form-label">審核日期</label>
-        <div class="col-xl-8 col-lg-8 col-md-8col-12 ">
-            <input id="AuditDate" name="AuditDate" placeholder="請選擇日期" type="date" class="form-control">
+        <div class="form-group d-lg-contents">
+            <label for="AuditDate">審核日期</label>
+            <input id="AuditDate" name="AuditDate" class="form-control" placeholder="請選擇日期" type="date">
         </div>
-    </div>
-    <div class="form-group row mb-3">
-        <label for="AuditResult" class="col-xl-4 col-lg-4 col-md-4 col-12  col-form-label">審核結果說明</label>
-        <div class="col-xl-8 col-lg-8 col-md-8col-12 ">
-            <textarea id="AuditResult" name="AuditResult" cols="40" rows="5" class="form-control"></textarea>
+        <div class="form-group d-lg-contents">
+            <label for="AuditResult">審核結果說明</label>
+            <textarea class="w-100" name="AuditResult" id="AuditResult" rows="5" maxlength="256"></textarea>
         </div>
-    </div>
-    @*<div class="form-group row">
-            <label for="formFile" class="col-xl-4 col-lg-4 col-md-4 col-12  col-form-label">相關文件</label>
-            <div class="col-xl-8 col-lg-8 col-md-8col-12 ">
-                <button class="upload_btn" id="formFile">選擇檔案</button>
-
-            </div>
-        </div>*@
-
-<div class="form-group row ">
-    <label class="col-xl-4 col-lg-4 col-md-4 col-12  col-form-label">相關文件</label>
-    <div class="col-xl-8 col-lg-8 col-md-8col-12 ">
-        <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
-            <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                <label for="DesignDiagrams" type="button" class="btn upload_btn w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
-                    選擇檔案
-                </label>
-            </div>
-            <div id="ImgPathGroup"
-                 class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
-                <div id="ImgPathName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
-                <button type="button" class="btn-delete-item flex-shrink-0" id="ImgPathDelete"></button>
-            </div>
-        </div>
-        <input id="DesignDiagrams" name="DesignDiagrams" type="file" class="form-file-input" required>
-    </div>
-    </div>
-</form>
+        <div id="FileUploader"></div>
+    </form>
+</div>
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
@@ -296,18 +146,27 @@
 <script>
 
     let sampleTr;
+    let fileUploader;
 
     $(async function () {
+        pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
         addButtonEvent();
         sampleTr = new SampleTr();
+        fileUploader = new FileUploader({
+            container: "#FileUploader",
+            className: "form-group d-lg-contents",
+            buttonAreaClassName: "edit-button-area position-relative justify-content-start align-items-start mt-1 flex-wrap",
+            label: "相關文件",
+            id: "File"
+        })
     })
 
     function SampleTr() {
         this.count = 0;
         this.data = {};
         this.init = async function () {
-            await pushSelect("PRUserName", '@Url.Action("AllMyName","DropDownList")');
-            await pushSelect("Kind", '@Url.Action("StockType","DropDownList")');
+            await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
+            await pushSelect("Kind", '@Url.Action("StockType", "DropDownList")');
             await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
 
             $("#item-area").on("click", ".btn-delete-item", function (e) {
@@ -330,9 +189,48 @@
     }
 
     function save() {
+        //重置自訂驗證錯誤訊息
+        getAllParams().forEach((e) => {
+            e.setCustomValidity('');
+        })
+        //自訂驗證錯誤
+        if (!fileUploader.checkAllExtension()) {
+            fileUploader.setCustomValidity("請上傳指定格式")
+        }
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("todo save():", isValidity)
+        console.log("isValidity():", isValidity)
         if (!isValidity) return;
+
+        var form = new FormData();
+        form.append("PRState", document.getElementById("PRState").value);
+        form.append("AuditDate", document.getElementById("AuditDate").value);
+        form.append("AuditResult", document.getElementById("AuditResult").value);
+        if (fileUploader.hasFile()) {
+            form.append("AFile", fileUploader.getFile());
+        }
+        console.log(Object.fromEntries(form.entries()));
+
+        return;
+        $.ajax({
+            url: '@Url.Action("EditPurchaseRequisition", "PurchaseRequisition_Management")',
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "修改成功！",
+                onHide: () => { window.location.href = "/PurchaseRequisition_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `修改失敗！` + `${res.responseText}` })
+        }
     }
 
     function addButtonEvent() {
@@ -345,70 +243,5 @@
         $("#submit").click(function () {
             save();
         });
-    }
-
-
-</script>
-
-<script>
-    $(function () {
-        addButtonEvent();
-        pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
-    });
-
-    function save() {
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity():", isValidity)
-        if (!isValidity) return;
-
-        var form = new FormData();
-        form.append("ImgName", document.getElementById("ImgName").value);
-        form.append("ImgType", document.getElementById("ImgType").value);
-        var files = $("#DesignDiagrams").get(0).files;
-        if (files.length > 0) {
-            form.append("DesignDiagrams", files[0]);
-        }
-        console.log(Object.fromEntries(form.entries()));
-        $.ajax({
-            url: '@Url.Action("CreateDesignDiagrams", "DesignDiagrams")',
-            data: form,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/DesignDiagrams/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
-        }
-    }
-
-    function addButtonEvent() {
-        $("#DesignDiagrams").change(function (e) {
-            console.log(this.files);
-            if (this.files && this.files.length !== 0) {
-                let file = this.files[0];
-                $("#ImgPathName").text(file.name);
-                $("#ImgPathGroup").removeClass('d-none');
-            }
-        })
-
-        $("#ImgPathDelete").click(function () {
-            $("#DesignDiagrams").val('');
-            $("#ImgPathName").text('');
-            $("#ImgPathGroup").addClass('d-none');
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
     }
 </script>
