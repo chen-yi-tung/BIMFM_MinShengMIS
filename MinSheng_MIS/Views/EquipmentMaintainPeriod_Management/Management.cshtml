@@ -2,10 +2,13 @@
     ViewBag.Title = "設備保養週期管理";
 }
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+@section styles {
+    @Html.Partial("DataGridScripts", true)
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -47,17 +50,11 @@
         <div class="form-group">
             <label for="ESN">設備編號</label>
             <input class="form-control" id="ESN" name="ESN" type="text" />
-            @*<select class="form-select" name="ESN" id="ESN">
-            <option value="">請選擇</option>
-            </select>*@
         </div>
 
         <div class="form-group">
             <label for="EName">設備名稱</label>
             <input class="form-control" id="EName" name="EName" type="text" />
-            @*<select class="form-select" name="EName" id="EName">
-            <option value="">請選擇</option>
-            </select>*@
         </div>
 
         <div class="form-group">
@@ -88,11 +85,12 @@
 <div class="d-flex justify-content-center mt-3 mb-5" style="gap:1rem">
     <button type="button" class="btn btn-search" id="save">儲存本頁變更</button>
 </div>
-<script src="../../Scripts/tool.js"></script>
-<script src="/Scripts/AreaFloorEvent.js"></script>
-<script>
 
-    var baseUrl = "/EquipmentMaintainPeriod_Management/";
+
+<script>
+    var getGridJSON = '@Url.Action("EquipmentMaintainPeriod_Management", "Datagrid")';
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
 
     const fakeData = [
         {
@@ -113,9 +111,6 @@
         }
     ]
 
-
-
-    var getGridJSON = '@Url.Action("EquipmentMaintainPeriod_Management", "Datagrid")';
     $(async function () {
         await AreaFloorEvent();
         await pushSelect("System", '@Url.Action("System", "DropDownList")');
