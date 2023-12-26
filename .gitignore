@@ -400,3 +400,5 @@ FodyWeavers.xsd
 # remove suo
 git rm --cached *.suo
 git commit -m "Delete suo file from repository"
+/MinSheng_MIS/Files/MonthlyReport
+/MinSheng_MIS/Files/DesignDiagrams

@@ -17,9 +17,8 @@
 <script src="/Scripts/datatable.js"></script>
 <script>
     const MRSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
-    let apiUrl = null;
-
+    let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
+    debugger;
     const fakeData = {
         MRSN: "1",
         ReportTitle: "2023-5月月報",
@@ -44,7 +43,7 @@
     })
 
     function readData(url = null) {
-
+        debugger;
         url == null ? onSuccess(fakeData) :
             $.ajax({
                 url: url,
@@ -70,7 +69,8 @@
         })
         $("#delete").click(function () {
             createDeleteDialog({
-                url: '@Url.Action("DeleteMonthlyReport", "MonthlyReport_Management")?MRSN=' + MRSN,
+                url: '@Url.Action("Delete_MonthlyReport", "MonthlyReport_Management")?MRSN=' + MRSN,
+                type: "DELETE",
                 data: MRSN,
                 onSuccess() {
                     window.location.href = '@Url.Action("Management", "MonthlyReport_Management")';
