@@ -43,8 +43,6 @@
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.MonthlyReport" Width="1.5" PointX="20.75" PointY="21.25" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PathSample" Width="1.5" PointX="12.75" PointY="15.75" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" Width="1.5" PointX="15" PointY="14.625" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PurchaseRequisition" Width="1.5" PointX="17.75" PointY="14.625" />
-        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PurchaseRequisitionItem" Width="1.5" PointX="20" PointY="14.5" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.RepairAuditImage" Width="1.5" PointX="18" PointY="2.875" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.RepairAuditInfo" Width="1.5" PointX="15.75" PointY="2.5" />
         <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.RepairCompletionImage" Width="1.5" PointX="5.25" PointY="11.75" />
@@ -90,7 +88,6 @@
         <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryFile_MaintainSupplementaryInfo" />
         <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_MaintainSupplementaryInfo_MaintainSupplementaryInfo" />
         <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" />
-        <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_PurchaseRequisitionItem_PurchaseRequisition" />
         <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_RepairAuditImage_RepairAuditInfo" />
         <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_RepairSupplementaryFile_RepairSupplementaryInfo" />
         <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_Stock_StockInRecord" />
@@ -100,6 +97,9 @@
         <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_StoresRequisitionItem_StoresRequisition" />
         <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement" />
         <AssociationConnector Association="Bimfm_MinSheng_MISModel.AspNetUserRoles" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PurchaseRequisition" Width="1.5" PointX="19.375" PointY="13" />
+        <EntityTypeShape EntityType="Bimfm_MinSheng_MISModel.PurchaseRequisitionItem" Width="1.5" PointX="21.625" PointY="13" />
+        <AssociationConnector Association="Bimfm_MinSheng_MISModel.FK_PurchaseRequisitionItem_PurchaseRequisition" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

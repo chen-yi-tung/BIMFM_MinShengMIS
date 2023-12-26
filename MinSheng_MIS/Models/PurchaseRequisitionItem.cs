@@ -16,7 +16,6 @@ namespace MinSheng_MIS.Models
     {
         public string PRIN { get; set; }
         public string PRN { get; set; }
-        public string PRIState { get; set; }
         public string Kind { get; set; }
         public string ItemName { get; set; }
         public string Size { get; set; }

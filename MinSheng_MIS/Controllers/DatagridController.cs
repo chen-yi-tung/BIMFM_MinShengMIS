@@ -113,5 +113,16 @@ namespace MinSheng_MIS.Controllers
             return Content(result, "application/json");
         }
         #endregion
+
+        #region PurchaseRequisition_Management 請購管理
+        [HttpPost]
+        public ActionResult PurchaseRequisition_Management(FormCollection form, string sort, string order)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_PurchaseRequisition_Management(form, sort, order);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
+        #endregion
     }
 }
