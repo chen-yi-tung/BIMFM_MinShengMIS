@@ -124,7 +124,6 @@
             error: onError
         })
         function onSuccess(res) {
-            debugger;
             console.log(res);
             if (res.success == false) {
                 createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res.responseText}` })

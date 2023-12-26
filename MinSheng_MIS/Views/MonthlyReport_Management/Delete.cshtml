@@ -18,7 +18,6 @@
 <script>
     const MRSN = '@ViewBag.id';
     let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
-    debugger;
     const fakeData = {
         MRSN: "1",
         ReportTitle: "2023-5月月報",
@@ -43,7 +42,6 @@
     })
 
     function readData(url = null) {
-        debugger;
         url == null ? onSuccess(fakeData) :
             $.ajax({
                 url: url,
