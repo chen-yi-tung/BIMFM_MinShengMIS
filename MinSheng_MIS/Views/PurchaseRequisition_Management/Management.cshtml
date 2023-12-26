@@ -99,17 +99,20 @@
     $(async function () {
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
+        await pushSelect("PRState", '@Url.Action("FormPRState", "DropDownList")');
+        await pushSelect("PRUserName", '@Url.Action("AllMyName","DropDownList")');
     });
 
     function Initialize_DataGrid(getGridJSON) {
         let dg = new DG();
         DataGrid = dg.init("#DataGrid", {
             url: getGridJSON,
-            data: fakeData,
+            //data: fakeData,
             method: 'POST',
             queryParams: getQueryParams(),
             idField: 'PRN',
             //sortName: 'PRN',
+            remoteSort: true,
             frozenColumns: [[
                 dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
                 dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "審核", "edit")),
@@ -120,7 +123,7 @@
                 dg.column('PRDate', '請購申請日期', 200),
                 dg.column('PRUserName', '請購人', 110),
                 dg.column('PRDept', '請購部門', 150),
-                dg.column('EstimatedDate', '預計交期', 200),
+                //dg.column('EstimatedDate', '預計交期', 200),
                 //dg.column('AuditUserID', '審核者', 110),
                 //dg.column('AuditDate', '審核日期', 200),
                 //dg.column('AuditContent', '審核意見', 400),

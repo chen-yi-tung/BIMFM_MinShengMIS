@@ -189,7 +189,8 @@ namespace MinSheng_MIS.Surfaces
         {
             var ValueOption = new Dictionary<string, string>();
             ValueOption.Add("1", "待審核");
-            ValueOption.Add("2", "審核完成");
+            ValueOption.Add("2", "已送審");
+            ValueOption.Add("3", "審核完成");
             return ValueOption;
         }
         #endregion

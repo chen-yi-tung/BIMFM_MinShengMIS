@@ -10,6 +10,8 @@ using System.Drawing.Printing;
 using System.Web.UI.WebControls;
 using MinSheng_MIS.Surfaces;
 using System.Security.Cryptography.X509Certificates;
+using System.Linq.Dynamic.Core;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 
 namespace MinSheng_MIS.Services
 {
@@ -2621,6 +2623,90 @@ namespace MinSheng_MIS.Services
 
             string reString = JsonConvert.SerializeObject(jo);
             return reString;
+        }
+        #endregion
+
+        #region 請購管理
+        public JObject GetJsonForGrid_PurchaseRequisition_Management(System.Web.Mvc.FormCollection form, string sort, string order)
+        {
+            //解析查詢字串
+            var PRState = form["PRState"]?.ToString();
+            var PRN = form["PRN"]?.ToString();
+            var PRUserName = form["PRUserName"]?.ToString();
+            var PRDept = form["PRDept"]?.ToString();
+            var DateFrom = form["DateFrom"]?.ToString();
+            var DateTo = form["DateTo"]?.ToString();
+
+            var rpT = db.PurchaseRequisition.AsQueryable();
+            //查詢請購單狀態
+            if (!string.IsNullOrEmpty(PRState)) rpT = rpT.Where(x => x.PRState == PRState);
+            //查詢單號
+            if (!string.IsNullOrEmpty(PRN)) rpT = rpT.Where(x => x.PRN == PRN);
+            //查詢請購人
+            if (!string.IsNullOrEmpty(PRUserName)) rpT = rpT.Where(x => x.PRUserName == PRUserName);
+            //查詢請購部門 (模糊查詢)
+            if (!string.IsNullOrEmpty(PRDept)) rpT = rpT.Where(x => x.PRDept.Contains(PRDept));
+            //查詢申請日期(起)
+            if (!string.IsNullOrEmpty(DateFrom) && DateTime.Parse(DateFrom) != DateTime.MinValue)
+            {
+                DateTime start = DateTime.Parse(DateFrom);  // 轉為DateTime
+                rpT = rpT.Where(x => x.PRDate >= start);
+            }
+            //查詢申請日期(迄)
+            if (!string.IsNullOrEmpty(DateTo) && DateTime.Parse(DateTo) != DateTime.MinValue)
+            {
+                DateTime end = DateTime.Parse(DateTo);
+                rpT = rpT.Where(x => x.PRDate <= end);
+            }
+
+             // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderByDescending(x => x.PRN);
+
+            //記住總筆數
+            int Total = rpT.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+
+            if (rpT != null || Total > 0)
+            {
+                var StateDics = Surface.PRState();
+                var UserDics = db.AspNetUsers.ToDictionary(k => k.UserName, v => v.MyName);
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "PRState", StateDics[item.PRState] },
+                        { "PRN", item.PRN },
+                        { "PRDate", item.PRDate.ToString("yyyy/MM/dd") },
+                        { "PRUserName", UserDics[item.PRUserName] },
+                        { "PRDept", item.PRDept },
+                    };
+
+                    ja.Add(itemObject);
+                }
+            }
+
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
+
+            return jo;
         }
         #endregion
     }
