@@ -50,6 +50,17 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region MaintainItem_Management 保養項目管理
+        [HttpPost]
+        public ActionResult MaintainItem_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_MaintainItem(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
+        #endregion
+        
         #region EquipmentMaintainPeriod_Management 設備保養週期管理
         [HttpPost]
         public ActionResult EquipmentMaintainPeriod_Management(FormCollection form)
