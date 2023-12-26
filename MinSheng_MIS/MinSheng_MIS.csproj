@@ -1948,6 +1948,7 @@
     <Content Include="Views\InspectionPlan_Management\InformationManagement.cshtml" />
     <Content Include="Views\InspectionPlan_Management\CurrentInformation.cshtml" />
     <Content Include="Views\InspectionPlan_Management\CurrentPosition.cshtml" />
+    <Content Include="Views\Shared\DataGridScripts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

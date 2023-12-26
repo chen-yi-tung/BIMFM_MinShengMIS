@@ -63,12 +63,7 @@
 
         async function onSuccess(res) {
             console.log(res);
-
             $(".datatable-table").append(createTableInner(res, sn))
-
-    @*  for (const [k, v] of Object.entries(res)) {
-                $(`#${k}`).val(v);
-                } *@
         }
         function onError(res) {
             console.log(res);

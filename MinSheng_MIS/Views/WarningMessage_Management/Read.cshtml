@@ -6,7 +6,9 @@
 <script src="/Content/easyui/jquery.min.js"></script>
 <script src="/Content/easyui/jquery.easyui.min.js"></script>
 <style>
-    @*.datatable-easyui.datagrid-wrap{height:100px!important;}*@
+    .datatable-easyui .datagrid-wrap {
+        height: 400px !important;
+    }
 </style>
 
 <h2>@ViewBag.Title</h2>
@@ -82,12 +84,12 @@
     // Function to generate random data
     function generateRandomData() {
         const randomData = [];
-        for (let i = 0; i < 10; i++) { // You can adjust the number of rows as needed
+        for (let i = 0; i < 20; i++) { // You can adjust the number of rows as needed
             randomData.push({
                 FillinDateTime: new Date().toLocaleString(),
                 FillinUserName: "User " + (i + 1),
                 WMState: Math.random() > 0.5 ? "已處理" : "未處理",
-                Memo: "Random Memo " + (i + 1)
+                Memo: "Random Memo Random Memo" + (i + 1)
             });
         }
         return randomData;
@@ -98,11 +100,11 @@
         const randomData = generateRandomData();
 
         $('#DataGrid').datagrid({
+            fit: true,
             data: randomData,
             method: 'GET',
             remoteSort: false,
             sortOrder: 'asc',
-            //fit: true,
             singleSelect: true,
             selectOnCheck: true,
             checkOnSelect: false,

@@ -10,21 +10,18 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="datatable mt-5">
-    @*<div class="datatable-header">保養項目資料</div>*@
     <div class="datatable-body">
         <table class="datatable-table" id="FormDetail"></table>
     </div>
 </div>
-
-@*<section id="InspectionPlanMaintainList"></section>*@
 
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/dataTable/InspectionPlanMaintain.js"></script>
 <script src="/Scripts/ImageDisplay.js"></script>
 <script src="/Scripts/dataTable/EquipmentInfoModal.js"></script>
 <script>
-    const EMFISN = '@ViewBag.EMFISN';
-    @*let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;*@
+    const MMSN = '@ViewBag.MMSN';
+    //let apiUrl = '@Url.Action("ReadBody", "MeetingMinutes_Management")' + `/${MMSN}`;
     let apiUrl = null;
 
     const SerializedName = [
@@ -52,43 +49,7 @@
         TakeTheMinutes: "助理",
         Agenda: "文字內容",
         MeetingContent: "電腦筆記",
-        FilePath: "5月主題.pdf",
-        //InspectionPlanList: [
-        //    {
-        //        "InspectionPlan": {
-        //            "IPSN": "P23022203",
-        //            "IPName": "維修設備E00003",
-        //            "PlanDate": "2023/2/22",
-        //            "PlanState": "巡檢完成",
-        //            "Shift": "2",
-        //            "MyName": "賈皓麟、羅紹齊"
-        //        },
-        //        "InspectionPlanMaintain": {
-        //            "MaintainState": "審核未過",
-        //            "MaintainContent": "好了",
-        //            "MyName": "賈皓麟",
-        //            "MaintainDate": "2023/2/22",
-        //            "ImgPath": []
-        //        },
-        //        "RepairSupplementaryInfo": [
-        //            {
-        //                "MyName": "王大明",
-        //                "SupplementaryDate": "2023/1/15",
-        //                "SupplementaryContent": "OOXX",
-        //                "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
-        //            }
-        //        ],
-        //        "RepairAuditInfo": [
-        //            {
-        //                "MyName": "陳進國",
-        //                "AuditDate": "2023/2/22",
-        //                "AuditResult": "審核未過",
-        //                "AuditMemo": "沒修好",
-        //                "ImgPath": []
-        //            }
-        //        ]
-        //    },
-        //]
+        FilePath: "5月主題.pdf"
     }
 
     function readData(url = null) {
@@ -106,9 +67,6 @@
         function onSuccess(res) {
             console.log(res);
             $("#FormDetail").append(createTableInner(res, SerializedName));
-            InspectionPlanMaintain("#InspectionPlanMaintainList", res.InspectionPlanList);
-
-            ImageDisplay(".datatable-img-item>img");
         }
         function onError(res) {
             console.log(res);

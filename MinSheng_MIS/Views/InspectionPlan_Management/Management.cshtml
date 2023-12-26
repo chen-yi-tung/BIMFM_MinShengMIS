@@ -1,11 +1,12 @@
 ﻿@{
     ViewBag.Title = "巡檢計畫管理";
 }
+@section styles {
+    @Html.Partial("DataGridScripts")
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -75,131 +76,100 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="../../Scripts/tool.js"></script>
-<script>
 
-    var getGridJSON = '@Url.Action("InspectionPlan_Management", "InspectionPlan_Management")';
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("InspectionPlan_Management", "InspectionPlan_Management")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    var baseUrl = "/InspectionPlan_Management/";
+        const fakedata = [{
+            PlanState: "已派工",
+            IPSN: "P23010401",
+            IPName: "A區巡檢計畫",
+            PlanDate: "2023/01/04",
+            Shift: "早班",
+            MyName: "王大明、李泰順",
+            RepairAmount: "2",
+            MaintainAmount: "1",
+        }]
 
-    const fakedata = [{
-        PlanState: "已派工",
-        IPSN: "P23010401",
-        IPName: "A區巡檢計畫",
-        PlanDate: "2023/01/04",
-        Shift: "早班",
-        MyName: "王大明、李泰順",
-        RepairAmount: "2",
-        MaintainAmount: "1",
-    }]
-
-    $(async function () {
-        await pushSelect("PlanState", '@Url.Action("PlanState", "DropDownList")');
-        await pushSelect("Shift", '@Url.Action("Shift", "DropDownList")');
-        await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-    });
-
-    function Initialize_DataGrid(getGridJSON) {
-
-        $('#DataGrid').datagrid({
-
-            url: getGridJSON,
-            //data: fakedata,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            rownumbers: true,
-            idField: 'IPSN',
-            //sortName: 'IPSN',
-            remoteSort: false,
-            sortOrder: 'asc',
-            fit: true,
-            frozenColumns: [[
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_edit', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = row.PlanState == "待執行" ? '' : 'disabled';
-                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})" ${disabled}>編輯</button>`;
-
-                    }
-                },
-                {
-                    field: '_record', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = row.PlanState == "巡檢完成" || row.PlanState == "巡檢未完成" ? '' : 'disabled';
-                        return `<button class="btn btn-datagrid" onclick="onRecord(${index})" ${disabled}>紀錄</button>`;
-                    }
-                }
-            ]],
-            columns: [[
-                { field: 'PlanState', title: '巡檢計畫狀態', align: 'center', width: 150, sortable: true },
-                { field: 'IPSN', title: '計畫編號', align: 'center', width: 110, sortable: true },
-                { field: 'IPName', title: '計畫名稱', align: 'center', width: 250, sortable: true },
-                { field: 'PlanDate', title: '計畫日期', align: 'center', width: 150, sortable: true },
-                { field: 'Shift', title: '巡檢班別', align: 'center', width: 106, sortable: true },
-                { field: 'MyName', title: '巡檢人員', align: 'center', width: 350, sortable: true },
-                { field: 'RepairAmount', title: '維修數量', align: 'center', width: 106, sortable: true },
-                { field: 'MaintainAmount', title: '定期保養數量', align: 'center', width: 146, sortable: true },
-            ]],
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-
-            pagination: true,
-            pagePosition: 'bottom',
-            pageSize: 10
-        });
-        //------------Pager --------------------------------------------------
-        var pager = $('#DataGrid').datagrid('getPager');
-        $(pager).pagination({
-            pageSize: 10,
-            showPageList: true,
-            pageList: [10, 20, 50],
-            beforePageText: '第',
-            afterPageText: '頁，共 {pages} 頁',
-            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-        });
-    }
-
-    // datagrid onClick Function
-    function onDetail(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + `/${row.IPSN}`;
-        window.open(url, "_blank");
-    }
-
-    function onEdit(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit' + `/${row.IPSN}`;
-        window.open(url, "_self");
-    }
-
-    function onRecord(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Record' + `/${row.IPSN}`;
-        window.open(url, "_blank");
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
+        $(async function () {
+            await pushSelect("PlanState", '@Url.Action("PlanState", "DropDownList")');
+            await pushSelect("Shift", '@Url.Action("Shift", "DropDownList")');
+            await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
         });
 
-        $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
-        });
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'IPSN',
+                //sortName: 'IPSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.PlanState != "待執行" })),
+                    dg.frozenColumn('_record', (v, row, i) => dg.eventButton(i, "紀錄", "record", { disabled: !(row.PlanState == "巡檢完成" || row.PlanState == "巡檢未完成") })),
+                ]],
+                columns: [[
+                    dg.column('PlanState', '巡檢計畫狀態', 150),
+                    dg.column('IPSN', '計畫編號', 110),
+                    dg.column('IPName', '計畫名稱', 250),
+                    dg.column('PlanDate', '計畫日期', 150),
+                    dg.column('Shift', '巡檢班別', 106),
+                    dg.column('MyName', '巡檢人員', 350),
+                    dg.column('RepairAmount', '維修數量', 106),
+                    dg.column('MaintainAmount', '定期保養數量', 146)
+                ]]
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.IPSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.IPSN}`, "_self")
+            })
+            dg.addEvent("record", function (row, i) {
+                window.open(`${baseUrl}/Record/${row.IPSN}`, "_blank")
+            })
+        }
 
-        $("#create").click(function () {
-            let url = baseUrl + 'Create';
+        // datagrid onClick Function
+        function onDetail(index) {
+            let row = $('#DataGrid').datagrid('getRows')[index];
+            let url = baseUrl + 'Read' + `/${row.IPSN}`;
+            window.open(url, "_blank");
+        }
+
+        function onEdit(index) {
+            let row = $('#DataGrid').datagrid('getRows')[index];
+            let url = baseUrl + 'Edit' + `/${row.IPSN}`;
             window.open(url, "_self");
-        });
-    }
-</script>
+        }
+
+        function onRecord(index) {
+            let row = $('#DataGrid').datagrid('getRows')[index];
+            let url = baseUrl + 'Record' + `/${row.IPSN}`;
+            window.open(url, "_blank");
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

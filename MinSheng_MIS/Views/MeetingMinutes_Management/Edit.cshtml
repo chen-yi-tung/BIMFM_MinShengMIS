@@ -2,20 +2,16 @@
     ViewBag.Title = "編輯會議記錄";
 }
 <style>
-    .readonly_box {
-        background: #DFDFDF
+    .mm-grid {
+        grid-template-columns: repeat(12, 1fr);
+        gap: 1.5rem;
     }
 
-        .readonly_box:focus {
-            background-color: #DFDFDF;
-            border-color: unset;
-            outline: 0;
-            box-shadow: unset;
+    @@media (max-width: 1200px) {
+        .mm-grid {
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
         }
-
-    .mm-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
     }
 
     .grid-2 {
@@ -47,32 +43,6 @@
     .textbox {
         width: 100% !important;
     }
-
-    .form-required::before, .edit-area .form-group.required label::before, .search-area .form-group.required label::before {
-        content: unset;
-    }
-
-    @@media (max-width: 1200px) {
-        .mm-grid {
-            grid-template-columns: repeat(6, 1fr);
-            gap: 1rem;
-        }
-    }
-
-    @@media only screen and (min-width: 768px) and (max-width: 1199px) {
-        .mm-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-        }
-    }
-
-    @@media only screen and (max-width: 767px) {
-        .mm-grid {
-            grid-template-columns: repeat(1, 1fr);
-            gap: 1rem;
-        }
-    }
- 
 </style>
 
 <h2>@ViewBag.Title</h2>
@@ -80,59 +50,56 @@
 <section>
     <div class="edit-area edit-area-middle px-lg-5 py-lg-4">
         <form class="d-grid mm-grid w-100">
-            <div class="form-group g-col-4 required">
+            <div class="form-group g-col-6 required">
                 <label for="MeetingTopic">會議主題</label>
                 <input class="form-control" id="MeetingTopic" name="MeetingTopic" type="text" required>
             </div>
-
-            <div class="form-group g-col-4 required">
-                <label for="MeetingDate">會議日期</label>
-                <input class="form-control readonly_box" id="MeetingDate" name="MeetingDate" type="date"  required readonly>
-            </div>
-            <div class="form-group g-col-4 required">
-                <label for="MeetingDateStart">會議時間</label>
-                <div class="d-grid grid grid-2">
-                    <input class="form-control readonly_box" id="MeetingDateStart" name="MeetingDateStart" type="time"
-                           placeholder="開始時間" pattern="[0-9]{2}:[0-9]{2}" required  readonly>
-                    <input class="form-control readonly_box" id="MeetingDateEnd" name="MeetingDateEnd" type="time" placeholder="結束時間"
-                           pattern="[0-9]{2}:[0-9]{2}"  required readonly>
-                </div>
-            </div>
-
-            <div class="form-group g-col-4 required">
+            <div class="form-group g-col-6 required">
                 <label for="MeetingVenue">會議地點</label>
                 <input class="form-control" id="MeetingVenue" name="MeetingVenue" type="text" required>
             </div>
-            <div class="form-group g-col-4 required">
+            <div class="form-group g-col-6 required">
+                <label for="MeetingDate">會議日期</label>
+                <input class="form-control" id="MeetingDate" name="MeetingDate" type="date" readonly disabled>
+            </div>
+            <div class="form-group g-col-6 required">
+                <label for="MeetingDateStart">會議時間</label>
+                <div class="d-grid grid grid-2">
+                    <input class="form-control" id="MeetingDateStart" name="MeetingDateStart" type="time"
+                        placeholder="開始時間" pattern="[0-9]{2}:[0-9]{2}" readonly disabled>
+                    <input class="form-control" id="MeetingDateEnd" name="MeetingDateEnd" type="time" placeholder="結束時間"
+                        pattern="[0-9]{2}:[0-9]{2}" readonly disabled>
+                </div>
+            </div>
+
+            <div class="form-group g-col-3 required">
                 <label for="Chairperson">會議主席</label>
                 <input class="form-control" id="Chairperson" name="Chairperson" type="text" required>
             </div>
-            <div class="form-group g-col-4 required">
-                <label for="Participant">與會者</label>
-                <input class="form-control" id="Participant" name="Participant" type="text">
-            </div>
 
-
-
-
-            <div class="form-group g-col-7 required">
-                <label for="ExpectedAttendence">出席狀況</label>
-                <div class="d-grid grid grid-3">
-                    <input class="form-control" id="ExpectedAttendence" name="ExpectedAttendence" type="number"
-                           placeholder="應到" step="1" min="0" required>
-                    <input class="form-control" id="ActualAttendence" name="ActualAttendence" type="number"
-                           placeholder="實到" step="1" min="0" required>
-                    <input class="form-control" id="AbsenteeList" name="AbsenteeList" type="number" placeholder="缺席"
-                           step="1" min="0" required>
-                </div>
-            </div>
-            <div class="form-group g-col-7 required">
+            <div class="form-group g-col-3 required">
                 <label for="TakeTheMinutes">會議紀錄負責人</label>
                 <input class="form-control" id="TakeTheMinutes" name="TakeTheMinutes" type="text" required>
             </div>
+
+            <div class="form-group g-col-6 required">
+                <label for="ExpectedAttendence">出席狀況</label>
+                <div class="d-grid grid grid-3">
+                    <input class="form-control" id="ExpectedAttendence" name="ExpectedAttendence" type="number"
+                        placeholder="應到" step="1" min="0" required>
+                    <input class="form-control" id="ActualAttendence" name="ActualAttendence" type="number"
+                        placeholder="實到" step="1" min="0" required>
+                    <input class="form-control" id="AbsenteeList" name="AbsenteeList" type="number" placeholder="缺席"
+                        step="1" min="0" required>
+                </div>
+            </div>
+
         </form>
         <form class="w-100 d-lg-contents">
-            
+            <div class="form-group w-100 mt-4">
+                <label for="Participant">與會者</label>
+                <input class="form-control" id="Participant" name="Participant" type="text">
+            </div>
             <div class="form-group w-100 mt-4">
                 <label for="Agenda">議題順序</label>
                 <textarea class="w-100" name="Agenda" id="Agenda" rows="5" maxlength="256"></textarea>
@@ -181,7 +148,7 @@
         var fd = new FormData();
         fd.append("MeetingTopic", document.getElementById("MeetingTopic").value);
         fd.append("MeetingDate", document.getElementById("MeetingDate").value);
-
+        
         fd.append("MeetingDateStart", document.getElementById("MeetingDateStart").value);
         fd.append("MeetingDateEnd", document.getElementById("MeetingDateEnd").value);
 
@@ -204,7 +171,7 @@
         }
         console.log(Object.fromEntries(fd.entries()));
         $.ajax({
-            url: '@Url.Action("CreateMonthlyReport", "MonthlyReport_Management")',
+            url: '@Url.Action("EditMonthlyReport", "MonthlyReport_Management")',
             data: fd,
             type: "POST",
             contentType: false,
@@ -215,13 +182,13 @@
         function onSuccess(res) {
             console.log(res);
             createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
+                id: "DialogModal-Success", inner: "儲存成功！",
                 onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
             });
         }
         function onError(res) {
             console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res.responseText}` })
         }
     }
 

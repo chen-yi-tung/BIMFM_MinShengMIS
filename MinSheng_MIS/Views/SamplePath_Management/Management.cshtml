@@ -1,11 +1,13 @@
 ﻿@{
     ViewBag.Title = "巡檢路線模板管理";
 }
+@section styles {
+    @Html.Partial("DataGridScripts")
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -49,121 +51,74 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="../../Scripts/tool.js"></script>
-<script src="/Scripts/AreaFloorEvent.js"></script>
-<script>
 
-    var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("SamplePath_Management", "SamplePath_Management")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    var baseUrl = "/SamplePath_Management/";
+        const fakeData = [
+            {
+                PSSN: "000001",
+                PathTitle: "A棟1F路線",
+                Area: "A棟",
+                Floor: "1F",
+            }
+        ]
 
-    const fakeData = [
-        {
-            PSSN: "000001",
-            PathTitle: "A棟1F路線",
-            Area: "A棟",
-            Floor: "1F",
+        $(async function () {
+            await AreaFloorEvent();
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'PSSN',
+                //sortName: 'PSSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('PSSN'),
+                    dg.column('PathTitle', '巡檢路線模板名稱', 500),
+                    dg.column('Area', '棟別', 350),
+                    dg.column('Floor', '樓層', 200)
+                ]]
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.PSSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.PSSN}`, "_self")
+            })
+            dg.addEvent("delete", function (row, i) {
+                window.open(`${baseUrl}/Delete/${row.PSSN}`, "_self")
+            })
         }
-    ]
 
-    $(async function () {
-        await AreaFloorEvent();
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-    });
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            });
 
-    function Initialize_DataGrid(getGridJSON) {
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
 
-        $('#DataGrid').datagrid({
-
-            url: getGridJSON,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            rownumbers: true,
-            idField: 'PSSN',
-            sortName: 'PSSN',
-            remoteSort: false,
-            sortOrder: 'asc',
-            fit: true,
-            frozenColumns: [[
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_dispatch', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
-                    }
-                },
-                {
-                    field: '_locate', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDelete(${index})">刪除</button>`;
-                    }
-                }
-            ]],
-            columns: [[
-                { field: 'PSSN', title: 'PSSN', hidden: true },
-                { field: 'PathTitle', title: '巡檢路線模板名稱', align: 'center', width: 500, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 350, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 200, sortable: true },
-            ]],
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-
-            pagination: true,
-            pagePosition: 'bottom',
-            pageSize: 10
-        });
-        //------------Pager --------------------------------------------------
-        var pager = $('#DataGrid').datagrid('getPager');
-        $(pager).pagination({
-            pageSize: 10,
-            showPageList: true,
-            pageList: [10, 20, 50],
-            beforePageText: '第',
-            afterPageText: '頁，共 {pages} 頁',
-            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-        });
-    }
-
-    // datagrid onClick Function
-    function onDetail(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + '/' + row.PSSN;
-        window.open(url, "_blank");
-    }
-
-    function onEdit(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit' + '/' + row.PSSN;
-        window.open(url, "_self");
-    }
-
-    function onDelete(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Delete' + '/' + row.PSSN;
-        window.open(url, "_self");
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
-            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
-        });
-
-        $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
-        });
-
-        $("#create").click(function () {
-            let url = baseUrl + 'Create';
-            window.open(url, "_self");
-        });
-    }
-</script>
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

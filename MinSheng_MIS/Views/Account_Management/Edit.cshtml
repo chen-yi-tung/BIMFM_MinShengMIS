@@ -75,7 +75,6 @@
         url == null ? onSuccess(fakeData) :
             $.ajax({
                 url: url,
-                //data: JSON.stringify(jsonData),
                 type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
@@ -110,9 +109,7 @@
                 contentType: false,
                 success: function (response) {
                     console.log(response);
-                    //alert(response);
-                    let url = '@Url.Action("Management", "Account_Management")';
-                    window.location.href = url;
+                    window.location.href = '@Url.Action("Management", "Account_Management")';
                 },
                 error: function (error) {
                     console.log(error);

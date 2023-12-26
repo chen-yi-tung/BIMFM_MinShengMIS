@@ -59,12 +59,13 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="../../Scripts/tool.js"></script>
+<script src="/Scripts/datagrid-management.js"></script>
+<script src="/Scripts/tool.js"></script>
 <script>
 
     var getGridJSON = '@Url.Action("Account_Management", "Datagrid")';
-
-    var baseUrl = "/Account_Management/";
+    var DataGrid;
+    var baseUrl = '/' + window.location.pathname.split('/')[1];
 
     const fakedata = [
         {
@@ -93,73 +94,34 @@
     });
 
     function Initialize_DataGrid(getGridJSON) {
-
-        $('#DataGrid').datagrid({
-
+        let dg = new DG();
+        DataGrid = dg.init("#DataGrid", {
             url: getGridJSON,
-            //data: fakedata,
+            //data: fakeData,
             method: 'POST',
             queryParams: getQueryParams(),
-            rownumbers: true,
             idField: 'UserName',
             //sortName: 'UserName',
-            remoteSort: false,
-            sortOrder: 'asc',
-            fit: true,
             frozenColumns: [[
-                {
-                    field: '_edit', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
-                    }
-                },
-                {
-                    field: '_delete', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDelete(${index})">刪除</button>`;
-                    }
-                }
+                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-delete" })),
             ]],
             columns: [[
-                { field: 'UserName', title: '帳號', align: 'center', width: 200, sortable: true },
-                { field: 'MyName', title: '姓名', align: 'center', width: 180, sortable: true },
-                { field: 'Authority', title: '權限', align: 'center', width: 150, sortable: true },
-                { field: 'Email', title: '信箱', align: 'center', width: 300, sortable: true },
-                { field: 'PhoneNumber', title: '電話', align: 'center', width: 180, sortable: true },
-                { field: 'Apartment', title: '單位', align: 'center', width: 180, sortable: true },
-                { field: 'Title', title: '職稱', align: 'center', width: 180, sortable: true },
-            ]],
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-
-            pagination: true,
-            pagePosition: 'bottom',
-            pageSize: 10
-        });
-        //------------Pager --------------------------------------------------
-        var pager = $('#DataGrid').datagrid('getPager');
-        $(pager).pagination({
-            pageSize: 10,
-            showPageList: true,
-            pageList: [10, 20, 50],
-            beforePageText: '第',
-            afterPageText: '頁，共 {pages} 頁',
-            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-        });
-    }
-
-    // datagrid onClick Function
-    function onEdit(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit' + `/${row.UserName}`;
-        window.open(url, "_self");
-    }
-
-    function onDelete(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Delete' + `/${row.UserName}`;
-        window.open(url, "_self");
+                dg.column('UserName', '帳號', 200),
+                dg.column('MyName', '姓名', 180),
+                dg.column('Authority', '權限', 150),
+                dg.column('Email', '信箱', 300),
+                dg.column('PhoneNumber', '電話', 180),
+                dg.column('Apartment', '單位', 180),
+                dg.column('Title', '職稱', 180),
+            ]]
+        })
+        dg.addEvent("edit", function (row, i) {
+            window.open(`${baseUrl}/Edit/${row.UserName}`, "_blank")
+        })
+        dg.addEvent("delete", function (row, i) {
+            window.open(`${baseUrl}/Delete/${row.UserName}`, "_self")
+        })
     }
 
     //search area onClick Function
@@ -169,12 +131,11 @@
         });
 
         $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
+            DataGrid.datagrid('load', getQueryParams());
         });
 
         $("#create").click(function () {
-            let url = baseUrl + 'Create';
-            window.open(url, "_self");
+            window.open(`${baseUrl}/Create`, "_self");
         });
     }
 </script>
