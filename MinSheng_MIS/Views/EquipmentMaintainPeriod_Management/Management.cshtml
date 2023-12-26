@@ -86,182 +86,135 @@
     <button type="button" class="btn btn-search" id="save">儲存本頁變更</button>
 </div>
 
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("EquipmentMaintainPeriod_Management", "Datagrid")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-<script>
-    var getGridJSON = '@Url.Action("EquipmentMaintainPeriod_Management", "Datagrid")';
-    var DataGrid;
-    var baseUrl = '/' + window.location.pathname.split('/')[1];
+        const fakeData = [
+            {
+                EMISN: "000003",
+                IsEnable: 1,
+                Area: "A棟",
+                Floor: "1F",
+                System: "處理",
+                SubSystem: "前處理",
+                ESN: "E00001",
+                EName: "除物皮帶輸送機",
+                MISN: "E00001_000001",
+                MIName: "軸承潤滑",
+                Unit: "月",
+                Period: "1",
+                LastTime: "2022/12/01",
+                NextTime: "2023/01/01",
+            }
+        ]
 
-    const fakeData = [
-        {
-            EMISN: "000003",
-            IsEnable: 1,
-            Area: "A棟",
-            Floor: "1F",
-            System: "處理",
-            SubSystem: "前處理",
-            ESN: "E00001",
-            EName: "除物皮帶輸送機",
-            MISN: "E00001_000001",
-            MIName: "軸承潤滑",
-            Unit: "月",
-            Period: "1",
-            LastTime: "2022/12/01",
-            NextTime: "2023/01/01",
-        }
-    ]
-
-    $(async function () {
-        await AreaFloorEvent();
-        await pushSelect("System", '@Url.Action("System", "DropDownList")');
-        const Systems = document.getElementById('System')
-        Systems.addEventListener("change", function () {
-            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-        });
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-        addSaveClickEvent();
-    });
-
-    function Initialize_DataGrid(getGridJSON) {
-
-        $('#DataGrid').datagrid({
-
-            url: getGridJSON,
-            method: 'POST',
-            //data: fakeData,
-            queryParams: getQueryParams(),
-            rownumbers: true,
-            idField: 'EMISN',
-            sortName: 'EMISN',
-            remoteSort: false,
-            //sortOrder: 'desc',
-            fit: true,
-            frozenColumns: [[
-                {
-                    field: '_edit', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onEdit(${index})">編輯</button>`;
-                    }
-                },
-                {
-                    field: '_locate', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
-                        //return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
-                    }
-                }
-            ]],
-            columns: [[
-                { field: 'EMISN', title: 'EMISN', hidden: true },
-                {
-                    field: 'IsEnable', title: '啟用狀態', align: 'center', width: 100, sortable: true,
-                    formatter: function (val, row, index) {
-                        return `<input type="checkbox" class="form-check-input check-item" data-index="${index}" ${!!val ? "checked" : ""}/>`;
-                    }
-                },
-
-                { field: 'Area', title: '棟別', align: 'center', width: 130, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
-
-                { field: 'System', title: '系統別', align: 'center', width: 100, sortable: true },
-                { field: 'SubSystem', title: '子系統別', align: 'center', width: 120, sortable: true },
-
-                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
-                { field: 'EState', title: '設備狀態', align: 'center', width: 100, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
-
-                { field: 'MISN', title: '保養項目編號', align: 'center', width: 130, sortable: true },
-                { field: 'MIName', title: '項目名稱', align: 'center', width: 150, sortable: true },
-
-                { field: 'Unit', title: '保養週期單位', align: 'center', width: 130, sortable: true },
-                { field: 'Period', title: '保養週期', align: 'center', width: 100, sortable: true },
-
-                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 150, sortable: true },
-                { field: 'NextTime', title: '最近應保養日期', align: 'center', width: 150, sortable: true },
-                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden: true },
-            ]],
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-
-            pagination: true,
-            pagePosition: 'bottom',
-            pageSize: 10
-        });
-        //------------Pager --------------------------------------------------
-        var pager = $('#DataGrid').datagrid('getPager');
-        $(pager).pagination({
-            pageSize: 10,
-            showPageList: true,
-            pageList: [10, 20, 50],
-            beforePageText: '第',
-            afterPageText: '頁，共 {pages} 頁',
-            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-        });
-    }
-
-    // datagrid onClick Function
-    function onEdit(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Edit' + `/${row.EMISN}`;
-        window.open(url, "_self");
-    }
-
-    function onLocate(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Locate';
-        window.open(url, "_self");
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
-            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
-            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
-        });
-
-        $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON);
-            console.log("onclick search");
-        });
-    }
-
-    //save onClick Function
-    function addSaveClickEvent() {
-        $("#checkall").change(function (e) {
-            let checked = e.target.checked;
-            $(".check-item").prop("checked", checked);
-        })
-
-        $("#save").click(function (e) { //儲存本頁變更
-            let cbs = $(".check-item");
-            let data = $('#DataGrid').datagrid('getRows').map((e, i) => {
-                return { EMISN: e.EMISN, IsEnable: cbs[i].checked };
+        $(async function () {
+            await AreaFloorEvent();
+            await pushSelect("System", '@Url.Action("System", "DropDownList")');
+            const Systems = document.getElementById('System')
+            Systems.addEventListener("change", function () {
+                pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
             });
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+            addSaveClickEvent();
+        });
 
-            console.log("onclick save:", data);
-
-            $.ajax({
-                url: '@Url.Action("IsEnableEdit", "EquipmentMaintainPeriod_Management")',
-                data: JSON.stringify(data),
-                method: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'PSSN',
+                //sortName: 'PSSN',
+                remoteSort: true,
+                frozenColumns: [[
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    //dg.frozenColumn('_locate', (v, row, i) => dg.eventButton(i, "定位", "locate", { disabled: row.DBID == null || row.DBID == "" })),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('EMISN'),
+                    dg.formatColumn('IsEnable', '啟用狀態', 100, function (val, row, index) {
+                        return `<input type="checkbox" class="form-check-input check-item" data-index="${index}" ${!!val ? "checked" : ""}/>`;
+                    }),
+                    dg.column('Area', '棟別', 130),
+                    dg.column('Floor', '樓層', 80),
+                    dg.column('System', '系統別', 100),
+                    dg.column('SubSystem', '子系統別', 120),
+                    dg.column('ESN', '設備編號', 100),
+                    dg.column('EState', '設備狀態', 100),
+                    dg.column('EName', '設備名稱', 220),
+                    dg.column('MISN', '保養項目編號', 130),
+                    dg.column('MIName', '項目名稱', 150),
+                    dg.column('Unit', '保養週期單位', 130),
+                    dg.column('Period', '保養週期', 100),
+                    dg.column('LastTime', '上次保養日期', 150),
+                    dg.column('NextTime', '最近應保養日期', 150),
+                    dg.hiddenColumn('DBID')
+                ]]
             })
 
-            function onSuccess(res) {
-                alert("儲存本頁變更完成");
-                console.log(res);
-            }
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.MISN}`, "_self")
+            })
+            dg.addEvent("locate", function (row, i) {
+                window.open(`${baseUrl}/Locate/${row.MISN}`, "_blank")
+            })
+        }
 
-            function onError(res) {
-                alert("儲存本頁變更失敗");
-                console.log(res);
-            }
-        })
-    }
-</script>
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+                pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+        }
+
+        //save onClick Function
+        function addSaveClickEvent() {
+            $("#checkall").change(function (e) {
+                let checked = e.target.checked;
+                $(".check-item").prop("checked", checked);
+            })
+
+            $("#save").click(function (e) { //儲存本頁變更
+                let cbs = $(".check-item");
+                let data = $('#DataGrid').datagrid('getRows').map((e, i) => {
+                    return { EMISN: e.EMISN, IsEnable: cbs[i].checked };
+                });
+
+                console.log("onclick save:", data);
+
+                $.ajax({
+                    url: '@Url.Action("IsEnableEdit", "EquipmentMaintainPeriod_Management")',
+                    data: JSON.stringify(data),
+                    method: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+                function onSuccess(res) {
+                    alert("儲存本頁變更完成");
+                    console.log(res);
+                }
+
+                function onError(res) {
+                    alert("儲存本頁變更失敗");
+                    console.log(res);
+                }
+            })
+        }
+    </script>
+}
