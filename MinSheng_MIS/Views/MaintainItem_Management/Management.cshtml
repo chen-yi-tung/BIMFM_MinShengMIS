@@ -99,6 +99,7 @@
                 queryParams: getQueryParams(),
                 idField: 'PSSN',
                 //sortName: 'PSSN',
+                remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),

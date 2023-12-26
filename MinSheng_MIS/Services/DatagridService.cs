@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using Microsoft.Owin;
 using System.Drawing.Printing;
@@ -15,6 +16,23 @@ namespace MinSheng_MIS.Services
 {
     public class DatagridService
     {
+        // 使用 Expression Tree 實現動態排序的方法
+        static IQueryable<T> OrderByField<T>(IQueryable<T> query, string propertyName, bool isAscending)
+        {
+            var entityType = typeof(T);
+            var property = entityType.GetProperty(propertyName);
+            var parameter = Expression.Parameter(entityType, "x");
+            var propertyAccess = Expression.MakeMemberAccess(parameter, property);
+            var orderByExp = Expression.Lambda(propertyAccess, parameter);
+
+            string methodName = isAscending ? "OrderBy" : "OrderByDescending";
+            var resultExp = Expression.Call(typeof(Queryable), methodName,
+                new Type[] { entityType, property.PropertyType },
+                query.Expression, Expression.Quote(orderByExp));
+
+            return query.Provider.CreateQuery<T>(resultExp);
+        }
+
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
         #region 報修管理
@@ -147,7 +165,7 @@ namespace MinSheng_MIS.Services
                     case "1":
                         SourceTable = SourceTable.Where(x => x.StockState == true);
                         break;
-                }   
+                }
             }
 
             //var atable_ESN_list = db.EquipmentInfo.Where(x => x.Area == Area).Select(x=>x.ESN).ToList();
@@ -207,7 +225,7 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("ReportContent", a.ReportContent);    //報修內容
                 if (itemObjects["MyName"] == null)
                     itemObjects.Add("MyName", a.MyName);    //報修人員
-                if(a.StockState) //庫存狀態
+                if (a.StockState) //庫存狀態
                 {
                     itemObjects.Add("StockState", "有");
                 }
@@ -911,11 +929,11 @@ namespace MinSheng_MIS.Services
                 var InspectionPlan_ = db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault() == null ? new InspectionPlan() : db.InspectionPlan.Where(x => x.IPSN == a.IPSN).FirstOrDefault();
                 var EquipmentReportForm_ = db.EquipmentReportForm.Where(x => x.RSN == a.RSN).FirstOrDefault() == null ? new EquipmentReportForm() : db.EquipmentReportForm.Where(x => x.RSN == a.RSN).FirstOrDefault();
                 var EquipmentInfo_ = db.EquipmentInfo.Where(x => x.ESN == EquipmentReportForm_.ESN).FirstOrDefault() == null ? new EquipmentInfo() : db.EquipmentInfo.Where(x => x.ESN == EquipmentReportForm_.ESN).FirstOrDefault();
-                var AspNetUsers_Informant = db.AspNetUsers.Where(x => x.UserName == EquipmentReportForm_.InformatUserID).FirstOrDefault() == null ? new AspNetUsers(): db.AspNetUsers.Where(x => x.UserName == EquipmentReportForm_.InformatUserID).FirstOrDefault();
-                var AspNetUsers_Repair = db.AspNetUsers.Where(x => x.UserName == a.RepairUserID).FirstOrDefault() == null? new AspNetUsers(): db.AspNetUsers.Where(x => x.UserName == a.RepairUserID).FirstOrDefault();
-                var RepairAuditInfo_ = db.RepairAuditInfo.Where(x => x.IPRSN == a.IPRSN).FirstOrDefault() == null? new RepairAuditInfo(): db.RepairAuditInfo.Where(x => x.IPRSN == a.IPRSN).FirstOrDefault();
+                var AspNetUsers_Informant = db.AspNetUsers.Where(x => x.UserName == EquipmentReportForm_.InformatUserID).FirstOrDefault() == null ? new AspNetUsers() : db.AspNetUsers.Where(x => x.UserName == EquipmentReportForm_.InformatUserID).FirstOrDefault();
+                var AspNetUsers_Repair = db.AspNetUsers.Where(x => x.UserName == a.RepairUserID).FirstOrDefault() == null ? new AspNetUsers() : db.AspNetUsers.Where(x => x.UserName == a.RepairUserID).FirstOrDefault();
+                var RepairAuditInfo_ = db.RepairAuditInfo.Where(x => x.IPRSN == a.IPRSN).FirstOrDefault() == null ? new RepairAuditInfo() : db.RepairAuditInfo.Where(x => x.IPRSN == a.IPRSN).FirstOrDefault();
                 string id = RepairAuditInfo_.AuditUserID;
-                var AspNetUsers_Audit = db.AspNetUsers.Where(x => x.UserName == id).FirstOrDefault() == null? new AspNetUsers(): db.AspNetUsers.Where(x => x.UserName == id).FirstOrDefault();
+                var AspNetUsers_Audit = db.AspNetUsers.Where(x => x.UserName == id).FirstOrDefault() == null ? new AspNetUsers() : db.AspNetUsers.Where(x => x.UserName == id).FirstOrDefault();
 
                 var itemObjects = new JObject();
                 itemObjects.Add("IPRSN", a.IPRSN);
@@ -939,7 +957,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("InformantUserID", AspNetUsers_Informant.MyName);
                 itemObjects.Add("RepairUserID", AspNetUsers_Repair.MyName);
                 itemObjects.Add("AuditUserID", AspNetUsers_Audit.MyName);
-                itemObjects.Add("AuditDate", RepairAuditInfo_.AuditDate.ToString("yyyy/M/d") == "0001/1/1"? "": RepairAuditInfo_.AuditDate.ToString("yyyy/M/d"));
+                itemObjects.Add("AuditDate", RepairAuditInfo_.AuditDate.ToString("yyyy/M/d") == "0001/1/1" ? "" : RepairAuditInfo_.AuditDate.ToString("yyyy/M/d"));
                 itemObjects.Add("DBID", EquipmentInfo_.DBID);
                 ja.Add(itemObjects);
             }
@@ -1147,27 +1165,27 @@ namespace MinSheng_MIS.Services
             {
                 Data = Data.Where(x => x.UserName.Contains(UserName));
             }
-            if (!string.IsNullOrEmpty(MyName)) 
+            if (!string.IsNullOrEmpty(MyName))
             {
                 Data = Data.Where(x => x.MyName.Contains(MyName));
             }
-            if (!string.IsNullOrEmpty(Authority)) 
+            if (!string.IsNullOrEmpty(Authority))
             {
                 Data = Data.Where(x => x.Authority == Authority);
             }
-            if (!string.IsNullOrEmpty(Email)) 
+            if (!string.IsNullOrEmpty(Email))
             {
                 Data = Data.Where(x => x.Email.Contains(Email));
             }
-            if (!string.IsNullOrEmpty(PhoneNumber)) 
+            if (!string.IsNullOrEmpty(PhoneNumber))
             {
                 Data = Data.Where(x => x.PhoneNumber.Contains(PhoneNumber));
             }
-            if (!string.IsNullOrEmpty(Apartment)) 
+            if (!string.IsNullOrEmpty(Apartment))
             {
                 Data = Data.Where(x => x.Apartment.Contains(Apartment));
             }
-            if (!string.IsNullOrEmpty(Title)) 
+            if (!string.IsNullOrEmpty(Title))
             {
                 Data = Data.Where(x => x.Title.Contains(Title));
             }
@@ -1735,7 +1753,7 @@ namespace MinSheng_MIS.Services
                 rows = short.Parse(form["rows"]?.ToString());
             }
             #endregion
-            
+
             #region 塞來自formdata的資料
             //系統別
             string System = form["System"]?.ToString();
@@ -1752,8 +1770,10 @@ namespace MinSheng_MIS.Services
             #endregion
 
             #region 依據查詢字串檢索資料表
-            var SourceTable = from x1 in db.MaintainItem 
-                            select new {x1.MISN, x1.System, x1.SubSystem, x1.EName, x1.MIName, x1.Unit, x1.Period};
+            var SourceTable = from x1 in db.MaintainItem
+                              select new { x1.MISN, x1.System, x1.SubSystem, x1.EName, x1.MIName, x1.Unit, x1.Period, x1.MaintainItemIsEnable };
+            
+            SourceTable = SourceTable.Where(x => x.MaintainItemIsEnable == "1");
             if (!string.IsNullOrEmpty(System))
             {
                 SourceTable = SourceTable.Where(x => x.System == System);
@@ -1783,9 +1803,29 @@ namespace MinSheng_MIS.Services
                 }
             }
             #endregion
-            
-            SourceTable = SourceTable.OrderByDescending(x => x.MISN);
-            
+
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            System.Web.Mvc.IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+
+                if (order == "asc")
+                {
+                    SourceTable = OrderByField(SourceTable, sort, true);
+                }
+                else if (order == "desc")
+                {
+                    SourceTable = OrderByField(SourceTable, sort, false);
+                }
+            }
+            else
+            {
+                SourceTable = SourceTable.OrderByDescending(x => x.MISN);
+            }
+            #endregion
+
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
@@ -1822,10 +1862,10 @@ namespace MinSheng_MIS.Services
                 }
 
                 itemObjects.Add("Period", item.Period);
-                
+
                 ja.Add(itemObjects);
             }
-            
+
             JObject jo = new JObject();
             jo.Add("rows", ja);
             jo.Add("total", total);
@@ -2156,7 +2196,7 @@ namespace MinSheng_MIS.Services
             #region 依據查詢字串檢索資料表
             var Data = from x1 in db.EquipmentInfo
                        join x2 in db.Floor_Info on x1.FSN equals x2.FSN
-                       select new { x1.EState,x2.ASN, x1.Area, x1.FSN, x1.Floor, x1.RoomName, x1.System, x1.SubSystem, x1.ESN, x1.EName, x1.Brand, x1.Model, x1.PropertyCode};
+                       select new { x1.EState, x2.ASN, x1.Area, x1.FSN, x1.Floor, x1.RoomName, x1.System, x1.SubSystem, x1.ESN, x1.EName, x1.Brand, x1.Model, x1.PropertyCode };
 
             if (!string.IsNullOrEmpty(EState))
             {
@@ -2226,7 +2266,7 @@ namespace MinSheng_MIS.Services
             foreach (var item in result)
             {
                 var itemObjects = new JObject();
-                
+
                 itemObjects.Add("ESN", item.ESN);
                 if (!string.IsNullOrEmpty(item.EState))
                 {
@@ -2541,7 +2581,7 @@ namespace MinSheng_MIS.Services
                               join x3 in db.DrawingSubSystemManagement on x1.DSubSystemID equals x3.DSubSystemID
                               join x4 in db.AreaInfo on x2.ASN equals x4.ASN
                               join x5 in db.DrawingSystemManagement on x3.DSystemID equals x5.DSystemID
-                              select new { x1.ADSN, x1.ImgPath, x2.ASN, x1.FSN, x3.DSystemID, x1.DSubSystemID, x1.ImgNum, x1.ImgName, x1.ImgVersion, x1.UploadDate, x4.Area, x2.FloorName, x3.DSubSystem, x5.DSystem};
+                              select new { x1.ADSN, x1.ImgPath, x2.ASN, x1.FSN, x3.DSystemID, x1.DSubSystemID, x1.ImgNum, x1.ImgName, x1.ImgVersion, x1.UploadDate, x4.Area, x2.FloorName, x3.DSubSystem, x5.DSystem };
 
 
             if (!string.IsNullOrEmpty(ASN))
@@ -2586,7 +2626,7 @@ namespace MinSheng_MIS.Services
                 var dateto = DateTime.Parse(DateEnd).AddDays(1);
                 SourceTable = SourceTable.Where(x => x.UploadDate < dateto);
             }
-            
+
             #endregion
 
             var result = SourceTable.OrderByDescending(x => x.ADSN).AsQueryable();
@@ -2610,7 +2650,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("ImgName", item.ImgName);
                 itemObjects.Add("UploadDate", item.UploadDate.ToString("yyyy/MM/dd"));
                 itemObjects.Add("ImgVersion", item.ImgVersion);
-                itemObjects.Add("ImgPath", "/Files/AsBuiltDrawing"+item.ImgPath);
+                itemObjects.Add("ImgPath", "/Files/AsBuiltDrawing" + item.ImgPath);
 
                 ja.Add(itemObjects);
             }
