@@ -19,7 +19,7 @@
 
         <div class="form-group required">
             <label for="YearMonth">年月份</label>
-            <input class="form-control" id="YearMonth" name="YearMonth" type="month" disabled readonly>
+            <input class="form-control" id="YearMonth" name="YearMonth" type="month">
         </div>
 
         <div class="form-group" style="grid-column: auto/span 2;">
@@ -38,7 +38,8 @@
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 <script>
-    const apiUrl = null;
+    const DDSN = '@ViewBag.id';
+    const apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${DDSN}`;
     const fakeData = {
         MRSN: "1",
         ReportTitle: "2023-5月月報",
@@ -48,7 +49,6 @@
         YearMonth: "2023-05",
         FilePath: "/Files/a.pdf"
     }
-    
     var fileUploader
     $(async function () {
         addButtonEvent();
@@ -63,12 +63,10 @@
     });
 
     function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :   //fakeData
+        url == null ? onSuccess(fakeData) :   //res
             $.ajax({
                 url: url,
-                data: JSON.stringify(jsonData),
-                type: "POST",
+                type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
@@ -101,12 +99,20 @@
         if (!isValidity) return;
 
         var fd = new FormData();
+        fd.append("MRSN", '@ViewBag.id');
         fd.append("ReportTitle", document.getElementById("ReportTitle").value);
         fd.append("ReportContent", document.getElementById("ReportContent").value);
         fd.append("YearMonth", document.getElementById("YearMonth").value);
         if (fileUploader.hasFile()) {
-            form.append("ReportFile", fileUploader.getFile());
+            let file = fileUploader.getFile()
+            if (file.size) {
+                fd.append("ReportFile", file);
+            }
+            else {
+                fd.append("ReportFileStr", file.name);
+            }
         }
+        console.log(fileUploader.getFile())
         console.log(Object.fromEntries(fd.entries()));
         $.ajax({
             url: '@Url.Action("EditMonthlyReport", "MonthlyReport_Management")',
@@ -119,10 +125,15 @@
         })
         function onSuccess(res) {
             console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "儲存成功！",
-                onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
-            });
+            if (res.success == false) {
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res.responseText}` })
+            }
+            else {
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
+                });
+            }
         }
         function onError(res) {
             console.log(res);
