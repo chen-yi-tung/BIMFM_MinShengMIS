@@ -153,14 +153,19 @@ function createTableGrid(data, options) {
     function createTds(op, d, i) {
         return op.map((o) => {
             let td
+            let width = ""
+            if (options.thead == false) {
+                let w = typeof o.width == "string" ? o.width : o.width + "px";
+                width = `style="${o.width ? `width:${w}` : ''}"`;
+            }
             if (o.formatter) {
                 td = `
-                <td id="d-${o.id}">
+                <td id="d-${o.id}" ${width}>
                     ${o.formatter(d[o.id], d, i)}
                 </td>`;
             }
             else {
-                td = `<td id="d-${o.id}">${d[o.id] ?? nullString}</td>`;
+                td = `<td id="d-${o.id}" ${width}>${d[o.id] ?? nullString}</td>`;
             }
             return td;
         }).join("");

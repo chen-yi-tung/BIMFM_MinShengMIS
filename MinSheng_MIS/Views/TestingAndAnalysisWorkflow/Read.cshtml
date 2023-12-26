@@ -1,7 +1,137 @@
-﻿
-@{
-    ViewBag.Title = "Read";
+﻿@{
+    ViewBag.Title = "採驗分析流程詳情";
 }
 
-<h2>Read</h2>
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
 
+<h2>@ViewBag.Title</h2>
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="FormInfo"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-small-grid mt-5">
+    <div class="datatable-header">實驗標籤</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="LabelNames">
+        </table>
+    </div>
+</div>
+
+<div class="datatable datatable-small-grid mt-5">
+    <div class="datatable-header">實驗數據欄位</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="DataNames">
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        const TAWSN = '@ViewBag.id';
+        //let apiUrl = '@Url.Action("ReadBody", "TestingAndAnalysisWorkflow")' + `/${TAWSN}`;
+        let apiUrl = null;
+
+        const fakeData = {
+            TAWSN: "000000001",
+            ExperimentType: "AT",
+            ExperimentName: "AAA",
+            FilePath: "000000001.pdf",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023/01/01 11:00:00",
+            LabelNames: [
+                {
+                    LNSN: "000000001L001",
+                    LabelName: "AAAL1"
+                }
+            ],
+            DataNames: [
+                {
+                    DNSN: "000000001D001",
+                    DataName: "AAAD1"
+                },
+                {
+                    DNSN: "000000001D002",
+                    DataName: "AAAD1"
+                }
+            ]
+        }
+
+        const sn = [
+            { text: "實驗類型", value: "ExperimentType" },
+            { text: "實驗名稱", value: "ExperimentName" },
+            { text: "實驗採樣分析流程檔案", value: "FilePath" },
+            { text: "上傳者帳號", value: "UploadUserName" },
+            { text: "上傳日期時間", value: "UploadDateTime" }
+        ]
+        const GridOptions_LabelNames = {
+            thead: false,
+            columns: [
+                { id: "index", width: "10%" },
+                { id: "data", width: "90%" },
+            ]
+        }
+        const GridOptions_DataNames = {
+            thead: false,
+            columns: [
+                { id: "index", width: "10%" },
+                { id: "data", width: "90%" },
+            ]
+        }
+
+        $(function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
+
+        function readData(url = null) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+                $("#FormInfo").append(createTableInner(res, sn))
+                res.LabelNames ?
+                    $("#LabelNames").append(createTableGrid(
+                        createIndexToArrayData(res.LabelNames, "LabelName"),
+                        GridOptions_LabelNames
+                    )) :
+                    $("#LabelNames").parents(".datatable").remove();
+                res.DataNames ?
+                    $("#DataNames").append(createTableGrid(
+                        createIndexToArrayData(res.DataNames, "DataName"),
+                        GridOptions_DataNames
+                    )) :
+                    $("#DataNames").parents(".datatable").remove();
+            }
+            function onError(res) {
+                console.log(res);
+            }
+
+            function createIndexToArrayData(arr, key) {
+                return arr.map((e, i) => {
+                    return {
+                        index: i,
+                        data: e[key]
+                    }
+                })
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+        }
+    </script>
+}

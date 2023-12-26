@@ -1,6 +1,12 @@
 ﻿@{
     ViewBag.Title = "帳號管理";
 }
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
 
 @Styles.Render("~/Content/easyui/themes/default/easyui.css")
 <script src="/Content/easyui/jquery.min.js"></script>
@@ -59,83 +65,84 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="/Scripts/datagrid-management.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script>
 
-    var getGridJSON = '@Url.Action("Account_Management", "Datagrid")';
-    var DataGrid;
-    var baseUrl = '/' + window.location.pathname.split('/')[1];
+@section scripts {
+    <script>
 
-    const fakedata = [
-        {
-            UserName: "Admin",
-            MyName: "Admin",
-            Authority: "管理人員",
-            Email: "Admin123@gmail.com",
-            PhoneNumber: "0900123123",
-            Apartment: "Admin",
-            Title: "Admin",
-        },
-        {
-            UserName: "DDD",
-            MyName: "DDD",
-            Authority: "管理人員",
-            Email: "DDD456@gmail.com",
-            PhoneNumber: "0900456456",
-            Apartment: "DDD",
-            Title: "DDD",
-        },
-    ]
+        var getGridJSON = '@Url.Action("Account_Management", "Datagrid")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    $(async function () {
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-    });
+        const fakedata = [
+            {
+                UserName: "Admin",
+                MyName: "Admin",
+                Authority: "管理人員",
+                Email: "Admin123@gmail.com",
+                PhoneNumber: "0900123123",
+                Apartment: "Admin",
+                Title: "Admin",
+            },
+            {
+                UserName: "DDD",
+                MyName: "DDD",
+                Authority: "管理人員",
+                Email: "DDD456@gmail.com",
+                PhoneNumber: "0900456456",
+                Apartment: "DDD",
+                Title: "DDD",
+            },
+        ]
 
-    function Initialize_DataGrid(getGridJSON) {
-        let dg = new DG();
-        DataGrid = dg.init("#DataGrid", {
-            url: getGridJSON,
-            //data: fakeData,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            idField: 'UserName',
-            //sortName: 'UserName',
-            frozenColumns: [[
-                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-delete" })),
-            ]],
-            columns: [[
-                dg.column('UserName', '帳號', 200),
-                dg.column('MyName', '姓名', 180),
-                dg.column('Authority', '權限', 150),
-                dg.column('Email', '信箱', 300),
-                dg.column('PhoneNumber', '電話', 180),
-                dg.column('Apartment', '單位', 180),
-                dg.column('Title', '職稱', 180),
-            ]]
-        })
-        dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/Edit/${row.UserName}`, "_blank")
-        })
-        dg.addEvent("delete", function (row, i) {
-            window.open(`${baseUrl}/Delete/${row.UserName}`, "_self")
-        })
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
+        $(async function () {
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
         });
 
-        $("#search").click(function () {
-            DataGrid.datagrid('load', getQueryParams());
-        });
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'UserName',
+                //sortName: 'UserName',
+                frozenColumns: [[
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
+                ]],
+                columns: [[
+                    dg.column('UserName', '帳號', 200),
+                    dg.column('MyName', '姓名', 180),
+                    dg.column('Authority', '權限', 150),
+                    dg.column('Email', '信箱', 300),
+                    dg.column('PhoneNumber', '電話', 180),
+                    dg.column('Apartment', '單位', 180),
+                    dg.column('Title', '職稱', 180),
+                ]]
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.UserName}`, "_blank")
+            })
+            dg.addEvent("delete", function (row, i) {
+                window.open(`${baseUrl}/Delete/${row.UserName}`, "_self")
+            })
+        }
 
-        $("#create").click(function () {
-            window.open(`${baseUrl}/Create`, "_self");
-        });
-    }
-</script>
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

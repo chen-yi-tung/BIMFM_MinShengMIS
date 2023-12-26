@@ -2,10 +2,13 @@
     ViewBag.Title = "警示訊息管理";
 }
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -83,84 +86,83 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="/Scripts/datagrid-management.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/AreaFloorEvent.js"></script>
-<script>
 
-    var getGridJSON = '@Url.Action("MonthlyReport_Management", "MonthlyReport_Management")';
-    var DataGrid;
-    var baseUrl = '/' + window.location.pathname.split('/')[1];
+@section scripts {
+    <script>
 
-    const fakeData = [
-        {
-            WMSN: "230101001",
-            PMSN: "1",
-            WMType: "一般",
-            WMState: "已處理",
-            TimeofOccurrence: "2023-01-01T06:30:27",
-            Location: "進流抽水站 B2F",
-            Message: "巡檢路徑偏移",
-            PSN: "P23050301",
-            MyName: "王OO"
-        }
-    ]
+        var getGridJSON = '@Url.Action("MonthlyReport_Management", "MonthlyReport_Management")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    $(async function () {
-        await AreaFloorEvent();
-        
-        if (window.location.search) {
-            let params = new URL(document.location).searchParams;
-            params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
-        }
+        const fakeData = [
+            {
+                WMSN: "230101001",
+                PMSN: "1",
+                WMType: "一般",
+                WMState: "已處理",
+                TimeofOccurrence: "2023-01-01T06:30:27",
+                Location: "進流抽水站 B2F",
+                Message: "巡檢路徑偏移",
+                PSN: "P23050301",
+                MyName: "王OO"
+            }
+        ]
 
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-    });
+        $(async function () {
+            await AreaFloorEvent();
 
-    function Initialize_DataGrid(getGridJSON) {
-        let dg = new DG();
-        DataGrid = dg.init("#DataGrid", {
-            //url: getGridJSON,
-            data: fakeData,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            idField: 'IAWSN',
-            //sortName: 'IAWSN',
-            frozenColumns: [[
-                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "填報", "edit")),
-            ]],
-            columns: [[
-                dg.hiddenColumn('WMSN'),
-                dg.hiddenColumn('PMSN'),
-                dg.column('WMType', '事件等級', 120),
-                dg.column('WMState', '事件處理狀況', 150),
-                dg.column('TimeofOccurrence', '發生時間', 200),
-                dg.column('Location', '發生地點', 250),
-                dg.column('Message', '事件內容', 250),
-                dg.column('PSN', '巡檢計畫編碼', 150),
-                dg.column('MyName', '人員姓名', 150),
-            ]]
-        })
-        dg.addEvent("detail", function (row, i) {
-            window.open(`${baseUrl}/Read/${row.WMSN}`, "_blank")
-        })
-        dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/Edit/${row.WMSN}`, "_self")
-        })
+            if (window.location.search) {
+                let params = new URL(document.location).searchParams;
+                params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
+            }
 
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
         });
 
-        $("#search").click(function () {
-            DataGrid.datagrid('load', getQueryParams());
-        });
-    }
-</script>
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                //url: getGridJSON,
+                data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'IAWSN',
+                //sortName: 'IAWSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "填報", "edit")),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('WMSN'),
+                    dg.hiddenColumn('PMSN'),
+                    dg.column('WMType', '事件等級', 120),
+                    dg.column('WMState', '事件處理狀況', 150),
+                    dg.column('TimeofOccurrence', '發生時間', 200),
+                    dg.column('Location', '發生地點', 250),
+                    dg.column('Message', '事件內容', 250),
+                    dg.column('PSN', '巡檢計畫編碼', 150),
+                    dg.column('MyName', '人員姓名', 150),
+                ]]
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.WMSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.WMSN}`, "_self")
+            })
 
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+        }
+    </script>
+}

@@ -60,7 +60,7 @@ DG.prototype.removeEvent = function (key) {
 
 DG.prototype.frozenColumn = function (/* field, title, width, formatter */) {
     let args = [].slice.call(arguments);
-    let res = { field: args[0], align: this.ColumnsOptions.align, formatter: args.at(-1) };
+    let res = { field: args[0], width: 74, align: this.ColumnsOptions.align, formatter: args.at(-1) };
     switch (true) {
         case (args.length === 4):
             res.width = args[2];
@@ -102,7 +102,7 @@ DG.prototype.hiddenColumn = function (field) {
 
 DG.prototype.eventButton = function (index, text, eventName = null, options = null) {
     let optionStr = [];
-    
+
     let className = "btn btn-datagrid";
     if (options) {
         options.className && options.className.length !== 0 && (className = options.className)
