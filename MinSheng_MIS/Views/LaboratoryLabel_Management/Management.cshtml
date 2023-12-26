@@ -2,10 +2,12 @@
     ViewBag.Title = "實驗室標籤管理";
 }
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -44,70 +46,69 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="/Scripts/datagrid-management.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script>
 
-    var getGridJSON = '@Url.Action("MonthlyReport_Management", "MonthlyReport_Management")';
-    var DataGrid;
-    var baseUrl = '/' + window.location.pathname.split('/')[1];
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("LaboratoryLabel_Management", "LaboratoryLabel_Management")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    const fakeData = [
-        {
-            ELSN: "1",
-            ExperimentType: "水質分析",
-            ExperimentName: "汙水管水質檢測分析實驗",
-            EDate: "2023/08/14"
+        const fakeData = [
+            {
+                ELSN: "1",
+                ExperimentType: "水質分析",
+                ExperimentName: "汙水管水質檢測分析實驗",
+                EDate: "2023/08/14"
+            }
+        ]
+
+        $(async function () {
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                //url: getGridJSON,
+                data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'ELSN',
+                //sortName: 'ELSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('ELSN'),
+                    dg.column('ExperimentType', '實驗類型', 200),
+                    dg.column('ExperimentName', '實驗名稱', 400),
+                    dg.column('EDate', '標籤日期', 200),
+                ]]
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.ELSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.ELSN}`, "_self")
+            })
+
         }
-    ]
 
-    $(async function () {
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-    });
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
 
-    function Initialize_DataGrid(getGridJSON) {
-        let dg = new DG();
-        DataGrid = dg.init("#DataGrid", {
-            //url: getGridJSON,
-            data: fakeData,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            idField: 'ELSN',
-            //sortName: 'ELSN',
-            frozenColumns: [[
-                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-            ]],
-            columns: [[
-                dg.hiddenColumn('ELSN'),
-                dg.column('ExperimentType', '實驗類型', 200),
-                dg.column('ExperimentName', '實驗名稱', 400),
-                dg.column('EDate', '標籤日期', 200),
-            ]]
-        })
-        dg.addEvent("detail", function (row, i) {
-            window.open(`${baseUrl}/Read/${row.ELSN}`, "_blank")
-        })
-        dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/Edit/${row.ELSN}`, "_self")
-        })
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
 
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
-        });
-
-        $("#search").click(function () {
-            DataGrid.datagrid('load', getQueryParams());
-        });
-
-        $("#create").click(function () {
-            window.open(`${baseUrl}/Create`, "_self");
-        });
-    }
-</script>
-
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}
