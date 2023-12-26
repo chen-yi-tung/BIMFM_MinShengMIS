@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "請購詳情";
 }
 
@@ -12,30 +11,30 @@
         padding: 5px;
     }
 
-        .PRM_table th {
-            text-align: center;
-            border: 1px solid #8A9BA5;
-            padding: 5px;
-            background: #C6E1FF;
-            font-weight: 500;
-        }
+    .PRM_table th {
+        text-align: center;
+        border: 1px solid #8A9BA5;
+        padding: 5px;
+        background: #C6E1FF;
+        font-weight: 500;
+    }
 
-        .PRM_table td {
-            border: 1px solid #8A9BA5;
-            text-align: center;
-            padding: 5px;
-            background: #E7F6FF;
-            color: #313030;
-            font-weight: lighter;
-            
-        }
+    .PRM_table td {
+        border: 1px solid #8A9BA5;
+        text-align: center;
+        padding: 5px;
+        background: #E7F6FF;
+        color: #313030;
+        font-weight: lighter;
+
+    }
 </style>
 
 <h2>請購詳情</h2>
 
 <div class="datatable datatable-small mt-5">
     <div class="datatable-body">
-        <table class="datatable-table" id="MaintainItemInfo"></table>
+        <table class="datatable-table" id="FormInfo"></table>
     </div>
 </div>
 
@@ -76,6 +75,7 @@
             <td>修補破損</td>
         </tr>
     </tbody>
+
     <script src="/Scripts/datatable.js"></script>
 
     <script>
@@ -90,7 +90,7 @@
             { text: "請購申請日", value: "PRDate" },
             { text: "審核日期", value: "AuditDate" },
             { text: "審核結果說明", value: "AuditResult" },
-            { text: "相關文件", value: "FileName" },
+            { text: "相關文件", value: "FilePath" },
         ]
 
         const fakeData = {
@@ -102,7 +102,33 @@
             PRDate: "2021-12-10 05:01:10",
             AuditDate: "2022-01-01",
             AuditResult: '審核通過',
-            FileName: "test.pdf",
+            FilePath: "test.pdf",
+            PurchaseRequisitionItem: [
+                {
+                    Kind: "電子",
+                    ItemName: "LG手機",
+                    Size: "12寸",
+                    PRAmount: "4",
+                    Unit: "台",
+                    ApplicationPurpose: "測試"
+                },
+                {
+                    Kind: "電子",
+                    ItemName: "LG手機",
+                    Size: "12寸",
+                    PRAmount: "4",
+                    Unit: "台",
+                    ApplicationPurpose: "測試"
+                },
+                {
+                    Kind: "耗材",
+                    ItemName: "螺絲",
+                    Size: "12cm",
+                    PRAmount: "4",
+                    Unit: "包",
+                    ApplicationPurpose: "修補破損"
+                }
+            ]
         }
 
         function readData(url = null) {
@@ -119,13 +145,7 @@
 
             function onSuccess(res) {
                 console.log(res);
-                $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
-                $("#ReadPSN").click(() => {
-                    window.open(`/InspectionPlan_Management/Read/${res.PSN}`, "_blank")
-                })
-                $("#SearchPSN").click(() => {
-                    window.open(`/WarningMessage_Management/Management?PSN=${res.PSN}`, "_blank")
-                })
+                $("#FormInfo").append(createTableInner(res, SerializedName));
             }
             function onError(res) {
                 console.log(res);
