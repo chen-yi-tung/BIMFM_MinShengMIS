@@ -106,7 +106,7 @@ namespace MinSheng_MIS.Controllers
             jo["DDSN"] = item.DDSN;
             jo["ImgName"] = item.ImgName;
             jo["ImgType"] = item.ImgType;
-            jo["DesignDiagrams"] = "/Files/DesignDiagrams" + item.ImgPath;
+            jo["DesignDiagrams"] = !string.IsNullOrEmpty(item.ImgPath) ? "/Files/DesignDiagrams" + item.ImgPath : null;
             jo["UploadDate"] = item.UploadDate;
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);
@@ -122,7 +122,7 @@ namespace MinSheng_MIS.Controllers
             jo["ImgName"] = item.ImgName;
             var dic = Surface.ImgType();
             jo["ImgType"] = dic[item.ImgType];
-            jo["DesignDiagrams"] = "/Files/DesignDiagrams" + item.ImgPath;
+            jo["DesignDiagrams"] = !string.IsNullOrEmpty(item.ImgPath) ? "/Files/DesignDiagrams" + item.ImgPath : null;
             jo["UploadDate"] = item.UploadDate;
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);

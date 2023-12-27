@@ -1,6 +1,4 @@
-﻿@model MinSheng_MIS.Models.ViewModels.ReviewEqMaintainItemViewModel
-
-@{
+﻿@{
     ViewBag.Title = "保養項目編輯";
 }
 
@@ -37,12 +35,9 @@
 
 <script src="/Scripts/datatable.js"></script>
 <script>
-    var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
-    eqList = eqList.replace("\r", "").replace("\n", "");
-    var equipmentList = JSON.parse(eqList);
-    //console.log(equipmentList);
 
-    const apiUrl = null;
+    const MISN = '@ViewBag.id'
+    const apiUrl = `@Url.Action("ReadBody", "MaintainItem_Management")?MISN=${MISN}`;
 
     const SerializedName = [
         { text: "系統別", value: "System" },
@@ -132,11 +127,10 @@
 
     function readData(url = null) {
 
-        url == null ? onSuccess(equipmentList) :
+        url == null ? onSuccess(fakeData) :
             $.ajax({
                 url: url,
-                data: JSON.stringify(jsonData),
-                type: "POST",
+                type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
@@ -213,19 +207,17 @@
     }
 
     function saveMaintainItem() {
-        //todo
-
         let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
         console.log("isValidity:", isValidity);
         if (!isValidity) return;
 
         let jsonData = {
             System: document.getElementById("d-System").innerHTML,
-            SubSystem: document.getElementById("d-SubSystem").innerHTML,//$("#MaintainItemInfo").find("#SubSystem").val(),
-            EName: document.getElementById("d-EName").innerHTML,        //$("#MaintainItemInfo").find("#EName").val(),
-            MIName: document.getElementById("d-MIName").innerHTML,      //$("#MaintainItemInfo").find("#MIName").val(),
+            SubSystem: document.getElementById("d-SubSystem").innerHTML,
+            EName: document.getElementById("d-EName").innerHTML,
+            MIName: document.getElementById("d-MIName").innerHTML,
 
-            MISN: $("#MISN").val(),
+            MISN,
             Unit: $("#MaintainItemInfo").find("#Unit").val(),
             Period: $("#MaintainItemInfo").find("#Period").val(),
             EquipmentMaintainItem: calcEquipmentMaintainItem()
@@ -235,7 +227,6 @@
 
         $.ajax({
             url: '@Url.Action("UpdateMaintainItem", "MaintainItem_Management")',
-            //data: JSON.stringify(jsonData),
             data: JSON.stringify(jsonData),
             type: "POST",
             dataType: "json",
@@ -258,19 +249,15 @@
 
         function onSuccess(res) {
             console.log(res);
-
-            if (res.ResponseCode == 0) {
-                alert(res.ResponseMessage);
-                var url = '@Url.Action("Management", "MaintainItem_Management")';
-                window.location.href = url;
-                /*history.back();*/
-            }
-            else {
-                alert(res.ResponseMessage);
-            }
+            if (res.ResponseCode !== 0) { onError(res); return; }
+            createDialogModal({
+                id: "DialogModal-Success", inner: "儲存成功！",
+                onHide: () => { window.location.href = "/MaintainItem_Management/Management"; }
+            });
         }
         function onError(res) {
             console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.ResponseMessage || ""}` })
         }
     }
 
@@ -279,4 +266,3 @@
         addButtonEvent();
     }
 </script>
-

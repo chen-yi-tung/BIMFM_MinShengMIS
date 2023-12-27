@@ -21,12 +21,8 @@
 
 <script src="/Scripts/datatable.js"></script>
 <script>
-    var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
-    eqList = eqList.replace("\r", "").replace("\n", "");
-    var equipmentList = JSON.parse(eqList);
-    console.log(equipmentList);
-
-    const apiUrl = null;
+    const MISN = '@ViewBag.id'
+    const apiUrl = `@Url.Action("ReadBody","MaintainItem_Management")?MISN=${MISN}`;
 
     const SerializedName = [
         { text: "系統別", value: "System" },
@@ -79,11 +75,10 @@
 
     function readData(url = null) {
 
-        url == null ? onSuccess(equipmentList) :   //fakeData
+        url == null ? onSuccess(fakeData) :   //fakeData
             $.ajax({
                 url: url,
-                data: JSON.stringify(jsonData),
-                type: "POST",
+                type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,

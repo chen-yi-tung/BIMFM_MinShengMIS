@@ -101,7 +101,7 @@ namespace MinSheng_MIS.Controllers
             jo["EName"] = item.EName;
             jo["Brand"] = item.Brand;
             jo["Model"] = item.Model;
-            jo["ManualFile"] = "/Files/EquipmentOperatingManual" + item.FilePath;
+            jo["ManualFile"] = !string.IsNullOrEmpty(item.FilePath) ? "/Files/EquipmentOperatingManual" + item.FilePath : null;
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);
 
