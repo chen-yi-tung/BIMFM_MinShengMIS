@@ -171,7 +171,7 @@
         }
         console.log(Object.fromEntries(fd.entries()));
         $.ajax({
-            url: '@Url.Action("CreateMonthlyReport", "MonthlyReport_Management")',
+            url: '@Url.Action("CreateMeetingMinutes", "MeetingMinutes_Management")',
             data: fd,
             type: "POST",
             contentType: false,
@@ -183,7 +183,7 @@
             console.log(res);
             createDialogModal({
                 id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
+                onHide: () => { window.location.href = "/MeetingMinutes_Management/Management"; }
             });
         }
         function onError(res) {

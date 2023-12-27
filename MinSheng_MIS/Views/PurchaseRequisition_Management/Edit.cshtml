@@ -45,73 +45,89 @@
 
 <h2>@ViewBag.Title</h2>
 
-<div class="edit-area bg-transparent flex-md-row" style="gap: 1rem 2rem;">
-    <form class="form d-lg-contents">
-        <div class="form-group w-lg-45 w-xl-250px required">
-            <label for="PRUserName">請購人</label>
-            <select class="form-select" name="PRUserName" id="PRUserName" required>
-                <option value="">請選擇</option>
-            </select>
+<section class="d-none" id="ReadonlySection">
+    <div class="datatable datatable-small mt-5">
+        <div class="datatable-body">
+            <table class="datatable-table" id="FormInfo"></table>
         </div>
+    </div>
 
-        <div class="form-group w-lg-45 w-xl-250px">
-            <label for="PRDept">請購部門</label>
-            <input class="form-control" id="PRDept" name="PRDept" type="text" maxlength="20" />
+    <div class="datatable mt-5">
+        <div class="datatable-body">
+            <table class="datatable-table" id="Items"></table>
         </div>
-    </form>
-</div>
+    </div>
+</section>
 
-<section class="datatable-input-area mt-3">
-    <button type="button" class="btn btn-search align-self-start" id="create-item">+ 新增</button>
-    <form class="d-contents">
-        <div class="edit-area m-0">
-            <div class="datatable datatable-grid w-100 h-100">
-                <div class="datatable-body h-100 overflow-auto">
-                    <table class="datatable-table" style="width: max-content;">
-                        <thead>
-                            <tr>
-                                <th class="datatable-header required" style="width:150px"><span>類別</span></th>
-                                <th class="datatable-header required" style="width:250px"><span>品名</span></th>
-                                <th class="datatable-header" style="width:150px"><span>尺寸</span></th>
-                                <th class="datatable-header required" style="width:120px"><span>數量</span></th>
-                                <th class="datatable-header required" style="width:150px"><span>單位</span></th>
-                                <th class="datatable-header" style="width:200px"><span>申請用途</span></th>
-                                <th class="datatable-header" style="width:36px"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="item-area">
-                            <tr id="sample-input-tr">
-                                <td id="d-Kind">
-                                    <select class="form-select" id="Kind" name="Kind" required></select>
-                                </td>
-                                <td id="d-ItemName">
-                                    <input class="form-control" type="text" id="ItemName" name="ItemName" maxlength="50"
-                                        required />
-                                </td>
-                                <td id="d-Size">
-                                    <input class="form-control" type="text" id="Size" name="Size" maxlength="50" />
-                                </td>
-                                <td id="d-PRAmount">
-                                    <input class="form-control" type="number" id="PRAmount" name="PRAmount" min="1"
-                                        value="1" required />
-                                </td>
-                                <td id="d-Unit">
-                                    <select class="form-select" id="Unit" name="Unit" required></select>
-                                </td>
-                                <td id="d-ApplicationPurpose">
-                                    <input class="form-control" type="text" id="ApplicationPurpose"
-                                        name="ApplicationPurpose" maxlength="200" />
-                                </td>
-                                <td id="d-_delete" class="p-1 pt-2">
-                                    <button type="button" class="btn-delete-item"></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+<section class="d-none" id="EditSection">
+    <div class="edit-area bg-transparent flex-md-row" style="gap: 1rem 2rem;">
+        <form class="form d-lg-contents">
+            <div class="form-group w-lg-45 w-xl-250px required">
+                <label for="PRUserName">請購人</label>
+                <select class="form-select" name="PRUserName" id="PRUserName" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+
+            <div class="form-group w-lg-45 w-xl-250px">
+                <label for="PRDept">請購部門</label>
+                <input class="form-control" id="PRDept" name="PRDept" type="text" maxlength="20" />
+            </div>
+        </form>
+    </div>
+
+    <section class="datatable-input-area mt-3">
+        <button type="button" class="btn btn-search align-self-start" id="create-item">+ 新增</button>
+        <form class="d-contents">
+            <div class="edit-area m-0">
+                <div class="datatable datatable-grid w-100 h-100">
+                    <div class="datatable-body h-100 overflow-auto">
+                        <table class="datatable-table" style="width: max-content;">
+                            <thead>
+                                <tr>
+                                    <th class="datatable-header required" style="width:150px"><span>類別</span></th>
+                                    <th class="datatable-header required" style="width:250px"><span>品名</span></th>
+                                    <th class="datatable-header" style="width:150px"><span>尺寸</span></th>
+                                    <th class="datatable-header required" style="width:120px"><span>數量</span></th>
+                                    <th class="datatable-header required" style="width:150px"><span>單位</span></th>
+                                    <th class="datatable-header" style="width:200px"><span>申請用途</span></th>
+                                    <th class="datatable-header" style="width:36px"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="item-area">
+                                <tr id="sample-input-tr">
+                                    <td id="d-Kind">
+                                        <select class="form-select" id="Kind" name="Kind" required></select>
+                                    </td>
+                                    <td id="d-ItemName">
+                                        <input class="form-control" type="text" id="ItemName" name="ItemName"
+                                            maxlength="50" required />
+                                    </td>
+                                    <td id="d-Size">
+                                        <input class="form-control" type="text" id="Size" name="Size" maxlength="50" />
+                                    </td>
+                                    <td id="d-PRAmount">
+                                        <input class="form-control" type="number" id="PRAmount" name="PRAmount" min="1"
+                                            value="1" required />
+                                    </td>
+                                    <td id="d-Unit">
+                                        <select class="form-select" id="Unit" name="Unit" required></select>
+                                    </td>
+                                    <td id="d-ApplicationPurpose">
+                                        <input class="form-control" type="text" id="ApplicationPurpose"
+                                            name="ApplicationPurpose" maxlength="200" />
+                                    </td>
+                                    <td id="d-_delete" class="p-1 pt-2">
+                                        <button type="button" class="btn-delete-item"></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </section>
 </section>
 
 <div class="edit-area edit-area-small">
@@ -119,10 +135,10 @@
         <div class="form-group d-lg-contents">
             <label for="PRState">請購單狀態</label>
             <select id="PRState" name="PRState" class="form-select">
-                <option value="wait">待送審</option>
-                <option value="sent">已送審</option>
-                <option value="done">審核完成</option>
-                <option value="notdone">審核未過</option>
+                <option value="1">待送審</option>
+                <option value="2">已送審</option>
+                <option value="3">審核完成</option>
+                <option value="4">審核未過</option>
             </select>
         </div>
         <div class="form-group d-lg-contents">
@@ -145,12 +161,74 @@
 <script src="/Scripts/tool.js"></script>
 
 <script>
+    //const PRN = '@ViewBag.id';
+    const PRN = window.location.pathname.split('/').at(-1)
+    const apiUrl = '@Url.Action("Read_Data", "PurchaseRequisition_Management")' + `/${PRN}`;
+
+    const SerializedName = [
+        { text: "請購單號", value: "PRN" },
+        { text: "請購人", value: "PRUserName" },
+        { text: "請購單狀態", value: "PRStateName" },
+        { text: "請購部門", value: "PRDept" },
+        { text: "請購申請日", value: "PRDate" },
+        { text: "審核日期", value: "AuditDate" },
+        { text: "審核結果說明", value: "AuditResult" },
+        { text: "相關文件", value: "FilePath" },
+    ]
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "KindName", title: "類別" },
+            { id: "ItemName", title: "品名" },
+            { id: "Size", title: "尺寸" },
+            { id: "PRAmount", title: "數量" },
+            { id: "UnitName", title: "單位" },
+            { id: "ApplicationPurpose", title: "申請用途" }
+        ]
+    }
+
+    const fakeData = {
+        PRN: "230101001",
+        PMSN: "1",
+        PRUserName: "黃助理",
+        PRState: "已處理",
+        PRDept: "人資部",
+        PRDate: "2021-12-10 05:01:10",
+        AuditDate: "2022-01-01",
+        AuditResult: '審核通過',
+        FilePath: "test.pdf",
+        PurchaseRequisitionItem: [
+            {
+                Kind: "電子",
+                ItemName: "LG手機",
+                Size: "12寸",
+                PRAmount: "4",
+                Unit: "台",
+                ApplicationPurpose: "測試"
+            },
+            {
+                Kind: "電子",
+                ItemName: "LG手機",
+                Size: "12寸",
+                PRAmount: "4",
+                Unit: "台",
+                ApplicationPurpose: "測試"
+            },
+            {
+                Kind: "耗材",
+                ItemName: "螺絲",
+                Size: "12cm",
+                PRAmount: "4",
+                Unit: "包",
+                ApplicationPurpose: "修補破損"
+            }
+        ]
+    }
 
     let sampleTr;
     let fileUploader;
 
     $(async function () {
-        pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
         addButtonEvent();
         sampleTr = new SampleTr();
         fileUploader = new FileUploader({
@@ -158,8 +236,11 @@
             className: "form-group d-lg-contents",
             buttonAreaClassName: "edit-button-area position-relative justify-content-start align-items-start mt-1 flex-wrap",
             label: "相關文件",
-            id: "File"
+            id: "File",
+            required: false
         })
+        await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
+        readData(apiUrl);
     })
 
     function SampleTr() {
@@ -189,6 +270,39 @@
         return this;
     }
 
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            if (res.PRState != "1") {
+                $("#ReadonlySection").removeClass("d-none")
+                $("#FormInfo").append(createTableInner(res, SerializedName));
+                $("#Items").append(createTableGrid(res.PurchaseRequisitionItem, GridOptions));
+                $("#PRState").val(res.PRState)
+                $("#AuditDate").val(res.AuditDate)
+                $("#AuditResult").val(res.AuditResult || "")
+                res.FilePath ? fileUploader.setFile(res.FilePath) : void 0;
+            }
+            else {
+                $("#EditSection").removeClass("d-none")
+
+            }
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
     function save() {
         //重置自訂驗證錯誤訊息
         getAllParams().forEach((e) => {
@@ -207,7 +321,13 @@
         form.append("AuditDate", document.getElementById("AuditDate").value);
         form.append("AuditResult", document.getElementById("AuditResult").value);
         if (fileUploader.hasFile()) {
-            form.append("AFile", fileUploader.getFile());
+            let file = fileUploader.getFile()
+            if (file?.size) {
+                form.append("AFile", fileUploader.getFile());
+            }
+            else {
+                form.append("AFileName", fileUploader.getFile()?.name);
+            }
         }
         console.log(Object.fromEntries(form.entries()));
 

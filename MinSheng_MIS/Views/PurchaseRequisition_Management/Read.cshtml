@@ -25,7 +25,7 @@
     const SerializedName = [
         { text: "請購單號", value: "PRN" },
         { text: "請購人", value: "PRUserName" },
-        { text: "請購單狀態", value: "PRState" },
+        { text: "請購單狀態", value: "PRStateName" },
         { text: "請購部門", value: "PRDept" },
         { text: "請購申請日", value: "PRDate" },
         { text: "審核日期", value: "AuditDate" },
@@ -35,11 +35,11 @@
     const GridOptions = {
         thead: true,
         columns: [
-            { id: "Kind", title: "類別" },
+            { id: "KindName", title: "類別" },
             { id: "ItemName", title: "品名" },
             { id: "Size", title: "尺寸" },
             { id: "PRAmount", title: "數量" },
-            { id: "Unit", title: "單位" },
+            { id: "UnitName", title: "單位" },
             { id: "ApplicationPurpose", title: "申請用途" }
         ]
     }
