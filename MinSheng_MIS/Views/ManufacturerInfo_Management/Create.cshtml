@@ -2,7 +2,7 @@
     ViewBag.Title = "新增廠商";
 }
 <style>
-    @@media (min-width: 992px){
+    @@media (min-width: 992px) {
         .edit-area .form {
             grid-template-columns: 250px 250px;
         }
@@ -57,12 +57,13 @@
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
+<script src="/Scripts/datatable.js"></script>
 <script>
     $(function () {
         addButtonEvent();
     })
 
-    function save(){
+    function save() {
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
@@ -89,14 +90,14 @@
 
         function onSuccess(res) {
             console.log(res);
-            alert("新增成功!");
-            let url = '@Url.Action("Management", "ManufacturerInfo_Management")';
-            window.location.href = url;
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/ManufacturerInfo_Management/Management"; }
+            });
         }
-
         function onError(res) {
             console.log(res);
-            alert("新增失敗!");
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
         }
     }
 
@@ -109,4 +110,3 @@
         })
     }
 </script>
-

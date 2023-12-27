@@ -126,7 +126,7 @@
         function onSuccess(res) {
             console.log(res);
             if (res.success == false) {
-                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res.responseText}` })
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
             }
             else {
                 createDialogModal({
@@ -137,7 +137,7 @@
         }
         function onError(res) {
             console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res.responseText}` })
+            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
         }
     }
 

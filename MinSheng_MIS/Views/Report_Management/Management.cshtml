@@ -190,8 +190,8 @@
                             id: "DialogModal-Success",
                             inner: "取消保留成功！",
                         })
-                        $('#DataGrid').datagrid('clearSelections');
-                        $('#DataGrid').datagrid('reload');
+                        DataGrid.datagrid('clearSelections');
+                        DataGrid.datagrid('reload');
                     },
                     error(err) {
                         createDialogModal({

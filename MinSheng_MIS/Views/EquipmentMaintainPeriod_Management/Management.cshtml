@@ -6,6 +6,7 @@
     @Html.Partial("DataGridScripts", true)
 
     <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
     <script src="/Scripts/AreaFloorEvent.js" defer></script>
 }
@@ -189,7 +190,7 @@
 
             $("#save").click(function (e) { //儲存本頁變更
                 let cbs = $(".check-item");
-                let data = $('#DataGrid').datagrid('getRows').map((e, i) => {
+                let data = DataGrid.datagrid('getRows').map((e, i) => {
                     return { EMISN: e.EMISN, IsEnable: cbs[i].checked };
                 });
 
@@ -206,13 +207,19 @@
                 })
 
                 function onSuccess(res) {
-                    alert("儲存本頁變更完成");
                     console.log(res);
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "儲存本頁變更完成！",
+                    })
                 }
 
                 function onError(res) {
-                    alert("儲存本頁變更失敗");
                     console.log(res);
+                    createDialogModal({
+                        id: "DialogModal-Error",
+                        inner: "儲存本頁變更失敗！",
+                    })
                 }
             })
         }

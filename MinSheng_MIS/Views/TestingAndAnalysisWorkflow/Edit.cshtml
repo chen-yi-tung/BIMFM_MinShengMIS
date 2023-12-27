@@ -174,13 +174,13 @@
         function onSuccess(res) {
             console.log(res);
             createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
+                id: "DialogModal-Success", inner: "儲存成功！",
                 onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
             });
         }
         function onError(res) {
             console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res.responseText}` })
+            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
         }
     }
 

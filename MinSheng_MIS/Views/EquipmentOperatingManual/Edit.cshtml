@@ -175,7 +175,7 @@
         }
         function onError(res) {
             console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res.responseText}` })
+            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
         }
     }
 

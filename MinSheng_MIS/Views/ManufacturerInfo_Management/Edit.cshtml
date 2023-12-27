@@ -57,6 +57,7 @@
     <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
+<script src="/Scripts/datatable.js"></script>
 <script>
     const MFRSN = '@ViewBag.id';
     let apiUrl = '@Url.Action("ReadBody", "ManufacturerInfo_Management")' + `/${MFRSN}`;
@@ -132,14 +133,14 @@
 
         function onSuccess(res) {
             console.log(res);
-            alert("編輯成功!");
-            let url = '@Url.Action("Management", "ManufacturerInfo_Management")';
-            window.location.href = url;
+            createDialogModal({
+                id: "DialogModal-Success", inner: "儲存成功！",
+                onHide: () => { window.location.href = "/ManufacturerInfo_Management/Management"; }
+            });
         }
-
         function onError(res) {
             console.log(res);
-            alert("編輯失敗!");
+            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
         }
     }
 

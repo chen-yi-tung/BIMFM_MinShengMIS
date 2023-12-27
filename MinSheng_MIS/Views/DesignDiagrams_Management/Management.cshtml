@@ -96,7 +96,7 @@
             frozenColumns: [[
                 dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
                 dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete")),
+                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
             ]],
             columns: [[
                 { field: 'DDSN', title: '設計圖說編號', width: 200, hidden: true },

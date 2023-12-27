@@ -62,6 +62,7 @@
     <button class="btn btn-submit" id="submit">新增</button>
 </div>
 
+<script src="/Scripts/datatable.js"></script>
 <script>
     var CreateUrl = '@Url.Action("Create_Add", "Account_Management")'; //Method : Post , 新增帳號
 
@@ -83,15 +84,21 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function (response) {
-                    console.log(response);
-                    window.location.href = '@Url.Action("Management", "Account_Management")';
-                },
-                error: function (error) {
-                    console.log(error);
-                    alert(error.responseText);
-                }
+                success: onSuccess,
+                error: onError
             });
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/Account_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
         })
     }
 </script>
