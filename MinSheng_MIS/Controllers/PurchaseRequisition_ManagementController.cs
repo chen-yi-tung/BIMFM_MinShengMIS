@@ -160,19 +160,12 @@ namespace MinSheng_MIS.Controllers
                 return Content(string.Join(Environment.NewLine, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))));
             }
 
-            // 編輯請購單
             var request = await db.PurchaseRequisition.Where(x => x.PRN == pr_info.PRN).FirstOrDefaultAsync();
             if (request == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Content("PRN is Undefined.");
             }
-
-            request.PRUserName = pr_info.PRUserName;
-            request.PRState = pr_info.PRState;
-            request.PRDept = pr_info.PRDept;
-            request.AuditDate = pr_info.AuditDate;
-            request.AuditResult = pr_info.AuditResult;
 
             // 檔案處理，目前只提供單個檔案上傳
             if (pr_info.File != null && pr_info.File.ContentLength > 0)
@@ -201,6 +194,21 @@ namespace MinSheng_MIS.Controllers
                     Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
                     return Content("非系統可接受的檔案格式!");
                 }
+            }
+
+            // 編輯請購單
+            request.PRUserName = pr_info.PRUserName;
+            request.PRState = pr_info.PRState;
+            request.PRDept = pr_info.PRDept;
+            request.AuditDate = pr_info.AuditDate;
+            request.AuditResult = pr_info.AuditResult;
+
+            // 若整體採購項目減少，則刪除資料庫項目
+            if (request.PurchaseRequisitionItem.Count > pr_info.PurchaseRequisitionItem.Count)
+            {
+                int deletNum = request.PurchaseRequisitionItem.Count - pr_info.PurchaseRequisitionItem.Count();
+                var deletedItems = request.PurchaseRequisitionItem.OrderByDescending(x => x.PRIN).Take(deletNum).ToList();
+                db.PurchaseRequisitionItem.RemoveRange(deletedItems);
             }
 
             // 編輯請購單項目
