@@ -45,27 +45,7 @@
             <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required />
         </div>
 
-        <div class="form-group g-col-2 required">
-            <label for="">設備操作手冊檔案</label>
-
-            <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
-                <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                    <label for="ManualFile" type="button"
-                        class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
-                        選擇檔案
-                        <input id="ManualFile" name="ManualFile" type="file" class="form-file-input">
-                        <input type="checkbox" id="_checkFilePath" name="_checkFilePath" class="form-file-input"
-                            required
-                            oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的使用手冊' : '')">
-                    </label>
-                </div>
-                <div id="ManualFileGroup"
-                    class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
-                    <div id="ManualFileName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
-                    <button type="button" class="btn-delete-item flex-shrink-0" id="ManualFileDelete"></button>
-                </div>
-            </div>
-        </div>
+        <div id="FileUploader"></div>
 
     </form>
 </div>
@@ -77,7 +57,7 @@
 <script src="/Scripts/tool.js"></script>
 
 <script>
-
+    var fileUploader
     $(async function () {
         await pushSelect("System", '@Url.Action("System", "DropDownList")');
         addButtonEvent();
@@ -91,6 +71,15 @@
         SubSystems.addEventListener("change", function () {
             pushSelect("EName", `@Url.Action("EName", "DropDownList")?System=${$('#System').val()}&SubSystem=${$('#SubSystem').val()}`);
         });
+
+        fileUploader = new FileUploader({
+            container: "#FileUploader",
+            className: "form-group g-col-2 required",
+            label: "設備操作手冊檔案",
+            id: "DesignDiagrams",
+            customValidityText:"請上傳設備操作手冊"
+        })
+
     });
 
     function save() {
@@ -104,11 +93,11 @@
         form.append("EName", document.getElementById("EName").value);
         form.append("Brand", document.getElementById("Brand").value);
         form.append("Model", document.getElementById("Model").value);
-        var files = $("#ManualFile").get(0).files;
-        if (files.length > 0) {
-            form.append("ManualFile", files[0]);
+
+        if (fileUploader.hasFile()) {
+            form.append("ManualFile", fileUploader.getFile());
         }
-        //form.append("ManualFile", document.getElementById("ManualFile").files[0]);
+
         console.log(Object.fromEntries(form.entries()));
 
         $.ajax({
@@ -137,23 +126,6 @@
     function addButtonEvent() {
         $("#back").click(function () {
             history.back();
-        })
-
-        $("#ManualFile").change(function (e) {
-            console.log(this.files);
-            if (this.files && this.files.length !== 0) {
-                let file = this.files[0];
-                $("#ManualFileName").text(file.name);
-                $("#ManualFileGroup").removeClass('d-none');
-                $("#_checkFilePath").prop("checked", true);
-            }
-        })
-
-        $("#ManualFileDelete").click(function () {
-            $("#ManualFile").val('');
-            $("#ManualFileName").text('');
-            $("#ManualFileGroup").addClass('d-none');
-            $("#_checkFilePath").prop("checked", false);
         })
 
         $("#submit").click(function () {

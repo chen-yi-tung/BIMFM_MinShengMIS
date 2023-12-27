@@ -44,7 +44,7 @@ namespace MinSheng_MIS.Controllers
             JObject jo = new JObject();
             #region 先檢查是否有同系統&子系統&設備名稱&廠牌&型號 之操作手冊存在
             var isexist = db.EquipmentOperatingManual.Where(x => x.System == eom.System && x.SubSystem == eom.SubSystem && x.EName == eom.EName && x.Brand == eom.Brand && x.Model == eom.Model);
-            if(isexist.Count() > 0)
+            if (isexist.Count() > 0)
             {
                 return Content("此操作手冊已存在!", "application/json");
             }
@@ -76,7 +76,7 @@ namespace MinSheng_MIS.Controllers
             string result = JsonConvert.SerializeObject(jo);
             return Content(result, "application/json");
         }
-        
+
         #endregion
         #region  設備操作手冊詳情->檢視
         public ActionResult Read()
@@ -101,7 +101,7 @@ namespace MinSheng_MIS.Controllers
             jo["EName"] = item.EName;
             jo["Brand"] = item.Brand;
             jo["Model"] = item.Model;
-            jo["ManualFile"] = item.FilePath;
+            jo["ManualFile"] = "/Files/EquipmentOperatingManual" + item.FilePath;
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);
 
@@ -120,7 +120,7 @@ namespace MinSheng_MIS.Controllers
             #endregion
             string Filename = "";
             #region 存設備操作手冊
-            if(eom.ManualFile != null)
+            if (eom.ManualFile != null)
             {
                 string file = db.EquipmentOperatingManual.Find(eom.EOMSN).FilePath.ToString();
                 string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{file}");
@@ -139,7 +139,7 @@ namespace MinSheng_MIS.Controllers
                 string filefullpath = Path.Combine(FolderPath, Filename);
                 eom.ManualFile.SaveAs(filefullpath);
             }
-            
+
             #endregion
             #region 編輯設備操作手冊至資料庫
             var addeom = new EquipmentOperatingManualService();

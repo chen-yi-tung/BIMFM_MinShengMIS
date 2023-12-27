@@ -145,23 +145,6 @@
             history.back();
         })
 
-        $("#DesignDiagrams").change(function (e) {
-            console.log(this.files);
-            if (this.files && this.files.length !== 0) {
-                let file = this.files[0];
-                $("#ImgPathName").text(file.name);
-                $("#ImgPathGroup").removeClass('d-none');
-                $("#_checkImgPath").prop("checked", true);
-            }
-        })
-
-        $("#ImgPathDelete").click(function () {
-            $("#DesignDiagrams").val('');
-            $("#ImgPathName").text('');
-            $("#ImgPathGroup").addClass('d-none');
-            $("#_checkImgPath").prop("checked", false);
-        })
-
         $("#submit").click(function () {
             save();
         })

@@ -2,10 +2,12 @@
     ViewBag.Title = "設備操作手冊";
 }
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+@section styles {
+    @Html.Partial("DataGridScripts", true)
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -40,17 +42,6 @@
             <label for="Model">型號</label>
             <input class="form-control" id="Model" name="Model" type="text" />
         </div>
-        @*
-        <div class="form-group">
-            <label for="DateStart">上傳日期(起)</label>
-            <input class="form-control" id="DateStart" name="DateStart" type="date" />
-        </div>
-
-        <div class="form-group">
-            <label for="DateEnd">上傳日期(迄)</label>
-            <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
-        </div>
-        *@
         <div class="button-group">
             <button type="button" class="btn btn-search" id="search">查詢</button>
             <button type="button" class="btn btn-clear" id="clear">清除</button>
@@ -59,117 +50,100 @@
     </form>
 </div>
 
-<script src="/Scripts/tool.js"></script>
-
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="/Scripts/datagrid-management.js"></script>
-<script src="../../Scripts/tool.js"></script>
-<script>
-    var getGridJSON = '@Url.Action("EquipmentOperatingManual_Management", "EquipmentOperatingManual")';
-    var DataGrid;
-    var baseUrl = "/EquipmentOperatingManual/";
 
-    const fakedata = [
-        {
-            EOMSN: "230502002",
-            Filepath: "59.120.37.49:9686/EquipmentOperatingManual/230502002.pdf",
-            System: "處理系統",
-            SubSystem: "前處理系統",
-            EName: "除霧皮帶輸送機",
-            Brand: "A廠牌",
-            Model: "HT-6356",
-            UploadDate: "2023/05/02"
-        },
-        {
-            EOMSN: "230502002",
-            Filepath: "59.120.37.49:9686/EquipmentOperatingManual/230502002.pdf",
-            System: "處理系統",
-            SubSystem: "前處理系統",
-            EName: "除霧皮帶輸送機",
-            Brand: "A廠牌",
-            Model: "HT-6356",
-            UploadDate: "2023/05/02"
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("EquipmentOperatingManual_Management", "EquipmentOperatingManual")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+        const fakedata = [
+            {
+                EOMSN: "230502002",
+                Filepath: "/EquipmentOperatingManual/230502002.pdf",
+                System: "處理系統",
+                SubSystem: "前處理系統",
+                EName: "除霧皮帶輸送機",
+                Brand: "A廠牌",
+                Model: "HT-6356",
+                UploadDate: "2023/05/02"
+            },
+            {
+                EOMSN: "230502002",
+                Filepath: "/EquipmentOperatingManual/230502002.pdf",
+                System: "處理系統",
+                SubSystem: "前處理系統",
+                EName: "除霧皮帶輸送機",
+                Brand: "A廠牌",
+                Model: "HT-6356",
+                UploadDate: "2023/05/02"
+            }
+        ]
+
+        $(async function () {
+            await pushSelect("System", '@Url.Action("System", "DropDownList")');
+
+            const Systems = document.getElementById('System')
+            Systems.addEventListener("change", function () {
+                pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+            });
+
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                // data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'EOMSN',
+                //sortName: 'EOMSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" }))
+                ]],
+                columns: [[
+                    dg.hiddenColumn('EOMSN'),
+                    dg.hiddenColumn('FilePath'),
+                    dg.column('System', '系統別', 180),
+                    dg.column('SubSystem', '子系統別', 180),
+                    dg.column('EName', '設備名稱', 240),
+                    dg.column('Brand', '廠牌', 200),
+                    dg.column('Model', '型號', 180)
+                ]]
+            })
+            dg.addEvent("view", function (row, i) {
+                window.open(`${row.FilePath}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.EOMSN}`, "_self")
+            })
+            dg.addEvent("delete", function (row, i) {
+                window.open(`${baseUrl}/Delete/${row.EOMSN}`, "_self")
+            })
         }
-    ]
 
-    $(async function () {
-        await pushSelect("System", '@Url.Action("System", "DropDownList")');
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+            });
 
-        const Systems = document.getElementById('System')
-        Systems.addEventListener("change", function () {
-            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-        });
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
 
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-    });
-
-    function Initialize_DataGrid(getGridJSON) {
-        let dg = new DG();
-        DataGrid = dg.init("#DataGrid", {
-            url: getGridJSON,
-            //data: fakedata,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            rownumbers: true,
-            idField: 'EOMSN',
-            //sortName: 'EOMSN',
-            remoteSort: false,
-            sortOrder: 'asc',
-            fit: true,
-            frozenColumns: [[
-                dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
-                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete"))
-            ]],
-            columns: [[
-                { field: 'EOMSN', title: '設備操作手冊編號', align: 'center', width: 180, sortable: true, hidden: true },
-                { field: 'FilePath', title: '設備操作手冊路徑', align: 'center', width: 300, sortable: true, hidden: true },
-                { field: 'System', title: '系統別', align: 'center', width: 180, sortable: true },
-                { field: 'SubSystem', title: '子系統別', align: 'center', width: 180, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 240, sortable: true },
-                { field: 'Brand', title: '廠牌', align: 'center', width: 200, sortable: true },
-                { field: 'Model', title: '型號', align: 'center', width: 180, sortable: true },
-                //{ field: 'UploadDate', title: '上傳時間', align: 'center', width: 240, sortable: true }
-            ]]
-        })
-        dg.addEvent("view", function (row, i) {
-            window.open(`${row.FilePath}`, "_blank")
-        })
-        dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/Edit/${row.EOMSN}`, "_self")
-        })
-        dg.addEvent("delete", function (row, i) {
-            window.open(`${baseUrl}/Delete/${row.EOMSN}`, "_self")
-        })
-        //------------Pager --------------------------------------------------
-        var pager = $('#DataGrid').datagrid('getPager');
-        $(pager).pagination({
-            pageSize: 10,
-            showPageList: true,
-            pageList: [10, 20, 50],
-            beforePageText: '第',
-            afterPageText: '頁，共 {pages} 頁',
-            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-        });
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
-            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
-        });
-
-        $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
-        });
-
-        $("#create").click(function () {
-            let url = baseUrl + 'Create';
-            window.open(url, "_self");
-        });
-    }
-</script>
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}
