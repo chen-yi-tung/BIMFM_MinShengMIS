@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -157,6 +158,34 @@ namespace MinSheng_MIS.Services
                     //throw new Exception("檔案不存在");
                     continue;
             }
+        }
+        #endregion
+
+        #region 取得檔案路徑
+        /// <summary>
+        /// 以資料夾路徑取得所有或指定檔案路徑
+        /// </summary>
+        /// <param name="path">資料夾"相對"路徑</param>
+        /// <param name="filename">指定檔案名稱(不含副檔名)</param>
+        /// <returns></returns>
+        public static List<string> GetFilePath(string path, HttpServerUtilityBase ser, string filename)
+        {
+            string folderpath = ser.MapPath("~/" + $"{path}" + "/");
+            if (Directory.Exists(folderpath))  // 資料夾路徑存在
+            {
+                List<string> files = new List<string>();
+                DirectoryInfo di = new DirectoryInfo(folderpath);
+                if (!string.IsNullOrEmpty(filename))
+                    foreach (var fi in di.GetFiles($"{filename}.*"))
+                        files.Add(UrlMaker($"{path}", fi.Name));
+                else
+                    foreach (var fi in di.GetFiles())
+                        files.Add(UrlMaker($"{path}", fi.Name));
+
+                return files;
+            }
+            else
+                return null;  // 資料路徑不存在，表示未有檔案
         }
         #endregion
 

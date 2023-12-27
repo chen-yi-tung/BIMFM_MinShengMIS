@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MinSheng_MIS.Models;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -25,7 +27,7 @@ namespace MinSheng_MIS.Models.ViewModels
         [Required]
         [StringLength(50, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多50個字元。", MinimumLength = 1)]
         [Display(Name = "類別")]
-        public string Kind { get; set; } //類別
+        public string Kind { get; set; } //類別(選單值)
         [Required]
         [StringLength(50, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多50個字元。", MinimumLength = 1)]
         [Display(Name = "品名")]
@@ -35,26 +37,31 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Size { get; set; } //尺寸
         [Required]
         [Display(Name = "數量")]
-        public float PRAmount { get; set; } //數量(請購量)
+        public double PRAmount { get; set; } //數量(請購量)
         [Required]
         [StringLength(10, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多10個字元。", MinimumLength = 1)]
         [Display(Name = "單位")]
-        public string Unit { get; set; } //單位
+        public string Unit { get; set; } //單位(選單值)
         [StringLength(200, ErrorMessage = "{0} 的長度最多200個字元。")]
         [Display(Name = "申請用途")]
         public string ApplicationPurpose { get; set; } //申請用途
+        //----------------資料顯示使用-------------------
+        public string KindName { get; set; } //類別(選單名)
+        public string UnitName { get; set; } //單位(選單名)
     }
 
-    public class Read_PR
+    public class PR_ViewModel
     {
         public string PRN { get; set; } //請購單號
         public string PRUserName { get; set; } //請購人
-        public string PRState { get; set; } //請購單狀態
+        public string PRState { get; set; } //請購單狀態(選單值)
+        public string PRStateName { get; set; } //請購單狀態(選單名)
         public string PRDept { get; set; } //請購部門
         public string PRDate { get; set; } //請購申請日
-        public DateTime? AuditDate { get; set; } //審核日期
+        public string AuditDate { get; set; } //審核日期
         public string AuditResult { get; set; } //審核結果說明
         public string FilePath { get; set; } //相關文件
         public List<PR_Item> PurchaseRequisitionItem { get; set; } // 請購單項目
     }
 }
+
