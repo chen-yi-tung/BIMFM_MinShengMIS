@@ -25,12 +25,12 @@
     // let apiUrl = null;
 
     const fakeData = {
-            DDSN: "230502002",
-            ImgPath: "59.120.37.49:9686/DesignDiagrams/230502002.jpg",
-            ImgName: "機電A設計圖",
-            ImgType: "機電類",
-            UploadDate: "2023/05/02",
-            DesignDiagrams: "123",
+        DDSN: "230502002",
+        ImgPath: "/Files/DesignDiagrams/230502002.jpg",
+        ImgName: "機電A設計圖",
+        ImgType: "機電類",
+        UploadDate: "2023/05/02",
+        DesignDiagrams: "123",
     }
 
     const sn = [
@@ -43,7 +43,7 @@
                     return `<a href="/Files/DesignDiagrams${v}" target="_blank">${v.split('/').at(-1)}</a>`;
                 }
                 else {
-                    return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="/Files/DesignDiagrams${v}"/></div></div>`;
+                    return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="${v}"/></div></div>`;
                 }
             }
         },

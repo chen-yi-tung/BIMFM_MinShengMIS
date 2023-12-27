@@ -58,7 +58,7 @@
 <script>
 
     var getGridJSON = '@Url.Action("DesignDiagrams_Management", "DesignDiagrams")';
-    // var DataGrid;
+    var DataGrid;
     var baseUrl = '/' + window.location.pathname.split('/')[1];
 
     const fakeData = [
@@ -73,15 +73,9 @@
     ]
 
     $(async function () {
-        //await AreaFloorEvent();
         await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
         Initialize_DataGrid(getGridJSON);
         addSearchAreaClickEvent();
-
-        @*const Systems = document.getElementById('System')
-        Systems.addEventListener("change", function () {
-            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-        });*@
     });
 
     function Initialize_DataGrid(getGridJSON) {
@@ -96,7 +90,7 @@
             frozenColumns: [[
                 dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
                 dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete")),
+                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
             ]],
             columns: [[
                 { field: 'DDSN', title: '設計圖說編號', width: 200, hidden: true },
