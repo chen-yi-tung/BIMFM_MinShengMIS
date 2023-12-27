@@ -169,7 +169,7 @@ namespace MinSheng_MIS.Controllers
             jo["ImgNum"] = item.ImgNum;
             jo["ImgName"] = item.ImgName;
             jo["ImgVersion"] = item.ImgVersion;
-            jo["ImgPath"] = item.ImgPath;
+            jo["ImgPath"] = "/Files/AsBuiltDrawing" + item.ImgPath;
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);
 
@@ -195,7 +195,7 @@ namespace MinSheng_MIS.Controllers
             jo["ImgNum"] = item.ImgNum;
             jo["ImgName"] = item.ImgName;
             jo["ImgVersion"] = item.ImgVersion;
-            jo["UploadDate"] = item.ImgPath;
+            jo["UploadDate"] = item.UploadDate.ToString("yyyy/MM/dd HH:mm:ss");
             jo["ImgPath"] = "/Files/AsBuiltDrawing" + item.ImgPath;
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);

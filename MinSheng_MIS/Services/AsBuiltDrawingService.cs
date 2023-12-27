@@ -31,7 +31,7 @@ namespace MinSheng_MIS.Services
             drawing.ImgNum = info.ImgNum;
             drawing.ImgName = info.ImgName;
             drawing.ImgVersion = info.ImgVersion;
-            drawing.UploadDate = DateTime.Today;
+            drawing.UploadDate = DateTime.Now;
 
             db.AsBuiltDrawing.AddOrUpdate(drawing);
             db.SaveChanges();
@@ -49,7 +49,7 @@ namespace MinSheng_MIS.Services
             drawing.ImgNum = info.ImgNum;
             drawing.ImgName = info.ImgName;
             drawing.ImgVersion = info.ImgVersion;
-            drawing.UploadDate = DateTime.Today;
+            drawing.UploadDate = DateTime.Now;
 
             db.AsBuiltDrawing.AddOrUpdate(drawing);
             db.SaveChanges();

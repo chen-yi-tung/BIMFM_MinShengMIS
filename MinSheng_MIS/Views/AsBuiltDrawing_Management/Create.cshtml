@@ -56,23 +56,7 @@
             <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" maxlength="50" />
         </div>
 
-        <div class="form-group g-col-2 required">
-            <label for="">檔案上傳</label>
-            
-            <div class="edit-button-area justify-content-start align-items-center mt-1 flex-wrap flex-lg-nowrap">
-                <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                    <label for="ImgPath" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0">
-                        選擇檔案
-                        <input id="ImgPath" name="ImgPath" type="file" class="form-file-input" required>
-                    </label>
-                </div>
-                <div id="ImgPathGroup"
-                    class="order-first order-lg-last d-flex align-items-center text-start text-light w-100 w-lg-auto d-none">
-                    <div id="ImgPathName" class="d-inline-block text-break me-2" style="margin: 0.375rem;"></div>
-                    <button type="button" class="btn-delete-item flex-shrink-0" id="ImgPathDelete"></button>
-                </div>
-            </div>
-        </div>
+        <div id="FileUploader"></div>
 
     </form>
 </div>
@@ -84,16 +68,23 @@
 <script src="/Scripts/tool.js"></script>
 <script src="/Scripts/AreaFloorEvent.js"></script>
 <script>
-
+    var fileUploader
     $(async function () {
         await AreaFloorEvent();
         await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
-        addButtonEvent();
 
         const Systems = document.getElementById('DSystemID')
         Systems.addEventListener("change", function () {
             pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?DSystemID=${$('#DSystemID').val()}`);
         });
+
+        addButtonEvent();
+        fileUploader = new FileUploader({
+            container: "#FileUploader",
+            className: "form-group g-col-2 required",
+            label: "檔案上傳",
+            id: "ImgFile"
+        })
     });
 
     function save() {
@@ -109,11 +100,10 @@
         form.append("ImgNum", document.getElementById("ImgNum").value);
         form.append("ImgName", document.getElementById("ImgName").value);
         form.append("ImgVersion", document.getElementById("ImgVersion").value);
-        var files = $("#ImgPath").get(0).files;
-        if (files.length > 0) {
-            form.append("ImgPath", files[0]);
+        if (fileUploader.hasFile()) {
+            form.append("ImgPath", fileUploader.getFile());
         }
-        //form.append("ManualFile", document.getElementById("ManualFile").files[0]);
+
         console.log(Object.fromEntries(form.entries()));
 
         $.ajax({
@@ -144,24 +134,8 @@
             history.back();
         })
 
-        $("#ImgPath").change(function (e) {
-            console.log(this.files);
-            if (this.files && this.files.length !== 0) {
-                let file = this.files[0];
-                $("#ImgPathName").text(file.name);
-                $("#ImgPathGroup").removeClass('d-none');
-            }
-        })
-
-        $("#ImgPathDelete").click(function () {
-            $("#ImgPath").val('');
-            $("#ImgPathName").text('');
-            $("#ImgPathGroup").addClass('d-none');
-        })
-
         $("#submit").click(function () {
             save();
         })
     }
 </script>
-

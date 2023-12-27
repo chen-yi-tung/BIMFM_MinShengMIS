@@ -166,7 +166,7 @@ function FileUploader({
                 </div>`
     }
     this.element = $(temp())
-    this.input = this.element.find("#File")
+    this.input = this.element.find(".form-file-input")
     this.items = []
 
     const list = this.element.find(".form-file-list")
