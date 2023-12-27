@@ -2,10 +2,13 @@
     ViewBag.Title = "設計圖說管理";
 }
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+@section styles {
+    @Html.Partial("DataGridScripts", true)
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -52,78 +55,78 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="/Scripts/datagrid-management.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/AreaFloorEvent.js"></script>
-<script>
 
-    var getGridJSON = '@Url.Action("DesignDiagrams_Management", "DesignDiagrams")';
-    var DataGrid;
-    var baseUrl = '/' + window.location.pathname.split('/')[1];
+@section scripts {
+    <script>
 
-    const fakeData = [
-        {
-            DDSN: "230502002",
-            ImgPath: "59.120.37.49:9686/DesignDiagrams/230502002.jpg",
-            ImgName: "機電A設計圖",
-            ImgType: "機電類",
-            UploadDate: "2023/05/02",
+        var getGridJSON = '@Url.Action("DesignDiagrams_Management", "DesignDiagrams")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-        }
-    ]
+        const fakeData = [
+            {
+                DDSN: "230502002",
+                ImgPath: "59.120.37.49:9686/DesignDiagrams/230502002.jpg",
+                ImgName: "機電A設計圖",
+                ImgType: "機電類",
+                UploadDate: "2023/05/02",
 
-    $(async function () {
-        await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-    });
+            }
+        ]
 
-    function Initialize_DataGrid(getGridJSON) {
-        let dg = new DG();
-        DataGrid = dg.init("#DataGrid", {
-            url: getGridJSON,
-            // data: fakeData,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            idField: 'DDSN',
-            //sortName: 'ImgNum',
-            frozenColumns: [[
-                dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
-                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
-            ]],
-            columns: [[
-                dg.hiddenColumn('DDSN'),
-                dg.hiddenColumn('ImgPath'),
-                dg.column('ImgName', '圖名', 200),
-                dg.column('ImgType', '圖說種類', 180),
-                dg.column('UploadDate', '上傳日期時間', 180),
-            ]]
-        })
-        dg.addEvent("view", function (row, i) {
-            window.open(`${row.ImgPath}`, "_blank")
-        })
-        dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/Edit/${row.DDSN}`, "_self")
-        })
-        dg.addEvent("delete", function (row, i) {
-            window.open(`${baseUrl}/Delete/${row.DDSN}`, "_self")
-        })
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
+        $(async function () {
+            await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
             Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
         });
 
-        $("#search").click(function () {
-            DataGrid.datagrid('load', getQueryParams());
-        });
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                // data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'DDSN',
+                //sortName: 'ImgNum',
+                frozenColumns: [[
+                    dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('DDSN'),
+                    dg.hiddenColumn('ImgPath'),
+                    dg.column('ImgName', '圖名', 200),
+                    dg.column('ImgType', '圖說種類', 180),
+                    dg.column('UploadDate', '上傳日期時間', 180),
+                ]]
+            })
+            dg.addEvent("view", function (row, i) {
+                window.open(`${row.ImgPath}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.DDSN}`, "_self")
+            })
+            dg.addEvent("delete", function (row, i) {
+                window.open(`${baseUrl}/Delete/${row.DDSN}`, "_self")
+            })
+        }
 
-        $("#create").click(function () {
-            window.open(`${baseUrl}/Create`, "_self");
-        });
-    }
-</script>
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                Initialize_DataGrid(getGridJSON);
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}
