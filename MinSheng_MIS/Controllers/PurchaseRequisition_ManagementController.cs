@@ -8,12 +8,15 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Data.Entity.Migrations;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using System.Web.Mvc;
+using System.Web.Razor.Editor;
+using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using static System.Data.Entity.Infrastructure.Design.Executor;
 
@@ -90,33 +93,56 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 請購詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
             return View();
         }
-        //public async Task<ActionResult> Read_Data(string id)
-        //{
-        //    var request = await db.PurchaseRequisition.FirstOrDefaultAsync(x => x.PRN == id);
-        //    if (request == null)
-        //    {
-        //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Content("PRN is Undefined.");
-        //    }
-        //    var StateDics = Surface.PRState();
-        //    Read_PR model = new Read_PR
-        //    {
-        //        PRN = request.PRN,
-        //        PRUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == request.PRUserName)?.Result.MyName,
-        //        PRState = StateDics[request.PRState],
-        //        PRDept = request.PRDept,
-        //        PRDate = request.PRDate.ToString("yyyy/MM/dd"),
-        //        AuditDate = request.AuditDate?.ToString("yyyy/MM/dd"),
 
-        //    };
-        //    InspectionPlan_ManagementViewModel IMV = new InspectionPlan_ManagementViewModel();
-        //    string result = IMV.InspectationPlan_Read_Data(id);
-        //    return Content(result, "application/json");
-        //}
+        public async Task<ActionResult> Read_Data(string id)
+        {
+            var request = await db.PurchaseRequisition.FirstOrDefaultAsync(x => x.PRN == id);
+            if (request == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content("PRN is Undefined.");
+            }
+            //var StateDics = Surface.PRState();
+            var KindDics = Surface.StockType();
+            var UnitDics = Surface.Unit();
+            PR_ViewModel model = new PR_ViewModel
+            {
+                PRN = request.PRN,
+                PRUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == request.PRUserName)?.Result.MyName,
+                PRState = request.PRState,
+                PRStateName = Surface.PRState()[request.PRState],
+                PRDept = request.PRDept,
+                PRDate = request.PRDate.ToString("yyyy-MM-dd"),
+                AuditDate = request.AuditDate?.ToString("yyyy-MM-dd"),
+                AuditResult = request.AuditResult,
+                FilePath = ComFunc.GetFilePath("Files/PurchaseRequisition", Server, request.PRN)?.FirstOrDefault(),
+                PurchaseRequisitionItem = request.PurchaseRequisitionItem.Select(x => new PR_Item
+                {
+                    Kind = x.Kind,
+                    KindName = KindDics.TryGetValue(x.Kind, out var mapKind) ? mapKind : "undefined",
+                    ItemName = x.ItemName,
+                    Size = x.Size,
+                    PRAmount = x.PRAmount,
+                    Unit = x.Unit,
+                    UnitName = UnitDics.TryGetValue(x.Unit, out var mapUnit) ? mapUnit : "undefined",
+                    ApplicationPurpose = x.ApplicationPurpose
+                }).ToList()
+            };
+            // Mapping
+            //model.PurchaseRequisitionItem.ForEach(x => 
+            //{
+            //    if (KindDics.TryGetValue(x.Kind, out var mapKind)) x.Kind = mapKind;
+            //    else x.Kind = "undefined";
+            //    if (UnitDics.TryGetValue(x.Unit, out var mapUnit)) x.Unit = mapUnit;
+            //    else x.Unit = "undefined";
+            //});
+            return Content(JsonConvert.SerializeObject(model), "application/json");
+        }
         #endregion
 
         #region 請購編輯
@@ -149,36 +175,42 @@ namespace MinSheng_MIS.Controllers
             request.AuditResult = pr_info.AuditResult;
 
             // 檔案處理，目前只提供單個檔案上傳
-            string extension = Path.GetExtension(pr_info.File.FileName); // 檔案副檔名
-            if (ComFunc.IsConformedForDocument(pr_info.File.ContentType, extension) || ComFunc.IsConformedForImage(pr_info.File.ContentType, extension)) // 檔案白名單檢查
+            if (pr_info.File != null && pr_info.File.ContentLength > 0)
             {
-                string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
-
-                // 若有檔案，先進行刪除
-                string[] oldFile = Directory.GetFiles(folderpath, $"{request.PRN}.*");
-                if (oldFile.Length > 0) 
-                    ComFunc.DeleteFile(oldFile, folderpath);
-
-                if (!ComFunc.UploadFile(pr_info.File, folderpath, request.PRN))
+                string extension = Path.GetExtension(pr_info.File.FileName); // 檔案副檔名
+                if (ComFunc.IsConformedForDocument(pr_info.File.ContentType, extension) || ComFunc.IsConformedForImage(pr_info.File.ContentType, extension)) // 檔案白名單檢查
                 {
-                    Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    return Content("檔案上傳過程出錯!");
+                    string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
+
+                    // 若有檔案，先進行刪除
+                    if (Directory.Exists(folderpath))
+                    {
+                        string[] oldFile = Directory.GetFiles(folderpath, $"{request.PRN}.*");
+                        if (oldFile.Length > 0)
+                            ComFunc.DeleteFile(oldFile, folderpath);
+                    }
+                    // 檔案上傳
+                    if (!ComFunc.UploadFile(pr_info.File, folderpath, request.PRN))
+                    {
+                        Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        return Content("檔案上傳過程出錯!");
+                    }
                 }
-            }
-            else
-            {
-                Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
-                return Content("非系統可接受的檔案格式!");
+                else
+                {
+                    Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+                    return Content("非系統可接受的檔案格式!");
+                }
             }
 
             // 編輯請購單項目
             int i = 1;
-            ICollection<PurchaseRequisitionItem> pr_items = null;
+            ICollection<PurchaseRequisitionItem> pr_items = new List<PurchaseRequisitionItem>();
             foreach (var item in pr_info.PurchaseRequisitionItem)
             {
                 PurchaseRequisitionItem pr_item;
                 if (request.PurchaseRequisitionItem.Count >= i)
-                    pr_item = request.PurchaseRequisitionItem.ElementAtOrDefault(i);
+                    pr_item = request.PurchaseRequisitionItem.ElementAtOrDefault(i-1); // 保留其餘欄位;
                 else pr_item = new PurchaseRequisitionItem { PRIN = request.PRN + "_" + i.ToString().PadLeft(2, '0'), PRN = request.PRN };
                 
                 pr_item.Kind = item.Kind;
