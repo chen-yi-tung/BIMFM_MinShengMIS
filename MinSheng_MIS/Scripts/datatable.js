@@ -98,6 +98,7 @@ function createTableInner(data, sn) {
         else if (typeof imgs === 'string' || imgs instanceof String) {
             return `<div class="datatable-img-area"><div class="datatable-img-item"><img src="${imgs}"/></div></div>`;
         }
+        return nullString;
     }
 
     function putFile(urls) {

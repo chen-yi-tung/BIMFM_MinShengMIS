@@ -2,10 +2,14 @@
     ViewBag.Title = "報修單管理";
 }
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+@section styles {
+    @Html.Partial("DataGridScripts", true)
+
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -32,19 +36,6 @@
         <div>
             <input class="form-control" id="Floor" name="Floor" type="text" hidden />
         </div>
-        @* <div class="form-group">
-        <label for="IPSN">巡檢計畫編號</label>
-        <select class="form-select" name="IPSN" id="IPSN">
-        <option value="">請選擇</option>
-        </select>
-        </div> *@
-
-        @* <div class="form-group">
-        <label for="IPName">巡檢計畫名稱</label>
-        <select class="form-select" name="IPName" id="IPName">
-        <option value="">請選擇</option>
-        </select>
-        </div> *@
 
         <div class="form-group">
             <label for="ReportState">報修單狀態</label>
@@ -68,17 +59,11 @@
         <div class="form-group">
             <label for="ESN">設備編號</label>
             <input class="form-control" id="ESN" name="ESN" type="text" />
-            @*<select class="form-select" name="ESN" id="ESN">
-            <option value="">請選擇</option>
-            </select>*@
         </div>
 
         <div class="form-group">
             <label for="EName">設備名稱</label>
             <input class="form-control" id="EName" name="EName" type="text" />
-            @*<select class="form-select" name="EName" id="EName">
-            <option value="">請選擇</option>
-            </select>*@
         </div>
 
         <div class="form-group">
@@ -119,184 +104,123 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="../../Scripts/datatable.js"></script>
-<script src="../../Scripts/tool.js"></script>
-<script src="/Scripts/AreaFloorEvent.js"></script>
-<script>
-    var baseUrl = "/Report_Management/";
 
-    var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
-    //const fakeData = [
-    //    {
-    //        ReportState: "已派工",
-    //        ReportLevel: "最速件",
-    //        Area: "A棟",
-    //        Floor: "1F",
-    //        ReportSource: "APP",
-    //        RSN: "R23010601",
-    //        Date: "2023/1/6 15:00:02",
-    //        PropertyCode: "無",
-    //        ESN: "E00001",
-    //        EName: "日光燈",
-    //        ReportContent: "故障",
-    //        MyName: "王大明",
-    //    }
-    //]
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    $(async function () {
-        await AreaFloorEvent();
-        await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
-        //document.getElementById('Area').value = '1'
-        await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
-        await pushSelect("InformantUserID", '@Url.Action("ReportUser", "DropDownList")');
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-        //$("#Area option[value=1]").attr('selected', 'selected');
-    });
-    function Initialize_DataGrid(getGridJSON) {
+        const fakeData = [
+            {
+                ReportState: "已派工",
+                ReportLevel: "最速件",
+                Area: "A棟",
+                Floor: "1F",
+                ReportSource: "APP",
+                RSN: "R23010601",
+                Date: "2023/1/6 15:00:02",
+                PropertyCode: "無",
+                ESN: "E00001",
+                EName: "日光燈",
+                ReportContent: "故障",
+                MyName: "王大明",
+            }
+        ]
 
-        $('#DataGrid').datagrid({
-
-            url: getGridJSON,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            rownumbers: true,
-            idField: 'Date',
-            sortName: 'Date',
-            remoteSort: false,
-            sortOrder: 'desc',
-            fit: true,
-            frozenColumns: [[
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_dispatch', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = (row.EState != "停用") && (row.ReportState == "待派工" || row.ReportState == "未完成" || row.ReportState == "審核未過") ? '' : 'disabled';
-                        return `<button class="btn btn-datagrid" onclick="onDispatch(${index})" ${disabled}>派工</button>`;
-                    }
-                },/*
-                {
-                    field: '_locate', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
-                    }
-                },*/
-                {
-                    field: '_cancel', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = row.ReportState == "保留中(待派工)" || row.ReportState == "保留中(未完成)" || row.ReportState == "保留中(審核未過)" ? '' : 'disabled'
-                        return `<button class="btn btn-datagrid btn-datagrid-secondary" onclick="onCancel(${index})" ${disabled}>取消保留</button>`;
-                    }
-                },
-            ]],
-            columns: [[
-                { field: 'ReportState', title: '報修單狀態', align: 'center', width: 145, sortable: true },
-                { field: 'ReportLevel', title: '報修等級', align: 'center', width: 100, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 130, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
-                { field: 'ReportSource', title: '報修來源', align: 'center', width: 100, sortable: true },
-                { field: 'RSN', title: '報修單號', align: 'center', width: 116, sortable: true },
-                { field: 'Date', title: '報修時間', align: 'center', width: 200, sortable: true },
-                { field: 'PropertyCode', title: '財產編碼', align: 'center', width: 150, sortable: true },
-                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
-                { field: 'EState', title: '設備狀態', align: 'center', width: 100, hidden: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
-                { field: 'MyName', title: '報修人員', align: 'center', width: 110, sortable: true },
-                { field: 'ReportContent', title: '報修內容', align: 'center', width: 300, sortable: true },
-                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden: true },
-            ]],
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-
-            pagination: true,
-            pagePosition: 'bottom',
-            pageSize: 10
+        $(async function () {
+            await AreaFloorEvent();
+            await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
+            await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
+            await pushSelect("InformantUserID", '@Url.Action("ReportUser", "DropDownList")');
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
         });
-        //------------Pager --------------------------------------------------
-        var pager = $('#DataGrid').datagrid('getPager');
-        $(pager).pagination({
-            pageSize: 10,
-            showPageList: true,
-            pageList: [10, 20, 50],
-            beforePageText: '第',
-            afterPageText: '頁，共 {pages} 頁',
-            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-        });
-    }
-
-    // datagrid onClick Function
-    function onDetail(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + `/${row.RSN}`;
-        window.open(url, "_blank");
-    }
-
-    function onDispatch(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Dispatch';
-        window.open(url, "_self");
-    }
-
-    function onLocate(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Locate';
-        window.open(url, "_self");
-    }
-
-    function onCancel(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Cancel' + `/${row.RSN}`;
-        $.ajax({
-            url: url,
-            method: "Post",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            createDialogModal({
-                id: "DialogModal-Success",
-                inner: "取消保留成功！",
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'RSN',
+                //sortName: 'RSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
+                    dg.frozenColumn('_dispatch', (v, row, i) => dg.eventButton(i, "派工", "dispatch", { disabled: row.EState == "停用" || !(row.ReportState == "待派工" || row.ReportState == "未完成" || row.ReportState == "審核未過") })),
+                    //dg.frozenColumn('_locate', (v, row, i) => dg.eventButton(i, "定位", "locate", { disabled: row.DBID == null || row.DBID == "" })),
+                    dg.frozenColumn('_cancel', "", 111, (v, row, i) => dg.eventButton(i, "取消保留", "cancel", { disabled: !(row.ReportState == "保留中(待派工)" || row.ReportState == "保留中(未完成)" || row.ReportState == "保留中(審核未過)") })),
+                ]],
+                columns: [[
+                    dg.column('ReportState', '報修單狀態', 145),
+                    dg.column('ReportLevel', '報修等級', 100),
+                    dg.column('Area', '棟別', 130),
+                    dg.column('Floor', '樓層', 80),
+                    dg.column('ReportSource', '報修來源', 100),
+                    dg.column('RSN', '報修單號', 116),
+                    dg.column('Date', '報修時間', 200),
+                    dg.column('PropertyCode', '財產編碼', 150),
+                    dg.column('ESN', '設備編號', 100),
+                    dg.hiddenColumn('EState'),
+                    dg.column('EName', '設備名稱', 220),
+                    dg.column('MyName', '報修人員', 110),
+                    dg.column('ReportContent', '報修內容', 300),
+                    dg.hiddenColumn('DBID')
+                ]]
             })
-            $('#DataGrid').datagrid('clearSelections');
-            $('#DataGrid').datagrid('reload');
-        }
 
-        function onError(res) {
-            createDialogModal({
-                id: "DialogModal-Error",
-                inner: "取消保留失敗！",
+            dg.addEvent("read", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.RSN}`, "_blank")
+            })
+            dg.addEvent("dispatch", function (row, i) {
+                window.open(`${baseUrl}/Dispatch/${row.RSN}`, "_self")
+            })
+            dg.addEvent("locate", function (row, i) {
+                window.open(`${baseUrl}/Locate/${row.RSN}`, "_blank")
+            })
+            dg.addEvent("cancel", function (row, i) {
+                let url = `${baseUrl}/Cancel/${row.RSN}`
+                $.ajax({
+                    url: url,
+                    method: "Post",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success(res) {
+                        createDialogModal({
+                            id: "DialogModal-Success",
+                            inner: "取消保留成功！",
+                        })
+                        $('#DataGrid').datagrid('clearSelections');
+                        $('#DataGrid').datagrid('reload');
+                    },
+                    error(err) {
+                        createDialogModal({
+                            id: "DialogModal-Error",
+                            inner: "取消保留失敗！",
+                        })
+                    }
+                })
             })
         }
-    }
 
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
-            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
-        });
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            });
 
-        $("#search").click(function () {
-            $('#DataGrid').datagrid('load', getQueryParams())
-        });
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
 
-        $("#export").click(function () {
-            let url = baseUrl + 'Export';
-            window.open(url, "_self");
-        });
+            $("#export").click(function () {
+                window.open(`${baseUrl}/Export`, "_self");
+            });
 
-        $("#create").click(function () {
-            let url = baseUrl + 'Create';
-            window.open(url, "_self");
-        });
-    }
-</script>
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

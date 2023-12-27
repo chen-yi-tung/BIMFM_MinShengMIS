@@ -82,7 +82,8 @@ function DeviceFileModal() {
         this.validityAndShow(name);
     };
 
-    this.validityAndShow = (name) => {
+    this.validityAndShow = (url) => {
+        let name = url.split("/").at(-1);
         $("#_checkFilePath").prop('checked', true);
         $("#_checkFilePath")[0].setCustomValidity('');
         $("#FilePathName").text(name);

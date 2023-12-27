@@ -1,11 +1,13 @@
 ﻿@{
     ViewBag.Title = "巡檢保養紀錄管理";
 }
+@section styles {
+    @Html.Partial("DataGridScripts", true)
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -123,156 +125,96 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="../../Scripts/tool.js"></script>
-<script src="/Scripts/AreaFloorEvent.js"></script>
-<script>
-    var baseUrl = "/MaintainRecord_Management/";
-    
-    var getGridJSON = '@Url.Action("MaintainRecord_Management", "Datagrid")';
 
-    $(async function () {
-        await AreaFloorEvent();
-        await pushSelect("MaintainState", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
-        //document.getElementById('Area').value = '1'
-        await pushSelect("MaintainUserID", '@Url.Action("MaintainUser", "DropDownList")');
-        await pushSelect("AuditUserID", '@Url.Action("AuditUser_Maintain", "DropDownList")');
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("MaintainRecord_Management", "Datagrid")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-        if (window.location.search) {
-            let params = new URL(document.location).searchParams;
-            params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
+
+        $(async function () {
+            await AreaFloorEvent();
+            await pushSelect("MaintainState", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
+            await pushSelect("MaintainUserID", '@Url.Action("MaintainUser", "DropDownList")');
+            await pushSelect("AuditUserID", '@Url.Action("AuditUser_Maintain", "DropDownList")');
+
+            if (window.location.search) {
+                let params = new URL(document.location).searchParams;
+                params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
+            }
+
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'IPMSN',
+                //sortName: 'IPMSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
+                    dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit", { disabled: !(row.MaintainState == "待審核") })),
+                    dg.frozenColumn('_supplement', (v, row, i) => dg.eventButton(i, "補件", "supplement", { disabled: !(row.MaintainState == "待補件") })),
+                    //dg.frozenColumn('_locate', (v, row, i) => dg.eventButton(i, "定位", "locate", { disabled: row.DBID == null || row.DBID == "" })),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('IPMSN'),
+                    dg.column('IPSN', '計畫編號', 110),
+                    dg.column('IPName', '計畫名稱', 250),
+                    dg.column('PlanDate', '計畫日期', 150),
+                    dg.column('MaintainState', '保養單狀態', 120),
+                    dg.column('Area', '棟別', 130),
+                    dg.column('Floor', '樓層', 80),
+                    dg.column('PropertyCode', '財產編碼', 150),
+                    dg.column('ESN', '設備編號', 100),
+                    dg.column('EName', '設備名稱', 220),
+                    dg.column('EMFISN', '保養項目編號', 225),
+                    dg.column('MIName', '保養項目', 200),
+                    dg.column('Unit', '保養週期單位', 130),
+                    dg.column('Period', '保養週期', 100),
+                    dg.column('LastTime', '上次保養日期', 150),
+                    dg.column('Date', '本次保養日期', 150),
+                    dg.column('NextTime', '下次保養日期', 150),
+                    dg.column('MaintainUserName', '保養人員', 110),
+                    dg.column('AuditUserName', '審核人員', 110),
+                    dg.column('AuditDate', '審核日期', 150),
+                    dg.hiddenColumn('DBID')
+                ]]
+            })
+
+            dg.addEvent("read", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.IPMSN}`, "_blank")
+            })
+            dg.addEvent("audit", function (row, i) {
+                window.open(`${baseUrl}/Audit/${row.IPMSN}`, "_self")
+            })
+            dg.addEvent("supplement", function (row, i) {
+                window.open(`${baseUrl}/Supplement/${row.IPMSN}`, "_self")
+            })
+            dg.addEvent("locate", function (row, i) {
+                window.open(`${baseUrl}/Locate/${row.IPMSN}`, "_blank")
+            })
         }
 
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-        //$("#Area option[value=1]").attr('selected', 'selected');
-    });
-    function Initialize_DataGrid(getGridJSON) {
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            });
 
-        $('#DataGrid').datagrid({
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
 
-            url: getGridJSON,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            rownumbers: true,
-            idField: 'Date',
-            sortName: 'Date',
-            remoteSort: false,
-            sortOrder: 'desc',
-            fit: true,
-            frozenColumns: [[
-                {
-                    field: '_detail', align: 'center',
-                    formatter: (val, row, index) => {
-                        return `<button class="btn btn-datagrid" onclick="onDetail(${index})">詳情</button>`;
-                    }
-                },
-                {
-                    field: '_audit', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = row.MaintainState == "待審核" ? '' : 'disabled';
-                        return `<button class="btn btn-datagrid" onclick="onAudit(${index})" ${disabled}>審核</button>`;
-                    }
-                },
-                {
-                    field: '_supplement', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = row.MaintainState == "待補件" ? '' : 'disabled';
-                        return `<button class="btn btn-datagrid" onclick="onSupplement(${index})" ${disabled}>補件</button>`;
-                    }
-                }/*,
-                {
-                    field: '_locate', align: 'center',
-                    formatter: (val, row, index) => {
-                        let disabled = row.DBID == null || row.DBID == "" ? 'disabled' : '';
-                        return `<button class="btn btn-datagrid" onclick="onLocate(${index})" ${disabled}>定位</button>`;
-                    }
-                },*/
-            ]],
-            columns: [[
-                { field: 'IPMSN', hidden: true },
-                { field: 'IPSN', title: '計畫編號', align: 'center', width: 110, sortable: true },
-                { field: 'IPName', title: '計畫名稱', align: 'center', width: 250, sortable: true },
-                { field: 'PlanDate', title: '計畫日期', align: 'center', width: 150, sortable: true },
-                { field: 'MaintainState', title: '保養單狀態', align: 'center', width: 120, sortable: true },
-                { field: 'Area', title: '棟別', align: 'center', width: 130, sortable: true },
-                { field: 'Floor', title: '樓層', align: 'center', width: 80, sortable: true },
-                { field: 'PropertyCode', title: '財產編碼', align: 'center', width: 150, sortable: true },
-                { field: 'ESN', title: '設備編號', align: 'center', width: 100, sortable: true },
-                { field: 'EName', title: '設備名稱', align: 'center', width: 220, sortable: true },
-
-                { field: 'EMFISN', title: '保養項目編號', align: 'center', width: 225, sortable: true },
-                { field: 'MIName', title: '保養項目', align: 'center', width: 200, sortable: true },
-                { field: 'Unit', title: '保養週期單位', align: 'center', width: 130, sortable: true },
-                { field: 'Period', title: '保養週期', align: 'center', width: 100, sortable: true },
-
-                { field: 'LastTime', title: '上次保養日期', align: 'center', width: 150, sortable: true },
-                { field: 'Date', title: '本次保養日期', align: 'center', width: 150, sortable: true },
-                { field: 'NextTime', title: '下次保養日期', align: 'center', width: 150, sortable: true },
-
-                { field: 'MaintainUserName', title: '保養人員', align: 'center', width: 110, sortable: true },
-                { field: 'AuditUserName', title: '審核人員', align: 'center', width: 110, sortable: true },
-                { field: 'AuditDate', title: '審核日期', align: 'center', width: 150, sortable: true },
-                { field: 'DBID', title: 'DBID', align: 'center', width: 150, hidden: true },
-            ]],
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-
-            pagination: true,
-            pagePosition: 'bottom',
-            pageSize: 10
-        });
-        //------------Pager --------------------------------------------------
-        var pager = $('#DataGrid').datagrid('getPager');
-        $(pager).pagination({
-            pageSize: 10,
-            showPageList: true,
-            pageList: [10, 20, 50],
-            beforePageText: '第',
-            afterPageText: '頁，共 {pages} 頁',
-            displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
-        });
-    }
-
-    // datagrid onClick Function
-    function onDetail(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Read' + `/${row.IPMSN}`;
-        window.open(url, "_blank");
-    }
-
-    function onAudit(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Audit' + `/${row.IPMSN}`;
-        window.open(url, "_self");
-    }
-
-    function onSupplement(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Supplement' + `/${row.IPMSN}`;
-        window.open(url, "_self");
-    }
-
-    function onLocate(index) {
-        let row = $('#DataGrid').datagrid('getRows')[index];
-        let url = baseUrl + 'Locate';
-        window.open(url, "_self");
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
-            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
-        });
-
-        $("#search").click(function () {
-            Initialize_DataGrid(getGridJSON)
-        });
-
-        $("#export").click(function () {
-            let url = baseUrl + 'Export';
-            window.open(url, "_self");
-        });
-    }
-</script>
+            $("#export").click(function () {
+                window.open(`${baseUrl}/Export`, "_self");
+            });
+        }
+    </script>
+}
