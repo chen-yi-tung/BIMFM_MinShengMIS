@@ -148,7 +148,7 @@
         var fd = new FormData();
         fd.append("MeetingTopic", document.getElementById("MeetingTopic").value);
         fd.append("MeetingDate", document.getElementById("MeetingDate").value);
-        
+
         fd.append("MeetingDateStart", document.getElementById("MeetingDateStart").value);
         fd.append("MeetingDateEnd", document.getElementById("MeetingDateEnd").value);
 
@@ -166,7 +166,12 @@
 
         if (fileUploader.hasFile()) {
             fileUploader.getAllFile().forEach((file, i) => {
-                fd.append(`MeetingFiles[${i}]`, fileUploader.getFile(i));
+                if (file?.size) {
+                    form.append(`MeetingFiles[${i}]`, fileUploader.getFile());
+                }
+                else {
+                    form.append(`MeetingFiles[${i}]`, fileUploader.getFile()?.name);
+                }
             })
         }
         console.log(Object.fromEntries(fd.entries()));

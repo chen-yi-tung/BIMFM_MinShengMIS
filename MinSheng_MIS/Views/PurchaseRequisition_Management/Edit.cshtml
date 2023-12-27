@@ -6,7 +6,7 @@
     .datatable-input-area {
         display: flex;
         flex-direction: column;
-        max-width: 1090px;
+        max-width: 1150px;
         margin: auto;
         max-height: calc(100vh - var(--navbar-height));
         max-height: calc(100dvh - var(--navbar-height));
@@ -85,9 +85,9 @@
                         <table class="datatable-table" style="width: max-content;">
                             <thead>
                                 <tr>
-                                    <th class="datatable-header required" style="width:150px"><span>類別</span></th>
+                                    <th class="datatable-header required" style="width:160px"><span>類別</span></th>
                                     <th class="datatable-header required" style="width:250px"><span>品名</span></th>
-                                    <th class="datatable-header" style="width:150px"><span>尺寸</span></th>
+                                    <th class="datatable-header" style="width:200px"><span>尺寸</span></th>
                                     <th class="datatable-header required" style="width:120px"><span>數量</span></th>
                                     <th class="datatable-header required" style="width:150px"><span>單位</span></th>
                                     <th class="datatable-header" style="width:200px"><span>申請用途</span></th>
@@ -227,6 +227,7 @@
 
     let sampleTr;
     let fileUploader;
+    let isReadonly = false;
 
     $(async function () {
         addButtonEvent();
@@ -245,26 +246,42 @@
 
     function SampleTr() {
         this.count = 0;
-        this.data = {};
+        this.list = $("#item-area")
         this.init = async function () {
             await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
             await pushSelect("Kind", '@Url.Action("StockType", "DropDownList")');
             await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
 
-            $("#item-area").on("click", ".btn-delete-item", function (e) {
+            this.list.on("click", ".btn-delete-item", function (e) {
                 $(this).parent().parent().remove();
             })
 
             this.sample = $("#sample-input-tr").clone();
             $("#sample-input-tr").remove();
-            this.add();
+            //this.add();
         }
-        this.add = function () {
+        this.add = function (data = null) {
             let item = this.sample.clone();
             item.attr('id', this.count);
-            $("#item-area").append(item);
-            this.data[this.count] = item;
+            this.list.append(item);
+            if (data) {
+                for (const [k, v] of Object.entries(data)) {
+                    item.find("#" + k).val(v)
+                }
+            }
             this.count++;
+        }
+        this.calc = function () {
+            return this.list.children().toArray().map((e) => {
+                return {
+                    Kind: $(e).find("#Kind").val(),
+                    ItemName: $(e).find("#ItemName").val(),
+                    Size: $(e).find("#Size").val(),
+                    PRAmount: $(e).find("#PRAmount").val(),
+                    Unit: $(e).find("#Unit").val(),
+                    ApplicationPurpose: $(e).find("#ApplicationPurpose").val(),
+                }
+            })
         }
         this.init();
         return this;
@@ -284,7 +301,8 @@
 
         function onSuccess(res) {
             console.log(res);
-            if (res.PRState != "1") {
+            isReadonly = res.PRState != "1";
+            if (isReadonly) {
                 $("#ReadonlySection").removeClass("d-none")
                 $("#FormInfo").append(createTableInner(res, SerializedName));
                 $("#Items").append(createTableGrid(res.PurchaseRequisitionItem, GridOptions));
@@ -296,6 +314,18 @@
             else {
                 $("#EditSection").removeClass("d-none")
 
+                //TODO DEBUG
+                $("#PRUserName").val(res?.PRUserAccount)
+
+                $("#PRDept").val(res.PRDept)
+                if (Array.isArray(res.PurchaseRequisitionItem) || res.PurchaseRequisitionItem.length !== 0) {
+                    res.PurchaseRequisitionItem.forEach((item) => {
+                        sampleTr.add(item);
+                    })
+                }
+                else {
+                    sampleTr.add();
+                }
             }
         }
         function onError(res) {
@@ -317,6 +347,20 @@
         if (!isValidity) return;
 
         var form = new FormData();
+
+        if (!isReadonly) {
+            form.append("PRUserName", document.getElementById("PRUserName").value);
+            form.append("PRDept", document.getElementById("PRDept").value);
+            sampleTr.calc().forEach((item, i) => {
+                form.append(`PRItem_${i}_Kind`, item.Kind);
+                form.append(`PRItem_${i}_ItemName`, item.ItemName);
+                form.append(`PRItem_${i}_Size`, item.Size);
+                form.append(`PRItem_${i}_PRAmount`, item.PRAmount);
+                form.append(`PRItem_${i}_Unit`, item.Unit);
+                form.append(`PRItem_${i}_ApplicationPurpose`, item.ApplicationPurpose);
+            })
+        }
+
         form.append("PRState", document.getElementById("PRState").value);
         form.append("AuditDate", document.getElementById("AuditDate").value);
         form.append("AuditResult", document.getElementById("AuditResult").value);
@@ -329,6 +373,7 @@
                 form.append("AFileName", fileUploader.getFile()?.name);
             }
         }
+
         console.log(Object.fromEntries(form.entries()));
 
         return;

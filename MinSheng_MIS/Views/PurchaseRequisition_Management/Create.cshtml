@@ -6,7 +6,7 @@
     .datatable-input-area {
         display: flex;
         flex-direction: column;
-        max-width: 1090px;
+        max-width: 1150px;
         margin: auto;
         max-height: calc(100vh - var(--navbar-height));
         max-height: calc(100dvh - var(--navbar-height));
@@ -64,9 +64,9 @@
                     <table class="datatable-table" style="width: max-content;">
                         <thead>
                             <tr>
-                                <th class="datatable-header required" style="width:150px"><span>類別</span></th>
+                                <th class="datatable-header required" style="width:160px"><span>類別</span></th>
                                 <th class="datatable-header required" style="width:250px"><span>品名</span></th>
-                                <th class="datatable-header" style="width:150px"><span>尺寸</span></th>
+                                <th class="datatable-header" style="width:200px"><span>尺寸</span></th>
                                 <th class="datatable-header required" style="width:120px"><span>數量</span></th>
                                 <th class="datatable-header required" style="width:150px"><span>單位</span></th>
                                 <th class="datatable-header" style="width:200px"><span>申請用途</span></th>
@@ -126,13 +126,13 @@
 
     function SampleTr() {
         this.count = 0;
-        this.data = {};
+        this.list = $("#item-area")
         this.init = async function () {
             await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
             await pushSelect("Kind", '@Url.Action("StockType", "DropDownList")');
             await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
 
-            $("#item-area").on("click", ".btn-delete-item", function (e) {
+            this.list.on("click", ".btn-delete-item", function (e) {
                 $(this).parent().parent().remove();
             })
 
@@ -140,12 +140,28 @@
             $("#sample-input-tr").remove();
             this.add();
         }
-        this.add = function () {
+        this.add = function (data = null) {
             let item = this.sample.clone();
             item.attr('id', this.count);
-            $("#item-area").append(item);
-            this.data[this.count] = item;
+            this.list.append(item);
+            if (data) {
+                for (const [k, v] of Object.entries(data)) {
+                    item.find("#" + k).val(v)
+                }
+            }
             this.count++;
+        }
+        this.calc = function () {
+            return this.list.children().toArray().map((e) => {
+                return {
+                    Kind: $(e).find("#Kind").val(),
+                    ItemName: $(e).find("#ItemName").val(),
+                    Size: $(e).find("#Size").val(),
+                    PRAmount: $(e).find("#PRAmount").val(),
+                    Unit: $(e).find("#Unit").val(),
+                    ApplicationPurpose: $(e).find("#ApplicationPurpose").val(),
+                }
+            })
         }
         this.init();
         return this;
@@ -155,6 +171,43 @@
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
+
+        var form = new FormData();
+
+        form.append("PRUserName", document.getElementById("PRUserName").value);
+        form.append("PRDept", document.getElementById("PRDept").value);
+        sampleTr.calc().forEach((item, i) => {
+            form.append(`PRItem_${i}_Kind`, item.Kind);
+            form.append(`PRItem_${i}_ItemName`, item.ItemName);
+            form.append(`PRItem_${i}_Size`, item.Size);
+            form.append(`PRItem_${i}_PRAmount`, item.PRAmount);
+            form.append(`PRItem_${i}_Unit`, item.Unit);
+            form.append(`PRItem_${i}_ApplicationPurpose`, item.ApplicationPurpose);
+        })
+
+        console.log(Object.fromEntries(form.entries()));
+
+        return;
+        $.ajax({
+            url: '@Url.Action("CreatePurchaseRequisition", "PurchaseRequisition_Management")',
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/PurchaseRequisition_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+        }
     }
 
     function addButtonEvent() {
