@@ -1,11 +1,12 @@
 ﻿@{
     ViewBag.Title = "領用申請管理";
 }
+@section styles {
+    @Html.Partial("DataGridScripts")
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -69,89 +70,90 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="/Scripts/datagrid-management.js"></script>
-<script src="../../Scripts/tool.js"></script>
-<script>
-    var getGridJSON = '@Url.Action("StoresRequisition_Management", "Datagrid")';
-    var DataGrid;
-    var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    const fakeData = [
-        {
-            SRState: "1",
-            SRStateName: "待審核",
-            SRSN: "SR230203001",
-            SRDateTime: "2023/05/02",
-            SRName: "王大明",
-            SRDept: "機電部門",
-            AuditName: "陳大明",
-            AuditDate: "2023/05/03"
-        },
-        {
-            SRState: "1",
-            SRStateName: "待審核",
-            SRSN: "SR230203001",
-            SRDateTime: "2023/05/02",
-            SRName: "王大明",
-            SRDept: "機電部門",
-            AuditName: "陳大明",
-            AuditDate: "2023/05/03"
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("StoresRequisition_Management", "Datagrid")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
+
+        const fakeData = [
+            {
+                SRState: "1",
+                SRStateName: "待審核",
+                SRSN: "SR230203001",
+                SRDateTime: "2023/05/02",
+                SRName: "王大明",
+                SRDept: "機電部門",
+                AuditName: "陳大明",
+                AuditDate: "2023/05/03"
+            },
+            {
+                SRState: "1",
+                SRStateName: "待審核",
+                SRSN: "SR230203001",
+                SRDateTime: "2023/05/02",
+                SRName: "王大明",
+                SRDept: "機電部門",
+                AuditName: "陳大明",
+                AuditDate: "2023/05/03"
+            }
+        ]
+
+        $(async function () {
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'SRSN',
+                //sortName: 'SRSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit", { disabled: row.MaintainState != "待審核" })),
+                ]],
+                columns: [[
+                    dg.column('SRState', '狀態編碼', 180),
+                    dg.column('SRStateName', '狀態', 160),
+                    dg.column('SRSN', '單號', 180),
+                    dg.column('SRDateTime', '申請日期', 240),
+                    dg.column('SRName', '申請人員', 180),
+                    dg.column('SRDept', '申請部門', 200),
+                    dg.column('AuditName', '審核人員', 180),
+                    dg.column('AuditDate', '審核日期', 240),
+                ]]
+            })
+            dg.addEvent("read", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.SRSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.SRSN}`, "_self")
+            })
+            dg.addEvent("audit", function (row, i) {
+                window.open(`${baseUrl}/Audit/${row.SRSN}`, "_self")
+            })
         }
-    ]
 
-    $(async function () {
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-    });
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
 
-    function Initialize_DataGrid(getGridJSON) {
-        let dg = new DG();
-        DataGrid = dg.init("#DataGrid", {
-            url: getGridJSON,
-            data: fakeData,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            idField: 'SRSN',
-            //sortName: 'SRSN',
-            frozenColumns: [[
-                dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
-                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit", { disabled: row.MaintainState != "待審核" })),
-            ]],
-            columns: [[
-                dg.column('SRState', '狀態編碼', 180),
-                dg.column('SRStateName', '狀態', 160),
-                dg.column('SRSN', '單號', 180),
-                dg.column('SRDateTime', '申請日期', 240),
-                dg.column('SRName', '申請人員', 180),
-                dg.column('SRDept', '申請部門', 200),
-                dg.column('AuditName', '審核人員', 180),
-                dg.column('AuditDate', '審核日期', 240),
-            ]]
-        })
-        dg.addEvent("read", function (row, i) {
-            window.open(`${baseUrl}/Read/${row.SRSN}`, "_blank")
-        })
-        dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/Edit/${row.SRSN}`, "_self")
-        })
-        dg.addEvent("audit", function (row, i) {
-            window.open(`${baseUrl}/Audit/${row.SRSN}`, "_self")
-        })
-    }
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
 
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
-        });
-
-        $("#search").click(function () {
-            DataGrid.datagrid('load', getQueryParams());
-        });
-
-        $("#create").click(function () {
-            window.open(`${baseUrl}/Create`, "_self");
-        });
-    }
-</script>
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

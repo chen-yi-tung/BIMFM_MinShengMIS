@@ -11,7 +11,6 @@
 </div>
 
 <div class="edit-area edit-area-small">
-    <p style="color: white;font-size: 20px;">警戒值設定</p>
     <form class="form" id="form">
         <div class="form-group d-lg-contents required">
             <label for="ExpiryDate">有效期限</label>
@@ -32,10 +31,6 @@
 
 <script src="/Scripts/datatable.js"></script>
 <script>
-    @*var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
-        eqList = eqList.replace("\r", "").replace("\n", "");
-        var equipmentList = JSON.parse(eqList);
-        console.log(equipmentList);*@
 
     const apiUrl = null;
 
@@ -112,11 +107,10 @@
         }
 
         console.log("jsonData:", jsonData);
-        console.log("A", JSON.stringify(jsonData))
         if (!isValidity) { return }
         e.preventDefault();
         $.ajax({
-            url: '@Url.Action("EditBodySave", "EquipmentMaintainPeriod_Management")',
+            url: '@Url.Action("EditBodySave", "Stock_Management")',
             data: JSON.stringify(jsonData),
             type: "post",
             dataType: "json",
@@ -126,7 +120,7 @@
         })
         function onSuccess(res) {
             console.log(res);
-            window.open('@Url.Action("Management", "EquipmentMaintainPeriod_Management")', "_self")
+            window.open('@Url.Action("Management", "Stock_Management")', "_self")
         }
         function onError(res) {
             console.log(res);

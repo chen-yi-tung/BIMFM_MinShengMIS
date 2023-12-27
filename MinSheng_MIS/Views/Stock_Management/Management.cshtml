@@ -1,26 +1,24 @@
 ﻿@{
     ViewBag.Title = "庫存管理";
 }
-@section styles{
-    @Styles.Render("~/Content/easyui/themes/default/easyui.css")
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+
     <style>
-        .isMinStock{
+        .isMinStock {
             background-color: rgba(255, 0, 0, 0.10);
         }
+
         .isMinStock td[field='StockAvaliableAmount']>.datagrid-cell,
         .isMinStock td[field='MinStockAmount']>.datagrid-cell {
             color: rgb(229, 0, 0);
             font-weight: 500;
         }
     </style>
-
-    <script src="/Content/easyui/jquery.min.js" defer></script>
-    <script src="/Content/easyui/jquery.easyui.min.js" defer></script>
-    <script src="/Scripts/easyui-datagrid-client-paging.js" defer></script>
-
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js"defer></script>
 }
 
 
@@ -59,102 +57,99 @@
     <table id="DataGrid"></table>
 </div>
 
-<script>
-    // var getGridJSON = '@Url.Action("AsBuiltDrawing_Management", "Datagrid")';
-    var DataGrid;
-    var baseUrl = '/' + window.location.pathname.split('/')[1];
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("Stock_Management", "Datagrid")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    const fakeData = [
-        {
-            MinStockAmount: "50",
-            SISN: "S0001",
-            StockType: "備料",
-            StockName: "軸承潤滑劑",
-            StockAmount: "50",
-            StockAvaliableAmount: "48",
-            Unit: "罐"
+        const fakeData = [
+            {
+                MinStockAmount: "50",
+                SISN: "S0001",
+                StockType: "備料",
+                StockName: "軸承潤滑劑",
+                StockAmount: "50",
+                StockAvaliableAmount: "48",
+                Unit: "罐"
 
-        },
-        {
-            MinStockAmount: "50",
-            SISN: "S0002",
-            StockType: "備料",
-            StockName: "軸承潤滑劑",
-            StockAmount: "70",
-            StockAvaliableAmount: "70",
-            Unit: "罐"
+            },
+            {
+                MinStockAmount: "50",
+                SISN: "S0002",
+                StockType: "備料",
+                StockName: "軸承潤滑劑",
+                StockAmount: "70",
+                StockAvaliableAmount: "70",
+                Unit: "罐"
 
-        },
-        {
-            MinStockAmount: "50",
-            SISN: "S0003",
-            StockType: "備料",
-            StockName: "軸承潤滑劑",
-            StockAmount: "50",
-            StockAvaliableAmount: "40",
-            Unit: "罐"
+            },
+            {
+                MinStockAmount: "50",
+                SISN: "S0003",
+                StockType: "備料",
+                StockName: "軸承潤滑劑",
+                StockAmount: "50",
+                StockAvaliableAmount: "40",
+                Unit: "罐"
 
+            }
+        ]
+
+        $(async function () {
+            //await AreaFloorEvent();
+            await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+            Initialize_DataGrid();
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                data: fakeData,
+                method: 'GET',
+                queryParams: getQueryParams(),
+                idField: 'SISN',
+                //sortName: 'ImgNum',
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', "", 131, (v, row, i) => dg.eventButton(i, "警戒值設定", "edit")),
+                ]],
+                columns: [[
+                    dg.column('MinStockAmount', '警戒值數量', 150),
+                    dg.column('StockAvaliableAmount', '庫存可用數量', 160),
+                    dg.column('SISN', '庫存編號', 160),
+                    dg.column('StockType', '品項', 120),
+                    dg.column('StockName', '品名', 250),
+                    dg.column('StockAmount', '庫存實際量', 150),
+                    dg.column('Unit', '單位', 120),
+                ]],
+                rowStyler: (i, row) => row.StockAvaliableAmount < row.MinStockAmount ? { class: 'isMinStock' } : undefined
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.SISN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/MinStockAmountSetting/${row.SISN}`, "_self")
+            })
         }
-    ]
 
-    $(async function () {
-        //await AreaFloorEvent();
-        await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
-        Initialize_DataGrid();
-        addSearchAreaClickEvent();
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+                pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+            });
 
-        const Systems = document.getElementById('System')
-    @*Systems.addEventListener("change", function () {
-            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-            });*@
-    });
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
 
-    function Initialize_DataGrid(getGridJSON) {
-        let dg = new DG();
-        DataGrid = dg.init("#DataGrid", {
-            //url: getGridJSON,
-            data: fakeData,
-            method: 'GET',
-            queryParams: getQueryParams(),
-            idField: 'SISN',
-            //sortName: 'ImgNum',
-            frozenColumns: [[
-                dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "警戒值設定", "edit")),
-            ]],
-            columns: [[
-                dg.column('MinStockAmount', '警戒值數量', 150),
-                dg.column('StockAvaliableAmount', '庫存可用數量', 160),
-                dg.column('SISN', '庫存編號', 160),
-                dg.column('StockType', '品項', 120),
-                dg.column('StockName', '品名', 250),
-                dg.column('StockAmount', '庫存實際量', 150),
-                dg.column('Unit', '單位', 120),
-            ]],
-            rowStyler: (i, row) => row.StockAvaliableAmount < row.MinStockAmount ? { class: 'isMinStock' } : undefined
-        })
-        dg.addEvent("detail", function (row, i) {
-            window.open(`${baseUrl}/Read/${row.SISN}`, "_blank")
-        })
-        dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/MinStockAmountSetting/${row.SISN}`, "_self")
-        })
-    }
-
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
-            pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
-            pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
-        });
-
-        $("#search").click(function () {
-            DataGrid.datagrid('load', getQueryParams());
-        });
-
-        $("#create").click(function () {
-            window.open(`${baseUrl}/Create`, "_self");
-        });
-    }
-</script>
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

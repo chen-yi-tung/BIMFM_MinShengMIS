@@ -2,10 +2,12 @@
     ViewBag.Title = "請購管理";
 }
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<script src="/Scripts/easyui-datagrid-client-paging.js"></script>
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -38,21 +40,6 @@
                 <option value="">請選擇</option>
             </select>
         </div>
-        @*
-        <div class="form-group">
-            <label for="AuditUserID">審核者</label>
-            <input class="form-control" id="AuditUserID" name="AuditUserID" type="text" />
-        </div>
-
-        <div class="form-group">
-            <label for="DateSelect">日期項目選擇</label>
-            <select class="form-select" name="DateSelect" id="DateSelect">
-                <option value="請購申請日期">請購申請日期</option>
-                <option value="預計交期">預計交期</option>
-                <option value="審核日期">審核日期</option>
-            </select>
-        </div>
-        *@
         <div class="form-group">
             <label for="DateFrom">日期(起)</label>
             <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
@@ -74,82 +61,74 @@
 <div class="datagrid-area">
     <table id="DataGrid"></table>
 </div>
-<script src="/Scripts/datagrid-management.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script>
 
-    var getGridJSON = '@Url.Action("PurchaseRequisition_Management", "Datagrid")';
-    var DataGrid;
-    var baseUrl = '/' + window.location.pathname.split('/')[1];
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("PurchaseRequisition_Management", "Datagrid")';
+        var DataGrid;
+        var baseUrl = '/' + window.location.pathname.split('/')[1];
 
-    const fakeData = [
-        {
-            PRState: "待審核",
-            PRN: "1120301001",
-            PRDate: "2023/03/01",
-            PRUserName: "王大明",
-            PRDept: "機電維修部",
-            EstimatedDate: "2023/04/01",
-            AuditUserID: "",
-            AuditDate: "",
-            AuditContent: "",
+        const fakeData = [
+            {
+                PRState: "待審核",
+                PRN: "1120301001",
+                PRDate: "2023/03/01",
+                PRUserName: "王大明",
+                PRDept: "機電維修部",
+                EstimatedDate: "2023/04/01"
+            }
+        ]
+
+        $(async function () {
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+            await pushSelect("PRState", '@Url.Action("FormPRState", "DropDownList")');
+            await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'PRN',
+                //sortName: 'PRN',
+                remoteSort: true,
+                frozenColumns: [[
+                    dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                ]],
+                columns: [[
+                    dg.column('PRState', '請購單狀態', 130),
+                    dg.column('PRN', '單號', 130),
+                    dg.column('PRDate', '請購申請日期', 200),
+                    dg.column('PRUserName', '請購人', 110),
+                    dg.column('PRDept', '請購部門', 150)
+                ]]
+            })
+            dg.addEvent("read", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.PRN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.PRN}`, "_self")
+            })
         }
-    ]
 
-    $(async function () {
-        Initialize_DataGrid(getGridJSON);
-        addSearchAreaClickEvent();
-        await pushSelect("PRState", '@Url.Action("FormPRState", "DropDownList")');
-        await pushSelect("PRUserName", '@Url.Action("AllMyName","DropDownList")');
-    });
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
 
-    function Initialize_DataGrid(getGridJSON) {
-        let dg = new DG();
-        DataGrid = dg.init("#DataGrid", {
-            url: getGridJSON,
-            //data: fakeData,
-            method: 'POST',
-            queryParams: getQueryParams(),
-            idField: 'PRN',
-            //sortName: 'PRN',
-            remoteSort: true,
-            frozenColumns: [[
-                dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
-                dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-            ]],
-            columns: [[
-                dg.column('PRState', '請購單狀態', 130),
-                dg.column('PRN', '單號', 130),
-                dg.column('PRDate', '請購申請日期', 200),
-                dg.column('PRUserName', '請購人', 110),
-                dg.column('PRDept', '請購部門', 150),
-                //dg.column('EstimatedDate', '預計交期', 200),
-                //dg.column('AuditUserID', '審核者', 110),
-                //dg.column('AuditDate', '審核日期', 200),
-                //dg.column('AuditContent', '審核意見', 400),
-            ]]
-        })
-        dg.addEvent("read", function (row, i) {
-            window.open(`${baseUrl}/Read/${row.PRN}`, "_blank")
-        })
-        dg.addEvent("edit", function (row, i) {
-            window.open(`${baseUrl}/Edit/${row.PRN}`, "_self")
-        })
-    }
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
 
-    //search area onClick Function
-    function addSearchAreaClickEvent() {
-        $("#clear").click(function () {
-            $(".search-area form")[0].reset();
-        });
-
-        $("#search").click(function () {
-            DataGrid.datagrid('load', getQueryParams());
-        });
-
-        $("#create").click(function () {
-            window.open(`${baseUrl}/Create`, "_self");
-        });
-    }
-</script>
-
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}
