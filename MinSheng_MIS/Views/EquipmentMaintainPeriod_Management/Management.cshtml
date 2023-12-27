@@ -131,8 +131,8 @@
                 //data: fakeData,
                 method: 'POST',
                 queryParams: getQueryParams(),
-                idField: 'PSSN',
-                //sortName: 'PSSN',
+                idField: 'EMISN',
+                //sortName: 'EMISN',
                 remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
@@ -161,10 +161,10 @@
             })
 
             dg.addEvent("edit", function (row, i) {
-                window.open(`${baseUrl}/Edit/${row.MISN}`, "_self")
+                window.open(`${baseUrl}/Edit/${row.EMISN}`, "_self")
             })
             dg.addEvent("locate", function (row, i) {
-                window.open(`${baseUrl}/Locate/${row.MISN}`, "_blank")
+                window.open(`${baseUrl}/Locate/${row.EMISN}`, "_blank")
             })
         }
 
