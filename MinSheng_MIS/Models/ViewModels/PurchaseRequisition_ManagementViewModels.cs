@@ -19,7 +19,8 @@ namespace MinSheng_MIS.Models.ViewModels
         public string PRState { get; set; } //請購單狀態
         public DateTime? AuditDate { get; set; } //審核日期
         public string AuditResult { get; set; } //審核結果說明
-        public HttpPostedFileBase File { get; set; } //相關文件
+        public HttpPostedFileBase AFile { get; set; } //相關文件
+        public string AFileName { get; set; } //相關文件
     }
 
     public class PR_Item
@@ -53,7 +54,8 @@ namespace MinSheng_MIS.Models.ViewModels
     public class PR_ViewModel
     {
         public string PRN { get; set; } //請購單號
-        public string PRUserName { get; set; } //請購人
+        public string PRUserName { get; set; } //請購人(選單值)
+        public string PRUserAccount { get; set; } //請購人(選單名)
         public string PRState { get; set; } //請購單狀態(選單值)
         public string PRStateName { get; set; } //請購單狀態(選單名)
         public string PRDept { get; set; } //請購部門

@@ -114,6 +114,7 @@ namespace MinSheng_MIS.Controllers
             {
                 PRN = request.PRN,
                 PRUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == request.PRUserName)?.Result.MyName,
+                PRUserAccount = request.PRUserName,
                 PRState = request.PRState,
                 PRStateName = Surface.PRState()[request.PRState],
                 PRDept = request.PRDept,
@@ -146,8 +147,9 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 請購編輯
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
         }
 
@@ -167,14 +169,18 @@ namespace MinSheng_MIS.Controllers
                 return Content("PRN is Undefined.");
             }
 
-            // 檔案處理，目前只提供單個檔案上傳
-            if (pr_info.File != null && pr_info.File.ContentLength > 0)
+            // 檔案處理，目前只提供單個檔案上傳及刪除
+            string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
+            if (pr_info.AFileName != null) // 刪除
             {
-                string extension = Path.GetExtension(pr_info.File.FileName); // 檔案副檔名
-                if (ComFunc.IsConformedForDocument(pr_info.File.ContentType, extension) || ComFunc.IsConformedForImage(pr_info.File.ContentType, extension)) // 檔案白名單檢查
+                string[] oldFile = new string[] { pr_info.AFileName };
+                ComFunc.DeleteFile(oldFile, folderpath);
+            }
+            if (pr_info.AFile != null && pr_info.AFile.ContentLength > 0) // 上傳
+            {
+                string extension = Path.GetExtension(pr_info.AFile.FileName); // 檔案副檔名
+                if (ComFunc.IsConformedForDocument(pr_info.AFile.ContentType, extension) || ComFunc.IsConformedForImage(pr_info.AFile.ContentType, extension)) // 檔案白名單檢查
                 {
-                    string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
-
                     // 若有檔案，先進行刪除
                     if (Directory.Exists(folderpath))
                     {
@@ -183,7 +189,7 @@ namespace MinSheng_MIS.Controllers
                             ComFunc.DeleteFile(oldFile, folderpath);
                     }
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(pr_info.File, folderpath, request.PRN))
+                    if (!ComFunc.UploadFile(pr_info.AFile, folderpath, request.PRN))
                     {
                         Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         return Content("檔案上傳過程出錯!");
