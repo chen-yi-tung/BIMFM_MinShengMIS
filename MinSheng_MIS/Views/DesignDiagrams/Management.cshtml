@@ -93,8 +93,8 @@
                 dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
             ]],
             columns: [[
-                { field: 'DDSN', title: '設計圖說編號', width: 200, hidden: true },
-                { field: 'ImgPath', title: '設計圖說路徑', width: 200, hidden: true },
+                dg.hiddenColumn('DDSN'),
+                dg.hiddenColumn('ImgPath'),
                 dg.column('ImgName', '圖名', 200),
                 dg.column('ImgType', '圖說種類', 180),
                 dg.column('UploadDate', '上傳日期時間', 180),
