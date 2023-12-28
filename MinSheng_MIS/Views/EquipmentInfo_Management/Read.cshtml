@@ -30,8 +30,8 @@
 
 <script>
     const ESN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
-    let apiUrl = null;
+    let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
+    //let apiUrl = null;
 
     const fakeData = {
         ASN: 1,
@@ -52,7 +52,7 @@
 
     const sn = [
         { text: "棟別", value: "Area" },
-        { text: "樓層", value: "FloorName" },
+        { text: "樓層", value: "Floor" },
         { text: "空間名稱", value: "RoomName" },
         { text: "系統別", value: "System" },
         { text: "子系統別", value: "SubSystem" },

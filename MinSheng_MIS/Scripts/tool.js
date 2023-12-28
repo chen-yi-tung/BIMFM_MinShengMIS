@@ -129,6 +129,7 @@ function FileUploader({
     container,
     className = "form-group required g-col-2",
     buttonAreaClassName = "edit-button-area position-relative justify-content-start align-items-start mt-1 flex-wrap flex-lg-nowrap",
+    buttonText = "選擇檔案",
     label = "",
     id = "File",
     accept = [".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".csv"],
@@ -144,7 +145,7 @@ function FileUploader({
             <div class="${buttonAreaClassName}">
                 <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
                     <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0 align-self-start">
-                        <span>選擇檔案</span>
+                        <span>${buttonText}</span>
                         <input id="${id}" name="${id}" type="file" class="form-file-input" 
                         ${accept && Array.isArray(accept) && accept.length > 0 ? `accept="${accept.join(",")}"` : ''}
                         ${required && !customValidity ? 'required' : ''}

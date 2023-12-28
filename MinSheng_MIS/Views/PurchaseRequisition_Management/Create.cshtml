@@ -187,7 +187,6 @@
 
         console.log(Object.fromEntries(form.entries()));
 
-        return;
         $.ajax({
             url: '@Url.Action("CreatePurchaseRequisition", "PurchaseRequisition_Management")',
             data: form,

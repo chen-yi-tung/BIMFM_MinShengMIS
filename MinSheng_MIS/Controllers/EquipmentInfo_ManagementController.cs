@@ -48,6 +48,12 @@ namespace MinSheng_MIS.Controllers
             ViewBag.id = id;
             return View();
         }
+
+        [HttpPost]
+        public ActionResult Edit(EquipmentInfo_ManagementViewModel eim)
+        {
+            return Content("這個API還沒做","application/json");
+        }
         #endregion
 
         #region 停用
@@ -79,7 +85,7 @@ namespace MinSheng_MIS.Controllers
             var num = 1;
             if (lastESN != null)
             {
-                num = Convert.ToInt32(lastESN.ESN.Remove(0,1)) + 1;
+                num = Convert.ToInt32(lastESN.ESN.Remove(0, 1)) + 1;
             }
             var newESN = 'E' + num.ToString().PadLeft(5, '0');
 
@@ -157,7 +163,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult CheckManual(EquipmentOperatingManualViewModel eom)
         {
             JArray ja = new JArray();
-            
+
             #region 檢查是否有同系統&子系統&設備名稱&廠牌&型號 之操作手冊
             var isexist = db.EquipmentOperatingManual.Where(e => e.System == eom.System && e.SubSystem == eom.SubSystem && e.EName == eom.EName && e.Brand == eom.Brand && e.Model == eom.Model).FirstOrDefault();
             if (isexist != null)
@@ -179,9 +185,45 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 設備屬性
+        #region 查看設備
         [HttpGet]
         public ActionResult ReadBody(string id)
+        {
+            EquipmentInfo item = db.EquipmentInfo.Find(id);
+
+            JObject jo = new JObject();
+            var ASN = db.Floor_Info.Find(item.FSN).ASN.ToString();
+            jo["ASN"] = ASN;
+            jo["Area"] = item.Area;
+            jo["FSN"] = item.FSN;
+            jo["Floor"] = item.Floor;
+            jo["RoomName"] = item.RoomName;
+            jo["System"] = item.System;
+            jo["SubSystem"] = item.SubSystem;
+            jo["PropertyCode"] = item.PropertyCode;
+            jo["PropertyCode"] = item.PropertyCode;
+            jo["EName"] = item.EName;
+            jo["Brand"] = item.Brand;
+            jo["Model"] = item.Model;
+            jo["LocationX"] = item.LocationX;
+            jo["LocationY"] = item.LocationY;
+
+            var EOM = db.EquipmentOperatingManual.Where(e =>
+                e.System == item.System &&
+                e.SubSystem == item.SubSystem &&
+                e.EName == item.EName &&
+                e.Brand == item.Brand &&
+                e.Model == item.Model).FirstOrDefault();
+
+            jo["FilePath"] = !string.IsNullOrEmpty(EOM.FilePath) ? "/Files/EquipmentOperatingManual" + EOM.FilePath : null;
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 設備屬性
+        [HttpGet]
+        public ActionResult ReadEquipment(string id)
         {
             var equipmentInfo = db.EquipmentInfo.Find(id);
             //設備狀態 編碼對照顯示文字

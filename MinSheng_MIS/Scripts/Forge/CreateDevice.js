@@ -1,6 +1,38 @@
 ﻿const deviceFileModal = new DeviceFileModal();
 function DeviceFileModal() {
     const self = this;
+    this.fileUploader = fileUploader = new FileUploader({
+        container: "#FileUploader",
+        className: "form-group w-100 mb-2",
+        label: "設備使用手冊",
+        buttonText: "上傳",
+        id: "File",
+        customValidity: true,
+        customValidityText: "請選擇或上傳新的使用手冊"
+    })
+    
+    this.checkFilePathBtn = $(`<button type="button" class="btn btn-search w-lg-auto w-100 flex-shrink-0" id="checkFilePath">檢查</button>`)
+    this.checkFilePathBtn.click(function () {
+        const arr = [
+            "System",
+            "SubSystem",
+            "EName",
+            "Brand",
+            "Model"
+        ]
+
+        let check = arr.map(e => document.getElementById(e).reportValidity()).every(e => e);
+        if (check) {
+            let search = {};
+            arr.forEach((e) => {
+                search[e] = document.getElementById(e).value;
+            })
+            deviceFileModal.create(search);
+        }
+    })
+
+    this.fileUploader.element.find(".btn-search").before(this.checkFilePathBtn)
+
     this.autoCalcRoute = true;
     this.ModalJQ = $(`
     <div class="modal fade sort-list-modal" tabindex="-1" id="DeviceFileModal">
@@ -74,21 +106,13 @@ function DeviceFileModal() {
 
     this.save = () => {
         let c = self.ModalJQ.find(".list-group-item .form-check-input:checked")
-        let name = c.siblings('span').text();
-        this.file = c.val();
-
         console.log("todo FileReader readFromUrl into this.file")
 
-        this.validityAndShow(name);
+        this.fileUploader.setFile(c.val());
     };
 
-    this.validityAndShow = (url) => {
-        let name = url.split("/").at(-1);
-        $("#_checkFilePath").prop('checked', true);
-        $("#_checkFilePath")[0].setCustomValidity('');
-        $("#FilePathName").text(name);
-        $("#FilePathGroup").removeClass('d-none');
-    }
+    this.file = this.fileUploader.getFile
+    this.setFile = this.fileUploader.setFile
 
     this.ModalJQ.one("hidden.bs.modal", () => {
         //self.ModalBs.dispose();
@@ -167,41 +191,6 @@ async function LocateClickEvent(callback = () => { }) {
 function addButtonEvent() {
     $("#back").click(function () {
         history.back();
-    })
-
-    $("#checkFilePath").click(function () {
-        const arr = [
-            "System",
-            "SubSystem",
-            "EName",
-            "Brand",
-            "Model"
-        ]
-
-        let check = arr.map(e => document.getElementById(e).reportValidity()).every(e => e);
-        if (check) {
-            let search = {};
-            arr.forEach((e) => {
-                search[e] = document.getElementById(e).value;
-            })
-            deviceFileModal.create(search);
-        }
-    })
-
-    $("#FilePath").change(function (e) {
-        console.log(this.files);
-        if (this.files && this.files[0]) {
-            let file = this.files[0];
-            deviceFileModal.validityAndShow(file.name);
-            deviceFileModal.file = file;
-        }
-    })
-
-    $("#FilePathDelete").click(function () {
-        $("#_checkFilePath").prop('checked', false);
-        $("#FilePath").val('');
-        $("#FilePathName").text('');
-        $("#FilePathGroup").addClass('d-none');
     })
 
     $("#locate").click(function () {

@@ -233,6 +233,7 @@
             buttonAreaClassName: "edit-button-area position-relative justify-content-start align-items-start mt-1 flex-wrap",
             label: "相關文件",
             id: "File",
+            accept: [".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx"],
             required: false
         })
         await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
@@ -379,7 +380,6 @@
 
         console.log(Object.fromEntries(form.entries()));
 
-        return;
         $.ajax({
             url: '@Url.Action("EditPurchaseRequisition", "PurchaseRequisition_Management")',
             data: form,

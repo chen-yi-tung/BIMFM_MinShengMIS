@@ -99,27 +99,7 @@
                 <label for="Model">型號</label>
                 <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required />
             </div>
-            <div class="form-group w-100 mb-2">
-                <label for="">設備使用手冊</label>
-                <div class="edit-button-area position-relative mt-1 flex-wrap justify-content-start">
-                    <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                        <button type="button" class="btn btn-search w-lg-auto w-100" id="checkFilePath">檢查</button>
-                        <label for="FilePath" type="button" class="btn btn-search w-lg-auto w-100 mt-0">
-                            <span>上傳</span>
-                            <input id="FilePath" name="FilePath" type="file" class="form-file-input">
-                            <input type="checkbox" id="_checkFilePath" name="_checkFilePath" class="form-file-input"
-                                required
-                                oninvalid="this.setCustomValidity(this.validity.valueMissing ? '請選擇或上傳新的使用手冊' : '')">
-                        </label>
-                    </div>
-                    <div id="FilePathGroup"
-                        class="order-first order-lg-last w-100 w-lg-auto d-none">
-                        <div id="FilePathName" class="d-inline-block text-break me-2"></div>
-                        <button type="button" class="btn-delete-item flex-shrink-0" id="FilePathDelete"></button>
-                    </div>
-                </div>
-
-            </div>
+            <div id="FileUploader"></div>
         </form>
     </div>
 
@@ -165,8 +145,8 @@
 
 <script>
     const ESN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
-    let apiUrl = null;
+    let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
+    //let apiUrl = null;
 
     const fakeData = {
         ASN: 1,
@@ -221,7 +201,7 @@
             for (const [k, v] of Object.entries(res)) {
                 switch (k) {
                     case "FilePath":
-                        deviceFileModal.validityAndShow(v);
+                        deviceFileModal.setFile(v);
                         break;
                     default:
                         $(`#${k}`).val(v);
@@ -245,7 +225,7 @@
         if (!$("#LocationX").val() || !$("#LocationX").val()) return;
 
         const fd = new FormData();
-
+        fd.append("ESN", ESN)
         fd.append("ASN", $("#ASN").val())
         fd.append("FSN", $("#FSN").val())
         fd.append("RoomName", $("#RoomName").val())
@@ -264,13 +244,11 @@
         if (!fd) return;
 
         $.ajax({
-            url: "/EquipmentInfo_Management/Create",
-            data: fd,//JSON.stringify(fd),
+            url: "/EquipmentInfo_Management/Edit",
+            data: fd,
             type: "POST",
             contentType: false,
             processData: false,
-            //dataType: "json",
-            //contentType: "application/json;charset=utf-8",
             success: onSuccess,
             error: onError
         })
