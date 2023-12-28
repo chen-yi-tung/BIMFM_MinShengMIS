@@ -156,8 +156,7 @@
 <script src="/Scripts/tool.js"></script>
 
 <script>
-    //const PRN = '@ViewBag.id';
-    const PRN = window.location.pathname.split('/').at(-1)
+    const PRN = '@ViewBag.id';
     const apiUrl = '@Url.Action("Read_Data", "PurchaseRequisition_Management")' + `/${PRN}`;
 
     const SerializedName = [
