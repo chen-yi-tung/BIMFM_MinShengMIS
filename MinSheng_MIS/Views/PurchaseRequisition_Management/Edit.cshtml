@@ -304,6 +304,8 @@
             isReadonly = res.PRState != "1";
             if (isReadonly) {
                 $("#ReadonlySection").removeClass("d-none")
+                $("#EditSection").remove()
+
                 $("#FormInfo").append(createTableInner(res, SerializedName));
                 $("#Items").append(createTableGrid(res.PurchaseRequisitionItem, GridOptions));
                 $("#PRState").val(res.PRState)
@@ -312,11 +314,10 @@
                 res.FilePath ? fileUploader.setFile(res.FilePath) : void 0;
             }
             else {
+                $("#ReadonlySection").remove()
                 $("#EditSection").removeClass("d-none")
 
-                //TODO DEBUG
                 $("#PRUserName").val(res?.PRUserAccount)
-
                 $("#PRDept").val(res.PRDept)
                 if (Array.isArray(res.PurchaseRequisitionItem) || res.PurchaseRequisitionItem.length !== 0) {
                     res.PurchaseRequisitionItem.forEach((item) => {
@@ -347,6 +348,8 @@
         if (!isValidity) return;
 
         var form = new FormData();
+
+        form.append("PRN", PRN);
 
         if (!isReadonly) {
             form.append("PRUserName", document.getElementById("PRUserName").value);
