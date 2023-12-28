@@ -143,11 +143,14 @@ namespace MinSheng_MIS.Services
         /// <summary>
         /// 刪除多個檔案(若不存在，則忽略)
         /// </summary>
-        /// <param name="deleteFile">欲刪除檔案的名稱(須包含副檔名)</param>
         /// <param name="folderpath">欲刪除檔案的資料夾路徑</param>
-        public static void DeleteFile(string[] deleteFile, string folderpath)
+        /// <param name="filename">欲刪除檔案的名稱(不包含副檔名)，若不指定則輸入"*"</param>
+        /// <param name="extension">欲刪除檔案的副檔名，若不指定則輸入"*"</param>
+        public static void DeleteFile(string folderpath, string filename, string extension)
         {
             if (!Directory.Exists(folderpath)) /*throw new Exception("檔案路徑不存在");*/ return;
+            // 找出符合的檔案
+            string[] deleteFile = Directory.GetFiles(folderpath, $"{filename}.{extension}");
             // 刪除檔案
             foreach (var file in deleteFile)
             {

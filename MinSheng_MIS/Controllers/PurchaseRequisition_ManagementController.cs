@@ -167,23 +167,15 @@ namespace MinSheng_MIS.Controllers
             request.AuditResult = pr_info.AuditResult;
             // [相關文件]檔案處理，目前只提供單個檔案上傳及刪除
             string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
-            if (pr_info.AFileName != null) // 刪除
-            {
-                string[] oldFile = new string[] { pr_info.AFileName };
-                ComFunc.DeleteFile(oldFile, folderpath);
-            }
+            if (pr_info.AFileName == null) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，表示若此請購單具有相關文件，應刪除。
+                ComFunc.DeleteFile(folderpath, request.PRN, "*");
             if (pr_info.AFile != null && pr_info.AFile.ContentLength > 0) // 上傳
             {
                 string extension = Path.GetExtension(pr_info.AFile.FileName); // 檔案副檔名
                 if (ComFunc.IsConformedForDocument(pr_info.AFile.ContentType, extension) || ComFunc.IsConformedForImage(pr_info.AFile.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 若有檔案，先進行刪除
-                    if (Directory.Exists(folderpath))
-                    {
-                        string[] oldFile = Directory.GetFiles(folderpath, $"{request.PRN}.*");
-                        if (oldFile.Length > 0)
-                            ComFunc.DeleteFile(oldFile, folderpath);
-                    }
+                    ComFunc.DeleteFile(folderpath, request.PRN, "*");
                     // 檔案上傳
                     if (!ComFunc.UploadFile(pr_info.AFile, folderpath, request.PRN))
                     {
