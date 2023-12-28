@@ -167,10 +167,10 @@
         if (fileUploader.hasFile()) {
             fileUploader.getAllFile().forEach((file, i) => {
                 if (file?.size) {
-                    form.append(`MeetingFiles[${i}]`, fileUploader.getFile());
+                    form.append(`MeetingFiles[${i}]`, file);
                 }
                 else {
-                    form.append(`MeetingFiles[${i}]`, fileUploader.getFile()?.name);
+                    form.append(`MeetingFiles[${i}]`, file?.name);
                 }
             })
         }

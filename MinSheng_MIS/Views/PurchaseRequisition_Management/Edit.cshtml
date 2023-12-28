@@ -370,10 +370,10 @@
         if (fileUploader.hasFile()) {
             let file = fileUploader.getFile()
             if (file?.size) {
-                form.append("AFile", fileUploader.getFile());
+                form.append("AFile", file);
             }
             else {
-                form.append("AFileName", fileUploader.getFile()?.name);
+                form.append("AFileName", file?.name);
             }
         }
 

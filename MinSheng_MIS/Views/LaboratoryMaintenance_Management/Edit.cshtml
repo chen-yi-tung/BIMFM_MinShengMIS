@@ -38,6 +38,8 @@
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 <script>
+    const LMSN = '@ViewBag.id';
+    //const apiUrl = '@Url.Action("ReadBody", "LaboratoryMaintenance_Management")' + `/${LMSN}`;
     const apiUrl = null;
     const fakeData = {
         LMSN: "1",
@@ -103,7 +105,13 @@
         form.append("MTitle", document.getElementById("MTitle").value);
         form.append("MContent", document.getElementById("MContent").value);
         if (fileUploader.hasFile()) {
-            form.append("MFile", fileUploader.getFile());
+            let file = fileUploader.getFile()
+            if (file?.size) {
+                form.append("MFile", file);
+            }
+            else {
+                form.append("MFileName", file.name);
+            }
         }
         console.log(Object.fromEntries(form.entries()));
         $.ajax({
