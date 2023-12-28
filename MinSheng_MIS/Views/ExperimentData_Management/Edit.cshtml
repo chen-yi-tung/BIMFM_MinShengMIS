@@ -69,18 +69,71 @@
 <script src="/Scripts/tool.js"></script>
 <script src="/Scripts/datatable.js"></script>
 <script>
+    const EDRSN = '@ViewBag.id';
+    //let apiUrl = '@Url.Action("ReadBody", "ExperimentData_Management")' + `/${EDRSN}`;
+    let apiUrl = null;
+
+    const fakeData = {
+        EDRSN: "1",
+        ExperimentType: "水質分析",
+        ExperimentName: "汙水管水質檢測分析實驗",
+        EDate: "2023-05-22",
+        FilePath: "/Files/ExperimentData/000001.pdf",
+        UploadUserName: "王大明",
+        UploadDateTime: "2023-12-18 12:10:33",
+        ExperimentalDataItem: [
+            {
+                DataName: "LLLD1",
+                Data: "10.1"
+            },
+            {
+                DataName: "LLLD1",
+                Data: "10.2"
+            },
+        ]
+    }
+
     var fileUploader
     var dataItems = new DataItems()
+
     $(async function () {
         addButtonEvent();
-        dataItems.create()
         fileUploader = new FileUploader({
             container: "#FileUploader",
             className: "form-group w-lg-532px required",
             label: "實驗數據上傳",
             id: "File"
         })
+        readData()
     });
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        async function onSuccess(res) {
+            console.log(res);
+            for (const [k, v] of Object.entries(res)) {
+                $("#" + k).val(v)
+            }
+            fileUploader.setFile(res.FilePath)
+            res?.ExperimentalDataItem?.forEach((d) => {
+                dataItems.create(d);
+            })
+
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
 
     function save() {
         //重置自訂驗證錯誤訊息
@@ -93,7 +146,7 @@
         }
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("isValidity():", isValidity)
-        if (!isValidity) return;
+        //if (!isValidity) return;
 
         var form = new FormData();
         form.append("EDate", document.getElementById("EDate").value);
@@ -103,13 +156,13 @@
             form.append("EDFile", fileUploader.getFile());
         }
         dataItems.calc().forEach((item, i) => {
-            form.append(`DatalItem_${i}_DataName`, item.DataName);
-            form.append(`DatalItem_${i}_Data`, item.Data);
+            form.append(`ExperimentalDataItem[${i}].DataName`, item.DataName);
+            form.append(`ExperimentalDataItem[${i}].Data`, item.Data);
         })
 
         console.log(Object.fromEntries(form.entries()));
         $.ajax({
-            url: '@Url.Action("EditLaboratoryLabel", "LaboratoryLabel_Management")',
+            url: '@Url.Action("EditExperimentData", "ExperimentData_Management")',
             data: form,
             type: "POST",
             contentType: false,
@@ -121,7 +174,7 @@
             console.log(res);
             createDialogModal({
                 id: "DialogModal-Success", inner: "儲存成功！",
-                onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
+                onHide: () => { window.location.href = "/ExperimentData_Management/Management"; }
             });
         }
         function onError(res) {
@@ -129,6 +182,7 @@
             createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
         }
     }
+
     function addButtonEvent() {
         $("#back").click(function () {
             history.back();
@@ -159,9 +213,9 @@
         this.create = (data = null) => {
             let item = $(temp_item(this.count))
             if (data) {
-                item.children("#EDSN").val(data.EDSN)
-                item.children("#DataName").val(data.DataName)
-                item.children("#Data").val(data.Data)
+                item.find("#EDSN").val(data.EDSN)
+                item.find("#DataName").val(data.DataName)
+                item.find("#Data").val(data.Data)
             }
             this.list.append(item)
             this.count++

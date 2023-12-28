@@ -103,13 +103,13 @@
             form.append("EDFile", fileUploader.getFile());
         }
         dataItems.calc().forEach((item, i) => {
-            form.append(`DatalItem_${i}_DataName`, item.DataName);
-            form.append(`DatalItem_${i}_Data`, item.Data);
+            form.append(`ExperimentalDataItem[${i}].DataName`, item.DataName);
+            form.append(`ExperimentalDataItem[${i}].Data`, item.Data);
         })
 
         console.log(Object.fromEntries(form.entries()));
         $.ajax({
-            url: '@Url.Action("CreateLaboratoryLabel", "LaboratoryLabel_Management")',
+            url: '@Url.Action("CreateExperimentData", "ExperimentData_Management")',
             data: form,
             type: "POST",
             contentType: false,
@@ -121,7 +121,7 @@
             console.log(res);
             createDialogModal({
                 id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
+                onHide: () => { window.location.href = "/ExperimentData_Management/Management"; }
             });
         }
         function onError(res) {

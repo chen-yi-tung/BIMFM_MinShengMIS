@@ -48,13 +48,13 @@
 </div>
 @section scripts {
     <script>
-        var getGridJSON = '@Url.Action("ExperimentData_Management", "ExperimentData_Management")';
+        var getGridJSON = '@Url.Action("ExperimentData_Management", "Datagrid")';
         var DataGrid;
         var baseUrl = '/' + window.location.pathname.split('/')[1];
 
         const fakeData = [
             {
-                EDSN: "1",
+                EDRSN: "1",
                 ExperimentType: "水質分析",
                 ExperimentName: "汙水管水質檢測分析實驗",
                 EDDate: "2023/5/22"
@@ -73,24 +73,24 @@
                 data: fakeData,
                 method: 'POST',
                 queryParams: getQueryParams(),
-                idField: 'EDSN',
-                //sortName: 'EDSN',
+                idField: 'EDRSN',
+                //sortName: 'EDRSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
                 ]],
                 columns: [[
-                    dg.hiddenColumn('EDSN'),
+                    dg.hiddenColumn('EDRSN'),
                     dg.column('ExperimentType', '實驗類型', 200),
                     dg.column('ExperimentName', '實驗名稱', 400),
                     dg.column('EDDate', '實驗日期', 200),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Read/${row.EDSN}`, "_blank")
+                window.open(`${baseUrl}/Read/${row.EDRSN}`, "_blank")
             })
             dg.addEvent("edit", function (row, i) {
-                window.open(`${baseUrl}/Edit/${row.EDSN}`, "_self")
+                window.open(`${baseUrl}/Edit/${row.EDRSN}`, "_self")
             })
 
         }
