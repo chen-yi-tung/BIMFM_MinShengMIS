@@ -23,7 +23,7 @@
 
         <div class="form-group" style="grid-column: auto/span 2;">
             <label for="ReportContent">內容說明</label>
-            <textarea class="form-control" name="ReportContent" id="ReportContent" rows="1"></textarea>
+            <textarea class="form-control" name="ReportContent" id="ReportContent" rows="3"></textarea>
         </div>
 
         <div id="FileUploader"></div>
@@ -46,6 +46,10 @@
             label: "月報檔案",
             id: "File"
         })
+
+        //預帶目前年月
+        let d = new Date()
+        $("#YearMonth").val(`${d.getFullYear()}-${d.getMonth() + 1}`)
     });
 
     function save() {
@@ -102,4 +106,3 @@
         })
     }
 </script>
-

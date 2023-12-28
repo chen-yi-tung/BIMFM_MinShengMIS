@@ -52,7 +52,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Edit(EquipmentInfo_ManagementViewModel eim)
         {
-            return Content("這個API還沒做","application/json");
+            return Content("這個API還沒做", "application/json");
         }
         #endregion
 
@@ -214,8 +214,10 @@ namespace MinSheng_MIS.Controllers
                 e.EName == item.EName &&
                 e.Brand == item.Brand &&
                 e.Model == item.Model).FirstOrDefault();
-
-            jo["FilePath"] = !string.IsNullOrEmpty(EOM.FilePath) ? "/Files/EquipmentOperatingManual" + EOM.FilePath : null;
+            if (EOM != null)
+            {
+                jo["FilePath"] = !string.IsNullOrEmpty(EOM.FilePath) ? "/Files/EquipmentOperatingManual" + EOM.FilePath : null;
+            }
             string result = JsonConvert.SerializeObject(jo);
             return Content(result, "application/json");
         }
