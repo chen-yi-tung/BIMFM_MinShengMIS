@@ -1,6 +1,22 @@
 ﻿@{
     ViewBag.Title = "實驗數據詳情";
 }
+@section styles {
+    @Html.Partial("DataGridScripts")
+    <script src="/Scripts/datatable.js" defer></script>
+
+    <style>
+        .datatable-easyui .datagrid-wrap {
+            height: 400px !important;
+        }
+
+        no-data {
+            padding: 1rem;
+            display: block;
+            text-align: center;
+        }
+    </style>
+}
 
 <h2>@ViewBag.Title</h2>
 <div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
@@ -9,106 +25,111 @@
     </div>
 </div>
 
-<div class="datatable datatable-small-grid mt-5">
+<div class="datatable datatable-small mt-5">
     <div class="datatable-header">實驗數據</div>
-    <div class="datatable-body">
-        <table class="datatable-table" id="EDatas">
-        </table>
+    <div class="datatable-body datatable-easyui">
+        <table id="DataGrid"></table>
     </div>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
+@section scripts {
+    <script>
+        const EDRSN = '@ViewBag.id';
+        //let apiUrl = '@Url.Action("ReadBody", "ExperimentData_Management")' + `/${EDRSN}`;
+        let apiUrl = null;
 
-<script>
-    const EDRSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "ExperimentData_Management")' + `/${EDRSN}`;
-    let apiUrl = null;
+        const fakeData = {
+            EDRSN: "1",
+            ExperimentType: "水質分析",
+            ExperimentName: "汙水管水質檢測分析實驗",
+            EDate: "2023-05-22",
+            FilePath: "/Files/ExperimentData/000001.pdf",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023-12-18 12:10:33",
+            ExperimentalDataItem: generateRandomData()
+        }
 
-    const fakeData = {
-        EDRSN: "1",
-        ExperimentType: "水質分析",
-        ExperimentName: "汙水管水質檢測分析實驗",
-        EDate: "2023-05-22",
-        FilePath: "/Files/ExperimentData/000001.pdf",
-        UploadUserName: "王大明",
-        UploadDateTime: "2023-12-18 12:10:33",
-        ExperimentalDataItem: [
-            {
-                DataName: "LLLD1",
-                Data: "10.1"
-            },
-            {
-                DataName: "LLLD1",
-                Data: "10.2"
-            },
+        const sn = [
+            { text: "實驗類型", value: "ExperimentType" },
+            { text: "實驗名稱", value: "ExperimentName" },
+            { text: "實驗日期", value: "EDate" },
+            { text: "上傳者", value: "UploadUserName" },
+            { text: "上傳時間", value: "UploadDateTime" },
+            { text: "實驗數據", value: "FilePath" },
         ]
-    }
 
-    const sn = [
-        { text: "實驗類型", value: "ExperimentType" },
-        { text: "實驗名稱", value: "ExperimentName" },
-        { text: "實驗日期", value: "EDate" },
-        { text: "上傳者", value: "UploadUserName" },
-        { text: "上傳時間", value: "UploadDateTime" },
-        { text: "實驗數據", value: "FilePath" },
-    ]
+        $(function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
 
-    const GridOptions = {
-        thead: false,
-        columns: [
-            { id: "index", width: "10%" },
-            { id: "DataName", width: "40%" },
-            { id: "Data", width: "50%" },
-        ]
-    }
+        function readData(url = null) {
 
-
-    $(function () {
-        addButtonEvent();
-        readData(apiUrl);
-    })
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        async function onSuccess(res) {
-            console.log(res);
-            $("#FormInfo").append(createTableInner(res, sn))
-
-            res.ExperimentalDataItem ?
-                $("#EDatas").append(createTableGrid(
-                    createIndexToArrayData(res.ExperimentalDataItem),
-                    GridOptions
-                )) :
-                $("#EDatas").parents(".datatable").remove();
-
-            function createIndexToArrayData(arr) {
-                return arr.map((e, i) => {
-                    return {
-                        index: i,
-                        DataName: e.DataName,
-                        Data: e.Data
-                    }
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
                 })
+
+            async function onSuccess(res) {
+                console.log(res);
+                $("#FormInfo").append(createTableInner(res, sn))
+
+                if (res?.ExperimentalDataItem && res?.ExperimentalDataItem.length != 0) {
+                    initDatagrid(res.ExperimentalDataItem);
+                }
+                else {
+                    $('#DataGrid').before("<no-data>無填報資料</no-data>")
+                }
+
+
+            }
+            function onError(res) {
+                console.log(res);
             }
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
 
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-    }
-</script>
+        function initDatagrid(data) {
+            $('#DataGrid').datagrid({
+                data,
+                fit: true,
+                fitColumns: true,
+                singleSelect: true,
+                selectOnCheck: true,
+                checkOnSelect: false,
+                rownumbers: true,
+                columns: [[
+                    { field: 'DataName', title: '數據欄位名稱', align: 'center', width: 100, sortable: true },
+                    { field: 'Data', title: '數據', align: 'center', width: 100, sortable: true }
+                ]]
+            });
+
+            const observer = new ResizeObserver((e) => {
+                $('#DataGrid').datagrid("resize")
+            });
+            observer.observe(document.querySelector(".datatable-easyui"));
+
+        }
+
+        function generateRandomData() {
+            const randomData = [];
+            for (let i = 0; i < 20; i++) {
+                randomData.push({
+                    DataName: "LLLD" + (i + 1),
+                    Data: Math.floor((i + 1) * Math.random() * 100) / 100
+                });
+            }
+            return randomData;
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+        }
+    </script>
+}

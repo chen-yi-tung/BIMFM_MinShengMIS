@@ -2,14 +2,22 @@
     ViewBag.Title = "警示訊息詳情";
 }
 
-@Styles.Render("~/Content/easyui/themes/default/easyui.css")
-<script src="/Content/easyui/jquery.min.js"></script>
-<script src="/Content/easyui/jquery.easyui.min.js"></script>
-<style>
-    .datatable-easyui .datagrid-wrap {
-        height: 400px !important;
-    }
-</style>
+@section styles {
+    @Html.Partial("DataGridScripts")
+    <script src="/Scripts/datatable.js" defer></script>
+
+    <style>
+        .datatable-easyui .datagrid-wrap {
+            height: 400px !important;
+        }
+
+        no-data {
+            padding: 1rem;
+            display: block;
+            text-align: center;
+        }
+    </style>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -25,107 +33,100 @@
         <table id="DataGrid"></table>
     </div>
 </div>
-<!-- jQuery CDN -->
 
-<script src="/Scripts/datatable.js" defer></script>
-<script>
+@section scripts {
+    <script>
+        const apiUrl = null;
 
-    const apiUrl = null;
+        const SerializedName = [
+            { text: "事件等級", value: "WMType" },
+            { text: "事件處理狀況", value: "WMState" },
+            { text: "發生時間", value: "TimeofOccurrence" },
+            { text: "發生地點", value: "Location" },
+            { text: "事件內容", value: "Message" },
+            { text: "警報來源", value: "WMSource" },
 
-    const SerializedName = [
-        { text: "事件等級", value: "WMType" },
-        { text: "事件處理狀況", value: "WMState" },
-        { text: "發生時間", value: "TimeofOccurrence" },
-        { text: "發生地點", value: "Location" },
-        { text: "事件內容", value: "Message" },
-        { text: "警報來源", value: "WMSource" },
+        ]
 
-    ]
-
-    const fakeData = {
-        WMSN: "230101001",
-        PMSN: "1",
-        WMType: "一般",
-        WMState: "已處理",
-        TimeofOccurrence: "2023-01-01T06:30:27",
-        Location: "進流抽水站 B2F",
-        Message: "巡檢路徑偏移",
-        WMSource: "文字內容",
-    }
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        function onSuccess(res) {
-            console.log(res);
-            $("#ItemInfo").append(createTableInner(res, SerializedName));
+        const fakeData = {
+            WMSN: "230101001",
+            PMSN: "1",
+            WMType: "一般",
+            WMState: "已處理",
+            TimeofOccurrence: "2023-01-01T06:30:27",
+            Location: "進流抽水站 B2F",
+            Message: "巡檢路徑偏移",
+            WMSource: "文字內容",
+            WarningMessageFillinRecord: generateRandomData()
         }
-        function onError(res) {
-            console.log(res);
+
+        window.onload = function () {
+            readData(apiUrl);
         }
-    }
 
-    window.onload = function () {
-        readData(apiUrl);
-    }
-</script>
-<script>
-    // ... (your existing code)
+        function readData(url = null) {
 
-    // Function to generate random data
-    function generateRandomData() {
-        const randomData = [];
-        for (let i = 0; i < 20; i++) { // You can adjust the number of rows as needed
-            randomData.push({
-                FillinDateTime: new Date().toLocaleString(),
-                FillinUserName: "User " + (i + 1),
-                WMState: Math.random() > 0.5 ? "已處理" : "未處理",
-                Memo: "Random Memo Random Memo" + (i + 1)
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#ItemInfo").append(createTableInner(res, SerializedName));
+                if (res?.WarningMessageFillinRecord && res?.WarningMessageFillinRecord.length != 0) {
+                    initDatagrid(res.WarningMessageFillinRecord);
+                }
+                else {
+                    $('#DataGrid').before("<no-data>無填報資料</no-data>")
+                }
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function initDatagrid(data) {
+            $('#DataGrid').datagrid({
+                data,
+                fit: true,
+                method: 'GET',
+                remoteSort: false,
+                sortOrder: 'asc',
+                singleSelect: true,
+                selectOnCheck: true,
+                checkOnSelect: false,
+                columns: [[
+                    { field: 'FillinDateTime', title: '填報時間', align: 'center', width: 220, sortable: true },
+                    { field: 'FillinUserName', title: '填報人員', align: 'center', width: 120, sortable: true },
+                    { field: 'WMState', title: '事件處理狀況', align: 'center', width: 150, sortable: true },
+                    { field: 'Memo', title: '備註', align: 'center', sortable: true },
+                ]]
             });
+
+            const observer = new ResizeObserver((e) => {
+                $('#DataGrid').datagrid("resize")
+            });
+            observer.observe(document.querySelector(".datatable-easyui"));
+
         }
-        return randomData;
-    }
 
-    // Function to initialize the datagrid with random data
-    function initDatagrid() {
-        const randomData = generateRandomData();
-
-        $('#DataGrid').datagrid({
-            fit: true,
-            data: randomData,
-            method: 'GET',
-            remoteSort: false,
-            sortOrder: 'asc',
-            singleSelect: true,
-            selectOnCheck: true,
-            checkOnSelect: false,
-            columns: [[
-                { field: 'FillinDateTime', title: '填報時間', align: 'center', width: 220, sortable: true },
-                { field: 'FillinUserName', title: '填報人員', align: 'center', width: 120, sortable: true },
-                { field: 'WMState', title: '事件處理狀況', align: 'center', width: 150, sortable: true },
-                { field: 'Memo', title: '備註', align: 'center', sortable: true },
-            ]]
-        });
-
-        const observer = new ResizeObserver((e) => {
-            $('#DataGrid').datagrid("resize")
-        });
-        observer.observe(document.querySelector(".datatable-easyui"));
-
-    }
-
-    // Call the initialization function
-    window.onload = function () {
-        readData(apiUrl); // Load your initial data
-        initDatagrid();   // Add random data to the datagrid
-    }
-</script>
+        function generateRandomData() {
+            const randomData = [];
+            for (let i = 0; i < 20; i++) {
+                randomData.push({
+                    FillinDateTime: new Date().toLocaleString(),
+                    FillinUserName: "User " + (i + 1),
+                    WMState: Math.random() > 0.5 ? "已處理" : "未處理",
+                    Memo: "Random Memo Random Memo" + (i + 1)
+                });
+            }
+            return randomData;
+        }
+    </script>
+}
