@@ -352,12 +352,12 @@
             form.append("PRUserName", document.getElementById("PRUserName").value);
             form.append("PRDept", document.getElementById("PRDept").value);
             sampleTr.calc().forEach((item, i) => {
-                form.append(`PRItem_${i}_Kind`, item.Kind);
-                form.append(`PRItem_${i}_ItemName`, item.ItemName);
-                form.append(`PRItem_${i}_Size`, item.Size);
-                form.append(`PRItem_${i}_PRAmount`, item.PRAmount);
-                form.append(`PRItem_${i}_Unit`, item.Unit);
-                form.append(`PRItem_${i}_ApplicationPurpose`, item.ApplicationPurpose);
+                form.append(`PurchaseRequisitionItem[${i}].Kind`, item.Kind);
+                form.append(`PurchaseRequisitionItem[${i}].ItemName`, item.ItemName);
+                form.append(`PurchaseRequisitionItem[${i}].Size`, item.Size);
+                form.append(`PurchaseRequisitionItem[${i}].PRAmount`, item.PRAmount);
+                form.append(`PurchaseRequisitionItem[${i}].Unit`, item.Unit);
+                form.append(`PurchaseRequisitionItem[${i}].ApplicationPurpose`, item.ApplicationPurpose);
             })
         }
 
