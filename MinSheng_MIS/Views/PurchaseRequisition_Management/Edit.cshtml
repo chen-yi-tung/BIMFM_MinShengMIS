@@ -134,12 +134,7 @@
     <form class="form">
         <div class="form-group d-lg-contents">
             <label for="PRState">請購單狀態</label>
-            <select id="PRState" name="PRState" class="form-select">
-                <option value="1">待送審</option>
-                <option value="2">已送審</option>
-                <option value="3">審核完成</option>
-                <option value="4">審核未過</option>
-            </select>
+            <select id="PRState" name="PRState" class="form-select"></select>
         </div>
         <div class="form-group d-lg-contents">
             <label for="AuditDate">審核日期</label>
@@ -241,6 +236,9 @@
             required: false
         })
         await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
+        await pushSelect("PRState", '@Url.Action("FormPRState", "DropDownList")');
+        $("#PRState option:first-child").remove()
+
         readData(apiUrl);
     })
 
@@ -302,13 +300,15 @@
         function onSuccess(res) {
             console.log(res);
             isReadonly = res.PRState != "1";
+            $("#PRState").val(res.PRState)
+
             if (isReadonly) {
                 $("#ReadonlySection").removeClass("d-none")
                 $("#EditSection").remove()
+                $("#PRState option:first-child").remove()
 
                 $("#FormInfo").append(createTableInner(res, SerializedName));
                 $("#Items").append(createTableGrid(res.PurchaseRequisitionItem, GridOptions));
-                $("#PRState").val(res.PRState)
                 $("#AuditDate").val(res.AuditDate)
                 $("#AuditResult").val(res.AuditResult || "")
                 res.FilePath ? fileUploader.setFile(res.FilePath) : void 0;
