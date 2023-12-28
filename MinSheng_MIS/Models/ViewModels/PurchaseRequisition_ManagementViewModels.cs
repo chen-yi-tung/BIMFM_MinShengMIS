@@ -15,12 +15,14 @@ namespace MinSheng_MIS.Models.ViewModels
         public string PRDept { get; set; } //請購部門
         public List<PR_Item> PurchaseRequisitionItem { get; set; } // 請購單項目
         //--------------------------------------------
+        [Required]
         public string PRN { get; set; } //請購單號
+        [Required]
         public string PRState { get; set; } //請購單狀態
         public DateTime? AuditDate { get; set; } //審核日期
         public string AuditResult { get; set; } //審核結果說明
-        public HttpPostedFileBase AFile { get; set; } //相關文件
-        public string AFileName { get; set; } //相關文件
+        public HttpPostedFileBase AFile { get; set; } //新增的相關文件
+        public string AFileName { get; set; } //已刪除的相關文件
     }
 
     public class PR_Item

@@ -8,17 +8,13 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Data.Entity.Migrations;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http.Results;
 using System.Web.Mvc;
-using System.Web.Razor.Editor;
 using System.Web.UI.WebControls;
-using System.Xml.Linq;
-using static System.Data.Entity.Infrastructure.Design.Executor;
+
 
 namespace MinSheng_MIS.Controllers
 {
@@ -43,11 +39,9 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> CreatePurchaseRequisition([Bind(Exclude = "PRN, PRState, AuditDate, AuditResult, File")] PR_Info pr_info)
         {
-            if (!ModelState.IsValid)  // Data Annotation未通過
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content(string.Join(Environment.NewLine, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))));
-            }
+            ModelState.Remove("PRN");
+            ModelState.Remove("PRState");
+            if (!ModelState.IsValid) HandleInvalidModelState(null);  // Data Annotation未通過
 
             DateTime now = DateTime.Now;
             // 新增請購單
@@ -79,16 +73,9 @@ namespace MinSheng_MIS.Controllers
                 db.PurchaseRequisitionItem.Add(pr_item);
                 i ++;
             }
-            try
-            {
-                await db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
-                return Content("Succeed");
-            }
-            catch (Exception ex)
-            {
-                return Content("Failed");
-            }
+            return Content("Succeed");
         }
         #endregion
 
@@ -156,20 +143,29 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> EditPurchaseRequisition(PR_Info pr_info)
         {
-            if (!ModelState.IsValid)  // Data Annotation未通過
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content(string.Join(Environment.NewLine, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))));
-            }
+            if (!ModelState.IsValidField("PRN")) HandleInvalidModelState("PRN");
 
             var request = await db.PurchaseRequisition.Where(x => x.PRN == pr_info.PRN).FirstOrDefaultAsync();
-            if (request == null)
+            if (request == null) 
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Content("PRN is Undefined.");
             }
 
-            // 檔案處理，目前只提供單個檔案上傳及刪除
+            if (request.PRState != "1")  //當請購單狀態非"待審核"時，請購單申請時的資訊不可更改。
+            {
+                // 移除相關欄位的資料驗證。
+                ModelState.Remove("PRUserName");
+                ModelState.Remove("PurchaseRequisitionItem"); // 請購單項目
+            }
+
+            if (!ModelState.IsValid) HandleInvalidModelState(null);  // Data Annotation未通過
+
+            #region 編輯請購單審核資訊
+            request.PRState = pr_info.PRState;
+            request.AuditDate = pr_info.AuditDate;
+            request.AuditResult = pr_info.AuditResult;
+            // [相關文件]檔案處理，目前只提供單個檔案上傳及刪除
             string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
             if (pr_info.AFileName != null) // 刪除
             {
@@ -201,42 +197,45 @@ namespace MinSheng_MIS.Controllers
                     return Content("非系統可接受的檔案格式!");
                 }
             }
+            #endregion
 
-            // 編輯請購單
-            request.PRUserName = pr_info.PRUserName;
-            request.PRState = pr_info.PRState;
-            request.PRDept = pr_info.PRDept;
-            request.AuditDate = pr_info.AuditDate;
-            request.AuditResult = pr_info.AuditResult;
-
-            // 若整體採購項目減少，則刪除資料庫項目
-            if (request.PurchaseRequisitionItem.Count > pr_info.PurchaseRequisitionItem.Count)
+            //當請購單狀態"待審核"時，請購單申請時的資訊才可更改。
+            #region 編輯請購單申請資訊 
+            if (request.PRState == "1")  
             {
-                int deletNum = request.PurchaseRequisitionItem.Count - pr_info.PurchaseRequisitionItem.Count();
-                var deletedItems = request.PurchaseRequisitionItem.OrderByDescending(x => x.PRIN).Take(deletNum).ToList();
-                db.PurchaseRequisitionItem.RemoveRange(deletedItems);
-            }
+                request.PRUserName = pr_info.PRUserName;
+                request.PRDept = pr_info.PRDept;
+                // 若整體採購項目減少，則刪除資料庫項目
+                if (request.PurchaseRequisitionItem.Count > pr_info.PurchaseRequisitionItem.Count)
+                {
+                    int deletNum = request.PurchaseRequisitionItem.Count - pr_info.PurchaseRequisitionItem.Count();
+                    var deletedItems = request.PurchaseRequisitionItem.OrderByDescending(x => x.PRIN).Take(deletNum).ToList();
+                    db.PurchaseRequisitionItem.RemoveRange(deletedItems);
+                }
 
-            // 編輯請購單項目
-            int i = 1;
-            ICollection<PurchaseRequisitionItem> pr_items = new List<PurchaseRequisitionItem>();
-            foreach (var item in pr_info.PurchaseRequisitionItem)
-            {
-                PurchaseRequisitionItem pr_item;
-                if (request.PurchaseRequisitionItem.Count >= i)
-                    pr_item = request.PurchaseRequisitionItem.ElementAtOrDefault(i-1); // 保留其餘欄位;
-                else pr_item = new PurchaseRequisitionItem { PRIN = request.PRN + "_" + i.ToString().PadLeft(2, '0'), PRN = request.PRN };
-                
-                pr_item.Kind = item.Kind;
-                pr_item.ItemName = item.ItemName;
-                pr_item.Size = item.Size;
-                pr_item.PRAmount = item.PRAmount;
-                pr_item.Unit = item.Unit;
-                pr_item.ApplicationPurpose = item.ApplicationPurpose;
-                pr_items.Add(pr_item);
-                i++;
+                // 編輯請購單項目
+                int i = 1;
+                ICollection<PurchaseRequisitionItem> pr_items = new List<PurchaseRequisitionItem>();
+                foreach (var item in pr_info.PurchaseRequisitionItem)
+                {
+                    PurchaseRequisitionItem pr_item;
+                    if (request.PurchaseRequisitionItem.Count >= i)
+                        pr_item = request.PurchaseRequisitionItem.ElementAtOrDefault(i - 1); // 保留其餘欄位;
+                    else pr_item = new PurchaseRequisitionItem { PRIN = request.PRN + "_" + i.ToString().PadLeft(2, '0'), PRN = request.PRN };
+
+                    pr_item.Kind = item.Kind;
+                    pr_item.ItemName = item.ItemName;
+                    pr_item.Size = item.Size;
+                    pr_item.PRAmount = item.PRAmount;
+                    pr_item.Unit = item.Unit;
+                    pr_item.ApplicationPurpose = item.ApplicationPurpose;
+                    pr_items.Add(pr_item);
+                    i++;
+                }
+                request.PurchaseRequisitionItem = pr_items;
             }
-            request.PurchaseRequisitionItem = pr_items;
+            #endregion
+
             db.PurchaseRequisition.AddOrUpdate(request);
             await db.SaveChangesAsync();
 
@@ -244,5 +243,15 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region Helper
+        private ActionResult HandleInvalidModelState(string field)
+        {
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            if (string.IsNullOrEmpty(field))
+                return Content(string.Join(Environment.NewLine, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))));
+            else
+                return Content(string.Join(Environment.NewLine, ModelState[field].Errors.Select(e => e.ErrorMessage)));
+        }
+        #endregion
     }
 }

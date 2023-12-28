@@ -191,6 +191,7 @@ namespace MinSheng_MIS.Surfaces
             ValueOption.Add("1", "待審核");
             ValueOption.Add("2", "已送審");
             ValueOption.Add("3", "審核完成");
+            ValueOption.Add("4", "審核未過");
             return ValueOption;
         }
         #endregion
