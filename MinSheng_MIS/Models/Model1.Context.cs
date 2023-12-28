@@ -52,6 +52,7 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<InspectionPlanPath> InspectionPlanPath { get; set; }
         public virtual DbSet<InspectionPlanRepair> InspectionPlanRepair { get; set; }
         public virtual DbSet<InspectionTrack> InspectionTrack { get; set; }
+        public virtual DbSet<LaboratoryMaintenance> LaboratoryMaintenance { get; set; }
         public virtual DbSet<MaintainAuditImage> MaintainAuditImage { get; set; }
         public virtual DbSet<MaintainAuditInfo> MaintainAuditInfo { get; set; }
         public virtual DbSet<MaintainCompletionImage> MaintainCompletionImage { get; set; }
@@ -63,6 +64,8 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<MonthlyReport> MonthlyReport { get; set; }
         public virtual DbSet<PathSample> PathSample { get; set; }
         public virtual DbSet<PathSampleOrder> PathSampleOrder { get; set; }
+        public virtual DbSet<PurchaseRequisition> PurchaseRequisition { get; set; }
+        public virtual DbSet<PurchaseRequisitionItem> PurchaseRequisitionItem { get; set; }
         public virtual DbSet<RepairAuditImage> RepairAuditImage { get; set; }
         public virtual DbSet<RepairAuditInfo> RepairAuditInfo { get; set; }
         public virtual DbSet<RepairCompletionImage> RepairCompletionImage { get; set; }
@@ -78,7 +81,5 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<SystemManagement> SystemManagement { get; set; }
-        public virtual DbSet<PurchaseRequisition> PurchaseRequisition { get; set; }
-        public virtual DbSet<PurchaseRequisitionItem> PurchaseRequisitionItem { get; set; }
     }
 }

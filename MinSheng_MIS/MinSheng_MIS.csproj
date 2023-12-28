@@ -307,6 +307,9 @@
     <Compile Include="Models\InspectionTrack.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\LaboratoryMaintenance.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ManufacturerInfo.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
