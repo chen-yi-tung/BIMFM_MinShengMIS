@@ -146,7 +146,7 @@
         }
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("isValidity():", isValidity)
-        //if (!isValidity) return;
+        if (!isValidity) return;
 
         var form = new FormData();
         form.append("EDate", document.getElementById("EDate").value);
