@@ -250,7 +250,7 @@ namespace MinSheng_MIS.Controllers
             jo["UploadDateTime"] = item.UploadDateTime.ToString("yyyy/M/d"); ;
             jo["ReportContent"] = item.ReportContent;
             jo["YearMonth"] = item.Year + "-" + item.Month;
-            jo["FilePath"] = string.IsNullOrEmpty(item.ReportFile) ? null : "\\Files\\MonthlyReport\\" + item.ReportFile;
+            jo["FilePath"] = string.IsNullOrEmpty(item.ReportFile) ? null : "/Files/MonthlyReport/" + item.ReportFile;
             jo["FileName"] = string.IsNullOrEmpty(item.ReportFile) ? null : item.ReportFile;
             jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);
