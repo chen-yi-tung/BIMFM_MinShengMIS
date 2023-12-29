@@ -28,14 +28,6 @@ namespace MinSheng_MIS.Controllers
 		{
 			return View();
 		}
-		[HttpPost]
-		public ActionResult InspectionPlan_Management(FormCollection form)
-		{
-			var service = new DatagridService();
-			var a = service.GetJsonForGrid_InspectionPlan(form);
-			string result = JsonConvert.SerializeObject(a);
-			return Content(result, "application/json");
-		}
 		#endregion
 
 		#region 新增巡檢計畫

@@ -24,14 +24,6 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-        [HttpPost]
-        public ActionResult DesignDiagrams_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_DesignDiagrams(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
         #endregion
 
         #region 新增設計圖說

@@ -31,14 +31,6 @@ namespace MinSheng_MIS.Controllers
 		{
 			return View();
 		}
-		[System.Web.Mvc.HttpPost]
-		public ActionResult SamplePath_Management(FormCollection form)
-		{
-			var service = new DatagridService();
-			var a = service.GetJsonForGrid_SamplePath(form);
-			string result = JsonConvert.SerializeObject(a);
-			return Content(result, "application/json");
-		}
 		#endregion
 
 		#region 新增巡檢路線模板

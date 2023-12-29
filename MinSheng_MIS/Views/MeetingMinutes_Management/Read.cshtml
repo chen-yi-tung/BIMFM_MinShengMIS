@@ -20,9 +20,9 @@
 <script src="/Scripts/ImageDisplay.js"></script>
 <script src="/Scripts/dataTable/EquipmentInfoModal.js"></script>
 <script>
-    const MMSN = '@ViewBag.MMSN';
-    //let apiUrl = '@Url.Action("ReadBody", "MeetingMinutes_Management")' + `/${MMSN}`;
-    let apiUrl = null;
+    const MMSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("ReadBody", "MeetingMinutes_Management")' + `/${MMSN}`;
+    //let apiUrl = null;
 
     const SerializedName = [
         { text: "會議主題", value: "MeetingTopic" },

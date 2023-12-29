@@ -102,9 +102,9 @@
 
 @section scripts {
     <script>
-        var getGridJSON = '@Url.Action("MaintainForm_Management", "MaintainForm_Management")';
+        var getGridJSON = '@Url.Action("MaintainForm_Management", "Datagrid")';
         var DataGrid;
-        var baseUrl = '/' + window.location.pathname.split('/')[1];
+        
 
         $(async function () {
             await AreaFloorEvent();

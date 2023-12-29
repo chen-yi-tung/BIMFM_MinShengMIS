@@ -119,6 +119,27 @@
 <script src="/Scripts/datatable.js"></script>
 <script src="/Scripts/tool.js"></script>
 <script>
+    const MMSN = '@ViewBag.id';
+    let apiUrl = '@Url.Action("EditReadBody", "MeetingMinutes_Management")' + `/${MMSN}`;
+    //let apiUrl = null;
+
+    const fakeData = {
+        MeetingTopic: "修改日期指定",
+        MeetingDate: "2024-01-01",
+        MeetingDateStart: "10:00",
+        MeetingDateEnd: "11:00",
+        MeetingVenue: "會議室3B",
+        Chairperson: "李助理",
+        Participant: "全體人員",
+        ExpectedAttendence: "53",
+        ActualAttendence: "53",
+        AbsenteeList: "0",
+        TakeTheMinutes: "助理",
+        Agenda: "文字內容",
+        MeetingContent: "電腦筆記",
+        FilePath: "5月主題.pdf"
+    }
+
     var fileUploader
     $(async function () {
         addButtonEvent();
@@ -130,7 +151,31 @@
             required: false,
             multiple: true
         })
+        readData(apiUrl)
     });
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            for (const [k, v] of Object.entries(res)) {
+                $("#" + k).val(v)
+            }
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
 
     function save() {
         //重置自訂驗證錯誤訊息

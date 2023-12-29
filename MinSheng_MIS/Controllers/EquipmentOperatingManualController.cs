@@ -23,14 +23,6 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-        [HttpPost]
-        public ActionResult EquipmentOperatingManual_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_EquipmentOperatingManual(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
         #endregion
 
         #region 新增設備操作手冊

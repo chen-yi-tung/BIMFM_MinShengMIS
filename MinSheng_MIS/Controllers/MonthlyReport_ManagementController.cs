@@ -21,92 +21,6 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-
-        [HttpPost]
-        public ActionResult GetData(FormCollection form)
-        {
-            try
-            {
-                int page = 1;
-                if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
-                int rows = 10;
-                if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
-                string reportTitle = form["ReportTitle"]?.ToString();
-                string uploadUserName = form["UploadUserName"]?.ToString();
-
-                string dateFrom = form["DateFrom"]?.ToString();
-                string dateTo = form["DateTo"]?.ToString();
-
-                Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-
-                var mr = from x in db.MonthlyReport
-                         select new { x.ReportTitle, x.UploadUserName, YearMonth = x.Year + "-" + x.Month, x.MRSN, x.ReportContent, x.UploadDateTime };
-
-                if (!string.IsNullOrEmpty(reportTitle)) mr = mr.Where(x => x.ReportTitle.Contains(reportTitle));
-                if (!string.IsNullOrEmpty(uploadUserName)) mr = mr.Where(x => x.UploadUserName.Contains(uploadUserName));
-
-                if (!string.IsNullOrEmpty(dateFrom))
-                {
-                    var datestart = DateTime.Parse(dateFrom);
-                    mr = mr.ToList().Where(x => DateTime.ParseExact(x.YearMonth, "yyyy-MM", CultureInfo.InvariantCulture) >= datestart).AsQueryable();
-                }
-
-                if (!string.IsNullOrEmpty(dateTo))
-                {
-                    var dateend = DateTime.Parse(dateTo).AddMonths(1); // Add one month to include records up to the end of the specified month
-                    mr = mr.ToList().Where(x => DateTime.ParseExact(x.YearMonth, "yyyy-MM", CultureInfo.InvariantCulture) < dateend).AsQueryable();
-                }
-
-                #region datagrid remoteSort 判斷有無 sort 跟 order
-                IValueProvider vp = form.ToValueProvider();
-                if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
-                {
-                    string sort = form["sort"]?.ToString();
-                    string order = form["order"]?.ToString();
-
-                    if (order == "asc")
-                    {
-                        mr = DatagridService.OrderByField(mr, sort, true);
-                    }
-                    else if (order == "desc")
-                    {
-                        mr = DatagridService.OrderByField(mr, sort, false);
-                    }
-                }
-                else
-                {
-                    mr = mr.OrderByDescending(x => x.MRSN);
-                }
-                #endregion
-
-                JArray ja = new JArray();
-                int total = mr.Count();
-                mr = mr.Skip((page - 1) * rows).Take(rows);
-                foreach (var item in mr)
-                {
-                    var itemObjects = new JObject
-                    {
-                        { "MRSN", item.MRSN },
-                        { "ReportTitle", item.ReportTitle },
-                        { "UploadUserName", item.UploadUserName },
-                        { "ReportContent", item.ReportContent },
-                        { "YearMonth", item.YearMonth },
-                        { "UploadDateTime", (item.UploadDateTime != DateTime.MinValue && item.UploadDateTime != null) ? item.UploadDateTime.ToString("yyyy/MM/dd") : null }
-                    };
-                    ja.Add(itemObjects);
-                }
-                JObject jo = new JObject();
-                jo.Add("rows", ja);
-                jo.Add("total", total);
-                return Content(JsonConvert.SerializeObject(jo), "application/json");
-            }
-            catch (Exception ex)
-            {
-                return Content(JsonConvert.SerializeObject(new List<ReportData> { new ReportData { ReportTitle = ex.Message, YearMonth = "ERROR" } }), "application/json");
-            }
-
-        }
-
         #endregion
 
         #region 新增月報
@@ -243,16 +157,14 @@ namespace MinSheng_MIS.Controllers
             JObject jo = new JObject();
             Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
             var item = db.MonthlyReport.Find(id);
-            if (item == null) return new HttpNotFoundResult("optional description"); //return Content(JsonConvert.SerializeObject(new JObject { { "Failed", false } }), "application/json");
+            if (item == null) return new HttpNotFoundResult("optional description");
             jo["MRSN"] = item.MRSN;
             jo["ReportTitle"] = item.ReportTitle;
             jo["UploadUserName"] = item.UploadUserName;
-            jo["UploadDateTime"] = item.UploadDateTime.ToString("yyyy/M/d"); ;
+            jo["UploadDateTime"] = item.UploadDateTime.ToString("yyyy/MM/dd"); ;
             jo["ReportContent"] = item.ReportContent;
             jo["YearMonth"] = item.Year + "-" + item.Month;
             jo["FilePath"] = string.IsNullOrEmpty(item.ReportFile) ? null : "/Files/MonthlyReport/" + item.ReportFile;
-            jo["FileName"] = string.IsNullOrEmpty(item.ReportFile) ? null : item.ReportFile;
-            jo.Add("Succeed", true);
             string result = JsonConvert.SerializeObject(jo);
             return Content(result, "application/json");
         }

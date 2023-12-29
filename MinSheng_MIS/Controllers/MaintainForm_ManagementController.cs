@@ -25,14 +25,6 @@ namespace MinSheng_MIS.Controllers
 
             return View();
         }
-        [HttpPost]
-        public ActionResult MaintainForm_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_MaintainForm(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
         #endregion
 
         #region 定期保養詳情
