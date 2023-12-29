@@ -19,7 +19,7 @@ namespace MinSheng_MIS.Services
     public class DatagridService
     {
         // 使用 Expression Tree 實現動態排序的方法
-        static IQueryable<T> OrderByField<T>(IQueryable<T> query, string propertyName, bool isAscending)
+        public static IQueryable<T> OrderByField<T>(IQueryable<T> query, string propertyName, bool isAscending)
         {
             var entityType = typeof(T);
             var property = entityType.GetProperty(propertyName);

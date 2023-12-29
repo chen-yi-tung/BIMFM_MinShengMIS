@@ -4,17 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using MinSheng_MIS.Models;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
 using System.IO;
-using System.Drawing.Imaging;
-using MinSheng_MIS.Surfaces;
+using MinSheng_MIS.Services;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -27,8 +21,6 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
-
-
 
         [HttpPost]
         public ActionResult GetData(FormCollection form)
@@ -47,56 +39,58 @@ namespace MinSheng_MIS.Controllers
 
                 Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
-                var mr = db.MonthlyReport.ToList();
+                var mr = from x in db.MonthlyReport
+                         select new { x.ReportTitle, x.UploadUserName, YearMonth = x.Year + "-" + x.Month, x.MRSN, x.ReportContent, x.UploadDateTime };
 
-                if (!string.IsNullOrEmpty(reportTitle)) mr = mr.Where(x => x.ReportTitle.Contains(reportTitle)).ToList();
-                if (!string.IsNullOrEmpty(uploadUserName)) mr = mr.Where(x => x.UploadUserName == uploadUserName).ToList();
+                if (!string.IsNullOrEmpty(reportTitle)) mr = mr.Where(x => x.ReportTitle.Contains(reportTitle));
+                if (!string.IsNullOrEmpty(uploadUserName)) mr = mr.Where(x => x.UploadUserName.Contains(uploadUserName));
 
                 if (!string.IsNullOrEmpty(dateFrom))
                 {
                     var datestart = DateTime.Parse(dateFrom);
-                    mr = mr.Where(x => DateTime.ParseExact($"{x.Year}-{x.Month}", "yyyy-MM", CultureInfo.InvariantCulture) >= datestart).ToList();
+                    mr = mr.ToList().Where(x => DateTime.ParseExact(x.YearMonth, "yyyy-MM", CultureInfo.InvariantCulture) >= datestart).AsQueryable();
                 }
 
                 if (!string.IsNullOrEmpty(dateTo))
                 {
                     var dateend = DateTime.Parse(dateTo).AddMonths(1); // Add one month to include records up to the end of the specified month
-                    mr = mr.Where(x => DateTime.ParseExact($"{x.Year}-{x.Month}", "yyyy-MM", CultureInfo.InvariantCulture) < dateend).ToList();
+                    mr = mr.ToList().Where(x => DateTime.ParseExact(x.YearMonth, "yyyy-MM", CultureInfo.InvariantCulture) < dateend).AsQueryable();
                 }
 
-                //if (!string.IsNullOrEmpty(dateFrom))
-                //{
-                //    var datestart = DateTime.Parse(dateFrom);
-                //    mr = mr.Where(x => x.UploadDateTime >= datestart).ToList();
-                //}
-                //if (!string.IsNullOrEmpty(dateTo))
-                //{
-                //    var dateend = DateTime.Parse(dateTo).AddMonths(1);
-                //    mr = mr.Where(x => x.UploadDateTime < dateend).ToList();
-                //}
+                #region datagrid remoteSort 判斷有無 sort 跟 order
+                IValueProvider vp = form.ToValueProvider();
+                if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+                {
+                    string sort = form["sort"]?.ToString();
+                    string order = form["order"]?.ToString();
 
-                mr = mr.OrderByDescending(x => x.MRSN).ToList();
+                    if (order == "asc")
+                    {
+                        mr = DatagridService.OrderByField(mr, sort, true);
+                    }
+                    else if (order == "desc")
+                    {
+                        mr = DatagridService.OrderByField(mr, sort, false);
+                    }
+                }
+                else
+                {
+                    mr = mr.OrderByDescending(x => x.MRSN);
+                }
+                #endregion
+
                 JArray ja = new JArray();
                 int total = mr.Count();
-                mr = mr.Skip((page - 1) * rows).Take(rows).ToList();
+                mr = mr.Skip((page - 1) * rows).Take(rows);
                 foreach (var item in mr)
                 {
-                    //var itemObjects = new JObject();
-                    //itemObjects.Add("MRSN", item.MRSN);
-                    //itemObjects.Add("ReportTitle", item.ReportTitle);
-                    //itemObjects.Add("UploadUserName", item.UploadUserName);
-                    //if (item.UploadDateTime != DateTime.MinValue && item.UploadDateTime != null) itemObjects.Add("UploadDateTime", item.UploadDateTime.ToString("yyyy/MM/dd"));
-                    //itemObjects.Add("ReportContent", item.ReportContent);
-                    //itemObjects.Add("YearMonth", $"{item.Year}-{item.Month}");
-                    //ja.Add(itemObjects);
-
                     var itemObjects = new JObject
                     {
                         { "MRSN", item.MRSN },
                         { "ReportTitle", item.ReportTitle },
                         { "UploadUserName", item.UploadUserName },
                         { "ReportContent", item.ReportContent },
-                        { "YearMonth", $"{item.Year}-{item.Month}" },
+                        { "YearMonth", item.YearMonth },
                         { "UploadDateTime", (item.UploadDateTime != DateTime.MinValue && item.UploadDateTime != null) ? item.UploadDateTime.ToString("yyyy/MM/dd") : null }
                     };
                     ja.Add(itemObjects);
@@ -105,8 +99,6 @@ namespace MinSheng_MIS.Controllers
                 jo.Add("rows", ja);
                 jo.Add("total", total);
                 return Content(JsonConvert.SerializeObject(jo), "application/json");
-                //List<ReportData> data = mr.Select(s => new ReportData { MRSN = s.MRSN, ReportTitle = s.ReportTitle, UploadUserName = s.UploadUserName, UploadDateTime = s.UploadDateTime.ToString("yyyy/MM/dd"), ReportContent = s.ReportContent, YearMonth = $"{s.Year}-{s.Month}" }).ToList();
-                //return Content(JsonConvert.SerializeObject(data), "application/json");
             }
             catch (Exception ex)
             {
