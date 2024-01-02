@@ -310,14 +310,14 @@ namespace MinSheng_MIS.Surfaces
         public static Dictionary<string, string> Unit()
         {
             var ValueOption = new Dictionary<string, string>();
-            ValueOption.Add("1", "個");
-            ValueOption.Add("2", "顆");
-            ValueOption.Add("3", "瓶");
-            ValueOption.Add("4", "片");
-            ValueOption.Add("5", "條");
-            ValueOption.Add("6", "支");
-            ValueOption.Add("7", "根");
-            ValueOption.Add("8", "盒");
+            ValueOption.Add("01", "個");
+            ValueOption.Add("02", "顆");
+            ValueOption.Add("03", "瓶");
+            ValueOption.Add("04", "片");
+            ValueOption.Add("05", "條");
+            ValueOption.Add("06", "支");
+            ValueOption.Add("07", "根");
+            ValueOption.Add("08", "盒");
             return ValueOption;
         }
         #endregion
