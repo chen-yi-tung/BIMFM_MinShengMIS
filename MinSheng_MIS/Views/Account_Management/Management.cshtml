@@ -103,6 +103,7 @@
                 queryParams: getQueryParams(),
                 idField: 'UserName',
                 //sortName: 'UserName',
+                remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
                     dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),

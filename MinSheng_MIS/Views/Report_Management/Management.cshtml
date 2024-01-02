@@ -109,7 +109,7 @@
     <script>
         var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
         var DataGrid;
-        
+
 
         const fakeData = [
             {
@@ -145,6 +145,7 @@
                 queryParams: getQueryParams(),
                 idField: 'RSN',
                 //sortName: 'RSN',
+                remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
                     dg.frozenColumn('_dispatch', (v, row, i) => dg.eventButton(i, "派工", "dispatch", { disabled: row.EState == "停用" || !(row.ReportState == "待派工" || row.ReportState == "未完成" || row.ReportState == "審核未過") })),

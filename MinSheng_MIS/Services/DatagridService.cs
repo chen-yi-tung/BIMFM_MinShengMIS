@@ -55,10 +55,8 @@ namespace MinSheng_MIS.Services
                 rows = short.Parse(form["rows"]?.ToString());
             }
             #endregion
-            //string propertyName = "PSSN";
-            //string order = "asc";
 
-            //塞來自formdata的資料
+            #region 塞來自formdata的資料
             //巡檢狀態
             string PlanState = form["PlanState"]?.ToString();
             //計畫編號
@@ -77,7 +75,7 @@ namespace MinSheng_MIS.Services
             string DateFrom = form["DateFrom"]?.ToString();
             //日期(迄)
             string DateTo = form["DateTo"]?.ToString();
-
+            #endregion
 
             #region 依據查詢字串檢索資料表
             var SourceTable = db.InspectionPlan.Where(x => x.PlanState != "5").AsQueryable();
@@ -248,19 +246,20 @@ namespace MinSheng_MIS.Services
             }
             #endregion
 
-            //塞來自formdata的資料
+            #region 塞來自formdata的資料
             //棟別編號
             string ASN = form["ASN"]?.ToString();
             //樓層編號
             string FSN = form["FSN"]?.ToString();
             //巡檢路線標題
             string PathTitle = form["PathTitle"]?.ToString();
+            #endregion
 
             #region 依據查詢字串檢索資料表
             var SourceTable = from x1 in db.PathSample
                               join x2 in db.Floor_Info on x1.FSN equals x2.FSN
                               join x3 in db.AreaInfo on x2.ASN equals x3.ASN
-                              select new { x1.PSSN, x1.PathTitle, x1.FSN, x2.ASN, x2.FloorName, x3.Area };
+                              select new { x1.PSSN, x1.PathTitle, x1.FSN, x2.ASN, Floor = x2.FloorName, x3.Area };
 
             if (!string.IsNullOrEmpty(ASN)) //查詢棟別編號
             {
@@ -281,7 +280,19 @@ namespace MinSheng_MIS.Services
             }
             #endregion
 
-            SourceTable = SourceTable.OrderBy(x => x.PSSN);
+            #region datagrid remoteSort 判斷有無 sort 跟 order  
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                SourceTable = OrderByField(SourceTable, sort, order == "asc");
+            }
+            else
+            {
+                SourceTable = SourceTable.OrderBy(x => x.PSSN);
+            }
+            #endregion
 
             //回傳JSON陣列
             JArray ja = new JArray();
@@ -305,7 +316,7 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("Area", a.Area);//棟別                  
 
                 if (itemObjects["Floor"] == null)
-                    itemObjects.Add("Floor", a.FloorName);//樓層
+                    itemObjects.Add("Floor", a.Floor);//樓層
 
                 ja.Add(itemObjects);
             }
@@ -457,10 +468,8 @@ namespace MinSheng_MIS.Services
                 rows = short.Parse(form["rows"]?.ToString());
             }
             #endregion
-            //string propertyName = "PSSN";
-            //string order = "asc";
 
-            //塞來自formdata的資料
+            #region 塞來自formdata的資料
             //棟別編號
             string ASN = form["ASN"]?.ToString();
             //樓層編號
@@ -489,7 +498,7 @@ namespace MinSheng_MIS.Services
             string StockState = form["StockState"]?.ToString();
             //設備狀態
             string EState = form["EState"]?.ToString();
-
+            #endregion
 
             #region 依據查詢字串檢索資料表
             var SourceTable = from x1 in db.EquipmentMaintainFormItem
@@ -599,7 +608,6 @@ namespace MinSheng_MIS.Services
             #endregion
 
             SourceTable = SourceTable.OrderByDescending(x => x.Date);
-
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
@@ -790,15 +798,7 @@ namespace MinSheng_MIS.Services
             {
                 string sort = form["sort"];
                 string order = form["order"];
-
-                if (order == "asc")
-                {
-                    SourceTable = OrderByField(SourceTable, sort, true);
-                }
-                else if (order == "desc")
-                {
-                    SourceTable = OrderByField(SourceTable, sort, false);
-                }
+                SourceTable = OrderByField(SourceTable, sort, order == "asc");
             }
             else
             {
@@ -1396,10 +1396,8 @@ namespace MinSheng_MIS.Services
                 rows = short.Parse(form["rows"]?.ToString());
             }
             #endregion
-            string propertyName = "Date";
-            string order = "asc";
 
-            //塞來自formdata的資料
+            #region 塞來自formdata的資料
             //棟別名稱
             string Area = form["Area"]?.ToString();
             //棟別編號
@@ -1432,7 +1430,7 @@ namespace MinSheng_MIS.Services
             string SourceReport = form["SourceReport"]?.ToString();
             //庫存狀態
             string StockState = form["StockState"]?.ToString();
-
+            #endregion
 
             #region 依據查詢字串檢索資料表
             var SourceTable = from x1 in db.EquipmentReportForm
@@ -1517,7 +1515,22 @@ namespace MinSheng_MIS.Services
             //var atable_ESN_list = db.EquipmentInfo.Where(x => x.Area == Area).Select(x=>x.ESN).ToList();
             //var atable_SearchTable = db.EquipmentReportForm.Where(x=> atable_ESN_list.Contains(x.ESN));
             #endregion
-            var resulttable = SourceTable.OrderByDescending(x => x.Date).AsQueryable();
+
+            #region datagrid remoteSort 判斷有無 sort 跟 order  
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                SourceTable = OrderByField(SourceTable, sort, order == "asc");
+            }
+            else
+            {
+                SourceTable = SourceTable.OrderByDescending(x => x.Date);
+            }
+            #endregion
+
+            var resulttable = SourceTable;
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
@@ -1888,7 +1901,6 @@ namespace MinSheng_MIS.Services
             }
             #endregion
 
-            //排序資料表
             var result = DataSource.OrderByDescending(x => x.IPRSN).AsQueryable();
             //回傳JSON陣列
             JArray ja = new JArray();
@@ -2050,7 +2062,21 @@ namespace MinSheng_MIS.Services
             }
             #endregion
 
-            var result = Data.OrderByDescending(x => x.ESN).AsQueryable();
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                Data = OrderByField(Data, sort, order == "asc");
+            }
+            else
+            {
+                Data = Data.OrderByDescending(x => x.ESN);
+            }
+            #endregion
+
+            var result = Data;
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
@@ -2124,7 +2150,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 竣工圖說管理
-        public String GetJsonForGrid_AsBuiltDrawing(System.Web.Mvc.FormCollection form)
+        public JObject GetJsonForGrid_AsBuiltDrawing(System.Web.Mvc.FormCollection form)
         {
             #region datagrid呼叫時的預設參數有 rows 跟 page
             int page = 1;
@@ -2218,7 +2244,21 @@ namespace MinSheng_MIS.Services
 
             #endregion
 
-            var result = SourceTable.OrderByDescending(x => x.ADSN).AsQueryable();
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                SourceTable = OrderByField(SourceTable, sort, order == "asc");
+            }
+            else
+            {
+                SourceTable = SourceTable.OrderByDescending(x => x.ADSN);
+            }
+            #endregion
+
+            var result = SourceTable;
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
@@ -2247,9 +2287,7 @@ namespace MinSheng_MIS.Services
             JObject jo = new JObject();
             jo.Add("rows", ja);
             jo.Add("total", total);
-
-            string reString = JsonConvert.SerializeObject(jo);
-            return reString;
+            return jo;
         }
         #endregion
 
@@ -2268,8 +2306,6 @@ namespace MinSheng_MIS.Services
                 rows = short.Parse(form["rows"]?.ToString());
             }
             #endregion
-            //string propertyName = "DDSN";
-            //string order = "asc";
 
             #region 塞來自formdata的資料
             //圖名
@@ -2281,7 +2317,6 @@ namespace MinSheng_MIS.Services
             //上傳日期(迄)
             string DateEnd = form["DateEnd"]?.ToString();
             #endregion
-
 
             #region 依據查詢字串檢索資料表
             var SourceTable = db.DesignDiagrams.AsQueryable();
@@ -2310,7 +2345,19 @@ namespace MinSheng_MIS.Services
             }
             #endregion
 
-            SourceTable = SourceTable.OrderByDescending(x => x.DDSN);
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                SourceTable = OrderByField(SourceTable, sort, order == "asc");
+            }
+            else
+            {
+                SourceTable = SourceTable.OrderByDescending(x => x.DDSN);
+            }
+            #endregion
 
             //回傳JSON陣列
             JArray ja = new JArray();
@@ -2423,7 +2470,21 @@ namespace MinSheng_MIS.Services
             */
             #endregion
 
-            var result = Data.OrderByDescending(x => x.EOMSN).AsQueryable();
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                Data = OrderByField(Data, sort, order == "asc");
+            }
+            else
+            {
+                Data = Data.OrderByDescending(x => x.EOMSN);
+            }
+            #endregion
+
+            var result = Data;
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
@@ -2713,15 +2774,7 @@ namespace MinSheng_MIS.Services
             {
                 string sort = form["sort"];
                 string order = form["order"];
-
-                if (order == "asc")
-                {
-                    SourceTable = OrderByField(SourceTable, sort, true);
-                }
-                else if (order == "desc")
-                {
-                    SourceTable = OrderByField(SourceTable, sort, false);
-                }
+                SourceTable = OrderByField(SourceTable, sort, order == "asc");
             }
             else
             {
@@ -2835,8 +2888,21 @@ namespace MinSheng_MIS.Services
             }
             #endregion
 
-            //排序資料表
-            var result = Data.OrderByDescending(x => x.UserName).AsQueryable();
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                Data = OrderByField(Data, sort, order == "asc");
+            }
+            else
+            {
+                Data = Data.OrderByDescending(x => x.UserName);
+            }
+            #endregion
+
+            var result = Data;
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
@@ -2881,10 +2947,8 @@ namespace MinSheng_MIS.Services
                 rows = short.Parse(form["rows"]?.ToString());
             }
             #endregion
-            string propertyName = "MFRSN";
-            string order = "asc";
 
-            //塞來自formdata的資料
+            #region 塞來自formdata的資料
             //廠商名稱
             string MFRName = form["MFRName"]?.ToString();
             //聯絡人
@@ -2897,6 +2961,7 @@ namespace MinSheng_MIS.Services
             string MFRMainProduct = form["MFRMainProduct"]?.ToString();
             //地址
             string MFRAddress = form["MFRAddress"]?.ToString();
+            #endregion
 
             #region 依據查詢字串檢索資料表
             var SourceTable = db.ManufacturerInfo.AsQueryable();
@@ -2925,16 +2990,29 @@ namespace MinSheng_MIS.Services
             {
                 SourceTable = SourceTable.Where(x => x.MFRAddress.Contains(MFRAddress));
             }
-
             #endregion
-            var resulttable = SourceTable.OrderByDescending(x => x.MFRSN).AsQueryable();
+
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                SourceTable = OrderByField(SourceTable, sort, order == "asc");
+            }
+            else
+            {
+                SourceTable = SourceTable.OrderByDescending(x => x.MFRSN);
+            }
+            #endregion
+
+            var resulttable = SourceTable;
             //回傳JSON陣列
             JArray ja = new JArray();
             //記住總筆數
             int total = resulttable.Count();
             //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
             resulttable = resulttable.Skip((page - 1) * rows).Take(rows);
-
 
             foreach (var a in resulttable)
             {

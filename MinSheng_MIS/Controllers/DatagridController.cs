@@ -146,7 +146,8 @@ namespace MinSheng_MIS.Controllers
         public ActionResult AsBuiltDrawing_Management(FormCollection form)
         {
             var service = new DatagridService();
-            string result = service.GetJsonForGrid_AsBuiltDrawing(form);
+            var a = service.GetJsonForGrid_AsBuiltDrawing(form);
+            string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
         #endregion
