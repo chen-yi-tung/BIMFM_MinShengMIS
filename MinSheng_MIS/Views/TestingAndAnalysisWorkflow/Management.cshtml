@@ -46,7 +46,7 @@
 
         const fakeData = [
             {
-                IAWSN: "1",
+                TAWSN: "1",
                 ExperimentType: "水質分析",
                 ExperimentName: "汙水管水質檢測分析實驗",
             }
@@ -64,23 +64,23 @@
                 data: fakeData,
                 method: 'POST',
                 queryParams: getQueryParams(),
-                idField: 'IAWSN',
-                //sortName: 'IAWSN',
+                idField: 'TAWSN',
+                //sortName: 'TAWSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
                 ]],
                 columns: [[
-                    dg.hiddenColumn('IAWSN'),
+                    dg.hiddenColumn('TAWSN'),
                     dg.column('ExperimentType', '實驗類型', 200),
                     dg.column('ExperimentName', '實驗名稱', 400),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Read/${row.IAWSN}`, "_blank")
+                window.open(`${baseUrl}/Read/${row.TAWSN}`, "_blank")
             })
             dg.addEvent("edit", function (row, i) {
-                window.open(`${baseUrl}/Edit/${row.IAWSN}`, "_self")
+                window.open(`${baseUrl}/Edit/${row.TAWSN}`, "_self")
             })
 
         }

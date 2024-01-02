@@ -82,10 +82,10 @@
         }
 
         labelItems.calc().forEach((item, i) => {
-            form.append(`LabelName_${item.Value ?? i}`, item.Name);
+            form.append(`LabelName[${i}]`, item.Name);
         })
         dataItems.calc().forEach((item, i) => {
-            form.append(`DataName_${item.Value ?? i}`, item.Name);
+            form.append(`DataName[${i}]`, item.Name);
         })
 
         console.log(Object.fromEntries(form.entries()));
