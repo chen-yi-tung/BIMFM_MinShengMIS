@@ -29,8 +29,8 @@
             </div>
 
             <div class="form-group w-lg-532px required">
-                <label for="ExperimentName">實驗名稱</label>
-                <select class="form-select" name="ExperimentName" id="ExperimentName" required>
+                <label for="TAWSN">實驗名稱</label>
+                <select class="form-select" name="TAWSN" id="TAWSN" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
@@ -53,11 +53,13 @@
 <script src="/Scripts/tool.js"></script>
 <script src="/Scripts/datatable.js"></script>
 <script>
+    const ELSN = '@ViewBag.id'
     const apiUrl = null;
 
     const fakeData = {
         ExperimentType: "水質分析",
         ExperimentName: "汙水管水質檢測分析實驗",
+        TAWSN: "1",
         EDate: "2023-08-14",
         UploadUserName: "王大明",
         UploadDateTime: "2023/08/13",
@@ -75,6 +77,21 @@
 
     var labelItems = new LabelItems()
     $(async function () {
+        await pushSelect("ExperimentType", '@Url.Action("ExperimentType", "DropDownList")');
+
+        const ExperimentType = document.getElementById('ExperimentType')
+        const TAWSN = document.getElementById('TAWSN')
+        ExperimentType.addEventListener("change", function () {
+            pushSelect("TAWSN", `@Url.Action("ExperimentName", "DropDownList")?ExperimentType=${ExperimentType.value}`);
+        });
+        TAWSN.addEventListener("change", function () {
+            $.getJSON(`@Url.Action("TestingAndAnalysis_LabelName", "TestingAndAnalysisWorkflow")?TAWSN=${TAWSN.value}`, (res) => {
+                res.forEach((item) => {
+                    labelItems.create(item)
+                })
+            })
+        })
+
         addButtonEvent();
         readData(apiUrl)
     });
@@ -85,13 +102,12 @@
         if (!isValidity) return;
 
         var form = new FormData();
+        form.append("ELSN", ELSN);
+        form.append("TAWSN", document.getElementById("TAWSN").value);
         form.append("EDate", document.getElementById("EDate").value);
-        form.append("ExperimentType", document.getElementById("ExperimentType").value);
-        form.append("ExperimentName", document.getElementById("ExperimentName").value);
 
         labelItems.calc().forEach((item, i) => {
-            form.append(`LabelItem_${i}_ELISN`, item.ELISN);
-            form.append(`LabelItem_${i}_LabelName`, item.LabelName);
+            form.append(`LabelName[${i}]`, item.LabelName);
         })
 
         console.log(Object.fromEntries(form.entries()));
@@ -137,9 +153,13 @@
             </div>`
         }
         this.create = (data = null) => {
+            if ($("#TAWSN").val() == "") {
+                $("#TAWSN")[0].reportValidity()
+                return;
+            }
             let item = $(temp_item(this.count))
             if (data) {
-                item.children("#ELISN").val(data.ELISN)
+                item.children("#ELISN").val(data?.ELISN)
                 item.children("#LabelName").val(data.LabelName)
             }
             this.list.append(item)
@@ -180,7 +200,7 @@
         function onSuccess(res) {
             console.log(res);
             $("#ExperimentType").val(res.ExperimentType)
-            $("#ExperimentName").val(res.ExperimentName)
+            $("#TAWSN").val(res.TAWSN)
             $("#EDate").val(res.EDate)
 
             res.LaboratoryLabelItem.forEach((item)=>{
