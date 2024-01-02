@@ -150,7 +150,9 @@
         form.append("AuditUserID", document.getElementById("AuditUserID").value);
         form.append("AuditContent", document.getElementById("AuditContent").value);
 
-        $("[name^='AuditResult']:checked")
+        $("[name^='AuditResult']:checked").toArray().forEach((item, i) => {
+            form.append(`AuditResult[${i}]`, item.value);
+        })
 
         console.log(Object.fromEntries(form.entries()));
 
