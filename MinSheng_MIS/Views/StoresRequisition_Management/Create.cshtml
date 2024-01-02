@@ -13,6 +13,10 @@
         gap: 1rem;
     }
 
+    .max-w-scroll {
+        max-width: calc(1090px + 18px);
+    }
+
     .datatable-input-area .edit-area {
         max-height: 30rem;
         padding: 1rem;
@@ -38,20 +42,19 @@
 </style>
 
 <h2>@ViewBag.Title</h2>
-
 <section style="max-width: 855px;margin: auto;">
     <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-center" style="gap: 1rem 2rem;">
         <form class="form d-lg-contents">
             <div class="form-group w-lg-250px required">
-                <label for="SRName">申請人</label>
-                <select class="form-select" name="SRName" id="SRName" required >
+                <label for="SRUserName">申請人</label>
+                <select class="form-select" name="SRUserName" id="SRUserName" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
 
             <div class="form-group w-lg-250px">
                 <label for="SRDept">申請部門</label>
-                <input class="form-control" id="SRDept" name="SRDept" type="text" maxlength="20" />
+                <input class="form-control" id="SRDept" name="SRDept" type="text" maxlength="20" required />
             </div>
 
             <div class="form-group w-lg-532px">
@@ -62,6 +65,7 @@
     </div>
 
 </section>
+
 <section class="datatable-input-area mt-3">
     <button type="button" class="btn btn-search align-self-start" id="create-item">+ 新增項目</button>
     <form class="d-contents">
@@ -73,7 +77,6 @@
                             <tr>
                                 <th class="datatable-header required" style="width:175px"><span>品項</span></th>
                                 <th class="datatable-header required" style="width:250px"><span>品名</span></th>
-                                @*<th class="datatable-header required" style="width:150px"><span>尺寸</span></th>*@
                                 <th class="datatable-header required" style="width:120px"><span>數量</span></th>
                                 <th class="datatable-header required" style="width:150px"><span>單位</span></th>
                                 <th class="datatable-header" style="width:325px"><span>領用原因</span></th>
@@ -88,22 +91,16 @@
                                 <td id="d-StockName">
                                     <select class="form-select" id="StockName" name="StockName" required></select>
                                 </td>
-                                @*
-                                <td id="d-Size">
-                                    <input class="form-control" type="text" id="Size" name="Size" maxlength="50" required/>
-                                </td>
-                                *@
                                 <td id="d-Amount">
                                     <input class="form-control" type="number" id="Amount" name="Amount" min="1"
-                                           value="1" required />
+                                        value="1" step="any" required />
                                 </td>
                                 <td id="d-Unit">
-                                    <input class="form-control" type="text" id="Unit" name="Unit" min="1"
-                                           value="1" required readonly/>
+                                    <select class="form-select" id="Unit" name="Unit" required></select>
                                 </td>
-                                <td id="d-Content">
-                                    <input class="form-control" type="text" id="Content"
-                                           name="Content" maxlength="200" />
+                                <td id="d-SRContent">
+                                    <input class="form-control" type="text" id="SRContent" name="SRContent"
+                                        maxlength="200" />
                                 </td>
                                 <td id="d-_delete" class="p-1 pt-2">
                                     <button type="button" class="btn-delete-item"></button>
@@ -129,35 +126,56 @@
     let sampleTr;
 
     $(async function () {
-        addButtonEvent();
         sampleTr = new SampleTr();
-    })
+        await sampleTr.init()
+        await pushSelect("SRUserName", '@Url.Action("AllMyName", "DropDownList")');
+        addButtonEvent();
+        sampleTr.create()
+    });
 
     function SampleTr() {
         this.count = 0;
-        this.data = {};
+        this.list = $("#item-area")
         this.init = async function () {
-            //await pushSelect("Kind", '@Url.Action("AllMyName","DropDownList")');
-            //await pushSelect("Unit", '@Url.Action("AllMyName", "DropDownList")');
-            await pushSelect("SRName", '@Url.Action("AllMyName","DropDownList")');
             await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+            //await pushSelect("StockName", '@Url.Action("StockName", "DropDownList")');
+            await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
 
-            $("#item-area").on("click", ".btn-delete-item", function (e) {
+            const observer = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    let style = getComputedStyle(entry.target)
+                    let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
+                    let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
+                    $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
+                    //console.log(`${h} >= ${mh} ${h >= mh}`)
+                }
+            })
+            observer.observe(this.list.closest(".datatable-body")[0])
+
+            this.list.on("click", ".btn-delete-item", function (e) {
                 $(this).parent().parent().remove();
             })
 
             this.sample = $("#sample-input-tr").clone();
             $("#sample-input-tr").remove();
-            this.add();
         }
-        this.add = function () {
+        this.create = function (data = null) {
             let item = this.sample.clone();
             item.attr('id', this.count);
-            $("#item-area").append(item);
-            this.data[this.count] = item;
+            this.list.append(item);
+            if (data != null) {
+                item.find("#StockType").val(data.StockType)
+                item.find("#StockName").val(data.StockName)
+                item.find("#Amount").val(data.Amount)
+                item.find("#Unit").val(data.Unit)
+                item.find("#SRContent").val(data.SRContent)
+            }
+            
             this.count++;
         }
-        this.init();
+        this.calc = function () {
+
+        }
         return this;
     }
 
@@ -165,6 +183,40 @@
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
+
+        var form = new FormData();
+
+        form.append("SRUserName", document.getElementById("SRUserName").value);
+        form.append("SRDept", document.getElementById("SRDept").value);
+        form.append("SRContent", document.getElementById("SRContent").value);
+        sampleTr.calc().forEach((item, i) => {
+            form.append(`StoresRequisitionItem[${i}].SISN`, item.StockName);
+            form.append(`StoresRequisitionItem[${i}].Amount`, item.Amount);
+            form.append(`StoresRequisitionItem[${i}].SRContent`, item.SRContent);
+        })
+
+        console.log(Object.fromEntries(form.entries()));
+
+        $.ajax({
+            url: '@Url.Action("CreateStoresRequisition=", "StoresRequisition_Management")',
+            data: form,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            success: onSuccess,
+            error: onError
+        })
+        function onSuccess(res) {
+            console.log(res);
+            createDialogModal({
+                id: "DialogModal-Success", inner: "新增成功！",
+                onHide: () => { window.location.href = "/StoresRequisition_Management/Management"; }
+            });
+        }
+        function onError(res) {
+            console.log(res);
+            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+        }
     }
 
     function addButtonEvent() {
@@ -172,11 +224,10 @@
             history.back();
         });
         $("#create-item").click(function () {
-            sampleTr.add();
+            sampleTr.create();
         });
         $("#submit").click(function () {
             save();
         });
     }
 </script>
-

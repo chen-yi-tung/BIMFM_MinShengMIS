@@ -13,8 +13,11 @@
         gap: 1rem;
     }
 
+    .max-w-scroll {
+        max-width: calc(1150px + 18px);
+    }
+
     .datatable-input-area .edit-area {
-        max-height: 30rem;
         padding: 1rem;
         display: block;
     }
@@ -55,7 +58,7 @@
     </form>
 </div>
 
-<section class="datatable-input-area mt-3">
+<section class="datatable-input-area mt-3" >
     <button type="button" class="btn btn-search align-self-start" id="create-item">+ 新增</button>
     <form class="d-contents">
         <div class="edit-area m-0">
@@ -132,12 +135,24 @@
             await pushSelect("Kind", '@Url.Action("StockType", "DropDownList")');
             await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
 
+            const observer = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    let style = getComputedStyle(entry.target)
+                    let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
+                    let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
+                    $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
+                    //console.log(`${h} >= ${mh} ${h >= mh}`)
+                }
+            })
+            observer.observe(this.list.closest(".datatable-body")[0])
+
             this.list.on("click", ".btn-delete-item", function (e) {
                 $(this).parent().parent().remove();
             })
 
             this.sample = $("#sample-input-tr").clone();
             $("#sample-input-tr").remove();
+
             this.add();
         }
         this.add = function (data = null) {

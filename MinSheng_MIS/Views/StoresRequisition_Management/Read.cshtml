@@ -22,43 +22,43 @@
     const apiUrl = null;
     const SerializedName = [
         { text: "領用編號", value: "SRSN" },
-        { text: "領用人員", value: "SRName" },
+        { text: "領用人員", value: "SRMyName" },
         { text: "領用部門", value: "SRDept" },
         { text: "領用原因", value: "SRContent" }
     ]
 
     const fakeData = {
         SRSN: "SR230502001",
-        SRName: "王大明",
+        SRMyName: "王大明",
         SRDept: "機電部門",
         SRContent: "OOXX",
         StoresRequisitionItem: [
             {
                 SRISN: "PR23041201_01",
-                PickUpStatus: "待審核",
+                PickUpStatusName: "待審核",
                 StockType: "潤滑劑",
                 StockName: "軸承潤滑劑B",
                 Amount: "10",
                 Unit: "罐",
-                Content: "OOXX",
+                SRContent: "OOXX",
             },
             {
                 SRISN: "PR23041201_01",
-                PickUpStatus: "待審核",
+                PickUpStatusName: "待審核",
                 StockType: "潤滑劑",
                 StockName: "軸承潤滑劑B",
                 Amount: "10",
                 Unit: "罐",
-                Content: "OOXX",
+                SRContent: "OOXX",
             },
             {
                 SRISN: "PR23041201_01",
-                PickUpStatus: "待審核",
+                PickUpStatusName: "待審核",
                 StockType: "潤滑劑",
                 StockName: "軸承潤滑劑B",
                 Amount: "10",
                 Unit: "罐",
-                Content: "OOXX",
+                SRContent: "OOXX",
             }
         ]
     }
@@ -66,12 +66,12 @@
     const GridOptions = {
         thead: true,
         columns: [
-            { id: "PickUpStatus", title: "狀態", width: "150px" },
+            { id: "PickUpStatusName", title: "狀態", width: "150px" },
             { id: "StockType", title: "品項", width: "150px" },
             { id: "StockName", title: "品名", width: "250px" },
             { id: "Amount", title: "數量", width: "120px" },
             { id: "Unit", title: "單位", width: "100px" },
-            { id: "Content", title: "領用原因", width: "200px" },
+            { id: "SRContent", title: "領用原因", width: "200px" },
         ]
     }
 

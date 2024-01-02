@@ -26,8 +26,8 @@
         </div>
 
         <div class="form-group">
-            <label for="SRName">申請人員</label>
-            <input class="form-control" id="SRName" name="SRName" type="text" />
+            <label for="SRMyName">申請人員</label>
+            <input class="form-control" id="SRMyName" name="SRMyName" type="text" />
         </div>
 
         <div class="form-group">
@@ -36,13 +36,13 @@
         </div>
 
         <div class="form-group">
-            <label for="AuditName">審核人員</label>
-            <input class="form-control" id="AuditName" name="AuditName" type="text" />
+            <label for="AuditMyName">審核人員</label>
+            <input class="form-control" id="AuditMyName" name="AuditMyName" type="text" />
         </div>
 
         <div class="form-group">
-            <label for="DateSelected">日期項目選擇</label>
-            <select class="form-select" name="DateSelected" id="DateSelected">
+            <label for="DateType">日期項目選擇</label>
+            <select class="form-select" name="DateType" id="DateType">
                 <option value="">請選擇</option>
                 <option value="申請日期">申請日期</option>
                 <option value="審核日期">審核日期</option>
@@ -83,9 +83,9 @@
                 SRStateName: "待審核",
                 SRSN: "SR230203001",
                 SRDateTime: "2023/05/02",
-                SRName: "王大明",
+                SRMyName: "王大明",
                 SRDept: "機電部門",
-                AuditName: "陳大明",
+                AuditMyName: "陳大明",
                 AuditDate: "2023/05/03"
             },
             {
@@ -93,9 +93,9 @@
                 SRStateName: "待審核",
                 SRSN: "SR230203001",
                 SRDateTime: "2023/05/02",
-                SRName: "王大明",
+                SRMyName: "王大明",
                 SRDept: "機電部門",
-                AuditName: "陳大明",
+                AuditMyName: "陳大明",
                 AuditDate: "2023/05/03"
             }
         ]
@@ -117,17 +117,17 @@
                 frozenColumns: [[
                     dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                    dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit", { disabled: row.MaintainState != "待審核" })),
+                    dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit", { disabled: row.SRStateName != "待審核" })),
                 ]],
                 columns: [[
-                    dg.column('SRState', '狀態編碼', 180),
+                    dg.hiddenColumn('SRSN'),
+                    dg.hiddenColumn('SRState'),
                     dg.column('SRStateName', '狀態', 160),
-                    dg.column('SRSN', '單號', 180),
                     dg.column('SRDateTime', '申請日期', 240),
-                    dg.column('SRName', '申請人員', 180),
+                    dg.column('SRMyName', '申請人員', 180),
                     dg.column('SRDept', '申請部門', 200),
-                    dg.column('AuditName', '審核人員', 180),
-                    dg.column('AuditDate', '審核日期', 240),
+                    dg.column('AuditMyName', '審核人員', 180),
+                    //dg.column('AuditDate', '審核日期', 240),
                 ]]
             })
             dg.addEvent("read", function (row, i) {

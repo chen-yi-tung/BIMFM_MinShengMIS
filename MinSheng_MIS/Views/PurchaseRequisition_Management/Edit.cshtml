@@ -13,6 +13,10 @@
         gap: 1rem;
     }
 
+    .max-w-scroll {
+        max-width: calc(1150px + 18px);
+    }
+
     .datatable-input-area .edit-area {
         max-height: 30rem;
         padding: 1rem;
@@ -250,6 +254,17 @@
             await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
             await pushSelect("Kind", '@Url.Action("StockType", "DropDownList")');
             await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
+
+            const observer = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    let style = getComputedStyle(entry.target)
+                    let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
+                    let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
+                    $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
+                    //console.log(`${h} >= ${mh} ${h >= mh}`)
+                }
+            })
+            observer.observe(this.list.closest(".datatable-body")[0])
 
             this.list.on("click", ".btn-delete-item", function (e) {
                 $(this).parent().parent().remove();

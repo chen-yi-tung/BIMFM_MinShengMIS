@@ -10,44 +10,18 @@
         text-align: left;
         color: #CCFCFF;
     }
-
-    .paths-btn {
-        width: 40px;
-        height: 40px;
-        background: #44BCC2;
-        color: #fff;
-        border-radius: 5px;
-        border: 0;
-        opacity: 1;
-        transition: all .3s;
-    }
 </style>
 
 <h2>@ViewBag.Title</h2>
 
-@*
-<div class="datatable mt-5 mb-5 datatable-table">
-<input type="text" id="POSN" name="POSN" value="@ViewBag.id" hidden readonly="readonly">
-<input type="text" id="POISN" name="POISN" value="@ViewBag.id" hidden readonly="readonly">
-<div class="datatable-body" id="POSNItem">
-<table class="datatable-table" id="SelectObject"></table>
-</div>
-</div>
-*@
 <section style="max-width: 855px;margin: auto;">
 
     <div class="edit-area flex-wrap flex-md-row justify-content-lg-start" style="gap: 1rem 2rem;">
         <div class="w-100 edit-area-title">1.資料確認</div>
         <form class="form d-lg-contents">
             <div class="d-flex flex-wrap w-100 align-items-center" style="gap: 0.5rem 2rem;">
-                <div class="form-group w-lg-460px">
-                    <input class="form-control" type="text" id="SearchStock" name="SearchStock">
-                </div>
-                <div>
-                    <button class="paths-btn" id="path-search" data-bs-toggle="modal"
-                        data-bs-target="#DatagridModal-Repair"><i class="icon-search"></i></button>
-                </div>
-
+                <input class="form-control w-lg-460px" type="text" id="SearchStock" name="SearchStock">
+                <button class="btn btn-search" id="SearchStockButton"><i class="icon-search"></i></button>
             </div>
             <div class="form-group w-lg-250px required">
                 <label for="StockType">品項</label>
@@ -65,12 +39,7 @@
                 <label for="MName">廠商品名</label>
                 <input class="form-control" id="MName" name="MName" type="text" maxlength="50" />
             </div>
-            @*
-            <div class="form-group w-lg-250px">
-            <label for="Size">尺寸</label>
-            <input class="form-control" id="Size" name="Size" type="text" maxlength="50" />
-            </div>
-            *@
+
             <div class="form-group w-lg-250px">
                 <label for="Brand">廠牌</label>
                 <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" />
@@ -83,7 +52,7 @@
 
             <div class="form-group w-lg-250px">
                 <label for="Amount">庫存數量</label>
-                <input class="form-control" id="Amount" name="Amount" type="number" />
+                <input class="form-control" id="Amount" name="Amount" type="number" step="any" />
             </div>
 
             <div class="form-group w-lg-250px required">
@@ -133,27 +102,20 @@
         <hr class="edit-area-hr">
         <div class="w-100 edit-area-title">3.RFID標籤</div>
         <form class="form d-lg-contents">
-            @*<div class="form-group w-lg-250px required">
-            <label for="RFIDStart">標籤編碼(起始值)</label>
-            <input class="form-control input-readonly" id="RFIDStart" name="RFIDStart" type="text" maxlength="50"
-            readonly="readonly" />
-            </div>*@
-
             <div class="form-group w-lg-250px required">
                 <label for="RFIDAmount">標籤張數</label>
                 <input class="form-control" id="RFIDAmount" name="RFIDAmount" type="text" maxlength="50" required />
             </div>
         </form>
-        <div class="w-100 d-flex justify-content-center" style="margin-top:2rem; margin-bottom:1rem;">
-            <button class="btn btn-search" id="StockIn-create" data-bs-toggle="modal"
-                data-bs-target="#DatagridModal-StockIn">產生標籤列表</button>
+        <div class="w-100 d-flex justify-content-center mt-4 mb-3">
+            <button class="btn btn-search" id="StockIn-create">產生標籤列表</button>
         </div>
     </div>
 </section>
 
-<div class="datatable datatable-fill mt-5 mb-5 datatable-table">
-    <div class="datatable-body overflow-auto" id="POSNItem">
-        <table class="datatable-table" id="SelectObject2"></table>
+<div class="datatable datatable-fill mt-5 mb-5 datatable-table d-none">
+    <div class="datatable-body overflow-auto">
+        <table class="datatable-table" id="POSNItem"></table>
     </div>
 </div>
 
@@ -165,12 +127,8 @@
 
 <script src="/Scripts/datatable.js"></script>
 <script>
-    const POISN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${POISN}`;
-    let apiUrl = null
-
     // DataTable 1
-    const GridOptions = {
+    /* const GridOptions = {
         thead: true,
         columns: [
             { id: "Kind", title: "類別" },
@@ -182,8 +140,21 @@
             { id: "Packaging", title: "包裝型式" },
             { id: "Memo", title: "備註" },
         ]
-    }
-    const GridOptions2 = {
+    } */
+    /*
+    const fakeData = [
+        {
+            Kind: "備料",
+            ItemName: "藥劑-1",
+            Size: "1L",
+            Brand: "A廠牌",
+            Model: "XMA-56",
+            Amount: "5",
+            Packaging: "250g/罐",
+            Memo: "已檢查過 都沒問題!"
+        }
+    ]*/
+    const GridOptions = {
         thead: true,
         columns: [
             //{ id: "ExternalRFID", title: "RFID標籤(外)", width: "8.4%" },
@@ -227,68 +198,33 @@
             },
         ]
     }
-    const fakeData = {
-        SelectObject: [
-            {
-                Kind: "備料",
-                ItemName: "藥劑-1",
-                Size: "1L",
-                Brand: "A廠牌",
-                Model: "XMA-56",
-                Amount: "5",
-                Packaging: "250g/罐",
-                Memo: "已檢查過 都沒問題!"
-            }
-        ],
-        SelectObject2: [
-            {
-                ExternalRFID: "A101",
-                RFID_StockType: "備料",
-                RFID_StockName: "藥劑-1",
-                RFID_MName: "藥劑-1",
-                RFID_Size: "1L",
-                RFID_Brand: "OXO",
-                RFID_Model: "OXO",
-                RFID_Amount: "1",
-                RFID_Packaging: "罐",
-                RFID_ExpiryDate: "2023/05/12",
-            },
-            {
-                ExternalRFID: "A101",
-                RFID_StockType: "備料",
-                RFID_StockName: "藥劑-1",
-                RFID_MName: "藥劑-1",
-                RFID_Size: "1L",
-                RFID_Brand: "OXO",
-                RFID_Model: "OXO",
-                RFID_Amount: "1",
-                RFID_Packaging: "罐",
-                RFID_ExpiryDate: "2023/05/12",
-            }
-        ]
-    };
-
-    addButtonEvent();
-    function readData(url = null) {
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        function onSuccess(res) {
-            console.log(res);
-            //$("#SelectObject").append(createTableGrid(res.SelectObject, GridOptions))
-            $("#SelectObject2").append(createTableGrid(res.SelectObject2, GridOptions2))
+    const fakeData = [
+        {
+            ExternalRFID: "A101",
+            RFID_StockType: "備料",
+            RFID_StockName: "藥劑-1",
+            RFID_MName: "藥劑-1",
+            RFID_Size: "1L",
+            RFID_Brand: "OXO",
+            RFID_Model: "OXO",
+            RFID_Amount: "1",
+            RFID_Packaging: "罐",
+            RFID_ExpiryDate: "2023/05/12",
+        },
+        {
+            ExternalRFID: "A101",
+            RFID_StockType: "備料",
+            RFID_StockName: "藥劑-1",
+            RFID_MName: "藥劑-1",
+            RFID_Size: "1L",
+            RFID_Brand: "OXO",
+            RFID_Model: "OXO",
+            RFID_Amount: "1",
+            RFID_Packaging: "罐",
+            RFID_ExpiryDate: "2023/05/12",
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
+    ]
+
 
     function save() {
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
@@ -297,6 +233,11 @@
     }
 
     function addButtonEvent() {
+        $("#StockIn-create").click(function () {
+            $("#POSNItem").closest(".datatable").removeClass("d-none")
+            $("#POSNItem").html(createTableGrid(fakeData, GridOptions))
+        })
+
         $("#back").click(function () {
             history.back();
         })
@@ -307,7 +248,7 @@
     }
 
     window.onload = function () {
-        readData(apiUrl);
+        addButtonEvent();
     }
 
 </script>

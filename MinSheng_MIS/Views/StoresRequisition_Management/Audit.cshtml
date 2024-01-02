@@ -19,10 +19,10 @@
 </div>
 
 <div class="datatable datatable-grid mt-5 w-auto" style="max-width:982px;">
-    <div class="datatable-body overflow-auto">
+    <form class="datatable-body overflow-auto">
         <table class="datatable-table" style="width: max-content;" id="StoresRequisitionItem">
         </table>
-    </div>
+    </form>
 </div>
 
 <div class="edit-area edit-area-small mt-5" style="gap: 1rem 2rem;">
@@ -48,14 +48,14 @@
     const apiUrl = null;
     const SerializedName = [
         { text: "領用編號", value: "SRSN" },
-        { text: "領用人員", value: "SRName" },
+        { text: "領用人員", value: "SRMyName" },
         { text: "領用部門", value: "SRDept" },
         { text: "領用原因", value: "SRContent" }
     ]
 
     const fakeData = {
         SRSN: "SR230502001",
-        SRName: "王大明",
+        SRMyName: "王大明",
         SRDept: "機電部門",
         SRContent: "OOXX",
         StoresRequisitionItem: [
@@ -65,7 +65,7 @@
                 StockName: "軸承潤滑劑B",
                 Amount: "10",
                 Unit: "罐",
-                Content: "OOXX",
+                SRContent: "OOXX",
             },
             {
                 SRISN: "PR23041201_01",
@@ -73,7 +73,7 @@
                 StockName: "軸承潤滑劑B",
                 Amount: "10",
                 Unit: "罐",
-                Content: "OOXX",
+                SRContent: "OOXX",
             },
             {
                 SRISN: "PR23041201_01",
@@ -81,7 +81,7 @@
                 StockName: "軸承潤滑劑B",
                 Amount: "10",
                 Unit: "罐",
-                Content: "OOXX",
+                SRContent: "OOXX",
             }
         ]
     }
@@ -94,11 +94,11 @@
                     return `
                     <div class="d-flex justify-content-center" style="gap:1rem;">
                         <div class="form-group">
-                            <input type="radio" id="AuditResult_${i}_1" value="1" name="AuditResult_${i}">
+                            <input type="radio" id="AuditResult_${i}_1" value="1" name="AuditResult_${i}" required>
                             <label for="AuditResult_${i}_1">退件</label>
                         </div>
                         <div class="form-group">
-                            <input type="radio" id="AuditResult_${i}_2" value="2" name="AuditResult_${i}">
+                            <input type="radio" id="AuditResult_${i}_2" value="2" name="AuditResult_${i}" required>
                             <label for="AuditResult_${i}_2">通過</label>
                         </div>
                     </div>
@@ -109,7 +109,7 @@
             { id: "StockName", title: "品名", width: "250px" },
             { id: "Amount", title: "數量", width: "120px" },
             { id: "Unit", title: "單位", width: "100px" },
-            { id: "Content", title: "領用原因", width: "200px" },
+            { id: "SRContent", title: "領用原因", width: "200px" },
         ]
     }
 
@@ -149,6 +149,8 @@
         var form = new FormData();
         form.append("AuditUserID", document.getElementById("AuditUserID").value);
         form.append("AuditContent", document.getElementById("AuditContent").value);
+
+        $("[name^='AuditResult']:checked")
 
         console.log(Object.fromEntries(form.entries()));
 
