@@ -236,6 +236,44 @@
           <Property Name="StockState" Type="bit" Nullable="false" />
           <Property Name="ReportSource" Type="char" MaxLength="1" Nullable="false" />
         </EntityType>
+        <EntityType Name="ExperimentalData">
+          <Key>
+            <PropertyRef Name="EDSN" />
+          </Key>
+          <Property Name="EDSN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="EDRSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="DataName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Data" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ExperimentalDataRecord">
+          <Key>
+            <PropertyRef Name="EDRSN" />
+          </Key>
+          <Property Name="EDRSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="TAWSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="EDate" Type="datetime" Nullable="false" />
+          <Property Name="EDFile" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="UploadDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ExperimentalLabel">
+          <Key>
+            <PropertyRef Name="ELSN" />
+          </Key>
+          <Property Name="ELSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="TAWSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="EDate" Type="datetime" Nullable="false" />
+          <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="UploadDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ExperimentalLabel_Item">
+          <Key>
+            <PropertyRef Name="ELISN" />
+          </Key>
+          <Property Name="ELISN" Type="char" MaxLength="13" Nullable="false" />
+          <Property Name="ELSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="LabelName" Type="nvarchar" MaxLength="200" Nullable="false" />
+        </EntityType>
         <EntityType Name="Floor_Info">
           <Key>
             <PropertyRef Name="FSN" />
@@ -643,6 +681,33 @@
           <Property Name="System" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SystemIsEnable" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="TestingAndAnalysis_DataName">
+          <Key>
+            <PropertyRef Name="DNSN" />
+          </Key>
+          <Property Name="DNSN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="TAWSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="DataName" Type="nvarchar" MaxLength="200" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TestingAndAnalysis_LabelName">
+          <Key>
+            <PropertyRef Name="LNSN" />
+          </Key>
+          <Property Name="LNSN" Type="nchar" MaxLength="13" Nullable="false" />
+          <Property Name="TAWSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="LabelName" Type="nvarchar" MaxLength="200" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TestingAndAnalysisWorkflow">
+          <Key>
+            <PropertyRef Name="TAWSN" />
+          </Key>
+          <Property Name="TAWSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="ExperimentType" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="ExperimentName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="WorkflowFile" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="UploadDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
         <Association Name="FK_CompletionReportImage_InspectionPlan">
           <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
           <End Role="CompletionReportImage" Type="Self.CompletionReportImage" Multiplicity="*" />
@@ -768,6 +833,54 @@
             </Principal>
             <Dependent Role="EquipmentReportForm">
               <PropertyRef Name="ESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExperimentalData_ExperimentalDataRecord">
+          <End Role="ExperimentalDataRecord" Type="Self.ExperimentalDataRecord" Multiplicity="1" />
+          <End Role="ExperimentalData" Type="Self.ExperimentalData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExperimentalDataRecord">
+              <PropertyRef Name="EDRSN" />
+            </Principal>
+            <Dependent Role="ExperimentalData">
+              <PropertyRef Name="EDRSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExperimentalDataRecord_TestingAndAnalysisWorkflow">
+          <End Role="TestingAndAnalysisWorkflow" Type="Self.TestingAndAnalysisWorkflow" Multiplicity="1" />
+          <End Role="ExperimentalDataRecord" Type="Self.ExperimentalDataRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestingAndAnalysisWorkflow">
+              <PropertyRef Name="TAWSN" />
+            </Principal>
+            <Dependent Role="ExperimentalDataRecord">
+              <PropertyRef Name="TAWSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExperimentalLabel_Item_ExperimentalLabel">
+          <End Role="ExperimentalLabel" Type="Self.ExperimentalLabel" Multiplicity="1" />
+          <End Role="ExperimentalLabel_Item" Type="Self.ExperimentalLabel_Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExperimentalLabel">
+              <PropertyRef Name="ELSN" />
+            </Principal>
+            <Dependent Role="ExperimentalLabel_Item">
+              <PropertyRef Name="ELSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExperimentalLabel_TestingAndAnalysisWorkflow">
+          <End Role="TestingAndAnalysisWorkflow" Type="Self.TestingAndAnalysisWorkflow" Multiplicity="1" />
+          <End Role="ExperimentalLabel" Type="Self.ExperimentalLabel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestingAndAnalysisWorkflow">
+              <PropertyRef Name="TAWSN" />
+            </Principal>
+            <Dependent Role="ExperimentalLabel">
+              <PropertyRef Name="TAWSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1143,6 +1256,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow">
+          <End Role="TestingAndAnalysisWorkflow" Type="Self.TestingAndAnalysisWorkflow" Multiplicity="1" />
+          <End Role="TestingAndAnalysis_DataName" Type="Self.TestingAndAnalysis_DataName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestingAndAnalysisWorkflow">
+              <PropertyRef Name="TAWSN" />
+            </Principal>
+            <Dependent Role="TestingAndAnalysis_DataName">
+              <PropertyRef Name="TAWSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow">
+          <End Role="TestingAndAnalysisWorkflow" Type="Self.TestingAndAnalysisWorkflow" Multiplicity="1" />
+          <End Role="TestingAndAnalysis_LabelName" Type="Self.TestingAndAnalysis_LabelName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestingAndAnalysisWorkflow">
+              <PropertyRef Name="TAWSN" />
+            </Principal>
+            <Dependent Role="TestingAndAnalysis_LabelName">
+              <PropertyRef Name="TAWSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Bimfm_MinSheng_MISModelStoreContainer">
           <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AreaInfo" EntityType="Self.AreaInfo" Schema="dbo" store:Type="Tables" />
@@ -1164,6 +1301,10 @@
           <EntitySet Name="EquipmentMaintainItem" EntityType="Self.EquipmentMaintainItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentOperatingManual" EntityType="Self.EquipmentOperatingManual" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EquipmentReportForm" EntityType="Self.EquipmentReportForm" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ExperimentalData" EntityType="Self.ExperimentalData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ExperimentalDataRecord" EntityType="Self.ExperimentalDataRecord" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ExperimentalLabel" EntityType="Self.ExperimentalLabel" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ExperimentalLabel_Item" EntityType="Self.ExperimentalLabel_Item" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Floor_Info" EntityType="Self.Floor_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlan" EntityType="Self.InspectionPlan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlanFloorPath" EntityType="Self.InspectionPlanFloorPath" Schema="dbo" store:Type="Tables" />
@@ -1201,6 +1342,9 @@
           <EntitySet Name="SubSystemManagement" EntityType="Self.SubSystemManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SystemManagement" EntityType="Self.SystemManagement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TestingAndAnalysis_DataName" EntityType="Self.TestingAndAnalysis_DataName" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Self.TestingAndAnalysis_LabelName" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Self.TestingAndAnalysisWorkflow" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_CompletionReportImage_InspectionPlan" Association="Self.FK_CompletionReportImage_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
             <End Role="CompletionReportImage" EntitySet="CompletionReportImage" />
@@ -1240,6 +1384,22 @@
           <AssociationSet Name="FK_EquipmentReportForm_EquipmentInfo" Association="Self.FK_EquipmentReportForm_EquipmentInfo">
             <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
             <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExperimentalData_ExperimentalDataRecord" Association="Self.FK_ExperimentalData_ExperimentalDataRecord">
+            <End Role="ExperimentalDataRecord" EntitySet="ExperimentalDataRecord" />
+            <End Role="ExperimentalData" EntitySet="ExperimentalData" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExperimentalDataRecord_TestingAndAnalysisWorkflow" Association="Self.FK_ExperimentalDataRecord_TestingAndAnalysisWorkflow">
+            <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
+            <End Role="ExperimentalDataRecord" EntitySet="ExperimentalDataRecord" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExperimentalLabel_Item_ExperimentalLabel" Association="Self.FK_ExperimentalLabel_Item_ExperimentalLabel">
+            <End Role="ExperimentalLabel" EntitySet="ExperimentalLabel" />
+            <End Role="ExperimentalLabel_Item" EntitySet="ExperimentalLabel_Item" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExperimentalLabel_TestingAndAnalysisWorkflow" Association="Self.FK_ExperimentalLabel_TestingAndAnalysisWorkflow">
+            <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
+            <End Role="ExperimentalLabel" EntitySet="ExperimentalLabel" />
           </AssociationSet>
           <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Self.FK_Floor_Info_AreaInfo">
             <End Role="AreaInfo" EntitySet="AreaInfo" />
@@ -1365,6 +1525,14 @@
             <End Role="SystemManagement" EntitySet="SystemManagement" />
             <End Role="SubSystemManagement" EntitySet="SubSystemManagement" />
           </AssociationSet>
+          <AssociationSet Name="FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow" Association="Self.FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow">
+            <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
+            <End Role="TestingAndAnalysis_DataName" EntitySet="TestingAndAnalysis_DataName" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow" Association="Self.FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow">
+            <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
+            <End Role="TestingAndAnalysis_LabelName" EntitySet="TestingAndAnalysis_LabelName" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -1390,6 +1558,10 @@
           <EntitySet Name="EquipmentMaintainItem" EntityType="Bimfm_MinSheng_MISModel.EquipmentMaintainItem" />
           <EntitySet Name="EquipmentOperatingManual" EntityType="Bimfm_MinSheng_MISModel.EquipmentOperatingManual" />
           <EntitySet Name="EquipmentReportForm" EntityType="Bimfm_MinSheng_MISModel.EquipmentReportForm" />
+          <EntitySet Name="ExperimentalData" EntityType="Bimfm_MinSheng_MISModel.ExperimentalData" />
+          <EntitySet Name="ExperimentalDataRecord" EntityType="Bimfm_MinSheng_MISModel.ExperimentalDataRecord" />
+          <EntitySet Name="ExperimentalLabel" EntityType="Bimfm_MinSheng_MISModel.ExperimentalLabel" />
+          <EntitySet Name="ExperimentalLabel_Item" EntityType="Bimfm_MinSheng_MISModel.ExperimentalLabel_Item" />
           <EntitySet Name="Floor_Info" EntityType="Bimfm_MinSheng_MISModel.Floor_Info" />
           <EntitySet Name="InspectionPlan" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan" />
           <EntitySet Name="InspectionPlanFloorPath" EntityType="Bimfm_MinSheng_MISModel.InspectionPlanFloorPath" />
@@ -1427,6 +1599,9 @@
           <EntitySet Name="SubSystemManagement" EntityType="Bimfm_MinSheng_MISModel.SubSystemManagement" />
           <EntitySet Name="sysdiagrams" EntityType="Bimfm_MinSheng_MISModel.sysdiagrams" />
           <EntitySet Name="SystemManagement" EntityType="Bimfm_MinSheng_MISModel.SystemManagement" />
+          <EntitySet Name="TestingAndAnalysis_DataName" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysis_DataName" />
+          <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysis_LabelName" />
+          <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysisWorkflow" />
           <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo">
             <End Role="AreaInfo" EntitySet="AreaInfo" />
             <End Role="Floor_Info" EntitySet="Floor_Info" />
@@ -1482,6 +1657,22 @@
           <AssociationSet Name="FK_ReportImage_EquipmentReportForm" Association="Bimfm_MinSheng_MISModel.FK_ReportImage_EquipmentReportForm">
             <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
             <End Role="ReportImage" EntitySet="ReportImage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExperimentalData_ExperimentalDataRecord" Association="Bimfm_MinSheng_MISModel.FK_ExperimentalData_ExperimentalDataRecord">
+            <End Role="ExperimentalDataRecord" EntitySet="ExperimentalDataRecord" />
+            <End Role="ExperimentalData" EntitySet="ExperimentalData" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExperimentalDataRecord_TestingAndAnalysisWorkflow" Association="Bimfm_MinSheng_MISModel.FK_ExperimentalDataRecord_TestingAndAnalysisWorkflow">
+            <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
+            <End Role="ExperimentalDataRecord" EntitySet="ExperimentalDataRecord" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExperimentalLabel_Item_ExperimentalLabel" Association="Bimfm_MinSheng_MISModel.FK_ExperimentalLabel_Item_ExperimentalLabel">
+            <End Role="ExperimentalLabel" EntitySet="ExperimentalLabel" />
+            <End Role="ExperimentalLabel_Item" EntitySet="ExperimentalLabel_Item" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExperimentalLabel_TestingAndAnalysisWorkflow" Association="Bimfm_MinSheng_MISModel.FK_ExperimentalLabel_TestingAndAnalysisWorkflow">
+            <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
+            <End Role="ExperimentalLabel" EntitySet="ExperimentalLabel" />
           </AssociationSet>
           <AssociationSet Name="FK_InspectionPlanMaintain_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlanMaintain_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
@@ -1582,6 +1773,14 @@
           <AssociationSet Name="FK_SubSystemManagement_SystemManagement" Association="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement">
             <End Role="SystemManagement" EntitySet="SystemManagement" />
             <End Role="SubSystemManagement" EntitySet="SubSystemManagement" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow" Association="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow">
+            <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
+            <End Role="TestingAndAnalysis_DataName" EntitySet="TestingAndAnalysis_DataName" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow" Association="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow">
+            <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
+            <End Role="TestingAndAnalysis_LabelName" EntitySet="TestingAndAnalysis_LabelName" />
           </AssociationSet>
           <AssociationSet Name="AspNetUserRoles" Association="Bimfm_MinSheng_MISModel.AspNetUserRoles">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
@@ -1831,6 +2030,50 @@
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentReportForm_EquipmentInfo" FromRole="EquipmentReportForm" ToRole="EquipmentInfo" />
           <NavigationProperty Name="InspectionPlanRepair" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlanRepair_InspectionPlanRepair" FromRole="EquipmentReportForm" ToRole="InspectionPlanRepair" />
           <NavigationProperty Name="ReportImage" Relationship="Bimfm_MinSheng_MISModel.FK_ReportImage_EquipmentReportForm" FromRole="EquipmentReportForm" ToRole="ReportImage" />
+        </EntityType>
+        <EntityType Name="ExperimentalData">
+          <Key>
+            <PropertyRef Name="EDSN" />
+          </Key>
+          <Property Name="EDSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="EDRSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="DataName" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Data" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ExperimentalDataRecord" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalData_ExperimentalDataRecord" FromRole="ExperimentalData" ToRole="ExperimentalDataRecord" />
+        </EntityType>
+        <EntityType Name="ExperimentalDataRecord">
+          <Key>
+            <PropertyRef Name="EDRSN" />
+          </Key>
+          <Property Name="EDRSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="TAWSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="EDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EDFile" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="UploadUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="UploadDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="ExperimentalData" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalData_ExperimentalDataRecord" FromRole="ExperimentalDataRecord" ToRole="ExperimentalData" />
+          <NavigationProperty Name="TestingAndAnalysisWorkflow" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalDataRecord_TestingAndAnalysisWorkflow" FromRole="ExperimentalDataRecord" ToRole="TestingAndAnalysisWorkflow" />
+        </EntityType>
+        <EntityType Name="ExperimentalLabel">
+          <Key>
+            <PropertyRef Name="ELSN" />
+          </Key>
+          <Property Name="ELSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="TAWSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="EDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UploadUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="UploadDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="ExperimentalLabel_Item" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalLabel_Item_ExperimentalLabel" FromRole="ExperimentalLabel" ToRole="ExperimentalLabel_Item" />
+          <NavigationProperty Name="TestingAndAnalysisWorkflow" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalLabel_TestingAndAnalysisWorkflow" FromRole="ExperimentalLabel" ToRole="TestingAndAnalysisWorkflow" />
+        </EntityType>
+        <EntityType Name="ExperimentalLabel_Item">
+          <Key>
+            <PropertyRef Name="ELISN" />
+          </Key>
+          <Property Name="ELISN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="false" />
+          <Property Name="ELSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="LabelName" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ExperimentalLabel" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalLabel_Item_ExperimentalLabel" FromRole="ExperimentalLabel_Item" ToRole="ExperimentalLabel" />
         </EntityType>
         <EntityType Name="Floor_Info">
           <Key>
@@ -2298,6 +2541,39 @@
           <Property Name="SystemIsEnable" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="SubSystemManagement" Relationship="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement" FromRole="SystemManagement" ToRole="SubSystemManagement" />
         </EntityType>
+        <EntityType Name="TestingAndAnalysis_DataName">
+          <Key>
+            <PropertyRef Name="DNSN" />
+          </Key>
+          <Property Name="DNSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="TAWSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="DataName" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="TestingAndAnalysisWorkflow" Relationship="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysis_DataName" ToRole="TestingAndAnalysisWorkflow" />
+        </EntityType>
+        <EntityType Name="TestingAndAnalysis_LabelName">
+          <Key>
+            <PropertyRef Name="LNSN" />
+          </Key>
+          <Property Name="LNSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="true" />
+          <Property Name="TAWSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="LabelName" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="TestingAndAnalysisWorkflow" Relationship="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysis_LabelName" ToRole="TestingAndAnalysisWorkflow" />
+        </EntityType>
+        <EntityType Name="TestingAndAnalysisWorkflow">
+          <Key>
+            <PropertyRef Name="TAWSN" />
+          </Key>
+          <Property Name="TAWSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="ExperimentType" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ExperimentName" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="WorkflowFile" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="UploadUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="UploadDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="ExperimentalDataRecord" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalDataRecord_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysisWorkflow" ToRole="ExperimentalDataRecord" />
+          <NavigationProperty Name="ExperimentalLabel" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalLabel_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysisWorkflow" ToRole="ExperimentalLabel" />
+          <NavigationProperty Name="TestingAndAnalysis_DataName" Relationship="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysisWorkflow" ToRole="TestingAndAnalysis_DataName" />
+          <NavigationProperty Name="TestingAndAnalysis_LabelName" Relationship="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysisWorkflow" ToRole="TestingAndAnalysis_LabelName" />
+        </EntityType>
         <Association Name="FK_Floor_Info_AreaInfo">
           <End Type="Bimfm_MinSheng_MISModel.AreaInfo" Role="AreaInfo" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="*" />
@@ -2467,6 +2743,54 @@
             </Principal>
             <Dependent Role="ReportImage">
               <PropertyRef Name="RSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExperimentalData_ExperimentalDataRecord">
+          <End Type="Bimfm_MinSheng_MISModel.ExperimentalDataRecord" Role="ExperimentalDataRecord" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.ExperimentalData" Role="ExperimentalData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExperimentalDataRecord">
+              <PropertyRef Name="EDRSN" />
+            </Principal>
+            <Dependent Role="ExperimentalData">
+              <PropertyRef Name="EDRSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExperimentalDataRecord_TestingAndAnalysisWorkflow">
+          <End Type="Bimfm_MinSheng_MISModel.TestingAndAnalysisWorkflow" Role="TestingAndAnalysisWorkflow" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.ExperimentalDataRecord" Role="ExperimentalDataRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestingAndAnalysisWorkflow">
+              <PropertyRef Name="TAWSN" />
+            </Principal>
+            <Dependent Role="ExperimentalDataRecord">
+              <PropertyRef Name="TAWSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExperimentalLabel_Item_ExperimentalLabel">
+          <End Type="Bimfm_MinSheng_MISModel.ExperimentalLabel" Role="ExperimentalLabel" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.ExperimentalLabel_Item" Role="ExperimentalLabel_Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExperimentalLabel">
+              <PropertyRef Name="ELSN" />
+            </Principal>
+            <Dependent Role="ExperimentalLabel_Item">
+              <PropertyRef Name="ELSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExperimentalLabel_TestingAndAnalysisWorkflow">
+          <End Type="Bimfm_MinSheng_MISModel.TestingAndAnalysisWorkflow" Role="TestingAndAnalysisWorkflow" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.ExperimentalLabel" Role="ExperimentalLabel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestingAndAnalysisWorkflow">
+              <PropertyRef Name="TAWSN" />
+            </Principal>
+            <Dependent Role="ExperimentalLabel">
+              <PropertyRef Name="TAWSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2770,6 +3094,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow">
+          <End Type="Bimfm_MinSheng_MISModel.TestingAndAnalysisWorkflow" Role="TestingAndAnalysisWorkflow" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.TestingAndAnalysis_DataName" Role="TestingAndAnalysis_DataName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestingAndAnalysisWorkflow">
+              <PropertyRef Name="TAWSN" />
+            </Principal>
+            <Dependent Role="TestingAndAnalysis_DataName">
+              <PropertyRef Name="TAWSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow">
+          <End Type="Bimfm_MinSheng_MISModel.TestingAndAnalysisWorkflow" Role="TestingAndAnalysisWorkflow" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.TestingAndAnalysis_LabelName" Role="TestingAndAnalysis_LabelName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestingAndAnalysisWorkflow">
+              <PropertyRef Name="TAWSN" />
+            </Principal>
+            <Dependent Role="TestingAndAnalysis_LabelName">
+              <PropertyRef Name="TAWSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="AspNetUserRoles">
           <End Type="Bimfm_MinSheng_MISModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
           <End Type="Bimfm_MinSheng_MISModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
@@ -3016,6 +3364,48 @@
                 <ScalarProperty Name="Date" ColumnName="Date" />
                 <ScalarProperty Name="ESN" ColumnName="ESN" />
                 <ScalarProperty Name="RSN" ColumnName="RSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExperimentalData">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ExperimentalData">
+              <MappingFragment StoreEntitySet="ExperimentalData">
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="DataName" ColumnName="DataName" />
+                <ScalarProperty Name="EDRSN" ColumnName="EDRSN" />
+                <ScalarProperty Name="EDSN" ColumnName="EDSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExperimentalDataRecord">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ExperimentalDataRecord">
+              <MappingFragment StoreEntitySet="ExperimentalDataRecord">
+                <ScalarProperty Name="UploadDateTime" ColumnName="UploadDateTime" />
+                <ScalarProperty Name="UploadUserName" ColumnName="UploadUserName" />
+                <ScalarProperty Name="EDFile" ColumnName="EDFile" />
+                <ScalarProperty Name="EDate" ColumnName="EDate" />
+                <ScalarProperty Name="TAWSN" ColumnName="TAWSN" />
+                <ScalarProperty Name="EDRSN" ColumnName="EDRSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExperimentalLabel">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ExperimentalLabel">
+              <MappingFragment StoreEntitySet="ExperimentalLabel">
+                <ScalarProperty Name="UploadDateTime" ColumnName="UploadDateTime" />
+                <ScalarProperty Name="UploadUserName" ColumnName="UploadUserName" />
+                <ScalarProperty Name="EDate" ColumnName="EDate" />
+                <ScalarProperty Name="TAWSN" ColumnName="TAWSN" />
+                <ScalarProperty Name="ELSN" ColumnName="ELSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExperimentalLabel_Item">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ExperimentalLabel_Item">
+              <MappingFragment StoreEntitySet="ExperimentalLabel_Item">
+                <ScalarProperty Name="LabelName" ColumnName="LabelName" />
+                <ScalarProperty Name="ELSN" ColumnName="ELSN" />
+                <ScalarProperty Name="ELISN" ColumnName="ELISN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -3460,6 +3850,36 @@
                 <ScalarProperty Name="SystemIsEnable" ColumnName="SystemIsEnable" />
                 <ScalarProperty Name="System" ColumnName="System" />
                 <ScalarProperty Name="SystemID" ColumnName="SystemID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TestingAndAnalysis_DataName">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.TestingAndAnalysis_DataName">
+              <MappingFragment StoreEntitySet="TestingAndAnalysis_DataName">
+                <ScalarProperty Name="DataName" ColumnName="DataName" />
+                <ScalarProperty Name="TAWSN" ColumnName="TAWSN" />
+                <ScalarProperty Name="DNSN" ColumnName="DNSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TestingAndAnalysis_LabelName">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.TestingAndAnalysis_LabelName">
+              <MappingFragment StoreEntitySet="TestingAndAnalysis_LabelName">
+                <ScalarProperty Name="LabelName" ColumnName="LabelName" />
+                <ScalarProperty Name="TAWSN" ColumnName="TAWSN" />
+                <ScalarProperty Name="LNSN" ColumnName="LNSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TestingAndAnalysisWorkflow">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.TestingAndAnalysisWorkflow">
+              <MappingFragment StoreEntitySet="TestingAndAnalysisWorkflow">
+                <ScalarProperty Name="UploadDateTime" ColumnName="UploadDateTime" />
+                <ScalarProperty Name="UploadUserName" ColumnName="UploadUserName" />
+                <ScalarProperty Name="WorkflowFile" ColumnName="WorkflowFile" />
+                <ScalarProperty Name="ExperimentName" ColumnName="ExperimentName" />
+                <ScalarProperty Name="ExperimentType" ColumnName="ExperimentType" />
+                <ScalarProperty Name="TAWSN" ColumnName="TAWSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

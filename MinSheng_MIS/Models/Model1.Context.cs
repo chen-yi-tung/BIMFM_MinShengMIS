@@ -44,6 +44,10 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<EquipmentMaintainItem> EquipmentMaintainItem { get; set; }
         public virtual DbSet<EquipmentOperatingManual> EquipmentOperatingManual { get; set; }
         public virtual DbSet<EquipmentReportForm> EquipmentReportForm { get; set; }
+        public virtual DbSet<ExperimentalData> ExperimentalData { get; set; }
+        public virtual DbSet<ExperimentalDataRecord> ExperimentalDataRecord { get; set; }
+        public virtual DbSet<ExperimentalLabel> ExperimentalLabel { get; set; }
+        public virtual DbSet<ExperimentalLabel_Item> ExperimentalLabel_Item { get; set; }
         public virtual DbSet<Floor_Info> Floor_Info { get; set; }
         public virtual DbSet<InspectionPlan> InspectionPlan { get; set; }
         public virtual DbSet<InspectionPlanFloorPath> InspectionPlanFloorPath { get; set; }
@@ -81,5 +85,8 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<SystemManagement> SystemManagement { get; set; }
+        public virtual DbSet<TestingAndAnalysis_DataName> TestingAndAnalysis_DataName { get; set; }
+        public virtual DbSet<TestingAndAnalysis_LabelName> TestingAndAnalysis_LabelName { get; set; }
+        public virtual DbSet<TestingAndAnalysisWorkflow> TestingAndAnalysisWorkflow { get; set; }
     }
 }
