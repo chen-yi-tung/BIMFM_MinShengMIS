@@ -68,9 +68,7 @@
             e.setCustomValidity('');
         })
         //自訂驗證錯誤
-        if (!fileUploader.checkAllExtension()) {
-            fileUploader.setCustomValidity("請上傳指定格式")
-        }
+        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("isValidity():", isValidity)
         if (!isValidity) return;

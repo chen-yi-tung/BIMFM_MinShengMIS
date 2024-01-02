@@ -243,6 +243,10 @@ function FileUploader({
     this.setCustomValidity = (text) => {
         this.input.get(0).setCustomValidity(text ?? '')
     }
+    this.setExtensionValidity = (validity = true) => {
+        if (validity) this.input.get(0).setCustomValidity("")
+        else this.input.get(0).setCustomValidity("請上傳指定格式：\n"+accept.join(", "))
+    }
     this.init = () => {
         $(container).after(this.element);
         $(container).remove();

@@ -142,6 +142,12 @@
     }
 
     function save() {
+        //重置自訂驗證錯誤訊息
+        getAllParams().forEach((e) => {
+            e.setCustomValidity('');
+        })
+        //自訂驗證錯誤
+        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
         let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
         console.log("todo save():", isValidity)
         if (!isValidity) return;
