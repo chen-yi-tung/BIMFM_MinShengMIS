@@ -78,6 +78,8 @@
 
     var labelItems = new LabelItems()
     $(async function () {
+        addButtonEvent();
+
         await pushSelect("ExperimentType", '@Url.Action("ExperimentType", "DropDownList")');
 
         const ExperimentType = document.getElementById('ExperimentType')
@@ -93,7 +95,6 @@
             })
         })
 
-        addButtonEvent();
         readData(apiUrl)
     });
 
