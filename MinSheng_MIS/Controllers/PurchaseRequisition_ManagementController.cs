@@ -121,14 +121,6 @@ namespace MinSheng_MIS.Controllers
                     ApplicationPurpose = x.ApplicationPurpose
                 }).ToList()
             };
-            // Mapping
-            //model.PurchaseRequisitionItem.ForEach(x => 
-            //{
-            //    if (KindDics.TryGetValue(x.Kind, out var mapKind)) x.Kind = mapKind;
-            //    else x.Kind = "undefined";
-            //    if (UnitDics.TryGetValue(x.Unit, out var mapUnit)) x.Unit = mapUnit;
-            //    else x.Unit = "undefined";
-            //});
             return Content(JsonConvert.SerializeObject(model), "application/json");
         }
         #endregion
@@ -144,7 +136,6 @@ namespace MinSheng_MIS.Controllers
         public async Task<ActionResult> EditPurchaseRequisition(PR_Info pr_info)
         {
             if (!ModelState.IsValidField("PRN")) HandleInvalidModelState("PRN");
-
             var request = await db.PurchaseRequisition.Where(x => x.PRN == pr_info.PRN).FirstOrDefaultAsync();
             if (request == null) 
             {
@@ -158,7 +149,6 @@ namespace MinSheng_MIS.Controllers
                 ModelState.Remove("PRUserName");
                 ModelState.Remove("PurchaseRequisitionItem"); // 請購單項目
             }
-
             if (!ModelState.IsValid) HandleInvalidModelState(null);  // Data Annotation未通過
 
             #region 編輯請購單審核資訊
@@ -167,21 +157,23 @@ namespace MinSheng_MIS.Controllers
             request.AuditResult = pr_info.AuditResult;
             // [相關文件]檔案處理，目前只提供單個檔案上傳及刪除
             string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
-            if (pr_info.AFileName == null) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，表示若此請購單具有相關文件，應刪除。
-                ComFunc.DeleteFile(folderpath, request.PRN, "*");
+            if (pr_info.AFileName == null && !string.IsNullOrEmpty(request.FileName)) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，表示若此請購單具有相關文件，應刪除。
+            {
+                ComFunc.DeleteFile(folderpath, request.FileName, null);
+                request.FileName = null;
+            }
             if (pr_info.AFile != null && pr_info.AFile.ContentLength > 0) // 上傳
             {
                 string extension = Path.GetExtension(pr_info.AFile.FileName); // 檔案副檔名
                 if (ComFunc.IsConformedForDocument(pr_info.AFile.ContentType, extension) || ComFunc.IsConformedForImage(pr_info.AFile.ContentType, extension)) // 檔案白名單檢查
                 {
-                    // 若有檔案，先進行刪除
-                    ComFunc.DeleteFile(folderpath, request.PRN, "*");
                     // 檔案上傳
                     if (!ComFunc.UploadFile(pr_info.AFile, folderpath, request.PRN))
                     {
                         Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         return Content("檔案上傳過程出錯!");
                     }
+                    request.FileName = request.PRN + extension;
                 }
                 else
                 {
