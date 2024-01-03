@@ -41,7 +41,7 @@ namespace MinSheng_MIS.Controllers
         {
             ModelState.Remove("PRN");
             ModelState.Remove("PRState");
-            if (!ModelState.IsValid) HandleInvalidModelState(null);  // Data Annotation未通過
+            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
             DateTime now = DateTime.Now;
             // 新增請購單
@@ -135,7 +135,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> EditPurchaseRequisition(PR_Info pr_info)
         {
-            if (!ModelState.IsValidField("PRN")) HandleInvalidModelState("PRN");
+            if (!ModelState.IsValidField("PRN")) return Helper.HandleInvalidModelState(this, "PRN");
             var request = await db.PurchaseRequisition.Where(x => x.PRN == pr_info.PRN).FirstOrDefaultAsync();
             if (request == null) 
             {
@@ -149,43 +149,12 @@ namespace MinSheng_MIS.Controllers
                 ModelState.Remove("PRUserName");
                 ModelState.Remove("PurchaseRequisitionItem"); // 請購單項目
             }
-            if (!ModelState.IsValid) HandleInvalidModelState(null);  // Data Annotation未通過
-
-            #region 編輯請購單審核資訊
-            request.PRState = pr_info.PRState;
-            request.AuditDate = pr_info.AuditDate;
-            request.AuditResult = pr_info.AuditResult;
-            // [相關文件]檔案處理，目前只提供單個檔案上傳及刪除
-            string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
-            if (pr_info.AFileName == null && !string.IsNullOrEmpty(request.FileName)) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，表示若此請購單具有相關文件，應刪除。
-            {
-                ComFunc.DeleteFile(folderpath, request.FileName, null);
-                request.FileName = null;
-            }
-            if (pr_info.AFile != null && pr_info.AFile.ContentLength > 0) // 上傳
-            {
-                string extension = Path.GetExtension(pr_info.AFile.FileName); // 檔案副檔名
-                if (ComFunc.IsConformedForDocument(pr_info.AFile.ContentType, extension) || ComFunc.IsConformedForImage(pr_info.AFile.ContentType, extension)) // 檔案白名單檢查
-                {
-                    // 檔案上傳
-                    if (!ComFunc.UploadFile(pr_info.AFile, folderpath, request.PRN))
-                    {
-                        Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        return Content("檔案上傳過程出錯!");
-                    }
-                    request.FileName = request.PRN + extension;
-                }
-                else
-                {
-                    Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
-                    return Content("非系統可接受的檔案格式!");
-                }
-            }
-            #endregion
+            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
             //當請購單狀態"待審核"時，請購單申請時的資訊才可更改。
+            //需先編輯申請資訊 ，若先編輯審核資訊，可能會有狀態發生改變而造成申請資訊無法編輯
             #region 編輯請購單申請資訊 
-            if (request.PRState == "1")  
+            if (request.PRState == "1")
             {
                 request.PRUserName = pr_info.PRUserName;
                 request.PRDept = pr_info.PRDept;
@@ -220,6 +189,38 @@ namespace MinSheng_MIS.Controllers
             }
             #endregion
 
+            #region 編輯請購單審核資訊
+            request.PRState = pr_info.PRState;
+            request.AuditDate = pr_info.AuditDate;
+            request.AuditResult = pr_info.AuditResult;
+            // [相關文件]檔案處理，目前只提供單個檔案上傳及刪除
+            string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
+            if (pr_info.AFileName == null && !string.IsNullOrEmpty(request.FileName)) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，表示若此請購單具有相關文件，應刪除。
+            {
+                ComFunc.DeleteFile(folderpath, request.FileName, null);
+                request.FileName = null;
+            }
+            if (pr_info.AFile != null && pr_info.AFile.ContentLength > 0) // 上傳
+            {
+                string extension = Path.GetExtension(pr_info.AFile.FileName); // 檔案副檔名
+                if (ComFunc.IsConformedForDocument(pr_info.AFile.ContentType, extension) || ComFunc.IsConformedForImage(pr_info.AFile.ContentType, extension)) // 檔案白名單檢查
+                {
+                    // 檔案上傳
+                    if (!ComFunc.UploadFile(pr_info.AFile, folderpath, request.PRN))
+                    {
+                        Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        return Content("檔案上傳過程出錯!");
+                    }
+                    request.FileName = request.PRN + extension;
+                }
+                else
+                {
+                    Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+                    return Content("非系統可接受的檔案格式!");
+                }
+            }
+            #endregion
+
             db.PurchaseRequisition.AddOrUpdate(request);
             await db.SaveChangesAsync();
 
@@ -228,14 +229,14 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region Helper
-        private ActionResult HandleInvalidModelState(string field)
-        {
-            Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            if (string.IsNullOrEmpty(field))
-                return Content(string.Join(Environment.NewLine, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))));
-            else
-                return Content(string.Join(Environment.NewLine, ModelState[field].Errors.Select(e => e.ErrorMessage)));
-        }
+        //private ActionResult HandleInvalidModelState(string field)
+        //{
+        //    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        //    if (string.IsNullOrEmpty(field))
+        //        return Content(string.Join(Environment.NewLine, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))));
+        //    else
+        //        return Content(string.Join(Environment.NewLine, ModelState[field].Errors.Select(e => e.ErrorMessage)));
+        //}
         #endregion
     }
 }
