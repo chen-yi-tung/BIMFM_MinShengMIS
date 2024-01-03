@@ -29,7 +29,7 @@
     <form class="form">
         <div class="form-group d-lg-contents">
             <label for="AuditUserID">審核人員</label>
-            <input class="form-control readonly" id="AuditUserID" name="AuditUserID" type="text" readonly value="王OO">
+            <input class="form-control readonly" id="AuditUserID" name="AuditUserID" type="text" readonly value='@Session["MyName"]'>
         </div>
         <div class="form-group d-lg-contents">
             <label for="AuditContent">審核意見</label>
@@ -147,11 +147,10 @@
         if (!isValidity) return;
 
         var form = new FormData();
-        form.append("AuditUserID", document.getElementById("AuditUserID").value);
         form.append("AuditContent", document.getElementById("AuditContent").value);
 
         $("[name^='AuditResult']:checked").toArray().forEach((item, i) => {
-            form.append(`AuditResult[${i}]`, item.value);
+            form.append(`StoresRequisitionItem[${i}].AuditResult`, item.value);
         })
 
         console.log(Object.fromEntries(form.entries()));
