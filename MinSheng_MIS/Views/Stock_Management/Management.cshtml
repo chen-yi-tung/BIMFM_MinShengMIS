@@ -13,7 +13,7 @@
             background-color: rgba(255, 0, 0, 0.10);
         }
 
-        .isMinStock td[field='StockAvaliableAmount']>.datagrid-cell,
+        .isMinStock td[field='AvailableStockAmount']>.datagrid-cell,
         .isMinStock td[field='MinStockAmount']>.datagrid-cell {
             color: rgb(229, 0, 0);
             font-weight: 500;
@@ -28,19 +28,19 @@
     <form class="form" method="post" action="">
 
         <div class="form-group">
-            <label for="ImgNum">庫存編號</label>
+            <label for="SISN">庫存編號</label>
             <input class="form-control" id="SISN" name="SISN" type="text" />
         </div>
 
         <div class="form-group">
-            <label for="ImgType">品項</label>
+            <label for="StockType">品項</label>
             <select class="form-select" name="StockType" id="StockType">
                 <option value="">請選擇</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="ImgNum">品名</label>
+            <label for="StockName">品名</label>
             <input class="form-control" id="StockName" name="StockName" type="text" />
         </div>
 
@@ -70,7 +70,7 @@
                 StockType: "備料",
                 StockName: "軸承潤滑劑",
                 StockAmount: "50",
-                StockAvaliableAmount: "48",
+                AvailableStockAmount: "48",
                 Unit: "罐"
 
             },
@@ -80,7 +80,7 @@
                 StockType: "備料",
                 StockName: "軸承潤滑劑",
                 StockAmount: "70",
-                StockAvaliableAmount: "70",
+                AvailableStockAmount: "70",
                 Unit: "罐"
 
             },
@@ -90,7 +90,7 @@
                 StockType: "備料",
                 StockName: "軸承潤滑劑",
                 StockAmount: "50",
-                StockAvaliableAmount: "40",
+                AvailableStockAmount: "40",
                 Unit: "罐"
 
             }
@@ -111,21 +111,21 @@
                 method: 'GET',
                 queryParams: getQueryParams(),
                 idField: 'SISN',
-                //sortName: 'ImgNum',
+                //sortName: 'SISN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', "", 131, (v, row, i) => dg.eventButton(i, "警戒值設定", "edit")),
                 ]],
                 columns: [[
                     dg.column('MinStockAmount', '警戒值數量', 150),
-                    dg.column('StockAvaliableAmount', '庫存可用數量', 160),
+                    dg.column('AvailableStockAmount', '庫存可用數量', 160),
                     dg.column('SISN', '庫存編號', 160),
                     dg.column('StockType', '品項', 120),
                     dg.column('StockName', '品名', 250),
                     dg.column('StockAmount', '庫存實際量', 150),
                     dg.column('Unit', '單位', 120),
                 ]],
-                rowStyler: (i, row) => row.StockAvaliableAmount < row.MinStockAmount ? { class: 'isMinStock' } : undefined
+                rowStyler: (i, row) => row.AvailableStockAmount < row.MinStockAmount ? { class: 'isMinStock' } : undefined
             })
             dg.addEvent("detail", function (row, i) {
                 window.open(`${baseUrl}/Read/${row.SISN}`, "_blank")
