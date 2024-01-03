@@ -592,7 +592,7 @@
           <Property Name="Location" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="ExpiryDate" Type="datetime" />
           <Property Name="Amount" Type="float" Nullable="false" />
-          <Property Name="RemianingAmount" Type="float" Nullable="false" />
+          <Property Name="RemainingAmount" Type="float" Nullable="false" />
           <Property Name="RFIDInternalCode" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="StockInRecord">
@@ -2438,7 +2438,7 @@
           <Property Name="Location" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
           <Property Name="Amount" Type="Double" Nullable="false" />
-          <Property Name="RemianingAmount" Type="Double" Nullable="false" />
+          <Property Name="RemainingAmount" Type="Double" Nullable="false" />
           <Property Name="RFIDInternalCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ComputationalStock" Relationship="Bimfm_MinSheng_MISModel.FK_Stock_ComputationalStock" FromRole="Stock" ToRole="ComputationalStock" />
           <NavigationProperty Name="StockInRecord" Relationship="Bimfm_MinSheng_MISModel.FK_Stock_StockInRecord" FromRole="Stock" ToRole="StockInRecord" />
@@ -3749,7 +3749,7 @@
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.Stock">
               <MappingFragment StoreEntitySet="Stock">
                 <ScalarProperty Name="RFIDInternalCode" ColumnName="RFIDInternalCode" />
-                <ScalarProperty Name="RemianingAmount" ColumnName="RemianingAmount" />
+                <ScalarProperty Name="RemainingAmount" ColumnName="RemainingAmount" />
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
                 <ScalarProperty Name="Location" ColumnName="Location" />

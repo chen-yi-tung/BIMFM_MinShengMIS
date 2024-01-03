@@ -26,7 +26,7 @@ namespace MinSheng_MIS.Models
         public string Location { get; set; }
         public Nullable<System.DateTime> ExpiryDate { get; set; }
         public double Amount { get; set; }
-        public double RemianingAmount { get; set; }
+        public double RemainingAmount { get; set; }
         public string RFIDInternalCode { get; set; }
     
         public virtual ComputationalStock ComputationalStock { get; set; }
