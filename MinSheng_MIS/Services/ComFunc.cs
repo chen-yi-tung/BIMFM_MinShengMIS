@@ -115,17 +115,22 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="file">上傳的檔案</param>
         /// <param name="folderpath">存入的"絕對"路徑</param>
-        /// <param name="reName">重新命名的名稱</param>
+        /// <param name="reName">重新命名的名稱，若不須改名，則不填寫</param>
         /// <returns>檔案是否上傳成功</returns>
-        public static bool UploadFile(HttpPostedFileBase file, string folderpath, string reName)
+        public static bool UploadFile(HttpPostedFileBase file, string folderpath, string reName = null)
         {
             try
             {
+                string filename = Path.GetFileName(file.FileName);
+
                 if (!Directory.Exists(folderpath))
                     System.IO.Directory.CreateDirectory(folderpath);  // 如果不存在，則建立資料夾
                 // Rename file
-                string extension = Path.GetExtension(file.FileName); // 文件副檔名
-                string filename = $"{reName}{extension}";
+                if (!string.IsNullOrEmpty(reName))
+                {
+                    string extension = Path.GetExtension(file.FileName); // 文件副檔名
+                    filename = $"{reName}{extension}";
+                }
                 string fileFullPath = Path.Combine(folderpath, filename);
                 // 儲存檔案
                 file.SaveAs(fileFullPath);
