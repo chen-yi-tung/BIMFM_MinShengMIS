@@ -59,22 +59,10 @@
 
 
 <script src="/Scripts/datatable.js"></script>
+<script src="/Scripts/tool.js"></script>
 <script>
-    @*var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
-    eqList = eqList.replace("\r", "").replace("\n", "");
-    var equipmentList = JSON.parse(eqList);
-    console.log(equipmentList);*@
 
     const apiUrl = null;
-
-    //const SerializedName = [
-    //    { text: "狀態", value: "PickUpStatus" },
-    //    { text: "品項", value: "StockType" },
-    //    { text: "品名", value: "StockName" },
-    //    { text: "數量", value: "Amount" },
-    //    { text: "已領取數量", value: "TakeAmount" },
-    //    { text: "單位", value: "Unit" },
-    //]
 
     const SerializedName = {
         thead: true,
@@ -147,7 +135,14 @@
             RFID_Unit:"罐"
         },
     ]
-    addButtonEvent();
+
+    $(async function () {
+        await pushSelect("StockOutName", '@Url.Action("AllMyName", "DropDownList")');
+        await pushSelect("ReceiverName", '@Url.Action("AllMyName", "DropDownList")');
+        addButtonEvent();
+        readData(apiUrl);
+    })
+    
     function readData(url = null) {
 
         url == null ? onSuccess(fakeData) :   //fakeData
@@ -164,12 +159,6 @@
         function onSuccess(res) {
             console.log(res);
             $("#StockItemInfo").append(createTableGrid(res, SerializedName));
-            //if (res.StockItem) {
-            //    $("#StockItem").append(createTableGrid(res.StockItem, GridOptions))
-            //}
-            //else {
-            //    $("#StockItem").parents(".datatable").remove();
-            //}
             $("#StockOutItem").append(createTableGrid(griditem, GridOptions))
         }
         function onError(res) {
@@ -192,11 +181,5 @@
             save();
         })
     }
-
-    window.onload = function () {
-        readData(apiUrl);
-    }
-
-   
 </script>
 
