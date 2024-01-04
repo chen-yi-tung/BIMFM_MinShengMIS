@@ -1,6 +1,9 @@
 ﻿@{
     ViewBag.Title = "警戒值設定";
 }
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -18,7 +21,8 @@
         </div>
         <div class="form-group d-lg-contents required">
             <label for="MinStockAmount">數量</label>
-            <input class="form-control" type="number" name="MinStockAmount" id="MinStockAmount" step="any" min="1" required>
+            <input class="form-control" type="number" name="MinStockAmount" id="MinStockAmount" step="any" min="1"
+                required>
         </div>
     </form>
 </div>
@@ -28,101 +32,103 @@
     <button class="btn btn-submit" id="submit" form="form">儲存</button>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
-<script>
 
-    const apiUrl = null;
+@section scripts {
+    <script>
 
-    const SerializedName = [
-        { text: "庫存編號", value: "SISN" },
-        { text: "品項", value: "StockType" },
-        { text: "品名", value: "StockName" },
-        { text: "單位", value: "Unit" },
-    ]
+        const apiUrl = null;
 
-    const GridOptions = {
-        thead: true,
-        columns: [
-            { id: "SISN", title: "庫存編號" },
-            { id: "StockType", title: "品項" },
-            { id: "StockName", title: "品名" },
-            { id: "Unit", title: "單位" },
+        const SerializedName = [
+            { text: "庫存編號", value: "SISN" },
+            { text: "品項", value: "StockType" },
+            { text: "品名", value: "StockName" },
+            { text: "單位", value: "Unit" },
         ]
-    }
 
-    const fakeData = {
-        SISN: "1120301001",
-        StockType: "備料",
-        StockName: "藥劑-1",
-        Unit: "罐",
-    }
+        const GridOptions = {
+            thead: true,
+            columns: [
+                { id: "SISN", title: "庫存編號" },
+                { id: "StockType", title: "品項" },
+                { id: "StockName", title: "品名" },
+                { id: "Unit", title: "單位" },
+            ]
+        }
 
-    function readData(url = null) {
+        const fakeData = {
+            SISN: "1120301001",
+            StockType: "備料",
+            StockName: "藥劑-1",
+            Unit: "罐",
+        }
 
-        url == null ? onSuccess(fakeData) :   //fakeData
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :   //fakeData
+                $.ajax({
+                    url: url,
+                    data: JSON.stringify(jsonData),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#StockItemInfo").append(createTableInner(res, SerializedName));
+                if (res.StockItem) {
+                    $("#StockItem").append(createTableGrid(res.StockItem, GridOptions))
+                }
+                else {
+                    $("#StockItem").parents(".datatable").remove();
+                }
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+
+            $("#submit").click(save);
+        }
+
+        function save(e) {
+            let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity:", isValidity);
+
+            let form = new FormData(document.getElementById("form"));
+            console.log(Object.fromEntries(form.entries()))
+
+            if (!isValidity) { return }
+            e.preventDefault();
             $.ajax({
-                url: url,
-                data: JSON.stringify(jsonData),
+                url: '@Url.Action("EditBodySave", "Stock_Management")',
+                data: form,
                 type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
-
-        function onSuccess(res) {
-            console.log(res);
-            $("#StockItemInfo").append(createTableInner(res, SerializedName));
-            if (res.StockItem) {
-                $("#StockItem").append(createTableGrid(res.StockItem, GridOptions))
+            function onSuccess(res) {
+                console.log(res);
+                window.open('@Url.Action("Management", "Stock_Management")', "_self")
             }
-            else {
-                $("#StockItem").parents(".datatable").remove();
+            function onError(res) {
+                console.log(res);
             }
         }
-        function onError(res) {
-            console.log(res);
+
+        window.onload = function () {
+            readData(apiUrl);
+            addButtonEvent();
         }
-    }
-
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        });
-
-        $("#submit").click(save);
-    }
-
-    function save(e) {
-        let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity:", isValidity);
-
-        let form = new FormData(document.getElementById("form"));
-        console.log(Object.fromEntries(form.entries()))
-
-        if (!isValidity) { return }
-        e.preventDefault();
-        $.ajax({
-            url: '@Url.Action("EditBodySave", "Stock_Management")',
-            data: form,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            window.open('@Url.Action("Management", "Stock_Management")', "_self")
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    window.onload = function () {
-        readData(apiUrl);
-        addButtonEvent();
-    }
-</script>
+    </script>
+}

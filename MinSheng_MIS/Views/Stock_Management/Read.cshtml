@@ -1,6 +1,9 @@
 ﻿@{
     ViewBag.Title = "庫存管理詳情";
 }
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -17,122 +20,123 @@
     </div>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
-<script>
+@section scripts {
+    <script>
 
-    const apiUrl = null;
+        const apiUrl = null;
 
-    const SerializedName = [
-        { text: "庫存編號", value: "SISN" },
-        { text: "品項", value: "StockType" },
-        { text: "品名", value: "StockName" },
-        { text: "數量", value: "StockAmount" },
-        { text: "單位", value: "Unit" },
-        { text: "警戒值", value: "MinStockAmount" },
-    ]
-
-    const GridOptions = {
-        thead: true,
-        columns: [
-            { id: "SSN", title: "RFID標籤(外)" },
-            { id: "Brand", title: "廠牌" },
-            { id: "Model", title: "型號" },
-            { id: "StockInDateTime", title: "入庫日期" },
-            { id: "ExpiryDate", title: "到期日" },
-            { id: "Location", title: "擺放位置" },
-            { id: "SIRSN", title: "入庫單號" },
-            { id: "RemainingAmount", title: "庫存數量" },
-            { id: "StockInMyName", title: "入庫人員" },
+        const SerializedName = [
+            { text: "庫存編號", value: "SISN" },
+            { text: "品項", value: "StockType" },
+            { text: "品名", value: "StockName" },
+            { text: "數量", value: "StockAmount" },
+            { text: "單位", value: "Unit" },
+            { text: "警戒值", value: "MinStockAmount" },
         ]
-    }
 
-    const fakeData = {
-        SISN: "A001",
-        StockType: "備料",
-        StockName: "藥劑-1",
-        StockAmount: "50",
-        Unit: "罐",
-        MinStockAmount: 25,
-        StockItem: [
-            {
-                SSN: "A00100001",
-                Brand: "OXO",
-                Model: "OXO",
-                StockInDateTime: "2023/03/15",
-                ExpiryDate: "2023/09/15",
-                Location: "A104,5,6,2,1",
-                SIRSN: "1120314001",
-                RemainingAmount: 5,
-                StockInMyName: "王OO"
-            },
-            {
-                SSN: "A00100001",
-                Brand: "OXO",
-                Model: "OXO",
-                StockInDateTime: "2023/03/15",
-                ExpiryDate: "2023/09/15",
-                Location: "A104,5,6,2,1",
-                POSN: "1120314001",
-                SIRSN: "1120314001",
-                RemainingAmount: 5,
-                StockInMyName: "王OO"
-            },
-            {
-                SSN: "A00100001",
-                Brand: "OXO",
-                Model: "OXO",
-                StockInDateTime: "2023/03/15",
-                ExpiryDate: "2023/09/15",
-                Location: "A104,5,6,2,1",
-                POSN: "1120314001",
-                SIRSN: "1120314001",
-                RemainingAmount: 5,
-                StockInMyName: "王OO"
-            },
-            {
-                SSN: "A00100001",
-                Brand: "OXO",
-                Model: "OXO",
-                StockInDateTime: "2023/03/15",
-                ExpiryDate: "2023/09/15",
-                Location: "A104,5,6,2,1",
-                POSN: "1120314001",
-                SIRSN: "1120314001",
-                RemainingAmount: 5,
-                StockInMyName: "王OO"
-            },
-        ]
-    }
+        const GridOptions = {
+            thead: true,
+            columns: [
+                { id: "SSN", title: "RFID標籤(外)" },
+                { id: "Brand", title: "廠牌" },
+                { id: "Model", title: "型號" },
+                { id: "StockInDateTime", title: "入庫日期" },
+                { id: "ExpiryDate", title: "到期日" },
+                { id: "Location", title: "擺放位置" },
+                { id: "SIRSN", title: "入庫單號" },
+                { id: "RemainingAmount", title: "庫存數量" },
+                { id: "StockInMyName", title: "入庫人員" },
+            ]
+        }
 
-    function readData(url = null) {
+        const fakeData = {
+            SISN: "A001",
+            StockType: "備料",
+            StockName: "藥劑-1",
+            StockAmount: "50",
+            Unit: "罐",
+            MinStockAmount: 25,
+            StockItem: [
+                {
+                    SSN: "A00100001",
+                    Brand: "OXO",
+                    Model: "OXO",
+                    StockInDateTime: "2023/03/15",
+                    ExpiryDate: "2023/09/15",
+                    Location: "A104,5,6,2,1",
+                    SIRSN: "1120314001",
+                    RemainingAmount: 5,
+                    StockInMyName: "王OO"
+                },
+                {
+                    SSN: "A00100001",
+                    Brand: "OXO",
+                    Model: "OXO",
+                    StockInDateTime: "2023/03/15",
+                    ExpiryDate: "2023/09/15",
+                    Location: "A104,5,6,2,1",
+                    POSN: "1120314001",
+                    SIRSN: "1120314001",
+                    RemainingAmount: 5,
+                    StockInMyName: "王OO"
+                },
+                {
+                    SSN: "A00100001",
+                    Brand: "OXO",
+                    Model: "OXO",
+                    StockInDateTime: "2023/03/15",
+                    ExpiryDate: "2023/09/15",
+                    Location: "A104,5,6,2,1",
+                    POSN: "1120314001",
+                    SIRSN: "1120314001",
+                    RemainingAmount: 5,
+                    StockInMyName: "王OO"
+                },
+                {
+                    SSN: "A00100001",
+                    Brand: "OXO",
+                    Model: "OXO",
+                    StockInDateTime: "2023/03/15",
+                    ExpiryDate: "2023/09/15",
+                    Location: "A104,5,6,2,1",
+                    POSN: "1120314001",
+                    SIRSN: "1120314001",
+                    RemainingAmount: 5,
+                    StockInMyName: "王OO"
+                },
+            ]
+        }
 
-        url == null ? onSuccess(fakeData) :   //fakeData
-            $.ajax({
-                url: url,
-                data: JSON.stringify(jsonData),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
+        function readData(url = null) {
 
-        function onSuccess(res) {
-            console.log(res);
-            $("#StockItemInfo").append(createTableInner(res, SerializedName));
-            if (res.StockItem) {
-                $("#StockItem").append(createTableGrid(res.StockItem, GridOptions))
+            url == null ? onSuccess(fakeData) :   //fakeData
+                $.ajax({
+                    url: url,
+                    data: JSON.stringify(jsonData),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#StockItemInfo").append(createTableInner(res, SerializedName));
+                if (res.StockItem) {
+                    $("#StockItem").append(createTableGrid(res.StockItem, GridOptions))
+                }
+                else {
+                    $("#StockItem").parents(".datatable").remove();
+                }
             }
-            else {
-                $("#StockItem").parents(".datatable").remove();
+            function onError(res) {
+                console.log(res);
             }
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
 
-    window.onload = function () {
-        readData(apiUrl);
-    }
-</script>
+        window.onload = function () {
+            readData(apiUrl);
+        }
+    </script>
+}
