@@ -19,7 +19,7 @@ namespace MinSheng_MIS.Controllers
 	public class TestingAndAnalysisWorkflowController : Controller
 	{
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-        static string folderPath = "~/Files/TestingAndAnalysisWorkflow/";
+        static readonly string folderPath = "~/Files/TestingAndAnalysisWorkflow/";
         // GET: TestingAndAnalysisWorkflow
         #region 採驗分析流程建立
         public ActionResult Management()
@@ -54,13 +54,12 @@ namespace MinSheng_MIS.Controllers
             };
 			db.TestingAndAnalysisWorkflow.Add(workflow);
             // 新增採驗分析_實驗標籤
-            ICollection<TestingAndAnalysis_LabelName> labelList = AddOrUpdateList<TestingAndAnalysis_LabelName>(ta_workflow.LabelName, workflow.TAWSN, null);
+            ICollection<TestingAndAnalysis_LabelName> labelList = AddOrUpdateList<TestingAndAnalysis_LabelName>(ta_workflow.LabelName, workflow.TAWSN);
             db.TestingAndAnalysis_LabelName.AddRange(labelList);
             // 新增採驗分析_實驗數據
-            ICollection<TestingAndAnalysis_DataName> dataList = AddOrUpdateList<TestingAndAnalysis_DataName>(ta_workflow.DataName, workflow.TAWSN, null);
+            ICollection<TestingAndAnalysis_DataName> dataList = AddOrUpdateList<TestingAndAnalysis_DataName>(ta_workflow.DataName, workflow.TAWSN);
             db.TestingAndAnalysis_DataName.AddRange(dataList);
             // [實驗採樣分析流程檔案]檔案處理，目前只提供單個檔案上傳
-            
             if (ta_workflow.WorkflowFile != null && ta_workflow.WorkflowFile.ContentLength > 0) // 上傳
             {
                 var File = ta_workflow.WorkflowFile;
@@ -102,11 +101,11 @@ namespace MinSheng_MIS.Controllers
             workflow.ExperimentName = ta_workflow.ExperimentName;
             // 編輯實驗標籤
             db.TestingAndAnalysis_LabelName.RemoveRange(workflow.TestingAndAnalysis_LabelName);
-            ICollection<TestingAndAnalysis_LabelName> ta_labels = AddOrUpdateList<TestingAndAnalysis_LabelName>(ta_workflow.LabelName, workflow.TAWSN, workflow.TestingAndAnalysis_LabelName);
+            ICollection<TestingAndAnalysis_LabelName> ta_labels = AddOrUpdateList<TestingAndAnalysis_LabelName>(ta_workflow.LabelName, workflow.TAWSN);
             workflow.TestingAndAnalysis_LabelName = ta_labels;
             // 編輯實驗數據
             db.TestingAndAnalysis_DataName.RemoveRange(workflow.TestingAndAnalysis_DataName);
-            ICollection<TestingAndAnalysis_DataName> ta_datas = AddOrUpdateList<TestingAndAnalysis_DataName>(ta_workflow.DataName, workflow.TAWSN, workflow.TestingAndAnalysis_DataName);
+            ICollection<TestingAndAnalysis_DataName> ta_datas = AddOrUpdateList<TestingAndAnalysis_DataName>(ta_workflow.DataName, workflow.TAWSN);
             workflow.TestingAndAnalysis_DataName = ta_datas;
             // [實驗採樣分析流程檔案]檔案處理，目前只提供單個檔案上傳且刪除
             if (ta_workflow.WorkflowFile != null && ta_workflow.WorkflowFile.ContentLength > 0) // 上傳
@@ -160,7 +159,7 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region Helper
-        private static ICollection<T> AddOrUpdateList<T>(List<string> list, string TAWSN, ICollection<T> oldList) where T : class, new()
+        private static ICollection<T> AddOrUpdateList<T>(List<string> list, string TAWSN) where T : class, new()
         {
             Type typeOfT = typeof(T);
             ICollection<T> result = new List<T>();

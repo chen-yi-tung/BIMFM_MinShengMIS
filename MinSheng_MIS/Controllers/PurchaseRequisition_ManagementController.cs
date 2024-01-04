@@ -21,7 +21,7 @@ namespace MinSheng_MIS.Controllers
     public class PurchaseRequisition_ManagementController : Controller
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-
+        static readonly string folderPath = "~/Files/PurchaseRequisition/";
         // GET: PurchaseRequisition_Management
         #region 請購管理
         public ActionResult Management()
@@ -56,23 +56,8 @@ namespace MinSheng_MIS.Controllers
             };
             db.PurchaseRequisition.Add(request);
             // 新增請購單項目
-            int i = 1;
-            foreach (var item in pr_info.PurchaseRequisitionItem)
-            {
-                var pr_item = new PurchaseRequisitionItem
-                {
-                    PRIN = request.PRN + "_" + i.ToString().PadLeft(2, '0'),
-                    PRN = request.PRN,
-                    Kind = item.Kind,
-                    ItemName = item.ItemName,
-                    Size = item.Size,
-                    PRAmount = item.PRAmount,
-                    Unit = item.Unit,
-                    ApplicationPurpose = item.ApplicationPurpose
-                };
-                db.PurchaseRequisitionItem.Add(pr_item);
-                i ++;
-            }
+            ICollection<PurchaseRequisitionItem> items = AddOrUpdateList<PurchaseRequisitionItem>(pr_info.PurchaseRequisitionItem, request.PRN);
+            db.PurchaseRequisitionItem.AddRange(items);
             await db.SaveChangesAsync();
 
             return Content("Succeed");
@@ -89,12 +74,8 @@ namespace MinSheng_MIS.Controllers
         public async Task<ActionResult> Read_Data(string id)
         {
             var request = await db.PurchaseRequisition.FirstOrDefaultAsync(x => x.PRN == id);
-            if (request == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content("PRN is Undefined.");
-            }
-            //var StateDics = Surface.PRState();
+            if (request == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "PRN is Undefined.");
+
             var KindDics = Surface.StockType();
             var UnitDics = Surface.Unit();
             PR_ViewModel model = new PR_ViewModel
@@ -137,11 +118,7 @@ namespace MinSheng_MIS.Controllers
         {
             if (!ModelState.IsValidField("PRN")) return Helper.HandleInvalidModelState(this, "PRN");
             var request = await db.PurchaseRequisition.Where(x => x.PRN == pr_info.PRN).FirstOrDefaultAsync();
-            if (request == null) 
-            {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content("PRN is Undefined.");
-            }
+            if (request == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "PRN is Undefined.");
 
             if (request.PRState != "1")  //當請購單狀態非"待審核"時，請購單申請時的資訊不可更改。
             {
@@ -158,33 +135,9 @@ namespace MinSheng_MIS.Controllers
             {
                 request.PRUserName = pr_info.PRUserName;
                 request.PRDept = pr_info.PRDept;
-                // 若整體採購項目減少，則刪除資料庫項目
-                if (request.PurchaseRequisitionItem.Count > pr_info.PurchaseRequisitionItem.Count)
-                {
-                    int deletNum = request.PurchaseRequisitionItem.Count - pr_info.PurchaseRequisitionItem.Count();
-                    var deletedItems = request.PurchaseRequisitionItem.OrderByDescending(x => x.PRIN).Take(deletNum).ToList();
-                    db.PurchaseRequisitionItem.RemoveRange(deletedItems);
-                }
-
                 // 編輯請購單項目
-                int i = 1;
-                ICollection<PurchaseRequisitionItem> pr_items = new List<PurchaseRequisitionItem>();
-                foreach (var item in pr_info.PurchaseRequisitionItem)
-                {
-                    PurchaseRequisitionItem pr_item;
-                    if (request.PurchaseRequisitionItem.Count >= i)
-                        pr_item = request.PurchaseRequisitionItem.ElementAtOrDefault(i - 1); // 編輯已存在資料
-                    else pr_item = new PurchaseRequisitionItem { PRIN = request.PRN + "_" + i.ToString().PadLeft(2, '0'), PRN = request.PRN }; // 新增一筆資料
-
-                    pr_item.Kind = item.Kind;
-                    pr_item.ItemName = item.ItemName;
-                    pr_item.Size = item.Size;
-                    pr_item.PRAmount = item.PRAmount;
-                    pr_item.Unit = item.Unit;
-                    pr_item.ApplicationPurpose = item.ApplicationPurpose;
-                    pr_items.Add(pr_item);
-                    i++;
-                }
+                db.PurchaseRequisitionItem.RemoveRange(request.PurchaseRequisitionItem);
+                ICollection<PurchaseRequisitionItem> pr_items = AddOrUpdateList<PurchaseRequisitionItem>(pr_info.PurchaseRequisitionItem, request.PRN);
                 request.PurchaseRequisitionItem = pr_items;
             }
             #endregion
@@ -194,10 +147,9 @@ namespace MinSheng_MIS.Controllers
             request.AuditDate = pr_info.AuditDate;
             request.AuditResult = pr_info.AuditResult;
             // [相關文件]檔案處理，目前只提供單個檔案上傳及刪除
-            string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
             if (pr_info.AFileName == null && !string.IsNullOrEmpty(request.FileName)) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，若此請購單具有相關文件，應刪除。
             {
-                ComFunc.DeleteFile(folderpath, request.FileName, null);
+                ComFunc.DeleteFile(Server.MapPath(folderPath), request.FileName, null);
                 request.FileName = null;
             }
             if (pr_info.AFile != null && pr_info.AFile.ContentLength > 0) // 上傳
@@ -207,18 +159,11 @@ namespace MinSheng_MIS.Controllers
                 if (ComFunc.IsConformedForDocument(newFile.ContentType, extension) || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(newFile, folderpath, request.PRN))
-                    {
-                        Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        return Content("檔案上傳過程出錯!");
-                    }
+                    if (!ComFunc.UploadFile(newFile, folderpath, request.PRN)) return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
                     request.FileName = request.PRN + extension;
                 }
-                else
-                {
-                    Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
-                    return Content("非系統可接受的檔案格式!");
-                }
+                else 
+                    return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
             }
             #endregion
 
@@ -230,14 +175,26 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region Helper
-        //private ActionResult HandleInvalidModelState(string field)
-        //{
-        //    Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //    if (string.IsNullOrEmpty(field))
-        //        return Content(string.Join(Environment.NewLine, ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))));
-        //    else
-        //        return Content(string.Join(Environment.NewLine, ModelState[field].Errors.Select(e => e.ErrorMessage)));
-        //}
+        private static ICollection<T> AddOrUpdateList<T>(List<PR_Item> list, string PRN) where T : PurchaseRequisitionItem, new()
+        {
+            ICollection<T> result = new List<T>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                T item = new T
+                {
+                    PRIN = PRN + "_" + (i + 1).ToString().PadLeft(2, '0'),
+                    PRN = PRN,
+                    Kind = list[i].Kind,
+                    ItemName = list[i].ItemName,
+                    Size = list[i].Size,
+                    PRAmount = list[i].PRAmount,
+                    Unit = list[i].Unit,
+                    ApplicationPurpose = list[i].ApplicationPurpose
+                };
+                result.Add((T)item);
+            }
+            return result;
+        }
         #endregion
     }
 }

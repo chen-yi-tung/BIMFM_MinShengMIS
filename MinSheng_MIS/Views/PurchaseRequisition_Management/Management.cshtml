@@ -84,6 +84,7 @@
             addSearchAreaClickEvent();
             await pushSelect("PRState", '@Url.Action("FormPRState", "DropDownList")');
             await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
+            await pushSelect("PRDept", '@Url.Action("FormPRDept", "DropDownList")');
         });
 
         function Initialize_DataGrid(getGridJSON) {

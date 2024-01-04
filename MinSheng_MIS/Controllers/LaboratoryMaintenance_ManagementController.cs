@@ -10,14 +10,13 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using static System.Net.WebRequestMethods;
 
 namespace MinSheng_MIS.Controllers
 {
 	public class LaboratoryMaintenance_ManagementController : Controller
 	{
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-
+        static readonly string folderPath = "~/Files/LaboratoryMaintenance/";
         // GET: LaboratoryMaintenance_Management
         #region 實驗室維護管理
         public ActionResult Management()
@@ -51,7 +50,6 @@ namespace MinSheng_MIS.Controllers
                 UploadDateTime = now
             };
             // [維護檔案]檔案處理，目前只提供單個檔案上傳
-            string folderpath = Server.MapPath("~/Files/LaboratoryMaintenance/");
             if (lm_info.MFile != null && lm_info.MFile.ContentLength > 0) // 上傳
 			{
                 var File = lm_info.MFile;
@@ -59,7 +57,7 @@ namespace MinSheng_MIS.Controllers
                 if (ComFunc.IsConformedForDocument(File.ContentType, extension) || ComFunc.IsConformedForImage(File.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(File, folderpath, maintenance.LMSN))
+                    if (!ComFunc.UploadFile(File, Server.MapPath(folderPath), maintenance.LMSN))
                         return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
                     maintenance.MFile = maintenance.LMSN + extension;
                 }
@@ -93,10 +91,9 @@ namespace MinSheng_MIS.Controllers
             maintenance.MTitle = lm_info.MTitle;
             maintenance.MContent = lm_info.MContent;
             // [維護檔案]檔案處理，目前只提供單個檔案上傳及刪除
-            string folderpath = Server.MapPath("~/Files/LaboratoryMaintenance/");
             if (lm_info.MFileName == null && !string.IsNullOrEmpty(maintenance.MFile)) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，若此實驗室維護具有維護檔案，應刪除。
             {
-                ComFunc.DeleteFile(folderpath, maintenance.MFile, null);
+                ComFunc.DeleteFile(Server.MapPath(folderPath), maintenance.MFile, null);
                 maintenance.MFile = null;
             }
             if (lm_info.MFile != null && lm_info.MFile.ContentLength > 0) // 上傳
@@ -106,7 +103,7 @@ namespace MinSheng_MIS.Controllers
                 if (ComFunc.IsConformedForDocument(newFile.ContentType, extension) || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(newFile, folderpath, maintenance.LMSN))
+                    if (!ComFunc.UploadFile(newFile, Server.MapPath(folderPath), maintenance.LMSN))
                         return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
                     maintenance.MFile = maintenance.LMSN + extension;
                 }

@@ -598,6 +598,26 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region FormPRDept 實驗室維護類型
+        [HttpGet]
+        public ActionResult FormPRDept()
+        {
+            List<JObject> list = new List<JObject>();
+            var dept = db.PurchaseRequisition.Select(x => x.PRDept).Distinct().ToList();
+            foreach (var item in dept)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", item },
+                    { "Value", item }
+                };
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
         #region 設計圖說種類下拉式選單
         [HttpGet]
         public ActionResult ImgType()
@@ -705,18 +725,19 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-
         #region FormMType 實驗室維護類型
         [HttpGet]
         public ActionResult FormMType()
         {
             List<JObject> list = new List<JObject>();
-            var type = db.LaboratoryMaintenance.GroupBy(x => x.MType).Select(g => g.Key).ToList();
+            var type = db.LaboratoryMaintenance.Select(x => x.MType).Distinct().ToList();
             foreach (var item in type)
             {
-                JObject jo = new JObject();
-                jo.Add("Text", item);
-                jo.Add("Value", item);
+                JObject jo = new JObject
+                {
+                    { "Text", item },
+                    { "Value", item }
+                };
                 list.Add(jo);
             }
             string text = JsonConvert.SerializeObject(list);
