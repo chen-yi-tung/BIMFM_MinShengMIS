@@ -195,18 +195,19 @@ namespace MinSheng_MIS.Controllers
             request.AuditResult = pr_info.AuditResult;
             // [相關文件]檔案處理，目前只提供單個檔案上傳及刪除
             string folderpath = Server.MapPath("~/Files/PurchaseRequisition/");
-            if (pr_info.AFileName == null && !string.IsNullOrEmpty(request.FileName)) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，表示若此請購單具有相關文件，應刪除。
+            if (pr_info.AFileName == null && !string.IsNullOrEmpty(request.FileName)) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，若此請購單具有相關文件，應刪除。
             {
                 ComFunc.DeleteFile(folderpath, request.FileName, null);
                 request.FileName = null;
             }
             if (pr_info.AFile != null && pr_info.AFile.ContentLength > 0) // 上傳
             {
-                string extension = Path.GetExtension(pr_info.AFile.FileName); // 檔案副檔名
-                if (ComFunc.IsConformedForDocument(pr_info.AFile.ContentType, extension) || ComFunc.IsConformedForImage(pr_info.AFile.ContentType, extension)) // 檔案白名單檢查
+                var newFile = pr_info.AFile;
+                string extension = Path.GetExtension(newFile.FileName); // 檔案副檔名
+                if (ComFunc.IsConformedForDocument(newFile.ContentType, extension) || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(pr_info.AFile, folderpath, request.PRN))
+                    if (!ComFunc.UploadFile(newFile, folderpath, request.PRN))
                     {
                         Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         return Content("檔案上傳過程出錯!");
