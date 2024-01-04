@@ -57,7 +57,7 @@
             addButtonEvent();
             fileUploader = new FileUploader({
                 container: "#FileUploader",
-                className: "form-group w-100",
+                className: "form-group w-100 required",
                 label: "實驗採樣分析流程",
                 id: "File"
             })
@@ -84,9 +84,17 @@
                 form.append("WorkflowFile", fileUploader.getFile());
             }
 
+            if (!labelItems.checkValidity()) {
+                onError({ responseText: "請至少新增一個實驗標籤名稱！" })
+                return;
+            }
             labelItems.calc().forEach((item, i) => {
                 form.append(`LabelName[${i}]`, item.Name);
             })
+            if (!dataItems.checkValidity()) {
+                onError({ responseText: "請至少新增一個實驗數據欄位！" })
+                return;
+            }
             dataItems.calc().forEach((item, i) => {
                 form.append(`DataName[${i}]`, item.Name);
             })
@@ -128,10 +136,10 @@
             this.count = 0
             const temp_item = (count) => {
                 return `<div class="d-flex w-100 gap-3" id="item-${count}">
-                    <input id="Value" name="Value" hidden>
-                    <input class="form-control" id="Name" name="Name" type="text" minlength="1" maxlength="200" required/>
-                    <button class="btn-delete-item align-self-center flex-shrink-0" type="button"></button>
-                </div>`
+                        <input id="Value" name="Value" hidden>
+                        <input class="form-control" id="Name" name="Name" type="text" minlength="1" maxlength="200" required/>
+                        <button class="btn-delete-item align-self-center flex-shrink-0" type="button"></button>
+                    </div>`
             }
             this.create = (data = null) => {
                 let item = $(temp_item(this.count))
@@ -155,6 +163,9 @@
                         Name: $(e).children("#Name").val()
                     }
                 })
+            }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
             }
             this.init = () => {
                 $(`#${id} #create-item`).click(() => {
