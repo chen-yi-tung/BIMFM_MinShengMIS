@@ -1,6 +1,10 @@
 ﻿@{
     ViewBag.Title = "新增採驗分析流程";
 }
+@section styles {
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -43,122 +47,122 @@
     <button class="btn btn-submit" id="submit">新增</button>
 </div>
 
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/datatable.js"></script>
-<script>
+@section scripts {
+    <script>
 
-    var labelItems = new LabelItems("LabelNames")
-    var dataItems = new LabelItems("DataNames")
-    var fileUploader;
-    $(async function () {
-        addButtonEvent();
-        fileUploader = new FileUploader({
-            container: "#FileUploader",
-            className: "form-group w-100",
-            label: "實驗採樣分析流程",
-            id: "File"
-        })
-        labelItems.create()
-        dataItems.create()
-    });
+        var labelItems = new LabelItems("LabelNames")
+        var dataItems = new LabelItems("DataNames")
+        var fileUploader;
+        $(async function () {
+            addButtonEvent();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group w-100",
+                label: "實驗採樣分析流程",
+                id: "File"
+            })
+            labelItems.create()
+            dataItems.create()
+        });
 
-    function save() {
-        //重置自訂驗證錯誤訊息
-        getAllParams().forEach((e) => {
-            e.setCustomValidity('');
-        })
-        //自訂驗證錯誤
-        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity():", isValidity)
-        if (!isValidity) return;
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
 
-        var form = new FormData();
-        form.append("ExperimentType", document.getElementById("ExperimentType").value);
-        form.append("ExperimentName", document.getElementById("ExperimentName").value);
+            var form = new FormData();
+            form.append("ExperimentType", document.getElementById("ExperimentType").value);
+            form.append("ExperimentName", document.getElementById("ExperimentName").value);
 
-        if (fileUploader.hasFile()) {
-            form.append("WorkflowFile", fileUploader.getFile());
-        }
-
-        labelItems.calc().forEach((item, i) => {
-            form.append(`LabelName[${i}]`, item.Name);
-        })
-        dataItems.calc().forEach((item, i) => {
-            form.append(`DataName[${i}]`, item.Name);
-        })
-
-        console.log(Object.fromEntries(form.entries()));
-        $.ajax({
-            url: '@Url.Action("CreateLaboratoryLabel", "LaboratoryLabel_Management")',
-            data: form,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-
-    function LabelItems(id) {
-        this.list = $(`#${id} #item-list`)
-        this.count = 0
-        const temp_item = (count) => {
-            return `<div class="d-flex w-100 gap-3" id="item-${count}">
-                <input id="Value" name="Value" hidden>
-                <input class="form-control" id="Name" name="Name" type="text" minlength="1" maxlength="200" required/>
-                <button class="btn-delete-item align-self-center flex-shrink-0" type="button"></button>
-            </div>`
-        }
-        this.create = (data = null) => {
-            let item = $(temp_item(this.count))
-            if (data) {
-                item.children("#Value").val(data.Value)
-                item.children("#Name").val(data.Name)
+            if (fileUploader.hasFile()) {
+                form.append("WorkflowFile", fileUploader.getFile());
             }
-            item.find(".btn-delete-item").click(() => {
-                item.remove()
+
+            labelItems.calc().forEach((item, i) => {
+                form.append(`LabelName[${i}]`, item.Name);
             })
-            this.list.append(item)
-            this.count++
+            dataItems.calc().forEach((item, i) => {
+                form.append(`DataName[${i}]`, item.Name);
+            })
+
+            console.log(Object.fromEntries(form.entries()));
+            $.ajax({
+                url: '@Url.Action("CreateLaboratoryLabel", "LaboratoryLabel_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
         }
-        this.delete = (count) => {
-            $(`#${id} #item-${count}`).remove()
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#submit").click(function () {
+                save();
+            })
         }
-        this.calc = () => {
-            return this.list.children().toArray().map((e) => {
-                return {
-                    Value: $(e).children("#Value").val() || null,
-                    Name: $(e).children("#Name").val()
+
+        function LabelItems(id) {
+            this.list = $(`#${id} #item-list`)
+            this.count = 0
+            const temp_item = (count) => {
+                return `<div class="d-flex w-100 gap-3" id="item-${count}">
+                    <input id="Value" name="Value" hidden>
+                    <input class="form-control" id="Name" name="Name" type="text" minlength="1" maxlength="200" required/>
+                    <button class="btn-delete-item align-self-center flex-shrink-0" type="button"></button>
+                </div>`
+            }
+            this.create = (data = null) => {
+                let item = $(temp_item(this.count))
+                if (data) {
+                    item.children("#Value").val(data.Value)
+                    item.children("#Name").val(data.Name)
                 }
-            })
+                item.find(".btn-delete-item").click(() => {
+                    item.remove()
+                })
+                this.list.append(item)
+                this.count++
+            }
+            this.delete = (count) => {
+                $(`#${id} #item-${count}`).remove()
+            }
+            this.calc = () => {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        Value: $(e).children("#Value").val() || null,
+                        Name: $(e).children("#Name").val()
+                    }
+                })
+            }
+            this.init = () => {
+                $(`#${id} #create-item`).click(() => {
+                    this.create()
+                })
+            }
+            this.init()
+            return this
         }
-        this.init = () => {
-            $(`#${id} #create-item`).click(() => {
-                this.create()
-            })
-        }
-        this.init()
-        return this
-    }
-</script>
+    </script>
+}

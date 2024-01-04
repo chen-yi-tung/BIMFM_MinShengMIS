@@ -1,6 +1,10 @@
 ﻿@{
     ViewBag.Title = "編輯採驗分析流程";
 }
+@section styles {
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -43,194 +47,194 @@
     <button class="btn btn-submit" id="submit">儲存</button>
 </div>
 
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/datatable.js"></script>
-<script>
-    const TAWSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "TestingAndAnalysisWorkflow")' + `/${TAWSN}`;
-    let apiUrl = null;
+@section scripts {
+    <script>
+        const TAWSN = '@ViewBag.id';
+        //let apiUrl = '@Url.Action("ReadBody", "TestingAndAnalysisWorkflow")' + `/${TAWSN}`;
+        let apiUrl = null;
 
-    const fakeData = {
-        TAWSN: "000000001",
-        ExperimentType: "AT",
-        ExperimentName: "AAA",
-        FilePath: "000000001.pdf",
-        UploadUserName: "王大明",
-        UploadDateTime: "2023/01/01 11:00:00",
-        LabelNames: [
-            {
-                LNSN: "000000001L001",
-                LabelName: "AAAL1"
+        const fakeData = {
+            TAWSN: "000000001",
+            ExperimentType: "AT",
+            ExperimentName: "AAA",
+            FilePath: "000000001.pdf",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023/01/01 11:00:00",
+            LabelNames: [
+                {
+                    LNSN: "000000001L001",
+                    LabelName: "AAAL1"
+                }
+            ],
+            DataNames: [
+                {
+                    DNSN: "000000001D001",
+                    DataName: "AAAD1"
+                },
+                {
+                    DNSN: "000000001D002",
+                    DataName: "AAAD1"
+                }
+            ]
+        }
+
+        var labelItems = new LabelItems("LabelNames")
+        var dataItems = new LabelItems("DataNames")
+        var fileUploader;
+        $(async function () {
+            addButtonEvent();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group w-100 required",
+                label: "實驗採樣分析流程",
+                id: "File",
+                customValidity: true
+            })
+
+            readData(apiUrl);
+        });
+
+        function readData(url = null) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+
+                for (const [k, v] of Object.entries(res)) {
+                    $("#" + k).val(v);
+                }
+                fileUploader.setFile(res.FilePath)
+
+                res.LabelNames ?
+                    res.LabelNames.forEach((e) => {
+                        labelItems.create({
+                            Value: e.LNSN,
+                            Name: e.LabelName
+                        });
+                    }) :
+                    labelItems.create();
+
+                res.DataNames ?
+                    res.DataNames.forEach((e) => {
+                        dataItems.create({
+                            Value: e.DNSN,
+                            Name: e.DataName
+                        });
+                    }) :
+                    dataItems.create();
             }
-        ],
-        DataNames: [
-            {
-                DNSN: "000000001D001",
-                DataName: "AAAD1"
-            },
-            {
-                DNSN: "000000001D002",
-                DataName: "AAAD1"
+            function onError(res) {
+                console.log(res);
             }
-        ]
-    }
+        }
 
-    var labelItems = new LabelItems("LabelNames")
-    var dataItems = new LabelItems("DataNames")
-    var fileUploader;
-    $(async function () {
-        addButtonEvent();
-        fileUploader = new FileUploader({
-            container: "#FileUploader",
-            className: "form-group w-100 required",
-            label: "實驗採樣分析流程",
-            id: "File",
-            customValidity: true
-        })
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
 
-        readData(apiUrl);
-    });
+            var form = new FormData();
+            form.append("ExperimentType", document.getElementById("ExperimentType").value);
+            form.append("ExperimentName", document.getElementById("ExperimentName").value);
 
-    function readData(url = null) {
-        url == null ? onSuccess(fakeData) :
+            if (fileUploader.hasFile()) {
+                form.append("WorkflowFile", fileUploader.getFile());
+            }
+
+            labelItems.calc().forEach((item, i) => {
+                form.append(`LabelName[${i}]`, item.Name);
+            })
+            dataItems.calc().forEach((item, i) => {
+                form.append(`DataName[${i}]`, item.Name);
+            })
+
+            console.log(Object.fromEntries(form.entries()));
             $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: '@Url.Action("EditLaboratoryLabel", "LaboratoryLabel_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
-
-        async function onSuccess(res) {
-            console.log(res);
-
-            for (const [k, v] of Object.entries(res)) {
-                $("#" + k).val(v);
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
+                });
             }
-            fileUploader.setFile(res.FilePath)
-
-            res.LabelNames ?
-                res.LabelNames.forEach((e) => {
-                    labelItems.create({
-                        Value: e.LNSN,
-                        Name: e.LabelName
-                    });
-                }) :
-                labelItems.create();
-
-            res.DataNames ?
-                res.DataNames.forEach((e) => {
-                    dataItems.create({
-                        Value: e.DNSN,
-                        Name: e.DataName
-                    });
-                }) :
-                dataItems.create();
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function save() {
-        //重置自訂驗證錯誤訊息
-        getAllParams().forEach((e) => {
-            e.setCustomValidity('');
-        })
-        //自訂驗證錯誤
-        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity():", isValidity)
-        if (!isValidity) return;
-
-        var form = new FormData();
-        form.append("ExperimentType", document.getElementById("ExperimentType").value);
-        form.append("ExperimentName", document.getElementById("ExperimentName").value);
-
-        if (fileUploader.hasFile()) {
-            form.append("WorkflowFile", fileUploader.getFile());
-        }
-
-        labelItems.calc().forEach((item, i) => {
-            form.append(`LabelName[${i}]`, item.Name);
-        })
-        dataItems.calc().forEach((item, i) => {
-            form.append(`DataName[${i}]`, item.Name);
-        })
-
-        console.log(Object.fromEntries(form.entries()));
-        $.ajax({
-            url: '@Url.Action("EditLaboratoryLabel", "LaboratoryLabel_Management")',
-            data: form,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "儲存成功！",
-                onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-
-    function LabelItems(id) {
-        this.list = $(`#${id} #item-list`)
-        this.count = 0
-        const temp_item = (count) => {
-            return `<div class="d-flex w-100 gap-3" id="item-${count}">
-                <input id="Value" name="Value" hidden>
-                <input class="form-control" id="Name" name="Name" type="text" minlength="1" maxlength="200" required/>
-                <button class="btn-delete-item align-self-center flex-shrink-0" type="button"></button>
-            </div>`
-        }
-        this.create = (data = null) => {
-            let item = $(temp_item(this.count))
-            if (data) {
-                item.children("#Value").val(data.Value)
-                item.children("#Name").val(data.Name)
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
             }
-            item.find(".btn-delete-item").click(() => {
-                item.remove()
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
             })
-            this.list.append(item)
-            this.count++
+
+            $("#submit").click(function () {
+                save();
+            })
         }
-        this.delete = (count) => {
-            $(`#${id} #item-${count}`).remove()
-        }
-        this.calc = () => {
-            return this.list.children().toArray().map((e) => {
-                return {
-                    Value: $(e).children("#Value").val() || null,
-                    Name: $(e).children("#Name").val()
+
+        function LabelItems(id) {
+            this.list = $(`#${id} #item-list`)
+            this.count = 0
+            const temp_item = (count) => {
+                return `<div class="d-flex w-100 gap-3" id="item-${count}">
+                    <input id="Value" name="Value" hidden>
+                    <input class="form-control" id="Name" name="Name" type="text" minlength="1" maxlength="200" required/>
+                    <button class="btn-delete-item align-self-center flex-shrink-0" type="button"></button>
+                </div>`
+            }
+            this.create = (data = null) => {
+                let item = $(temp_item(this.count))
+                if (data) {
+                    item.children("#Value").val(data.Value)
+                    item.children("#Name").val(data.Name)
                 }
-            })
+                item.find(".btn-delete-item").click(() => {
+                    item.remove()
+                })
+                this.list.append(item)
+                this.count++
+            }
+            this.delete = (count) => {
+                $(`#${id} #item-${count}`).remove()
+            }
+            this.calc = () => {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        Value: $(e).children("#Value").val() || null,
+                        Name: $(e).children("#Name").val()
+                    }
+                })
+            }
+            this.init = () => {
+                $(`#${id} #create-item`).click(() => {
+                    this.create()
+                })
+            }
+            this.init()
+            return this
         }
-        this.init = () => {
-            $(`#${id} #create-item`).click(() => {
-                this.create()
-            })
-        }
-        this.init()
-        return this
-    }
-</script>
+    </script>
+}
