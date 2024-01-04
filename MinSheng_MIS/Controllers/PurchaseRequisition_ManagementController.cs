@@ -173,8 +173,8 @@ namespace MinSheng_MIS.Controllers
                 {
                     PurchaseRequisitionItem pr_item;
                     if (request.PurchaseRequisitionItem.Count >= i)
-                        pr_item = request.PurchaseRequisitionItem.ElementAtOrDefault(i - 1); // 保留其餘欄位;
-                    else pr_item = new PurchaseRequisitionItem { PRIN = request.PRN + "_" + i.ToString().PadLeft(2, '0'), PRN = request.PRN };
+                        pr_item = request.PurchaseRequisitionItem.ElementAtOrDefault(i - 1); // 編輯已存在資料
+                    else pr_item = new PurchaseRequisitionItem { PRIN = request.PRN + "_" + i.ToString().PadLeft(2, '0'), PRN = request.PRN }; // 新增一筆資料
 
                     pr_item.Kind = item.Kind;
                     pr_item.ItemName = item.ItemName;

@@ -201,7 +201,15 @@ namespace MinSheng_MIS.Controllers
 
 
         //--實驗室管理--
-        #region TestingAndAnalysisWorkflow 採驗分析流程建立 TODO
+        #region TestingAndAnalysisWorkflow 採驗分析流程建立
+        [HttpPost]
+        public ActionResult TestingAndAnalysisWorkflow(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_TestingAndAnalysisWorkflow(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region LaboratoryLabel_Management 實驗室標籤管理 TODO
