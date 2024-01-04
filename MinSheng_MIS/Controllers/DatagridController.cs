@@ -178,10 +178,10 @@ namespace MinSheng_MIS.Controllers
         //--庫存管理--
         #region PurchaseRequisition_Management 請購管理
         [HttpPost]
-        public ActionResult PurchaseRequisition_Management(FormCollection form, string sort, string order)
+        public ActionResult PurchaseRequisition_Management(FormCollection form)
         {
             var service = new DatagridService();
-            var a = service.GetJsonForGrid_PurchaseRequisition_Management(form, sort, order);
+            var a = service.GetJsonForGrid_PurchaseRequisition_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -207,7 +207,15 @@ namespace MinSheng_MIS.Controllers
         #region LaboratoryLabel_Management 實驗室標籤管理 TODO
         #endregion
 
-        #region LaboratoryMaintenance_Management 實驗室維護管理 TODO
+        #region LaboratoryMaintenance_Management 實驗室維護管理
+        [HttpPost]
+        public ActionResult LaboratoryMaintenance_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_LaboratoryMaintenance_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region ExperimentData_Management 實驗數據管理 TODO

@@ -2525,7 +2525,7 @@ namespace MinSheng_MIS.Services
 
         //--庫存管理--
         #region 請購管理
-        public JObject GetJsonForGrid_PurchaseRequisition_Management(System.Web.Mvc.FormCollection form, string sort, string order)
+        public JObject GetJsonForGrid_PurchaseRequisition_Management(System.Web.Mvc.FormCollection form)
         {
             //解析查詢字串
             var PRState = form["PRState"]?.ToString();
@@ -2534,6 +2534,14 @@ namespace MinSheng_MIS.Services
             var PRDept = form["PRDept"]?.ToString();
             var DateFrom = form["DateFrom"]?.ToString();
             var DateTo = form["DateTo"]?.ToString();
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
             var rpT = db.PurchaseRequisition.AsQueryable();
             //查詢請購單狀態
@@ -2563,17 +2571,7 @@ namespace MinSheng_MIS.Services
 
             //記住總筆數
             int Total = rpT.Count();
-            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-            int page = 1;
-            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
-            {
-                page = short.Parse(form["page"].ToString());
-            }
-            int rows = 10;
-            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
-            {
-                rows = short.Parse(form["rows"]?.ToString());
-            }
+            //切頁
             rpT = rpT.Skip((page - 1) * rows).Take(rows);
 
             //回傳JSON陣列
@@ -2628,7 +2626,70 @@ namespace MinSheng_MIS.Services
         #region 實驗室標籤管理 TODO
         #endregion
 
-        #region 實驗室維護管理 TODO
+        #region 實驗室維護管理
+        public JObject GetJsonForGrid_LaboratoryMaintenance_Management(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var MType = form["MType"]?.ToString();
+            var MTitle = form["MTitle"]?.ToString();
+            var MContent = form["MContent"]?.ToString();
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+
+            var rpT = db.LaboratoryMaintenance.AsQueryable();
+            //查詢維護類型
+            if (!string.IsNullOrEmpty(MType)) rpT = rpT.Where(x => x.MType == MType);
+            //查詢標題 (模糊查詢)
+            if (!string.IsNullOrEmpty(MTitle)) rpT = rpT.Where(x => x.MTitle.Contains(MTitle));
+            //查詢說明 (模糊查詢)
+            if (!string.IsNullOrEmpty(MContent)) rpT = rpT.Where(x => x.MContent.Contains(MContent));
+
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderByDescending(x => x.LMSN);
+
+            // 記住總筆數
+            int Total = rpT.Count();
+            // 切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+
+            if (rpT != null || Total > 0)
+            {
+                var StateDics = Surface.PRState();
+                var UserDics = db.AspNetUsers.ToDictionary(k => k.UserName, v => v.MyName);
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "LMSN", item.LMSN },
+                        { "MType", item.MType },
+                        { "MTitle", item.MTitle },
+                        { "MContent", item.MContent },
+                        { "UploadUserName", UserDics[item.UploadUserName] },
+                        { "UploadDateTime", item.UploadDateTime?.ToString("yyyy/MM/dd HH:mm:ss") },
+                    };
+
+                    ja.Add(itemObject);
+                }
+            }
+
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
+
+            return jo;
+        }
         #endregion
 
         #region 實驗數據管理 TODO
