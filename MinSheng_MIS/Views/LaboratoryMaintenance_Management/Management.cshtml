@@ -49,7 +49,6 @@
 
         var getGridJSON = '@Url.Action("LaboratoryMaintenance_Management", "Datagrid")';
         var DataGrid;
-        
 
         const fakeData = [
             {
@@ -65,13 +64,14 @@
         $(async function () {
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
+            await pushSelect("MType", '@Url.Action("FormMType", "DropDownList")');
         });
 
         function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
-                //url: getGridJSON,
-                data: fakeData,
+                url: getGridJSON,
+                //data: fakeData,
                 method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'LMSN',

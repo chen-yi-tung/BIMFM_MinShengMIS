@@ -1,15 +1,14 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
@@ -74,17 +73,78 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯實驗室維護管理
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
 		{
-			return View();
+            ViewBag.id = id;
+            return View();
 		}
-		#endregion
 
-		#region 實驗室維護管理詳情
-		public ActionResult Read()
+        [HttpPost]
+        public async Task<ActionResult> EditLaboratoryMaintenance(LM_Info lm_info)
+        {
+            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+            var maintenance = await db.LaboratoryMaintenance.FirstOrDefaultAsync(x => x.LMSN == lm_info.LMSN);
+            if (maintenance == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "LMSN is Undefined.");
+
+            #region 編輯實驗室維護資訊
+            maintenance.MType = lm_info.MType;
+            maintenance.MTitle = lm_info.MTitle;
+            maintenance.MContent = lm_info.MContent;
+            // [維護檔案]檔案處理，目前只提供單個檔案上傳及刪除
+            string folderpath = Server.MapPath("~/Files/LaboratoryMaintenance/");
+            if (lm_info.MFileName == null && !string.IsNullOrEmpty(maintenance.MFile)) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，若此實驗室維護具有維護檔案，應刪除。
+            {
+                ComFunc.DeleteFile(folderpath, maintenance.MFile, null);
+                maintenance.MFile = null;
+            }
+            if (lm_info.MFile != null && lm_info.MFile.ContentLength > 0) // 上傳
+            {
+                var newFile = lm_info.MFile;
+                string extension = Path.GetExtension(newFile.FileName); // 檔案副檔名
+                if (ComFunc.IsConformedForDocument(newFile.ContentType, extension) || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
+                {
+                    // 檔案上傳
+                    if (!ComFunc.UploadFile(newFile, folderpath, maintenance.LMSN))
+                        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
+                    maintenance.MFile = maintenance.LMSN + extension;
+                }
+                else
+                    return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
+            }
+            #endregion
+
+            db.LaboratoryMaintenance.AddOrUpdate(maintenance);
+            await db.SaveChangesAsync();
+
+            return Json(new { Message = "Succeed" });
+        }
+        #endregion
+
+        #region 實驗室維護管理詳情
+        public ActionResult Read(string id)
 		{
-			return View();
+            ViewBag.id = id;
+            return View();
 		}
-		#endregion
-	}
+
+        public async Task<ActionResult> Read_Data(string id)
+        {
+            var maintenance = await db.LaboratoryMaintenance.FirstOrDefaultAsync(x => x.LMSN == id);
+            if (maintenance == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "LMSN is Undefined.");
+
+            LM_ViewModel model = new LM_ViewModel
+            {
+                LMSN = maintenance.LMSN,
+                MType = maintenance.MType,
+                MTitle = maintenance.MTitle,
+                MContent = maintenance.MContent,
+                UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == maintenance.UploadUserName)?.Result.MyName,
+                UploadDateTime = maintenance.UploadDateTime?.ToString("yyyy/MM/dd HH:mm:ss"),
+                FilePath = !string.IsNullOrEmpty(maintenance.MFile) ? ComFunc.UrlMaker("Files/LaboratoryMaintenance", maintenance.MFile) : null,
+            };
+            return Content(JsonConvert.SerializeObject(model), "application/json");
+        }
+        #endregion
+    }
 }

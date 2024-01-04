@@ -22,7 +22,18 @@ namespace MinSheng_MIS.Models.ViewModels
         public HttpPostedFileBase MFile { get; set; } //新增的維護檔案
         //--------------------------------------------
         [Required]
-        public string LMSN { get; set; } //請購單號
-        public string AFileName { get; set; } //已刪除的相關文件
+        public string LMSN { get; set; } //實驗室維護單號
+        public string MFileName { get; set; } //已刪除的維護檔案
+    }
+
+    public class LM_ViewModel
+    {
+        public string LMSN { get; set; } //實驗室維護單號
+        public string MType { get; set; } //維護類型
+        public string MTitle { get; set; } //標題
+        public string MContent { get; set; } //說明
+        public string UploadUserName { get; set; } //上傳者
+        public string UploadDateTime { get; set; } //上傳日期時間
+        public string FilePath { get; set; } //維護檔案
     }
 }
