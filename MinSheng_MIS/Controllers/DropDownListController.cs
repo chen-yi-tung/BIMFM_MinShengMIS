@@ -704,5 +704,25 @@ namespace MinSheng_MIS.Controllers
             return Content(text, "application/json");
         }
         #endregion
+
+
+        #region FormMType 實驗室維護類型
+        [HttpGet]
+        public ActionResult FormMType()
+        {
+            List<JObject> list = new List<JObject>();
+            var type = db.LaboratoryMaintenance.GroupBy(x => x.MType).Select(g => g.Key).ToList();
+            foreach (var item in type)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item);
+                jo.Add("Value", item);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
     }
 }
