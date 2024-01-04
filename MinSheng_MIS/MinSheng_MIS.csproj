@@ -1900,7 +1900,6 @@
     <Content Include="Views\ManufacturerInfo_Management\Edit.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Management.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Create.cshtml" />
-    <Content Include="Views\AsBuiltDrawing_Management\Read.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Edit.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Delete.cshtml" />
     <Content Include="Views\PurchaseRequisition_Management\Management.cshtml" />

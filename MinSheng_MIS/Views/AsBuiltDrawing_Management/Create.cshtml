@@ -1,13 +1,19 @@
 ﻿@{
     ViewBag.Title = "新增竣工圖";
 }
-<style>
-    @@media (min-width: 992px) {
-        .edit-area .form {
-            grid-template-columns: 250px 250px;
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+    <style>
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                grid-template-columns: 250px 250px;
+            }
         }
-    }
-</style>
+    </style>
+}
+
 <h2>@ViewBag.Title</h2>
 <div class="edit-area edit-area-small">
     <form class="form pt-0">
@@ -43,7 +49,7 @@
 
         <div class="form-group required">
             <label for="ImgNum">圖號</label>
-            <input class="form-control" id="ImgNum" name="ImgNum" type="text" maxlength="200" required/>
+            <input class="form-control" id="ImgNum" name="ImgNum" type="text" maxlength="200" required />
         </div>
 
         <div class="form-group required">
@@ -53,7 +59,7 @@
 
         <div class="form-group required">
             <label for="ImgVersion">版本</label>
-            <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" maxlength="50" required/>
+            <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" maxlength="50" required />
         </div>
 
         <div id="FileUploader"></div>
@@ -64,85 +70,85 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增</button>
 </div>
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/AreaFloorEvent.js"></script>
-<script>
-    var fileUploader
-    $(async function () {
-        await AreaFloorEvent();
-        await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
 
-        const Systems = document.getElementById('DSystemID')
-        Systems.addEventListener("change", function () {
-            pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?DSystemID=${$('#DSystemID').val()}`);
+@section scripts {
+    <script>
+        var fileUploader
+        $(async function () {
+            await AreaFloorEvent();
+            await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
+
+            const Systems = document.getElementById('DSystemID')
+            Systems.addEventListener("change", function () {
+                pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?DSystemID=${$('#DSystemID').val()}`);
+            });
+
+            addButtonEvent();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group g-col-2 required",
+                label: "檔案上傳",
+                id: "ImgFile"
+            })
         });
 
-        addButtonEvent();
-        fileUploader = new FileUploader({
-            container: "#FileUploader",
-            className: "form-group g-col-2 required",
-            label: "檔案上傳",
-            id: "ImgFile"
-        })
-    });
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
 
-    function save() {
-        //重置自訂驗證錯誤訊息
-        getAllParams().forEach((e) => {
-            e.setCustomValidity('');
-        })
-        //自訂驗證錯誤
-        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-        
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("todo save():", isValidity)
-        if (!isValidity) return;
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
 
-        var form = new FormData();
-        form.append("ASN", document.getElementById("ASN").value);
-        form.append("FSN", document.getElementById("FSN").value);
-        form.append("DSystemID", document.getElementById("DSystemID").value);
-        form.append("DSubSystemID", document.getElementById("DSubSystemID").value);
-        form.append("ImgNum", document.getElementById("ImgNum").value);
-        form.append("ImgName", document.getElementById("ImgName").value);
-        form.append("ImgVersion", document.getElementById("ImgVersion").value);
-        if (fileUploader.hasFile()) {
-            form.append("ImgPath", fileUploader.getFile());
+            var form = new FormData();
+            form.append("ASN", document.getElementById("ASN").value);
+            form.append("FSN", document.getElementById("FSN").value);
+            form.append("DSystemID", document.getElementById("DSystemID").value);
+            form.append("DSubSystemID", document.getElementById("DSubSystemID").value);
+            form.append("ImgNum", document.getElementById("ImgNum").value);
+            form.append("ImgName", document.getElementById("ImgName").value);
+            form.append("ImgVersion", document.getElementById("ImgVersion").value);
+            if (fileUploader.hasFile()) {
+                form.append("ImgPath", fileUploader.getFile());
+            }
+
+            console.log(Object.fromEntries(form.entries()));
+
+            $.ajax({
+                url: "/AsBuiltDrawing_Management/Create",
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/AsBuiltDrawing_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
         }
 
-        console.log(Object.fromEntries(form.entries()));
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
 
-        $.ajax({
-            url: "/AsBuiltDrawing_Management/Create",
-            data: form,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/AsBuiltDrawing_Management/Management"; }
-            });
+            $("#submit").click(function () {
+                save();
+            })
         }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-</script>
+    </script>
+}
