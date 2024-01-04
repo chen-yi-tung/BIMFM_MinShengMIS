@@ -32,8 +32,8 @@
 @section scripts {
     <script>
         const TAWSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "TestingAndAnalysisWorkflow")' + `/${TAWSN}`;
-        let apiUrl = null;
+        let apiUrl = '@Url.Action("Read_Data", "TestingAndAnalysisWorkflow")' + `/${TAWSN}`;
+        //let apiUrl = null;
 
         const fakeData = {
             TAWSN: "000000001",

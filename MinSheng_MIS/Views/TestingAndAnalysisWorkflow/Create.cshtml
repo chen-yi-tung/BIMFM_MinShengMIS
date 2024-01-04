@@ -93,7 +93,7 @@
 
             console.log(Object.fromEntries(form.entries()));
             $.ajax({
-                url: '@Url.Action("CreateLaboratoryLabel", "LaboratoryLabel_Management")',
+                url: '@Url.Action("CreateTestingAndAnalysisWorkflow", "TestingAndAnalysisWorkflow")',
                 data: form,
                 type: "POST",
                 contentType: false,
@@ -105,7 +105,7 @@
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Success", inner: "新增成功！",
-                    onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
+                    onHide: () => { window.location.href = "/TestingAndAnalysisWorkflow/Management"; }
                 });
             }
             function onError(res) {

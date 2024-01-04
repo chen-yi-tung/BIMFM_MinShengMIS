@@ -11,6 +11,7 @@
 <section class="m-auto">
     <div class="edit-area edit-area-xsmall flex-wrap justify-content-lg-center gap-3 px-5 py-4">
         <form class="form d-lg-contents p-0">
+            <input type="text" id="TAWSN" name="TAWSN" hidden>
             <div class="form-group w-100 required">
                 <label for="ExperimentType">實驗類型</label>
                 <input class="form-control" type="text" id="ExperimentType" name="ExperimentType" required>
@@ -50,8 +51,8 @@
 @section scripts {
     <script>
         const TAWSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "TestingAndAnalysisWorkflow")' + `/${TAWSN}`;
-        let apiUrl = null;
+        let apiUrl = '@Url.Action("Read_Data", "TestingAndAnalysisWorkflow")' + `/${TAWSN}`;
+        //let apiUrl = null;
 
         const fakeData = {
             TAWSN: "000000001",
@@ -148,6 +149,7 @@
             if (!isValidity) return;
 
             var form = new FormData();
+            form.append("TAWSN", document.getElementById("TAWSN").value);
             form.append("ExperimentType", document.getElementById("ExperimentType").value);
             form.append("ExperimentName", document.getElementById("ExperimentName").value);
 
@@ -164,7 +166,7 @@
 
             console.log(Object.fromEntries(form.entries()));
             $.ajax({
-                url: '@Url.Action("EditLaboratoryLabel", "LaboratoryLabel_Management")',
+                url: '@Url.Action("EditTestingAndAnalysisWorkflow", "TestingAndAnalysisWorkflow")',
                 data: form,
                 type: "POST",
                 contentType: false,
@@ -176,7 +178,7 @@
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Success", inner: "儲存成功！",
-                    onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
+                    onHide: () => { window.location.href = "/TestingAndAnalysisWorkflow/Management"; }
                 });
             }
             function onError(res) {
