@@ -1,17 +1,19 @@
 ﻿@{
     ViewBag.Title = "編輯實驗標籤";
 }
-
-<style>
-    .edit-title {
-        font-size: 16px;
-        color: #fff;
-        margin-top: 12px;
-    }
-</style>
+@section styles {
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+    <style>
+        .edit-title {
+            font-size: 16px;
+            color: #fff;
+            margin-top: 12px;
+        }
+    </style>
+}
 
 <h2>@ViewBag.Title</h2>
-
 
 <section style="max-width: 855px;margin: auto;">
     <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-center" style="gap: 1rem 2rem;">
@@ -50,167 +52,167 @@
     <button class="btn btn-submit" id="submit">儲存及列印</button>
 </div>
 
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/datatable.js"></script>
-<script>
-    const ELSN = '@ViewBag.id'
-    //const apiUrl = '@Url.Action("ReadBody", "LaboratoryLabel_Management")' + `/${ELSN}`;
-    const apiUrl = null;
+@section scripts {
+    <script>
+        const ELSN = '@ViewBag.id'
+        //const apiUrl = '@Url.Action("ReadBody", "LaboratoryLabel_Management")' + `/${ELSN}`;
+        const apiUrl = null;
 
-    const fakeData = {
-        ExperimentType: "水質分析",
-        ExperimentName: "汙水管水質檢測分析實驗",
-        TAWSN: "1",
-        EDate: "2023-08-14",
-        UploadUserName: "王大明",
-        UploadDateTime: "2023/08/13",
-        LaboratoryLabelItem: [
-            {
-                ELISN: "230814001_001",
-                LabelName: "2023/08/14_5M樣品_1",
-            },
-            {
-                ELISN: "230814001_002",
-                LabelName: "2023/08/14_5M樣品_2",
-            }
-        ]
-    }
+        const fakeData = {
+            ExperimentType: "水質分析",
+            ExperimentName: "汙水管水質檢測分析實驗",
+            TAWSN: "1",
+            EDate: "2023-08-14",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023/08/13",
+            LaboratoryLabelItem: [
+                {
+                    ELISN: "230814001_001",
+                    LabelName: "2023/08/14_5M樣品_1",
+                },
+                {
+                    ELISN: "230814001_002",
+                    LabelName: "2023/08/14_5M樣品_2",
+                }
+            ]
+        }
 
-    var labelItems = new LabelItems()
-    $(async function () {
-        addButtonEvent();
+        var labelItems = new LabelItems()
+        $(async function () {
+            addButtonEvent();
 
-        await pushSelect("ExperimentType", '@Url.Action("ExperimentType", "DropDownList")');
+            await pushSelect("ExperimentType", '@Url.Action("ExperimentType", "DropDownList")');
 
-        const ExperimentType = document.getElementById('ExperimentType')
-        const TAWSN = document.getElementById('TAWSN')
-        ExperimentType.addEventListener("change", function () {
-            pushSelect("TAWSN", `@Url.Action("ExperimentName", "DropDownList")?ExperimentType=${ExperimentType.value}`);
-        });
-        TAWSN.addEventListener("change", function () {
-            $.getJSON(`@Url.Action("TestingAndAnalysis_LabelName", "TestingAndAnalysisWorkflow")?TAWSN=${TAWSN.value}`, (res) => {
-                res.forEach((item) => {
-                    labelItems.create(item)
+            const ExperimentType = document.getElementById('ExperimentType')
+            const TAWSN = document.getElementById('TAWSN')
+            ExperimentType.addEventListener("change", function () {
+                pushSelect("TAWSN", `@Url.Action("ExperimentName", "DropDownList")?ExperimentType=${ExperimentType.value}`);
+            });
+            TAWSN.addEventListener("change", function () {
+                $.getJSON(`@Url.Action("TestingAndAnalysis_LabelName", "TestingAndAnalysisWorkflow")?TAWSN=${TAWSN.value}`, (res) => {
+                    res.forEach((item) => {
+                        labelItems.create(item)
+                    })
                 })
             })
-        })
 
-        readData(apiUrl)
-    });
+            readData(apiUrl)
+        });
 
-    function save() {
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity():", isValidity)
-        if (!isValidity) return;
+        function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
 
-        var form = new FormData();
-        form.append("ELSN", ELSN);
-        form.append("TAWSN", document.getElementById("TAWSN").value);
-        form.append("EDate", document.getElementById("EDate").value);
+            var form = new FormData();
+            form.append("ELSN", ELSN);
+            form.append("TAWSN", document.getElementById("TAWSN").value);
+            form.append("EDate", document.getElementById("EDate").value);
 
-        labelItems.calc().forEach((item, i) => {
-            form.append(`LabelName[${i}]`, item.LabelName);
-        })
-
-        console.log(Object.fromEntries(form.entries()));
-        $.ajax({
-            url: '@Url.Action("EditLaboratoryLabel", "LaboratoryLabel_Management")',
-            data: form,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "儲存成功！",
-                onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-
-    function LabelItems() {
-        this.list = $("#item-list")
-        this.count = 0
-        const temp_item = (count) => {
-            return `<div class="d-flex w-100 gap-3" id="item-${count}">
-                <input id="ELISN" name="ELISN" hidden>
-                <input class="form-control" id="LabelName" name="LabelName" type="text" minlength="1" maxlength="200" required/>
-                <button class="btn-delete-item align-self-center flex-shrink-0" onclick="labelItems.delete(${count})"></button>
-            </div>`
-        }
-        this.create = (data = null) => {
-            if ($("#TAWSN").val() == "") {
-                $("#TAWSN")[0].reportValidity()
-                return;
-            }
-            let item = $(temp_item(this.count))
-            if (data) {
-                item.children("#ELISN").val(data?.ELISN)
-                item.children("#LabelName").val(data.LabelName)
-            }
-            this.list.append(item)
-            this.count++
-        }
-        this.delete = (count) => {
-            $(`#item-${count}`).remove()
-        }
-        this.calc = () => {
-            return this.list.children().toArray().map((e) => {
-                return {
-                    ELISN: $(e).children("#ELISN").val(),
-                    LabelName: $(e).children("#LabelName").val()
-                }
+            labelItems.calc().forEach((item, i) => {
+                form.append(`LabelName[${i}]`, item.LabelName);
             })
-        }
-        this.init = () => {
-            $("#create-item").click(function () {
-                labelItems.create()
-            })
-        }
-        this.init()
-        return this
-    }
 
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :   //fakeData
+            console.log(Object.fromEntries(form.entries()));
             $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: '@Url.Action("EditLaboratoryLabel", "LaboratoryLabel_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/LaboratoryLabel_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
 
-        function onSuccess(res) {
-            console.log(res);
-            $("#ExperimentType").val(res.ExperimentType)
-            $("#TAWSN").val(res.TAWSN)
-            $("#EDate").val(res.EDate)
-
-            res.LaboratoryLabelItem.forEach((item)=>{
-                labelItems.create(item)
+            $("#submit").click(function () {
+                save();
             })
         }
-        function onError(res) {
-            console.log(res);
+
+        function LabelItems() {
+            this.list = $("#item-list")
+            this.count = 0
+            const temp_item = (count) => {
+                return `<div class="d-flex w-100 gap-3" id="item-${count}">
+                    <input id="ELISN" name="ELISN" hidden>
+                    <input class="form-control" id="LabelName" name="LabelName" type="text" minlength="1" maxlength="200" required/>
+                    <button class="btn-delete-item align-self-center flex-shrink-0" onclick="labelItems.delete(${count})"></button>
+                </div>`
+            }
+            this.create = (data = null) => {
+                if ($("#TAWSN").val() == "") {
+                    $("#TAWSN")[0].reportValidity()
+                    return;
+                }
+                let item = $(temp_item(this.count))
+                if (data) {
+                    item.children("#ELISN").val(data?.ELISN)
+                    item.children("#LabelName").val(data.LabelName)
+                }
+                this.list.append(item)
+                this.count++
+            }
+            this.delete = (count) => {
+                $(`#item-${count}`).remove()
+            }
+            this.calc = () => {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        ELISN: $(e).children("#ELISN").val(),
+                        LabelName: $(e).children("#LabelName").val()
+                    }
+                })
+            }
+            this.init = () => {
+                $("#create-item").click(function () {
+                    labelItems.create()
+                })
+            }
+            this.init()
+            return this
         }
-    }
-</script>
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :   //fakeData
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#ExperimentType").val(res.ExperimentType)
+                $("#TAWSN").val(res.TAWSN)
+                $("#EDate").val(res.EDate)
+
+                res.LaboratoryLabelItem.forEach((item) => {
+                    labelItems.create(item)
+                })
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+    </script>
+}

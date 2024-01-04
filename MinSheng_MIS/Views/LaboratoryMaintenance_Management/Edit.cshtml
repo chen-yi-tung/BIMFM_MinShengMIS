@@ -1,13 +1,18 @@
 ﻿@{
     ViewBag.Title = "編輯實驗室維護管理";
 }
-<style>
-    @@media (min-width: 992px) {
-        .edit-area .form {
-            grid-template-columns: 250px 250px;
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <style>
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                grid-template-columns: 250px 250px;
+            }
         }
-    }
-</style>
+    </style>
+}
+
 <h2>@ViewBag.Title</h2>
 <div class="edit-area edit-area-small">
     <form class="form pt-0">
@@ -35,113 +40,113 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">儲存</button>
 </div>
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script>
-    const LMSN = '@ViewBag.id';
-    const apiUrl = '@Url.Action("Read_Data", "LaboratoryMaintenance_Management")' + `/${LMSN}`;
-    //const apiUrl = null;
-    const fakeData = {
-        LMSN: "1",
-        MType: "人員維護",
-        MTitle: "水質分析室緊急逃生路線",
-        MContent: "緊急逃生說明",
-        FilePath: "/Files/a.pdf"
-    }
-    var fileUploader
-    $(async function () {
-        addButtonEvent();
-        fileUploader = new FileUploader({
-            container: "#FileUploader",
-            className: "form-group g-col-2 required",
-            label: "維護檔案",
-            id: "File",
-            customValidity: true
-        })
-        readData(apiUrl);
-    });
 
-    function readData(url = null) {
+@section scripts {
+    <script>
+        const LMSN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("Read_Data", "LaboratoryMaintenance_Management")' + `/${LMSN}`;
+        //const apiUrl = null;
+        const fakeData = {
+            LMSN: "1",
+            MType: "人員維護",
+            MTitle: "水質分析室緊急逃生路線",
+            MContent: "緊急逃生說明",
+            FilePath: "/Files/a.pdf"
+        }
+        var fileUploader
+        $(async function () {
+            addButtonEvent();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group g-col-2 required",
+                label: "維護檔案",
+                id: "File",
+                customValidity: true
+            })
+            readData(apiUrl);
+        });
 
-        url == null ? onSuccess(fakeData) :   //fakeData
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :   //fakeData
+                $.ajax({
+                    url: url,
+                    //data: JSON.stringify(jsonData),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                for (const [k, v] of Object.entries(res)) {
+                    $("#" + k).val(v);
+                }
+                fileUploader.setFile(res.FilePath)
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
+
+            var form = new FormData();
+            form.append("LMSN", document.getElementById("LMSN").value);
+            form.append("MType", document.getElementById("MType").value);
+            form.append("MTitle", document.getElementById("MTitle").value);
+            form.append("MContent", document.getElementById("MContent").value);
+            if (fileUploader.hasFile()) {
+                let file = fileUploader.getFile()
+                if (file?.size) {
+                    form.append("MFile", file);
+                }
+                else {
+                    form.append("MFileName", file.name);
+                }
+            }
+            console.log(Object.fromEntries(form.entries()));
             $.ajax({
-                url: url,
-                //data: JSON.stringify(jsonData),
+                url: '@Url.Action("EditLaboratoryMaintenance", "LaboratoryMaintenance_Management")',
+                data: form,
                 type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
-
-        function onSuccess(res) {
-            console.log(res);
-            for (const [k, v] of Object.entries(res)) {
-                $("#" + k).val(v);
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/LaboratoryMaintenance_Management/Management"; }
+                });
             }
-            fileUploader.setFile(res.FilePath)
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function save() {
-        //重置自訂驗證錯誤訊息
-        getAllParams().forEach((e) => {
-            e.setCustomValidity('');
-        })
-        //自訂驗證錯誤
-        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity():", isValidity)
-        if (!isValidity) return;
-
-        var form = new FormData();
-        form.append("LMSN", document.getElementById("LMSN").value);
-        form.append("MType", document.getElementById("MType").value);
-        form.append("MTitle", document.getElementById("MTitle").value);
-        form.append("MContent", document.getElementById("MContent").value);
-        if (fileUploader.hasFile()) {
-            let file = fileUploader.getFile()
-            if (file?.size) {
-                form.append("MFile", file);
-            }
-            else {
-                form.append("MFileName", file.name);
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
             }
         }
-        console.log(Object.fromEntries(form.entries()));
-        $.ajax({
-            url: '@Url.Action("EditLaboratoryMaintenance", "LaboratoryMaintenance_Management")',
-            data: form,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "儲存成功！",
-                onHide: () => { window.location.href = "/LaboratoryMaintenance_Management/Management"; }
-            });
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#submit").click(function () {
+                save();
+            })
         }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-</script>
-
+    </script>
+}
