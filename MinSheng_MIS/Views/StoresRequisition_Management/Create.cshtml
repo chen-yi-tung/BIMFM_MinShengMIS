@@ -174,7 +174,13 @@
             this.count++;
         }
         this.calc = function () {
-
+            return this.list.children().toArray().map((e) => {
+                return {
+                    SISN: $(e).find("#StockName").val(),
+                    Amount: $(e).find("#Amount").val(),
+                    SRContent: $(e).find("#SRContent").val()
+                }
+            })
         }
         return this;
     }
@@ -190,7 +196,7 @@
         form.append("SRDept", document.getElementById("SRDept").value);
         form.append("SRContent", document.getElementById("SRContent").value);
         sampleTr.calc().forEach((item, i) => {
-            form.append(`StoresRequisitionItem[${i}].SISN`, item.StockName);
+            form.append(`StoresRequisitionItem[${i}].SISN`, item.SISN);
             form.append(`StoresRequisitionItem[${i}].Amount`, item.Amount);
             form.append(`StoresRequisitionItem[${i}].SRContent`, item.SRContent);
         })
