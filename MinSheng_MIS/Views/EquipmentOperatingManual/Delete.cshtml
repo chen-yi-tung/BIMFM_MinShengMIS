@@ -1,6 +1,10 @@
 ﻿@{
     ViewBag.Title = "刪除設備操作手冊";
 }
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -17,84 +21,84 @@
     <button class="btn btn-delete" id="delete">刪除</button>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/ImageDisplay.js"></script>
-<script>
-    const EOMSN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("ReadBody", "EquipmentOperatingManual")' + `/${EOMSN}`;
-    //let apiUrl = null;
+@section scripts {
+    <script>
+        const EOMSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "EquipmentOperatingManual")' + `/${EOMSN}`;
+        //let apiUrl = null;
 
-    const fakeData = {
-        EOMSN: "A棟",
-        System: "1F",
-        SubSystem: "BT",
-        EName: "BT-11",
-        Brand: "M7-126",
-        Model: "空調控制配置平面圖",
-        ManualFile: "2023/04/11 10:30:26"
-    }
-
-    const sn = [
-        { text: "設備操作手冊編號", value: "EOMSN" },
-        { text: "系統別", value: "System" },
-        { text: "子系統別", value: "SubSystem" },
-        { text: "設備名稱", value: "EName" },
-        { text: "廠牌", value: "Brand" },
-        { text: "型號", value: "Model" },
-        {
-            text: "設備操作手冊檔案", value: "ManualFile", formatter: (v) => {
-                if (v.split('.').at(-1).toLowerCase() === "pdf") {
-                    return `<a href="/Files/EquipmentOperatingManual${v}" target="_blank">${v.split('/').at(-1)}</a>`;
-                }
-                else {
-                    return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="${v}"/></div></div>`;
-                }
-            }
-        },
-    ]
-
-    $(async function () {
-        addButtonEvent();
-        readData(apiUrl);
-    });
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        async function onSuccess(res) {
-            console.log(res);
-
-            $(".datatable-table").append(createTableInner(res, sn))
-            ImageDisplay(".datatable-img-item>img");
+        const fakeData = {
+            EOMSN: "A棟",
+            System: "1F",
+            SubSystem: "BT",
+            EName: "BT-11",
+            Brand: "M7-126",
+            Model: "空調控制配置平面圖",
+            ManualFile: "2023/04/11 10:30:26"
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
 
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#delete").click(function () {
-            createDeleteDialog({
-                url: '@Url.Action("DeleteEOM", "EquipmentOperatingManual")/' + EOMSN,
-                data: EOMSN,
-                onSuccess() {
-                    let url = '@Url.Action("Management", "EquipmentOperatingManual")';
-                    window.location.href = url;
+        const sn = [
+            { text: "設備操作手冊編號", value: "EOMSN" },
+            { text: "系統別", value: "System" },
+            { text: "子系統別", value: "SubSystem" },
+            { text: "設備名稱", value: "EName" },
+            { text: "廠牌", value: "Brand" },
+            { text: "型號", value: "Model" },
+            {
+                text: "設備操作手冊檔案", value: "ManualFile", formatter: (v) => {
+                    if (v.split('.').at(-1).toLowerCase() === "pdf") {
+                        return `<a href="/Files/EquipmentOperatingManual${v}" target="_blank">${v.split('/').at(-1)}</a>`;
+                    }
+                    else {
+                        return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="${v}"/></div></div>`;
+                    }
                 }
-            })
+            },
+        ]
+
+        $(async function () {
+            addButtonEvent();
+            readData(apiUrl);
         });
-    }
-</script>
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+
+                $(".datatable-table").append(createTableInner(res, sn))
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#delete").click(function () {
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteEOM", "EquipmentOperatingManual")/' + EOMSN,
+                    data: EOMSN,
+                    onSuccess() {
+                        let url = '@Url.Action("Management", "EquipmentOperatingManual")';
+                        window.location.href = url;
+                    }
+                })
+            });
+        }
+    </script>
+}

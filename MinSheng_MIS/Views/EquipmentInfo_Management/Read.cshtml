@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "設備詳情";
 }
-@section styles{
+@section styles {
     <link rel="stylesheet" href="/Content/samplepath.css">
     <!-- Autodesk Forge -->
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
@@ -28,123 +28,125 @@
     </div>
 </div>
 
-<script>
-    const ESN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
-    //let apiUrl = null;
+@section scripts {
+    <script>
+        const ESN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
+        //let apiUrl = null;
 
-    const fakeData = {
-        ASN: 1,
-        Area: "進流抽水站",
-        FSN: "1_1",
-        Floor: "B1F",
-        RoomName: "A",
-        System: "BT",
-        SubSystem: "BT-11",
-        PropertyCode: "A",
-        EName: "Test",
-        Brand: "111",
-        Model: "112",
-        FilePath: "/000007.gif",
-        LocationX: 22,
-        LocationY: 40
-    }
+        const fakeData = {
+            ASN: 1,
+            Area: "進流抽水站",
+            FSN: "1_1",
+            Floor: "B1F",
+            RoomName: "A",
+            System: "BT",
+            SubSystem: "BT-11",
+            PropertyCode: "A",
+            EName: "Test",
+            Brand: "111",
+            Model: "112",
+            FilePath: "/000007.gif",
+            LocationX: 22,
+            LocationY: 40
+        }
 
-    const sn = [
-        { text: "棟別", value: "Area" },
-        { text: "樓層", value: "Floor" },
-        { text: "空間名稱", value: "RoomName" },
-        { text: "系統別", value: "System" },
-        { text: "子系統別", value: "SubSystem" },
-        { text: "財產編碼", value: "PropertyCode" },
-        { text: "設備名稱", value: "EName" },
-        { text: "廠商", value: "Brand" },
-        { text: "型號", value: "Model" },
-        { text: "設備使用手冊", value: "FilePath" },
-        { text: "設備定位(X座標)", value: "LocationX" },
-        { text: "設備定位(Y座標)", value: "LocationY" },
-        {
-            text: "設備定位", value: "HasLocation", formatter: (v) => {
-                return v != null ? `
-                <div class="viewer3Dcontainer">
-                    <div id="viewer3d" style="margin:0;"></div>
-                    <canvas id="PathCanvas"></canvas>
-                    <div id="current-path-areafloor"></div>
-                </div>
-                `: '';
+        const sn = [
+            { text: "棟別", value: "Area" },
+            { text: "樓層", value: "Floor" },
+            { text: "空間名稱", value: "RoomName" },
+            { text: "系統別", value: "System" },
+            { text: "子系統別", value: "SubSystem" },
+            { text: "財產編碼", value: "PropertyCode" },
+            { text: "設備名稱", value: "EName" },
+            { text: "廠商", value: "Brand" },
+            { text: "型號", value: "Model" },
+            { text: "設備使用手冊", value: "FilePath" },
+            { text: "設備定位(X座標)", value: "LocationX" },
+            { text: "設備定位(Y座標)", value: "LocationY" },
+            {
+                text: "設備定位", value: "HasLocation", formatter: (v) => {
+                    return v != null ? `
+                    <div class="viewer3Dcontainer">
+                        <div id="viewer3d" style="margin:0;"></div>
+                        <canvas id="PathCanvas"></canvas>
+                        <div id="current-path-areafloor"></div>
+                    </div>
+                    `: '';
+                }
+            }
+        ]
+
+
+        $(function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+                const HasAsnFsn = res.ASN != null && res.FSN != null;
+                const HasLocation = res.LocationX != null && res.LocationY != null;
+                res.HasLocation = HasLocation;
+                $(".datatable-table").append(createTableInner(res, sn))
+
+                if (!HasLocation || !HasAsnFsn) return;
+
+                $.ajax({
+                    url: "/InspectionPlan_Management/AddPlanPath",
+                    data: JSON.stringify({
+                        ASN: res.ASN,
+                        FSN: res.FSN,
+                        PathTitle: ''
+                    }),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: (PathData) => {
+                        console.log(PathData);
+                        initializeViewer({
+                            BIMPath: PathData.PathSample.BIMPath,
+                            BeaconPath: null,
+                            callback: () => { initDrawView(res) }
+                        });
+                    },
+                    error: (err) => { console.log(err) }
+                })
+
+            }
+            function onError(res) {
+                console.log(res);
+            }
+            function initDrawView(res) {
+                const view = document.querySelector("#PathCanvas");
+                ForgeDraw.init(view, viewer, function () {
+                    ForgeDraw.setControl(ForgeDraw.Control.READONLY);
+
+                    let forgePos = new THREE.Vector3(res.LocationX, res.LocationY, 0);
+                    let pos = viewer.worldToClient(forgePos);
+                    let position = new PIXI.Point(pos.x, pos.y);
+                    ForgeDraw.readLineData([{ position, forgePos }]);
+                    ForgeDraw.setDrawSetting("point.contextMenu.button", []);
+                });
             }
         }
-    ]
 
-
-    $(function () {
-        addButtonEvent();
-        readData(apiUrl);
-    })
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
             })
-
-        async function onSuccess(res) {
-            console.log(res);
-            const HasAsnFsn = res.ASN != null && res.FSN != null;
-            const HasLocation = res.LocationX != null && res.LocationY != null;
-            res.HasLocation = HasLocation;
-            $(".datatable-table").append(createTableInner(res, sn))
-
-            if (!HasLocation || !HasAsnFsn) return;
-
-            $.ajax({
-                url: "/InspectionPlan_Management/AddPlanPath",
-                data: JSON.stringify({
-                    ASN: res.ASN,
-                    FSN: res.FSN,
-                    PathTitle: ''
-                }),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: (PathData) => {
-                    console.log(PathData);
-                    initializeViewer({
-                        BIMPath: PathData.PathSample.BIMPath,
-                        BeaconPath: null,
-                        callback: () => { initDrawView(res) }
-                    });
-                },
-                error: (err) => { console.log(err) }
-            })
-
         }
-        function onError(res) {
-            console.log(res);
-        }
-        function initDrawView(res) {
-            const view = document.querySelector("#PathCanvas");
-            ForgeDraw.init(view, viewer, function () {
-                ForgeDraw.setControl(ForgeDraw.Control.READONLY);
-
-                let forgePos = new THREE.Vector3(res.LocationX, res.LocationY, 0);
-                let pos = viewer.worldToClient(forgePos);
-                let position = new PIXI.Point(pos.x, pos.y);
-                ForgeDraw.readLineData([{ position, forgePos }]);
-                ForgeDraw.setDrawSetting("point.contextMenu.button", []);
-            });
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-    }
-</script>
+    </script>
+}

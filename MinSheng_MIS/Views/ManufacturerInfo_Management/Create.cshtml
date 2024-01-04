@@ -1,13 +1,17 @@
 ﻿@{
     ViewBag.Title = "新增廠商";
 }
-<style>
-    @@media (min-width: 992px) {
-        .edit-area .form {
-            grid-template-columns: 250px 250px;
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <style>
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                grid-template-columns: 250px 250px;
+            }
         }
-    }
-</style>
+    </style>
+}
+
 <h2>@ViewBag.Title</h2>
 
 <div class="edit-area edit-area-small">
@@ -57,56 +61,57 @@
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
-<script>
-    $(function () {
-        addButtonEvent();
-    })
-
-    function save() {
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("todo save():", isValidity)
-        if (!isValidity) return;
-
-        let fd = new FormData();
-        fd.append('MFRName', $("#MFRName").val());
-        fd.append('ContactPerson', $("#ContactPerson").val());
-        fd.append('MFRTelNO', $("#MFRTelNO").val());
-        fd.append('MFRMBPhone', $("#MFRMBPhone").val());
-        fd.append('MFRAddress', $("#MFRAddress").val());
-        fd.append('MFREmail', $("#MFREmail").val());
-        fd.append('MFRWeb', $("#MFRWeb").val());
-        fd.append('MFRMainProduct', $("#MFRMainProduct").val());
-
-        $.ajax({
-            url: '@Url.Action("Create", "ManufacturerInfo_Management")',
-            type: "POST",
-            contentType: false,
-            processData: false,
-            data: fd,
-            success: onSuccess,
-            error: onError
+@section scripts {
+    <script>
+        $(function () {
+            addButtonEvent();
         })
 
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/ManufacturerInfo_Management/Management"; }
-            });
+        function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
+
+            let fd = new FormData();
+            fd.append('MFRName', $("#MFRName").val());
+            fd.append('ContactPerson', $("#ContactPerson").val());
+            fd.append('MFRTelNO', $("#MFRTelNO").val());
+            fd.append('MFRMBPhone', $("#MFRMBPhone").val());
+            fd.append('MFRAddress', $("#MFRAddress").val());
+            fd.append('MFREmail', $("#MFREmail").val());
+            fd.append('MFRWeb', $("#MFRWeb").val());
+            fd.append('MFRMainProduct', $("#MFRMainProduct").val());
+
+            $.ajax({
+                url: '@Url.Action("Create", "ManufacturerInfo_Management")',
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: fd,
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/ManufacturerInfo_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
         }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
-        }
-    }
 
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-        $("#submit").click(function () {
-            save();
-        })
-    }
-</script>
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+            $("#submit").click(function () {
+                save();
+            })
+        }
+    </script>
+}

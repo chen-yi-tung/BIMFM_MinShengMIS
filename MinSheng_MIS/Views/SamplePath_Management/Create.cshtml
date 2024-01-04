@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "新增巡檢路線模板";
 }
-@section styles{
+@section styles {
     <link rel="stylesheet" href="/Content/samplepath.css">
     <!-- Autodesk Forge -->
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
@@ -101,182 +101,184 @@
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
-<script>
-    function initializeDrawer(data) {
-        const view = document.querySelector("#PathCanvas");
-        ForgeDraw.init(view, viewer, function () {
-            view.addEventListener("fd.point.detecterror", function (event) {
-                console.log("view => fd.point.detecterror");
-                createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
-            });
-            view.addEventListener("fd.linedata.change", function (event) {
-                console.log("view => fd.linedata.change");
-                updatePathDisplay(calcPath());
-            });
-            view.addEventListener("fd.linedata.detail", function (event) {
-                console.log("view => fd.linedata.detail", event.detail);
-                if (event.detail instanceof ForgeDraw.DevicePoint) {
-                    createDevicePointDetailModal(event.detail);
-                }
-                else {
-                    createPointDetailModal(event.detail);
-                }
-            });
-            view.addEventListener("fd.devicepoint.ignore", function (event) {
-                console.log("view => fd.devicepoint.ignore");
-                updatePathDisplay(calcPath());
-            });
-
-            createBeacons(data.BIMDevices);
-
-            addToolbarEvent();
-            addTooltip(true);
-        });
-    }
-</script>
-
-<script>
-    let sortRouteModal;
-    $(async function () {
-        sortRouteModal = new SortRouteModal({
-            onSave: updatePathDisplay
-        });
-        addAreaFloorEvent();
-        addButtonEvent();
-        controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        sortRouteModal.autoRouteToggle(true);
-
-        $("#PathTitle").change(function () {
-            $("#current-path-title").text($(this).val())
-        })
-    });
-
-    async function addAreaFloorEvent() {
-        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-        let ASN = document.getElementById("ASN");
-        ASN.addEventListener("change", async function () {
-            console.log("areas change")
-            await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
-            $('#Floor').val('');
-        });
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-        $("#path-create").click(function (e) {
-            e.preventDefault();
-            console.log("onclick path-create");
-            if ($("form")[0].reportValidity()) {
-                $("#current-path-title").text($("#PathTitle").val());
-                $(".sample-path-group-area").removeClass("d-none");
-                $(".sample-path-draw-area").removeClass("d-none");
-
-                let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val();
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
-
-                function onSuccess(res) {
-                    console.log(res);
-                    let { BIMPath, BeaconPath } = res;
-                    initializeViewer({
-                        BIMPath,
-                        BeaconPath,
-                        callback() { initializeDrawer(res) }
-                    });
-
-                    $("#path-create").off();
-                    $('#ASN').attr("disabled", '');
-                    $('#FSN').attr("disabled", '');
-                }
-                function onError(res) {
-                    console.log(res);
-                }
-            }
-        })
-        $("#submit").click(function () {
-            //!!棟別樓層巡檢路線模板巡檢路線規劃 需有資料才傳!!
-            let pt = $("#PathTitle").val();
-            //先判斷巡檢路線模板是否有填值
-            if (pt == "") {
-                createDialogModal({ id: "DialogModal-Error", inner: "巡檢路線模板名稱不可為空！" })
-            }
-            else {
-                save();
-            }
-        })
-    }
-
-    function save() {
-        let PathSampleOrder = getPathSampleOrder();
-        let PathSampleRecord = getPathSampleRecord();
-
-        if (PathSampleRecord.every(e => e) === false) {
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
-            return
-        }
-        if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0) {
-            createDialogModal({ id: "DialogModal-Error", inner: "新增失敗！沒有規劃路線資料！" });
-            return;
-        }
-
-        let data = {
-            PathSample: {
-                ASN: $("#ASN").val(),
-                FSN: $("#FSN").val(),
-                PathTitle: $("#PathTitle").val()
-            },
-            PathSampleOrder: PathSampleOrder,
-            PathSampleRecord: PathSampleRecord
-        }
-
-        //console.log(data);
-        //console.log(JSON.stringify(data));
-
-        $.ajax({
-            url: '@Url.Action("CreateSamplePath", "SamplePath_Management")',
-            data: JSON.stringify(data),
-            type: "POST",
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: onSuccess,
-            error: onError
-        })
-
-        function onSuccess(res) {
-            //console.log(res);
-            if (res.ResponseCode == 0) {
-                createDialogModal({
-                    id: "DialogModal-Success",
-                    inner: "新增成功！",
-                    onHide: () => {
-                        let url = '@Url.Action("Management", "SamplePath_Management")';
-                        window.location.href = url;
+@section scripts {
+    <script>
+        function initializeDrawer(data) {
+            const view = document.querySelector("#PathCanvas");
+            ForgeDraw.init(view, viewer, function () {
+                view.addEventListener("fd.point.detecterror", function (event) {
+                    console.log("view => fd.point.detecterror");
+                    createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
+                });
+                view.addEventListener("fd.linedata.change", function (event) {
+                    console.log("view => fd.linedata.change");
+                    updatePathDisplay(calcPath());
+                });
+                view.addEventListener("fd.linedata.detail", function (event) {
+                    console.log("view => fd.linedata.detail", event.detail);
+                    if (event.detail instanceof ForgeDraw.DevicePoint) {
+                        createDevicePointDetailModal(event.detail);
+                    }
+                    else {
+                        createPointDetailModal(event.detail);
                     }
                 });
+                view.addEventListener("fd.devicepoint.ignore", function (event) {
+                    console.log("view => fd.devicepoint.ignore");
+                    updatePathDisplay(calcPath());
+                });
+
+                createBeacons(data.BIMDevices);
+
+                addToolbarEvent();
+                addTooltip(true);
+            });
+        }
+    </script>
+
+    <script>
+        let sortRouteModal;
+        $(async function () {
+            sortRouteModal = new SortRouteModal({
+                onSave: updatePathDisplay
+            });
+            addAreaFloorEvent();
+            addButtonEvent();
+            controlToggle("path-draw", ForgeDraw.Control.DRAW);
+            sortRouteModal.autoRouteToggle(true);
+
+            $("#PathTitle").change(function () {
+                $("#current-path-title").text($(this).val())
+            })
+        });
+
+        async function addAreaFloorEvent() {
+            await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+            let ASN = document.getElementById("ASN");
+            ASN.addEventListener("change", async function () {
+                console.log("areas change")
+                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
+                $('#Floor').val('');
+            });
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+            $("#path-create").click(function (e) {
+                e.preventDefault();
+                console.log("onclick path-create");
+                if ($("form")[0].reportValidity()) {
+                    $("#current-path-title").text($("#PathTitle").val());
+                    $(".sample-path-group-area").removeClass("d-none");
+                    $(".sample-path-draw-area").removeClass("d-none");
+
+                    let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val();
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                        success: onSuccess,
+                        error: onError
+                    })
+
+                    function onSuccess(res) {
+                        console.log(res);
+                        let { BIMPath, BeaconPath } = res;
+                        initializeViewer({
+                            BIMPath,
+                            BeaconPath,
+                            callback() { initializeDrawer(res) }
+                        });
+
+                        $("#path-create").off();
+                        $('#ASN').attr("disabled", '');
+                        $('#FSN').attr("disabled", '');
+                    }
+                    function onError(res) {
+                        console.log(res);
+                    }
+                }
+            })
+            $("#submit").click(function () {
+                //!!棟別樓層巡檢路線模板巡檢路線規劃 需有資料才傳!!
+                let pt = $("#PathTitle").val();
+                //先判斷巡檢路線模板是否有填值
+                if (pt == "") {
+                    createDialogModal({ id: "DialogModal-Error", inner: "巡檢路線模板名稱不可為空！" })
+                }
+                else {
+                    save();
+                }
+            })
+        }
+
+        function save() {
+            let PathSampleOrder = getPathSampleOrder();
+            let PathSampleRecord = getPathSampleRecord();
+
+            if (PathSampleRecord.every(e => e) === false) {
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
+                return
+            }
+            if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0) {
+                createDialogModal({ id: "DialogModal-Error", inner: "新增失敗！沒有規劃路線資料！" });
+                return;
+            }
+
+            let data = {
+                PathSample: {
+                    ASN: $("#ASN").val(),
+                    FSN: $("#FSN").val(),
+                    PathTitle: $("#PathTitle").val()
+                },
+                PathSampleOrder: PathSampleOrder,
+                PathSampleRecord: PathSampleRecord
+            }
+
+            //console.log(data);
+            //console.log(JSON.stringify(data));
+
+            $.ajax({
+                url: '@Url.Action("CreateSamplePath", "SamplePath_Management")',
+                data: JSON.stringify(data),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                //console.log(res);
+                if (res.ResponseCode == 0) {
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "新增成功！",
+                        onHide: () => {
+                            let url = '@Url.Action("Management", "SamplePath_Management")';
+                            window.location.href = url;
+                        }
+                    });
+                }
+            }
+            function onError(res) {
+                //console.log(res);
+                let errtext;
+
+                switch (res.responseText) {
+                    case "duplicate title":
+                        errtext = "巡檢路線模板名稱重複！";
+                        break;
+                    default:
+                        errtext = "";
+                        break;
+                }
+
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！${errtext}` })
             }
         }
-        function onError(res) {
-            //console.log(res);
-            let errtext;
-
-            switch (res.responseText) {
-                case "duplicate title":
-                    errtext = "巡檢路線模板名稱重複！";
-                    break;
-                default:
-                    errtext = "";
-                    break;
-            }
-
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！${errtext}` })
-        }
-    }
-</script>
+    </script>
+}

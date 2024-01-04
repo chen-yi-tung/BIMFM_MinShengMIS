@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "新增巡檢計畫";
 }
-@section styles{
+@section styles {
     @Styles.Render("~/Content/easyui/themes/default/easyui.css")
     <link rel="stylesheet" href="/Content/samplepath.css">
     <link rel="stylesheet" href="/Content/tagbox.css">
@@ -477,55 +477,57 @@
     </div>
 </div>
 
-<script>
-    $(async function () {
-        addButtonEvent();
-        //DatagridEvent = addDatagridEvent();
-        maintainDG_Controller = new IPDG(MDGOptions);
-        repairDG_Controller = new IPDG(RDGOptions);
-        await addDropDownList();
-        await addAreaFloorEvent();
-        controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        sortRouteModal.autoRouteToggle(true);
+@section scripts {
+    <script>
+        $(async function () {
+            addButtonEvent();
+            //DatagridEvent = addDatagridEvent();
+            maintainDG_Controller = new IPDG(MDGOptions);
+            repairDG_Controller = new IPDG(RDGOptions);
+            await addDropDownList();
+            await addAreaFloorEvent();
+            controlToggle("path-draw", ForgeDraw.Control.DRAW);
+            sortRouteModal.autoRouteToggle(true);
 
-        $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
+            $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
 
-        window.addEventListener("beforeunload", (event) => {
-            sessionStorage.clear();
-        });
+            window.addEventListener("beforeunload", (event) => {
+                sessionStorage.clear();
+            });
 
-        addSaveSamplePathEvent();
+            addSaveSamplePathEvent();
 
-        $(".spinner-area").fadeOut(300, function () { $(this).remove(); });
-    })
-
-    function save() {
-        let data = getCreateSaveData();
-
-        //console.log(data);
-
-        if (!data) return;
-
-        $.ajax({
-            url: "/InspectionPlan_Management/CreateInspectionPlan",
-            data: JSON.stringify(data),
-            type: "POST",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: onSuccess,
-            error: onError
+            $(".spinner-area").fadeOut(300, function () { $(this).remove(); });
         })
 
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
-            });
+        function save() {
+            let data = getCreateSaveData();
+
+            //console.log(data);
+
+            if (!data) return;
+
+            $.ajax({
+                url: "/InspectionPlan_Management/CreateInspectionPlan",
+                data: JSON.stringify(data),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` })
+            }
         }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` })
-        }
-    }
-</script>
+    </script>
+}

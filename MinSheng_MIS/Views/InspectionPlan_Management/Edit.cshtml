@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "編輯巡檢計畫";
 }
-@section styles{
+@section styles {
     @Styles.Render("~/Content/easyui/themes/default/easyui.css")
     <link rel="stylesheet" href="/Content/samplepath.css">
     <link rel="stylesheet" href="/Content/tagbox.css">
@@ -477,403 +477,404 @@
     </div>
 </div>
 
-<!-- Edit readData -->
-<script>
-    let EditFakeData = {
-        "IPSN": "P12345",
-        "IPName": "AAA",
-        "PlanCreateUserID": "Admin",
-        "PlanDate": "2023-04-13",
-        "PlanState": "執行中",
-        "Shift": "1",
-        "UserID": ["A101204", "KennyTest"],
-        "MaintainUserID": "A101204",
-        "RepairUserID": "A101204",
-        "MaintainEquipment": [
-            {
-                "StockState": "無",
-                "FormItemState": "保留中(待派工)",
-                "EMFISN": "E00024_000035_230407",
-                "Period": 1,
-                "Unit": "月",
-                "LastTime": "2023/03/07",
-                "Date": "2023/04/07",
-                "EState": "正常",
-                "Area": "生物處理單元",
-                "Floor": "管廊底",
-                "ESN": "E00024",
-                "EName": "加氯消毒池混和井攪拌機",
-                "MIName": "加氯保養測試1"
-            },
-            {
-                "StockState": "無",
-                "FormItemState": "保留中(待派工)",
-                "EMFISN": "E00020_000048_230329",
-                "Period": 3,
-                "Unit": "日",
-                "LastTime": "2023/03/29",
-                "Date": "2023/03/29",
-                "EState": "正常",
-                "Area": "生物處理單元",
-                "Floor": "管廊底",
-                "ESN": "E00020",
-                "EName": "二沉池刮泥機",
-                "MIName": "二沉池保養一"
-            },
-            {
-                "StockState": "無",
-                "FormItemState": "保留中(待派工)",
-                "EMFISN": "E00021_000048_230329",
-                "Period": 3,
-                "Unit": "日",
-                "LastTime": "2023/03/29",
-                "Date": "2023/03/29",
-                "EState": "正常",
-                "Area": "生物處理單元",
-                "Floor": "管廊頂",
-                "ESN": "E00021",
-                "EName": "二沉池刮泥機",
-                "MIName": "二沉池保養一"
-            }
-        ],
-        "RepairEquipment": [
-            {
-                "StockState": "有",
-                "ReportState": "保留中(待派工)",
-                "ESN": "E00143",
-                "RSN": "R23032901",
-                "ReportLevel": "緊急",
-                "Date": "2023/03/29 09:00:00",
-                "ReportContent": "壞壞JUDY",
-                "InformatUserID": "賈皓麟",
-                "EState": "報修中",
-                "Area": "進流抽水站",
-                "Floor": "B2F",
-                "EName": "二沉池刮泥機"
-            },
-            {
-                "StockState": "無",
-                "ReportState": "保留中(待派工)",
-                "ESN": "E00002",
-                "RSN": "R23022606",
-                "ReportLevel": "一般",
-                "Date": "2023/02/26 14:00:00",
-                "ReportContent": "假資料",
-                "InformatUserID": "賈皓麟",
-                "EState": "報修中",
-                "Area": "前處理機房",
-                "Floor": "B1F",
-                "EName": "粗攔物除物皮帶輸送機"
-            },
-            {
-                "StockState": "無",
-                "ReportState": "保留中(待派工)",
-                "ESN": "E00002",
-                "RSN": "R23022605",
-                "ReportLevel": "一般",
-                "Date": "2023/02/26 13:00:00",
-                "ReportContent": "假資料",
-                "InformatUserID": "賈皓麟",
-                "EState": "報修中",
-                "Area": "前處理機房",
-                "Floor": "B1F",
-                "EName": "粗攔物除物皮帶輸送機"
-            }
-        ],
-        "InspectionPlanPaths": [
-            {
-                "PathSample": {
-                    "PSSN": null,
+@section scripts {
+    <script>
+        let EditFakeData = {
+            "IPSN": "P12345",
+            "IPName": "AAA",
+            "PlanCreateUserID": "Admin",
+            "PlanDate": "2023-04-13",
+            "PlanState": "執行中",
+            "Shift": "1",
+            "UserID": ["A101204", "KennyTest"],
+            "MaintainUserID": "A101204",
+            "RepairUserID": "A101204",
+            "MaintainEquipment": [
+                {
+                    "StockState": "無",
+                    "FormItemState": "保留中(待派工)",
+                    "EMFISN": "E00024_000035_230407",
+                    "Period": 1,
+                    "Unit": "月",
+                    "LastTime": "2023/03/07",
+                    "Date": "2023/04/07",
+                    "EState": "正常",
+                    "Area": "生物處理單元",
+                    "Floor": "管廊底",
+                    "ESN": "E00024",
+                    "EName": "加氯消毒池混和井攪拌機",
+                    "MIName": "加氯保養測試1"
+                },
+                {
+                    "StockState": "無",
+                    "FormItemState": "保留中(待派工)",
+                    "EMFISN": "E00020_000048_230329",
+                    "Period": 3,
+                    "Unit": "日",
+                    "LastTime": "2023/03/29",
+                    "Date": "2023/03/29",
+                    "EState": "正常",
+                    "Area": "生物處理單元",
+                    "Floor": "管廊底",
+                    "ESN": "E00020",
+                    "EName": "二沉池刮泥機",
+                    "MIName": "二沉池保養一"
+                },
+                {
+                    "StockState": "無",
+                    "FormItemState": "保留中(待派工)",
+                    "EMFISN": "E00021_000048_230329",
+                    "Period": 3,
+                    "Unit": "日",
+                    "LastTime": "2023/03/29",
+                    "Date": "2023/03/29",
+                    "EState": "正常",
+                    "Area": "生物處理單元",
+                    "Floor": "管廊頂",
+                    "ESN": "E00021",
+                    "EName": "二沉池刮泥機",
+                    "MIName": "二沉池保養一"
+                }
+            ],
+            "RepairEquipment": [
+                {
+                    "StockState": "有",
+                    "ReportState": "保留中(待派工)",
+                    "ESN": "E00143",
+                    "RSN": "R23032901",
+                    "ReportLevel": "緊急",
+                    "Date": "2023/03/29 09:00:00",
+                    "ReportContent": "壞壞JUDY",
+                    "InformatUserID": "賈皓麟",
+                    "EState": "報修中",
                     "Area": "進流抽水站",
                     "Floor": "B2F",
-                    "ASN": "1",
-                    "FSN": "1_2",
-                    "PathTitle": "進流抽水站 B2F 巡檢路線",
-                    "BIMPath": "/BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
-                    "Beacon": [
-                        {
-                            "dbId": 3078,
-                            "deviceType": "藍芽",
-                            "deviceName": "E00028"
-                        },
-                        {
-                            "dbId": 3239,
-                            "deviceType": "藍芽",
-                            "deviceName": "E00029"
-                        },
-                        {
-                            "dbId": 3162,
-                            "deviceType": "藍芽",
-                            "deviceName": "E00030"
-                        },
-                        {
-                            "dbId": 3113,
-                            "deviceType": "藍芽",
-                            "deviceName": "E00031"
-                        }
-                    ]
+                    "EName": "二沉池刮泥機"
                 },
-                "PathSampleOrder": [
-                    "E00028",
-                    "E00028",
-                    "E00031",
-                    "E00029",
-                    "E00029",
-                    "E00030",
-                    "E00143"
-                ],
-                "PathSampleRecord": [
-                    {
-                        "LocationX": 4.343302473135253,
-                        "LocationY": -71.36540038498816
-                    },
-                    {
-                        "LocationX": 20.78023159302441,
-                        "LocationY": -10.403119589648426
-                    },
-                    {
-                        "LocationX": -23.74512070642215,
-                        "LocationY": 7.074121320960913
-                    },
-                    {
-                        "LocationX": -37.269176311394254,
-                        "LocationY": -69.28477646705846
-                    }
-                ],
-                "MaintainEquipment": [
-                    "E00028",
-                    "E00029"
-                ],
-                "RepairEquipment": [
-                    "E00143"
-                ],
-                "BothEquipment": []
-            },
-            {
-                "PathSample": {
-                    "PSSN": null,
-                    "Area": "進流抽水站",
-                    "Floor": "B2F",
-                    "ASN": "1",
-                    "FSN": "1_2",
-                    "PathTitle": "進流抽水站 B2F 巡檢路線",
-                    "BIMPath": "/BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
-                    "Beacon": [
-                        {
-                            "dbId": 3078,
-                            "deviceType": "藍芽",
-                            "deviceName": "E00028"
-                        },
-                        {
-                            "dbId": 3239,
-                            "deviceType": "藍芽",
-                            "deviceName": "E00029"
-                        },
-                        {
-                            "dbId": 3162,
-                            "deviceType": "藍芽",
-                            "deviceName": "E00030"
-                        },
-                        {
-                            "dbId": 3113,
-                            "deviceType": "藍芽",
-                            "deviceName": "E00031"
-                        }
-                    ]
+                {
+                    "StockState": "無",
+                    "ReportState": "保留中(待派工)",
+                    "ESN": "E00002",
+                    "RSN": "R23022606",
+                    "ReportLevel": "一般",
+                    "Date": "2023/02/26 14:00:00",
+                    "ReportContent": "假資料",
+                    "InformatUserID": "賈皓麟",
+                    "EState": "報修中",
+                    "Area": "前處理機房",
+                    "Floor": "B1F",
+                    "EName": "粗攔物除物皮帶輸送機"
                 },
-                "PathSampleOrder": [
-                    "E00031",
-                    "E00028",
-                    "E00028",
-                    "E00143",
-                    "E00030",
-                    "E00029",
-                    "E00029"
-                ],
-                "PathSampleRecord": [
-                    {
-                        "LocationX": 18.699608986978998,
-                        "LocationY": -25.591673713233597
+                {
+                    "StockState": "無",
+                    "ReportState": "保留中(待派工)",
+                    "ESN": "E00002",
+                    "RSN": "R23022605",
+                    "ReportLevel": "一般",
+                    "Date": "2023/02/26 13:00:00",
+                    "ReportContent": "假資料",
+                    "InformatUserID": "賈皓麟",
+                    "EState": "報修中",
+                    "Area": "前處理機房",
+                    "Floor": "B1F",
+                    "EName": "粗攔物除物皮帶輸送機"
+                }
+            ],
+            "InspectionPlanPaths": [
+                {
+                    "PathSample": {
+                        "PSSN": null,
+                        "Area": "進流抽水站",
+                        "Floor": "B2F",
+                        "ASN": "1",
+                        "FSN": "1_2",
+                        "PathTitle": "進流抽水站 B2F 巡檢路線",
+                        "BIMPath": "/BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+                        "Beacon": [
+                            {
+                                "dbId": 3078,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00028"
+                            },
+                            {
+                                "dbId": 3239,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00029"
+                            },
+                            {
+                                "dbId": 3162,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00030"
+                            },
+                            {
+                                "dbId": 3113,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00031"
+                            }
+                        ]
                     },
-                    {
-                        "LocationX": -8.140441162223595,
-                        "LocationY": -73.23796191112488
+                    "PathSampleOrder": [
+                        "E00028",
+                        "E00028",
+                        "E00031",
+                        "E00029",
+                        "E00029",
+                        "E00030",
+                        "E00143"
+                    ],
+                    "PathSampleRecord": [
+                        {
+                            "LocationX": 4.343302473135253,
+                            "LocationY": -71.36540038498816
+                        },
+                        {
+                            "LocationX": 20.78023159302441,
+                            "LocationY": -10.403119589648426
+                        },
+                        {
+                            "LocationX": -23.74512070642215,
+                            "LocationY": 7.074121320960913
+                        },
+                        {
+                            "LocationX": -37.269176311394254,
+                            "LocationY": -69.28477646705846
+                        }
+                    ],
+                    "MaintainEquipment": [
+                        "E00028",
+                        "E00029"
+                    ],
+                    "RepairEquipment": [
+                        "E00143"
+                    ],
+                    "BothEquipment": []
+                },
+                {
+                    "PathSample": {
+                        "PSSN": null,
+                        "Area": "進流抽水站",
+                        "Floor": "B2F",
+                        "ASN": "1",
+                        "FSN": "1_2",
+                        "PathTitle": "進流抽水站 B2F 巡檢路線",
+                        "BIMPath": "/BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+                        "Beacon": [
+                            {
+                                "dbId": 3078,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00028"
+                            },
+                            {
+                                "dbId": 3239,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00029"
+                            },
+                            {
+                                "dbId": 3162,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00030"
+                            },
+                            {
+                                "dbId": 3113,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00031"
+                            }
+                        ]
                     },
-                    {
-                        "LocationX": -46.42392164399074,
-                        "LocationY": -53.47203469079287
-                    },
-                    {
-                        "LocationX": -15.838749737361553,
-                        "LocationY": -28.504547675636672
-                    },
-                    {
-                        "LocationX": -48.712607977139854,
-                        "LocationY": -9.570870022476527
-                    },
-                    {
-                        "LocationX": -29.778930130178928,
-                        "LocationY": 7.9063708881328125
-                    },
-                    {
-                        "LocationX": 23.276980320096186,
-                        "LocationY": -20.39011439571091
-                    }
-                ],
-                "MaintainEquipment": [
-                    "E00028",
-                    "E00029"
-                ],
-                "RepairEquipment": [
-                    "E00143"
-                ],
-                "BothEquipment": []
-            }
-        ]
-    }
-    const IPSN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
-    let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
-    let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
-    //let apiUrl = null;
-    function readData(url = null) {
+                    "PathSampleOrder": [
+                        "E00031",
+                        "E00028",
+                        "E00028",
+                        "E00143",
+                        "E00030",
+                        "E00029",
+                        "E00029"
+                    ],
+                    "PathSampleRecord": [
+                        {
+                            "LocationX": 18.699608986978998,
+                            "LocationY": -25.591673713233597
+                        },
+                        {
+                            "LocationX": -8.140441162223595,
+                            "LocationY": -73.23796191112488
+                        },
+                        {
+                            "LocationX": -46.42392164399074,
+                            "LocationY": -53.47203469079287
+                        },
+                        {
+                            "LocationX": -15.838749737361553,
+                            "LocationY": -28.504547675636672
+                        },
+                        {
+                            "LocationX": -48.712607977139854,
+                            "LocationY": -9.570870022476527
+                        },
+                        {
+                            "LocationX": -29.778930130178928,
+                            "LocationY": 7.9063708881328125
+                        },
+                        {
+                            "LocationX": 23.276980320096186,
+                            "LocationY": -20.39011439571091
+                        }
+                    ],
+                    "MaintainEquipment": [
+                        "E00028",
+                        "E00029"
+                    ],
+                    "RepairEquipment": [
+                        "E00143"
+                    ],
+                    "BothEquipment": []
+                }
+            ]
+        }
+        const IPSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
+        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
+        let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
+        //let apiUrl = null;
+        function readData(url = null) {
 
-        url == null ? onSuccess(EditFakeData) :
+            url == null ? onSuccess(EditFakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                EditFakeData = res;
+
+                sortRouteModal.autoRouteToggle(false);
+
+                $("#PlanDate").attr('disabled', '');
+
+                $("#IPName").val(res.IPName);
+                $("#PlanDate").val(res.PlanDate);
+                $("#Shift").val(res.Shift);
+                $("#UserID").tagbox('setValues', res.UserID);
+
+                $("#MaintainUserID").val(res.MaintainUserID);
+                $("#RepairUserID").val(res.RepairUserID);
+
+                if (res.MaintainEquipment.length > 0) {
+                    maintainDG_Controller.changeEditAreaCss()
+                    maintainDG_Controller.initResultDatagrid(maintainDG_Controller.edg)
+                    maintainDG_Controller.edg.datagrid('loadData', res.MaintainEquipment);
+                }
+                if (res.RepairEquipment.length > 0) {
+                    repairDG_Controller.changeEditAreaCss()
+                    repairDG_Controller.initResultDatagrid(repairDG_Controller.edg)
+                    repairDG_Controller.edg.datagrid('loadData', res.RepairEquipment);
+                }
+
+                getDeviceData([...res.MaintainEquipment.map(e => e.ESN), ...res.RepairEquipment.map(e => e.ESN)]);
+
+                res.InspectionPlanPaths.forEach((e, i, arr) => {
+                    sessionStorage.setItem(`P${i + 1}_pathData`, JSON.stringify(e));
+                    pathGroup.create(e);
+                })
+
+                $(".sample-path-draw-area").removeClass('d-none');
+
+                $("#current-path-id").val(1);
+
+                let { BIMPath, BeaconPath } = res.InspectionPlanPaths[0].PathSample
+
+                initializeViewer({
+                    BIMPath, BeaconPath,
+                    callback: () => { initializeDrawer(1, true) }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            let data = getCreateSaveData(IPSN);
+
+            console.log(data);
+
+            if (!data) return;
+
             $.ajax({
-                url: url,
-                type: "GET",
+                url: SubmitUrl,
+                data: JSON.stringify(data),
+                type: "POST",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
             })
 
-        function onSuccess(res) {
-            console.log(res);
-            EditFakeData = res;
-
-            sortRouteModal.autoRouteToggle(false);
-
-            $("#PlanDate").attr('disabled', '');
-
-            $("#IPName").val(res.IPName);
-            $("#PlanDate").val(res.PlanDate);
-            $("#Shift").val(res.Shift);
-            $("#UserID").tagbox('setValues', res.UserID);
-
-            $("#MaintainUserID").val(res.MaintainUserID);
-            $("#RepairUserID").val(res.RepairUserID);
-
-            if (res.MaintainEquipment.length > 0) {
-                maintainDG_Controller.changeEditAreaCss()
-                maintainDG_Controller.initResultDatagrid(maintainDG_Controller.edg)
-                maintainDG_Controller.edg.datagrid('loadData', res.MaintainEquipment);
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                });
             }
-            if (res.RepairEquipment.length > 0) {
-                repairDG_Controller.changeEditAreaCss()
-                repairDG_Controller.initResultDatagrid(repairDG_Controller.edg)
-                repairDG_Controller.edg.datagrid('loadData', res.RepairEquipment);
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` })
             }
+        }
 
-            getDeviceData([...res.MaintainEquipment.map(e => e.ESN), ...res.RepairEquipment.map(e => e.ESN)]);
-
-            res.InspectionPlanPaths.forEach((e, i, arr) => {
-                sessionStorage.setItem(`P${i + 1}_pathData`, JSON.stringify(e));
-                pathGroup.create(e);
+        function deleteIP() {
+            $.ajax({
+                url: delUrl,
+                type: "DELETE",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
             })
 
-            $(".sample-path-draw-area").removeClass('d-none');
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "刪除成功！",
+                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
+            }
+        }
 
-            $("#current-path-id").val(1);
+        $(async function () {
+            addButtonEvent();
+            //DatagridEvent = addDatagridEvent();
+            maintainDG_Controller = new IPDG(MDGOptions);
+            repairDG_Controller = new IPDG(RDGOptions);
+            await addDropDownList();
+            await addAreaFloorEvent();
+            controlToggle("path-draw", ForgeDraw.Control.DRAW);
+            sortRouteModal.autoRouteToggle(true);
 
-            let { BIMPath, BeaconPath } = res.InspectionPlanPaths[0].PathSample
+            $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
 
-            initializeViewer({
-                BIMPath, BeaconPath,
-                callback: () => { initializeDrawer(1, true) }
+            window.addEventListener("beforeunload", (event) => {
+                sessionStorage.clear();
             });
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
 
-    function save() {
-        let data = getCreateSaveData(IPSN);
+            addSaveSamplePathEvent();
 
-        console.log(data);
+            $("#delete").click(deleteIP);
 
-        if (!data) return;
+            readData(apiUrl);
 
-        $.ajax({
-            url: SubmitUrl,
-            data: JSON.stringify(data),
-            type: "POST",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: onSuccess,
-            error: onError
+            $(".spinner-area").fadeOut(300, function () { $(this).remove(); });
+
         })
-
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "儲存成功！",
-                onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` })
-        }
-    }
-
-    function deleteIP() {
-        $.ajax({
-            url: delUrl,
-            type: "DELETE",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: onSuccess,
-            error: onError
-        })
-
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "刪除成功！",
-                onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
-        }
-    }
-
-    $(async function () {
-        addButtonEvent();
-        //DatagridEvent = addDatagridEvent();
-        maintainDG_Controller = new IPDG(MDGOptions);
-        repairDG_Controller = new IPDG(RDGOptions);
-        await addDropDownList();
-        await addAreaFloorEvent();
-        controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        sortRouteModal.autoRouteToggle(true);
-
-        $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
-
-        window.addEventListener("beforeunload", (event) => {
-            sessionStorage.clear();
-        });
-
-        addSaveSamplePathEvent();
-
-        $("#delete").click(deleteIP);
-
-        readData(apiUrl);
-
-        $(".spinner-area").fadeOut(300, function () { $(this).remove(); });
-
-    })
-</script>
+    </script>
+}

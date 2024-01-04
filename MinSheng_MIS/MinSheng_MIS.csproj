@@ -1876,14 +1876,9 @@
     <Content Include="Views\InspectionPlan_Management\Create.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Read.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Edit.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Delete.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Record.cshtml" />
     <Content Include="Views\InspectionPlan_Management\TrackRecord.cshtml" />
-    <Content Include="Views\RepairRecord_Management\ReadMaintainForm.cshtml" />
-    <Content Include="Views\RepairRecord_Management\ReadReportForm.cshtml" />
     <Content Include="Views\Home\Login.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\ReadMaintainForm.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\ReadReportForm.cshtml" />
     <Content Include="Views\SamplePath_Management\Edit.cshtml" />
     <Content Include="Views\Account_Management\Management.cshtml" />
     <Content Include="Views\Account_Management\Create.cshtml" />
@@ -1901,7 +1896,6 @@
     <Content Include="Views\ManufacturerInfo_Management\Edit.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Management.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Create.cshtml" />
-    <Content Include="Views\AsBuiltDrawing_Management\Read.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Edit.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Delete.cshtml" />
     <Content Include="Views\PurchaseRequisition_Management\Management.cshtml" />
@@ -1922,7 +1916,6 @@
     <Content Include="Views\DesignDiagrams\Delete.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Management.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Create.cshtml" />
-    <Content Include="Views\EquipmentOperatingManual\Read.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Edit.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Delete.cshtml" />
     <Content Include="Views\StockIn_Management\Management.cshtml" />

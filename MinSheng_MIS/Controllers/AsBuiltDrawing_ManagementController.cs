@@ -71,13 +71,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 檢視竣工圖
-        public ActionResult Read()
-        {
-            return View();
-        }
-        #endregion
-
         #region 編輯竣工圖
         public ActionResult Edit(string id)
         {

@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "編輯巡檢路線模板";
 }
-@section styles{
+@section styles {
     <link rel="stylesheet" href="/Content/samplepath.css">
     <!-- Autodesk Forge -->
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
@@ -105,194 +105,196 @@
     <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
-<script>
-    function initializeDrawer(data) {
-        var view = document.querySelector("#PathCanvas");
-        ForgeDraw.init(view, viewer, function () {
-            view.addEventListener("fd.point.detecterror", function (event) {
-                console.log("view => fd.point.detecterror");
-                createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
+@section scripts {
+    <script>
+        function initializeDrawer(data) {
+            var view = document.querySelector("#PathCanvas");
+            ForgeDraw.init(view, viewer, function () {
+                view.addEventListener("fd.point.detecterror", function (event) {
+                    console.log("view => fd.point.detecterror");
+                    createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
+                });
+                view.addEventListener("fd.linedata.change", function (event) {
+                    console.log("view => fd.linedata.change");
+                    updatePathDisplay(calcPath());
+                });
+                view.addEventListener("fd.linedata.detail", function (event) {
+                    console.log("view => fd.linedata.detail", event.detail);
+                    if (event.detail instanceof ForgeDraw.DevicePoint) {
+                        createDevicePointDetailModal(event.detail);
+                    }
+                    else {
+                        createPointDetailModal(event.detail);
+                    }
+                });
+                view.addEventListener("fd.devicepoint.ignore", function (event) {
+                    console.log("view => fd.devicepoint.ignore");
+                    updatePathDisplay(calcPath());
+                });
+
+                createBeacons(data.PathSample.BIMDevices);
+                createLinePath(data.PathSampleRecord);
+
+                updatePathDisplay(data.PathSampleOrder);
+
+                addToolbarEvent();
+                addTooltip(true);
             });
-            view.addEventListener("fd.linedata.change", function (event) {
-                console.log("view => fd.linedata.change");
-                updatePathDisplay(calcPath());
+        }
+    </script>
+
+    <script>
+        const PSSN = '@ViewBag.PSSN';
+        let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
+
+        let fakeData;
+        let sortRouteModal;
+        $(async function () {
+            sortRouteModal = new SortRouteModal({
+                onSave: updatePathDisplay
             });
-            view.addEventListener("fd.linedata.detail", function (event) {
-                console.log("view => fd.linedata.detail", event.detail);
-                if (event.detail instanceof ForgeDraw.DevicePoint) {
-                    createDevicePointDetailModal(event.detail);
+            await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+
+            addButtonEvent();
+            controlToggle("path-draw", ForgeDraw.Control.DRAW);
+            sortRouteModal.autoRouteToggle(false);
+
+            $("#PathTitle").change(function () {
+                $("#current-path-title").text($(this).val())
+            })
+
+            readData(apiUrl);
+        });
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+                fakeData = res;
+                let ps = res.PathSample;
+
+                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ps.ASN}`);
+
+
+                $("#PSSN").val(ps.PSSN);
+                $("#ASN").val(ps.ASN);
+                $("#FSN").val(ps.FSN);
+                $("#PathTitle").val(ps.PathTitle);
+
+                $("#path-create").click();
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+            $("#path-create").click(function (e) {
+                e.preventDefault();
+                console.log("onclick path-create");
+                if ($("form")[0].reportValidity()) {
+
+                    $("#current-path-title").text($("#PathTitle").val());
+                    $(".sample-path-group-area").removeClass("d-none");
+                    $(".sample-path-draw-area").removeClass("d-none");
+
+                    if (!viewer) {
+                        const { BIMPath, BeaconPath } = fakeData.PathSample;
+                        initializeViewer({
+                            BIMPath,
+                            BeaconPath,
+                            callback: () => { initializeDrawer(fakeData) }
+                        });
+                    }
+
+                }
+            })
+            $("#submit").click(function () {
+                console.log("onclick submit")
+                if ($("#PathTitle").val() == "") {
+                    errtext = "巡檢路線模板名稱不可為空!";
+                    createDialogModal({ id: "DialogModal-Error", inner: `${errtext}` })
                 }
                 else {
-                    createPointDetailModal(event.detail);
+                    save();
                 }
-            });
-            view.addEventListener("fd.devicepoint.ignore", function (event) {
-                console.log("view => fd.devicepoint.ignore");
-                updatePathDisplay(calcPath());
-            });
+            })
+        }
 
-            createBeacons(data.PathSample.BIMDevices);
-            createLinePath(data.PathSampleRecord);
+        function save() {
+            let PathSampleOrder = getPathSampleOrder();
+            let PathSampleRecord = getPathSampleRecord();
 
-            updatePathDisplay(data.PathSampleOrder);
+            if (PathSampleRecord.every(e => e) === false) {
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
+                return
+            }
 
-            addToolbarEvent();
-            addTooltip(true);
-        });
-    }
-</script>
+            let data = {
+                PathSample: {
+                    PSSN: $("#PSSN").val(),
+                    ASN: $("#ASN").val(),
+                    FSN: $("#FSN").val(),
+                    PathTitle: $("#PathTitle").val()
+                },
+                PathSampleOrder: PathSampleOrder,
+                PathSampleRecord: PathSampleRecord
+            }
 
-<script>
-    const PSSN = '@ViewBag.PSSN';
-    let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
+            console.log(data);
 
-    let fakeData;
-    let sortRouteModal;
-    $(async function () {
-        sortRouteModal = new SortRouteModal({
-            onSave: updatePathDisplay
-        });
-        await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-
-        addButtonEvent();
-        controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        sortRouteModal.autoRouteToggle(false);
-
-        $("#PathTitle").change(function () {
-            $("#current-path-title").text($(this).val())
-        })
-
-        readData(apiUrl);
-    });
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :
             $.ajax({
-                url: url,
-                type: "GET",
+                url: '@Url.Action("EditSamplePath", "SamplePath_Management")',
+                data: JSON.stringify(data),
+                type: "POST",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
             })
 
-        async function onSuccess(res) {
-            console.log(res);
-            fakeData = res;
-            let ps = res.PathSample;
+            function onSuccess(res) {
+                //console.log(res);
 
-            await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ps.ASN}`);
-
-
-            $("#PSSN").val(ps.PSSN);
-            $("#ASN").val(ps.ASN);
-            $("#FSN").val(ps.FSN);
-            $("#PathTitle").val(ps.PathTitle);
-
-            $("#path-create").click();
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-        $("#path-create").click(function (e) {
-            e.preventDefault();
-            console.log("onclick path-create");
-            if ($("form")[0].reportValidity()) {
-
-                $("#current-path-title").text($("#PathTitle").val());
-                $(".sample-path-group-area").removeClass("d-none");
-                $(".sample-path-draw-area").removeClass("d-none");
-
-                if (!viewer) {
-                    const { BIMPath, BeaconPath } = fakeData.PathSample;
-                    initializeViewer({
-                        BIMPath,
-                        BeaconPath,
-                        callback: () => { initializeDrawer(fakeData) }
+                if (res.ResponseCode == 0) {
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "編輯成功！",
+                        onHide: () => {
+                            let url = '@Url.Action("Management", "SamplePath_Management")';
+                            window.location.href = url;
+                        }
                     });
                 }
-
             }
-        })
-        $("#submit").click(function () {
-            console.log("onclick submit")
-            if ($("#PathTitle").val() == "") {
-                errtext = "巡檢路線模板名稱不可為空!";
-                createDialogModal({ id: "DialogModal-Error", inner: `${errtext}` })
-            }
-            else {
-                save();
-            }
-        })
-    }
+            function onError(res) {
+                //console.log(res);
+                let errtext;
 
-    function save() {
-        let PathSampleOrder = getPathSampleOrder();
-        let PathSampleRecord = getPathSampleRecord();
+                switch (res.responseText) {
+                    case "duplicate title":
+                        errtext = "巡檢路線模板名稱重複！";
+                        break;
+                    default:
+                        errtext = "";
+                        break;
+                }
 
-        if (PathSampleRecord.every(e => e) === false) {
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
-            return
-        }
-
-        let data = {
-            PathSample: {
-                PSSN: $("#PSSN").val(),
-                ASN: $("#ASN").val(),
-                FSN: $("#FSN").val(),
-                PathTitle: $("#PathTitle").val()
-            },
-            PathSampleOrder: PathSampleOrder,
-            PathSampleRecord: PathSampleRecord
-        }
-
-        console.log(data);
-
-        $.ajax({
-            url: '@Url.Action("EditSamplePath", "SamplePath_Management")',
-            data: JSON.stringify(data),
-            type: "POST",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: onSuccess,
-            error: onError
-        })
-
-        function onSuccess(res) {
-            //console.log(res);
-
-            if (res.ResponseCode == 0) {
-                createDialogModal({
-                    id: "DialogModal-Success",
-                    inner: "編輯成功！",
-                    onHide: () => {
-                        let url = '@Url.Action("Management", "SamplePath_Management")';
-                        window.location.href = url;
-                    }
-                });
+                createDialogModal({ id: "DialogModal-Error", inner: `編輯失敗！${errtext}` })
             }
         }
-        function onError(res) {
-            //console.log(res);
-            let errtext;
-
-            switch (res.responseText) {
-                case "duplicate title":
-                    errtext = "巡檢路線模板名稱重複！";
-                    break;
-                default:
-                    errtext = "";
-                    break;
-            }
-
-            createDialogModal({ id: "DialogModal-Error", inner: `編輯失敗！${errtext}` })
-        }
-    }
-</script>
+    </script>
+}

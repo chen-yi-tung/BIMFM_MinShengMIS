@@ -1,49 +1,53 @@
 ﻿@{
     ViewBag.Title = "新增會議記錄";
 }
-<style>
-    .mm-grid {
-        grid-template-columns: repeat(12, 1fr);
-        gap: 1.5rem;
-    }
-
-    @@media (max-width: 1200px) {
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <style>
         .mm-grid {
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+
+        @@media (max-width: 1200px) {
+            .mm-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
-    }
 
-    .grid-2 {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-    }
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
 
-    .grid-3 {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-    }
+        .grid .form-control {
+            grid-column-start: auto;
+        }
 
-    .grid .form-control {
-        grid-column-start: auto;
-    }
+        .g-col-2 {
+            grid-column: auto/span 2;
+        }
 
-    .g-col-2 {
-        grid-column: auto/span 2;
-    }
+        .g-col-3 {
+            grid-column: auto/span 3;
+        }
 
-    .g-col-3 {
-        grid-column: auto/span 3;
-    }
+        .g-col-6 {
+            grid-column: auto/span 6;
+        }
 
-    .g-col-6 {
-        grid-column: auto/span 6;
-    }
-
-    .textbox {
-        width: 100% !important;
-    }
-</style>
+        .textbox {
+            width: 100% !important;
+        }
+    </style>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -116,87 +120,88 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增</button>
 </div>
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script>
-    var fileUploader
-    $(async function () {
-        addButtonEvent();
-        fileUploader = new FileUploader({
-            container: "#FileUploader",
-            className: "form-group w-100",
-            label: "會議資料",
-            id: "File",
-            required: false,
-            multiple: true
-        })
-    });
 
-    function save() {
-        //重置自訂驗證錯誤訊息
-        getAllParams().forEach((e) => {
-            e.setCustomValidity('');
-        })
-        //自訂驗證錯誤
-        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity():", isValidity)
-        if (!isValidity) return;
+@section scripts {
+    <script>
+        var fileUploader
+        $(async function () {
+            addButtonEvent();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group w-100",
+                label: "會議資料",
+                id: "File",
+                required: false,
+                multiple: true
+            })
+        });
 
-        var fd = new FormData();
-        fd.append("MeetingTopic", document.getElementById("MeetingTopic").value);
-        fd.append("MeetingDate", document.getElementById("MeetingDate").value);
-        
-        fd.append("MeetingDateStart", document.getElementById("MeetingDateStart").value);
-        fd.append("MeetingDateEnd", document.getElementById("MeetingDateEnd").value);
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
 
-        fd.append("MeetingVenue", document.getElementById("MeetingVenue").value);
-        fd.append("Chairperson", document.getElementById("Chairperson").value);
-        fd.append("Participant", document.getElementById("Participant").value);
+            var fd = new FormData();
+            fd.append("MeetingTopic", document.getElementById("MeetingTopic").value);
+            fd.append("MeetingDate", document.getElementById("MeetingDate").value);
 
-        fd.append("ExpectedAttendence", document.getElementById("ExpectedAttendence").value);
-        fd.append("ActualAttendence", document.getElementById("ActualAttendence").value);
-        fd.append("AbsenteeList", document.getElementById("AbsenteeList").value);
+            fd.append("MeetingDateStart", document.getElementById("MeetingDateStart").value);
+            fd.append("MeetingDateEnd", document.getElementById("MeetingDateEnd").value);
 
-        fd.append("TakeTheMinutes", document.getElementById("TakeTheMinutes").value);
-        fd.append("Agenda", document.getElementById("Agenda").value);
-        fd.append("MeetingContent", document.getElementById("MeetingContent").value);
+            fd.append("MeetingVenue", document.getElementById("MeetingVenue").value);
+            fd.append("Chairperson", document.getElementById("Chairperson").value);
+            fd.append("Participant", document.getElementById("Participant").value);
 
-        if (fileUploader.hasFile()) {
-            fileUploader.getAllFile().forEach((file, i) => {
-                fd.append(`MeetingFiles[${i}]`, fileUploader.getFile(i));
+            fd.append("ExpectedAttendence", document.getElementById("ExpectedAttendence").value);
+            fd.append("ActualAttendence", document.getElementById("ActualAttendence").value);
+            fd.append("AbsenteeList", document.getElementById("AbsenteeList").value);
+
+            fd.append("TakeTheMinutes", document.getElementById("TakeTheMinutes").value);
+            fd.append("Agenda", document.getElementById("Agenda").value);
+            fd.append("MeetingContent", document.getElementById("MeetingContent").value);
+
+            if (fileUploader.hasFile()) {
+                fileUploader.getAllFile().forEach((file, i) => {
+                    fd.append(`MeetingFiles[${i}]`, fileUploader.getFile(i));
+                })
+            }
+            console.log(Object.fromEntries(fd.entries()));
+            $.ajax({
+                url: '@Url.Action("CreateMeetingMinutes", "MeetingMinutes_Management")',
+                data: fd,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/MeetingMinutes_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#submit").click(function () {
+                save();
             })
         }
-        console.log(Object.fromEntries(fd.entries()));
-        $.ajax({
-            url: '@Url.Action("CreateMeetingMinutes", "MeetingMinutes_Management")',
-            data: fd,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/MeetingMinutes_Management/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-</script>
+    </script>
+}

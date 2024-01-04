@@ -1,6 +1,10 @@
 ﻿@{
     ViewBag.Title = "刪除竣工圖";
 }
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -17,88 +21,88 @@
     <button class="btn btn-delete" id="delete">刪除</button>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/ImageDisplay.js"></script>
-<script>
-    const ADSN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("ReadAsBuiltDrawingbody", "AsBuiltDrawing_Management")' + `/${ADSN}`;
-    //let apiUrl = null;
+@section scripts {
+    <script>
+        const ADSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadAsBuiltDrawingbody", "AsBuiltDrawing_Management")' + `/${ADSN}`;
+        //let apiUrl = null;
 
-    const fakeData = {
-        Area: "A棟",
-        Floor: "1F",
-        DSystem: "BT",
-        DSubSystem: "BT-11",
-        ImgNum: "M7-126",
-        ImgName: "空調控制配置平面圖",
-        UploadDate: "2023/04/11 10:30:26",
-        ImgVersion: "1.0",
-        ImgPath: "2023-03-30_B.png",
-    }
-
-    const sn = [
-        { text: "棟別", value: "Area" },
-        { text: "樓層", value: "Floor" },
-        { text: "系統", value: "DSystem" },
-        { text: "子系統", value: "DSubSystem" },
-        { text: "圖號", value: "ImgNum" },
-        { text: "圖名", value: "ImgName" },
-        { text: "版本", value: "ImgVersion" },
-        { text: "上傳日期時間", value: "UploadDate" },
-        {
-            text: "檔案", value: "ImgPath", formatter: (v) => {
-                if (v.split('.').at(-1).toLowerCase() === "pdf") {
-                    return `<a href="${v}" target="_blank">${v.split('/').at(-1)}</a>`;
-                }
-                else {
-                    return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="${v}"/></div></div>`;
-                }
-            }
-        },
-    ]
-
-    $(async function () {
-        addButtonEvent();
-        readData(apiUrl);
-    });
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        async function onSuccess(res) {
-            console.log(res);
-
-            $(".datatable-table").append(createTableInner(res, sn))
-            ImageDisplay(".datatable-img-item>img");
+        const fakeData = {
+            Area: "A棟",
+            Floor: "1F",
+            DSystem: "BT",
+            DSubSystem: "BT-11",
+            ImgNum: "M7-126",
+            ImgName: "空調控制配置平面圖",
+            UploadDate: "2023/04/11 10:30:26",
+            ImgVersion: "1.0",
+            ImgPath: "2023-03-30_B.png",
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
 
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#delete").click(function () {
-            createDeleteDialog({
-                url: '@Url.Action("DeleteAsBuiltDrawing", "AsBuiltDrawing_Management")/' + ADSN,
-                data: ADSN,
-                onSuccess() {
-                    let url = '@Url.Action("Management", "AsBuiltDrawing_Management")';
-                    window.location.href = url;
+        const sn = [
+            { text: "棟別", value: "Area" },
+            { text: "樓層", value: "Floor" },
+            { text: "系統", value: "DSystem" },
+            { text: "子系統", value: "DSubSystem" },
+            { text: "圖號", value: "ImgNum" },
+            { text: "圖名", value: "ImgName" },
+            { text: "版本", value: "ImgVersion" },
+            { text: "上傳日期時間", value: "UploadDate" },
+            {
+                text: "檔案", value: "ImgPath", formatter: (v) => {
+                    if (v.split('.').at(-1).toLowerCase() === "pdf") {
+                        return `<a href="${v}" target="_blank">${v.split('/').at(-1)}</a>`;
+                    }
+                    else {
+                        return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="${v}"/></div></div>`;
+                    }
                 }
-            })
+            },
+        ]
+
+        $(async function () {
+            addButtonEvent();
+            readData(apiUrl);
         });
-    }
-</script>
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+
+                $(".datatable-table").append(createTableInner(res, sn))
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#delete").click(function () {
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteAsBuiltDrawing", "AsBuiltDrawing_Management")/' + ADSN,
+                    data: ADSN,
+                    onSuccess() {
+                        let url = '@Url.Action("Management", "AsBuiltDrawing_Management")';
+                        window.location.href = url;
+                    }
+                })
+            });
+        }
+    </script>
+}

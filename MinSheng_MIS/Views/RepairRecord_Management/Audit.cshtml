@@ -1,6 +1,13 @@
 ﻿@{
     ViewBag.Title = "巡檢維修紀錄審核";
 }
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
+    <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
+    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 <section>
@@ -71,287 +78,284 @@
     </div>
 </section>
 
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/dataTable/InspectionPlanRepair.js"></script>
-<script src="/Scripts/dataTable/RepairRecord.js"></script>
-<script src="/Scripts/dataTable/EquipmentInfoModal.js"></script>
-<script src="/Scripts/ImageDisplay.js"></script>
-<script>
+@section scripts {
+    <script>
 
-    const IPRSN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("AuditBody", "RepairRecord_Management")' + `/${IPRSN}`; //這是上方顯示資訊
-    let AuditFormUrl = '@Url.Action("GetBufferData", "RepairRecord_Management")' + `/${IPRSN}`;  //這是最下面審核表單暫存資料，在載入此頁面時要先去抓有沒有暫存資料，沒有的話就只顯示審核人員
-    let AuditFormPostUrl = '@Url.Action("CreateDataAudit", "RepairRecord_Management")'; //這是最下面'暫存草稿'&&'送出'按鈕的API (Post)，除了要傳審核表單本身的資料之外，還要再給我IPRSN、IsBuffer -> 0為{送出} 、 1為{暫存草稿}
-    //let apiUrl = null
+        const IPRSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("AuditBody", "RepairRecord_Management")' + `/${IPRSN}`; //這是上方顯示資訊
+        let AuditFormUrl = '@Url.Action("GetBufferData", "RepairRecord_Management")' + `/${IPRSN}`;  //這是最下面審核表單暫存資料，在載入此頁面時要先去抓有沒有暫存資料，沒有的話就只顯示審核人員
+        let AuditFormPostUrl = '@Url.Action("CreateDataAudit", "RepairRecord_Management")'; //這是最下面'暫存草稿'&&'送出'按鈕的API (Post)，除了要傳審核表單本身的資料之外，還要再給我IPRSN、IsBuffer -> 0為{送出} 、 1為{暫存草稿}
+        //let apiUrl = null
 
-    let imgFiles = [];
+        let imgFiles = [];
 
-    const fakeData = {
-        EquipmentReportItem: {
-            ReportState: "已完工",
-            RSN: "R23010401",
-            Date: "2023/02/04 14:27:52",
-            ReportLevel: "最速件",
-            MyName: "李泰順",
-            Area: "A區",
-            Floor: "2F",
-            PorpertyCode: "",
-            ESN: "E00001",
-            EName: "日光燈36Wx2",
-            ESN_Button: "E00001",
-            ReportContent: "電燈故障",
-            ImgPath: ["/Content/img/bg.png"],
-        },
-        InspectionPlan: {
-            IPSN: "P23010401",
-            IPName: "巡檢A區計畫",
-            PlanDate: "2023/01/08",
-            PlanState: "巡檢完成",
-            Shift: "早班",
-            MyName: "王大明、李泰順",
-        },
-        InspectionPlanRepair: {
-            RepairState: "完成",
-            MyName: "王大明",
-            RepairContent: "修復完成",
-            RepairDate: "2023/01/07 12:40:56",
-            ImgPath: [
-                "/Content/img/bg.png"
-            ],
-        },
-        RepairSupplementaryInfo: [
-            {
+        const fakeData = {
+            EquipmentReportItem: {
+                ReportState: "已完工",
+                RSN: "R23010401",
+                Date: "2023/02/04 14:27:52",
+                ReportLevel: "最速件",
+                MyName: "李泰順",
+                Area: "A區",
+                Floor: "2F",
+                PorpertyCode: "",
+                ESN: "E00001",
+                EName: "日光燈36Wx2",
+                ESN_Button: "E00001",
+                ReportContent: "電燈故障",
+                ImgPath: ["/Content/img/bg.png"],
+            },
+            InspectionPlan: {
+                IPSN: "P23010401",
+                IPName: "巡檢A區計畫",
+                PlanDate: "2023/01/08",
+                PlanState: "巡檢完成",
+                Shift: "早班",
+                MyName: "王大明、李泰順",
+            },
+            InspectionPlanRepair: {
+                RepairState: "完成",
                 MyName: "王大明",
-                SupplementaryDate: "2023/01/10",
-                SupplementaryContent: "OOXX",
-                FilePath: ["/file/電燈故障.pdf"],
-            }
-        ],
-        RepairAuditInfo: [
-            {
-                MyName: "陳組長",
-                AuditDate: "2023/1/12",
-                AuditResult: "審核未過",
-                AuditMemo: "未處理完善",
+                RepairContent: "修復完成",
+                RepairDate: "2023/01/07 12:40:56",
                 ImgPath: [
                     "/Content/img/bg.png"
                 ],
-            }
-        ],
-        InspectionPlanList: [
-            {
-                "InspectionPlan": {
-                    "IPSN": "P23022203",
-                    "IPName": "維修設備E00003",
-                    "PlanDate": "2023/2/22",
-                    "PlanState": "巡檢完成",
-                    "Shift": "2",
-                    "MyName": "賈皓麟、羅紹齊"
-                },
-                "InspectionPlanRepair": {
-                    "RepairState": "審核未過",
-                    "RepairContent": "好了",
-                    "MyName": "賈皓麟",
-                    "RepairDate": "2023/2/22",
-                    "ImgPath": []
-                },
-                "RepairSupplementaryInfo": [
-                    {
-                        "MyName": "王大明",
-                        "SupplementaryDate": "2023/1/15",
-                        "SupplementaryContent": "OOXX",
-                        "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
-                    }
-                ],
-                "RepairAuditInfo": [
-                    {
-                        "MyName": "陳進國",
-                        "AuditDate": "2023/2/22",
-                        "AuditResult": "審核未過",
-                        "AuditMemo": "沒修好",
-                        "ImgPath": []
-                    }
-                ]
             },
-        ]
-    }
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        function onSuccess(res) {
-            console.log(res);
-            RepairRecord("#RepairRecord", res);
-            InspectionPlanRepair("#InspectionPlanRepairList", res.InspectionPlanList);
-
-            ImageDisplay(".datatable-img-item>img");
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function readData_audit(url = null) {
-
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        function onSuccess(res) {
-            console.log(res);
-            for (const [k, v] of Object.entries(res)) {
-                switch (k) {
-                    case 'AuditResult':
-                        AuditResult(v)
-                        break;
-                    case 'ImgPath':
-                        ImgPath(v);
-                        break;
-                    default:
-                        $("#" + k).val(v);
-                        break;
+            RepairSupplementaryInfo: [
+                {
+                    MyName: "王大明",
+                    SupplementaryDate: "2023/01/10",
+                    SupplementaryContent: "OOXX",
+                    FilePath: ["/file/電燈故障.pdf"],
                 }
-            }
-            function ImgPath(v) {
-                v.length !== 0 && v.forEach((url) => {
-                    let CurFile;
-                    let filename = url.split("/").pop();
-                    fetch(url)
-                        .then(response => response.blob())
-                        .then(blob => {
-                            const file = new File([blob], filename, { type: blob.type });
-                            imgFiles.push(file);
-                            CurFile = file
-                        })
-                    let query = $(`
-                            <div class="edit-img-item">
-                                <img src="${url}">
-                                <button class="btn-delete-item"></button>
-                            </div>`);
-                    $(".edit-img-area").append(query);
-                    ImageDisplay(query.children("img"));
-                    query.children("button").click(function (event) {
-                        event.preventDefault();
-                        let index = imgFiles.findIndex((e) => e == CurFile);
-                        imgFiles.splice(index, 1);
-                        $(this).parent().remove();
-                    })
+            ],
+            RepairAuditInfo: [
+                {
+                    MyName: "陳組長",
+                    AuditDate: "2023/1/12",
+                    AuditResult: "審核未過",
+                    AuditMemo: "未處理完善",
+                    ImgPath: [
+                        "/Content/img/bg.png"
+                    ],
+                }
+            ],
+            InspectionPlanList: [
+                {
+                    "InspectionPlan": {
+                        "IPSN": "P23022203",
+                        "IPName": "維修設備E00003",
+                        "PlanDate": "2023/2/22",
+                        "PlanState": "巡檢完成",
+                        "Shift": "2",
+                        "MyName": "賈皓麟、羅紹齊"
+                    },
+                    "InspectionPlanRepair": {
+                        "RepairState": "審核未過",
+                        "RepairContent": "好了",
+                        "MyName": "賈皓麟",
+                        "RepairDate": "2023/2/22",
+                        "ImgPath": []
+                    },
+                    "RepairSupplementaryInfo": [
+                        {
+                            "MyName": "王大明",
+                            "SupplementaryDate": "2023/1/15",
+                            "SupplementaryContent": "OOXX",
+                            "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
+                        }
+                    ],
+                    "RepairAuditInfo": [
+                        {
+                            "MyName": "陳進國",
+                            "AuditDate": "2023/2/22",
+                            "AuditResult": "審核未過",
+                            "AuditMemo": "沒修好",
+                            "ImgPath": []
+                        }
+                    ]
+                },
+            ]
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
                 })
+
+            function onSuccess(res) {
+                console.log(res);
+                RepairRecord("#RepairRecord", res);
+                InspectionPlanRepair("#InspectionPlanRepairList", res.InspectionPlanList);
+
+                ImageDisplay(".datatable-img-item>img");
             }
-            function AuditResult(v) {
-                switch (v) {
-                    case '審核未過':
-                        $('#AuditResult_1').prop('checked', true);
-                        break;
-                    case '請補件':
-                        $('#AuditResult_2').prop('checked', true);
-                        break;
-                    case '審核通過':
-                        $('#AuditResult_3').prop('checked', true);
-                        break;
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function readData_audit(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                for (const [k, v] of Object.entries(res)) {
+                    switch (k) {
+                        case 'AuditResult':
+                            AuditResult(v)
+                            break;
+                        case 'ImgPath':
+                            ImgPath(v);
+                            break;
+                        default:
+                            $("#" + k).val(v);
+                            break;
+                    }
                 }
-            }
-        }
-        function onError(res) {
-            console.log(res);
-            $("#AuditUserID").val($("#NavbarUserName").text());
-        }
-    }
-
-    function buttonsubmitEvent(IsBu) {
-        let auditResult = $('input[name="AuditResult"]:checked').val() ?? 0;
-        if (auditResult === 0) {
-            createDialogModal({
-                id: "DialogModal-Error",
-                inner: "請選擇審核結果！",
-            })
-            return;
-        }
-        let iprsn = IPRSN
-        let auditID = document.getElementById("NavbarUserID").value
-        let auditMemo = document.getElementById("AuditMemo").value
-        var form = new FormData();
-        form.append("IPRSN", iprsn);
-        form.append("IsBuffer", IsBu);
-        form.append("AuditUserID", auditID);
-        form.append("AuditMemo", auditMemo);
-        form.append("AuditResult", auditResult);
-        for (let i = 0; i < imgFiles.length; i++) {
-            form.append(`Img${i}`, imgFiles[i]);
-        }
-        var settings = {
-            "url": AuditFormPostUrl,
-            "method": "POST",
-            "timeout": 0,
-            "processData": false,
-            "mimeType": "multipart/form-data",
-            "contentType": false,
-            "data": form
-        };
-
-        $.ajax(settings).done(function (response) {
-            console.log(response);
-            createDialogModal({
-                id: "DialogModal-Success",
-                inner: "送出成功！",
-                onHide: () => {
-                    window.location.href = '@Url.Action("Management", "RepairRecord_Management")';
-                }
-            })
-        });
-    }
-
-    function addButtonEvent() {
-        $("#ImgPath").change(function (e) {
-            console.log(this.files);
-            if (this.files && this.files.length !== 0) {
-                createIamges(this.files);
-            }
-
-            function createIamges(data) {
-                for (let i = 0; i < data.length; i++) {
-                    imgFiles.push(data[i]);
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
+                function ImgPath(v) {
+                    v.length !== 0 && v.forEach((url) => {
+                        let CurFile;
+                        let filename = url.split("/").pop();
+                        fetch(url)
+                            .then(response => response.blob())
+                            .then(blob => {
+                                const file = new File([blob], filename, { type: blob.type });
+                                imgFiles.push(file);
+                                CurFile = file
+                            })
                         let query = $(`
-                        <div class="edit-img-item">
-                            <img src="${e.target.result}">
-                            <button class="btn-delete-item"></button>
-                        </div>`);
+                                <div class="edit-img-item">
+                                    <img src="${url}">
+                                    <button class="btn-delete-item"></button>
+                                </div>`);
                         $(".edit-img-area").append(query);
                         ImageDisplay(query.children("img"));
                         query.children("button").click(function (event) {
                             event.preventDefault();
-                            let index = imgFiles.findIndex((e) => e == data[i]);
+                            let index = imgFiles.findIndex((e) => e == CurFile);
                             imgFiles.splice(index, 1);
                             $(this).parent().remove();
                         })
-                    };
-                    reader.readAsDataURL(data[i]);
+                    })
+                }
+                function AuditResult(v) {
+                    switch (v) {
+                        case '審核未過':
+                            $('#AuditResult_1').prop('checked', true);
+                            break;
+                        case '請補件':
+                            $('#AuditResult_2').prop('checked', true);
+                            break;
+                        case '審核通過':
+                            $('#AuditResult_3').prop('checked', true);
+                            break;
+                    }
                 }
             }
-        });
-    }
+            function onError(res) {
+                console.log(res);
+                $("#AuditUserID").val($("#NavbarUserName").text());
+            }
+        }
 
-    window.onload = function () {
-        readData(apiUrl);
-        readData_audit(AuditFormUrl);
-        addButtonEvent();
-    }
+        function buttonsubmitEvent(IsBu) {
+            let auditResult = $('input[name="AuditResult"]:checked').val() ?? 0;
+            if (auditResult === 0) {
+                createDialogModal({
+                    id: "DialogModal-Error",
+                    inner: "請選擇審核結果！",
+                })
+                return;
+            }
+            let iprsn = IPRSN
+            let auditID = document.getElementById("NavbarUserID").value
+            let auditMemo = document.getElementById("AuditMemo").value
+            var form = new FormData();
+            form.append("IPRSN", iprsn);
+            form.append("IsBuffer", IsBu);
+            form.append("AuditUserID", auditID);
+            form.append("AuditMemo", auditMemo);
+            form.append("AuditResult", auditResult);
+            for (let i = 0; i < imgFiles.length; i++) {
+                form.append(`Img${i}`, imgFiles[i]);
+            }
+            var settings = {
+                "url": AuditFormPostUrl,
+                "method": "POST",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form
+            };
 
-</script>
+            $.ajax(settings).done(function (response) {
+                console.log(response);
+                createDialogModal({
+                    id: "DialogModal-Success",
+                    inner: "送出成功！",
+                    onHide: () => {
+                        window.location.href = '@Url.Action("Management", "RepairRecord_Management")';
+                    }
+                })
+            });
+        }
+
+        function addButtonEvent() {
+            $("#ImgPath").change(function (e) {
+                console.log(this.files);
+                if (this.files && this.files.length !== 0) {
+                    createIamges(this.files);
+                }
+
+                function createIamges(data) {
+                    for (let i = 0; i < data.length; i++) {
+                        imgFiles.push(data[i]);
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            let query = $(`
+                            <div class="edit-img-item">
+                                <img src="${e.target.result}">
+                                <button class="btn-delete-item"></button>
+                            </div>`);
+                            $(".edit-img-area").append(query);
+                            ImageDisplay(query.children("img"));
+                            query.children("button").click(function (event) {
+                                event.preventDefault();
+                                let index = imgFiles.findIndex((e) => e == data[i]);
+                                imgFiles.splice(index, 1);
+                                $(this).parent().remove();
+                            })
+                        };
+                        reader.readAsDataURL(data[i]);
+                    }
+                }
+            });
+        }
+
+        window.onload = function () {
+            readData(apiUrl);
+            readData_audit(AuditFormUrl);
+            addButtonEvent();
+        }
+
+    </script>
+}

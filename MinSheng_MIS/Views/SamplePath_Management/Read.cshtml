@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "巡檢路線模板詳情";
 }
-@section styles{
+@section styles {
     <link rel="stylesheet" href="/Content/samplepath.css">
     <!-- Autodesk Forge -->
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
@@ -54,51 +54,52 @@
     </div>
 </div>
 
-<script>
+@section scripts {
+    <script>
+        const PSSN = '@ViewBag.PSSN';
+        let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
 
-    const PSSN = '@ViewBag.PSSN';
-    let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
+        let fakeData;
 
-    let fakeData;
+        $(async function () {
+            readData(apiUrl);
+        });
 
-    $(async function () {
-        readData(apiUrl);
-    });
+        function readData(url = null) {
 
-    function readData(url = null) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
 
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
+            async function onSuccess(res) {
+                console.log(res);
+                fakeData = res;
+                const ps = res.PathSample;
 
-        async function onSuccess(res) {
-            console.log(res);
-            fakeData = res;
-            const ps = res.PathSample;
+                $("#PathSampleInfo").append(
+                    createTableInner(ps, [
+                        { text: "巡檢路線模板", value: "PathTitle" },
+                        { text: "棟別", value: "Area" },
+                        { text: "樓層", value: "Floor" },
+                    ])
+                )
 
-            $("#PathSampleInfo").append(
-                createTableInner(ps, [
-                    { text: "巡檢路線模板", value: "PathTitle" },
-                    { text: "棟別", value: "Area" },
-                    { text: "樓層", value: "Floor" },
-                ])
-            )
-
-            $("#current-path-title").text(ps.PathTitle);
-            const { BIMPath, BeaconPath } = ps;
-            initializeViewer({
-                BIMPath, BeaconPath,
-                callback: () => { initializeDrawer(res) }
-            });
+                $("#current-path-title").text(ps.PathTitle);
+                const { BIMPath, BeaconPath } = ps;
+                initializeViewer({
+                    BIMPath, BeaconPath,
+                    callback: () => { initializeDrawer(res) }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+            }
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-</script>
+    </script>
+}

@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "編輯設備";
 }
-@section styles{
+@section styles {
     <link rel="stylesheet" href="/Content/samplepath.css">
     <!-- Autodesk Forge -->
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
@@ -143,126 +143,128 @@
     <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
-<script>
-    const ESN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
-    //let apiUrl = null;
+@section scripts {
+    <script>
+        const ESN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
+        //let apiUrl = null;
 
-    const fakeData = {
-        ASN: 1,
-        Area: "進流抽水站",
-        FSN: "1_1",
-        Floor: "B1F",
-        RoomName: "A",
-        System: "BT",
-        SubSystem: "BT-11",
-        PropertyCode: "A",
-        EName: "Test",
-        Brand: "111",
-        Model: "112",
-        FilePath: "/000007.gif",
-        LocationX: 22,
-        LocationY: 40
-    }
+        const fakeData = {
+            ASN: 1,
+            Area: "進流抽水站",
+            FSN: "1_1",
+            Floor: "B1F",
+            RoomName: "A",
+            System: "BT",
+            SubSystem: "BT-11",
+            PropertyCode: "A",
+            EName: "Test",
+            Brand: "111",
+            Model: "112",
+            FilePath: "/000007.gif",
+            LocationX: 22,
+            LocationY: 40
+        }
 
-    $(async function () {
-        await AreaFloorEvent();
-        await pushSelect("System", '@Url.Action("System", "DropDownList")');
-        const Systems = document.getElementById('System')
-        Systems.addEventListener("change", function () {
-            pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+        $(async function () {
+            await AreaFloorEvent();
+            await pushSelect("System", '@Url.Action("System", "DropDownList")');
+            const Systems = document.getElementById('System')
+            Systems.addEventListener("change", function () {
+                pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+            });
+            addButtonEvent();
+
+            readData(apiUrl);
         });
-        addButtonEvent();
 
-        readData(apiUrl);
-    });
+        function readData(url = null) {
 
-    function readData(url = null) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
 
-        url == null ? onSuccess(fakeData) :
+            async function onSuccess(res) {
+                console.log(res);
+
+                await pushSelect("FSN", `@Url.Action("Floor", "DropDownList")?ASN=${res.ASN}`);
+                await pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${res.System}`);
+
+                $("#Area").val(res.Area);
+                $("#Floor").val(res.Floor);
+
+                for (const [k, v] of Object.entries(res)) {
+                    switch (k) {
+                        case "FilePath":
+                            deviceFileModal.setFile(v);
+                            break;
+                        default:
+                            $(`#${k}`).val(v);
+                            break;
+                    }
+                }
+
+                LocateClickEvent(() => {
+                    ForgeDraw.readDevicePos(res);
+                });
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
+            if (!$("#LocationX").val() || !$("#LocationX").val()) return;
+
+            const fd = new FormData();
+            fd.append("ESN", ESN)
+            fd.append("ASN", $("#ASN").val())
+            fd.append("FSN", $("#FSN").val())
+            fd.append("RoomName", $("#RoomName").val())
+            fd.append("System", $("#System").val())
+            fd.append("SubSystem", $("#SubSystem").val())
+            fd.append("PropertyCode", $("#PropertyCode").val())
+            fd.append("EName", $("#EName").val())
+            fd.append("Brand", $("#Brand").val())
+            fd.append("Model", $("#Model").val())
+            fd.append("LocationX", $("#LocationX").val())
+            fd.append("LocationY", $("#LocationY").val())
+            fd.append("FilePath", deviceFileModal.file)
+
+            console.log(Object.fromEntries(fd.entries()));
+
+            if (!fd) return;
+
             $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: "/EquipmentInfo_Management/Edit",
+                data: fd,
+                type: "POST",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
 
-        async function onSuccess(res) {
-            console.log(res);
-
-            await pushSelect("FSN", `@Url.Action("Floor", "DropDownList")?ASN=${res.ASN}`);
-            await pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${res.System}`);
-
-            $("#Area").val(res.Area);
-            $("#Floor").val(res.Floor);
-
-            for (const [k, v] of Object.entries(res)) {
-                switch (k) {
-                    case "FilePath":
-                        deviceFileModal.setFile(v);
-                        break;
-                    default:
-                        $(`#${k}`).val(v);
-                        break;
-                }
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "修改成功！",
+                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+                });
             }
-
-            LocateClickEvent(() => {
-                ForgeDraw.readDevicePos(res);
-            });
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `修改失敗！` + `${res?.responseText || ""}` })
+            }
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function save() {
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("todo save():", isValidity)
-        if (!isValidity) return;
-        if (!$("#LocationX").val() || !$("#LocationX").val()) return;
-
-        const fd = new FormData();
-        fd.append("ESN", ESN)
-        fd.append("ASN", $("#ASN").val())
-        fd.append("FSN", $("#FSN").val())
-        fd.append("RoomName", $("#RoomName").val())
-        fd.append("System", $("#System").val())
-        fd.append("SubSystem", $("#SubSystem").val())
-        fd.append("PropertyCode", $("#PropertyCode").val())
-        fd.append("EName", $("#EName").val())
-        fd.append("Brand", $("#Brand").val())
-        fd.append("Model", $("#Model").val())
-        fd.append("LocationX", $("#LocationX").val())
-        fd.append("LocationY", $("#LocationY").val())
-        fd.append("FilePath", deviceFileModal.file)
-
-        console.log(Object.fromEntries(fd.entries()));
-
-        if (!fd) return;
-
-        $.ajax({
-            url: "/EquipmentInfo_Management/Edit",
-            data: fd,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "修改成功！",
-                onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `修改失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-</script>
+    </script>
+}
