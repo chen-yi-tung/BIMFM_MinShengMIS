@@ -1,51 +1,54 @@
 ﻿@{
     ViewBag.Title = "請購編輯";
 }
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <style>
+        .datatable-input-area {
+            display: flex;
+            flex-direction: column;
+            max-width: 1150px;
+            margin: auto;
+            max-height: calc(100vh - var(--navbar-height));
+            max-height: calc(100dvh - var(--navbar-height));
+            gap: 1rem;
+        }
 
-<style>
-    .datatable-input-area {
-        display: flex;
-        flex-direction: column;
-        max-width: 1150px;
-        margin: auto;
-        max-height: calc(100vh - var(--navbar-height));
-        max-height: calc(100dvh - var(--navbar-height));
-        gap: 1rem;
-    }
+        .max-w-scroll {
+            max-width: calc(1150px + 18px);
+        }
 
-    .max-w-scroll {
-        max-width: calc(1150px + 18px);
-    }
-
-    .datatable-input-area .edit-area {
-        max-height: 30rem;
-        padding: 1rem;
-        display: block;
-    }
-
-    .datatable-input-area .datatable,
-    .datatable-input-area .datatable-body {
-        max-height: 28rem;
-        margin: 0;
-    }
-
-    @@media (max-width:991.98px) {
         .datatable-input-area .edit-area {
-            max-height: calc(100vh - var(--navbar-height) - 5rem);
+            max-height: 30rem;
+            padding: 1rem;
+            display: block;
         }
 
         .datatable-input-area .datatable,
         .datatable-input-area .datatable-body {
-            max-height: calc(100vh - var(--navbar-height) - 7rem);
+            max-height: 28rem;
+            margin: 0;
         }
-    }
 
-    @@media (min-width: 992px) {
-        .edit-area .form {
-            align-items: flex-start;
+        @@media (max-width:991.98px) {
+            .datatable-input-area .edit-area {
+                max-height: calc(100vh - var(--navbar-height) - 5rem);
+            }
+
+            .datatable-input-area .datatable,
+            .datatable-input-area .datatable-body {
+                max-height: calc(100vh - var(--navbar-height) - 7rem);
+            }
         }
-    }
-</style>
+
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                align-items: flex-start;
+            }
+        }
+    </style>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -111,7 +114,8 @@
                                         <input class="form-control" type="text" id="Size" name="Size" maxlength="50" />
                                     </td>
                                     <td id="d-PRAmount">
-                                        <input class="form-control" type="number" id="PRAmount" name="PRAmount" step="any" min="0" value="1" required />
+                                        <input class="form-control" type="number" id="PRAmount" name="PRAmount"
+                                            step="any" min="0" value="1" required />
                                     </td>
                                     <td id="d-Unit">
                                         <select class="form-select" id="Unit" name="Unit" required></select>
@@ -155,274 +159,274 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-submit" id="submit">儲存</button>
 </div>
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/tool.js"></script>
 
-<script>
-    const PRN = '@ViewBag.id';
-    const apiUrl = '@Url.Action("Read_Data", "PurchaseRequisition_Management")' + `/${PRN}`;
+@section scripts {
+    <script>
+        const PRN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("Read_Data", "PurchaseRequisition_Management")' + `/${PRN}`;
 
-    const SerializedName = [
-        { text: "請購單號", value: "PRN" },
-        { text: "請購人", value: "PRUserName" },
-        { text: "請購單狀態", value: "PRStateName" },
-        { text: "請購部門", value: "PRDept" },
-        { text: "請購申請日", value: "PRDate", formatter: (val) => val.replaceAll("-", "/") },
-        { text: "審核日期", value: "AuditDate", formatter: (val) => val.replaceAll("-", "/") },
-        { text: "審核結果說明", value: "AuditResult" },
-        { text: "相關文件", value: "FilePath" },
-    ]
-    
-    const GridOptions = {
-        thead: true,
-        columns: [
-            { id: "KindName", title: "類別" },
-            { id: "ItemName", title: "品名" },
-            { id: "Size", title: "尺寸" },
-            { id: "PRAmount", title: "數量" },
-            { id: "UnitName", title: "單位" },
-            { id: "ApplicationPurpose", title: "申請用途" }
+        const SerializedName = [
+            { text: "請購單號", value: "PRN" },
+            { text: "請購人", value: "PRUserName" },
+            { text: "請購單狀態", value: "PRStateName" },
+            { text: "請購部門", value: "PRDept" },
+            { text: "請購申請日", value: "PRDate", formatter: (val) => val.replaceAll("-", "/") },
+            { text: "審核日期", value: "AuditDate", formatter: (val) => val.replaceAll("-", "/") },
+            { text: "審核結果說明", value: "AuditResult" },
+            { text: "相關文件", value: "FilePath" },
         ]
-    }
 
-    const fakeData = {
-        PRN: "230101001",
-        PMSN: "1",
-        PRUserName: "黃助理",
-        PRState: "已處理",
-        PRDept: "人資部",
-        PRDate: "2021-12-10 05:01:10",
-        AuditDate: "2022-01-01",
-        AuditResult: '審核通過',
-        FilePath: "test.pdf",
-        PurchaseRequisitionItem: [
-            {
-                Kind: "電子",
-                ItemName: "LG手機",
-                Size: "12寸",
-                PRAmount: "4",
-                Unit: "台",
-                ApplicationPurpose: "測試"
-            },
-            {
-                Kind: "電子",
-                ItemName: "LG手機",
-                Size: "12寸",
-                PRAmount: "4",
-                Unit: "台",
-                ApplicationPurpose: "測試"
-            },
-            {
-                Kind: "耗材",
-                ItemName: "螺絲",
-                Size: "12cm",
-                PRAmount: "4",
-                Unit: "包",
-                ApplicationPurpose: "修補破損"
-            }
-        ]
-    }
+        const GridOptions = {
+            thead: true,
+            columns: [
+                { id: "KindName", title: "類別" },
+                { id: "ItemName", title: "品名" },
+                { id: "Size", title: "尺寸" },
+                { id: "PRAmount", title: "數量" },
+                { id: "UnitName", title: "單位" },
+                { id: "ApplicationPurpose", title: "申請用途" }
+            ]
+        }
 
-    let sampleTr;
-    let fileUploader;
-    let isReadonly = false;
+        const fakeData = {
+            PRN: "230101001",
+            PMSN: "1",
+            PRUserName: "黃助理",
+            PRState: "已處理",
+            PRDept: "人資部",
+            PRDate: "2021-12-10 05:01:10",
+            AuditDate: "2022-01-01",
+            AuditResult: '審核通過',
+            FilePath: "test.pdf",
+            PurchaseRequisitionItem: [
+                {
+                    Kind: "電子",
+                    ItemName: "LG手機",
+                    Size: "12寸",
+                    PRAmount: "4",
+                    Unit: "台",
+                    ApplicationPurpose: "測試"
+                },
+                {
+                    Kind: "電子",
+                    ItemName: "LG手機",
+                    Size: "12寸",
+                    PRAmount: "4",
+                    Unit: "台",
+                    ApplicationPurpose: "測試"
+                },
+                {
+                    Kind: "耗材",
+                    ItemName: "螺絲",
+                    Size: "12cm",
+                    PRAmount: "4",
+                    Unit: "包",
+                    ApplicationPurpose: "修補破損"
+                }
+            ]
+        }
 
-    $(async function () {
-        addButtonEvent();
-        sampleTr = new SampleTr();
-        fileUploader = new FileUploader({
-            container: "#FileUploader",
-            className: "form-group d-lg-contents",
-            buttonAreaClassName: "edit-button-area position-relative justify-content-start align-items-start mt-1 flex-wrap",
-            label: "相關文件",
-            id: "File",
-            accept: [".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx"],
-            required: false
+        let sampleTr;
+        let fileUploader;
+        let isReadonly = false;
+
+        $(async function () {
+            addButtonEvent();
+            sampleTr = new SampleTr();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group d-lg-contents",
+                buttonAreaClassName: "edit-button-area position-relative justify-content-start align-items-start mt-1 flex-wrap",
+                label: "相關文件",
+                id: "File",
+                accept: [".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx"],
+                required: false
+            })
+            await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
+            await pushSelect("PRState", '@Url.Action("FormPRState", "DropDownList")');
+            $("#PRState option:first-child").remove()
+
+            readData(apiUrl);
         })
-        await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
-        await pushSelect("PRState", '@Url.Action("FormPRState", "DropDownList")');
-        $("#PRState option:first-child").remove()
 
-        readData(apiUrl);
-    })
+        function SampleTr() {
+            this.count = 0;
+            this.list = $("#item-area")
+            this.init = async function () {
+                await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
+                await pushSelect("Kind", '@Url.Action("StockType", "DropDownList")');
+                await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
 
-    function SampleTr() {
-        this.count = 0;
-        this.list = $("#item-area")
-        this.init = async function () {
-            await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
-            await pushSelect("Kind", '@Url.Action("StockType", "DropDownList")');
-            await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
+                const observer = new ResizeObserver((entries) => {
+                    for (const entry of entries) {
+                        let style = getComputedStyle(entry.target)
+                        let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
+                        let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
+                        $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
+                        //console.log(`${h} >= ${mh} ${h >= mh}`)
+                    }
+                })
+                observer.observe(this.list.closest(".datatable-body")[0])
 
-            const observer = new ResizeObserver((entries) => {
-                for (const entry of entries) {
-                    let style = getComputedStyle(entry.target)
-                    let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
-                    let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
-                    $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
-                    //console.log(`${h} >= ${mh} ${h >= mh}`)
+                this.list.on("click", ".btn-delete-item", function (e) {
+                    $(this).parent().parent().remove();
+                })
+
+                this.sample = $("#sample-input-tr").clone();
+                $("#sample-input-tr").remove();
+                //this.create();
+            }
+            this.create = function (data = null) {
+                let item = this.sample.clone();
+                item.attr('id', this.count);
+                this.list.append(item);
+                if (data) {
+                    for (const [k, v] of Object.entries(data)) {
+                        item.find("#" + k).val(v)
+                    }
                 }
-            })
-            observer.observe(this.list.closest(".datatable-body")[0])
-
-            this.list.on("click", ".btn-delete-item", function (e) {
-                $(this).parent().parent().remove();
-            })
-
-            this.sample = $("#sample-input-tr").clone();
-            $("#sample-input-tr").remove();
-            //this.create();
+                this.count++;
+            }
+            this.calc = function () {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        Kind: $(e).find("#Kind").val(),
+                        ItemName: $(e).find("#ItemName").val(),
+                        Size: $(e).find("#Size").val(),
+                        PRAmount: $(e).find("#PRAmount").val(),
+                        Unit: $(e).find("#Unit").val(),
+                        ApplicationPurpose: $(e).find("#ApplicationPurpose").val(),
+                    }
+                })
+            }
+            this.init();
+            return this;
         }
-        this.create = function (data = null) {
-            let item = this.sample.clone();
-            item.attr('id', this.count);
-            this.list.append(item);
-            if (data) {
-                for (const [k, v] of Object.entries(data)) {
-                    item.find("#" + k).val(v)
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                isReadonly = res.PRState != "1";
+                $("#PRState").val(res.PRState)
+
+                if (isReadonly) {
+                    $("#ReadonlySection").removeClass("d-none")
+                    $("#EditSection").remove()
+                    $("#PRState option:first-child").remove()
+
+                    $("#FormInfo").append(createTableInner(res, SerializedName));
+                    $("#Items").append(createTableGrid(res.PurchaseRequisitionItem, GridOptions));
+                    $("#AuditDate").val(res.AuditDate)
+                    $("#AuditResult").val(res.AuditResult || "")
+                    res.FilePath ? fileUploader.setFile(res.FilePath) : void 0;
+                }
+                else {
+                    $("#ReadonlySection").remove()
+                    $("#EditSection").removeClass("d-none")
+
+                    $("#PRUserName").val(res?.PRUserAccount)
+                    $("#PRDept").val(res.PRDept)
+                    if (Array.isArray(res.PurchaseRequisitionItem) || res.PurchaseRequisitionItem.length !== 0) {
+                        res.PurchaseRequisitionItem.forEach((item) => {
+                            sampleTr.create(item);
+                        })
+                    }
+                    else {
+                        sampleTr.create();
+                    }
                 }
             }
-            this.count++;
+            function onError(res) {
+                console.log(res);
+            }
         }
-        this.calc = function () {
-            return this.list.children().toArray().map((e) => {
-                return {
-                    Kind: $(e).find("#Kind").val(),
-                    ItemName: $(e).find("#ItemName").val(),
-                    Size: $(e).find("#Size").val(),
-                    PRAmount: $(e).find("#PRAmount").val(),
-                    Unit: $(e).find("#Unit").val(),
-                    ApplicationPurpose: $(e).find("#ApplicationPurpose").val(),
-                }
+
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
             })
-        }
-        this.init();
-        return this;
-    }
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
 
-    function readData(url = null) {
+            var form = new FormData();
 
-        url == null ? onSuccess(fakeData) :
+            form.append("PRN", PRN);
+
+            if (!isReadonly) {
+                form.append("PRUserName", document.getElementById("PRUserName").value);
+                form.append("PRDept", document.getElementById("PRDept").value);
+                sampleTr.calc().forEach((item, i) => {
+                    form.append(`PurchaseRequisitionItem[${i}].Kind`, item.Kind);
+                    form.append(`PurchaseRequisitionItem[${i}].ItemName`, item.ItemName);
+                    form.append(`PurchaseRequisitionItem[${i}].Size`, item.Size);
+                    form.append(`PurchaseRequisitionItem[${i}].PRAmount`, item.PRAmount);
+                    form.append(`PurchaseRequisitionItem[${i}].Unit`, item.Unit);
+                    form.append(`PurchaseRequisitionItem[${i}].ApplicationPurpose`, item.ApplicationPurpose);
+                })
+            }
+
+            form.append("PRState", document.getElementById("PRState").value);
+            form.append("AuditDate", document.getElementById("AuditDate").value);
+            form.append("AuditResult", document.getElementById("AuditResult").value);
+            if (fileUploader.hasFile()) {
+                let file = fileUploader.getFile()
+                if (file?.size) {
+                    form.append("AFile", file);
+                }
+                else {
+                    form.append("AFileName", file?.name);
+                }
+            }
+
+            console.log(Object.fromEntries(form.entries()));
+
             $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: '@Url.Action("EditPurchaseRequisition", "PurchaseRequisition_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
-
-        function onSuccess(res) {
-            console.log(res);
-            isReadonly = res.PRState != "1";
-            $("#PRState").val(res.PRState)
-
-            if (isReadonly) {
-                $("#ReadonlySection").removeClass("d-none")
-                $("#EditSection").remove()
-                $("#PRState option:first-child").remove()
-
-                $("#FormInfo").append(createTableInner(res, SerializedName));
-                $("#Items").append(createTableGrid(res.PurchaseRequisitionItem, GridOptions));
-                $("#AuditDate").val(res.AuditDate)
-                $("#AuditResult").val(res.AuditResult || "")
-                res.FilePath ? fileUploader.setFile(res.FilePath) : void 0;
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "修改成功！",
+                    onHide: () => { window.location.href = "/PurchaseRequisition_Management/Management"; }
+                });
             }
-            else {
-                $("#ReadonlySection").remove()
-                $("#EditSection").removeClass("d-none")
-
-                $("#PRUserName").val(res?.PRUserAccount)
-                $("#PRDept").val(res.PRDept)
-                if (Array.isArray(res.PurchaseRequisitionItem) || res.PurchaseRequisitionItem.length !== 0) {
-                    res.PurchaseRequisitionItem.forEach((item) => {
-                        sampleTr.create(item);
-                    })
-                }
-                else {
-                    sampleTr.create();
-                }
-            }
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function save() {
-        //重置自訂驗證錯誤訊息
-        getAllParams().forEach((e) => {
-            e.setCustomValidity('');
-        })
-        //自訂驗證錯誤
-        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity():", isValidity)
-        if (!isValidity) return;
-
-        var form = new FormData();
-
-        form.append("PRN", PRN);
-
-        if (!isReadonly) {
-            form.append("PRUserName", document.getElementById("PRUserName").value);
-            form.append("PRDept", document.getElementById("PRDept").value);
-            sampleTr.calc().forEach((item, i) => {
-                form.append(`PurchaseRequisitionItem[${i}].Kind`, item.Kind);
-                form.append(`PurchaseRequisitionItem[${i}].ItemName`, item.ItemName);
-                form.append(`PurchaseRequisitionItem[${i}].Size`, item.Size);
-                form.append(`PurchaseRequisitionItem[${i}].PRAmount`, item.PRAmount);
-                form.append(`PurchaseRequisitionItem[${i}].Unit`, item.Unit);
-                form.append(`PurchaseRequisitionItem[${i}].ApplicationPurpose`, item.ApplicationPurpose);
-            })
-        }
-
-        form.append("PRState", document.getElementById("PRState").value);
-        form.append("AuditDate", document.getElementById("AuditDate").value);
-        form.append("AuditResult", document.getElementById("AuditResult").value);
-        if (fileUploader.hasFile()) {
-            let file = fileUploader.getFile()
-            if (file?.size) {
-                form.append("AFile", file);
-            }
-            else {
-                form.append("AFileName", file?.name);
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `修改失敗！` + `${res?.responseText || ""}` })
             }
         }
 
-        console.log(Object.fromEntries(form.entries()));
-
-        $.ajax({
-            url: '@Url.Action("EditPurchaseRequisition", "PurchaseRequisition_Management")',
-            data: form,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "修改成功！",
-                onHide: () => { window.location.href = "/PurchaseRequisition_Management/Management"; }
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+            $("#create-item").click(function () {
+                sampleTr.create();
+            });
+            $("#submit").click(function () {
+                save();
             });
         }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `修改失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        });
-        $("#create-item").click(function () {
-            sampleTr.create();
-        });
-        $("#submit").click(function () {
-            save();
-        });
-    }
-</script>
+    </script>
+}
