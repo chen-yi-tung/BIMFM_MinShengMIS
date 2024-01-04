@@ -16,8 +16,9 @@
         }
 
         .edit-area:is(:has(.datatable .datatable-table tbody:empty),:has(.datatable .datatable-table:empty))::before{
-            content: "請掃描RFID";
+            content: "請掃瞄RFID以進行出庫作業";
             color: white;
+            padding: 3rem;
         }
     </style>
 }
@@ -63,8 +64,7 @@
 <div class="edit-area mt-5">
     <div class="datatable datatable-fill">
         <div class="datatable-body overflow-auto">
-            <table class="datatable-table" id="StockOutItem">
-            </table>
+            <table class="datatable-table" id="StockOutItem"></table>
         </div>
     </div>
 </div>
@@ -195,7 +195,7 @@
         function onSuccess(res) {
             console.log(res);
             $("#StockItemInfo").append(createTableGrid(res, SerializedName));
-            //$("#StockOutItem").append(createTableGrid(griditem, GridOptions))
+            $("#StockOutItem").append(createTableGrid(griditem, GridOptions))
         }
         function onError(res) {
             console.log(res);
