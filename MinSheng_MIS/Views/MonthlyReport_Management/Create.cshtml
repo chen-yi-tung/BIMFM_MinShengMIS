@@ -49,7 +49,7 @@
 
         //預帶目前年月
         let d = new Date()
-        $("#YearMonth").val(`${d.getFullYear()}-${d.getMonth() + 1}`)
+        $("#YearMonth").val(`${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}`)
     });
 
     function save() {
