@@ -2620,7 +2620,62 @@ namespace MinSheng_MIS.Services
 
 
         //--實驗室管理--
-        #region 採驗分析流程建立 TODO
+        #region 採驗分析流程建立
+        public JObject GetJsonForGrid_TestingAndAnalysisWorkflow(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var ExperimentType = form["ExperimentType"]?.ToString();
+            var ExperimentName = form["ExperimentName"]?.ToString();
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+
+            var rpT = db.TestingAndAnalysisWorkflow.AsQueryable();
+            //查詢實驗類型 (模糊查詢)
+            if (!string.IsNullOrEmpty(ExperimentType)) rpT = rpT.Where(x => x.ExperimentType.Contains(ExperimentType));
+            //查詢實驗名稱 (模糊查詢)
+            if (!string.IsNullOrEmpty(ExperimentName)) rpT = rpT.Where(x => x.ExperimentName.Contains(ExperimentName));
+
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderByDescending(x => x.TAWSN);
+
+            // 記住總筆數
+            int Total = rpT.Count();
+            // 切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+
+            if (rpT != null || Total > 0)
+            {
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "TAWSN", item.TAWSN },
+                        { "ExperimentType", item.ExperimentType },
+                        { "ExperimentName", item.ExperimentName }
+                    };
+
+                    ja.Add(itemObject);
+                }
+            }
+
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
+
+            return jo;
+        }
         #endregion
 
         #region 實驗室標籤管理 TODO
@@ -2664,7 +2719,6 @@ namespace MinSheng_MIS.Services
 
             if (rpT != null || Total > 0)
             {
-                var StateDics = Surface.PRState();
                 var UserDics = db.AspNetUsers.ToDictionary(k => k.UserName, v => v.MyName);
                 foreach (var item in rpT)
                 {

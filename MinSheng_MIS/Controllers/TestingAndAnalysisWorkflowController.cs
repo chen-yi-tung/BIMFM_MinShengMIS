@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -102,13 +103,33 @@ namespace MinSheng_MIS.Controllers
 		{
 			return View();
 		}
-		#endregion
+        #endregion
 
-		#region 採樣分析流程詳情
-		public ActionResult Read()
-		{
-			return View();
-		}
-		#endregion
-	}
+        #region 採樣分析流程詳情
+        public ActionResult Read(string id)
+        {
+            ViewBag.id = id;
+            return View();
+        }
+
+        public async Task<ActionResult> Read_Data(string id)
+        {
+            var workflow = await db.TestingAndAnalysisWorkflow.FirstOrDefaultAsync(x => x.TAWSN == id);
+            if (workflow == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "TAWSN is Undefined.");
+
+            TA_Workflow_ViewModel model = new TA_Workflow_ViewModel
+            {
+                TAWSN = workflow.TAWSN,
+                ExperimentType = workflow.ExperimentType,
+                ExperimentName = workflow.ExperimentName,
+                UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == workflow.UploadUserName)?.Result.MyName,
+                UploadDateTime = workflow.UploadDateTime.ToString("yyyy/MM/dd HH:mm:ss"),
+                FilePath = !string.IsNullOrEmpty(workflow.WorkflowFile) ? ComFunc.UrlMaker("Files/TestingAndAnalysisWorkflow", workflow.WorkflowFile) : null,
+                LabelNames = workflow.TestingAndAnalysis_LabelName.Select(x => new TA_Label { LNSN = x.LNSN, LabelName = x.LabelName})?.ToList(),
+                DataNames = workflow.TestingAndAnalysis_DataName.Select(x => new TA_Data { DNSN = x.DNSN, DataName = x.DataName})?.ToList()
+            };
+            return Content(JsonConvert.SerializeObject(model), "application/json");
+        }
+        #endregion
+    }
 }
