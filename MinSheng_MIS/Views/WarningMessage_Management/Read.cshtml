@@ -41,7 +41,7 @@
         const SerializedName = [
             { text: "事件等級", value: "WMType" },
             { text: "事件處理狀況", value: "WMState" },
-            { text: "發生時間", value: "TimeofOccurrence" },
+            { text: "發生時間", value: "TimeOfOccurrence" },
             { text: "發生地點", value: "Location" },
             { text: "事件內容", value: "Message" },
             { text: "警報來源", value: "WMSource" },
@@ -53,7 +53,7 @@
             PMSN: "1",
             WMType: "一般",
             WMState: "已處理",
-            TimeofOccurrence: "2023-01-01T06:30:27",
+            TimeOfOccurrence: "2023-01-01T06:30:27",
             Location: "進流抽水站 B2F",
             Message: "巡檢路徑偏移",
             WMSource: "文字內容",
@@ -104,7 +104,7 @@
                 columns: [[
                     { field: 'FillinDateTime', title: '填報時間', align: 'center', width: 220, sortable: true },
                     { field: 'FillinUserName', title: '填報人員', align: 'center', width: 120, sortable: true },
-                    { field: 'WMState', title: '事件處理狀況', align: 'center', width: 150, sortable: true },
+                    { field: 'FillinState', title: '事件處理狀況', align: 'center', width: 150, sortable: true },
                     { field: 'Memo', title: '備註', align: 'center', sortable: true },
                 ]]
             });
@@ -122,7 +122,7 @@
                 randomData.push({
                     FillinDateTime: new Date().toLocaleString(),
                     FillinUserName: "User " + (i + 1),
-                    WMState: Math.random() > 0.5 ? "已處理" : "未處理",
+                    FillinState: Math.random() > 0.5 ? "已處理" : "未處理",
                     Memo: "Random Memo Random Memo" + (i + 1)
                 });
             }

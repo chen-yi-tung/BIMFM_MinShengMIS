@@ -1,21 +1,24 @@
 ﻿@{
     ViewBag.Title = "警示訊息填報";
 }
-
-<style>
-    .edit-area .form label.btn {
-        margin-top: 0;
-    }
-
-    .edit-area .form label.btn:hover {
-        color: #fff;
-    }
-    @@media (min-width: 992px) {
-        .edit-area .form {
-            align-items: flex-start;
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <style>
+        .edit-area .form label.btn {
+            margin-top: 0;
         }
-    }
-</style>
+
+        .edit-area .form label.btn:hover {
+            color: #fff;
+        }
+
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                align-items: flex-start;
+            }
+        }
+    </style>
+}
 
 <h2>警示訊息填報</h2>
 
@@ -30,12 +33,14 @@
         <div class="form-group d-lg-contents required">
             <label for="">處理狀態</label>
             <div class="d-flex flex-column flex-sm-row" style="gap:0.5em;">
-                <label class="btn" for="WMState_1">
-                    <input type="radio" class="form-check-input" id="WMState_1" name="WMState" value="1" required>
+                <label class="btn" for="FillinState_1">
+                    <input type="radio" class="form-check-input" id="FillinState_1" name="FillinState" value="1"
+                        required>
                     處理中
                 </label>
-                <label class="btn" for="WMState_2">
-                    <input type="radio" class="form-check-input" id="WMState_2" name="WMState" value="2" required>
+                <label class="btn" for="FillinState_2">
+                    <input type="radio" class="form-check-input" id="FillinState_2" name="FillinState" value="2"
+                        required>
                     已處理
                 </label>
             </div>
@@ -52,68 +57,94 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-submit" id="submit">儲存</button>
 </div>
-<script src="/Scripts/datatable.js"></script>
 
-<script>
+@section scripts {
+    <script>
+        const WMSN = '@ViewBag.id'
+        //const apiUrl = '@Url.Action("Read_Data", "WarningMessage_Management")?WMSN=' + WMSN;
+        const apiUrl = null;
 
-    const apiUrl = null;
+        const SerializedName = [
+            { text: "事件等級", value: "WMType" },
+            { text: "事件處理狀況", value: "WMState" },
+            { text: "發生時間", value: "TimeOfOccurrence" },
+            { text: "發生地點", value: "Location" },
+            { text: "時間內容", value: "Message" },
+            { text: "警示來源", value: "WMSource" }
+        ]
 
-    const SerializedName = [
-        { text: "事件等級", value: "WMType" },
-        { text: "事件處理狀況", value: "WMState" },
-        { text: "發生時間", value: "TimeofOccurrence" },
-        { text: "發生地點", value: "Location" },
-        { text: "時間內容", value: "Message" },
-        { text: "警示來源", value: "WMSource" }
-    ]
+        const fakeData = {
+            WMSN: "1",
+            WMType: "緊急",
+            WMState: "待處理",
+            TimeOfOccurrence: "2022/02/01 11:20:10",
+            Location: "B1儲藏室",
+            Message: "電力失常",
+            WMSource: "文字內容"
+        }
 
-    const fakeData = {
-        WMSN: "1",
-        WMType: "緊急",
-        WMState: "待處理",
-        TimeofOccurrence: "2022/02/01 11:20:10",
-        Location: "B1儲藏室",
-        Message: "電力失常",
-        WMSource: "文字內容"
-    }
+        function readData(url = null) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
 
-    function readData(url = null) {
-        url == null ? onSuccess(fakeData) :
+            function onSuccess(res) {
+                console.log(res);
+                $("#ItemInfo").append(createTableInner(res, SerializedName));
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
+
+            let form = new FormData(document.querySelector(".edit-area .form"))
+            console.log(Object.fromEntries(form.entries()))
+
             $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: '@Url.Action("EditWarningMessage", "WarningMessage_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
-
-        function onSuccess(res) {
-            console.log(res);
-            $("#ItemInfo").append(createTableInner(res, SerializedName));
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/WarningMessage_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+            }
         }
-        function onError(res) {
-            console.log(res);
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+            $("#submit").click(function () {
+                save();
+            });
         }
-    }
 
-    function save() {
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("todo save():", isValidity)
-        if (!isValidity) return;
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        });
-        $("#submit").click(function () {
-            save();
-        });
-    }
-
-    window.onload = function () {
-        addButtonEvent();
-        readData(apiUrl);
-    }
-</script>
+        window.onload = function () {
+            addButtonEvent();
+            readData(apiUrl);
+        }
+    </script>
+}

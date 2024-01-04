@@ -1,8 +1,9 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "出庫詳情";
 }
-
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
 <h2>@ViewBag.Title</h2>
 
 <div class="datatable datatable-small mt-5">
@@ -11,109 +12,112 @@
     </div>
 </div>
 
-<div class="datatable datatable-grid mt-5">
+<div class="datatable datatable-fill mt-5">
     <div class="datatable-body overflow-auto">
         <table class="datatable-table" id="StockOutItem">
         </table>
     </div>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
-<script>
-    @*var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
-    eqList = eqList.replace("\r", "").replace("\n", "");
-    var equipmentList = JSON.parse(eqList);
-    console.log(equipmentList);*@
+@section scripts {
+    <script>
+        const SORSN = '@ViewBag.id'
+        //const apiUrl = '@Url.Action("Read_Data", "StockOut_Management")?SORSN=' + SORSN;
+        const apiUrl = null;
 
-    const apiUrl = null;
-
-    const SerializedName = [
-        { text: "出庫單號", value: "SORSN" },
-        { text: "領用單號", value: "SRSN" },
-        { text: "出庫日期", value: "StockOutDateTime" },
-        { text: "出庫人員", value: "StockOutName" },
-        { text: "領取人員", value: "ReceiverName" },
-        { text: "說明", value: "StockOutContent" },
-    ]
-
-    const GridOptions = {
-        thead: true,
-        columns: [
-            { id: "ExternalRFID", title: "RFID",width:135 },
-            { id: "RFID_StockType", title: "品項", width: 135 },
-            { id: "RFID_StockName", title: "品名", width: 135 },
-            { id: "MName", title: "廠商品名", width: 135 },
-            //{ id: "Size", title: "尺寸", width: 135 },
-            { id: "Brand", title: "廠牌", width: 135 },
-            { id: "Model", title: "型號", width: 135 },
-            { id: "OutAmount", title: "數量", width: 135 },
-            { id: "RFID_Unit", title: "單位", width: 135 },
+        const SerializedName = [
+            { text: "出庫單號", value: "SORSN" },
+            { text: "領用單號", value: "SRSN" },
+            { text: "出庫日期", value: "StockOutDateTime" },
+            { text: "出庫人員", value: "StockOutMyName" },
+            { text: "領取人員", value: "ReceiverMyName" },
+            { text: "說明", value: "StockOutContent" },
         ]
-    }
 
-    const fakeData = {
-        SORSN: "A001",
-        SRSN: "備料",
-        StockOutDateTime: "藥劑-1",
-        StockOutName: "50",
-        ReceiverName: "罐",
-        StockOutContent: 25,
-        StockOutItem: [
-            {
-                ExternalRFID: "A101",
-                RFID_StockType: "備料",
-                RFID_StockName: "軸承潤滑劑",
-                MName:"軸承潤滑劑",
-                Size:"1L",
-                Brand:"OXO",
-                Model:"OXO",
-                OutAmount:"1",
-                RFID_Unit:"罐",
-            },
-            {
-                ExternalRFID: "A101",
-                RFID_StockType: "備料",
-                RFID_StockName: "軸承潤滑劑",
-                MName: "軸承潤滑劑",
-                Size: "1L",
-                Brand: "OXO",
-                Model: "OXO",
-                OutAmount: "3",
-                RFID_Unit: "罐",
+        const GridOptions = {
+            thead: true,
+            columns: [
+                { id: "SSN", title: "RFID", width: 100 },
+                { id: "StockType", title: "品項", width: 160 },
+                { id: "StockName", title: "品名", width: 250 },
+                { id: "MName", title: "廠商品名", width: 100 },
+                { id: "Size", title: "尺寸", width: 200 },
+                { id: "Brand", title: "廠牌", width: 120 },
+                { id: "Model", title: "型號", width: 120 },
+                { id: "OutAmount", title: "數量", width: 100 },
+                { id: "Unit", title: "單位", width: 80 },
+            ]
+        }
+
+        const fakeData = {
+            SORSN: "A001",
+            SRSN: "備料",
+            StockOutDateTime: "藥劑-1",
+            StockOutMyName: "50",
+            ReceiverMyName: "罐",
+            StockOutContent: 25,
+            StockOutItem: [
+                {
+                    SSN: "A101",
+                    StockType: "備料",
+                    StockName: "藥劑-1",
+                    MName: "藥劑-1",
+                    Size: "1L",
+                    Brand: "OXO",
+                    Model: "OXO",
+                    ExpiryDate: "2023/03/22",
+                    Unit: "罐",
+                    OutAmount: "1",
+                    RemainingAmount: "6",
+                    SISN: "1"
+                },
+                {
+                    SSN: "A101",
+                    StockType: "備料",
+                    StockName: "藥劑-1",
+                    MName: "藥劑-1",
+                    Size: "1L",
+                    Brand: "OXO",
+                    Model: "OXO",
+                    ExpiryDate: "2023/03/22",
+                    Unit: "罐",
+                    OutAmount: "1",
+                    RemainingAmount: "10",
+                    SISN: "2"
+                }
+            ]
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :   //fakeData
+                $.ajax({
+                    url: url,
+                    data: JSON.stringify(jsonData),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#StockItemInfo").append(createTableInner(res, SerializedName));
+                if (res.StockOutItem) {
+                    $("#StockOutItem").append(createTableGrid(res.StockOutItem, GridOptions))
+                }
+                else {
+                    $("#StockOutItem").parents(".datatable").remove();
+                }
             }
-        ]
-    }
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :   //fakeData
-            $.ajax({
-                url: url,
-                data: JSON.stringify(jsonData),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        function onSuccess(res) {
-            console.log(res);
-            $("#StockItemInfo").append(createTableInner(res, SerializedName));
-            if (res.StockOutItem) {
-                $("#StockOutItem").append(createTableGrid(res.StockOutItem, GridOptions))
-            }
-            else {
-                $("#StockOutItem").parents(".datatable").remove();
+            function onError(res) {
+                console.log(res);
             }
         }
-        function onError(res) {
-            console.log(res);
+
+        window.onload = function () {
+            readData(apiUrl);
         }
-    }
-
-    window.onload = function () {
-        readData(apiUrl);
-    }
-</script>
-
+    </script>
+}

@@ -66,13 +66,13 @@
         </div>
 
         <div class="form-group">
-            <label for="DateFrom">發生時間(起)</label>
-            <input class="form-control" id="DateFrom" name="DateFrom" type="datetime-local" />
+            <label for="DateStart">發生時間(起)</label>
+            <input class="form-control" id="DateStart" name="DateStart" type="datetime-local" />
         </div>
 
         <div class="form-group">
-            <label for="DateTo">發生時間(迄)</label>
-            <input class="form-control" id="DateTo" name="DateTo" type="datetime-local" />
+            <label for="DateEnd">發生時間(迄)</label>
+            <input class="form-control" id="DateEnd" name="DateEnd" type="datetime-local" />
         </div>
 
         <div class="button-group">
@@ -99,7 +99,7 @@
                 PMSN: "1",
                 WMType: "一般",
                 WMState: "已處理",
-                TimeofOccurrence: "2023-01-01T06:30:27",
+                TimeOfOccurrence: "2023-01-01T06:30:27",
                 Location: "進流抽水站 B2F",
                 Message: "巡檢路徑偏移",
                 PSN: "P23050301",
@@ -137,7 +137,7 @@
                     dg.hiddenColumn('PMSN'),
                     dg.column('WMType', '事件等級', 120),
                     dg.column('WMState', '事件處理狀況', 150),
-                    dg.column('TimeofOccurrence', '發生時間', 200),
+                    dg.column('TimeOfOccurrence', '發生時間', 200),
                     dg.column('Location', '發生地點', 250),
                     dg.column('Message', '事件內容', 250),
                     dg.column('PSN', '巡檢計畫編碼', 150),
