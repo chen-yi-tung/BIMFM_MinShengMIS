@@ -65,7 +65,7 @@ namespace MinSheng_MIS.Controllers
             {
                 fileList.Add(Request.Files[item]);
             }
-            string result = repairRecord_Management_ReadViewModel.CreateAuditData(formCollection,Server, fileList);
+            string result = repairRecord_Management_ReadViewModel.CreateAuditData(formCollection, Server, fileList);
             return Content(result, "application/json");
         }
         #endregion
@@ -110,22 +110,8 @@ namespace MinSheng_MIS.Controllers
                     fileList.Add(Request.Files[item]);
                 }
             }
-            string result = repairRecord_Management_ReadViewModel.UpdateSuppleData(formCollection,Server, imgList, fileList);
+            string result = repairRecord_Management_ReadViewModel.UpdateSuppleData(formCollection, Server, imgList, fileList);
             return Content(result, "application/json");
-        }
-        #endregion
-
-        #region 定期保養單詳情
-        public ActionResult ReadMaintainForm()
-        {
-            return View();
-        }
-        #endregion
-
-        #region 設備報修單詳情
-        public ActionResult ReadReportForm()
-        {
-            return View();
         }
         #endregion
     }
