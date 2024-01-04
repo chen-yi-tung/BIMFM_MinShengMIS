@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "庫存管理詳情";
 }
 
@@ -35,16 +34,15 @@
     const GridOptions = {
         thead: true,
         columns: [
-            { id: "ExternalRFID", title: "RFID標籤(外)" },
-            { id: "Brand", title: "廠牌"},
+            { id: "SSN", title: "RFID標籤(外)" },
+            { id: "Brand", title: "廠牌" },
             { id: "Model", title: "型號" },
-            { id: "StockInDateTime", title: "入庫日期"},
-            { id: "ExpiryDate", title: "到期日"},
-            { id: "Location", title: "擺放位置"},
-            //{ id: "POSN", title: "採購單號"},
-            { id: "SIRSN", title: "入庫單號"},
-            { id: "RemianingAmount", title: "庫存數量"},
-            { id: "StockInName", title: "入庫人員" },
+            { id: "StockInDateTime", title: "入庫日期" },
+            { id: "ExpiryDate", title: "到期日" },
+            { id: "Location", title: "擺放位置" },
+            { id: "SIRSN", title: "入庫單號" },
+            { id: "RemainingAmount", title: "庫存數量" },
+            { id: "StockInMyName", title: "入庫人員" },
         ]
     }
 
@@ -57,19 +55,18 @@
         MinStockAmount: 25,
         StockItem: [
             {
-                ExternalRFID: "A00100001",
+                SSN: "A00100001",
                 Brand: "OXO",
                 Model: "OXO",
-                StockInDateTime:"2023/03/15",
-                ExpiryDate:"2023/09/15",
-                Location:"A104,5,6,2,1",
-                POSN:"1120314001",
-                SIRSN:"1120314001",
-                RemianingAmount:5,
-                StockInName:"王OO"
+                StockInDateTime: "2023/03/15",
+                ExpiryDate: "2023/09/15",
+                Location: "A104,5,6,2,1",
+                SIRSN: "1120314001",
+                RemainingAmount: 5,
+                StockInMyName: "王OO"
             },
             {
-                ExternalRFID: "A00100001",
+                SSN: "A00100001",
                 Brand: "OXO",
                 Model: "OXO",
                 StockInDateTime: "2023/03/15",
@@ -77,11 +74,11 @@
                 Location: "A104,5,6,2,1",
                 POSN: "1120314001",
                 SIRSN: "1120314001",
-                RemianingAmount: 5,
-                StockInName: "王OO"
+                RemainingAmount: 5,
+                StockInMyName: "王OO"
             },
             {
-                ExternalRFID: "A00100001",
+                SSN: "A00100001",
                 Brand: "OXO",
                 Model: "OXO",
                 StockInDateTime: "2023/03/15",
@@ -89,11 +86,11 @@
                 Location: "A104,5,6,2,1",
                 POSN: "1120314001",
                 SIRSN: "1120314001",
-                RemianingAmount: 5,
-                StockInName: "王OO"
+                RemainingAmount: 5,
+                StockInMyName: "王OO"
             },
             {
-                ExternalRFID: "A00100001",
+                SSN: "A00100001",
                 Brand: "OXO",
                 Model: "OXO",
                 StockInDateTime: "2023/03/15",
@@ -101,8 +98,8 @@
                 Location: "A104,5,6,2,1",
                 POSN: "1120314001",
                 SIRSN: "1120314001",
-                RemianingAmount: 5,
-                StockInName: "王OO"
+                RemainingAmount: 5,
+                StockInMyName: "王OO"
             },
         ]
     }
@@ -139,4 +136,3 @@
         readData(apiUrl);
     }
 </script>
-

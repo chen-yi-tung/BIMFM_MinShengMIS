@@ -1,311 +1,312 @@
 ﻿@{
     ViewBag.Title = "新增入庫";
 }
-<style>
-    .datatable-input-area {
-        display: flex;
-        flex-direction: column;
-        max-width: 1090px;
-        margin: auto;
-        max-height: calc(100vh - var(--navbar-height));
-        max-height: calc(100vh - var(--navbar-height));
-        gap: 1rem;
-    }
-    .edit-area {
-        display: flex;
-        justify-content: left;
-        align-items: start;
-    }
-    .paths-btn {
-        width: 40px;
-        height: 40px;
-        background: #44BCC2;
-        color: #fff;
-        border-radius: 5px;
-        border: 0;
-        opacity: 1;
-        transition: all .3s;
-    }
-    .datatable {
-        border: 0;
-    }
-    .datatable-body {
-        border: 1px solid var(--datatable-border-color);
-    }
-</style>
+@section styles {
+    @Styles.Render("~/Content/easyui/themes/default/easyui.css")
+    @Styles.Render("~/Content/tagbox.css")
+    <script src="/Content/easyui/jquery.min.js" defer></script>
+    <script src="/Content/easyui/jquery.easyui.min.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <style>
+        .edit-area-title {
+            width: 100%;
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 29px;
+            text-align: left;
+            color: #CCFCFF;
+        }
+
+        .g-fill {
+            grid-column: 1 / -1;
+        }
+
+        .edit-area .form {
+            width: 100%;
+        }
+
+        @@media (min-width: 576px) {
+            .edit-area .form {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @@media (min-width: 992px) {
+            .edit-area .form-group .form-control.w-lg-460px {
+                width: 460px !important;
+            }
+
+            .edit-area .form {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+}
 
 <h2>@ViewBag.Title</h2>
 
-<section class="datatable-input-area mt-3">
-    <div class="edit-area edit-area-middle">
-        <div class="d-flex">
-            <form class="form" enctype="multipart/form-data">
-                <div class="form-group d-lg-contents">
-                    <label for="POSN">採購單號</label>
-                    <input class="form-control" type="text" id="POSN" name="POSN">
-                </div>
-            </form>
-            <div style="padding:18px 0; margin-left:23px">
-                <button class="paths-btn" id="path-search" data-bs-toggle="modal" data-bs-target="#DatagridModal-Repair"><i class="icon-search"></i></button>
-            </div>
+<div class="edit-area edit-area-small">
+    <div class="edit-area-title">1.資料確認</div>
+    <form class="form">
+        <div class="form-group d-flex align-items-center gap-4 g-fill">
+            <input class="form-control w-lg-460px" type="text" id="SearchStock" name="SearchStock">
+            <button class="btn btn-search" id="SearchStockButton" type="button"><i class="icon-search"></i></button>
         </div>
-        <div class="datatable datatable-fill mt-5 d-none">
-            <div class="datatable-body">
-                <table class="datatable-table" id="EquipmentMaintainItem">
-                </table>
-            </div>
-        </div>
-    </div>
-</section>
 
-<form class="form">
-    <div class="datatable mt-5 datatable-table POSNItem d-none">
-        <div class="mb-1" style="font-size:18px; color:white; text-align:left;">採購單號:<span id="POSN"></span></div> 
-        <input type="text" id="POISN" name="POISN" value="@ViewBag.id" hidden readonly="readonly">
-        <div class="datatable-body" id="POSNItem"></div>
-        <div class="edit-button-area">
-            <button class="btn btn-create-item" id="StockIn">入庫</button>
+        <div class="form-group required">
+            <label for="StockType">品項</label>
+            <select class="form-select" name="StockType" id="StockType" required>
+                <option value="">請選擇</option>
+            </select>
         </div>
+
+        <div class="form-group required">
+            <label for="StockName">庫存品名</label>
+            <input class="form-control" id="StockName" name="StockName" type="text" maxlength="50" required />
+        </div>
+
+        <div class="form-group">
+            <label for="MName">廠商品名</label>
+            <input class="form-control" id="MName" name="MName" type="text" maxlength="50" />
+        </div>
+
+        <div class="form-group">
+            <label for="Size">尺寸</label>
+            <input class="form-control" id="Size" name="Size" type="text" maxlength="50" />
+        </div>
+
+        <div class="form-group">
+            <label for="Brand">廠牌</label>
+            <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" />
+        </div>
+
+        <div class="form-group">
+            <label for="Model">型號</label>
+            <input class="form-control" id="Model" name="Model" type="text" maxlength="50" />
+        </div>
+
+        <div class="form-group required">
+            <label for="Amount">庫存數量</label>
+            <input class="form-control" id="Amount" name="Amount" type="number" step="any" min="0" required />
+        </div>
+
+        <div class="form-group required">
+            <label for="Unit">庫存單位</label>
+            <select class="form-select" name="Unit" id="Unit" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group required">
+            <label for="ExpiryDate">到期日</label>
+            <input class="form-control" id="ExpiryDate" name="ExpiryDate" type="date" required />
+        </div>
+    </form>
+    <hr class="edit-area-hr">
+    <div class="edit-area-title">2.存放位置</div>
+    <form class="form">
+        <div class="form-group g-fill" style="font-size:18px; color:white;">擺放位置(倉庫, 貨架, 排, 層, 區)</div>
+        <div class="form-group g-fill">
+            <input class="form-control" type="text" name="Location" id="Location" maxlength="30">
+        </div>
+    </form>
+    <hr class="edit-area-hr">
+    <div class="edit-area-title">3.RFID標籤</div>
+    <form class="form">
+        <div class="form-group required">
+            <label for="RFIDAmount">標籤張數</label>
+            <input class="form-control" id="RFIDAmount" name="RFIDAmount" type="number" min="0" step="1" value="1"
+                required />
+        </div>
+    </form>
+    <div class="mt-4 mb-3">
+        <button class="btn btn-search" id="StockIn-create">產生標籤列表</button>
     </div>
-</form>
+</div>
+
+<div class="datatable datatable-fill mt-5 mb-5 datatable-table d-none">
+    <form class="datatable-body overflow-auto">
+        <table class="datatable-table" id="POSNItem">
+            <thead>
+                <tr>
+                    <th class="datatable-header" style="width:6rem"><span>品項</span></th>
+                    <th class="datatable-header" style="width:10rem"><span>品名</span></th>
+                    <th class="datatable-header" style="width:10rem"><span>廠商品名</span></th>
+                    <th class="datatable-header" style="width:6rem"><span>廠牌</span></th>
+                    <th class="datatable-header" style="width:6rem"><span>型號</span></th>
+                    <th class="datatable-header" style="width:6rem"><span>庫存數量</span></th>
+                    <th class="datatable-header" style="width:7rem"><span>庫存單位</span></th>
+                    <th class="datatable-header" style="width:10rem"><span>到期日</span></th>
+                    <th class="datatable-header" style="width:30rem"><span>擺放位置(倉庫, 貨架, 排, 層, 區)</span></th>
+                </tr>
+            </thead>
+            <tbody id="item-area">
+                <tr id="sample-input-tr">
+                    <td id="d-StockType"></td>
+                    <td id="d-StockName"></td>
+                    <td id="d-MName"></td>
+                    <td id="d-Brand"></td>
+                    <td id="d-Model"></td>
+                    <td id="d-Amount"></td>
+                    <td id="d-Unit"></td>
+                    <td id="d-_ExpiryDate"><input type="date" class="form-control" id="ExpiryDate" required></td>
+                    <td id="d-_Location"><input type="text" class="form-control" id="Location" maxlength="30" required>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增及列印</button>
 </div>
 
+@section scripts {
+    <script>
+        let sampleTr;
 
-<script src="/Scripts/datatable.js"></script>
-<script>
+        $(async function () {
+            await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+            await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
 
-    const POSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${POSN}`;
-    let apiUrl = null;
-    var selectedIndex = "";
-    
+            sampleTr = new SampleTr();
 
-    const GridOptions = {
-        thead: true,
-        columns: [
-            {
-                id: "_checkbox",
-                title: "",
-                width: "6%",
-                formatter: (data, row, index) => {
-                    return `<input class="form-check-input check-item" type="radio" name="radio-POSN" id="checkbox-${index}"/>`
+            $('#SearchStock').combobox({
+                //url: '@Url.Action("StockInfoList", "DropDownList")',
+                method: 'GET',
+                textField: 'Text',
+                valueField: 'Value',
+                hasDownArrow: false,
+                prompt: "搜尋庫存是否有同品項品名",
+                cls: "form-control w-lg-460px",
+                data: [
+                    { Text: "aaa", Value: "aaa" }
+                ],
+                onSelect(record) {
+                    console.log("record:", record)
+                    //取得該品名資訊
+                    $.getJSON(`@Url.Action("GetStockInfo", "StockIn_Management")?SISN=${record.Value}`, (res) => {
+                        //放入資料
+                        $("#StockType").val(res.StockType)
+                        $("#StockName").val(res.StockName)
+                        $("#Unit").val(res.Unit)
+                    })
                 }
-            },
-            { id: "POState", title: "狀態" },
-            { id: "POSN", title: "採購單號" },
-            { id: "PurchaseName", title: "採購人員" },
-            { id: "PurchaseDataTime", title: "採購日期" },
-            { id: "MFRName", title: "廠商" },
-            { id: "Accepter", title: "驗收人員" },
-            { id: "AcceptanceDateTime", title: "驗收日期" },
-            { id: "InquiryName", title: "詢價人員" }
-        ]
-    }
-    const GridOptions2 = {
-        thead: true,
-        columns: [
-            {
-                id: "_checkbox",
-                title: "",
-                width: "6%",
-                formatter: (data, row, index) => {
-                    return `<input class="form-check-input check-item" type="radio" name="checkbox-POISN" id="checkbox2-${index}"/>`
-                }
-            },
-            //{ id: "POISN", title: "採購單項目編號"}, 
-            { id: "Kind", title: "類別" },
-            { id: "ItemName", title: "品名" },
-            { id: "Size", title: "尺寸" },
-            { id: "Brand", title: "廠牌" },
-            { id: "Model", title: "型號" },
-            { id: "Amount", title: "數量" },
-            { id: "Packaging", title: "包裝型式" }
-        ]
-    }
-    const fakeData = {
+            });
 
-        EquipmentMaintainItem: [
-            {
-                POState:"部分驗收",
-                POSN: "PO23050201",
-                PurchaseName:"王小明",
-                PurchaseDataTime:"2023/05/02",
-                MFRName:"A廠商",
-                Accepter:"陳大明",
-                AcceptanceDateTime:"2023/05/06",
-                InquiryName:"黃中明",
-                SelectObject:[
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-1",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    }
-                ]
-            },
-            {
-                POState:"部分驗收",
-                POSN: "PO23050201",
-                PurchaseName:"王小明",
-                PurchaseDataTime:"2023/05/02",
-                MFRName:"A廠商",
-                Accepter:"陳大明",
-                AcceptanceDateTime:"2023/05/06",
-                InquiryName:"黃中明",
-                SelectObject:[
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-2",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    },
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-2",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    },
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-2",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    }
-                ]
-            },
-            {
-                POState:"部分驗收",
-                POSN: "PO23050201",
-                PurchaseName:"王小明",
-                PurchaseDataTime:"2023/05/02",
-                MFRName:"A廠商",
-                Accepter:"陳大明",
-                AcceptanceDateTime:"2023/05/06",
-                InquiryName:"黃中明" ,
-                SelectObject:[
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-3",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    },
-                    {
-                        POISN:"PO23050201_01",
-                        Kind:"備料",
-                        ItemName:"藥劑-3",
-                        Size:"1L",
-                        Brand:"A廠牌",
-                        Model:"XMA-56",
-                        Amount:"5",
-                        Packaging:"250g/罐"
-                    }
-                ]
+
+            addButtonEvent();
+        })
+
+        function SampleTr() {
+            this.count = 0;
+            this.list = $("#item-area")
+            this.init = async function () {
+                this.sample = $("#sample-input-tr").clone();
+
+                $("#sample-input-tr").remove();
             }
-        ]
-    }
+            this.create = function (data = null) {
+                let item = this.sample.clone();
+                item.attr('id', this.count);
+                this.list.append(item);
+                if (data) {
+                    for (const [k, v] of Object.entries(data)) {
+                        item.find("#" + k).val(v)
+                        item.find("#d-" + k).text(v)
+                    }
+                }
+                this.count++;
+            }
+            this.calc = function () {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        Location: $(e).find("#Location").val(),
+                        ExpiryDate: $(e).find("#ExpiryDate").val(),
+                        Amount: $(e).find("#d-Amount").text()
+                    }
+                })
+            }
+            this.init();
+            return this;
+        }
 
-    $(async function () {
-        addButtonEvent();
-    })
+        function save() {
+            let forms = [].slice.call(document.querySelectorAll(".datatable form"))
+            let isValidity = forms.map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
 
-    function addButtonEvent() {
-        //1.搜尋後列出所有的採購單號
-        $("#path-search").click(function () {
-            //e.preventDefault();
-            console.log("onclick path-search");
-            $(".datatable.datatable-fill.mt-5").removeClass("d-none");
-        });
-        //2.選擇其中一個採購單號後，會跳出各自的資訊(Datatable)
-        $("#EquipmentMaintainItem").change(function() {
-            $(`.POSNItem`).removeClass("d-none");
-            let selectedRadio = $(this).find("input[name='radio-POSN']:checked");
-            selectedIndex = selectedRadio.closest("tr").index();
-            $(`[id^=POSNItem-]`).addClass("d-none");
-            $(`#POSNItem-${selectedIndex}`).removeClass("d-none");
-            console.log(selectedIndex);
-        });
-        
-        //3.入庫跳轉畫面
-        $("#StockIn").click(function() {
-            console.log("按下入庫鈕");
-            //StockInToCreate2()
-        })
-
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-    
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :
+            var form = new FormData();
+            sampleTr.calc().forEach((item, i) => {
+                form.append(`StockItem[${i}].Location`, item.Location);
+                form.append(`StockItem[${i}].ExpiryDate`, item.ExpiryDate);
+                form.append(`StockItem[${i}].Amount`, item.Amount);
+            })
+            console.log(Object.fromEntries(form.entries()));
+            return
             $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: '@Url.Action("CreateStockIn", "StockIn_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
-
-        function onSuccess(res) {
-            console.log(res);
-            console.log("selectedIndex:",selectedIndex);
-            $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
-            $("#POISN").parent().children().first().children().html(res.EquipmentMaintainItem[0].POSN)
-            res.EquipmentMaintainItem.forEach((d,i)=>{
-                let table = $(`<table class="datatable-table" id="POSNItem-${i}"></table>`);
-                table.append(createTableGrid(d.SelectObject, GridOptions2));
-                table.addClass("d-none");
-                $("#POSNItem").append(table);
-            });
-
-            function StockInToCreate2() {
-                let url = '@Url.Action("CreateStockIn", "StockIn_Management")';
-                window.location.href = url;
-            };
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/StockIn_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
         }
-        function onError(res) {
-            console.log(res);
+
+        function addButtonEvent() {
+            $("#SearchStockButton").click(function () {
+                $('#SearchStock').combobox("showPanel")
+            })
+            $("#StockIn-create").click(function () {
+                let forms = [].slice.call(document.querySelectorAll(".edit-area form"))
+                let isValidity = forms.map(e => e.reportValidity()).every(e => e);
+                console.log("todo save():", isValidity)
+                if (!isValidity) return;
+
+                let data = {
+                    StockType: $(".edit-area #StockType option:selected").text(),
+                    StockName: $(".edit-area #StockName").val(),
+                    MName: $(".edit-area #MName").val(),
+                    Brand: $(".edit-area #Brand").val(),
+                    Model: $(".edit-area #Model").val(),
+                    Amount: $(".edit-area #Amount").val(),
+                    Unit: $(".edit-area #Unit option:selected").text(),
+
+                    ExpiryDate: $(".edit-area #ExpiryDate").val(),
+                    Location: $(".edit-area #Location").val(),
+                }
+
+                $("#POSNItem").closest(".datatable").removeClass("d-none")
+                for (let i = 0; i < $("#RFIDAmount").val(); i++) {
+                    sampleTr.create(data)
+                }
+            })
+
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#submit").click(function () {
+                save();
+            })
         }
-    }
-
-    function save() {
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("todo save():", isValidity)
-        if (!isValidity) return;
-    }
-
-    window.onload = function () {
-        readData(apiUrl);
-    }
-
-</script>
+    </script>
+}

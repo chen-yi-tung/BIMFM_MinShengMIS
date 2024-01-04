@@ -23,13 +23,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 新增入庫項目
-        public ActionResult CreateStockIn()
-        {
-            return View();
-        }
-        #endregion
-
         #region 入庫詳情
         public ActionResult Read()
         {
