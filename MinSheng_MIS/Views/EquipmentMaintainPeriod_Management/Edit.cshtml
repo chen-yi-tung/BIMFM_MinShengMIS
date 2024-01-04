@@ -1,6 +1,11 @@
 ﻿@{
     ViewBag.Title = "設備保養週期編輯";
 }
+
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
+
 <h2>@ViewBag.Title</h2>
 
 <div class="datatable datatable-small mt-5">
@@ -39,107 +44,108 @@
     <button class="btn btn-submit" id="submit" form="form">儲存</button>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
-<script>
-    var EMISN = '@ViewBag.id';
-    //const apiUrl = null;
-    var apiUrl = '@Url.Action("EditBody", "EquipmentMaintainPeriod_Management")' + `?EMISN=${EMISN}`
-    const SerializedName = [
-        { text: "棟別", value: "Area" },
-        { text: "樓層", value: "Floor" },
-        { text: "系統別", value: "System" },
-        { text: "子系統別", value: "SubSystem" },
-        { text: "設備編號", value: "ESN" },
-        { text: "設備名稱", value: "EName" },
-        { text: "項目名稱", value: "MIName" },
-        { text: "上次保養日期", value: "LastTime" },
-        { text: "最近應保養日期", value: "Date" },
-    ]
+@section scripts {
+    <script>
+        var EMISN = '@ViewBag.id';
+        //const apiUrl = null;
+        var apiUrl = '@Url.Action("EditBody", "EquipmentMaintainPeriod_Management")' + `?EMISN=${EMISN}`
+        const SerializedName = [
+            { text: "棟別", value: "Area" },
+            { text: "樓層", value: "Floor" },
+            { text: "系統別", value: "System" },
+            { text: "子系統別", value: "SubSystem" },
+            { text: "設備編號", value: "ESN" },
+            { text: "設備名稱", value: "EName" },
+            { text: "項目名稱", value: "MIName" },
+            { text: "上次保養日期", value: "LastTime" },
+            { text: "最近應保養日期", value: "Date" },
+        ]
 
-    const fakeData = {
-        EMISN: "E00001_000001",
-        Area: "A",
-        Floor: "1F",
-        System: "處理",
-        SubSystem: "前處理",
-        ESN: "E00001",
-        EName: "除物皮帶輸送機",
-        MIName: "軸承潤滑",
-        LastTime: "2022/12/01",
-        Date: "2023/01/01",
-        Unit: "月",
-        Period: "1",
-        IsEnable: 1,
-    }
+        const fakeData = {
+            EMISN: "E00001_000001",
+            Area: "A",
+            Floor: "1F",
+            System: "處理",
+            SubSystem: "前處理",
+            ESN: "E00001",
+            EName: "除物皮帶輸送機",
+            MIName: "軸承潤滑",
+            LastTime: "2022/12/01",
+            Date: "2023/01/01",
+            Unit: "月",
+            Period: "1",
+            IsEnable: 1,
+        }
 
-    function readData(url = null) {
+        function readData(url = null) {
 
-        url == null ? onSuccess(fakeData) :
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#EMISN").val(res.EMISN);
+                $("#EquipemtMaintainItem").append(createTableInner(res, SerializedName));
+                $("#Unit").val(res.Unit);
+                $("#Period").val(res.Period);
+                $("#IsEnable").val(res.IsEnable);
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+
+            $("#submit").click(save);
+        }
+
+        function save(e) {
+            let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity:", isValidity);
+
+            let jsonData = {
+                EMISN: $("#EMISN").val(),
+                Unit: $("#Unit").val(),
+                Period: $("#Period").val(),
+                IsEnable: $("#IsEnable").val(),
+            }
+
+            console.log("jsonData:", jsonData);
+            console.log("A", JSON.stringify(jsonData))
+            if (!isValidity) { return }
+            e.preventDefault();
             $.ajax({
-                url: url,
-                type: "GET",
+                url: '@Url.Action("EditBodySave", "EquipmentMaintainPeriod_Management")',
+                data: JSON.stringify(jsonData),
+                type: "post",
                 dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                contentType: "application/json; charset=utf-8",
                 success: onSuccess,
                 error: onError
             })
-
-        function onSuccess(res) {
-            console.log(res);
-            $("#EMISN").val(res.EMISN);
-            $("#EquipemtMaintainItem").append(createTableInner(res, SerializedName));
-            $("#Unit").val(res.Unit);
-            $("#Period").val(res.Period);
-            $("#IsEnable").val(res.IsEnable);
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        });
-
-        $("#submit").click(save);
-    }
-
-    function save(e) {
-        let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity:", isValidity);
-
-        let jsonData = {
-            EMISN: $("#EMISN").val(),
-            Unit: $("#Unit").val(),
-            Period: $("#Period").val(),
-            IsEnable: $("#IsEnable").val(),
+            function onSuccess(res) {
+                console.log(res);
+                window.open('@Url.Action("Management", "EquipmentMaintainPeriod_Management")', "_self")
+            }
+            function onError(res) {
+                console.log(res);
+            }
         }
 
-        console.log("jsonData:", jsonData);
-        console.log("A", JSON.stringify(jsonData))
-        if (!isValidity) { return }
-        e.preventDefault();
-        $.ajax({
-            url: '@Url.Action("EditBodySave", "EquipmentMaintainPeriod_Management")',
-            data: JSON.stringify(jsonData),
-            type: "post",
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            window.open('@Url.Action("Management", "EquipmentMaintainPeriod_Management")',"_self")
+        window.onload = function () {
+            readData(apiUrl);
+            addButtonEvent();
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    window.onload = function () {
-        readData(apiUrl);
-        addButtonEvent();
-    }
-</script>
+    </script>
+}
