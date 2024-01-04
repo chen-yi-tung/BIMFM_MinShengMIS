@@ -3,6 +3,8 @@
 }
 
 @section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
     <style>
         @@media(min-width: 992px) {
             .datatable-large {
@@ -11,11 +13,11 @@
             }
         }
 
-        .datatable:is(:has(.datatable-table tbody:empty),:has(.datatable-table:empty)){
+        .datatable:is(:has(.datatable-table tbody:empty), :has(.datatable-table:empty)) {
             display: none;
         }
 
-        .edit-area:is(:has(.datatable .datatable-table tbody:empty),:has(.datatable .datatable-table:empty))::before{
+        .edit-area:is(:has(.datatable .datatable-table tbody:empty), :has(.datatable .datatable-table:empty))::before {
             content: "請掃瞄RFID以進行出庫作業";
             color: white;
             padding: 3rem;
@@ -69,152 +71,154 @@
     </div>
 </div>
 
-
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
+@section scripts {
+    <script>
 
+        const apiUrl = null;
 
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script>
+        const SerializedName = {
+            thead: true,
+            columns: [
+                { id: "PickUpStatus", title: "狀態" },
+                { id: "StockType", title: "品項", width: 160 },
+                { id: "StockName", title: "品名", width: 250 },
+                { id: "Amount", title: "數量", width: 120 },
+                { id: "TakeAmount", title: "已領取數量", width: 150 },
+                { id: "RemainingAmount", title: "剩餘可領取數量", width: 150 },
+                { id: "Unit", title: "單位", width: 80 },
+            ]
+        }
 
-    const apiUrl = null;
-
-    const SerializedName = {
-        thead: true,
-        columns: [
-            { id: "PickUpStatus", title: "狀態" },
-            { id: "StockType", title: "品項", width: 160 },
-            { id: "StockName", title: "品名", width: 250 },
-            { id: "Amount", title: "數量", width: 120 },
-            { id: "TakeAmount", title: "已領取數量", width: 150 },
-            { id: "RemainingAmount", title: "剩餘可領取數量", width: 150 },
-            { id: "Unit", title: "單位", width: 80 },
-        ]
-    }
-
-    const GridOptions = {
-        thead: true,
-        columns: [
-            { id: "ExternalRFID", title: "RFID", width: 100 },
-            { id: "StockType", title: "品項", width: 160 },
-            { id: "StockName", title: "品名", width: 250 },
-            { id: "MName", title: "廠商品名", width: 100 },
-            { id: "Size", title: "尺寸", width: 200 },
-            { id: "Brand", title: "廠商", width: 120 },
-            { id: "Model", title: "型號", width: 120 },
-            { id: "ExpiryDate", title: "到期日", width: 150 },
-            {
-                id: "OutAmount", title: "領取數量", width: 120, formatter: (val, row) => {
-                    return `<input type="number" class="form-control" step="any" min="0" max="${row.RemainingAmount}" required value="${val}">`
+        const GridOptions = {
+            thead: true,
+            columns: [
+                { id: "SSN", title: "RFID", width: 100 },
+                { id: "StockType", title: "品項", width: 160 },
+                { id: "StockName", title: "品名", width: 250 },
+                { id: "MName", title: "廠商品名", width: 100 },
+                { id: "Size", title: "尺寸", width: 200 },
+                { id: "Brand", title: "廠商", width: 120 },
+                { id: "Model", title: "型號", width: 120 },
+                { id: "ExpiryDate", title: "到期日", width: 150 },
+                {
+                    id: "OutAmount", title: "領取數量", width: 120, formatter: (val, row) => {
+                        return `<input type="number" class="form-control" step="any" min="0" max="${row.RemainingAmount}" required value="${val}">`
+                    }
+                },
+                { id: "Unit", title: "單位", width: 80 },
+                { id: "RemainingAmount", title: "剩餘可領取數量", width: 150 },
+                {
+                    id: "", title: "", width: 36, formatter: (val, row, i) => {
+                        return `<button type="button" class="btn-delete-item" onclick='$("#StockOutItem tr#${i}").remove()'></button>`
+                    }
                 }
-            },
-            { id: "Unit", title: "單位", width: 80 },
-            { id: "RemainingAmount", title: "剩餘可領取數量", width: 150 },
-            {
-                id: "", title: "", width: 36, formatter: (val, row, i) => {
-                    return `<button type="button" class="btn-delete-item" onclick='$("#StockOutItem tr#${i}").remove()'></button>`
+            ]
+        }
+
+        const fakeData = {
+            StoresRequisitionItem: [
+                {
+                    PickUpStatus: "已領取",
+                    StockType: "備料",
+                    StockName: "軸承潤滑劑",
+                    Amount: "1",
+                    TakeAmount: "1",
+                    RemainingAmount: "0",
+                    Unit: "罐",
+                    SISN: "1"
+                },
+                {
+                    PickUpStatus: "部分領取",
+                    StockType: "備料",
+                    StockName: "藥劑-1",
+                    Amount: "11",
+                    TakeAmount: "1",
+                    RemainingAmount: "10",
+                    Unit: "罐",
+                    SISN: "2"
+                },
+            ],
+            StockOutItem: [
+                {
+                    SSN: "A101",
+                    StockType: "備料",
+                    StockName: "藥劑-1",
+                    MName: "藥劑-1",
+                    Size: "1L",
+                    Brand: "OXO",
+                    Model: "OXO",
+                    ExpiryDate: "2023/03/22",
+                    Unit: "罐",
+                    OutAmount: "1",
+                    RemainingAmount: "6",
+                    SISN: "1"
+                },
+                {
+                    SSN: "A101",
+                    StockType: "備料",
+                    StockName: "藥劑-1",
+                    MName: "藥劑-1",
+                    Size: "1L",
+                    Brand: "OXO",
+                    Model: "OXO",
+                    ExpiryDate: "2023/03/22",
+                    Unit: "罐",
+                    OutAmount: "1",
+                    RemainingAmount: "10",
+                    SISN: "2"
                 }
+            ]
+        }
+
+        $(async function () {
+            await pushSelect("StockOutName", '@Url.Action("AllMyName", "DropDownList")');
+            await pushSelect("ReceiverName", '@Url.Action("AllMyName", "DropDownList")');
+            addButtonEvent();
+            readData(apiUrl);
+        })
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :   //fakeData
+                $.ajax({
+                    url: url,
+                    data: JSON.stringify(jsonData),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#StockItemInfo").append(createTableGrid(res.StoresRequisitionItem, SerializedName));
+                $("#StockOutItem").append(createTableGrid(res.StockOutItem, GridOptions))
             }
-        ]
-    }
+            function onError(res) {
+                console.log(res);
+            }
+        }
 
-    const fakeData = [
-        {
-            PickUpStatus: "已領取",
-            StockType: "備料",
-            StockName: "軸承潤滑劑",
-            Amount: "1",
-            TakeAmount: "1",
-            RemainingAmount: "0",
-            Unit: "罐",
-        },
-        {
-            PickUpStatus: "部分領取",
-            StockType: "備料",
-            StockName: "藥劑-1",
-            Amount: "11",
-            TakeAmount: "1",
-            RemainingAmount: "10",
-            Unit: "罐",
-        },
-    ]
+        function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
+        }
 
-    const griditem = [
-        {
-            ExternalRFID: "A101",
-            StockType: "備料",
-            StockName: "藥劑-1",
-            MName: "藥劑-1",
-            Size: "1L",
-            Brand: "OXO",
-            Model: "OXO",
-            ExpiryDate: "2023/03/22",
-            OutAmount: "1",
-            Unit: "罐",
-            RemainingAmount: "6"
-        },
-        {
-            ExternalRFID: "A101",
-            StockType: "備料",
-            StockName: "藥劑-1",
-            MName: "藥劑-1",
-            Size: "1L",
-            Brand: "OXO",
-            Model: "OXO",
-            ExpiryDate: "2023/03/22",
-            OutAmount: "1",
-            Unit: "罐",
-            RemainingAmount: "10"
-        },
-    ]
-
-    $(async function () {
-        await pushSelect("StockOutName", '@Url.Action("AllMyName", "DropDownList")');
-        await pushSelect("ReceiverName", '@Url.Action("AllMyName", "DropDownList")');
-        addButtonEvent();
-        readData(apiUrl);
-    })
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :   //fakeData
-            $.ajax({
-                url: url,
-                data: JSON.stringify(jsonData),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
             })
 
-        function onSuccess(res) {
-            console.log(res);
-            $("#StockItemInfo").append(createTableGrid(res, SerializedName));
-            $("#StockOutItem").append(createTableGrid(griditem, GridOptions))
+            $("#submit").click(function () {
+                save();
+            })
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function save() {
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("todo save():", isValidity)
-        if (!isValidity) return;
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-</script>
+    </script>
+}

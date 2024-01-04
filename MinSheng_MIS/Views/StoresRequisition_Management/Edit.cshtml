@@ -1,45 +1,48 @@
 ﻿@{
     ViewBag.Title = "領用編輯";
 }
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <style>
+        .datatable-input-area {
+            display: flex;
+            flex-direction: column;
+            max-width: 1090px;
+            margin: auto;
+            max-height: calc(100vh - var(--navbar-height));
+            max-height: calc(100dvh - var(--navbar-height));
+            gap: 1rem;
+        }
 
-<style>
-    .datatable-input-area {
-        display: flex;
-        flex-direction: column;
-        max-width: 1090px;
-        margin: auto;
-        max-height: calc(100vh - var(--navbar-height));
-        max-height: calc(100dvh - var(--navbar-height));
-        gap: 1rem;
-    }
+        .max-w-scroll {
+            max-width: calc(1090px + 18px);
+        }
 
-    .max-w-scroll {
-        max-width: calc(1090px + 18px);
-    }
-
-    .datatable-input-area .edit-area {
-        max-height: 30rem;
-        padding: 1rem;
-        display: block;
-    }
-
-    .datatable-input-area .datatable,
-    .datatable-input-area .datatable-body {
-        max-height: 28rem;
-        margin: 0;
-    }
-
-    @@media (max-width:991.98px) {
         .datatable-input-area .edit-area {
-            max-height: calc(100vh - var(--navbar-height) - 5rem);
+            max-height: 30rem;
+            padding: 1rem;
+            display: block;
         }
 
         .datatable-input-area .datatable,
         .datatable-input-area .datatable-body {
-            max-height: calc(100vh - var(--navbar-height) - 7rem);
+            max-height: 28rem;
+            margin: 0;
         }
-    }
-</style>
+
+        @@media (max-width:991.98px) {
+            .datatable-input-area .edit-area {
+                max-height: calc(100vh - var(--navbar-height) - 5rem);
+            }
+
+            .datatable-input-area .datatable,
+            .datatable-input-area .datatable-body {
+                max-height: calc(100vh - var(--navbar-height) - 7rem);
+            }
+        }
+    </style>
+}
 
 <h2>@ViewBag.Title</h2>
 <section style="max-width: 855px;margin: auto;">
@@ -59,7 +62,7 @@
 
             <div class="form-group w-lg-532px">
                 <label for="SRContent">領用原因</label>
-                <input class="form-control" id="SRContent" name="SRContent" type="text" maxlength="200"/>
+                <input class="form-control" id="SRContent" name="SRContent" type="text" maxlength="200" />
             </div>
         </form>
     </div>
@@ -119,167 +122,167 @@
     <button class="btn btn-submit" id="submit">儲存</button>
 </div>
 
-<script src="/Scripts/tool.js"></script>
-<script src="/Scripts/datatable.js"></script>
-<script>
-    const SRSN = '@ViewBag.id';
-    //const apiUrl = '@Url.Action("Read_Data", "PurchaseRequisition_Management")' + `/${SRSN}`;
-    const apiUrl = null;
+@section scripts {
+    <script>
+        const SRSN = '@ViewBag.id';
+        //const apiUrl = '@Url.Action("Read_Data", "PurchaseRequisition_Management")' + `/${SRSN}`;
+        const apiUrl = null;
 
-    const fakeData = {
-        SRSN: "000001",
-        SRUserName: "admin",
-        SRDept: "前處理",
-        SRContent: "除物皮帶輸送機",
-        StoresRequisitionItem: [
-            {
-                StockType: "A",
-                StockName: "01",
-                Amount: "1",
-                Unit: "01",
-                SRContent: "1",
+        const fakeData = {
+            SRSN: "000001",
+            SRUserName: "admin",
+            SRDept: "前處理",
+            SRContent: "除物皮帶輸送機",
+            StoresRequisitionItem: [
+                {
+                    StockType: "A",
+                    StockName: "01",
+                    Amount: "1",
+                    Unit: "01",
+                    SRContent: "1",
+                }
+            ]
+        }
+
+        let sampleTr;
+
+        function readData(url = null) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    //data: JSON.stringify(jsonData),
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                });
+
+            function onSuccess(res) {
+                console.log(res);
+                for (const [k, v] of Object.entries(res)) {
+                    $("#" + k).val(v)
+                }
+                res?.StoresRequisitionItem.forEach((item) => {
+                    sampleTr.create(item)
+                })
             }
-        ]
-    }
+            function onError(res) {
+                console.log(res);
+            }
+        }
 
-    let sampleTr;
+        $(async function () {
+            sampleTr = new SampleTr();
+            await sampleTr.init()
+            await pushSelect("SRUserName", '@Url.Action("AllMyName", "DropDownList")');
+            addButtonEvent();
+            readData(apiUrl);
+        });
 
-    function readData(url = null) {
-        url == null ? onSuccess(fakeData) :
+        function SampleTr() {
+            this.count = 0;
+            this.list = $("#item-area")
+            this.init = async function () {
+                await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+                //await pushSelect("StockName", '@Url.Action("StockName", "DropDownList")');
+                await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
+
+                const observer = new ResizeObserver((entries) => {
+                    for (const entry of entries) {
+                        let style = getComputedStyle(entry.target)
+                        let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
+                        let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
+                        $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
+                        //console.log(`${h} >= ${mh} ${h >= mh}`)
+                    }
+                })
+                observer.observe(this.list.closest(".datatable-body")[0])
+
+                this.list.on("click", ".btn-delete-item", function (e) {
+                    $(this).parent().parent().remove();
+                })
+
+                this.sample = $("#sample-input-tr").clone();
+                $("#sample-input-tr").remove();
+            }
+            this.create = function (data = null) {
+                let item = this.sample.clone();
+                item.attr('id', this.count);
+                this.list.append(item);
+                if (data != null) {
+                    item.find("#StockType").val(data.StockType)
+                    item.find("#StockName").val(data.StockName)
+                    item.find("#Amount").val(data.Amount)
+                    item.find("#Unit").val(data.Unit)
+                    item.find("#SRContent").val(data.SRContent)
+                }
+
+                this.count++;
+            }
+            this.calc = function () {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        SISN: $(e).find("#StockName").val(),
+                        Amount: $(e).find("#Amount").val(),
+                        SRContent: $(e).find("#SRContent").val()
+                    }
+                })
+            }
+            return this;
+        }
+
+        function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
+
+            var form = new FormData();
+
+            form.append("SRSN", SRSN);
+            form.append("SRUserName", document.getElementById("SRUserName").value);
+            form.append("SRDept", document.getElementById("SRDept").value);
+            form.append("SRContent", document.getElementById("SRContent").value);
+            sampleTr.calc().forEach((item, i) => {
+                form.append(`StoresRequisitionItem[${i}].SISN`, item.SISN);
+                form.append(`StoresRequisitionItem[${i}].Amount`, item.Amount);
+                form.append(`StoresRequisitionItem[${i}].SRContent`, item.SRContent);
+            })
+
+            console.log(Object.fromEntries(form.entries()));
+
             $.ajax({
-                url: url,
-                //data: JSON.stringify(jsonData),
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: '@Url.Action("CreateStoresRequisition=", "StoresRequisition_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
+            })
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/StoresRequisition_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
             });
-
-        function onSuccess(res) {
-            console.log(res);
-            for (const [k, v] of Object.entries(res)) {
-                $("#" + k).val(v)
-            }
-            res?.StoresRequisitionItem.forEach((item) => {
-                sampleTr.create(item)
-            })
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    $(async function () {
-        sampleTr = new SampleTr();
-        await sampleTr.init()
-        await pushSelect("SRUserName", '@Url.Action("AllMyName", "DropDownList")');
-        addButtonEvent();
-        readData(apiUrl);
-    });
-
-    function SampleTr() {
-        this.count = 0;
-        this.list = $("#item-area")
-        this.init = async function () {
-            await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
-            //await pushSelect("StockName", '@Url.Action("StockName", "DropDownList")');
-            await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
-
-            const observer = new ResizeObserver((entries) => {
-                for (const entry of entries) {
-                    let style = getComputedStyle(entry.target)
-                    let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
-                    let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
-                    $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
-                    //console.log(`${h} >= ${mh} ${h >= mh}`)
-                }
-            })
-            observer.observe(this.list.closest(".datatable-body")[0])
-
-            this.list.on("click", ".btn-delete-item", function (e) {
-                $(this).parent().parent().remove();
-            })
-
-            this.sample = $("#sample-input-tr").clone();
-            $("#sample-input-tr").remove();
-        }
-        this.create = function (data = null) {
-            let item = this.sample.clone();
-            item.attr('id', this.count);
-            this.list.append(item);
-            if (data != null) {
-                item.find("#StockType").val(data.StockType)
-                item.find("#StockName").val(data.StockName)
-                item.find("#Amount").val(data.Amount)
-                item.find("#Unit").val(data.Unit)
-                item.find("#SRContent").val(data.SRContent)
-            }
-
-            this.count++;
-        }
-        this.calc = function () {
-            return this.list.children().toArray().map((e) => {
-                return {
-                    SISN: $(e).find("#StockName").val(),
-                    Amount: $(e).find("#Amount").val(),
-                    SRContent: $(e).find("#SRContent").val()
-                }
-            })
-        }
-        return this;
-    }
-
-    function save() {
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("todo save():", isValidity)
-        if (!isValidity) return;
-
-        var form = new FormData();
-
-        form.append("SRSN", SRSN);
-        form.append("SRUserName", document.getElementById("SRUserName").value);
-        form.append("SRDept", document.getElementById("SRDept").value);
-        form.append("SRContent", document.getElementById("SRContent").value);
-        sampleTr.calc().forEach((item, i) => {
-            form.append(`StoresRequisitionItem[${i}].SISN`, item.SISN);
-            form.append(`StoresRequisitionItem[${i}].Amount`, item.Amount);
-            form.append(`StoresRequisitionItem[${i}].SRContent`, item.SRContent);
-        })
-
-        console.log(Object.fromEntries(form.entries()));
-
-        $.ajax({
-            url: '@Url.Action("CreateStoresRequisition=", "StoresRequisition_Management")',
-            data: form,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "新增成功！",
-                onHide: () => { window.location.href = "/StoresRequisition_Management/Management"; }
+            $("#create-item").click(function () {
+                sampleTr.create();
+            });
+            $("#submit").click(function () {
+                save();
             });
         }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        });
-        $("#create-item").click(function () {
-            sampleTr.create();
-        });
-        $("#submit").click(function () {
-            save();
-        });
-    }
-</script>
+    </script>
+}
