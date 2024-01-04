@@ -1920,7 +1920,6 @@
     <Content Include="Views\DesignDiagrams\Delete.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Management.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Create.cshtml" />
-    <Content Include="Views\EquipmentOperatingManual\Read.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Edit.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Delete.cshtml" />
     <Content Include="Views\StockIn_Management\Management.cshtml" />

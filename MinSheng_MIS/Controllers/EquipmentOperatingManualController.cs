@@ -1,16 +1,16 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
-using Newtonsoft.Json.Linq;
+using MinSheng_MIS.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Http.Results;
 using System.Web.Mvc;
-using System.Data.Entity.Migrations;
-using MinSheng_MIS.Services;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -70,12 +70,7 @@ namespace MinSheng_MIS.Controllers
         }
 
         #endregion
-        #region  設備操作手冊詳情->檢視
-        public ActionResult Read()
-        {
-            return View();
-        }
-        #endregion
+
         #region 編輯設備操作手冊
         public ActionResult Edit(string id)
         {
@@ -142,6 +137,7 @@ namespace MinSheng_MIS.Controllers
             return Content(result, "application/json");
         }
         #endregion
+
         #region 刪除設備操作手冊
         public ActionResult Delete(string id)
         {
