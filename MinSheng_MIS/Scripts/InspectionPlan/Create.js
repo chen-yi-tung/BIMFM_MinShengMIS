@@ -9,14 +9,14 @@ async function addDropDownList() {
     await pushSelect("MaintainUserID", "/DropDownList/AllMyName");
     await pushSelect("RepairUserID", "/DropDownList/AllMyName");
 
-    const DMM = 'DatagridModal-Maintain';
+    const DMM = "DatagridModal-Maintain";
     await pushSelect(DMM + " #FormItemState", "/DropDownList/AddFormItemState");
     await pushSelect(DMM + " #EState", "/DropDownList/EState?url=AddToPlan");
     await pushSelect(DMM + " #StockState", "/DropDownList/StockState");
 
-    const DMR = 'DatagridModal-Repair';
+    const DMR = "DatagridModal-Repair";
     await pushSelect(DMR + " #ReportLevel", "/DropDownList/ReportLevel");
-    await pushSelect(DMR + " #ReportState", '/DropDownList/Report_Management_Management_ReportFormState?url=CanAddToPlanReportState');
+    await pushSelect(DMR + " #ReportState", "/DropDownList/Report_Management_Management_ReportFormState?url=CanAddToPlanReportState");
     await pushSelect(DMR + " #UserID", "/DropDownList/ReportUser");
     await pushSelect(DMR + " #StockState", "/DropDownList/StockState");
 
@@ -26,6 +26,7 @@ async function addDropDownList() {
         valueField: 'Value',
         hasDownArrow: true,
         limitToList: true,
+        validateOnCreate: false
     });
 }
 

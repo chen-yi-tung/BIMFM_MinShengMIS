@@ -31,13 +31,13 @@ async function pushSelectOptions(selectId, jsonUrl, optionName, optionValue) {
         })
     });
 }
-async function pushSelect(selectId, jsonUrl, optionName, optionValue) {
+async function pushSelect(selectId, jsonUrl, optionName, optionValue, defaultText = "請選擇") {
     const $select = $("#" + selectId);
     let name = optionName ? optionName : "Text";
     let value = optionValue ? optionValue : "Value";
     await $.getJSON(jsonUrl, function (data) {
         $select.empty();
-        $select.append('<option value="">請選擇</option>');
+        $select.append(`<option value="">${defaultText}</option>`);
         $.each(data, function (i, e) {
             $select.append('<option value="' + e[value] + '">' + e[name] + '</option>')
         })
