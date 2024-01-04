@@ -61,70 +61,72 @@
     <button class="btn btn-delete" id="delete">刪除</button>
 </div>
 
-<script>
-    const PSSN = '@ViewBag.PSSN';
-    let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
+@section scripts {
+    <script>
+        const PSSN = '@ViewBag.PSSN';
+        let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
 
-    let fakeData;
+        let fakeData;
 
-    $(async function () {
-        addButtonEvent();
-        readData(apiUrl);
-    });
+        $(async function () {
+            addButtonEvent();
+            readData(apiUrl);
+        });
 
-    function readData(url = null) {
+        function readData(url = null) {
 
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
 
-        async function onSuccess(res) {
-            console.log(res);
-            fakeData = res;
-            const ps = res.PathSample;
+            async function onSuccess(res) {
+                console.log(res);
+                fakeData = res;
+                const ps = res.PathSample;
 
-            $("#PSSN").val(ps.PSSN);
+                $("#PSSN").val(ps.PSSN);
 
-            $("#PathSampleInfo").append(
-                createTableInner(ps, [
-                    { text: "巡檢路線模板", value: "PathTitle" },
-                    { text: "棟別", value: "Area" },
-                    { text: "樓層", value: "Floor" },
-                ])
-            )
+                $("#PathSampleInfo").append(
+                    createTableInner(ps, [
+                        { text: "巡檢路線模板", value: "PathTitle" },
+                        { text: "棟別", value: "Area" },
+                        { text: "樓層", value: "Floor" },
+                    ])
+                )
 
-            $("#current-path-title").text(ps.PathTitle);
-            const { BIMPath, BeaconPath } = ps;
-            initializeViewer({
-                BIMPath, BeaconPath,
-                callback: () => { initializeDrawer(res) }
+                $("#current-path-title").text(ps.PathTitle);
+                const { BIMPath, BeaconPath } = ps;
+                initializeViewer({
+                    BIMPath, BeaconPath,
+                    callback: () => { initializeDrawer(res) }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+            $("#delete").click(function () {
+                let PSSN = $("#PSSN").val();
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteSamplePath", "SamplePath_Management")?PSSN=' + PSSN,
+                    data: PSSN,
+                    onSuccess() {
+                        let url = '@Url.Action("Management", "SamplePath_Management")';
+                        window.location.href = url;
+                    }
+                })
             });
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        });
-        $("#delete").click(function () {
-            let PSSN = $("#PSSN").val();
-            createDeleteDialog({
-                url: '@Url.Action("DeleteSamplePath", "SamplePath_Management")?PSSN=' + PSSN,
-                data: PSSN,
-                onSuccess() {
-                    let url = '@Url.Action("Management", "SamplePath_Management")';
-                    window.location.href = url;
-                }
-            })
-        });
-    }
-</script>
+    </script>
+}
