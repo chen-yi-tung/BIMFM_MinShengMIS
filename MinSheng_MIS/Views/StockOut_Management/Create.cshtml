@@ -1,6 +1,25 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "新增出庫";
+}
+
+@section styles {
+    <style>
+        @@media(min-width: 992px) {
+            .datatable-large {
+                max-width: 100%;
+                width: 1050px;
+            }
+        }
+
+        .datatable:is(:has(.datatable-table tbody:empty),:has(.datatable-table:empty)){
+            display: none;
+        }
+
+        .edit-area:is(:has(.datatable .datatable-table tbody:empty),:has(.datatable .datatable-table:empty))::before{
+            content: "請掃描RFID";
+            color: white;
+        }
+    </style>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -10,32 +29,32 @@
         <form class="form d-lg-contents">
             <div class="form-group w-lg-100 w-xl-250px required">
                 <label for="SRSN">領用申請單號</label>
-                <input class="form-control" id="SRSN" name="SRSN" type="text" />
+                <input class="form-control" id="SRSN" name="SRSN" type="text" maxlength="10" />
             </div>
 
             <div class="form-group w-lg-45 w-xl-250px required">
-                <label for="StockOutName">出庫人員</label>
-                <select class="form-select" name="StockOutName" id="StockOutName" required>
+                <label for="StockOutUserName">出庫人員</label>
+                <select class="form-select" name="StockOutUserName" id="StockOutUserName" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
 
             <div class="form-group w-lg-45 w-xl-250px required">
-                <label for="ReceiverName">領取人員</label>
-                <select class="form-select" name="ReceiverName" id="ReceiverName" required>
+                <label for="ReceiverUserName">領取人員</label>
+                <select class="form-select" name="ReceiverUserName" id="ReceiverUserName" required>
                     <option value="">請選擇</option>
                 </select>
             </div>
 
             <div class="form-group w-lg-100">
                 <label for="StockOutContent">說明</label>
-                <input class="form-control" id="StockOutContent" name="StockOutContent" type="text" />
+                <input class="form-control" id="StockOutContent" name="StockOutContent" type="text" maxlength="200" />
             </div>
         </form>
     </div>
 </section>
 
-<div class="datatable datatable mt-5">
+<div class="datatable datatable-large mt-5">
     <div class="datatable-body overflow-auto">
         <table class="datatable-table" id="StockItemInfo"></table>
     </div>
@@ -68,33 +87,38 @@
         thead: true,
         columns: [
             { id: "PickUpStatus", title: "狀態" },
-            { id: "StockType", title: "品項" },
-            { id: "StockName", title: "品名" },
-            { id: "Amount", title: "數量" },
-            { id: "TakeAmount", title: "已領取數量" },
-            { id: "RemainingAmount", title: "剩餘可領取數量" },
-            { id: "Unit", title: "單位" },
+            { id: "StockType", title: "品項", width: 160 },
+            { id: "StockName", title: "品名", width: 250 },
+            { id: "Amount", title: "數量", width: 120 },
+            { id: "TakeAmount", title: "已領取數量", width: 150 },
+            { id: "RemainingAmount", title: "剩餘可領取數量", width: 150 },
+            { id: "Unit", title: "單位", width: 80 },
         ]
     }
 
     const GridOptions = {
         thead: true,
         columns: [
-            { id: "ExternalRFID", title: "RFID" },
-            { id: "RFID_StockType", title: "品項"},
-            { id: "RFID_StockName", title: "品名" },
-            { id: "MName", title: "廠商品名"},
-            { id: "Size", title: "尺寸"},
-            { id: "Brand", title: "廠商" },
-            { id: "Model", title: "型號" },
-            { id: "ExpiryDate", title: "到期日" },
+            { id: "ExternalRFID", title: "RFID", width: 100 },
+            { id: "StockType", title: "品項", width: 160 },
+            { id: "StockName", title: "品名", width: 250 },
+            { id: "MName", title: "廠商品名", width: 100 },
+            { id: "Size", title: "尺寸", width: 200 },
+            { id: "Brand", title: "廠商", width: 120 },
+            { id: "Model", title: "型號", width: 120 },
+            { id: "ExpiryDate", title: "到期日", width: 150 },
             {
-                id: "OutAmount", title: "領取數量", formatter: (val) => {
-                    return `<input type="number" class="form-control" step="any" min="0" required value="${val}">`
+                id: "OutAmount", title: "領取數量", width: 120, formatter: (val, row) => {
+                    return `<input type="number" class="form-control" step="any" min="0" max="${row.RemainingAmount}" required value="${val}">`
                 }
             },
-            { id: "RFID_Unit", title: "單位" },
-            { id: "RemainingAmount", title: "剩餘可領取數量" },
+            { id: "Unit", title: "單位", width: 80 },
+            { id: "RemainingAmount", title: "剩餘可領取數量", width: 150 },
+            {
+                id: "", title: "", width: 36, formatter: (val, row, i) => {
+                    return `<button type="button" class="btn-delete-item" onclick='$("#StockOutItem tr#${i}").remove()'></button>`
+                }
+            }
         ]
     }
 
@@ -122,28 +146,28 @@
     const griditem = [
         {
             ExternalRFID: "A101",
-            RFID_StockType: "備料",
-            RFID_StockName: "藥劑-1",
+            StockType: "備料",
+            StockName: "藥劑-1",
             MName: "藥劑-1",
             Size: "1L",
             Brand: "OXO",
             Model: "OXO",
             ExpiryDate: "2023/03/22",
             OutAmount: "1",
-            RFID_Unit: "罐",
+            Unit: "罐",
             RemainingAmount: "6"
-         },
+        },
         {
             ExternalRFID: "A101",
-            RFID_StockType: "備料",
-            RFID_StockName: "藥劑-1",
+            StockType: "備料",
+            StockName: "藥劑-1",
             MName: "藥劑-1",
             Size: "1L",
             Brand: "OXO",
             Model: "OXO",
             ExpiryDate: "2023/03/22",
             OutAmount: "1",
-            RFID_Unit: "罐",
+            Unit: "罐",
             RemainingAmount: "10"
         },
     ]
@@ -154,7 +178,7 @@
         addButtonEvent();
         readData(apiUrl);
     })
-    
+
     function readData(url = null) {
 
         url == null ? onSuccess(fakeData) :   //fakeData
@@ -171,7 +195,7 @@
         function onSuccess(res) {
             console.log(res);
             $("#StockItemInfo").append(createTableGrid(res, SerializedName));
-            $("#StockOutItem").append(createTableGrid(griditem, GridOptions))
+            //$("#StockOutItem").append(createTableGrid(griditem, GridOptions))
         }
         function onError(res) {
             console.log(res);
@@ -194,4 +218,3 @@
         })
     }
 </script>
-

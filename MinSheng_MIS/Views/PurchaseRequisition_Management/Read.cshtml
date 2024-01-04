@@ -27,8 +27,8 @@
         { text: "請購人", value: "PRUserName" },
         { text: "請購單狀態", value: "PRStateName" },
         { text: "請購部門", value: "PRDept" },
-        { text: "請購申請日", value: "PRDate", formatter: (val) => val.replaceAll("-", "/") },
-        { text: "審核日期", value: "AuditDate", formatter: (val) => val.replaceAll("-", "/") },
+        { text: "請購申請日", value: "PRDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
+        { text: "審核日期", value: "AuditDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
         { text: "審核結果說明", value: "AuditResult" },
         { text: "相關文件", value: "FilePath" },
     ]

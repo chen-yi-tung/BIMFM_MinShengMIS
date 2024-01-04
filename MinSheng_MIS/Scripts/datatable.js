@@ -119,7 +119,7 @@ function createTableInner(data, sn) {
  * @property {string} title - use to th
  * @property {string?} width - ex: "30%"
  * @property {boolean?} required
- * @property {function (value):string?} formatter - use to formatter td data
+ * @property {function (string, object, number):string?} formatter - use to formatter td data
  * 
  * @typedef {object} TableGridOptions
  * @property {TableGridColumnsOptions} columns - use to datatable-header

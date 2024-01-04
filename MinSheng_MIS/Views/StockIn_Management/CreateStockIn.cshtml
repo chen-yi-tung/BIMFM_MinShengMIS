@@ -26,33 +26,10 @@
             width: 100%;
         }
 
-        @@media (min-width: 576px) and (max-width: 768px) {
+        @@media (min-width: 576px) {
             .edit-area .form {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
-            }
-
-            .edit-area .form.wsalz {
-                grid-template-columns: repeat(6, 1fr);
-            }
-
-            .edit-area .form.wsalz .form-group:is(:nth-child(2), :nth-child(3)) {
-                grid-column: auto / span 3;
-            }
-
-            .edit-area .form.wsalz .form-group:is(:nth-child(4), :nth-child(5), :nth-child(6)) {
-                grid-column: auto / span 2;
-            }
-        }
-
-        @@media (min-width: 768px) {
-            .edit-area .form {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .edit-area .form.wsalz {
-                grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
             }
         }
 
@@ -107,7 +84,7 @@
 
         <div class="form-group required">
             <label for="Amount">庫存數量</label>
-            <input class="form-control" id="Amount" name="Amount" type="number" step="any" required />
+            <input class="form-control" id="Amount" name="Amount" type="number" step="any" min="0" required />
         </div>
 
         <div class="form-group required">
@@ -124,32 +101,10 @@
     </form>
     <hr class="edit-area-hr">
     <div class="edit-area-title">2.存放位置</div>
-    <form class="form wsalz">
+    <form class="form">
         <div class="form-group g-fill" style="font-size:18px; color:white;">擺放位置(倉庫, 貨架, 排, 層, 區)</div>
-        <div class="form-group">
-            <select class="form-select" name="Warehouse" id="Warehouse">
-                <option value="">倉庫</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <select class="form-select" name="Shelf" id="Shelf">
-                <option value="">貨架</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <select class="form-select" name="Aisle" id="Aisle">
-                <option value="">排</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <select class="form-select" name="Layer" id="Layer">
-                <option value="">層</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <select class="form-select" name="Zone" id="Zone">
-                <option value="">區</option>
-            </select>
+        <div class="form-group g-fill">
+            <input class="form-control" type="text" name="Location" id="Location" maxlength="30">
         </div>
     </form>
     <hr class="edit-area-hr">
@@ -157,7 +112,7 @@
     <form class="form">
         <div class="form-group required">
             <label for="RFIDAmount">標籤張數</label>
-            <input class="form-control" id="RFIDAmount" name="RFIDAmount" type="text" maxlength="50" required />
+            <input class="form-control" id="RFIDAmount" name="RFIDAmount" type="number" min="0" step="1" required />
         </div>
     </form>
     <div class="mt-4 mb-3">
@@ -166,7 +121,7 @@
 </div>
 
 <div class="datatable datatable-fill mt-5 mb-5 datatable-table d-none">
-    <div class="datatable-body overflow-auto">
+    <form class="datatable-body overflow-auto">
         <table class="datatable-table" id="POSNItem">
             <thead>
                 <tr>
@@ -178,7 +133,7 @@
                     <th class="datatable-header" style="width:6rem"><span>庫存數量</span></th>
                     <th class="datatable-header" style="width:7rem"><span>庫存單位</span></th>
                     <th class="datatable-header" style="width:10rem"><span>到期日</span></th>
-                    <th class="datatable-header" style="width:30rem"><span>擺放位置(倉庫,貨架,排,層,區)</span></th>
+                    <th class="datatable-header" style="width:30rem"><span>擺放位置(倉庫, 貨架, 排, 層, 區)</span></th>
                 </tr>
             </thead>
             <tbody id="item-area">
@@ -190,20 +145,12 @@
                     <td id="d-Model"></td>
                     <td id="d-Amount"></td>
                     <td id="d-Unit"></td>
-                    <td id="d-ExpiryDate"><input type="date" class="form-control" id="RFID_ExpiryDate"></td>
-                    <td id="d-Packaging">
-                        <div class="d-flex" style="gap:0 10px;">
-                            <select class="form-select" id="Warehouse" style="width:24%"></select>
-                            <select class="form-select" id="Shelf" style="width:19%"></select>
-                            <select class="form-select" id="Aisle" style="width:19%"></select>
-                            <select class="form-select" id="Layer" style="width:19%"></select>
-                            <select class="form-select" id="Zone" style="width:19%"></select>
-                        </div>
-                    </td>
+                    <td id="d-_ExpiryDate"><input type="date" class="form-control" id="ExpiryDate" required></td>
+                    <td id="d-_Location"><input type="text" class="form-control" id="Location" maxlength="30" required></td>
                 </tr>
             </tbody>
         </table>
-    </div>
+    </form>
 </div>
 
 <div class="edit-button-area">
@@ -218,8 +165,6 @@
         $(async function () {
             await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
             await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
-
-            await addWSALZEvent();
 
             sampleTr = new SampleTr();
 
@@ -254,8 +199,6 @@
             this.init = async function () {
                 this.sample = $("#sample-input-tr").clone();
 
-                //await addWSALZEvent("sample-input-tr");
-
                 $("#sample-input-tr").remove();
             }
             this.create = function (data = null) {
@@ -284,7 +227,8 @@
         }
 
         function save() {
-            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            let forms = [].slice.call(document.querySelectorAll(".datatable form"))
+            let isValidity = forms.map(e => e.reportValidity()).every(e => e);
             console.log("todo save():", isValidity)
             if (!isValidity) return;
         }
@@ -294,26 +238,22 @@
                 $('#SearchStock').combobox("showPanel")
             })
             $("#StockIn-create").click(function () {
-                let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+                let forms = [].slice.call(document.querySelectorAll(".edit-area form"))
+                let isValidity = forms.map(e => e.reportValidity()).every(e => e);
                 console.log("todo save():", isValidity)
                 if (!isValidity) return;
 
                 let data = {
-                    StockType: $("#StockType").val(),
-                    StockName: $("#StockName").val(),
-                    MName: $("#MName").val(),
-                    Brand: $("#Brand").val(),
-                    Model: $("#Model").val(),
-                    Amount: $("#Amount").val(),
-                    Unit: $("#Unit").val(),
+                    StockType: $(".edit-area #StockType").val(),
+                    StockName: $(".edit-area #StockName").val(),
+                    MName: $(".edit-area #MName").val(),
+                    Brand: $(".edit-area #Brand").val(),
+                    Model: $(".edit-area #Model").val(),
+                    Amount: $(".edit-area #Amount").val(),
+                    Unit: $(".edit-area #Unit").val(),
 
-                    ExpiryDate: $("#ExpiryDate").val(),
-
-                    Warehouse: $("#Warehouse").val(),
-                    Shelf: $("#Shelf").val(),
-                    Aisle: $("#Aisle").val(),
-                    Layer: $("#Layer").val(),
-                    Zone: $("#Zone").val(),
+                    ExpiryDate: $(".edit-area #ExpiryDate").val(),
+                    Location: $(".edit-area #Location").val(),
                 }
 
                 $("#POSNItem").closest(".datatable").removeClass("d-none")
@@ -330,68 +270,5 @@
                 save();
             })
         }
-
-        async function addWSALZEvent(selector = null) {
-            let s = selector ? selector + " #" : ""
-            await cps(`${s}Warehouse`, '@Url.Action("Warehouse", "DropDownList")', "倉庫");
-            await cps(`${s}Shelf`, '@Url.Action("Shelf", "DropDownList")', "貨架");
-            await cps(`${s}Aisle`, '@Url.Action("Aisle", "DropDownList")', "排");
-            await cps(`${s}Layer`, '@Url.Action("Layer", "DropDownList")', "層");
-            await cps(`${s}Zone`, '@Url.Action("Zone", "DropDownList")', "區");
-
-            const Warehouse = document.querySelector(`${s}Warehouse`)
-            const Shelf = document.querySelector(`${s}Shelf`)
-            const Aisle = document.querySelector(`${s}Aisle`)
-            const Layer = document.querySelector(`${s}Layer`)
-            const Zone = document.querySelector(`${s}Zone`)
-
-            Warehouse.addEventListener("change", () => {
-                let url = '@Url.Action("Shelf", "DropDownList")'
-                let params = new URLSearchParams()
-
-                params.set("Warehouse", Warehouse.value)
-
-                await cps(`${s}Shelf`, url + "?" + params.toString(), "貨架");
-            })
-
-            Shelf.addEventListener("change", () => {
-                let url = '@Url.Action("Aisle", "DropDownList")'
-                let params = new URLSearchParams()
-
-                params.set("Warehouse", Warehouse.value)
-                params.set("Shelf", Shelf.value)
-
-                await cps(`${s}Aisle`, url + "?" + params.toString(), "排");
-            })
-
-            Aisle.addEventListener("change", () => {
-                let url = '@Url.Action("Layer", "DropDownList")'
-                let params = new URLSearchParams()
-
-                params.set("Warehouse", Warehouse.value)
-                params.set("Shelf", Shelf.value)
-                params.set("Aisle", Aisle.value)
-
-                await cps(`${s}Layer`, url + "?" + params.toString(), "層");
-            })
-
-            Layer.addEventListener("change", () => {
-                let url = '@Url.Action("Zone", "DropDownList")'
-                let params = new URLSearchParams()
-
-                params.set("Warehouse", Warehouse.value)
-                params.set("Shelf", Shelf.value)
-                params.set("Aisle", Aisle.value)
-                params.set("Layer", Layer.value)
-
-                await cps(`${s}Zone`, url + "?" + params.toString(), "區");
-            })
-
-            async function cps(selector, url, placeholder) {
-                return await pushSelect(selector, url, "Text", "Value", placeholder);
-            }
-        }
-
-
     </script>
 }
