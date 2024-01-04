@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using static System.Net.WebRequestMethods;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -40,7 +41,6 @@ namespace MinSheng_MIS.Controllers
             DateTime now = DateTime.Now;
             // 新增實驗室維護
             var count = await db.LaboratoryMaintenance.Where(x => x.UploadDateTime.HasValue && DbFunctions.TruncateTime(x.UploadDateTime.Value) == now.Date).CountAsync() + 1;  // 實驗室維護流水碼
-            //var count = await db.LaboratoryMaintenance.Where(x => (x.UploadDateTime ?? DateTime.MinValue).Date == now.Date).CountAsync() + 1;  // 實驗室維護流水碼
 			var maintenance = new LaboratoryMaintenance
 			{
 				LMSN = now.ToString("yyMMdd") + count.ToString().PadLeft(3, '0'),
@@ -54,11 +54,12 @@ namespace MinSheng_MIS.Controllers
             string folderpath = Server.MapPath("~/Files/LaboratoryMaintenance/");
             if (lm_info.MFile != null && lm_info.MFile.ContentLength > 0) // 上傳
 			{
-                string extension = Path.GetExtension(lm_info.MFile.FileName); // 檔案副檔名
-                if (ComFunc.IsConformedForDocument(lm_info.MFile.ContentType, extension) || ComFunc.IsConformedForImage(lm_info.MFile.ContentType, extension)) // 檔案白名單檢查
+                var File = lm_info.MFile;
+                string extension = Path.GetExtension(File.FileName); // 檔案副檔名
+                if (ComFunc.IsConformedForDocument(File.ContentType, extension) || ComFunc.IsConformedForImage(File.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(lm_info.MFile, folderpath, maintenance.LMSN))
+                    if (!ComFunc.UploadFile(File, folderpath, maintenance.LMSN))
                         return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
                     maintenance.MFile = maintenance.LMSN + extension;
                 }
