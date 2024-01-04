@@ -1,12 +1,15 @@
 ﻿@{
     ViewBag.Title = "刪除會議記錄";
 }
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <style>
+        .datatable-table .datatable-table-th {
+            background: var(--datatable-header-bg);
+        }
+    </style>
+}
 
-<style>
-    .datatable-table .datatable-table-th {
-        background: var(--datatable-header-bg);
-    }
-</style>
 <h2>@ViewBag.Title</h2>
 
 <div class="datatable mt-5">
@@ -20,78 +23,79 @@
     <button class="btn btn-delete" id="delete">刪除</button>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
-<script>
-    const MMSN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("ReadBody", "MeetingMinutes_Management")' + `/${MMSN}`;
-    //let apiUrl = null;
+@section scripts {
+    <script>
+        const MMSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "MeetingMinutes_Management")' + `/${MMSN}`;
+        //let apiUrl = null;
 
-    const SerializedName = [
-        { text: "會議主題", value: "MeetingTopic" },
-        { text: "會議日期", value: "MeetingDate" },
-        { text: "會議時間", value: "MeetingTime" },
-        { text: "會議地點", value: "MeetingVenue" },
-        { text: "會議主席", value: "Chairperson" },
-        { text: "興會者", value: "Participant" },
-        { text: "出席狀況", value: "ExpectedAttendence" },
-        { text: "會議記錄負責人", value: "TakeTheMinutes" },
-        { text: "議題順序", value: "Agenda" },
-        { text: "會議內容", value: "MeetingContent" },
-        { text: "會議資料", value: "FilePath" }
-    ]
+        const SerializedName = [
+            { text: "會議主題", value: "MeetingTopic" },
+            { text: "會議日期", value: "MeetingDate" },
+            { text: "會議時間", value: "MeetingTime" },
+            { text: "會議地點", value: "MeetingVenue" },
+            { text: "會議主席", value: "Chairperson" },
+            { text: "興會者", value: "Participant" },
+            { text: "出席狀況", value: "ExpectedAttendence" },
+            { text: "會議記錄負責人", value: "TakeTheMinutes" },
+            { text: "議題順序", value: "Agenda" },
+            { text: "會議內容", value: "MeetingContent" },
+            { text: "會議資料", value: "FilePath" }
+        ]
 
-    const fakeData = {
-        MeetingTopic: "修改日期指定",
-        MeetingDate: "2024/01/01",
-        MeetingTime: "10:00-11:00",
-        MeetingVenue: "會議室3B",
-        Chairperson: "李助理",
-        Participant: "全體人員",
-        ExpectedAttendence: "應到:53位  出席:53位  缺席:0位",
-        TakeTheMinutes: "助理",
-        Agenda: "文字內容",
-        MeetingContent: "電腦筆記",
-        FilePath: "5月主題.pdf"
-    }
-
-    function readData(url = null) {
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        function onSuccess(res) {
-            console.log(res);
-            $("#FormDetail").append(createTableInner(res, SerializedName));
+        const fakeData = {
+            MeetingTopic: "修改日期指定",
+            MeetingDate: "2024/01/01",
+            MeetingTime: "10:00-11:00",
+            MeetingVenue: "會議室3B",
+            Chairperson: "李助理",
+            Participant: "全體人員",
+            ExpectedAttendence: "應到:53位  出席:53位  缺席:0位",
+            TakeTheMinutes: "助理",
+            Agenda: "文字內容",
+            MeetingContent: "電腦筆記",
+            FilePath: "5月主題.pdf"
         }
-        function onError(res) {
-            console.log(res);
+
+        function readData(url = null) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#FormDetail").append(createTableInner(res, SerializedName));
+            }
+            function onError(res) {
+                console.log(res);
+            }
         }
-    }
 
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        });
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
 
-        $("#delete").click(function () {
-            createDeleteDialog({
-                url: '@Url.Action("DeleteMeetingMinutes", "MeetingMinutes_Management")?MMSN=' + MMSN,
-                data: MMSN,
-                onSuccess() {
-                    window.location.href = '@Url.Action("Management", "MeetingMinutes_Management")';
-                }
-            })
-        });
-    }
+            $("#delete").click(function () {
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteMeetingMinutes", "MeetingMinutes_Management")?MMSN=' + MMSN,
+                    data: MMSN,
+                    onSuccess() {
+                        window.location.href = '@Url.Action("Management", "MeetingMinutes_Management")';
+                    }
+                })
+            });
+        }
 
-    window.onload = function () {
-        readData(apiUrl);
-        addButtonEvent();
-    }
-</script>
+        window.onload = function () {
+            readData(apiUrl);
+            addButtonEvent();
+        }
+    </script>
+}

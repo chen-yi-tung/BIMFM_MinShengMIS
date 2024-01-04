@@ -1,13 +1,18 @@
 ﻿@{
     ViewBag.Title = "編輯月報";
 }
-<style>
-    @@media (min-width: 992px) {
-        .edit-area .form {
-            grid-template-columns: 250px 250px;
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <style>
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                grid-template-columns: 250px 250px;
+            }
         }
-    }
-</style>
+    </style>
+}
+
 <h2>@ViewBag.Title</h2>
 <div class="edit-area edit-area-small">
     <form class="form pt-0">
@@ -35,118 +40,118 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">儲存</button>
 </div>
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script>
-    const MRSN = '@ViewBag.id';
-    const apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
-    const fakeData = {
-        MRSN: "1",
-        ReportTitle: "2023-5月月報",
-        UploadUserName: "王大明",
-        UploadDateTime: "2023/5/22",
-        ReportContent: "OOXX",
-        YearMonth: "2023-05",
-        FilePath: "/Files/a.pdf"
-    }
-    var fileUploader
-    $(async function () {
-        addButtonEvent();
-        fileUploader = new FileUploader({
-            container: "#FileUploader",
-            className: "form-group g-col-2 required",
-            label: "月報檔案",
-            id: "File",
-            customValidity: true
-        })
-        readData(apiUrl);
-    });
 
-    function readData(url = null) {
-        url == null ? onSuccess(fakeData) :   //res
+@section scripts {
+    <script>
+        const MRSN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
+        const fakeData = {
+            MRSN: "1",
+            ReportTitle: "2023-5月月報",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023/5/22",
+            ReportContent: "OOXX",
+            YearMonth: "2023-05",
+            FilePath: "/Files/a.pdf"
+        }
+        var fileUploader
+        $(async function () {
+            addButtonEvent();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group g-col-2 required",
+                label: "月報檔案",
+                id: "File",
+                customValidity: true
+            })
+            readData(apiUrl);
+        });
+
+        function readData(url = null) {
+            url == null ? onSuccess(fakeData) :   //res
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                for (const [k, v] of Object.entries(res)) {
+                    $("#" + k).val(v);
+                }
+                fileUploader.setFile(res.FilePath)
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
+
+            var fd = new FormData();
+            fd.append("MRSN", '@ViewBag.id');
+            fd.append("ReportTitle", document.getElementById("ReportTitle").value);
+            fd.append("ReportContent", document.getElementById("ReportContent").value);
+            fd.append("YearMonth", document.getElementById("YearMonth").value);
+            if (fileUploader.hasFile()) {
+                let file = fileUploader.getFile()
+                if (file.size) {
+                    fd.append("ReportFile", file);
+                }
+                else {
+                    fd.append("ReportFileStr", file.name);
+                }
+            }
+            console.log(fileUploader.getFile())
+            console.log(Object.fromEntries(fd.entries()));
             $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: '@Url.Action("EditMonthlyReport", "MonthlyReport_Management")',
+                data: fd,
+                type: "POST",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
-
-        function onSuccess(res) {
-            console.log(res);
-            for (const [k, v] of Object.entries(res)) {
-                $("#" + k).val(v);
+            function onSuccess(res) {
+                console.log(res);
+                if (res.success == false) {
+                    createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+                }
+                else {
+                    createDialogModal({
+                        id: "DialogModal-Success", inner: "儲存成功！",
+                        onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
+                    });
+                }
             }
-            fileUploader.setFile(res.FilePath)
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function save() {
-        //重置自訂驗證錯誤訊息
-        getAllParams().forEach((e) => {
-            e.setCustomValidity('');
-        })
-        //自訂驗證錯誤
-        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity():", isValidity)
-        if (!isValidity) return;
-
-        var fd = new FormData();
-        fd.append("MRSN", '@ViewBag.id');
-        fd.append("ReportTitle", document.getElementById("ReportTitle").value);
-        fd.append("ReportContent", document.getElementById("ReportContent").value);
-        fd.append("YearMonth", document.getElementById("YearMonth").value);
-        if (fileUploader.hasFile()) {
-            let file = fileUploader.getFile()
-            if (file.size) {
-                fd.append("ReportFile", file);
-            }
-            else {
-                fd.append("ReportFileStr", file.name);
-            }
-        }
-        console.log(fileUploader.getFile())
-        console.log(Object.fromEntries(fd.entries()));
-        $.ajax({
-            url: '@Url.Action("EditMonthlyReport", "MonthlyReport_Management")',
-            data: fd,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            if (res.success == false) {
+            function onError(res) {
+                console.log(res);
                 createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
             }
-            else {
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "儲存成功！",
-                    onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
-                });
-            }
         }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#submit").click(function () {
+                save();
+            })
         }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-</script>
-
+    </script>
+}

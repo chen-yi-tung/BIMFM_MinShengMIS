@@ -1,7 +1,10 @@
 ﻿@{
     ViewBag.Title = "月報詳情";
 }
-<link rel="stylesheet" href="/Content/samplepath.css">
+@section styles {
+    <link rel="stylesheet" href="/Content/samplepath.css">
+    <script src="/Scripts/datatable.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 <div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
@@ -10,61 +13,61 @@
     </div>
 </div>
 
-<script src="/Scripts/datatable.js"></script>
+@section scripts {
+    <script>
+        const MRSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
 
-<script>
-    const MRSN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
-
-    const fakeData = {
-        MRSN: "1",
-        ReportTitle: "2023-5月月報",
-        UploadUserName: "王大明",
-        UploadDateTime: "2023/5/22",
-        ReportContent: "OOXX",
-        YearMonth: "2023-05",
-        FilePath: "/Files/a.pdf"
-    }
-
-    const sn = [
-        { text: "年月份", value: "YearMonth" },
-        { text: "月報名稱", value: "ReportTitle" },
-        { text: "上傳者", value: "UploadUserName" },
-        { text: "上傳日期", value: "UploadDateTime" },
-        { text: "內容說明", value: "ReportContent" },
-        { text: "月報檔案", value: "FilePath" },
-    ]
-
-
-    $(function () {
-        addButtonEvent();
-        readData(apiUrl);
-    })
-
-    function readData(url = null) {
-
-        url == null ? onSuccess(fakeData) :
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-        async function onSuccess(res) {
-            console.log(res);
-            $(".datatable-table").append(createTableInner(res, sn))
+        const fakeData = {
+            MRSN: "1",
+            ReportTitle: "2023-5月月報",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023/5/22",
+            ReportContent: "OOXX",
+            YearMonth: "2023-05",
+            FilePath: "/Files/a.pdf"
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
 
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
+        const sn = [
+            { text: "年月份", value: "YearMonth" },
+            { text: "月報名稱", value: "ReportTitle" },
+            { text: "上傳者", value: "UploadUserName" },
+            { text: "上傳日期", value: "UploadDateTime" },
+            { text: "內容說明", value: "ReportContent" },
+            { text: "月報檔案", value: "FilePath" },
+        ]
+
+
+        $(function () {
+            addButtonEvent();
+            readData(apiUrl);
         })
-    }
-</script>
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+                $(".datatable-table").append(createTableInner(res, sn))
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+        }
+    </script>
+}

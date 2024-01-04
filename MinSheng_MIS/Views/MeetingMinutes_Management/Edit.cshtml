@@ -1,49 +1,53 @@
 ﻿@{
     ViewBag.Title = "編輯會議記錄";
 }
-<style>
-    .mm-grid {
-        grid-template-columns: repeat(12, 1fr);
-        gap: 1.5rem;
-    }
-
-    @@media (max-width: 1200px) {
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <style>
         .mm-grid {
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+
+        @@media (max-width: 1200px) {
+            .mm-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
-    }
 
-    .grid-2 {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-    }
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
 
-    .grid-3 {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-    }
+        .grid .form-control {
+            grid-column-start: auto;
+        }
 
-    .grid .form-control {
-        grid-column-start: auto;
-    }
+        .g-col-2 {
+            grid-column: auto/span 2;
+        }
 
-    .g-col-2 {
-        grid-column: auto/span 2;
-    }
+        .g-col-3 {
+            grid-column: auto/span 3;
+        }
 
-    .g-col-3 {
-        grid-column: auto/span 3;
-    }
+        .g-col-6 {
+            grid-column: auto/span 6;
+        }
 
-    .g-col-6 {
-        grid-column: auto/span 6;
-    }
-
-    .textbox {
-        width: 100% !important;
-    }
-</style>
+        .textbox {
+            width: 100% !important;
+        }
+    </style>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -116,137 +120,138 @@
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">儲存</button>
 </div>
-<script src="/Scripts/datatable.js"></script>
-<script src="/Scripts/tool.js"></script>
-<script>
-    const MMSN = '@ViewBag.id';
-    let apiUrl = '@Url.Action("EditReadBody", "MeetingMinutes_Management")' + `/${MMSN}`;
-    //let apiUrl = null;
 
-    const fakeData = {
-        MeetingTopic: "修改日期指定",
-        MeetingDate: "2024-01-01",
-        MeetingDateStart: "10:00",
-        MeetingDateEnd: "11:00",
-        MeetingVenue: "會議室3B",
-        Chairperson: "李助理",
-        Participant: "全體人員",
-        ExpectedAttendence: "53",
-        ActualAttendence: "53",
-        AbsenteeList: "0",
-        TakeTheMinutes: "助理",
-        Agenda: "文字內容",
-        MeetingContent: "電腦筆記",
-        FilePath: "5月主題.pdf"
-    }
+@section scripts {
+    <script>
+        const MMSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("EditReadBody", "MeetingMinutes_Management")' + `/${MMSN}`;
+        //let apiUrl = null;
 
-    var fileUploader
-    $(async function () {
-        addButtonEvent();
-        fileUploader = new FileUploader({
-            container: "#FileUploader",
-            className: "form-group w-100",
-            label: "會議資料",
-            id: "File",
-            required: false,
-            multiple: true
-        })
-        readData(apiUrl)
-    });
+        const fakeData = {
+            MeetingTopic: "修改日期指定",
+            MeetingDate: "2024-01-01",
+            MeetingDateStart: "10:00",
+            MeetingDateEnd: "11:00",
+            MeetingVenue: "會議室3B",
+            Chairperson: "李助理",
+            Participant: "全體人員",
+            ExpectedAttendence: "53",
+            ActualAttendence: "53",
+            AbsenteeList: "0",
+            TakeTheMinutes: "助理",
+            Agenda: "文字內容",
+            MeetingContent: "電腦筆記",
+            FilePath: "5月主題.pdf"
+        }
 
-    function readData(url = null) {
+        var fileUploader
+        $(async function () {
+            addButtonEvent();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group w-100",
+                label: "會議資料",
+                id: "File",
+                required: false,
+                multiple: true
+            })
+            readData(apiUrl)
+        });
 
-        url == null ? onSuccess(fakeData) :
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                for (const [k, v] of Object.entries(res)) {
+                    $("#" + k).val(v)
+                }
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
+
+            var fd = new FormData();
+            fd.append("MeetingTopic", document.getElementById("MeetingTopic").value);
+            fd.append("MeetingDate", document.getElementById("MeetingDate").value);
+
+            fd.append("MeetingDateStart", document.getElementById("MeetingDateStart").value);
+            fd.append("MeetingDateEnd", document.getElementById("MeetingDateEnd").value);
+
+            fd.append("MeetingVenue", document.getElementById("MeetingVenue").value);
+            fd.append("Chairperson", document.getElementById("Chairperson").value);
+            fd.append("Participant", document.getElementById("Participant").value);
+
+            fd.append("ExpectedAttendence", document.getElementById("ExpectedAttendence").value);
+            fd.append("ActualAttendence", document.getElementById("ActualAttendence").value);
+            fd.append("AbsenteeList", document.getElementById("AbsenteeList").value);
+
+            fd.append("TakeTheMinutes", document.getElementById("TakeTheMinutes").value);
+            fd.append("Agenda", document.getElementById("Agenda").value);
+            fd.append("MeetingContent", document.getElementById("MeetingContent").value);
+
+            if (fileUploader.hasFile()) {
+                fileUploader.getAllFile().forEach((file, i) => {
+                    if (file?.size) {
+                        form.append(`MeetingFiles[${i}]`, file);
+                    }
+                    else {
+                        form.append(`MeetingFiles[${i}]`, file?.name);
+                    }
+                })
+            }
+            console.log(Object.fromEntries(fd.entries()));
             $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: '@Url.Action("EditMeetingMinutes", "MeetingMinutes_Management")',
+                data: fd,
+                type: "POST",
+                contentType: false,
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
-
-        function onSuccess(res) {
-            console.log(res);
-            for (const [k, v] of Object.entries(res)) {
-                $("#" + k).val(v)
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/MeetingMinutes_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
             }
         }
-        function onError(res) {
-            console.log(res);
-        }
-    }
 
-    function save() {
-        //重置自訂驗證錯誤訊息
-        getAllParams().forEach((e) => {
-            e.setCustomValidity('');
-        })
-        //自訂驗證錯誤
-        fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity():", isValidity)
-        if (!isValidity) return;
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
 
-        var fd = new FormData();
-        fd.append("MeetingTopic", document.getElementById("MeetingTopic").value);
-        fd.append("MeetingDate", document.getElementById("MeetingDate").value);
-
-        fd.append("MeetingDateStart", document.getElementById("MeetingDateStart").value);
-        fd.append("MeetingDateEnd", document.getElementById("MeetingDateEnd").value);
-
-        fd.append("MeetingVenue", document.getElementById("MeetingVenue").value);
-        fd.append("Chairperson", document.getElementById("Chairperson").value);
-        fd.append("Participant", document.getElementById("Participant").value);
-
-        fd.append("ExpectedAttendence", document.getElementById("ExpectedAttendence").value);
-        fd.append("ActualAttendence", document.getElementById("ActualAttendence").value);
-        fd.append("AbsenteeList", document.getElementById("AbsenteeList").value);
-
-        fd.append("TakeTheMinutes", document.getElementById("TakeTheMinutes").value);
-        fd.append("Agenda", document.getElementById("Agenda").value);
-        fd.append("MeetingContent", document.getElementById("MeetingContent").value);
-
-        if (fileUploader.hasFile()) {
-            fileUploader.getAllFile().forEach((file, i) => {
-                if (file?.size) {
-                    form.append(`MeetingFiles[${i}]`, file);
-                }
-                else {
-                    form.append(`MeetingFiles[${i}]`, file?.name);
-                }
+            $("#submit").click(function () {
+                save();
             })
         }
-        console.log(Object.fromEntries(fd.entries()));
-        $.ajax({
-            url: '@Url.Action("EditMeetingMinutes", "MeetingMinutes_Management")',
-            data: fd,
-            type: "POST",
-            contentType: false,
-            processData: false,
-            success: onSuccess,
-            error: onError
-        })
-        function onSuccess(res) {
-            console.log(res);
-            createDialogModal({
-                id: "DialogModal-Success", inner: "儲存成功！",
-                onHide: () => { window.location.href = "/MeetingMinutes_Management/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        })
-
-        $("#submit").click(function () {
-            save();
-        })
-    }
-</script>
+    </script>
+}
