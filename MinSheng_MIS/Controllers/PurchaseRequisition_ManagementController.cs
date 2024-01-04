@@ -159,7 +159,7 @@ namespace MinSheng_MIS.Controllers
                 if (ComFunc.IsConformedForDocument(newFile.ContentType, extension) || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(newFile, folderpath, request.PRN)) return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
+                    if (!ComFunc.UploadFile(newFile, Server.MapPath(folderPath), request.PRN)) return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
                     request.FileName = request.PRN + extension;
                 }
                 else 
