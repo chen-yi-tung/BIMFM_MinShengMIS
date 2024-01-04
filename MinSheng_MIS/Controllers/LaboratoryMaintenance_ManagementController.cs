@@ -88,7 +88,7 @@ namespace MinSheng_MIS.Controllers
             var maintenance = await db.LaboratoryMaintenance.FirstOrDefaultAsync(x => x.LMSN == lm_info.LMSN);
             if (maintenance == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "LMSN is Undefined.");
 
-            #region 編輯實驗室維護資訊
+            // 編輯實驗室維護資訊
             maintenance.MType = lm_info.MType;
             maintenance.MTitle = lm_info.MTitle;
             maintenance.MContent = lm_info.MContent;
@@ -113,7 +113,6 @@ namespace MinSheng_MIS.Controllers
                 else
                     return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
             }
-            #endregion
 
             db.LaboratoryMaintenance.AddOrUpdate(maintenance);
             await db.SaveChangesAsync();
