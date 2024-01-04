@@ -181,6 +181,9 @@
                     }
                 })
             }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
+            }
             this.init();
             return this;
         }
@@ -194,6 +197,11 @@
 
             form.append("PRUserName", document.getElementById("PRUserName").value);
             form.append("PRDept", document.getElementById("PRDept").value);
+
+            if (!sampleTr.checkValidity()) {
+                onError({ responseText: "請至少新增一個請購項目！" })
+                return;
+            }
             sampleTr.calc().forEach((item, i) => {
                 form.append(`PurchaseRequisitionItem[${i}].Kind`, item.Kind);
                 form.append(`PurchaseRequisitionItem[${i}].ItemName`, item.ItemName);
