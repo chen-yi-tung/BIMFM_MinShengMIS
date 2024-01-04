@@ -31,8 +31,8 @@
             <input class="form-control" id="StockName" name="StockName" type="text" />
         </div>
         <div class="form-group">
-            <label for="StockInName">入庫人員</label>
-            <input class="form-control" id="StockInName" name="StockInName" type="text" />
+            <label for="StockInMyName">入庫人員</label>
+            <input class="form-control" id="StockInMyName" name="StockInMyName" type="text" />
         </div>
 
         <div class="form-group">
@@ -72,7 +72,7 @@
                 TotalAmount: "50",
                 Unit: "罐",
                 StockInDateTime: "2023/05/06 9:00",
-                StockInName: "王大明"
+                StockInMyName: "王大明"
             },
             {
                 SIRSN: "SI230506001",
@@ -82,7 +82,7 @@
                 TotalAmount: "50",
                 Unit: "罐",
                 StockInDateTime: "2023/05/06 9:00",
-                StockInName: "王大明"
+                StockInMyName: "王大明"
             }
         ]
 
@@ -110,7 +110,7 @@
                     dg.column('TotalAmount', '總數量', 160),
                     dg.column('Unit', '單位', 180),
                     dg.column('StockInDateTime', '入庫時間', 240),
-                    dg.column('StockInName', '入庫人員', 240)
+                    dg.column('StockInMyName', '入庫人員', 240)
                 ]]
             })
             dg.addEvent("read", function (row, i) {
@@ -129,7 +129,7 @@
             });
 
             $("#create").click(function () {
-                window.open(`${baseUrl}/CreateStockIn`, "_self");
+                window.open(`${baseUrl}/Create`, "_self");
             });
         }
     </script>
