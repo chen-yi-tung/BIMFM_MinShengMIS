@@ -51,12 +51,12 @@
 
         <div class="form-group">
             <label for="DateStart">日期(起)</label>
-            <input class="form-control" id="DateStart" name="DateStart" type="date" />
+            <input class="form-control" id="DateStart" name="DateStart" type="date" max='@($"{DateTime.Now:yyyy-MM-dd}")'/>
         </div>
 
         <div class="form-group">
             <label for="DateEnd">日期(迄)</label>
-            <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
+            <input class="form-control" id="DateEnd" name="DateEnd" type="date" max='@($"{DateTime.Now:yyyy-MM-dd}")'/>
         </div>
 
         <div class="button-group">

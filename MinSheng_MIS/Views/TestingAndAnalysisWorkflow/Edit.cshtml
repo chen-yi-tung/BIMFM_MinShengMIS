@@ -157,9 +157,17 @@
                 form.append("WorkflowFile", fileUploader.getFile());
             }
 
+            if (!labelItems.checkValidity()) {
+                onError({ responseText: "請至少新增一個實驗標籤名稱！" })
+                return;
+            }
             labelItems.calc().forEach((item, i) => {
                 form.append(`LabelName[${i}]`, item.Name);
             })
+            if (!dataItems.checkValidity()) {
+                onError({ responseText: "請至少新增一個實驗數據欄位！" })
+                return;
+            }
             dataItems.calc().forEach((item, i) => {
                 form.append(`DataName[${i}]`, item.Name);
             })
@@ -229,6 +237,9 @@
                         Name: $(e).children("#Name").val()
                     }
                 })
+            }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
             }
             this.init = () => {
                 $(`#${id} #create-item`).click(() => {
