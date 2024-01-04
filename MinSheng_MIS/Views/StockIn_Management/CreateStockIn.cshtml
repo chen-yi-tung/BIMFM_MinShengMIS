@@ -231,10 +231,13 @@
                 hasDownArrow: false,
                 prompt: "搜尋庫存是否有同品項品名",
                 cls: "form-control w-lg-460px",
+                data: [
+                    { Text: "aaa", Value: "aaa" }
+                ],
                 onSelect(record) {
                     console.log("record:", record)
                     //取得該品名資訊
-                    $.getJSON(`@Url.Action("GetStockInfo", "StockIn_Management")?SSN=${record.Value}`, (res) => {
+                    $.getJSON(`@Url.Action("GetStockInfo", "StockIn_Management")?SISN=${record.Value}`, (res) => {
                         //放入資料
                         $("#StockType").val(res.StockType)
                         $("#StockName").val(res.StockName)
