@@ -108,7 +108,7 @@ namespace MinSheng_MIS.Controllers
                 PRDate = request.PRDate.ToString("yyyy-MM-dd"),
                 AuditDate = request.AuditDate?.ToString("yyyy-MM-dd"),
                 AuditResult = request.AuditResult,
-                FilePath = ComFunc.GetFilePath("Files/PurchaseRequisition", Server, request.PRN)?.FirstOrDefault(),
+                FilePath = !string.IsNullOrEmpty(request.FileName)? ComFunc.UrlMaker("Files/PurchaseRequisition", request.FileName):null,
                 PurchaseRequisitionItem = request.PurchaseRequisitionItem.Select(x => new PR_Item
                 {
                     Kind = x.Kind,

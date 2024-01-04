@@ -1,15 +1,13 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
@@ -81,10 +79,28 @@ namespace MinSheng_MIS.Controllers
 		#endregion
 
 		#region 實驗室維護管理詳情
-		public ActionResult Read()
+		public ActionResult Read(string id)
 		{
-			return View();
+            ViewBag.id = id;
+            return View();
 		}
-		#endregion
-	}
+
+        public async Task<ActionResult> Read_Data(string id)
+        {
+            var maintenance = await db.LaboratoryMaintenance.FirstOrDefaultAsync(x => x.LMSN == id);
+            if (maintenance == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "LMSN is Undefined.");
+
+            LM_ViewModel model = new LM_ViewModel
+            {
+                MType = maintenance.MType,
+                MTitle = maintenance.MTitle,
+                MContent = maintenance.MContent,
+                UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == maintenance.UploadUserName)?.Result.MyName,
+                UploadDateTime = maintenance.UploadDateTime?.ToString("yyyy/MM/dd HH:mm:ss"),
+                FilePath = !string.IsNullOrEmpty(maintenance.MFile) ? ComFunc.UrlMaker("Files/LaboratoryMaintenance", maintenance.MFile) : null,
+            };
+            return Content(JsonConvert.SerializeObject(model), "application/json");
+        }
+        #endregion
+    }
 }

@@ -180,17 +180,17 @@ namespace MinSheng_MIS.Services
         /// <returns></returns>
         public static List<string> GetFilePath(string path, HttpServerUtilityBase ser, string filename)
         {
-            string folderpath = ser.MapPath("~/" + $"{path}" + "/");
+            string folderpath = ser.MapPath($"~/{path}/");
             if (Directory.Exists(folderpath))  // 資料夾路徑存在
             {
                 List<string> files = new List<string>();
                 DirectoryInfo di = new DirectoryInfo(folderpath);
                 if (!string.IsNullOrEmpty(filename))
                     foreach (var fi in di.GetFiles($"{filename}.*"))
-                        files.Add(UrlMaker($"{path}", fi.Name));
+                        files.Add(UrlMaker(path, fi.Name));
                 else
                     foreach (var fi in di.GetFiles())
-                        files.Add(UrlMaker($"{path}", fi.Name));
+                        files.Add(UrlMaker(path, fi.Name));
 
                 return files;
             }
