@@ -271,9 +271,9 @@
 
             this.sample = $("#sample-input-tr").clone();
             $("#sample-input-tr").remove();
-            //this.add();
+            //this.create();
         }
-        this.add = function (data = null) {
+        this.create = function (data = null) {
             let item = this.sample.clone();
             item.attr('id', this.count);
             this.list.append(item);
@@ -336,11 +336,11 @@
                 $("#PRDept").val(res.PRDept)
                 if (Array.isArray(res.PurchaseRequisitionItem) || res.PurchaseRequisitionItem.length !== 0) {
                     res.PurchaseRequisitionItem.forEach((item) => {
-                        sampleTr.add(item);
+                        sampleTr.create(item);
                     })
                 }
                 else {
-                    sampleTr.add();
+                    sampleTr.create();
                 }
             }
         }
@@ -419,7 +419,7 @@
             history.back();
         });
         $("#create-item").click(function () {
-            sampleTr.add();
+            sampleTr.create();
         });
         $("#submit").click(function () {
             save();

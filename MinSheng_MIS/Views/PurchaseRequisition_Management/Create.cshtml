@@ -152,9 +152,9 @@
             this.sample = $("#sample-input-tr").clone();
             $("#sample-input-tr").remove();
 
-            this.add();
+            this.create();
         }
-        this.add = function (data = null) {
+        this.create = function (data = null) {
             let item = this.sample.clone();
             item.attr('id', this.count);
             this.list.append(item);
@@ -228,7 +228,7 @@
             history.back();
         });
         $("#create-item").click(function () {
-            sampleTr.add();
+            sampleTr.create();
         });
         $("#submit").click(function () {
             save();
