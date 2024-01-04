@@ -57,7 +57,7 @@
 
             <div class="form-group w-lg-250px">
                 <label for="SRDept">申請部門</label>
-                <input class="form-control" id="SRDept" name="SRDept" type="text" maxlength="20" required />
+                <input class="form-control" id="SRDept" name="SRDept" type="text" maxlength="20" />
             </div>
 
             <div class="form-group w-lg-532px">
@@ -229,6 +229,9 @@
                     }
                 })
             }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
+            }
             return this;
         }
 
@@ -243,6 +246,11 @@
             form.append("SRUserName", document.getElementById("SRUserName").value);
             form.append("SRDept", document.getElementById("SRDept").value);
             form.append("SRContent", document.getElementById("SRContent").value);
+
+            if (!sampleTr.checkValidity()) {
+                onError({ responseText: "請至少新增一個領用申請項目！" })
+                return;
+            }
             sampleTr.calc().forEach((item, i) => {
                 form.append(`StoresRequisitionItem[${i}].SISN`, item.SISN);
                 form.append(`StoresRequisitionItem[${i}].Amount`, item.Amount);
@@ -252,7 +260,7 @@
             console.log(Object.fromEntries(form.entries()));
 
             $.ajax({
-                url: '@Url.Action("CreateStoresRequisition=", "StoresRequisition_Management")',
+                url: '@Url.Action("CreateStoresRequisition", "StoresRequisition_Management")',
                 data: form,
                 type: "POST",
                 contentType: false,
@@ -263,13 +271,13 @@
             function onSuccess(res) {
                 console.log(res);
                 createDialogModal({
-                    id: "DialogModal-Success", inner: "新增成功！",
+                    id: "DialogModal-Success", inner: "儲存成功！",
                     onHide: () => { window.location.href = "/StoresRequisition_Management/Management"; }
                 });
             }
             function onError(res) {
                 console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
             }
         }
 

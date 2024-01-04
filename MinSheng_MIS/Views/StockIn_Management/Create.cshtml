@@ -231,6 +231,9 @@
                     }
                 })
             }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
+            }
             this.init();
             return this;
         }
@@ -242,6 +245,10 @@
             if (!isValidity) return;
 
             var form = new FormData();
+            if (!sampleTr.checkValidity()) {
+                onError({ responseText: "請至少產生一個標籤！" })
+                return;
+            }
             sampleTr.calc().forEach((item, i) => {
                 form.append(`StockItem[${i}].Location`, item.Location);
                 form.append(`StockItem[${i}].ExpiryDate`, item.ExpiryDate);

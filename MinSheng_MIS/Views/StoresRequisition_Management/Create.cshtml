@@ -58,7 +58,7 @@
 
             <div class="form-group w-lg-250px">
                 <label for="SRDept">申請部門</label>
-                <input class="form-control" id="SRDept" name="SRDept" type="text" maxlength="20" required />
+                <input class="form-control" id="SRDept" name="SRDept" type="text" maxlength="20" />
             </div>
 
             <div class="form-group w-lg-532px">
@@ -186,6 +186,9 @@
                     }
                 })
             }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
+            }
             return this;
         }
 
@@ -199,6 +202,11 @@
             form.append("SRUserName", document.getElementById("SRUserName").value);
             form.append("SRDept", document.getElementById("SRDept").value);
             form.append("SRContent", document.getElementById("SRContent").value);
+
+            if (!sampleTr.checkValidity()) {
+                onError({ responseText: "請至少新增一個領用申請項目！" })
+                return;
+            }
             sampleTr.calc().forEach((item, i) => {
                 form.append(`StoresRequisitionItem[${i}].SISN`, item.SISN);
                 form.append(`StoresRequisitionItem[${i}].Amount`, item.Amount);

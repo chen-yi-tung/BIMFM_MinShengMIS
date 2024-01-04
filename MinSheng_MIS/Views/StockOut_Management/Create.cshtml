@@ -66,7 +66,25 @@
 <div class="edit-area mt-5">
     <div class="datatable datatable-fill">
         <div class="datatable-body overflow-auto">
-            <table class="datatable-table" id="StockOutItem"></table>
+            <table class="datatable-table" id="StockOutItem">
+                <thead>
+                    <tr>
+                        <th class="datatable-header" style="width:100px"><span>RFID</span></th>
+                        <th class="datatable-header" style="width:160px"><span>品項</span></th>
+                        <th class="datatable-header" style="width:250px"><span>品名</span></th>
+                        <th class="datatable-header" style="width:100px"><span>廠商品名</span></th>
+                        <th class="datatable-header" style="width:200px"><span>尺寸</span></th>
+                        <th class="datatable-header" style="width:120px"><span>廠商</span></th>
+                        <th class="datatable-header" style="width:120px"><span>型號</span></th>
+                        <th class="datatable-header" style="width:150px"><span>到期日</span></th>
+                        <th class="datatable-header" style="width:120px"><span>領取數量</span></th>
+                        <th class="datatable-header" style="width:80px"><span>單位</span></th>
+                        <th class="datatable-header" style="width:150px"><span>剩餘可領取數量</span></th>
+                        <th class="datatable-header" style="width:36px"><span></span></th>
+                    </tr>
+                </thead>
+                <tbody id="item-area"></tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -91,32 +109,6 @@
                 { id: "TakeAmount", title: "已領取數量", width: 150 },
                 { id: "RemainingAmount", title: "剩餘可領取數量", width: 150 },
                 { id: "Unit", title: "單位", width: 80 },
-            ]
-        }
-
-        const GridOptions = {
-            thead: true,
-            columns: [
-                { id: "SSN", title: "RFID", width: 100 },
-                { id: "StockType", title: "品項", width: 160 },
-                { id: "StockName", title: "品名", width: 250 },
-                { id: "MName", title: "廠商品名", width: 100 },
-                { id: "Size", title: "尺寸", width: 200 },
-                { id: "Brand", title: "廠商", width: 120 },
-                { id: "Model", title: "型號", width: 120 },
-                { id: "ExpiryDate", title: "到期日", width: 150 },
-                {
-                    id: "OutAmount", title: "領取數量", width: 120, formatter: (val, row) => {
-                        return `<input type="number" class="form-control" step="any" min="0" max="${row.RemainingAmount}" required value="${val}">`
-                    }
-                },
-                { id: "Unit", title: "單位", width: 80 },
-                { id: "RemainingAmount", title: "剩餘可領取數量", width: 150 },
-                {
-                    id: "", title: "", width: 36, formatter: (val, row, i) => {
-                        return `<button type="button" class="btn-delete-item" onclick='$("#StockOutItem tr#${i}").remove()'></button>`
-                    }
-                }
             ]
         }
 
@@ -175,12 +167,82 @@
             ]
         }
 
+        let sampleTr;
+
         $(async function () {
-            await pushSelect("StockOutName", '@Url.Action("AllMyName", "DropDownList")');
-            await pushSelect("ReceiverName", '@Url.Action("AllMyName", "DropDownList")');
+            await pushSelect("StockOutUserName", '@Url.Action("AllMyName", "DropDownList")');
+            await pushSelect("ReceiverUserName", '@Url.Action("AllMyName", "DropDownList")');
+            sampleTr = new SampleTr();
             addButtonEvent();
             readData(apiUrl);
         })
+
+        function SampleTr() {
+            this.count = 0;
+            this.list = $("#item-area")
+            this.init = async function () {
+                const observer = new ResizeObserver((entries) => {
+                    for (const entry of entries) {
+                        let style = getComputedStyle(entry.target)
+                        let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
+                        let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
+                        $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
+                        //console.log(`${h} >= ${mh} ${h >= mh}`)
+                    }
+                })
+                observer.observe(this.list.closest(".datatable-body")[0])
+
+                this.list.on("click", ".btn-delete-item", function (e) {
+                    $(this).parent().parent().remove();
+                })
+
+                this.sample = $(`<tr id="sample-input-tr">
+                        <td id="d-SSN"></td>
+                        <td id="d-StockType"></td>
+                        <td id="d-StockName"></td>
+                        <td id="d-MName"></td>
+                        <td id="d-Size"></td>
+                        <td id="d-Brand"></td>
+                        <td id="d-Model"></td>
+                        <td id="d-ExpiryDate"></td>
+                        <td id="d-_OutAmount"><input type="number" class="form-control" step="any" min="0" required>
+                        </td>
+                        <td id="d-Unit"></td>
+                        <td id="d-RemainingAmount"></td>
+                        <td id="d-"><button type="button" class="btn-delete-item"></button></td>
+                    </tr>`);
+            }
+            this.create = function (data = null) {
+                let item = this.sample.clone();
+                item.attr('id', this.count);
+                this.list.append(item);
+                if (data) {
+                    for (const [k, v] of Object.entries(data)) {
+                        item.find("#d-" + k).text(v)
+                    }
+                    item.find("#d-_OutAmount")
+                        .html(`<input type="number" class="form-control" step="any" min="0" max="${data.RemainingAmount}" required value="${data.OutAmount}">`)
+                }
+                this.count++;
+            }
+            this.calc = function () {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        Kind: $(e).find("#Kind").val(),
+                        ItemName: $(e).find("#ItemName").val(),
+                        Size: $(e).find("#Size").val(),
+                        PRAmount: $(e).find("#PRAmount").val(),
+                        Unit: $(e).find("#Unit").val(),
+                        ApplicationPurpose: $(e).find("#ApplicationPurpose").val(),
+                    }
+                })
+            }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
+            }
+            this.init();
+            return this;
+        }
 
         function readData(url = null) {
 
@@ -198,7 +260,9 @@
             function onSuccess(res) {
                 console.log(res);
                 $("#StockItemInfo").append(createTableGrid(res.StoresRequisitionItem, SerializedName));
-                $("#StockOutItem").append(createTableGrid(res.StockOutItem, GridOptions))
+                res?.StockOutItem?.forEach((item) => {
+                    sampleTr.create(item)
+                })
             }
             function onError(res) {
                 console.log(res);
@@ -209,6 +273,32 @@
             let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
             console.log("todo save():", isValidity)
             if (!isValidity) return;
+
+            if (!sampleTr.checkValidity()) {
+                onError({ responseText: "請掃瞄RFID以進行出庫作業！" })
+                return;
+            }
+            return;
+            $.ajax({
+                url: '@Url.Action("CreateStockOut", "StockOut_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/StockOut_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
         }
 
         function addButtonEvent() {
