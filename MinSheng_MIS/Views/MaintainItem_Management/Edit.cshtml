@@ -1,6 +1,9 @@
 ﻿@{
     ViewBag.Title = "保養項目編輯";
 }
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
 
 <h2>@ViewBag.Title</h2>
 
@@ -31,51 +34,19 @@
     <button class="btn btn-submit" id="submit">儲存</button>
 </div>
 
+@section scripts {
+    <script>
 
+        const MISN = '@ViewBag.id'
+        const apiUrl = `@Url.Action("ReadBody", "MaintainItem_Management")?MISN=${MISN}`;
 
-<script src="/Scripts/datatable.js"></script>
-<script>
-
-    const MISN = '@ViewBag.id'
-    const apiUrl = `@Url.Action("ReadBody", "MaintainItem_Management")?MISN=${MISN}`;
-
-    const SerializedName = [
-        { text: "系統別", value: "System" },
-        { text: "子系統別", value: "SubSystem" },
-        { text: "設備名稱", value: "EName" },
-        { text: "項目名稱", value: "MIName" },
-        {
-            text: "保養週期單位", value: "Unit", formatter: (data) => {
-                return `
-                <select class="form-select" name="Unit" id="Unit" required>
-                    <option value="日" ${data == "日" ? "selected" : ""}>日</option>
-                    <option value="月" ${data == "月" ? "selected" : ""}>月</option>
-                    <option value="年" ${data == "年" ? "selected" : ""}>年</option>
-                </select>
-                `
-            }
-        },
-        {
-            text: "保養週期", value: "Period", formatter: (data) => {
-                return `<input class="form-control" type="number" name="Period" id="Period" min="1" value="${data}" required/>`
-            }
-        },
-    ]
-
-    const GridOptions = {
-        thead: true,
-        columns: [
+        const SerializedName = [
+            { text: "系統別", value: "System" },
+            { text: "子系統別", value: "SubSystem" },
+            { text: "設備名稱", value: "EName" },
+            { text: "項目名稱", value: "MIName" },
             {
-                id: "_checkbox",
-                title: `<input class="form-check-input check-all" type="checkbox" name="checkbox-all" id="checkbox-all"/>`,
-                width: "6%",
-                formatter: (data, row, index) => {
-                    return `<input class="form-check-input check-item" type="checkbox" name="checkbox-${index}" id="checkbox-${index}"/>`
-                }
-            },
-            { id: "ESN", title: "設備編號", width: "30%" },
-            {
-                id: "Unit", title: "保養週期單位", width: "36%", required: true, formatter: (data) => {
+                text: "保養週期單位", value: "Unit", formatter: (data) => {
                     return `
                     <select class="form-select" name="Unit" id="Unit" required>
                         <option value="日" ${data == "日" ? "selected" : ""}>日</option>
@@ -86,183 +57,214 @@
                 }
             },
             {
-                id: "Period", title: "保養週期", width: "28%", required: true, formatter: (data) => {
+                text: "保養週期", value: "Period", formatter: (data) => {
                     return `<input class="form-control" type="number" name="Period" id="Period" min="1" value="${data}" required/>`
                 }
             },
         ]
-    }
 
-    const fakeData = {
-        MISN: "000001",
-        System: "前處理",
-        SubSystem: "前處理",
-        EName: "除物皮帶輸送機",
-        MIName: "軸承潤滑",
-        Unit: "月",
-        Period: "1",
-        EquipmentMaintainItem: [
-            {
-                ESN: "E00001",
-                Unit: "月",
-                Period: "1",
-            },
-            {
-                ESN: "E00002",
-                Unit: "天",
-                Period: "7",
-            },
-            {
-                ESN: "E00003",
-                Unit: "月",
-                Period: "2",
-            },
-            {
-                ESN: "E00004",
-                Unit: "月",
-                Period: "2",
-            },
-        ]
-    }
+        const GridOptions = {
+            thead: true,
+            columns: [
+                {
+                    id: "_checkbox",
+                    title: `<input class="form-check-input check-all" type="checkbox" name="checkbox-all" id="checkbox-all"/>`,
+                    width: "6%",
+                    formatter: (data, row, index) => {
+                        return `<input class="form-check-input check-item" type="checkbox" name="checkbox-${index}" id="checkbox-${index}"/>`
+                    }
+                },
+                { id: "ESN", title: "設備編號", width: "30%" },
+                {
+                    id: "Unit", title: "保養週期單位", width: "36%", required: true, formatter: (data) => {
+                        return `
+                        <select class="form-select" name="Unit" id="Unit" required>
+                            <option value="日" ${data == "日" ? "selected" : ""}>日</option>
+                            <option value="月" ${data == "月" ? "selected" : ""}>月</option>
+                            <option value="年" ${data == "年" ? "selected" : ""}>年</option>
+                        </select>
+                        `
+                    }
+                },
+                {
+                    id: "Period", title: "保養週期", width: "28%", required: true, formatter: (data) => {
+                        return `<input class="form-control" type="number" name="Period" id="Period" min="1" value="${data}" required/>`
+                    }
+                },
+            ]
+        }
 
-    function readData(url = null) {
+        const fakeData = {
+            MISN: "000001",
+            System: "前處理",
+            SubSystem: "前處理",
+            EName: "除物皮帶輸送機",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            EquipmentMaintainItem: [
+                {
+                    ESN: "E00001",
+                    Unit: "月",
+                    Period: "1",
+                },
+                {
+                    ESN: "E00002",
+                    Unit: "天",
+                    Period: "7",
+                },
+                {
+                    ESN: "E00003",
+                    Unit: "月",
+                    Period: "2",
+                },
+                {
+                    ESN: "E00004",
+                    Unit: "月",
+                    Period: "2",
+                },
+            ]
+        }
 
-        url == null ? onSuccess(fakeData) :
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#MISN").val(res.MISN);
+
+                $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
+
+                if (res.EquipmentMaintainItem) {
+                    $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
+                }
+                else {
+                    $("#EquipmentMaintainItem").parents(".datatable").remove();
+                }
+
+                let container = $("#EquipmentMaintainItem");
+                let checkbox_all = container.find("#checkbox-all");
+                let checkbox_item = container.find(".check-item");
+
+                container.on("change", ".check-item", function (e) {
+                    let checked = $(e.target).prop('checked');
+                    let checkeds = checkbox_item.toArray().map(item => {
+                        return item.checked;
+                    })
+
+                    if (checkeds.every(e => e)) {
+                        checkbox_all.prop('checked', true);
+                        checkbox_all.prop('indeterminate', false);
+                    }
+                    else if (checkeds.some(e => e)) {
+                        checkbox_all.prop('checked', false);
+                        checkbox_all.prop('indeterminate', true);
+                    }
+                    else {
+                        checkbox_all.prop('checked', false);
+                        checkbox_all.prop('indeterminate', false);
+                    }
+                })
+                checkbox_all.change((e) => {
+                    let checked = $(e.target).prop('checked');
+                    checkbox_item.prop('checked', checked);
+                    checkbox_all.prop('indeterminate', false);
+                })
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+
+            $("#submit").click(function () {
+                saveMaintainItem();
+            });
+
+            $("#changePeriod").click(function () {
+                let Unit = $("#MaintainItemInfo").find("#Unit").val(),
+                    Period = $("#MaintainItemInfo").find("#Period").val();
+                $("#EquipmentMaintainItem").find(".check-item").toArray().forEach((item, i) => {
+                    if (item.checked) {
+                        let tr = $("#EquipmentMaintainItem").find("tr#" + i);
+                        tr.find("#Unit").val(Unit);
+                        tr.find("#Period").val(Period);
+                    }
+                })
+            });
+        }
+
+        function saveMaintainItem() {
+            let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity:", isValidity);
+            if (!isValidity) return;
+
+            let jsonData = {
+                System: document.getElementById("d-System").innerHTML,
+                SubSystem: document.getElementById("d-SubSystem").innerHTML,
+                EName: document.getElementById("d-EName").innerHTML,
+                MIName: document.getElementById("d-MIName").innerHTML,
+
+                MISN,
+                Unit: $("#MaintainItemInfo").find("#Unit").val(),
+                Period: $("#MaintainItemInfo").find("#Period").val(),
+                EquipmentMaintainItem: calcEquipmentMaintainItem()
+            }
+
+            console.log("jsonData:", jsonData);
+
             $.ajax({
-                url: url,
-                type: "GET",
+                url: '@Url.Action("UpdateMaintainItem", "MaintainItem_Management")',
+                data: JSON.stringify(jsonData),
+                type: "POST",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
             })
 
-        function onSuccess(res) {
-            console.log(res);
-            $("#MISN").val(res.MISN);
 
-            $("#MaintainItemInfo").append(createTableInner(res, SerializedName));
-
-            if (res.EquipmentMaintainItem) {
-                $("#EquipmentMaintainItem").append(createTableGrid(res.EquipmentMaintainItem, GridOptions))
-            }
-            else {
-                $("#EquipmentMaintainItem").parents(".datatable").remove();
-            }
-
-            let container = $("#EquipmentMaintainItem");
-            let checkbox_all = container.find("#checkbox-all");
-            let checkbox_item = container.find(".check-item");
-
-            container.on("change", ".check-item", function (e) {
-                let checked = $(e.target).prop('checked');
-                let checkeds = checkbox_item.toArray().map(item => {
-                    return item.checked;
+            function calcEquipmentMaintainItem() {
+                let arr = $("#EquipmentMaintainItem tbody tr").toArray().map((e, i) => {
+                    return {
+                        ESN: $(e).find("#d-ESN").text(),
+                        Unit: $(e).find("#Unit").val(),
+                        Period: $(e).find("#Period").val(),
+                    };
                 })
+                return arr;
+            }
 
-                if (checkeds.every(e => e)) {
-                    checkbox_all.prop('checked', true);
-                    checkbox_all.prop('indeterminate', false);
-                }
-                else if (checkeds.some(e => e)) {
-                    checkbox_all.prop('checked', false);
-                    checkbox_all.prop('indeterminate', true);
-                }
-                else {
-                    checkbox_all.prop('checked', false);
-                    checkbox_all.prop('indeterminate', false);
-                }
-            })
-            checkbox_all.change((e) => {
-                let checked = $(e.target).prop('checked');
-                checkbox_item.prop('checked', checked);
-                checkbox_all.prop('indeterminate', false);
-            })
-        }
-        function onError(res) {
-            console.log(res);
-        }
-    }
-
-    function addButtonEvent() {
-        $("#back").click(function () {
-            history.back();
-        });
-
-        $("#submit").click(function () {
-            saveMaintainItem();
-        });
-
-        $("#changePeriod").click(function () {
-            let Unit = $("#MaintainItemInfo").find("#Unit").val(),
-                Period = $("#MaintainItemInfo").find("#Period").val();
-            $("#EquipmentMaintainItem").find(".check-item").toArray().forEach((item, i) => {
-                if (item.checked) {
-                    let tr = $("#EquipmentMaintainItem").find("tr#" + i);
-                    tr.find("#Unit").val(Unit);
-                    tr.find("#Period").val(Period);
-                }
-            })
-        });
-    }
-
-    function saveMaintainItem() {
-        let isValidity = $("form").toArray().map(e => e.reportValidity()).every(e => e);
-        console.log("isValidity:", isValidity);
-        if (!isValidity) return;
-
-        let jsonData = {
-            System: document.getElementById("d-System").innerHTML,
-            SubSystem: document.getElementById("d-SubSystem").innerHTML,
-            EName: document.getElementById("d-EName").innerHTML,
-            MIName: document.getElementById("d-MIName").innerHTML,
-
-            MISN,
-            Unit: $("#MaintainItemInfo").find("#Unit").val(),
-            Period: $("#MaintainItemInfo").find("#Period").val(),
-            EquipmentMaintainItem: calcEquipmentMaintainItem()
+            function onSuccess(res) {
+                console.log(res);
+                if (res.ResponseCode !== 0) { onError(res); return; }
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/MaintainItem_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.ResponseMessage || ""}` })
+            }
         }
 
-        console.log("jsonData:", jsonData);
-
-        $.ajax({
-            url: '@Url.Action("UpdateMaintainItem", "MaintainItem_Management")',
-            data: JSON.stringify(jsonData),
-            type: "POST",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: onSuccess,
-            error: onError
-        })
-
-
-        function calcEquipmentMaintainItem() {
-            let arr = $("#EquipmentMaintainItem tbody tr").toArray().map((e, i) => {
-                return {
-                    ESN: $(e).find("#d-ESN").text(),
-                    Unit: $(e).find("#Unit").val(),
-                    Period: $(e).find("#Period").val(),
-                };
-            })
-            return arr;
+        window.onload = function () {
+            readData(apiUrl);
+            addButtonEvent();
         }
-
-        function onSuccess(res) {
-            console.log(res);
-            if (res.ResponseCode !== 0) { onError(res); return; }
-            createDialogModal({
-                id: "DialogModal-Success", inner: "儲存成功！",
-                onHide: () => { window.location.href = "/MaintainItem_Management/Management"; }
-            });
-        }
-        function onError(res) {
-            console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.ResponseMessage || ""}` })
-        }
-    }
-
-    window.onload = function () {
-        readData(apiUrl);
-        addButtonEvent();
-    }
-</script>
+    </script>
+}
