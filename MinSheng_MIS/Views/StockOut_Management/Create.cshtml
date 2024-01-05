@@ -228,12 +228,8 @@
             this.calc = function () {
                 return this.list.children().toArray().map((e) => {
                     return {
-                        Kind: $(e).find("#Kind").val(),
-                        ItemName: $(e).find("#ItemName").val(),
-                        Size: $(e).find("#Size").val(),
-                        PRAmount: $(e).find("#PRAmount").val(),
-                        Unit: $(e).find("#Unit").val(),
-                        ApplicationPurpose: $(e).find("#ApplicationPurpose").val(),
+                        SSN: $(e).find("#d-SSN").text(),
+                        OutAmount: $(e).find("#OutAmount").val(),
                     }
                 })
             }
@@ -278,6 +274,18 @@
                 onError({ responseText: "請掃瞄RFID以進行出庫作業！" })
                 return;
             }
+
+            let form = new FormData();
+            form.append("SRSN",$("#SRSN").val())
+            form.append("StockOutUserName",$("#StockOutUserName").val())
+            form.append("ReceiverUserName",$("#ReceiverUserName").val())
+            form.append("StockOutContent",$("#StockOutContent").val())
+            
+            sampleTr.calc().forEach((item, i) => {
+                form.append(`StockOutItem[${i}].SSN`,item.SSN)
+                form.append(`StockOutItem[${i}].OutAmount`,item.OutAmount)
+            })
+
             return;
             $.ajax({
                 url: '@Url.Action("CreateStockOut", "StockOut_Management")',
