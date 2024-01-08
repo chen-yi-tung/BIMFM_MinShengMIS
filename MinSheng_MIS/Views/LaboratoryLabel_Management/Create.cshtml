@@ -79,6 +79,10 @@
             let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
             console.log("isValidity():", isValidity)
             if (!isValidity) return;
+            if (!labelItems.checkValidity()) {
+                onError({ responseText: "請至少新增一個實驗標籤名稱！" })
+                return;
+            }
 
             var form = new FormData();
             form.append("TAWSN", document.getElementById("TAWSN").value);
@@ -153,6 +157,9 @@
                         LabelName: $(e).children("#LabelName").val()
                     }
                 })
+            }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
             }
             this.init = () => {
                 $("#create-item").click(function () {
