@@ -72,8 +72,8 @@
 @section scripts {
     <script>
         const EDRSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "ExperimentData_Management")' + `/${EDRSN}`;
-        let apiUrl = null;
+        let apiUrl = '@Url.Action("Read_Data", "ExperimentData_Management")' + `/${EDRSN}`;
+        //let apiUrl = null;
 
         const fakeData = {
             EDRSN: "1",
@@ -122,7 +122,7 @@
                     })
                 })
             })
-            readData()
+            readData(apiUrl)
         });
 
         function readData(url = null) {

@@ -35,8 +35,8 @@
 @section scripts {
     <script>
         const EDRSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "ExperimentData_Management")' + `/${EDRSN}`;
-        let apiUrl = null;
+        let apiUrl = '@Url.Action("Read_Data", "ExperimentData_Management")' + `/${EDRSN}`;
+        //let apiUrl = null;
 
         const fakeData = {
             EDRSN: "1",
@@ -53,7 +53,7 @@
         const sn = [
             { text: "實驗類型", value: "ExperimentType" },
             { text: "實驗名稱", value: "ExperimentName" },
-            { text: "實驗日期", value: "EDate" },
+            { text: "實驗日期", value: "EDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
             { text: "上傳者", value: "UploadUserName" },
             { text: "上傳時間", value: "UploadDateTime" },
             { text: "實驗數據", value: "FilePath" },
