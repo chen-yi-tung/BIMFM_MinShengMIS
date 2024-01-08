@@ -16,7 +16,7 @@ namespace MinSheng_MIS.Models.ViewModels
         [StringLength(200, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多200個字元。", MinimumLength = 1)]
         [Display(Name = "實驗名稱")]
         public string ExperimentName { get; set; } //實驗名稱
-        public List<string> LabelName { get; set; } //使用的實驗標籤名稱
+        public List<string> LabelName { get; set; } //實驗標籤名稱
         public List<string> DataName { get; set; } //實驗數據欄位名稱
         public HttpPostedFileBase WorkflowFile { get; set; } //新增的實驗採樣分析流程檔案
         //--------------------------------------------

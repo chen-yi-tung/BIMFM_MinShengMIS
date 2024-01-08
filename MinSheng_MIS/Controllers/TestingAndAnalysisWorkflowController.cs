@@ -2,6 +2,7 @@
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -155,6 +157,24 @@ namespace MinSheng_MIS.Controllers
                 DataNames = workflow.TestingAndAnalysis_DataName.Select(x => new TA_Data { DNSN = x.DNSN, DataName = x.DataName})?.ToList()
             };
             return Content(JsonConvert.SerializeObject(model), "application/json");
+        }
+        #endregion
+
+        #region 實驗室標籤管理-獲取流程實驗標籤名稱
+        [HttpGet]
+        public ActionResult TestingAndAnalysis_LabelName(string TAWSN)
+        {
+            List<JObject> list = new List<JObject>();
+            var labels = db.TestingAndAnalysisWorkflow.FirstOrDefault(x => x.TAWSN == TAWSN)?.TestingAndAnalysis_LabelName;
+            foreach (var item in labels)
+            {
+                JObject jo = new JObject
+                {
+                    { "LabelName", item.LabelName },
+                };
+                list.Add(jo);
+            }
+            return Content(JsonConvert.SerializeObject(list), "application/json");
         }
         #endregion
 

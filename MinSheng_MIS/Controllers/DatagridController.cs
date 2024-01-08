@@ -212,7 +212,15 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region LaboratoryLabel_Management 實驗室標籤管理 TODO
+        #region LaboratoryLabel_Management 實驗室標籤管理
+        [HttpPost]
+        public ActionResult LaboratoryLabel_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_LaboratoryLabel_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region LaboratoryMaintenance_Management 實驗室維護管理

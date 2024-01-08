@@ -598,7 +598,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region FormPRDept 實驗室維護類型
+        #region FormPRDept 請購部門
         [HttpGet]
         public ActionResult FormPRDept()
         {
@@ -737,6 +737,46 @@ namespace MinSheng_MIS.Controllers
                 {
                     { "Text", item },
                     { "Value", item }
+                };
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region FormExperimentType 實驗室實驗類型
+        [HttpGet]
+        public ActionResult FormExperimentType()
+        {
+            List<JObject> list = new List<JObject>();
+            var experiment = db.TestingAndAnalysisWorkflow.Select(x => x.ExperimentType).Distinct();
+            foreach (var item in experiment)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", item },
+                    { "Value", item }
+                };
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region FormExperimentName 實驗室實驗名稱
+        [HttpGet]
+        public ActionResult FormExperimentName(string ExperimentType)
+        {
+            List<JObject> list = new List<JObject>();
+            var experiment = db.TestingAndAnalysisWorkflow.Where(x => x.ExperimentType == ExperimentType).Select(x => new { x.TAWSN, x.ExperimentName }).ToDictionary(k => k.TAWSN, v => v.ExperimentName);
+            foreach (var item in experiment)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", item.Value },
+                    { "Value", item.Key }
                 };
                 list.Add(jo);
             }

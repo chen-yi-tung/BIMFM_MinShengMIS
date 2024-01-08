@@ -177,22 +177,33 @@ namespace MinSheng_MIS.Controllers
         #region Helper
         private static ICollection<T> AddOrUpdateList<T>(List<PR_Item> list, string PRN) where T : PurchaseRequisitionItem, new()
         {
-            ICollection<T> result = new List<T>();
-            for (int i = 0; i < list.Count; i++)
+            ICollection<T> result = list.Select(x => new T
             {
-                T item = new T
-                {
-                    PRIN = PRN + "_" + (i + 1).ToString().PadLeft(2, '0'),
-                    PRN = PRN,
-                    Kind = list[i].Kind,
-                    ItemName = list[i].ItemName,
-                    Size = list[i].Size,
-                    PRAmount = list[i].PRAmount,
-                    Unit = list[i].Unit,
-                    ApplicationPurpose = list[i].ApplicationPurpose
-                };
-                result.Add((T)item);
-            }
+                PRIN = PRN + "_" + (list.IndexOf(x) + 1).ToString().PadLeft(2, '0'),
+                PRN = PRN,
+                Kind = x.Kind,
+                ItemName = x.ItemName,
+                Size = x.Size,
+                PRAmount = x.PRAmount,
+                Unit = x.Unit,
+                ApplicationPurpose = x.ApplicationPurpose
+            }).ToList();
+            //ICollection<T> result = new List<T>();
+            //for (int i = 0; i < list.Count; i++)
+            //{
+            //    T item = new T
+            //    {
+            //        PRIN = PRN + "_" + (i + 1).ToString().PadLeft(2, '0'),
+            //        PRN = PRN,
+            //        Kind = list[i].Kind,
+            //        ItemName = list[i].ItemName,
+            //        Size = list[i].Size,
+            //        PRAmount = list[i].PRAmount,
+            //        Unit = list[i].Unit,
+            //        ApplicationPurpose = list[i].ApplicationPurpose
+            //    };
+            //    result.Add((T)item);
+            //}
             return result;
         }
         #endregion
