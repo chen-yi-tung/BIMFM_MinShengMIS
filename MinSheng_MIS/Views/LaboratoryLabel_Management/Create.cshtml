@@ -59,12 +59,12 @@
         $(async function () {
             addButtonEvent();
 
-            await pushSelect("ExperimentType", '@Url.Action("ExperimentType", "DropDownList")');
+            await pushSelect("ExperimentType", '@Url.Action("FormExperimentType", "DropDownList")');
 
             const ExperimentType = document.getElementById('ExperimentType')
             const TAWSN = document.getElementById('TAWSN')
             ExperimentType.addEventListener("change", function () {
-                pushSelect("TAWSN", `@Url.Action("ExperimentName", "DropDownList")?ExperimentType=${ExperimentType.value}`);
+                pushSelect("TAWSN", `@Url.Action("FormExperimentName", "DropDownList")?ExperimentType=${ExperimentType.value}`);
             });
             TAWSN.addEventListener("change", function () {
                 $.getJSON(`@Url.Action("TestingAndAnalysis_LabelName", "TestingAndAnalysisWorkflow")?TAWSN=${TAWSN.value}`, (res) => {

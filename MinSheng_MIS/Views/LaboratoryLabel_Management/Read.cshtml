@@ -23,13 +23,13 @@
 @section scripts {
     <script>
         const ELSN = '@ViewBag.id'
-        //const apiUrl = '@Url.Action("ReadBody", "LaboratoryLabel_Management")' + `/${ELSN}`;
-        const apiUrl = null;
+        const apiUrl = '@Url.Action("Read_Data", "LaboratoryLabel_Management")' + `/${ELSN}`;
+        //const apiUrl = null;
 
         const SerializedName = [
             { text: "實驗類型", value: "ExperimentType" },
             { text: "實驗名稱", value: "ExperimentName" },
-            { text: "實驗日期", value: "EDate" },
+            { text: "實驗日期", value: "EDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
             { text: "上傳者", value: "UploadUserName" },
             { text: "上傳日期時間", value: "UploadDateTime" },
         ]
