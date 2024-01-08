@@ -41,6 +41,8 @@ namespace MinSheng_MIS.Controllers
 		{
             ModelState.Remove("TAWSN");
             if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+            else if (ta_workflow.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗標籤名稱 的長度最多200個字元。");
+            else if (ta_workflow.DataName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗數據欄位名稱 的長度最多200個字元。");
 
             DateTime now = DateTime.Now;
             // 新增採驗分析流程
@@ -97,6 +99,8 @@ namespace MinSheng_MIS.Controllers
 
             var workflow = await db.TestingAndAnalysisWorkflow.FirstOrDefaultAsync(x => x.TAWSN == ta_workflow.TAWSN);
             if (workflow == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "TAWSN is Undefined.");
+            else if (ta_workflow.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗標籤名稱 的長度最多200個字元。");
+            else if (ta_workflow.DataName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗數據欄位名稱 的長度最多200個字元。");
 
             // 編輯採樣分析流程
             workflow.ExperimentType = ta_workflow.ExperimentType;
@@ -116,6 +120,7 @@ namespace MinSheng_MIS.Controllers
                 string extension = Path.GetExtension(newFile.FileName); // 檔案副檔名
                 if (ComFunc.IsConformedForDocument(newFile.ContentType, extension) || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
+                    // 舊檔案刪除
                     ComFunc.DeleteFile(Server.MapPath(folderPath), workflow.WorkflowFile, null);
                     // 檔案上傳
                     if (!ComFunc.UploadFile(newFile, Server.MapPath(folderPath), workflow.TAWSN))

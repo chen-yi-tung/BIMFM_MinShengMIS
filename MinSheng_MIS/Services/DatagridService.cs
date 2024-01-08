@@ -2825,7 +2825,86 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 實驗數據管理 TODO
+        #region 實驗數據管理
+        public JObject GetJsonForGrid_ExperimentData_Management(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var ExperimentType = form["ExperimentType"]?.ToString();
+            var ExperimentName = form["ExperimentName"]?.ToString();
+            var EDateStart = form["EDateStart"]?.ToString();
+            var EDateEnd = form["EDateEnd"]?.ToString();
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+
+            var rpT = from e in db.ExperimentalDataRecord
+                      join t in db.TestingAndAnalysisWorkflow
+                      on e.TAWSN equals t.TAWSN
+                      select new
+                      {
+                          e.EDRSN,
+                          t.ExperimentType,
+                          t.ExperimentName,
+                          e.EDate
+                      };
+            //查詢實驗類型 (模糊查詢)
+            if (!string.IsNullOrEmpty(ExperimentType)) rpT = rpT.Where(x => x.ExperimentType.Contains(ExperimentType));
+            //查詢實驗名稱 (模糊查詢)
+            if (!string.IsNullOrEmpty(ExperimentName)) rpT = rpT.Where(x => x.ExperimentName.Contains(ExperimentName));
+            //查詢實驗日期(起)
+            if (!string.IsNullOrEmpty(EDateStart) && DateTime.Parse(EDateStart) != DateTime.MinValue)
+            {
+                DateTime start = DateTime.Parse(EDateStart);  // 轉為DateTime
+                rpT = rpT.Where(x => x.EDate >= start);
+            }
+            //查詢實驗日期(迄)
+            if (!string.IsNullOrEmpty(EDateEnd) && DateTime.Parse(EDateEnd) != DateTime.MinValue)
+            {
+                DateTime end = DateTime.Parse(EDateEnd);
+                rpT = rpT.Where(x => x.EDate <= end);
+            }
+
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderByDescending(x => x.EDRSN);
+
+            // 記住總筆數
+            int Total = rpT.Count();
+            // 切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+
+            if (rpT != null || Total > 0)
+            {
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "EDRSN", item.EDRSN },
+                        { "ExperimentType", item.ExperimentType },
+                        { "ExperimentName", item.ExperimentName },
+                        { "EDate", item.EDate.ToString("yyyy/MM/dd") },
+                    };
+
+                    ja.Add(itemObject);
+                }
+            }
+
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
+
+            return jo;
+        }
         #endregion
 
 

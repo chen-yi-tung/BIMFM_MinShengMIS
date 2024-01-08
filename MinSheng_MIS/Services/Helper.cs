@@ -21,13 +21,13 @@ namespace MinSheng_MIS.Services
 
             if (string.IsNullOrEmpty(field))
                 return new ContentResult { 
-                    Content = string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))), 
+                    Content = string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).Distinct()), 
                     ContentType = "text/plain" 
                 };
             else
                 return new ContentResult
                 {
-                    Content = string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage)),
+                    Content = string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage).Distinct()),
                     ContentType = "text/plain"
                 };
         }

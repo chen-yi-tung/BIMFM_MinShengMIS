@@ -39,6 +39,7 @@ namespace MinSheng_MIS.Controllers
 		{
             ModelState.Remove("ELSN");
             if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+            else if (el_info.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "標籤名稱 的長度最多200個字元。");
 
             DateTime now = DateTime.Now;
             // 新增實驗標籤
@@ -72,6 +73,7 @@ namespace MinSheng_MIS.Controllers
         public async Task<ActionResult> EditLaboratoryLabel(EL_Info el_info)
         {
             if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+            else if (el_info.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "標籤名稱 的長度最多200個字元。");
 
             var label = await db.ExperimentalLabel.FirstOrDefaultAsync(x => x.ELSN == el_info.ELSN);
             if (label == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "ELSN is Undefined.");
@@ -81,7 +83,7 @@ namespace MinSheng_MIS.Controllers
             label.EDate = el_info.EDate;
             // 編輯實驗標籤項目
             db.ExperimentalLabel_Item.RemoveRange(label.ExperimentalLabel_Item);
-            ICollection<ExperimentalLabel_Item> label_items = AddOrUpdateList<ExperimentalLabel_Item>(el_info.LabelName, label.TAWSN);
+            ICollection<ExperimentalLabel_Item> label_items = AddOrUpdateList<ExperimentalLabel_Item>(el_info.LabelName, label.ELSN);
             label.ExperimentalLabel_Item = label_items;
 
             db.ExperimentalLabel.AddOrUpdate(label);
@@ -109,7 +111,7 @@ namespace MinSheng_MIS.Controllers
                 ExperimentName = label.TestingAndAnalysisWorkflow?.ExperimentName,
                 TAWSN = label.TAWSN,
                 EDate = label.EDate.ToString("yyyy-MM-dd"),
-                UploadUserName = User.Identity.Name,
+                UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == label.UploadUserName)?.Result.MyName,
                 UploadDateTime = label.UploadDateTime.ToString("yyyy/MM/dd"),
                 LaboratoryLabelItem = label.ExperimentalLabel_Item.Select(x => new EL_Item { ELISN = x.ELISN, LabelName = x.LabelName}).ToList()
             };
@@ -120,22 +122,12 @@ namespace MinSheng_MIS.Controllers
         #region Helper
         private static ICollection<T> AddOrUpdateList<T>(List<string> list, string ELSN) where T : ExperimentalLabel_Item, new()
         {
-            ICollection<T> result = list.Select(x => new T
+            ICollection<T> result = list.Where(x => !string.IsNullOrEmpty(x.Trim())).Select(x => new T
             {
                 ELISN = ELSN + "_" + (list.IndexOf(x) + 1).ToString().PadLeft(3, '0'),
                 ELSN = ELSN,
                 LabelName = x
             }).ToList();
-            //for (int i = 0; i < list.Count; i++)
-            //{
-            //    T item = new T
-            //    {
-            //        ELISN = ELSN + "_" + (i + 1).ToString().PadLeft(3, '0'),
-            //        ELSN = ELSN,
-            //        LabelName = list[i]
-            //    };
-            //    result.Add((T)item);
-            //}
             return result;
         }
         #endregion

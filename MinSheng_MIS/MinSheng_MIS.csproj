@@ -376,6 +376,7 @@
     <Compile Include="Models\ViewModels\EquipmentInfo_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\EquipmentOperatingManualViewModel.cs" />
     <Compile Include="Models\ViewModels\ExperimentalLabelViewModels.cs" />
+    <Compile Include="Models\ViewModels\ExperimentData_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\InspectionPlan_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\JsonResponseViewModel.cs" />
     <Compile Include="Models\MaintainAuditImage.cs">
