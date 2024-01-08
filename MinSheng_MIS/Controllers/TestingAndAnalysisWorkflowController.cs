@@ -178,6 +178,24 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 實驗室標籤管理-獲取流程實驗數據欄位名稱
+        [HttpGet]
+        public ActionResult TestingAndAnalysis_DataName(string TAWSN)
+        {
+            List<JObject> list = new List<JObject>();
+            var labels = db.TestingAndAnalysisWorkflow.FirstOrDefault(x => x.TAWSN == TAWSN)?.TestingAndAnalysis_DataName;
+            foreach (var item in labels)
+            {
+                JObject jo = new JObject
+                {
+                    { "DataName", item.DataName },
+                };
+                list.Add(jo);
+            }
+            return Content(JsonConvert.SerializeObject(list), "application/json");
+        }
+        #endregion
+
         #region Helper
         private static ICollection<T> AddOrUpdateList<T>(List<string> list, string TAWSN) where T : class, new()
         {
