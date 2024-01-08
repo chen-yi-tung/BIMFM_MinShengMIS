@@ -90,6 +90,7 @@
             });
             TAWSN.addEventListener("change", function () {
                 $.getJSON(`@Url.Action("TestingAndAnalysis_LabelName", "TestingAndAnalysisWorkflow")?TAWSN=${TAWSN.value}`, (res) => {
+                    labelItems.list.children().remove()
                     res.forEach((item) => {
                         labelItems.create(item)
                     })
@@ -207,9 +208,10 @@
                     error: onError
                 })
 
-            function onSuccess(res) {
+            async function onSuccess(res) {
                 console.log(res);
                 $("#ExperimentType").val(res.ExperimentType)
+                await pushSelect("TAWSN", `@Url.Action("FormExperimentName", "DropDownList")?ExperimentType=${$("#ExperimentType").val()}`);
                 $("#TAWSN").val(res.TAWSN)
                 $("#EDate").val(res.EDate)
 
