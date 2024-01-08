@@ -157,17 +157,17 @@
             this.count = 0
             const temp_item = (count) => {
                 return `<div class="d-flex w-100 gap-3" id="item-${count}">
-                        <input type="text" id="EDSN" name="EDSN" hidden>
-                        <table class="datatable datatable-body datatable-table">
-                            <tbody>
-                                <tr>
-                                    <td><input class="form-control" placeholder="數據標題" id="DataName" name="DataName" type="text" minlength="1" maxlength="200" required/></td>
-                                    <td><input class="form-control" placeholder="數據" id="Data" name="Data" type="text" minlength="1" required/></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button class="btn-delete-item align-self-center flex-shrink-0" onclick="dataItems.delete(${count})"></button>
-                    </div>`
+                    <input type="text" id="EDSN" name="EDSN" hidden>
+                    <table class="datatable datatable-body datatable-table">
+                        <tbody>
+                            <tr>
+                                <td><input class="form-control" placeholder="數據標題" id="DataName" name="DataName" type="text" minlength="1" maxlength="200" required/></td>
+                                <td><input class="form-control" placeholder="數據" id="Data" name="Data" type="text" minlength="1" required/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn-delete-item align-self-center flex-shrink-0" onclick="dataItems.delete(${count})"></button>
+                </div>`
             }
             this.create = (data = null) => {
                 if ($("#TAWSN").val() == "") {
@@ -177,9 +177,9 @@
 
                 let item = $(temp_item(this.count))
                 if (data) {
-                    item.children("#EDSN").val(data.EDSN)
-                    item.children("#DataName").val(data.DataName)
-                    item.children("#Data").val(data.Data)
+                    item.find("#EDSN").val(data.EDSN)
+                    item.find("#DataName").val(data.DataName)
+                    item.find("#Data").val(data.Data)
                 }
                 this.list.append(item)
                 this.count++
