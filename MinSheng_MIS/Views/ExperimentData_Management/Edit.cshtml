@@ -107,15 +107,16 @@
                 label: "實驗數據上傳",
                 id: "File"
             })
-            await pushSelect("ExperimentType", '@Url.Action("ExperimentType", "DropDownList")');
+            await pushSelect("ExperimentType", '@Url.Action("FormExperimentType", "DropDownList")');
 
             const ExperimentType = document.getElementById('ExperimentType')
             const TAWSN = document.getElementById('TAWSN')
             ExperimentType.addEventListener("change", function () {
-                pushSelect("TAWSN", `@Url.Action("ExperimentName", "DropDownList")?ExperimentType=${ExperimentType.value}`);
+                pushSelect("TAWSN", `@Url.Action("FormExperimentName", "DropDownList")?ExperimentType=${ExperimentType.value}`);
             });
             TAWSN.addEventListener("change", function () {
                 $.getJSON(`@Url.Action("TestingAndAnalysis_DataName", "TestingAndAnalysisWorkflow")?TAWSN=${TAWSN.value}`, (res) => {
+                    dataItems.list.children().remove()
                     res.forEach((item) => {
                         dataItems.create(item)
                     })
@@ -138,6 +139,7 @@
 
             async function onSuccess(res) {
                 console.log(res);
+                await pushSelect("TAWSN", `@Url.Action("FormExperimentName", "DropDownList")?ExperimentType=${res.ExperimentType}`);
                 for (const [k, v] of Object.entries(res)) {
                     $("#" + k).val(v)
                 }
