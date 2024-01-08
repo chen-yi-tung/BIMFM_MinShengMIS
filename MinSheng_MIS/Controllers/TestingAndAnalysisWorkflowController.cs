@@ -21,7 +21,7 @@ namespace MinSheng_MIS.Controllers
 	public class TestingAndAnalysisWorkflowController : Controller
 	{
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-        static readonly string folderPath = "Files/TestingAndAnalysisWorkflow/";
+        static readonly string folderPath = "Files/TestingAndAnalysisWorkflow";
         // GET: TestingAndAnalysisWorkflow
         #region 採驗分析流程建立
         public ActionResult Management()
@@ -71,7 +71,7 @@ namespace MinSheng_MIS.Controllers
                 if (ComFunc.IsConformedForDocument(File.ContentType, extension) || ComFunc.IsConformedForImage(File.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(File, Server.MapPath($"~/{folderPath}"), workflow.TAWSN))
+                    if (!ComFunc.UploadFile(File, Server.MapPath($"~/{folderPath}/"), workflow.TAWSN))
                         return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
                     workflow.WorkflowFile = workflow.TAWSN + extension;
                     db.TestingAndAnalysisWorkflow.AddOrUpdate(workflow);
@@ -121,9 +121,9 @@ namespace MinSheng_MIS.Controllers
                 if (ComFunc.IsConformedForDocument(newFile.ContentType, extension) || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 舊檔案刪除
-                    ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}"), workflow.WorkflowFile, null);
+                    ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), workflow.WorkflowFile, null);
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(newFile, Server.MapPath($"~/{folderPath}"), workflow.TAWSN))
+                    if (!ComFunc.UploadFile(newFile, Server.MapPath($"~/{folderPath}/"), workflow.TAWSN))
                         return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!(舊檔案已刪除)");
                     workflow.WorkflowFile = workflow.TAWSN + extension;
                 }

@@ -21,7 +21,7 @@ namespace MinSheng_MIS.Controllers
     public class PurchaseRequisition_ManagementController : Controller
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-        static readonly string folderPath = "Files/PurchaseRequisition/";
+        static readonly string folderPath = "Files/PurchaseRequisition";
         // GET: PurchaseRequisition_Management
         #region 請購管理
         public ActionResult Management()
@@ -149,7 +149,7 @@ namespace MinSheng_MIS.Controllers
             // [相關文件]檔案處理，目前只提供單個檔案上傳及刪除
             if (pr_info.AFileName == null && !string.IsNullOrEmpty(request.FileName)) // 當使用者介面目前無檔案(不包含本次上傳的檔案)時，若此請購單具有相關文件，應刪除。
             {
-                ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}"), request.FileName, null);
+                ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), request.FileName, null);
                 request.FileName = null;
             }
             if (pr_info.AFile != null && pr_info.AFile.ContentLength > 0) // 上傳
@@ -159,7 +159,7 @@ namespace MinSheng_MIS.Controllers
                 if (ComFunc.IsConformedForDocument(newFile.ContentType, extension) || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(newFile, Server.MapPath($"~/{folderPath}"), request.PRN)) return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
+                    if (!ComFunc.UploadFile(newFile, Server.MapPath($"~/{folderPath}/"), request.PRN)) return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
                     request.FileName = request.PRN + extension;
                 }
                 else 
