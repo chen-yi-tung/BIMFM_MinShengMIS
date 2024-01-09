@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Permissions;
 using System.Web;
 using System.Web.Mvc;
@@ -87,56 +88,63 @@ namespace MinSheng_MIS.Controllers
             string Filename = "";
             if (eim.FilePath != null)
             {
-                var lastEOMSN = db.EquipmentOperatingManual.OrderByDescending(x => x.EOMSN).FirstOrDefault();
-                var EOMSNnum = 1;
-                if (lastEOMSN != null)
+                //檢查檔案上傳格式
+                string extension = Path.GetExtension(eim.FilePath.FileName); //檔案副檔名
+                if (ComFunc.IsConformedForDocument(eim.FilePath.ContentType, extension) || ComFunc.IsConformedForImage(eim.FilePath.ContentType, extension)) //檔案白名單檢查
                 {
-                    EOMSNnum = Convert.ToInt32(lastEOMSN.EOMSN) + 1;
-                }
-                var EOMSN = EOMSNnum.ToString().PadLeft(6, '0');
-
-                #region 檢查是否需要新增或更新設備操作手冊
-                var manualexist = db.EquipmentOperatingManual.Where(x => x.System == eim.System && x.SubSystem == eim.SubSystem && x.EName == eim.EName && x.Brand == eim.Brand && x.Model == eim.Model);
-                if (manualexist.Count() > 0)
-                {
-                    string file = manualexist.FirstOrDefault().FilePath.ToString();
-
-                    string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{file}");
-                    if (System.IO.File.Exists(fillfullpath))
+                    var lastEOMSN = db.EquipmentOperatingManual.OrderByDescending(x => x.EOMSN).FirstOrDefault();
+                    var EOMSNnum = 1;
+                    if (lastEOMSN != null)
                     {
-                        System.IO.File.Delete(fillfullpath);
+                        EOMSNnum = Convert.ToInt32(lastEOMSN.EOMSN) + 1;
                     }
-                    EOMSN = manualexist.FirstOrDefault().EOMSN;
-                }
-                string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
-                if (!Directory.Exists(Folder))
-                {
-                    System.IO.Directory.CreateDirectory(Folder);
-                }
-                string FolderPath = Server.MapPath("~/Files/EquipmentOperatingManual");
-                Filename = EOMSN + Path.GetExtension(eim.FilePath.FileName);
-                System.IO.Directory.CreateDirectory(FolderPath);
-                string filefullpath = Path.Combine(FolderPath, Filename);
-                eim.FilePath.SaveAs(filefullpath);
-                #endregion
+                    var EOMSN = EOMSNnum.ToString().PadLeft(6, '0');
 
-                #region 新增/更新設備操作手冊至資料庫
-                var eom = new EquipmentOperatingManualViewModel();
-                eom.System = eim.System;
-                eom.SubSystem = eim.SubSystem;
-                eom.EName = eim.EName;
-                eom.Brand = eim.Brand;
-                eom.Model = eim.Model;
-                var addeom = new EquipmentOperatingManualService();
-                if (manualexist.Count() > 0)
-                {
-                    addeom.EditEquipmentOperatingManual(eom, EOMSN, Filename);
+                    #region 檢查是否需要新增或更新設備操作手冊
+                    var manualexist = db.EquipmentOperatingManual.Where(x => x.System == eim.System && x.SubSystem == eim.SubSystem && x.EName == eim.EName && x.Brand == eim.Brand && x.Model == eim.Model);
+                    if (manualexist.Count() > 0)
+                    {
+                        string file = manualexist.FirstOrDefault().FilePath.ToString();
+
+                        string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{file}");
+                        if (System.IO.File.Exists(fillfullpath))
+                        {
+                            System.IO.File.Delete(fillfullpath);
+                        }
+                        EOMSN = manualexist.FirstOrDefault().EOMSN;
+                    }
+                    string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
+                    if (!Directory.Exists(Folder))
+                    {
+                        System.IO.Directory.CreateDirectory(Folder);
+                    }
+                    string FolderPath = Server.MapPath("~/Files/EquipmentOperatingManual");
+                    Filename = EOMSN + Path.GetExtension(eim.FilePath.FileName);
+                    System.IO.Directory.CreateDirectory(FolderPath);
+                    string filefullpath = Path.Combine(FolderPath, Filename);
+                    eim.FilePath.SaveAs(filefullpath);
+                    #endregion
+
+                    #region 新增/更新設備操作手冊至資料庫
+                    var eom = new EquipmentOperatingManualViewModel();
+                    eom.System = eim.System;
+                    eom.SubSystem = eim.SubSystem;
+                    eom.EName = eim.EName;
+                    eom.Brand = eim.Brand;
+                    eom.Model = eim.Model;
+                    var addeom = new EquipmentOperatingManualService();
+                    if (manualexist.Count() > 0)
+                    {
+                        addeom.EditEquipmentOperatingManual(eom, EOMSN, Filename);
+                    }
+                    else
+                    {
+                        addeom.AddEquipmentOperatingManual(eom, EOMSN, Filename);
+                    }
+                    #endregion
                 }
                 else
-                {
-                    addeom.AddEquipmentOperatingManual(eom, EOMSN, Filename);
-                }
-                #endregion
+                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
             }
             #endregion
 
@@ -187,57 +195,63 @@ namespace MinSheng_MIS.Controllers
             string Filename = "";
             if (eim.FilePath != null)
             {
-                var lastEOMSN = db.EquipmentOperatingManual.OrderByDescending(x => x.EOMSN).FirstOrDefault();
-                var EOMSNnum = 1;
-                if (lastEOMSN != null)
+                //檢查檔案上傳格式
+                string extension = Path.GetExtension(eim.FilePath.FileName); //檔案副檔名
+                if (ComFunc.IsConformedForDocument(eim.FilePath.ContentType, extension) || ComFunc.IsConformedForImage(eim.FilePath.ContentType, extension)) //檔案白名單檢查
                 {
-                    EOMSNnum = Convert.ToInt32(lastEOMSN.EOMSN) + 1;
-                }
-                var EOMSN = EOMSNnum.ToString().PadLeft(6, '0');
-
-                #region 檢查是否需要新增或更新設備操作手冊
-                var manualexist = db.EquipmentOperatingManual.Where(x => x.System == eim.System && x.SubSystem == eim.SubSystem && x.EName == eim.EName && x.Brand == eim.Brand && x.Model == eim.Model);
-                if (manualexist.Count() > 0)
-                {
-                    string file = manualexist.FirstOrDefault().FilePath.ToString();
-
-                    string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{file}");
-                    if (System.IO.File.Exists(fillfullpath))
+                    var lastEOMSN = db.EquipmentOperatingManual.OrderByDescending(x => x.EOMSN).FirstOrDefault();
+                    var EOMSNnum = 1;
+                    if (lastEOMSN != null)
                     {
-                        System.IO.File.Delete(fillfullpath);
+                        EOMSNnum = Convert.ToInt32(lastEOMSN.EOMSN) + 1;
                     }
-                    EOMSN = manualexist.FirstOrDefault().EOMSN;
-                }
-                string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
-                if (!Directory.Exists(Folder))
-                {
-                    System.IO.Directory.CreateDirectory(Folder);
-                }
-                string FolderPath = Server.MapPath("~/Files/EquipmentOperatingManual");
-                Filename = EOMSN + Path.GetExtension(eim.FilePath.FileName);
-                System.IO.Directory.CreateDirectory(FolderPath);
-                string filefullpath = Path.Combine(FolderPath, Filename);
-                eim.FilePath.SaveAs(filefullpath);
-                #endregion
+                    var EOMSN = EOMSNnum.ToString().PadLeft(6, '0');
 
-                #region 新增設備操作手冊至資料庫
-                var eom = new EquipmentOperatingManualViewModel();
-                eom.System = eim.System;
-                eom.SubSystem = eim.SubSystem;
-                eom.EName = eim.EName;
-                eom.Brand = eim.Brand;
-                eom.Model = eim.Model;
-                var addeom = new EquipmentOperatingManualService();
-                if (manualexist.Count() > 0)
-                {
-                    addeom.EditEquipmentOperatingManual(eom, EOMSN, Filename);
+                    #region 檢查是否需要新增或更新設備操作手冊
+                    var manualexist = db.EquipmentOperatingManual.Where(x => x.System == eim.System && x.SubSystem == eim.SubSystem && x.EName == eim.EName && x.Brand == eim.Brand && x.Model == eim.Model);
+                    if (manualexist.Count() > 0)
+                    {
+                        string file = manualexist.FirstOrDefault().FilePath.ToString();
+
+                        string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{file}");
+                        if (System.IO.File.Exists(fillfullpath))
+                        {
+                            System.IO.File.Delete(fillfullpath);
+                        }
+                        EOMSN = manualexist.FirstOrDefault().EOMSN;
+                    }
+                    string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
+                    if (!Directory.Exists(Folder))
+                    {
+                        System.IO.Directory.CreateDirectory(Folder);
+                    }
+                    string FolderPath = Server.MapPath("~/Files/EquipmentOperatingManual");
+                    Filename = EOMSN + Path.GetExtension(eim.FilePath.FileName);
+                    System.IO.Directory.CreateDirectory(FolderPath);
+                    string filefullpath = Path.Combine(FolderPath, Filename);
+                    eim.FilePath.SaveAs(filefullpath);
+                    #endregion
+
+                    #region 新增/更新設備操作手冊至資料庫
+                    var eom = new EquipmentOperatingManualViewModel();
+                    eom.System = eim.System;
+                    eom.SubSystem = eim.SubSystem;
+                    eom.EName = eim.EName;
+                    eom.Brand = eim.Brand;
+                    eom.Model = eim.Model;
+                    var addeom = new EquipmentOperatingManualService();
+                    if (manualexist.Count() > 0)
+                    {
+                        addeom.EditEquipmentOperatingManual(eom, EOMSN, Filename);
+                    }
+                    else
+                    {
+                        addeom.AddEquipmentOperatingManual(eom, EOMSN, Filename);
+                    }
+                    #endregion
                 }
                 else
-                {
-                    addeom.AddEquipmentOperatingManual(eom, EOMSN, Filename);
-                }
-                #endregion
-
+                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
             }
             #endregion
 
