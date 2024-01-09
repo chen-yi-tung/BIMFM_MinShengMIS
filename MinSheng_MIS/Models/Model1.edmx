@@ -589,7 +589,7 @@
           <Property Name="SSN" Type="char" MaxLength="8" Nullable="false" />
           <Property Name="SIRSN" Type="char" MaxLength="10" Nullable="false" />
           <Property Name="SISN" Type="char" MaxLength="4" Nullable="false" />
-          <Property Name="Location" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Location" Type="nvarchar" MaxLength="30" Nullable="false" />
           <Property Name="ExpiryDate" Type="datetime" />
           <Property Name="Amount" Type="float" Nullable="false" />
           <Property Name="RemainingAmount" Type="float" Nullable="false" />
@@ -2435,7 +2435,7 @@
           <Property Name="SSN" Type="String" Nullable="false" MaxLength="8" FixedLength="true" Unicode="false" />
           <Property Name="SIRSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
           <Property Name="SISN" Type="String" Nullable="false" MaxLength="4" FixedLength="true" Unicode="false" />
-          <Property Name="Location" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Location" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
           <Property Name="Amount" Type="Double" Nullable="false" />
           <Property Name="RemainingAmount" Type="Double" Nullable="false" />
