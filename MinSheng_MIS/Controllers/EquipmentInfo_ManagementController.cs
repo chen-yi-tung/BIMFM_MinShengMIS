@@ -32,6 +32,43 @@ namespace MinSheng_MIS.Controllers
             ViewBag.id = id;
             return View();
         }
+        #region 查看設備
+        [HttpGet]
+        public ActionResult ReadBody(string id)
+        {
+            EquipmentInfo item = db.EquipmentInfo.Find(id);
+
+            JObject jo = new JObject();
+            var ASN = db.Floor_Info.Find(item.FSN).ASN.ToString();
+            jo["ASN"] = ASN;
+            jo["Area"] = item.Area;
+            jo["FSN"] = item.FSN;
+            jo["Floor"] = item.Floor;
+            jo["RoomName"] = item.RoomName;
+            jo["System"] = item.System;
+            jo["SubSystem"] = item.SubSystem;
+            jo["PropertyCode"] = item.PropertyCode;
+            jo["PropertyCode"] = item.PropertyCode;
+            jo["EName"] = item.EName;
+            jo["Brand"] = item.Brand;
+            jo["Model"] = item.Model;
+            jo["LocationX"] = item.LocationX;
+            jo["LocationY"] = item.LocationY;
+
+            var EOM = db.EquipmentOperatingManual.Where(e =>
+                e.System == item.System &&
+                e.SubSystem == item.SubSystem &&
+                e.EName == item.EName &&
+                e.Brand == item.Brand &&
+                e.Model == item.Model).FirstOrDefault();
+            if (EOM != null)
+            {
+                jo["FilePath"] = !string.IsNullOrEmpty(EOM.FilePath) ? "/Files/EquipmentOperatingManual" + EOM.FilePath : null;
+            }
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
+        }
+        #endregion
         #endregion
 
         #region 編輯
@@ -44,7 +81,72 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Edit(EquipmentInfo_ManagementViewModel eim)
         {
-            return Content("這個API還沒做", "application/json");
+            JObject jo = new JObject();
+
+            #region 存設備操作手冊
+            string Filename = "";
+            if (eim.FilePath != null)
+            {
+                var lastEOMSN = db.EquipmentOperatingManual.OrderByDescending(x => x.EOMSN).FirstOrDefault();
+                var EOMSNnum = 1;
+                if (lastEOMSN != null)
+                {
+                    EOMSNnum = Convert.ToInt32(lastEOMSN.EOMSN) + 1;
+                }
+                var EOMSN = EOMSNnum.ToString().PadLeft(6, '0');
+
+                #region 檢查是否需要新增或更新設備操作手冊
+                var manualexist = db.EquipmentOperatingManual.Where(x => x.System == eim.System && x.SubSystem == eim.SubSystem && x.EName == eim.EName && x.Brand == eim.Brand && x.Model == eim.Model);
+                if (manualexist.Count() > 0)
+                {
+                    string file = manualexist.FirstOrDefault().FilePath.ToString();
+
+                    string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{file}");
+                    if (System.IO.File.Exists(fillfullpath))
+                    {
+                        System.IO.File.Delete(fillfullpath);
+                    }
+                    EOMSN = manualexist.FirstOrDefault().EOMSN;
+                }
+                string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
+                if (!Directory.Exists(Folder))
+                {
+                    System.IO.Directory.CreateDirectory(Folder);
+                }
+                string FolderPath = Server.MapPath("~/Files/EquipmentOperatingManual");
+                Filename = EOMSN + Path.GetExtension(eim.FilePath.FileName);
+                System.IO.Directory.CreateDirectory(FolderPath);
+                string filefullpath = Path.Combine(FolderPath, Filename);
+                eim.FilePath.SaveAs(filefullpath);
+                #endregion
+
+                #region 新增/更新設備操作手冊至資料庫
+                var eom = new EquipmentOperatingManualViewModel();
+                eom.System = eim.System;
+                eom.SubSystem = eim.SubSystem;
+                eom.EName = eim.EName;
+                eom.Brand = eim.Brand;
+                eom.Model = eim.Model;
+                var addeom = new EquipmentOperatingManualService();
+                if (manualexist.Count() > 0)
+                {
+                    addeom.EditEquipmentOperatingManual(eom, EOMSN, Filename);
+                }
+                else
+                {
+                    addeom.AddEquipmentOperatingManual(eom, EOMSN, Filename);
+                }
+                #endregion
+            }
+            #endregion
+
+            #region 編輯設備至資料庫
+            var editeim = new EquipmentInfo_ManagementService();
+            editeim.EditEquipmentInfo(eim);
+            #endregion
+            jo.Add("Succeed", true);
+            string result = JsonConvert.SerializeObject(jo);
+            return Content(result, "application/json");
         }
         #endregion
 
@@ -173,44 +275,6 @@ namespace MinSheng_MIS.Controllers
             }
             #endregion
             string result = JsonConvert.SerializeObject(ja);
-            return Content(result, "application/json");
-        }
-        #endregion
-
-        #region 查看設備
-        [HttpGet]
-        public ActionResult ReadBody(string id)
-        {
-            EquipmentInfo item = db.EquipmentInfo.Find(id);
-
-            JObject jo = new JObject();
-            var ASN = db.Floor_Info.Find(item.FSN).ASN.ToString();
-            jo["ASN"] = ASN;
-            jo["Area"] = item.Area;
-            jo["FSN"] = item.FSN;
-            jo["Floor"] = item.Floor;
-            jo["RoomName"] = item.RoomName;
-            jo["System"] = item.System;
-            jo["SubSystem"] = item.SubSystem;
-            jo["PropertyCode"] = item.PropertyCode;
-            jo["PropertyCode"] = item.PropertyCode;
-            jo["EName"] = item.EName;
-            jo["Brand"] = item.Brand;
-            jo["Model"] = item.Model;
-            jo["LocationX"] = item.LocationX;
-            jo["LocationY"] = item.LocationY;
-
-            var EOM = db.EquipmentOperatingManual.Where(e =>
-                e.System == item.System &&
-                e.SubSystem == item.SubSystem &&
-                e.EName == item.EName &&
-                e.Brand == item.Brand &&
-                e.Model == item.Model).FirstOrDefault();
-            if (EOM != null)
-            {
-                jo["FilePath"] = !string.IsNullOrEmpty(EOM.FilePath) ? "/Files/EquipmentOperatingManual" + EOM.FilePath : null;
-            }
-            string result = JsonConvert.SerializeObject(jo);
             return Content(result, "application/json");
         }
         #endregion

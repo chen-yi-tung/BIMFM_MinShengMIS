@@ -36,6 +36,30 @@ namespace MinSheng_MIS.Services
             db.SaveChanges();
             #endregion
         }
-        
+        public void EditEquipmentInfo(EquipmentInfo_ManagementViewModel eim)
+        {
+            #region 編輯設備
+
+            var eiitem = db.EquipmentInfo.Find(eim.ESN);
+            if(eiitem != null)
+            {
+                eiitem.FSN = eim.FSN;
+                eiitem.RoomName = eim.RoomName;
+                eiitem.System = eim.System;
+                eiitem.SubSystem = eim.SubSystem;
+                eiitem.PropertyCode = eim.PropertyCode;
+                eiitem.EName = eim.EName;
+                eiitem.Brand = eim.Brand;
+                eiitem.Model = eim.Model;
+                eiitem.LocationX = eim.LocationX;
+                eiitem.LocationY = eim.LocationY;
+                eiitem.Area = db.AreaInfo.Where(a => a.ASN == eim.ASN).FirstOrDefault().Area;
+                eiitem.Floor = db.Floor_Info.Where(f => f.FSN == eim.FSN).FirstOrDefault().FloorName;
+
+                db.EquipmentInfo.AddOrUpdate(eiitem);
+                db.SaveChanges();
+            }
+            #endregion
+        }
     }
 }

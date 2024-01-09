@@ -238,11 +238,11 @@
             fd.append("Model", $("#Model").val())
             fd.append("LocationX", $("#LocationX").val())
             fd.append("LocationY", $("#LocationY").val())
-            fd.append("FilePath", deviceFileModal.file)
+            fd.append("FilePath", deviceFileModal.file())
 
             console.log(Object.fromEntries(fd.entries()));
 
-            if (!fd) return;
+            //return;
 
             $.ajax({
                 url: "/EquipmentInfo_Management/Edit",
