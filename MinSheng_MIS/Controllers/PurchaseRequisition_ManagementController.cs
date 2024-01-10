@@ -162,8 +162,9 @@ namespace MinSheng_MIS.Controllers
                     if (!ComFunc.UploadFile(newFile, Server.MapPath($"~/{folderPath}/"), request.PRN)) return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
                     request.FileName = request.PRN + extension;
                 }
-                else 
-                    return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
+                else
+                    //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
+                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
             }
             #endregion
 
