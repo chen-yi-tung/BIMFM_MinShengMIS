@@ -134,26 +134,27 @@
                     <th class="datatable-header" style="width:6rem"><span>品項</span></th>
                     <th class="datatable-header" style="width:10rem"><span>品名</span></th>
                     <th class="datatable-header" style="width:10rem"><span>廠商品名</span></th>
+                    <th class="datatable-header" style="width:6rem"><span>尺寸</span></th>
                     <th class="datatable-header" style="width:6rem"><span>廠牌</span></th>
                     <th class="datatable-header" style="width:6rem"><span>型號</span></th>
                     <th class="datatable-header" style="width:6rem"><span>庫存數量</span></th>
                     <th class="datatable-header" style="width:7rem"><span>庫存單位</span></th>
                     <th class="datatable-header" style="width:10rem"><span>到期日</span></th>
-                    <th class="datatable-header" style="width:30rem"><span>擺放位置(倉庫, 貨架, 排, 層, 區)</span></th>
+                    <th class="datatable-header" style="width:24rem"><span>擺放位置(倉庫, 貨架, 排, 層, 區)</span></th>
                 </tr>
             </thead>
             <tbody id="item-area">
                 <tr id="sample-input-tr">
-                    <td id="d-StockType"></td>
-                    <td id="d-StockName"></td>
-                    <td id="d-MName"></td>
-                    <td id="d-Brand"></td>
-                    <td id="d-Model"></td>
-                    <td id="d-Amount"></td>
-                    <td id="d-Unit"></td>
-                    <td id="d-_ExpiryDate"><input type="date" class="form-control" id="ExpiryDate" required></td>
-                    <td id="d-_Location"><input type="text" class="form-control" id="Location" maxlength="30" required>
-                    </td>
+                    <td><input type="text" id="StockType" hidden required><span id="d-StockType"></span></td>
+                    <td><span id="d-StockName"></span></td>
+                    <td><span id="d-MName"></span></td>
+                    <td><span id="d-Size"></span></td>
+                    <td><span id="d-Brand"></span></td>
+                    <td><span id="d-Model"></span></td>
+                    <td><span id="d-Amount"></span></td>
+                    <td><input type="text" id="Unit" hidden required><span id="d-Unit"></span></td>
+                    <td><input type="date" class="form-control" id="ExpiryDate" required></td>
+                    <td><input type="text" class="form-control" id="Location" maxlength="30" required></td>
                 </tr>
             </tbody>
         </table>
@@ -216,8 +217,11 @@
                 this.list.append(item);
                 if (data) {
                     for (const [k, v] of Object.entries(data)) {
+                        if (/d-\S+/.test(k)) {
+                            item.find("#" + k).text(v)
+                            continue
+                        }
                         item.find("#" + k).val(v)
-                        item.find("#d-" + k).text(v)
                     }
                 }
                 this.count++;
@@ -225,9 +229,15 @@
             this.calc = function () {
                 return this.list.children().toArray().map((e) => {
                     return {
+                        StockType: $(e).find("#StockType").val(),
+                        StockName: $(e).find("#d-StockName").text(),
+                        MName: $(e).find("#d-MName").text(),
+                        Size: $(e).find("#d-Size").text(),
+                        Brand: $(e).find("#d-Brand").text(),
+                        Model: $(e).find("#d-Model").text(),
+                        Unit: $(e).find("#Unit").val(),
                         Location: $(e).find("#Location").val(),
                         ExpiryDate: $(e).find("#ExpiryDate").val(),
-                        Amount: $(e).find("#d-Amount").text()
                     }
                 })
             }
@@ -250,9 +260,16 @@
                 return;
             }
             sampleTr.calc().forEach((item, i) => {
-                form.append(`StockItem[${i}].Location`, item.Location);
-                form.append(`StockItem[${i}].ExpiryDate`, item.ExpiryDate);
+                form.append(`StockItem[${i}].StockType`, item.StockType);
+                form.append(`StockItem[${i}].StockName`, item.StockName);
+                form.append(`StockItem[${i}].MName`, item.MName);
+                form.append(`StockItem[${i}].Size`, item.Size);
+                form.append(`StockItem[${i}].Brand`, item.Brand);
+                form.append(`StockItem[${i}].Model`, item.Model);
                 form.append(`StockItem[${i}].Amount`, item.Amount);
+                form.append(`StockItem[${i}].Unit`, item.Unit);
+                form.append(`StockItem[${i}].ExpiryDate`, item.ExpiryDate);
+                form.append(`StockItem[${i}].Location`, item.Location);
             })
             console.log(Object.fromEntries(form.entries()));
             return
@@ -288,17 +305,21 @@
                 console.log("todo save():", isValidity)
                 if (!isValidity) return;
 
-                let data = {
-                    StockType: $(".edit-area #StockType option:selected").text(),
-                    StockName: $(".edit-area #StockName").val(),
-                    MName: $(".edit-area #MName").val(),
-                    Brand: $(".edit-area #Brand").val(),
-                    Model: $(".edit-area #Model").val(),
-                    Amount: $(".edit-area #Amount").val(),
-                    Unit: $(".edit-area #Unit option:selected").text(),
+                let e = $(".edit-area")
 
-                    ExpiryDate: $(".edit-area #ExpiryDate").val(),
-                    Location: $(".edit-area #Location").val(),
+                let data = {
+                    StockType: e.find("#StockType").val(),
+                    "d-StockType": e.find("#StockType option:selected").text(),
+                    "d-StockName": e.find("#StockName").val(),
+                    "d-MName": e.find("#MName").val(),
+                    "d-Size": e.find("#Size").val(),
+                    "d-Brand": e.find("#Brand").val(),
+                    "d-Model": e.find("#Model").val(),
+                    "d-Amount": e.find("#Amount").val(),
+                    Unit: e.find("#Unit").val(),
+                    "d-Unit": e.find("#Unit option:selected").text(),
+                    ExpiryDate: e.find("#ExpiryDate").val(),
+                    Location: e.find("#Location").val(),
                 }
 
                 $("#POSNItem").closest(".datatable").removeClass("d-none")
