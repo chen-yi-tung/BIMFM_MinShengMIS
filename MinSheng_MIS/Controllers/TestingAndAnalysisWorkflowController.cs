@@ -77,7 +77,8 @@ namespace MinSheng_MIS.Controllers
                     db.TestingAndAnalysisWorkflow.AddOrUpdate(workflow);
                 }
                 else
-                    return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
+                    //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
+                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
             }
             await db.SaveChangesAsync();
 
@@ -128,7 +129,8 @@ namespace MinSheng_MIS.Controllers
                     workflow.WorkflowFile = workflow.TAWSN + extension;
                 }
                 else
-                    return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
+                    //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
+                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
             }
 
             db.TestingAndAnalysisWorkflow.AddOrUpdate(workflow);
