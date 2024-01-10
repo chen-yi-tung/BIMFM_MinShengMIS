@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Security.Policy;
 using System.Web;
 using System.Web.Mvc;
@@ -576,48 +577,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region FormPRState 請購申請狀態
-        [HttpGet]
-        public ActionResult FormPRState()
-        {
-            List<JObject> list = new List<JObject>();
-            var Dics = Surface.PRState();
-
-            foreach (var a in Dics)
-            {
-                JObject jo = new JObject
-                {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
-                };
-                list.Add(jo);
-            }
-
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region FormPRDept 請購部門
-        [HttpGet]
-        public ActionResult FormPRDept()
-        {
-            List<JObject> list = new List<JObject>();
-            var dept = db.PurchaseRequisition.Select(x => x.PRDept).Distinct().ToList();
-            foreach (var item in dept)
-            {
-                JObject jo = new JObject
-                {
-                    { "Text", item },
-                    { "Value", item }
-                };
-                list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
         #region 設計圖說種類下拉式選單
         [HttpGet]
         public ActionResult ImgType()
@@ -668,7 +627,6 @@ namespace MinSheng_MIS.Controllers
             return Content(text, "application/json");
         }
         #endregion
-
 
         #region 圖系統下拉式選單
         [HttpGet]
@@ -725,6 +683,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        //--實驗室管理--
         #region FormMType 實驗室維護類型
         [HttpGet]
         public ActionResult FormMType()
@@ -785,5 +744,67 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        //--庫存管理--
+        #region FormPRDept 請購部門
+        [HttpGet]
+        public ActionResult FormPRDept()
+        {
+            List<JObject> list = new List<JObject>();
+            var dept = db.PurchaseRequisition.Select(x => x.PRDept).Distinct().ToList();
+            foreach (var item in dept)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", item },
+                    { "Value", item }
+                };
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region FormPRState 請購申請狀態
+        [HttpGet]
+        public ActionResult FormPRState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.PRState();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region StockInfoList 品名及對應SN
+        /// <summary>
+        /// 以品名對庫存(表[ComputationalStock])進行模糊搜尋
+        /// </summary>
+        /// <param name="str">使用者輸入字串</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult StockInfoList(string str)
+        {
+            List<JObject> list = db.ComputationalStock.Where(x => x.StockName.Contains(str)).Select(a => new JObject
+            {
+                { "Text", a.StockName },
+                { "Value", a.SISN }
+            }).ToList();
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
     }
 }
