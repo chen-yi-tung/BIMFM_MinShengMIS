@@ -308,6 +308,38 @@
 
                 let e = $(".edit-area")
 
+                //TODO 檢查有無重複
+                var form = new FormData();
+                form.append("StockType", e.find("#StockType").val())
+                form.append("StockName", e.find("#StockName").val())
+                form.append("Unit", e.find("#Unit").val())
+
+                $.ajax({
+                    url: '@Url.Action("CheckDuplicateStockItem", "StockIn_Management")',
+                    data: form,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    success: onSuccess,
+                    error: onError
+                })
+
+                function onSuccess(res){
+                    //同品項同品名同單位
+                    if (res.IsDuplicate == true) {
+                        return
+                    }
+                    //有不同單位
+                    else if (res.IsDuplicate == false) {
+                        console.log(res.Units)
+                        //[ {Text: "", Value: ""} ]
+                    }
+                }
+
+                function onError(res){
+
+                }
+
                 let data = {
                     StockType: e.find("#StockType").val(),
                     "d-StockType": e.find("#StockType option:selected").text(),
