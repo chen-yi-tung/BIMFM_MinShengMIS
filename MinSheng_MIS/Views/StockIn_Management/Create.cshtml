@@ -117,7 +117,7 @@
     <form class="form">
         <div class="form-group required">
             <label for="RFIDAmount">標籤張數</label>
-            <input class="form-control" id="RFIDAmount" name="RFIDAmount" type="number" min="0" step="1" value="1"
+            <input class="form-control" id="RFIDAmount" name="RFIDAmount" type="number" min="0" max="99" step="1" value="1"
                 required />
         </div>
     </form>
@@ -356,6 +356,7 @@
                 }
 
                 $("#POSNItem").closest(".datatable").removeClass("d-none")
+                sampleTr.list.children().remove()
                 for (let i = 0; i < $("#RFIDAmount").val(); i++) {
                     sampleTr.create(data)
                 }
