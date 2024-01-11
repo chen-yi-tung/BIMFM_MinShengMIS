@@ -273,7 +273,6 @@
                 form.append(`StockItem[${i}].Location`, item.Location);
             })
             console.log(Object.fromEntries(form.entries()));
-            return
             $.ajax({
                 url: '@Url.Action("CreateStockIn", "StockIn_Management")',
                 data: form,

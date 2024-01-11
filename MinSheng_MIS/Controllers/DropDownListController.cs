@@ -796,11 +796,15 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult StockInfoList(string str)
         {
-            List<JObject> list = db.ComputationalStock.Where(x => x.StockName.Contains(str)).Select(a => new JObject
+            List<JObject> list = new List<JObject>();
+            if (!string.IsNullOrEmpty(str))
             {
-                { "Text", a.StockName },
-                { "Value", a.SISN }
-            }).ToList();
+                list = db.ComputationalStock.Where(x => x.StockName.Contains(str)).Select(a => new JObject
+                {
+                    { "Text", a.StockName },
+                    { "Value", a.SISN }
+                }).ToList();
+            }
 
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
