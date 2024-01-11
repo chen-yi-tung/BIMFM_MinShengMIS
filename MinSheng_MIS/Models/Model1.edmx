@@ -91,6 +91,40 @@
           <Property Name="Apartment" Type="nvarchar" MaxLength="20" />
           <Property Name="Title" Type="nvarchar" MaxLength="20" />
         </EntityType>
+        <EntityType Name="BIMData">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ElementID" Type="nvarchar" MaxLength="100" />
+          <Property Name="Category" Type="nvarchar" MaxLength="100" />
+          <Property Name="FamilyName" Type="nvarchar" MaxLength="100" />
+          <Property Name="TypeName" Type="nvarchar" MaxLength="100" />
+          <Property Name="Level" Type="nvarchar" MaxLength="100" />
+          <Property Name="BuildingName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ApplianceName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ServiceLife" Type="nvarchar" MaxLength="100" />
+          <Property Name="ProductModel" Type="nvarchar" MaxLength="100" />
+          <Property Name="WarrantyManufacturer" Type="nvarchar" MaxLength="100" />
+          <Property Name="WarrantyDate" Type="nvarchar" MaxLength="100" />
+          <Property Name="WarrantyUnit" Type="nvarchar" MaxLength="100" />
+          <Property Name="CompletionDate" Type="nvarchar" MaxLength="100" />
+          <Property Name="Price" Type="nvarchar" MaxLength="100" />
+          <Property Name="Illustration" Type="nvarchar" MaxLength="100" />
+          <Property Name="Specification" Type="nvarchar" MaxLength="100" />
+          <Property Name="WarrantyPhone" Type="nvarchar" MaxLength="100" />
+          <Property Name="MaintenanceFrequency" Type="nvarchar" MaxLength="100" />
+          <Property Name="Catalog" Type="nvarchar" MaxLength="100" />
+          <Property Name="OMManual" Type="nvarchar" MaxLength="100" />
+          <Property Name="Photo" Type="nvarchar" MaxLength="100" />
+          <Property Name="StandardSize" Type="nvarchar" MaxLength="100" />
+          <Property Name="FireResistance" Type="nvarchar" MaxLength="100" />
+          <Property Name="Source" Type="nvarchar" MaxLength="100" />
+          <Property Name="DBID" Type="int" />
+          <Property Name="MainSystem" Type="nvarchar" MaxLength="50" />
+          <Property Name="SubSystem" Type="nvarchar" MaxLength="50" />
+          <Property Name="PWarrantyDate" Type="date" />
+        </EntityType>
         <EntityType Name="CompletionReportImage">
           <Key>
             <PropertyRef Name="ImgPath" />
@@ -473,7 +507,7 @@
           <Property Name="TakeTheMinutes" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Agenda" Type="nvarchar" MaxLength="256" />
           <Property Name="MeetingContent" Type="nvarchar(max)" />
-          <Property Name="MeetingFiles" Type="nvarchar" MaxLength="20" />
+          <Property Name="MeetingFile" Type="nvarchar" MaxLength="20" />
           <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="UploadDateTime" Type="datetime" Nullable="false" />
         </EntityType>
@@ -600,7 +634,7 @@
             <PropertyRef Name="SIRSN" />
           </Key>
           <Property Name="SIRSN" Type="char" MaxLength="10" Nullable="false" />
-          <Property Name="MName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="MName" Type="nvarchar" MaxLength="50" />
           <Property Name="Brand" Type="nvarchar" MaxLength="50" />
           <Property Name="Model" Type="nvarchar" MaxLength="50" />
           <Property Name="Size" Type="nvarchar" MaxLength="50" />
@@ -673,6 +707,21 @@
           <Property Name="version" Type="int" />
           <Property Name="definition" Type="varbinary(max)" />
         </EntityType>
+        <EntityType Name="SystemLogs">
+          <Key>
+            <PropertyRef Name="LogId" />
+          </Key>
+          <Property Name="LogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LogTime" Type="datetime2" Precision="7" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" />
+          <Property Name="Client_IP" Type="varbinary" MaxLength="16" />
+          <Property Name="Request" Type="nvarchar(max)" />
+          <Property Name="HttpMethod" Type="nchar" MaxLength="10" />
+          <Property Name="Controller" Type="nvarchar(max)" />
+          <Property Name="Action" Type="nvarchar(max)" />
+          <Property Name="Result" Type="nvarchar(max)" />
+          <Property Name="Data" Type="nvarchar(max)" />
+        </EntityType>
         <EntityType Name="SystemManagement">
           <Key>
             <PropertyRef Name="SystemID" />
@@ -707,6 +756,17 @@
           <Property Name="WorkflowFile" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="UploadDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tokens">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="Purpose" />
+            <PropertyRef Name="TimeStamp" />
+          </Key>
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Purpose" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="TimeStamp" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompletionReportImage_InspectionPlan">
           <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
@@ -1280,6 +1340,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Tokens_AspNetUsers">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
+          <End Role="Tokens" Type="Self.Tokens" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Tokens">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Bimfm_MinSheng_MISModelStoreContainer">
           <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AreaInfo" EntityType="Self.AreaInfo" Schema="dbo" store:Type="Tables" />
@@ -1289,6 +1361,7 @@
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BIMData" EntityType="Self.BIMData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompletionReportImage" EntityType="Self.CompletionReportImage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ComputationalStock" EntityType="Self.ComputationalStock" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DesignDiagrams" EntityType="Self.DesignDiagrams" Schema="dbo" store:Type="Tables" />
@@ -1341,10 +1414,12 @@
           <EntitySet Name="StoresRequisitionItem" EntityType="Self.StoresRequisitionItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubSystemManagement" EntityType="Self.SubSystemManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SystemLogs" EntityType="Self.SystemLogs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SystemManagement" EntityType="Self.SystemManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TestingAndAnalysis_DataName" EntityType="Self.TestingAndAnalysis_DataName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Self.TestingAndAnalysis_LabelName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Self.TestingAndAnalysisWorkflow" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tokens" EntityType="Self.Tokens" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_CompletionReportImage_InspectionPlan" Association="Self.FK_CompletionReportImage_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
             <End Role="CompletionReportImage" EntitySet="CompletionReportImage" />
@@ -1533,6 +1608,10 @@
             <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
             <End Role="TestingAndAnalysis_LabelName" EntitySet="TestingAndAnalysis_LabelName" />
           </AssociationSet>
+          <AssociationSet Name="FK_Tokens_AspNetUsers" Association="Self.FK_Tokens_AspNetUsers">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="Tokens" EntitySet="Tokens" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -1546,6 +1625,7 @@
           <EntitySet Name="AspNetUserClaims" EntityType="Bimfm_MinSheng_MISModel.AspNetUserClaims" />
           <EntitySet Name="AspNetUserLogins" EntityType="Bimfm_MinSheng_MISModel.AspNetUserLogins" />
           <EntitySet Name="AspNetUsers" EntityType="Bimfm_MinSheng_MISModel.AspNetUsers" />
+          <EntitySet Name="BIMData" EntityType="Bimfm_MinSheng_MISModel.BIMData" />
           <EntitySet Name="CompletionReportImage" EntityType="Bimfm_MinSheng_MISModel.CompletionReportImage" />
           <EntitySet Name="ComputationalStock" EntityType="Bimfm_MinSheng_MISModel.ComputationalStock" />
           <EntitySet Name="DesignDiagrams" EntityType="Bimfm_MinSheng_MISModel.DesignDiagrams" />
@@ -1598,10 +1678,12 @@
           <EntitySet Name="StoresRequisitionItem" EntityType="Bimfm_MinSheng_MISModel.StoresRequisitionItem" />
           <EntitySet Name="SubSystemManagement" EntityType="Bimfm_MinSheng_MISModel.SubSystemManagement" />
           <EntitySet Name="sysdiagrams" EntityType="Bimfm_MinSheng_MISModel.sysdiagrams" />
+          <EntitySet Name="SystemLogs" EntityType="Bimfm_MinSheng_MISModel.SystemLogs" />
           <EntitySet Name="SystemManagement" EntityType="Bimfm_MinSheng_MISModel.SystemManagement" />
           <EntitySet Name="TestingAndAnalysis_DataName" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysis_DataName" />
           <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysis_LabelName" />
           <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysisWorkflow" />
+          <EntitySet Name="Tokens" EntityType="Bimfm_MinSheng_MISModel.Tokens" />
           <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo">
             <End Role="AreaInfo" EntitySet="AreaInfo" />
             <End Role="Floor_Info" EntitySet="Floor_Info" />
@@ -1613,6 +1695,10 @@
           <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tokens_AspNetUsers" Association="Bimfm_MinSheng_MISModel.FK_Tokens_AspNetUsers">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="Tokens" EntitySet="Tokens" />
           </AssociationSet>
           <AssociationSet Name="FK_CompletionReportImage_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_CompletionReportImage_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
@@ -1870,7 +1956,42 @@
           <Property Name="Title" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUserClaims" Relationship="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
           <NavigationProperty Name="AspNetUserLogins" Relationship="Bimfm_MinSheng_MISModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
+          <NavigationProperty Name="Tokens" Relationship="Bimfm_MinSheng_MISModel.FK_Tokens_AspNetUsers" FromRole="AspNetUsers" ToRole="Tokens" />
           <NavigationProperty Name="AspNetRoles" Relationship="Bimfm_MinSheng_MISModel.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
+        </EntityType>
+        <EntityType Name="BIMData">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ElementID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Category" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FamilyName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TypeName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Level" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="BuildingName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ApplianceName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceLife" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ProductModel" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="WarrantyManufacturer" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="WarrantyDate" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="WarrantyUnit" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CompletionDate" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Price" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Illustration" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Specification" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="WarrantyPhone" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="MaintenanceFrequency" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Catalog" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="OMManual" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Photo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="StandardSize" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FireResistance" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Source" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="DBID" Type="Int32" />
+          <Property Name="MainSystem" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SubSystem" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PWarrantyDate" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="CompletionReportImage">
           <Key>
@@ -2307,7 +2428,7 @@
           <Property Name="TakeTheMinutes" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Agenda" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="MeetingContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="MeetingFiles" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="MeetingFile" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="UploadUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="UploadDateTime" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
@@ -2449,7 +2570,7 @@
             <PropertyRef Name="SIRSN" />
           </Key>
           <Property Name="SIRSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
-          <Property Name="MName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
@@ -2532,6 +2653,21 @@
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
+        <EntityType Name="SystemLogs">
+          <Key>
+            <PropertyRef Name="LogId" />
+          </Key>
+          <Property Name="LogId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LogTime" Type="DateTime" Precision="7" />
+          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Client_IP" Type="Binary" MaxLength="16" FixedLength="false" />
+          <Property Name="Request" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="HttpMethod" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Controller" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Action" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Result" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Data" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
         <EntityType Name="SystemManagement">
           <Key>
             <PropertyRef Name="SystemID" />
@@ -2574,6 +2710,18 @@
           <NavigationProperty Name="TestingAndAnalysis_DataName" Relationship="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysisWorkflow" ToRole="TestingAndAnalysis_DataName" />
           <NavigationProperty Name="TestingAndAnalysis_LabelName" Relationship="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysisWorkflow" ToRole="TestingAndAnalysis_LabelName" />
         </EntityType>
+        <EntityType Name="Tokens">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="Purpose" />
+            <PropertyRef Name="TimeStamp" />
+          </Key>
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Purpose" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TimeStamp" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUsers" Relationship="Bimfm_MinSheng_MISModel.FK_Tokens_AspNetUsers" FromRole="Tokens" ToRole="AspNetUsers" />
+        </EntityType>
         <Association Name="FK_Floor_Info_AreaInfo">
           <End Type="Bimfm_MinSheng_MISModel.AreaInfo" Role="AreaInfo" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="*" />
@@ -2610,6 +2758,18 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="AspNetUserLogins">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tokens_AspNetUsers">
+          <End Type="Bimfm_MinSheng_MISModel.AspNetUsers" Role="AspNetUsers" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.Tokens" Role="Tokens" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Tokens">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
@@ -3210,6 +3370,41 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="BIMData">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.BIMData">
+              <MappingFragment StoreEntitySet="BIMData">
+                <ScalarProperty Name="PWarrantyDate" ColumnName="PWarrantyDate" />
+                <ScalarProperty Name="SubSystem" ColumnName="SubSystem" />
+                <ScalarProperty Name="MainSystem" ColumnName="MainSystem" />
+                <ScalarProperty Name="DBID" ColumnName="DBID" />
+                <ScalarProperty Name="Source" ColumnName="Source" />
+                <ScalarProperty Name="FireResistance" ColumnName="FireResistance" />
+                <ScalarProperty Name="StandardSize" ColumnName="StandardSize" />
+                <ScalarProperty Name="Photo" ColumnName="Photo" />
+                <ScalarProperty Name="OMManual" ColumnName="OMManual" />
+                <ScalarProperty Name="Catalog" ColumnName="Catalog" />
+                <ScalarProperty Name="MaintenanceFrequency" ColumnName="MaintenanceFrequency" />
+                <ScalarProperty Name="WarrantyPhone" ColumnName="WarrantyPhone" />
+                <ScalarProperty Name="Specification" ColumnName="Specification" />
+                <ScalarProperty Name="Illustration" ColumnName="Illustration" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="CompletionDate" ColumnName="CompletionDate" />
+                <ScalarProperty Name="WarrantyUnit" ColumnName="WarrantyUnit" />
+                <ScalarProperty Name="WarrantyDate" ColumnName="WarrantyDate" />
+                <ScalarProperty Name="WarrantyManufacturer" ColumnName="WarrantyManufacturer" />
+                <ScalarProperty Name="ProductModel" ColumnName="ProductModel" />
+                <ScalarProperty Name="ServiceLife" ColumnName="ServiceLife" />
+                <ScalarProperty Name="ApplianceName" ColumnName="ApplianceName" />
+                <ScalarProperty Name="BuildingName" ColumnName="BuildingName" />
+                <ScalarProperty Name="Level" ColumnName="Level" />
+                <ScalarProperty Name="TypeName" ColumnName="TypeName" />
+                <ScalarProperty Name="FamilyName" ColumnName="FamilyName" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="ElementID" ColumnName="ElementID" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="CompletionReportImage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.CompletionReportImage">
               <MappingFragment StoreEntitySet="CompletionReportImage">
@@ -3611,7 +3806,7 @@
               <MappingFragment StoreEntitySet="MeetingMinutes">
                 <ScalarProperty Name="UploadDateTime" ColumnName="UploadDateTime" />
                 <ScalarProperty Name="UploadUserName" ColumnName="UploadUserName" />
-                <ScalarProperty Name="MeetingFiles" ColumnName="MeetingFiles" />
+                <ScalarProperty Name="MeetingFile" ColumnName="MeetingFile" />
                 <ScalarProperty Name="MeetingContent" ColumnName="MeetingContent" />
                 <ScalarProperty Name="Agenda" ColumnName="Agenda" />
                 <ScalarProperty Name="TakeTheMinutes" ColumnName="TakeTheMinutes" />
@@ -3844,6 +4039,22 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="SystemLogs">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.SystemLogs">
+              <MappingFragment StoreEntitySet="SystemLogs">
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="Result" ColumnName="Result" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Controller" ColumnName="Controller" />
+                <ScalarProperty Name="HttpMethod" ColumnName="HttpMethod" />
+                <ScalarProperty Name="Request" ColumnName="Request" />
+                <ScalarProperty Name="Client_IP" ColumnName="Client_IP" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="LogTime" ColumnName="LogTime" />
+                <ScalarProperty Name="LogId" ColumnName="LogId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="SystemManagement">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.SystemManagement">
               <MappingFragment StoreEntitySet="SystemManagement">
@@ -3880,6 +4091,16 @@
                 <ScalarProperty Name="ExperimentName" ColumnName="ExperimentName" />
                 <ScalarProperty Name="ExperimentType" ColumnName="ExperimentType" />
                 <ScalarProperty Name="TAWSN" ColumnName="TAWSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tokens">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.Tokens">
+              <MappingFragment StoreEntitySet="Tokens">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="TimeStamp" ColumnName="TimeStamp" />
+                <ScalarProperty Name="Purpose" ColumnName="Purpose" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

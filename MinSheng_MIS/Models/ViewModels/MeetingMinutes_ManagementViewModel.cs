@@ -51,6 +51,6 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Agenda { get; set; } //議題順序
         [Display(Name = "會議內容")]
         public string MeetingContent { get; set; } //會議內容
-        public HttpPostedFileBase MeetingFiles { get; set; } //會議記錄文件
+        public HttpPostedFileBase MeetingFile { get; set; } //會議記錄文件
     }
 }

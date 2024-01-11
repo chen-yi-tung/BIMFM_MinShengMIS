@@ -28,7 +28,7 @@ namespace MinSheng_MIS.Models
         public string TakeTheMinutes { get; set; }
         public string Agenda { get; set; }
         public string MeetingContent { get; set; }
-        public string MeetingFiles { get; set; }
+        public string MeetingFile { get; set; }
         public string UploadUserName { get; set; }
         public System.DateTime UploadDateTime { get; set; }
     }

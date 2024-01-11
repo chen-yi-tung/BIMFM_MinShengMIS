@@ -100,9 +100,9 @@
 
         </form>
         <form class="w-100 d-lg-contents">
-            <div class="form-group w-100 mt-4">
+            <div class="form-group w-100 mt-4 required">
                 <label for="Participant">與會者</label>
-                <input class="form-control" id="Participant" name="Participant" type="text">
+                <input class="form-control" id="Participant" name="Participant" type="text" required>
             </div>
             <div class="form-group w-100 mt-4">
                 <label for="Agenda">議題順序</label>
@@ -152,8 +152,7 @@
                 className: "form-group w-100",
                 label: "會議資料",
                 id: "File",
-                required: false,
-                multiple: true
+                required: false
             })
             readData(apiUrl)
         });
@@ -212,14 +211,13 @@
             fd.append("MeetingContent", document.getElementById("MeetingContent").value);
 
             if (fileUploader.hasFile()) {
-                fileUploader.getAllFile().forEach((file, i) => {
-                    if (file?.size) {
-                        form.append(`MeetingFiles[${i}]`, file);
-                    }
-                    else {
-                        form.append(`MeetingFiles[${i}]`, file?.name);
-                    }
-                })
+                let file = fileUploader.getFile()
+                if (file?.size) {
+                    form.append(`MeetingFile`, file);
+                }
+                else {
+                    form.append(`MeetingFileName`, file?.name);
+                }
             }
             console.log(Object.fromEntries(fd.entries()));
             $.ajax({

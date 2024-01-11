@@ -48,15 +48,15 @@ namespace MinSheng_MIS.Controllers
             var MMSN = Info.MeetingDate.Date.ToString("yyMMdd") + mmsnnum.ToString().PadLeft(2, '0'); ;
             var FileName = "";
 			//新增會議紀錄文件
-			if(Info.MeetingFiles != null)
+			if(Info.MeetingFile != null)
 			{
                 //檢查會議記錄文件格式
-                string extension = Path.GetExtension(Info.MeetingFiles.FileName); //檔案副檔名
-                if (ComFunc.IsConformedForDocument(Info.MeetingFiles.ContentType, extension) || ComFunc.IsConformedForImage(Info.MeetingFiles.ContentType, extension)) //檔案白名單檢查
+                string extension = Path.GetExtension(Info.MeetingFile.FileName); //檔案副檔名
+                if (ComFunc.IsConformedForDocument(Info.MeetingFile.ContentType, extension) || ComFunc.IsConformedForImage(Info.MeetingFile.ContentType, extension)) //檔案白名單檢查
                 {
                     #region 檢查是否需要新增或更新設備操作手冊
                     // 檔案上傳
-                    if (!ComFunc.UploadFile(Info.MeetingFiles, Server.MapPath($"~/{folderPath}/"), MMSN))
+                    if (!ComFunc.UploadFile(Info.MeetingFile, Server.MapPath($"~/{folderPath}/"), MMSN))
                         return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
                     FileName = MMSN + extension;
                     #endregion
