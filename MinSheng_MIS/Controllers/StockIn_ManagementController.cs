@@ -1,6 +1,8 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -8,7 +10,9 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -101,6 +105,48 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Read()
         {
             return View();
+        }
+        #endregion
+
+        #region 入庫檢查
+        /// <summary>
+        /// 是否在計算型庫存中有同庫存品項
+        /// </summary>
+        /// <param name="info">類型/品名/單位資訊</param>
+        /// <returns>
+        /// {
+        ///     "IsDuplicate": true/false,          // true表示已有此品項，false表示未有此品項(需要確認是否需要新增或更改為已有的單位)
+        ///     "Units":[ {Text: "", Value: ""} ]   // IsDuplicate為false時給予已有的單位列表
+        /// }
+        /// </returns>
+        [HttpPost]
+        public async Task<ActionResult> CheckDuplicateStockItem(CheckInfo info)
+        {
+            var result = new JObject
+            {
+                { "IsDuplicate", true},
+                { "Units", null}
+            };
+
+            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+            var inStock = await db.ComputationalStock.Where(x => x.StockType == info.StockType && x.StockName == info.StockName).Select(x => x.Unit).Distinct().ToListAsync();
+            if (!inStock.Contains(info.Unit))
+            {
+                result["IsDuplicate"] = false;
+                result["Units"] = JArray.FromObject(inStock.Select(x => new JObject { { "Text", x }, { "Value", x } }));
+            }
+
+            string text = JsonConvert.SerializeObject(result);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 取得指定SISN的庫存資訊(庫存種類/庫存名稱/單位)
+        public ActionResult GetStockInfo(string SISN)
+        {
+            var stockInfo = db.ComputationalStock.Where(x => x.SISN == SISN).Select(x => new { x.StockType, x.StockName, x.Unit }).FirstOrDefault();
+            return Content(JsonConvert.SerializeObject(stockInfo), "application/json");
         }
         #endregion
     }
