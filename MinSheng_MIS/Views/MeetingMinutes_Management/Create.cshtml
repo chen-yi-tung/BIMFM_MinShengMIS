@@ -100,7 +100,7 @@
 
         </form>
         <form class="w-100 d-lg-contents">
-            <div class="form-group w-100 mt-4">
+            <div class="form-group w-100 mt-4 required">
                 <label for="Participant">與會者</label>
                 <input class="form-control" id="Participant" name="Participant" type="text" required>
             </div>
@@ -131,8 +131,7 @@
                 className: "form-group w-100",
                 label: "會議資料",
                 id: "File",
-                required: false,
-                multiple: true
+                required: false
             })
         });
 
@@ -167,7 +166,7 @@
             fd.append("MeetingContent", document.getElementById("MeetingContent").value);
 
             if (fileUploader.hasFile()) {
-                fd.append(`MeetingFiles`, fileUploader.getFile());
+                fd.append(`MeetingFile`, fileUploader.getFile());
             }
             console.log(Object.fromEntries(fd.entries()));
             $.ajax({

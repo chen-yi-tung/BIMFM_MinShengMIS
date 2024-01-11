@@ -12,7 +12,7 @@ namespace MinSheng_MIS.Services
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
-        public void AddMeetingMinutes(MeetingMinutesInfo Info, string MMSN, string MeetingFiles, string UserName)
+        public void AddMeetingMinutes(MeetingMinutesInfo Info, string MMSN, string MeetingFile, string UserName)
         {
             MeetingMinutes meetingMinutes = new MeetingMinutes();
             meetingMinutes.MMSN = MMSN;
@@ -29,7 +29,7 @@ namespace MinSheng_MIS.Services
             meetingMinutes.TakeTheMinutes = Info.TakeTheMinutes;
             meetingMinutes.Agenda = Info.Agenda;
             meetingMinutes.MeetingContent = Info.MeetingContent;
-            meetingMinutes.MeetingFiles = MeetingFiles;
+            meetingMinutes.MeetingFile = MeetingFile;
             meetingMinutes.UploadUserName = UserName;
             meetingMinutes.UploadDateTime = DateTime.Now;
 

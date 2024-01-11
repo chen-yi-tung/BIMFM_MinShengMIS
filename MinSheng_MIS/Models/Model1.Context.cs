@@ -32,6 +32,7 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
         public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
+        public virtual DbSet<BIMData> BIMData { get; set; }
         public virtual DbSet<CompletionReportImage> CompletionReportImage { get; set; }
         public virtual DbSet<ComputationalStock> ComputationalStock { get; set; }
         public virtual DbSet<DesignDiagrams> DesignDiagrams { get; set; }
@@ -84,9 +85,11 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<StoresRequisitionItem> StoresRequisitionItem { get; set; }
         public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
+        public virtual DbSet<SystemLogs> SystemLogs { get; set; }
         public virtual DbSet<SystemManagement> SystemManagement { get; set; }
         public virtual DbSet<TestingAndAnalysis_DataName> TestingAndAnalysis_DataName { get; set; }
         public virtual DbSet<TestingAndAnalysis_LabelName> TestingAndAnalysis_LabelName { get; set; }
         public virtual DbSet<TestingAndAnalysisWorkflow> TestingAndAnalysisWorkflow { get; set; }
+        public virtual DbSet<Tokens> Tokens { get; set; }
     }
 }
