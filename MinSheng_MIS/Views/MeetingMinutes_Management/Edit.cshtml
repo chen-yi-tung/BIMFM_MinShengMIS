@@ -174,6 +174,7 @@
                 for (const [k, v] of Object.entries(res)) {
                     $("#" + k).val(v)
                 }
+                res.FilePath ? fileUploader.setFile(res.FilePath) : void 0
             }
             function onError(res) {
                 console.log(res);
@@ -192,6 +193,7 @@
             if (!isValidity) return;
 
             var fd = new FormData();
+            fd.append("MMSN", MMSN);
             fd.append("MeetingTopic", document.getElementById("MeetingTopic").value);
             fd.append("MeetingDate", document.getElementById("MeetingDate").value);
 
@@ -213,10 +215,10 @@
             if (fileUploader.hasFile()) {
                 let file = fileUploader.getFile()
                 if (file?.size) {
-                    form.append(`MeetingFile`, file);
+                    fd.append(`MeetingFile`, file);
                 }
                 else {
-                    form.append(`MeetingFileName`, file?.name);
+                    fd.append(`MeetingFileName`, file?.name);
                 }
             }
             console.log(Object.fromEntries(fd.entries()));

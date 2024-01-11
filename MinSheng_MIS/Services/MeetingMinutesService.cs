@@ -12,10 +12,10 @@ namespace MinSheng_MIS.Services
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
-        public void AddMeetingMinutes(MeetingMinutesInfo Info, string MMSN, string MeetingFile, string UserName)
+        public void AddMeetingMinutes(MeetingMinutesInfo Info, string MeetingFile, string UserName)
         {
             MeetingMinutes meetingMinutes = new MeetingMinutes();
-            meetingMinutes.MMSN = MMSN;
+            meetingMinutes.MMSN = Info.MMSN;
             meetingMinutes.MeetingTopic = Info.MeetingTopic;
             meetingMinutes.MeetingDate = Info.MeetingDate;
             meetingMinutes.MeetingDateStart = Info.MeetingDateStart;
@@ -35,6 +35,32 @@ namespace MinSheng_MIS.Services
 
             db.MeetingMinutes.AddOrUpdate(meetingMinutes);
             db.SaveChanges();
+        }
+        public void EditMeetingMinutes(MeetingMinutesInfo Info, string MeetingFile, string UserName)
+        {
+            var meetingMinutes = db.MeetingMinutes.Find(Info.MMSN);
+            if(meetingMinutes != null)
+            {
+                meetingMinutes.MeetingTopic = Info.MeetingTopic;
+                meetingMinutes.MeetingDate = Info.MeetingDate;
+                meetingMinutes.MeetingDateStart = Info.MeetingDateStart;
+                meetingMinutes.MeetingDateEnd = Info.MeetingDateEnd;
+                meetingMinutes.MeetingVenue = Info.MeetingVenue;
+                meetingMinutes.Chairperson = Info.Chairperson;
+                meetingMinutes.Participant = Info.Participant;
+                meetingMinutes.ExpectedAttendence = Info.ExpectedAttendence;
+                meetingMinutes.ActualAttendence = Info.ActualAttendence;
+                meetingMinutes.AbsenteeList = Info.AbsenteeList;
+                meetingMinutes.TakeTheMinutes = Info.TakeTheMinutes;
+                meetingMinutes.Agenda = Info.Agenda;
+                meetingMinutes.MeetingContent = Info.MeetingContent;
+                meetingMinutes.MeetingFile = MeetingFile;
+                meetingMinutes.UploadUserName = UserName; //更新為最近一次修改者
+                meetingMinutes.UploadDateTime = DateTime.Now; //更新為最近一次修改時間
+
+                db.MeetingMinutes.AddOrUpdate(meetingMinutes);
+                db.SaveChanges();
+            }
         }
     }
 }
