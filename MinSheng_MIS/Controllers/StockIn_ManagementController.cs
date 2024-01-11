@@ -34,17 +34,17 @@ namespace MinSheng_MIS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateStockIn(List<SI_Info> si_info)
+        public async Task<ActionResult> CreateStockIn(List<SI_Info> StockItem)
         {
             if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
             DateTime now = DateTime.Now;
             ComputationalStock stock = null;
-            var universalInfo = si_info.FirstOrDefault(); // 庫存(Stock)以外所需的data
+            var universalInfo = StockItem.FirstOrDefault(); // 庫存(Stock)以外所需的data
 
             // 檢查庫存品項是否已存在(以StockType/StockName/Unit檢查)
-            var computationalItem = await db.ComputationalStock.Where(x => x.StockType == universalInfo.StockType && x.StockName == universalInfo.StockName && x.Unit == universalInfo.Unit).FirstOrDefaultAsync();
-            if (computationalItem == null) // 表示需新增計算型庫存品項
+            stock = await db.ComputationalStock.Where(x => x.StockType == universalInfo.StockType && x.StockName == universalInfo.StockName && x.Unit == universalInfo.Unit).FirstOrDefaultAsync();
+            if (stock == null) // 表示需新增計算型庫存品項
             {
                 var c_count = await db.ComputationalStock.Where(x => x.StockType == universalInfo.StockType).CountAsync() + 1;  // 計算型庫存同庫存種類流水碼
                 stock = new ComputationalStock
@@ -53,15 +53,15 @@ namespace MinSheng_MIS.Controllers
                     StockType = universalInfo.StockType,
                     StockName = universalInfo.StockName,
                     Unit = universalInfo.Unit,
-                    StockAmount = si_info.Select(x => x.Amount).Sum(),
+                    StockAmount = StockItem.Select(x => x.Amount).Sum(),
                     MinStockAmount = universalInfo.MinStockAmount,
-                    ExpiryDate = si_info.OrderByDescending(x => x.ExpiryDate).Select(x => x.ExpiryDate).Distinct().FirstOrDefault()
+                    ExpiryDate = StockItem.OrderByDescending(x => x.ExpiryDate).Select(x => x.ExpiryDate).Distinct().FirstOrDefault()
                 };
                 db.ComputationalStock.Add(stock);
             }
             else // 表示需計算品項庫存量
             {
-                computationalItem.StockAmount += si_info.Select(x => x.Amount).Sum();
+                stock.StockAmount += StockItem.Select(x => x.Amount).Sum();
                 db.ComputationalStock.AddOrUpdate(stock);
             }
 
@@ -69,7 +69,7 @@ namespace MinSheng_MIS.Controllers
             var r_count = await db.StockInRecord.Where(x => DbFunctions.TruncateTime(x.StockInDateTime) == now.Date).CountAsync() + 1;  // 庫存入庫紀錄流水碼
             var record = new StockInRecord
             {
-                SIRSN = "SI" + now.ToString("yyMMdd") + r_count.ToString().PadLeft(3, '0'),
+                SIRSN = "I" + now.ToString("yyMMdd") + r_count.ToString().PadLeft(3, '0'),
                 MName = universalInfo.MName,
                 Brand = universalInfo.Brand,
                 Model = universalInfo.Model,
@@ -80,8 +80,8 @@ namespace MinSheng_MIS.Controllers
             db.StockInRecord.Add(record);
 
             // 新增庫存
-            var s_count = await db.Stock.Where(x => x.SISN == computationalItem.SISN).CountAsync() + 1;  // 庫存同庫存項目(計算型庫存)流水碼
-            foreach (var item in si_info)
+            var s_count = await db.Stock.Where(x => x.SISN == stock.SISN).CountAsync() + 1;  // 庫存同庫存項目(計算型庫存)流水碼
+            foreach (var item in StockItem)
             {
                 var obj = new Stock
                 {
@@ -96,6 +96,7 @@ namespace MinSheng_MIS.Controllers
                 };
                 db.Stock.Add(obj);
             }
+            await db.SaveChangesAsync();
 
             return Content("Succeed");
         }
