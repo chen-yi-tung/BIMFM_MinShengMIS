@@ -2543,7 +2543,20 @@ namespace MinSheng_MIS.Services
             int rows = 10;
             if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
-            var rpT = db.PurchaseRequisition.AsQueryable();
+            var rpT = from p in db.PurchaseRequisition
+                      join u in db.AspNetUsers on p.PRUserName equals u.UserName into UserGroup
+                      from ug in UserGroup.DefaultIfEmpty()
+                      select new
+                      {
+                          p.PRState,
+                          p.PRN,
+                          p.PRDate,
+                          p.PRDept,
+                          PRUserName = ug.MyName
+                      };
+
+
+
             //查詢請購單狀態
             if (!string.IsNullOrEmpty(PRState)) rpT = rpT.Where(x => x.PRState == PRState);
             //查詢單號
@@ -2580,7 +2593,6 @@ namespace MinSheng_MIS.Services
             if (rpT != null || Total > 0)
             {
                 var StateDics = Surface.PRState();
-                var UserDics = db.AspNetUsers.ToDictionary(k => k.UserName, v => v.MyName);
                 foreach (var item in rpT)
                 {
                     var itemObject = new JObject
@@ -2588,7 +2600,7 @@ namespace MinSheng_MIS.Services
                         { "PRState", StateDics[item.PRState] },
                         { "PRN", item.PRN },
                         { "PRDate", item.PRDate.ToString("yyyy/MM/dd") },
-                        { "PRUserName", UserDics[item.PRUserName] },
+                        { "PRUserName", item.PRUserName },
                         { "PRDept", item.PRDept },
                     };
 
@@ -2606,7 +2618,106 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 入庫管理 TODO
+        #region 入庫管理
+        public JObject GetJsonForGrid_StockIn_Management(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var SIRSN = form["SIRSN"]?.ToString();
+            var StockType = form["StockType"]?.ToString();
+            var StockName = form["StockName"]?.ToString();
+            var StockInMyName = form["StockInMyName"]?.ToString();
+            var DateStart = form["DateStart"]?.ToString();
+            var DateEnd = form["DateEnd"]?.ToString();
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+
+            var rpT = from s in db.Stock
+                      join r in db.StockInRecord on s.SIRSN equals r.SIRSN into RecordGroup
+                      from rg in RecordGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                      join u in db.AspNetUsers on rg.StockInUserName equals u.UserName into UserGroup
+                      from ug in UserGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                      join cs in db.ComputationalStock on s.SISN equals cs.SISN into ComputationalStockGroup
+                      from csg in ComputationalStockGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                      select new
+                      {
+                          rg.SIRSN,
+                          csg.StockType,
+                          csg.StockName,
+                          TotalAmount = s.Amount,
+                          csg.Unit,
+                          rg.StockInDateTime,
+                          StockInMyName = ug.MyName
+                      };
+
+
+            //查詢入庫編號 (模糊查詢)
+            if (!string.IsNullOrEmpty(SIRSN)) rpT = rpT.Where(x => x.SIRSN.Contains(SIRSN));
+            //查詢品項
+            if (!string.IsNullOrEmpty(StockType)) rpT = rpT.Where(x => x.StockType == StockType);
+            //查詢品名 (模糊查詢)
+            if (!string.IsNullOrEmpty(StockName)) rpT = rpT.Where(x => x.StockName.Contains(StockName));
+            //查詢入庫人員 (模糊查詢)
+            if (!string.IsNullOrEmpty(StockInMyName)) rpT = rpT.Where(x => x.StockInMyName.Contains(StockInMyName));
+            //查詢入庫日期(起)
+            if (!string.IsNullOrEmpty(DateStart) && DateTime.Parse(DateStart) != DateTime.MinValue)
+            {
+                DateTime start = DateTime.Parse(DateStart);  // 轉為DateTime
+                rpT = rpT.Where(x => x.StockInDateTime >= start);
+            }
+            //查詢入庫日期(迄)
+            if (!string.IsNullOrEmpty(DateEnd) && DateTime.Parse(DateEnd) != DateTime.MinValue)
+            {
+                DateTime end = DateTime.Parse(DateEnd);
+                rpT = rpT.Where(x => x.StockInDateTime <= end);
+            }
+
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderByDescending(x => x.SIRSN);
+
+            //記住總筆數
+            int Total = rpT.Count();
+            //切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+
+            if (rpT != null || Total > 0)
+            {
+                var TypeDics = Surface.StockType();
+                var UnitDics = Surface.Unit();
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "SIRSN", item.SIRSN },
+                        { "StockType", TypeDics[item.StockType] },
+                        { "StockName", item.StockName },
+                        { "TotalAmount", item.TotalAmount },
+                        { "Unit", UnitDics[item.Unit] },
+                        { "StockInDateTime", item.StockInDateTime.ToString("yyyy/MM/dd HH:mm:ss") },
+                        { "StockInMyName", item.StockInMyName },
+                    };
+
+                    ja.Add(itemObject);
+                }
+            }
+
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
+
+            return jo;
+        }
         #endregion
 
         #region 領用申請管理 TODO
@@ -2776,7 +2887,20 @@ namespace MinSheng_MIS.Services
             int rows = 10;
             if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
-            var rpT = db.LaboratoryMaintenance.AsQueryable();
+            var rpT = from m in db.LaboratoryMaintenance
+                      join u in db.AspNetUsers on m.UploadUserName equals u.UserName into UserGroup
+                      from ug in UserGroup.DefaultIfEmpty()
+                      select new
+                      {
+                          m.LMSN,
+                          m.MType,
+                          m.MTitle,
+                          m.MContent,
+                          m.UploadDateTime,
+                          UploadUserName = ug.MyName
+                      };
+
+
             //查詢維護類型
             if (!string.IsNullOrEmpty(MType)) rpT = rpT.Where(x => x.MType == MType);
             //查詢標題 (模糊查詢)
@@ -2798,7 +2922,6 @@ namespace MinSheng_MIS.Services
 
             if (rpT != null || Total > 0)
             {
-                var UserDics = db.AspNetUsers.ToDictionary(k => k.UserName, v => v.MyName);
                 foreach (var item in rpT)
                 {
                     var itemObject = new JObject
@@ -2807,7 +2930,7 @@ namespace MinSheng_MIS.Services
                         { "MType", item.MType },
                         { "MTitle", item.MTitle },
                         { "MContent", item.MContent },
-                        { "UploadUserName", UserDics[item.UploadUserName] },
+                        { "UploadUserName", item.UploadUserName },
                         { "UploadDateTime", item.UploadDateTime?.ToString("yyyy/MM/dd HH:mm:ss") },
                     };
 
@@ -2850,7 +2973,7 @@ namespace MinSheng_MIS.Services
                           e.EDRSN,
                           t.ExperimentType,
                           t.ExperimentName,
-                          e.EDate
+                          EDDate = e.EDate
                       };
             //查詢實驗類型 (模糊查詢)
             if (!string.IsNullOrEmpty(ExperimentType)) rpT = rpT.Where(x => x.ExperimentType.Contains(ExperimentType));
@@ -2860,13 +2983,13 @@ namespace MinSheng_MIS.Services
             if (!string.IsNullOrEmpty(EDateStart) && DateTime.Parse(EDateStart) != DateTime.MinValue)
             {
                 DateTime start = DateTime.Parse(EDateStart);  // 轉為DateTime
-                rpT = rpT.Where(x => x.EDate >= start);
+                rpT = rpT.Where(x => x.EDDate >= start);
             }
             //查詢實驗日期(迄)
             if (!string.IsNullOrEmpty(EDateEnd) && DateTime.Parse(EDateEnd) != DateTime.MinValue)
             {
                 DateTime end = DateTime.Parse(EDateEnd);
-                rpT = rpT.Where(x => x.EDate <= end);
+                rpT = rpT.Where(x => x.EDDate <= end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
@@ -2890,7 +3013,7 @@ namespace MinSheng_MIS.Services
                         { "EDRSN", item.EDRSN },
                         { "ExperimentType", item.ExperimentType },
                         { "ExperimentName", item.ExperimentName },
-                        { "EDate", item.EDate.ToString("yyyy/MM/dd") },
+                        { "EDDate", item.EDDate.ToString("yyyy/MM/dd") },
                     };
 
                     ja.Add(itemObject);
