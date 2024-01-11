@@ -7,6 +7,11 @@ using MinSheng_MIS.Models;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Data.Entity.Migrations;
+using MinSheng_MIS.Services;
+using MinSheng_MIS.Models.ViewModels;
+using System.IO;
+using static System.Net.WebRequestMethods;
+using System.Net;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -14,8 +19,10 @@ namespace MinSheng_MIS.Controllers
 	{
 		// GET: MeetingMinutes_Management
 		Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-		#region 會議記錄管理
-		public ActionResult Management()
+        static readonly string folderPath = "Files/MeetingMinutes";
+
+        #region 會議記錄管理
+        public ActionResult Management()
 		{
 			return View();
 		}
@@ -27,8 +34,41 @@ namespace MinSheng_MIS.Controllers
 			return View();
 		}
 		[HttpPost]
-		public ActionResult CreateMeetingMinutes(FormCollection form)
+		public ActionResult CreateMeetingMinutes(MeetingMinutesInfo Info)
 		{
+            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+            //MMSN
+            var mmsnnum = 1;
+            var currentmmsnnum = db.MeetingMinutes.Where(x => x.MeetingDate == Info.MeetingDate).Count();
+            if (currentmmsnnum > 0)
+            {
+                mmsnnum = currentmmsnnum + 1;
+            }
+            var MMSN = Info.MeetingDate.Date.ToString("yyMMdd") + mmsnnum.ToString().PadLeft(2, '0'); ;
+            var FileName = "";
+			//新增會議紀錄文件
+			if(Info.MeetingFiles != null)
+			{
+                //檢查會議記錄文件格式
+                string extension = Path.GetExtension(Info.MeetingFiles.FileName); //檔案副檔名
+                if (ComFunc.IsConformedForDocument(Info.MeetingFiles.ContentType, extension) || ComFunc.IsConformedForImage(Info.MeetingFiles.ContentType, extension)) //檔案白名單檢查
+                {
+                    #region 檢查是否需要新增或更新設備操作手冊
+                    // 檔案上傳
+                    if (!ComFunc.UploadFile(Info.MeetingFiles, Server.MapPath($"~/{folderPath}/"), MMSN))
+                        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
+                    FileName = MMSN + extension;
+                    #endregion
+                }
+                else
+                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
+            }
+            //新增會議紀錄
+			MeetingMinutesService mm = new MeetingMinutesService();
+			mm.AddMeetingMinutes(Info, MMSN, FileName, User.Identity.Name);
+            return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+            /*
 			DateTime today = DateTime.Now.Date;
 			try
 			{
@@ -96,7 +136,8 @@ namespace MinSheng_MIS.Controllers
 			{
 				return Content(ex.Message, "application/json");
 			}
-		}
+			*/
+        }
 		#endregion
 
 		#region 編輯會議記錄

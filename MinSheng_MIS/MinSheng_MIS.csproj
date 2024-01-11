@@ -445,6 +445,7 @@
     </Compile>
     <Compile Include="Models\ViewModels\MaintainRecord_Management_ViewModel.cs" />
     <Compile Include="Models\ViewModels\ManufacturerInfo_ViewModel.cs" />
+    <Compile Include="Models\ViewModels\MeetingMinutes_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\PathSampleViewModel.cs" />
     <Compile Include="Models\ViewModels\PurchaseRequisition_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\ReadInspectionPlanPathData.cs" />
@@ -465,6 +466,7 @@
     <Compile Include="Services\DesignDiagramsService.cs" />
     <Compile Include="Services\EquipmentOperatingManualService.cs" />
     <Compile Include="Services\Helper.cs" />
+    <Compile Include="Services\MeetingMinutesService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Surfaces\Surface.cs" />
   </ItemGroup>
