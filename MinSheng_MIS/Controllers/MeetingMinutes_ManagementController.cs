@@ -46,7 +46,7 @@ namespace MinSheng_MIS.Controllers
 			{
 				mmsnnum = currentmmsnnum + 1;
 			}
-			Info.MMSN = Info.MeetingDate.Date.ToString("yyMMdd") + mmsnnum.ToString().PadLeft(2, '0'); ;
+			Info.MMSN = Info.MeetingDate.Date.ToString("yyMMdd") + mmsnnum.ToString().PadLeft(2, '0');
 			var FileName = "";
 			//新增會議紀錄文件
 			if (Info.MeetingFile != null)
