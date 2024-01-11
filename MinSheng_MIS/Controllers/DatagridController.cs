@@ -247,7 +247,15 @@ namespace MinSheng_MIS.Controllers
 
 
         //--警示訊息管理--
-        #region WarningMessage_Management 警示訊息管理 TODO
+        #region WarningMessage_Management 警示訊息管理
+        [HttpPost]
+        public ActionResult WarningMessage_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_WarningMessage_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
 

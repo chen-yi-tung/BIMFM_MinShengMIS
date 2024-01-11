@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MinSheng_MIS.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,12 +9,15 @@ namespace MinSheng_MIS.Controllers
 {
 	public class WarningMessage_ManagementController : Controller
 	{
-		// GET: WarningMessage_Management
-		public ActionResult Management()
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+
+        #region 警示訊息管理
+        public ActionResult Management()
 		{
 			return View();
 		}
-		public ActionResult Edit()
+        #endregion
+        public ActionResult Edit()
 		{
 			return View();
 		}
