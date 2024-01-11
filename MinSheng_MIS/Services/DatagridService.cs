@@ -5,14 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web;
-using Microsoft.Owin;
-using System.Drawing.Printing;
 using System.Web.UI.WebControls;
 using MinSheng_MIS.Surfaces;
-using System.Security.Cryptography.X509Certificates;
 using System.Linq.Dynamic.Core;
-using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Globalization;
 using System.Web.Mvc;
 
@@ -2555,8 +2550,6 @@ namespace MinSheng_MIS.Services
                           PRUserName = ug.MyName
                       };
 
-
-
             //查詢請購單狀態
             if (!string.IsNullOrEmpty(PRState)) rpT = rpT.Where(x => x.PRState == PRState);
             //查詢單號
@@ -2637,24 +2630,34 @@ namespace MinSheng_MIS.Services
             int rows = 10;
             if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
-            var rpT = from s in db.Stock
-                      join r in db.StockInRecord on s.SIRSN equals r.SIRSN into RecordGroup
-                      from rg in RecordGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
-                      join u in db.AspNetUsers on rg.StockInUserName equals u.UserName into UserGroup
-                      from ug in UserGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
-                      join cs in db.ComputationalStock on s.SISN equals cs.SISN into ComputationalStockGroup
-                      from csg in ComputationalStockGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
-                      select new
-                      {
-                          rg.SIRSN,
-                          csg.StockType,
-                          csg.StockName,
-                          TotalAmount = s.Amount,
-                          csg.Unit,
-                          rg.StockInDateTime,
-                          StockInMyName = ug.MyName
-                      };
-
+            var rpT = (from s in db.Stock
+                       join r in db.StockInRecord on s.SIRSN equals r.SIRSN into RecordGroup
+                       from rg in RecordGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                       join u in db.AspNetUsers on rg.StockInUserName equals u.UserName into UserGroup
+                       from ug in UserGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                       join cs in db.ComputationalStock on s.SISN equals cs.SISN into ComputationalStockGroup
+                       from csg in ComputationalStockGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                       group new
+                       {
+                           rg.SIRSN,
+                           csg.StockType,
+                           csg.StockName,
+                           s.Amount,
+                           csg.Unit,
+                           rg.StockInDateTime,
+                           StockInMyName = ug.MyName
+                       } by rg.SIRSN into result
+                       let first = result.FirstOrDefault()
+                       select new
+                       {
+                           SIRSN = result.Key,
+                           TotalAmount = result.Sum(item => item.Amount), // 加總數量
+                           first.StockType,
+                           first.StockName,
+                           first.Unit,
+                           first.StockInDateTime,
+                           first.StockInMyName
+                       });
 
             //查詢入庫編號 (模糊查詢)
             if (!string.IsNullOrEmpty(SIRSN)) rpT = rpT.Where(x => x.SIRSN.Contains(SIRSN));

@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Results;
@@ -95,6 +97,7 @@ namespace MinSheng_MIS.Controllers
                     RFIDInternalCode = null
                 };
                 db.Stock.Add(obj);
+                s_count++;
             }
             await db.SaveChangesAsync();
 
@@ -103,9 +106,40 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 入庫詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+
+        public async Task<ActionResult> Read_Data(string id)
+        {
+            var record = await db.StockInRecord.FirstOrDefaultAsync(x => x.SIRSN == id);
+            if (record == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SIRSN is Undefined.");
+
+            var UserDics = await db.AspNetUsers.Where(x => x.IsEnabled == true).ToDictionaryAsync(k => k.UserName, v => v.MyName);
+            var TypeDics = Surface.StockType();
+            var UnitDics = Surface.Unit();
+            SI_ViewModel model = new SI_ViewModel
+            {
+                SIRSN = record.SIRSN,
+                StockInMyName = UserDics[record.StockInUserName],
+                ExternalRFID = record.Stock.Select(x => new SI_Info
+                {
+                    SSN = x.SSN,
+                    StockType = x.ComputationalStock != null ? TypeDics[x.ComputationalStock.StockType] : null,
+                    StockName = x.ComputationalStock?.StockName,
+                    MName = record.MName,
+                    Size = record.Size,
+                    Brand = record.Brand,
+                    Model = record.Model,
+                    Amount = x.Amount,
+                    Unit = x.ComputationalStock != null ? UnitDics[x.ComputationalStock.Unit] : null,
+                    ViewExpiryDate = x.ExpiryDate?.ToString("yyyy/MM/dd"),
+                    Location = x.Location,
+                }).ToList()
+            };
+            return Content(JsonConvert.SerializeObject(model), "application/json");
         }
         #endregion
 
