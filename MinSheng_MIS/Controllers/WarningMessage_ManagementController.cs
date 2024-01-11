@@ -1,7 +1,9 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Services;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +22,26 @@ namespace MinSheng_MIS.Controllers
 			return View();
 		}
         #endregion
-        public ActionResult Edit()
+
+        #region 警示訊息填報
+        public ActionResult Edit(string id)
 		{
-			return View();
+            ViewBag.id = id;
+            return View();
 		}
+		[HttpPost]
+		public ActionResult WarningMessageFillin(FillinInfo info)
+		{
+            WarningMessageService wms = new WarningMessageService();
+			wms.AddWarningMessageFillinRecord(info, User.Identity.Name);
+            return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+        }
+        #endregion
+
         #region 警示訊息詳情
         public ActionResult Read(string id)
 		{
 			ViewBag.id = id;
-
             return View();
 		}
 		[HttpGet]
@@ -52,20 +65,21 @@ namespace MinSheng_MIS.Controllers
 			var records = db.WarningMessageFillinRecord.Where(x => x.WMSN == WMSN).ToList();
 			if (records.Count() > 0)
 			{
-				foreach(var record in records)
+                List<WarningMessageFillinRecordViewModel> rlist = new List<WarningMessageFillinRecordViewModel>();
+                foreach (var record in records)
 				{
 					WarningMessageFillinRecordViewModel r = new WarningMessageFillinRecordViewModel();
 					r.FillinDateTime = record.FillinDateTime.ToString("yyyy/MM/dd HH:mm:ss");
 					r.MyName = db.AspNetUsers.Where(x => x.UserName == record.FillinUserName).FirstOrDefault().MyName.ToString();
 					r.FillinState = WMState[record.FillinState];
 					r.Memo = record.Memo;
-					warningMessage.records.Add(r);
+                    rlist.Add(r);
                 }
-			}
+				warningMessage.WarningMessageFillinRecord = rlist;
+            }
 			else
 			{
-				warningMessage.records = null;
-
+				warningMessage.WarningMessageFillinRecord = null;
             }
 
             string result = JsonConvert.SerializeObject(warningMessage);
