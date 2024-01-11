@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -96,6 +97,7 @@ namespace MinSheng_MIS.Controllers
                     RFIDInternalCode = null
                 };
                 db.Stock.Add(obj);
+                s_count++;
             }
             await db.SaveChangesAsync();
 
@@ -115,22 +117,24 @@ namespace MinSheng_MIS.Controllers
             var record = await db.StockInRecord.FirstOrDefaultAsync(x => x.SIRSN == id);
             if (record == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SIRSN is Undefined.");
 
-            var UserDic = await db.AspNetUsers.Where(x => x.IsEnabled == true).ToDictionaryAsync(k => k.UserName, v => v.MyName);
+            var UserDics = await db.AspNetUsers.Where(x => x.IsEnabled == true).ToDictionaryAsync(k => k.UserName, v => v.MyName);
+            var TypeDics = Surface.StockType();
+            var UnitDics = Surface.Unit();
             SI_ViewModel model = new SI_ViewModel
             {
                 SIRSN = record.SIRSN,
-                StockInMyName = UserDic[record.StockInUserName],
+                StockInMyName = UserDics[record.StockInUserName],
                 ExternalRFID = record.Stock.Select(x => new SI_Info
                 {
                     SSN = x.SSN,
-                    StockType = x.ComputationalStock?.StockType,
+                    StockType = x.ComputationalStock != null ? TypeDics[x.ComputationalStock.StockType] : null,
                     StockName = x.ComputationalStock?.StockName,
                     MName = record.MName,
                     Size = record.Size,
                     Brand = record.Brand,
                     Model = record.Model,
                     Amount = x.Amount,
-                    Unit = x.ComputationalStock?.Unit,
+                    Unit = x.ComputationalStock != null ? UnitDics[x.ComputationalStock.Unit] : null,
                     ViewExpiryDate = x.ExpiryDate?.ToString("yyyy/MM/dd"),
                     Location = x.Location,
                 }).ToList()
