@@ -2543,7 +2543,20 @@ namespace MinSheng_MIS.Services
             int rows = 10;
             if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
-            var rpT = db.PurchaseRequisition.AsQueryable();
+            var rpT = from p in db.PurchaseRequisition
+                      join u in db.AspNetUsers on p.PRUserName equals u.UserName into UserGroup
+                      from ug in UserGroup.DefaultIfEmpty()
+                      select new
+                      {
+                          p.PRState,
+                          p.PRN,
+                          p.PRDate,
+                          p.PRDept,
+                          PRUserName = ug.MyName
+                      };
+
+
+
             //查詢請購單狀態
             if (!string.IsNullOrEmpty(PRState)) rpT = rpT.Where(x => x.PRState == PRState);
             //查詢單號
@@ -2580,7 +2593,6 @@ namespace MinSheng_MIS.Services
             if (rpT != null || Total > 0)
             {
                 var StateDics = Surface.PRState();
-                var UserDics = db.AspNetUsers.ToDictionary(k => k.UserName, v => v.MyName);
                 foreach (var item in rpT)
                 {
                     var itemObject = new JObject
@@ -2588,7 +2600,7 @@ namespace MinSheng_MIS.Services
                         { "PRState", StateDics[item.PRState] },
                         { "PRN", item.PRN },
                         { "PRDate", item.PRDate.ToString("yyyy/MM/dd") },
-                        { "PRUserName", UserDics[item.PRUserName] },
+                        { "PRUserName", item.PRUserName },
                         { "PRDept", item.PRDept },
                     };
 
@@ -2875,7 +2887,20 @@ namespace MinSheng_MIS.Services
             int rows = 10;
             if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
-            var rpT = db.LaboratoryMaintenance.AsQueryable();
+            var rpT = from m in db.LaboratoryMaintenance
+                      join u in db.AspNetUsers on m.UploadUserName equals u.UserName into UserGroup
+                      from ug in UserGroup.DefaultIfEmpty()
+                      select new
+                      {
+                          m.LMSN,
+                          m.MType,
+                          m.MTitle,
+                          m.MContent,
+                          m.UploadDateTime,
+                          UploadUserName = ug.MyName
+                      };
+
+
             //查詢維護類型
             if (!string.IsNullOrEmpty(MType)) rpT = rpT.Where(x => x.MType == MType);
             //查詢標題 (模糊查詢)
@@ -2897,7 +2922,6 @@ namespace MinSheng_MIS.Services
 
             if (rpT != null || Total > 0)
             {
-                var UserDics = db.AspNetUsers.ToDictionary(k => k.UserName, v => v.MyName);
                 foreach (var item in rpT)
                 {
                     var itemObject = new JObject
@@ -2906,7 +2930,7 @@ namespace MinSheng_MIS.Services
                         { "MType", item.MType },
                         { "MTitle", item.MTitle },
                         { "MContent", item.MContent },
-                        { "UploadUserName", UserDics[item.UploadUserName] },
+                        { "UploadUserName", item.UploadUserName },
                         { "UploadDateTime", item.UploadDateTime?.ToString("yyyy/MM/dd HH:mm:ss") },
                     };
 
@@ -2949,7 +2973,7 @@ namespace MinSheng_MIS.Services
                           e.EDRSN,
                           t.ExperimentType,
                           t.ExperimentName,
-                          e.EDate
+                          EDDate = e.EDate
                       };
             //查詢實驗類型 (模糊查詢)
             if (!string.IsNullOrEmpty(ExperimentType)) rpT = rpT.Where(x => x.ExperimentType.Contains(ExperimentType));
@@ -2959,13 +2983,13 @@ namespace MinSheng_MIS.Services
             if (!string.IsNullOrEmpty(EDateStart) && DateTime.Parse(EDateStart) != DateTime.MinValue)
             {
                 DateTime start = DateTime.Parse(EDateStart);  // 轉為DateTime
-                rpT = rpT.Where(x => x.EDate >= start);
+                rpT = rpT.Where(x => x.EDDate >= start);
             }
             //查詢實驗日期(迄)
             if (!string.IsNullOrEmpty(EDateEnd) && DateTime.Parse(EDateEnd) != DateTime.MinValue)
             {
                 DateTime end = DateTime.Parse(EDateEnd);
-                rpT = rpT.Where(x => x.EDate <= end);
+                rpT = rpT.Where(x => x.EDDate <= end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
@@ -2989,7 +3013,7 @@ namespace MinSheng_MIS.Services
                         { "EDRSN", item.EDRSN },
                         { "ExperimentType", item.ExperimentType },
                         { "ExperimentName", item.ExperimentName },
-                        { "EDate", item.EDate.ToString("yyyy/MM/dd") },
+                        { "EDDate", item.EDDate.ToString("yyyy/MM/dd") },
                     };
 
                     ja.Add(itemObject);
