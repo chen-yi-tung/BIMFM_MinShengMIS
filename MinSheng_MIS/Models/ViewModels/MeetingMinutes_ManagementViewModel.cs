@@ -9,6 +9,7 @@ namespace MinSheng_MIS.Models.ViewModels
 {
     public class MeetingMinutesInfo
     {
+        public string MMSN { get; set; }
         [Required]
         [StringLength(200, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多200個字元。", MinimumLength = 1)]
         [Display(Name = "會議主題")]
@@ -52,5 +53,6 @@ namespace MinSheng_MIS.Models.ViewModels
         [Display(Name = "會議內容")]
         public string MeetingContent { get; set; } //會議內容
         public HttpPostedFileBase MeetingFile { get; set; } //會議記錄文件
+        public string MeetingFileName { get; set; }
     }
 }

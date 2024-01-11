@@ -86,6 +86,7 @@
                 createDeleteDialog({
                     url: '@Url.Action("DeleteMeetingMinutes", "MeetingMinutes_Management")?MMSN=' + MMSN,
                     data: MMSN,
+                    type: "Delete",
                     onSuccess() {
                         window.location.href = '@Url.Action("Management", "MeetingMinutes_Management")';
                     }
