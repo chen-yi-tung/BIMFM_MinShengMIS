@@ -768,6 +768,29 @@
           <Property Name="TimeStamp" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="WarningMessage">
+          <Key>
+            <PropertyRef Name="WMSN" />
+          </Key>
+          <Property Name="WMSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="WMType" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="WMState" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="TimeOfOccurrence" Type="datetime" Nullable="false" />
+          <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
+          <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="PMSN" Type="char" MaxLength="11" Nullable="false" />
+        </EntityType>
+        <EntityType Name="WarningMessageFillinRecord">
+          <Key>
+            <PropertyRef Name="WNFRSN" />
+          </Key>
+          <Property Name="WMSN" Type="char" MaxLength="10" Nullable="false" />
+          <Property Name="WNFRSN" Type="char" MaxLength="13" Nullable="false" />
+          <Property Name="FillinDateTime" Type="datetime" Nullable="false" />
+          <Property Name="FillinUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="FillinState" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="Memo" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
         <Association Name="FK_CompletionReportImage_InspectionPlan">
           <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
           <End Role="CompletionReportImage" Type="Self.CompletionReportImage" Multiplicity="*" />
@@ -1352,6 +1375,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_WarningMessageFillinRecord_WarningMessage">
+          <End Role="WarningMessage" Type="Self.WarningMessage" Multiplicity="1" />
+          <End Role="WarningMessageFillinRecord" Type="Self.WarningMessageFillinRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WarningMessage">
+              <PropertyRef Name="WMSN" />
+            </Principal>
+            <Dependent Role="WarningMessageFillinRecord">
+              <PropertyRef Name="WMSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Bimfm_MinSheng_MISModelStoreContainer">
           <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AreaInfo" EntityType="Self.AreaInfo" Schema="dbo" store:Type="Tables" />
@@ -1420,6 +1455,8 @@
           <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Self.TestingAndAnalysis_LabelName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Self.TestingAndAnalysisWorkflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tokens" EntityType="Self.Tokens" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WarningMessage" EntityType="Self.WarningMessage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WarningMessageFillinRecord" EntityType="Self.WarningMessageFillinRecord" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_CompletionReportImage_InspectionPlan" Association="Self.FK_CompletionReportImage_InspectionPlan">
             <End Role="InspectionPlan" EntitySet="InspectionPlan" />
             <End Role="CompletionReportImage" EntitySet="CompletionReportImage" />
@@ -1612,6 +1649,10 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="Tokens" EntitySet="Tokens" />
           </AssociationSet>
+          <AssociationSet Name="FK_WarningMessageFillinRecord_WarningMessage" Association="Self.FK_WarningMessageFillinRecord_WarningMessage">
+            <End Role="WarningMessage" EntitySet="WarningMessage" />
+            <End Role="WarningMessageFillinRecord" EntitySet="WarningMessageFillinRecord" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -1684,6 +1725,8 @@
           <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysis_LabelName" />
           <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysisWorkflow" />
           <EntitySet Name="Tokens" EntityType="Bimfm_MinSheng_MISModel.Tokens" />
+          <EntitySet Name="WarningMessage" EntityType="Bimfm_MinSheng_MISModel.WarningMessage" />
+          <EntitySet Name="WarningMessageFillinRecord" EntityType="Bimfm_MinSheng_MISModel.WarningMessageFillinRecord" />
           <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo">
             <End Role="AreaInfo" EntitySet="AreaInfo" />
             <End Role="Floor_Info" EntitySet="Floor_Info" />
@@ -1867,6 +1910,10 @@
           <AssociationSet Name="FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow" Association="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow">
             <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
             <End Role="TestingAndAnalysis_LabelName" EntitySet="TestingAndAnalysis_LabelName" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WarningMessageFillinRecord_WarningMessage" Association="Bimfm_MinSheng_MISModel.FK_WarningMessageFillinRecord_WarningMessage">
+            <End Role="WarningMessage" EntitySet="WarningMessage" />
+            <End Role="WarningMessageFillinRecord" EntitySet="WarningMessageFillinRecord" />
           </AssociationSet>
           <AssociationSet Name="AspNetUserRoles" Association="Bimfm_MinSheng_MISModel.AspNetUserRoles">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
@@ -2722,6 +2769,31 @@
           <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUsers" Relationship="Bimfm_MinSheng_MISModel.FK_Tokens_AspNetUsers" FromRole="Tokens" ToRole="AspNetUsers" />
         </EntityType>
+        <EntityType Name="WarningMessage">
+          <Key>
+            <PropertyRef Name="WMSN" />
+          </Key>
+          <Property Name="WMSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="WMType" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="WMState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="TimeOfOccurrence" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="Message" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PMSN" Type="String" Nullable="false" MaxLength="11" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="WarningMessageFillinRecord" Relationship="Bimfm_MinSheng_MISModel.FK_WarningMessageFillinRecord_WarningMessage" FromRole="WarningMessage" ToRole="WarningMessageFillinRecord" />
+        </EntityType>
+        <EntityType Name="WarningMessageFillinRecord">
+          <Key>
+            <PropertyRef Name="WNFRSN" />
+          </Key>
+          <Property Name="WMSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
+          <Property Name="WNFRSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="false" />
+          <Property Name="FillinDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FillinUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="FillinState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Memo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="WarningMessage" Relationship="Bimfm_MinSheng_MISModel.FK_WarningMessageFillinRecord_WarningMessage" FromRole="WarningMessageFillinRecord" ToRole="WarningMessage" />
+        </EntityType>
         <Association Name="FK_Floor_Info_AreaInfo">
           <End Type="Bimfm_MinSheng_MISModel.AreaInfo" Role="AreaInfo" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="*" />
@@ -3275,6 +3347,18 @@
             </Principal>
             <Dependent Role="TestingAndAnalysis_LabelName">
               <PropertyRef Name="TAWSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WarningMessageFillinRecord_WarningMessage">
+          <End Type="Bimfm_MinSheng_MISModel.WarningMessage" Role="WarningMessage" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.WarningMessageFillinRecord" Role="WarningMessageFillinRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WarningMessage">
+              <PropertyRef Name="WMSN" />
+            </Principal>
+            <Dependent Role="WarningMessageFillinRecord">
+              <PropertyRef Name="WMSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4101,6 +4185,31 @@
                 <ScalarProperty Name="TimeStamp" ColumnName="TimeStamp" />
                 <ScalarProperty Name="Purpose" ColumnName="Purpose" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WarningMessage">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.WarningMessage">
+              <MappingFragment StoreEntitySet="WarningMessage">
+                <ScalarProperty Name="PMSN" ColumnName="PMSN" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="FSN" ColumnName="FSN" />
+                <ScalarProperty Name="TimeOfOccurrence" ColumnName="TimeOfOccurrence" />
+                <ScalarProperty Name="WMState" ColumnName="WMState" />
+                <ScalarProperty Name="WMType" ColumnName="WMType" />
+                <ScalarProperty Name="WMSN" ColumnName="WMSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WarningMessageFillinRecord">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.WarningMessageFillinRecord">
+              <MappingFragment StoreEntitySet="WarningMessageFillinRecord">
+                <ScalarProperty Name="Memo" ColumnName="Memo" />
+                <ScalarProperty Name="FillinState" ColumnName="FillinState" />
+                <ScalarProperty Name="FillinUserName" ColumnName="FillinUserName" />
+                <ScalarProperty Name="FillinDateTime" ColumnName="FillinDateTime" />
+                <ScalarProperty Name="WNFRSN" ColumnName="WNFRSN" />
+                <ScalarProperty Name="WMSN" ColumnName="WMSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

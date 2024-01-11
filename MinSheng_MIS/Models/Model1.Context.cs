@@ -91,5 +91,7 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<TestingAndAnalysis_LabelName> TestingAndAnalysis_LabelName { get; set; }
         public virtual DbSet<TestingAndAnalysisWorkflow> TestingAndAnalysisWorkflow { get; set; }
         public virtual DbSet<Tokens> Tokens { get; set; }
+        public virtual DbSet<WarningMessage> WarningMessage { get; set; }
+        public virtual DbSet<WarningMessageFillinRecord> WarningMessageFillinRecord { get; set; }
     }
 }
