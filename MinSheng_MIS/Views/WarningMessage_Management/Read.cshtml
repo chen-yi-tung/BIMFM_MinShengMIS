@@ -36,7 +36,9 @@
 
 @section scripts {
     <script>
-        const apiUrl = null;
+
+        const WMSN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("GetWarningMessageInfo", "WarningMessage_Management")' + `/?WMSN=${WMSN}`;
 
         const SerializedName = [
             { text: "事件等級", value: "WMType" },
@@ -44,7 +46,6 @@
             { text: "發生時間", value: "TimeOfOccurrence" },
             { text: "發生地點", value: "Location" },
             { text: "事件內容", value: "Message" },
-            { text: "警報來源", value: "WMSource" },
 
         ]
 
@@ -56,7 +57,6 @@
             TimeOfOccurrence: "2023-01-01T06:30:27",
             Location: "進流抽水站 B2F",
             Message: "巡檢路徑偏移",
-            WMSource: "文字內容",
             WarningMessageFillinRecord: generateRandomData()
         }
 
