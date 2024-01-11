@@ -14,6 +14,14 @@ namespace MinSheng_MIS.Services
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         public void AddWarningMessageFillinRecord(FillinInfo info,string UserName) //新增警示訊息填報紀錄
         {
+            //依填報事件處理狀況 更新警示訊息事件處理狀況
+            var message = db.WarningMessage.Find(info.WMSN);
+            if(message != null)
+            {
+                message.WMState = info.FillinState;
+                db.WarningMessage.AddOrUpdate(message);
+                db.SaveChanges();
+            }
             var record = new WarningMessageFillinRecord();
 
             //編WNFRSN
