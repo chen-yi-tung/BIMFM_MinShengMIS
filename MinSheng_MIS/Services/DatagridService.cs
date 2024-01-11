@@ -2912,10 +2912,15 @@ namespace MinSheng_MIS.Services
         public JObject GetJsonForGrid_WarningMessage_Management(System.Web.Mvc.FormCollection form)
         {
             //解析查詢字串
-            var ExperimentType = form["ExperimentType"]?.ToString();
-            var ExperimentName = form["ExperimentName"]?.ToString();
-            var EDateStart = form["EDateStart"]?.ToString();
-            var EDateEnd = form["EDateEnd"]?.ToString();
+            var WMType = form["WMType"]?.ToString();
+            var WMState = form["WMState"]?.ToString();
+            var ASN = form["ASN"]?.ToString();
+            var FSN = form["FSN"]?.ToString();
+            var Message = form["Message"]?.ToString();
+            var IPSN = form["IPSN"]?.ToString();
+            var MyName = form["MyName"]?.ToString();
+            var DateStart = form["DateStart"]?.ToString();
+            var DateEnd = form["DateEnd"]?.ToString();
             // DataGrid參數
             var sort = form["sort"]?.ToString();
             var order = form["order"]?.ToString();
@@ -2925,36 +2930,83 @@ namespace MinSheng_MIS.Services
             int rows = 10;
             if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
-            var rpT = from e in db.ExperimentalDataRecord
-                      join t in db.TestingAndAnalysisWorkflow
-                      on e.TAWSN equals t.TAWSN
+            var rpT = from x1 in db.WarningMessage
+                      join x2 in db.InspectionPlanMember
+                      on x1.PMSN equals x2.PMSN
+                      join x3 in db.Floor_Info
+                      on x1.FSN equals x3.FSN
+                      join x4 in db.AspNetUsers
+                      on x2.UserID equals x4.UserName
+                      join x5 in db.AreaInfo
+                      on x3.ASN equals x5.ASN
                       select new
                       {
-                          e.EDRSN,
-                          t.ExperimentType,
-                          t.ExperimentName,
-                          e.EDate
+                          x1.WMSN,
+                          x1.WMType,
+                          x1.WMState,
+                          x1.TimeOfOccurrence,
+                          x1.FSN,
+                          x1.Message,
+                          x1.PMSN,
+                          x2.IPSN,
+                          x3.ASN,
+                          x3.FloorName,
+                          x4.MyName,
+                          x5.Area
                       };
-            //查詢實驗類型 (模糊查詢)
-            if (!string.IsNullOrEmpty(ExperimentType)) rpT = rpT.Where(x => x.ExperimentType.Contains(ExperimentType));
-            //查詢實驗名稱 (模糊查詢)
-            if (!string.IsNullOrEmpty(ExperimentName)) rpT = rpT.Where(x => x.ExperimentName.Contains(ExperimentName));
-            //查詢實驗日期(起)
-            if (!string.IsNullOrEmpty(EDateStart) && DateTime.Parse(EDateStart) != DateTime.MinValue)
+            //查詢事件等級
+            if (!string.IsNullOrEmpty(WMType))
             {
-                DateTime start = DateTime.Parse(EDateStart);  // 轉為DateTime
-                rpT = rpT.Where(x => x.EDate >= start);
+                rpT = rpT.Where(x => x.WMType == WMType);
             }
-            //查詢實驗日期(迄)
-            if (!string.IsNullOrEmpty(EDateEnd) && DateTime.Parse(EDateEnd) != DateTime.MinValue)
+            //查詢事件處理狀況
+            if (!string.IsNullOrEmpty(WMState))
             {
-                DateTime end = DateTime.Parse(EDateEnd);
-                rpT = rpT.Where(x => x.EDate <= end);
+                rpT = rpT.Where(x => x.WMState == WMState);
+            }
+            //查詢棟別
+            if (!string.IsNullOrEmpty(ASN))
+            {
+                var numASN = Int32.Parse(ASN);
+                rpT = rpT.Where(x => x.ASN == numASN);
+            }
+            //查詢樓層
+            if (!string.IsNullOrEmpty(FSN))
+            {
+                rpT = rpT.Where(x => x.FSN == FSN);
+            }
+            //查詢事件內容(模糊查詢)
+            if (!string.IsNullOrEmpty(Message))
+            {
+                rpT = rpT.Where(x => x.Message.Contains(Message));
+            }
+            //查詢巡檢計畫編號(模糊查詢)
+            if (!string.IsNullOrEmpty(IPSN))
+            {
+                rpT = rpT.Where(x => x.IPSN.Contains(IPSN));
+            }
+            //查詢人員姓名(模糊)
+            if(!string.IsNullOrEmpty(MyName))
+            {
+                rpT = rpT.Where(x => x.MyName.Contains(MyName));
+            }
+
+            //查詢發生時間(起)
+            if (!string.IsNullOrEmpty(DateStart) && DateTime.Parse(DateStart) != DateTime.MinValue)
+            {
+                DateTime start = DateTime.Parse(DateStart);  // 轉為DateTime
+                rpT = rpT.Where(x => x.TimeOfOccurrence >= start);
+            }
+            //查詢發生時間(迄)
+            if (!string.IsNullOrEmpty(DateEnd) && DateTime.Parse(DateEnd) != DateTime.MinValue)
+            {
+                DateTime end = DateTime.Parse(DateEnd);
+                rpT = rpT.Where(x => x.TimeOfOccurrence < end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
             if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
-            else rpT = rpT.OrderByDescending(x => x.EDRSN);
+            else rpT = rpT.OrderByDescending(x => x.WMSN);
 
             // 記住總筆數
             int Total = rpT.Count();
@@ -2964,16 +3016,24 @@ namespace MinSheng_MIS.Services
             //回傳JSON陣列
             JArray ja = new JArray();
 
+            var WMTypedic = Surface.WMType();
+            var WMStatedic = Surface.WMState();
+
             if (rpT != null || Total > 0)
             {
                 foreach (var item in rpT)
                 {
                     var itemObject = new JObject
                     {
-                        { "EDRSN", item.EDRSN },
-                        { "ExperimentType", item.ExperimentType },
-                        { "ExperimentName", item.ExperimentName },
-                        { "EDate", item.EDate.ToString("yyyy/MM/dd") },
+                        { "WMSN", item.WMSN },
+                        { "PMSN", item.PMSN },
+                        { "WMType", WMTypedic[item.WMType] },
+                        { "WMState", WMStatedic[item.WMState] },
+                        { "TimeOfOccurrence", item.TimeOfOccurrence.ToString("yyyy/MM/dd HH:mm:ss") },
+                        { "Location", item.Area + " " + item.FloorName },
+                        { "Message", item.Message },
+                        { "IPSN", item.IPSN },
+                        { "MyName", item.MyName },
                     };
 
                     ja.Add(itemObject);

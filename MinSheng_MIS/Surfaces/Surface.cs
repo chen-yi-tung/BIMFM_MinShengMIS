@@ -333,5 +333,28 @@ namespace MinSheng_MIS.Surfaces
             return ValueOption;
         }
         #endregion
+
+        //警示訊息-事件等級
+        #region 事件等級 WMType
+        public static Dictionary<string, string> WMType()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "一般");
+            ValueOption.Add("2", "緊急");
+            return ValueOption;
+        }
+        #endregion
+
+        //警示訊息-事件處理狀況
+        #region 事件處理狀況 WMState
+        public static Dictionary<string, string> WMState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待處理");
+            ValueOption.Add("2", "處理中");
+            ValueOption.Add("3", "處理完成");
+            return ValueOption;
+        }
+        #endregion
     }
 }
