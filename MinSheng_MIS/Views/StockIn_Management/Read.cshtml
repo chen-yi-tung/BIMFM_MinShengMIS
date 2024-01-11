@@ -21,8 +21,8 @@
 <script>
 
     const SIRSN = '@ViewBag.id';
-    //let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${SIRSN}`;
-    let apiUrl = null
+    let apiUrl = '@Url.Action("Read_Data", "StockIn_Management")' + `/${SIRSN}`;
+    //let apiUrl = null
     const SerializedName = [
         { text: "入庫編號", value: "SIRSN" },
         { text: "入庫人員", value: "StockInMyName" }

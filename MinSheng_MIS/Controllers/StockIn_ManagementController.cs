@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Results;
@@ -103,9 +104,38 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 入庫詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+
+        public async Task<ActionResult> Read_Data(string id)
+        {
+            var record = await db.StockInRecord.FirstOrDefaultAsync(x => x.SIRSN == id);
+            if (record == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SIRSN is Undefined.");
+
+            var UserDic = await db.AspNetUsers.Where(x => x.IsEnabled == true).ToDictionaryAsync(k => k.UserName, v => v.MyName);
+            SI_ViewModel model = new SI_ViewModel
+            {
+                SIRSN = record.SIRSN,
+                StockInMyName = UserDic[record.StockInUserName],
+                ExternalRFID = record.Stock.Select(x => new SI_Info
+                {
+                    SSN = x.SSN,
+                    StockType = x.ComputationalStock?.StockType,
+                    StockName = x.ComputationalStock?.StockName,
+                    MName = record.MName,
+                    Size = record.Size,
+                    Brand = record.Brand,
+                    Model = record.Model,
+                    Amount = x.Amount,
+                    Unit = x.ComputationalStock?.Unit,
+                    ViewExpiryDate = x.ExpiryDate?.ToString("yyyy/MM/dd"),
+                    Location = x.Location,
+                }).ToList()
+            };
+            return Content(JsonConvert.SerializeObject(model), "application/json");
         }
         #endregion
 
