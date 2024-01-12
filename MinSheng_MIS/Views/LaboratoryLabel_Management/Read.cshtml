@@ -14,6 +14,7 @@
 </div>
 
 <div class="datatable datatable-small-grid mt-5">
+    <div class="datatable-header">實驗標籤</div>
     <div class="datatable-body">
         <table class="datatable-table" id="LaboratoryLabelItem">
         </table>
@@ -35,10 +36,10 @@
         ]
 
         const GridOptions = {
-            thead: true,
+            thead: false,
             columns: [
-                { id: "ELISN", title: "項目編號", width: "30%" },
-                { id: "LabelName", title: "項目名稱", width: "70%" },
+                { id: "index", title: "項目編號", width: "10%" },
+                { id: "data", title: "項目名稱", width: "90%" },
             ]
         }
 
@@ -76,15 +77,24 @@
             function onSuccess(res) {
                 console.log(res);
                 $("#LaboratoryLabelInfo").append(createTableInner(res, SerializedName));
-                if (res.LaboratoryLabelItem) {
-                    $("#LaboratoryLabelItem").append(createTableGrid(res.LaboratoryLabelItem, GridOptions))
-                }
-                else {
+                res.LaboratoryLabelItem ?
+                    $("#LaboratoryLabelItem").append(createTableGrid(
+                        createIndexToArrayData(res.LaboratoryLabelItem, "LabelName"),
+                        GridOptions
+                    )) :
                     $("#LaboratoryLabelItem").parents(".datatable").remove();
-                }
             }
             function onError(res) {
                 console.log(res);
+            }
+
+            function createIndexToArrayData(arr, key) {
+                return arr.map((e, i) => {
+                    return {
+                        index: i + 1,
+                        data: e[key]
+                    }
+                })
             }
         }
 
