@@ -48,11 +48,12 @@ namespace MinSheng_MIS.Controllers
 		public ActionResult GetWarningMessageInfo(string WMSN)
 		{
 			var messageinfo = db.WarningMessage.Find(WMSN);
-			var WMTypedic = Surface.WMType();
-			var WMState = Surface.WMState();
+			var WMTypedic = Surface.WMType(); //警示訊息事件等級對照
+			var WMState = Surface.WMState(); //警示訊息事件處理狀況對照
 			var FloorName = db.Floor_Info.Find(messageinfo.FSN).FloorName.ToString();
 			var Area = db.Floor_Info.Find(messageinfo.FSN).AreaInfo.Area.ToString();
 
+			//取得警示訊息資訊
             WarningMessageViewModel warningMessage = new WarningMessageViewModel();
 			warningMessage.WMSN = WMSN;
 			warningMessage.WMType = WMTypedic[messageinfo.WMType];
@@ -61,7 +62,7 @@ namespace MinSheng_MIS.Controllers
 			warningMessage.Location = Area + " " + FloorName;
 			warningMessage.Message = messageinfo.Message;
 
-			//填報紀錄
+			//取得填報紀錄
 			var records = db.WarningMessageFillinRecord.Where(x => x.WMSN == WMSN).ToList();
 			if (records.Count() > 0)
 			{
