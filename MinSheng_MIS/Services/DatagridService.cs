@@ -3111,7 +3111,7 @@ namespace MinSheng_MIS.Services
             {
                 rpT = rpT.Where(x => x.IPSN.Contains(IPSN));
             }
-            //查詢人員姓名(模糊)
+            //查詢人員姓名(模糊查詢)
             if(!string.IsNullOrEmpty(MyName))
             {
                 rpT = rpT.Where(x => x.MyName.Contains(MyName));
@@ -3120,14 +3120,14 @@ namespace MinSheng_MIS.Services
             //查詢發生時間(起)
             if (!string.IsNullOrEmpty(DateStart) && DateTime.Parse(DateStart) != DateTime.MinValue)
             {
-                DateTime start = DateTime.Parse(DateStart);  // 轉為DateTime
+                DateTime start = DateTime.Parse(DateStart); //轉為DateTime
                 rpT = rpT.Where(x => x.TimeOfOccurrence >= start);
             }
             //查詢發生時間(迄)
             if (!string.IsNullOrEmpty(DateEnd) && DateTime.Parse(DateEnd) != DateTime.MinValue)
             {
-                DateTime end = DateTime.Parse(DateEnd);
-                rpT = rpT.Where(x => x.TimeOfOccurrence < end);
+                DateTime end = DateTime.Parse(DateEnd); //轉為DateTime
+                rpT = rpT.Where(x => x.TimeOfOccurrence <= end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
@@ -3149,7 +3149,7 @@ namespace MinSheng_MIS.Services
             {
                 foreach (var item in rpT)
                 {
-                    var itemObject = new JObject
+                    var itemObject = new JObject //DataGrid顯示資料內容
                     {
                         { "WMSN", item.WMSN },
                         { "PMSN", item.PMSN },
