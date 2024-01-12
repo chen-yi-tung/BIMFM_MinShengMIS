@@ -146,13 +146,14 @@
                     console.log(e.target)
                     let item = $(e.target).closest("tr[id]")[0]
                     let id = item.id
-                    //await pushSelect(`${id} #StockName`, `@Url.Action("StockName", "DropDownList")?StockType=${e.target.value}`);
+                    await pushSelect(`${id} #StockName`, `@Url.Action("FormStockName", "DropDownList")?StockType=${e.target.value}`);
                 })
                 this.list.on("change", "#StockName", async function (e) {
                     console.log(e.target)
                     let item = $(e.target).closest("tr[id]")
                     let id = item.attr("id")
-                    $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SSN=${e.target.value}`, (res) => {
+                    $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SISN=${e.target.value}`, (res) => {
+                        console.log(res)
                         item.find("#Unit").val(res.Unit)
                     })
                 })
@@ -228,7 +229,7 @@
             console.log(Object.fromEntries(form.entries()));
 
             $.ajax({
-                url: '@Url.Action("CreateStoresRequisition=", "StoresRequisition_Management")',
+                url: '@Url.Action("CreateStoresRequisition", "StoresRequisition_Management")',
                 data: form,
                 type: "POST",
                 contentType: false,
