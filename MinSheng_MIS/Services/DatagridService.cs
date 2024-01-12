@@ -3145,7 +3145,9 @@ namespace MinSheng_MIS.Services
             var WMType = form["WMType"]?.ToString();
             var WMState = form["WMState"]?.ToString();
             var ASN = form["ASN"]?.ToString();
+            var Area = form["Area"]?.ToString();
             var FSN = form["FSN"]?.ToString();
+            var Floor = form["Floor"]?.ToString();
             var Message = form["Message"]?.ToString();
             var IPSN = form["IPSN"]?.ToString();
             var MyName = form["MyName"]?.ToString();
@@ -3200,10 +3202,18 @@ namespace MinSheng_MIS.Services
                 var numASN = Int32.Parse(ASN);
                 rpT = rpT.Where(x => x.ASN == numASN);
             }
+            if (!string.IsNullOrEmpty(Area))
+            {
+                rpT = rpT.Where(x => x.Area == Area);
+            }
             //查詢樓層
             if (!string.IsNullOrEmpty(FSN))
             {
                 rpT = rpT.Where(x => x.FSN == FSN);
+            }
+            if (!string.IsNullOrEmpty(Floor))
+            {
+                rpT = rpT.Where(x => x.FloorName == Floor);
             }
             //查詢事件內容(模糊查詢)
             if (!string.IsNullOrEmpty(Message))
@@ -3220,7 +3230,6 @@ namespace MinSheng_MIS.Services
             {
                 rpT = rpT.Where(x => x.MyName.Contains(MyName));
             }
-
             //查詢發生時間(起)
             if (!string.IsNullOrEmpty(DateStart) && DateTime.Parse(DateStart) != DateTime.MinValue)
             {
@@ -3253,7 +3262,7 @@ namespace MinSheng_MIS.Services
             {
                 foreach (var item in rpT)
                 {
-                    var itemObject = new JObject //DataGrid顯示資料內容
+                    var itemObject = new JObject //DataGrid顯示的資料內容
                     {
                         { "WMSN", item.WMSN },
                         { "PMSN", item.PMSN },
@@ -3396,9 +3405,9 @@ namespace MinSheng_MIS.Services
 
             #region 依據查詢字串檢索資料表
             var SourceTable = from x in db.MeetingMinutes select new { x.MMSN, x.MeetingTopic, x.MeetingDate, x.MeetingDateStart, x.MeetingDateEnd, x.MeetingVenue, x.Chairperson, x.Participant, x.ExpectedAttendence, x.ActualAttendence, x.AbsenteeList, x.TakeTheMinutes, x.Agenda, x.MeetingContent };
-            if (!string.IsNullOrEmpty(MeetingTopic)) SourceTable.Where(x => x.MeetingTopic.Contains(MeetingTopic));
-            if (!string.IsNullOrEmpty(Chairperson)) SourceTable.Where(x => x.Chairperson.Contains(Chairperson));
-            if (!string.IsNullOrEmpty(MeetingVenue)) SourceTable.Where(x => x.MeetingVenue.Contains(MeetingVenue));
+            if (!string.IsNullOrEmpty(MeetingTopic)) SourceTable = SourceTable.Where(x => x.MeetingTopic.Contains(MeetingTopic));
+            if (!string.IsNullOrEmpty(Chairperson)) SourceTable = SourceTable.Where(x => x.Chairperson.Contains(Chairperson));
+            if (!string.IsNullOrEmpty(MeetingVenue)) SourceTable = SourceTable.Where(x => x.MeetingVenue.Contains(MeetingVenue));
             //日期(起)
             if (!string.IsNullOrEmpty(DateFrom))
             {
