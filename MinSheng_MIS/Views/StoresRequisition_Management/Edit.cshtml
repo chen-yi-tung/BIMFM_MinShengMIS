@@ -98,9 +98,7 @@
                                     <input class="form-control" type="number" id="Amount" name="Amount" min="1"
                                         value="1" step="any" required />
                                 </td>
-                                <td id="d-Unit">
-                                    <select class="form-select" id="Unit" name="Unit" required></select>
-                                </td>
+                                <td id="d-Unit">-</td>
                                 <td id="d-SRContent">
                                     <input class="form-control" type="text" id="SRContent" name="SRContent"
                                         maxlength="200" />
@@ -136,9 +134,16 @@
             StoresRequisitionItem: [
                 {
                     StockType: "A",
-                    StockName: "01",
+                    StockName: "A001",
                     Amount: "1",
-                    Unit: "01",
+                    Unit: "個",
+                    SRContent: "1",
+                },
+                {
+                    StockType: "D",
+                    StockName: "D001",
+                    Amount: "1",
+                    Unit: "個",
                     SRContent: "1",
                 }
             ]
@@ -185,8 +190,21 @@
             this.list = $("#item-area")
             this.init = async function () {
                 await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
-                //await pushSelect("StockName", '@Url.Action("StockName", "DropDownList")');
-                await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
+                this.list.on("change", "#StockType", async function (e) {
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")[0]
+                    let id = item.id
+                    await pushSelect(`${id} #StockName`, `@Url.Action("FormStockName", "DropDownList")?StockType=${e.target.value}`);
+                })
+                this.list.on("change", "#StockName", async function (e) {
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")
+                    let id = item.attr("id")
+                    $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SISN=${e.target.value}`, (res) => {
+                        console.log(res)
+                        item.find("#d-Unit").text(res?.Unit || "-")
+                    })
+                })
 
                 const observer = new ResizeObserver((entries) => {
                     for (const entry of entries) {
@@ -212,9 +230,13 @@
                 this.list.append(item);
                 if (data != null) {
                     item.find("#StockType").val(data.StockType)
-                    item.find("#StockName").val(data.StockName)
+                    pushSelect(`${item.attr("id")} #StockName`,
+                        `@Url.Action("FormStockName", "DropDownList")?StockType=${data.StockType}`)
+                        .then(() => {
+                            item.find("#StockName").val(data.StockName)
+                        });
                     item.find("#Amount").val(data.Amount)
-                    item.find("#Unit").val(data.Unit)
+                    item.find("#d-Unit").text(data.Unit)
                     item.find("#SRContent").val(data.SRContent)
                 }
 
