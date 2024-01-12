@@ -150,8 +150,8 @@
                 })
                 this.list.on("change", "#StockName", async function (e) {
                     console.log(e.target)
-                    let item = $(e.target).closest("tr[id]")[0]
-                    let id = item.id
+                    let item = $(e.target).closest("tr[id]")
+                    let id = item.attr("id")
                     $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SSN=${e.target.value}`, (res) => {
                         item.find("#Unit").val(res.Unit)
                     })
