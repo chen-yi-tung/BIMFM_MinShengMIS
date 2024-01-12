@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -74,13 +75,13 @@ namespace MinSheng_MIS.Controllers
             var TypeDics = Surface.StockType();
             var UnitDics = Surface.Unit();
             var ItemStateDics = Surface.PickUpStatus();
-            SR_ViewModel model = new SR_ViewModel
+            SR_ViewModel<Read_ItemViewModel> model = new SR_ViewModel<Read_ItemViewModel>
             {
                 SRSN = request.SRSN,
                 SRMyName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == request.SRUserName)?.Result.MyName,
                 SRDept = request.SRDept,
                 SRContent = request.SRContent,
-                StoresRequisitionItem = request.StoresRequisitionItem.Select(x => new SR_Item_ViewModel
+                StoresRequisitionItem = request.StoresRequisitionItem.Select(x => new Read_ItemViewModel
                 {
                     PickUpStatusName = ItemStateDics.TryGetValue(x.PickUpStatus, out var mapPick) ? mapPick : "undefined",
                     StockType = TypeDics.TryGetValue(x.ComputationalStock?.StockType, out var mapType) ? mapType : "undefined",
@@ -95,9 +96,58 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯領用申請
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+
+        public async Task<ActionResult> Edit_Data(string id)
+        {
+            var request = await db.StoresRequisition.FirstOrDefaultAsync(x => x.SRSN == id);
+            if (request == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SRSN is Undefined.");
+
+            var UnitDics = Surface.Unit();
+            SR_ViewModel<Edit_ItemViewModel> model = new SR_ViewModel<Edit_ItemViewModel>
+            {
+                SRSN = request.SRSN,
+                SRUserName = request.SRUserName,
+                SRDept = request.SRDept,
+                SRContent = request.SRContent,
+                StoresRequisitionItem = request.StoresRequisitionItem.Select(x => new Edit_ItemViewModel
+                {
+                    SISN = x. SISN,
+                    StockType = x.ComputationalStock?.StockType,
+                    StockName = x.ComputationalStock?.StockName,
+                    Amount = x.Amount,
+                    Unit = UnitDics.TryGetValue(x.ComputationalStock?.Unit, out var mapUnit) ? mapUnit : "undefined",
+                    SRContent = x.SRContent
+                }).ToList()
+            };
+            return Content(JsonConvert.SerializeObject(model), "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditStoresRequisition(SR_Info sr_info)
+        {
+            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+            var request = await db.StoresRequisition.Where(x => x.SRSN == sr_info.SRSN).FirstOrDefaultAsync();
+            if (request == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SRSN is Undefined.");
+            else if (request.SRState != "1") return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Cannot be Edited!");
+
+            // 編輯領用申請單
+            request.SRUserName = sr_info.SRUserName;
+            request.SRDept = sr_info.SRDept;
+            request.SRContent = sr_info.SRContent;
+            // 編輯領用申請單項目
+            db.StoresRequisitionItem.RemoveRange(request.StoresRequisitionItem);
+            ICollection<StoresRequisitionItem> items = AddOrUpdateList<StoresRequisitionItem>(sr_info.StoresRequisitionItem, request.SRSN);
+            request.StoresRequisitionItem = items;
+
+            db.StoresRequisition.AddOrUpdate(request);
+            await db.SaveChangesAsync();
+
+            return Content("Succeed");
         }
         #endregion
 
