@@ -103,9 +103,10 @@
             addButtonEvent();
             fileUploader = new FileUploader({
                 container: "#FileUploader",
-                className: "form-group w-lg-532px required",
+                className: "form-group w-lg-532px",
                 label: "實驗數據上傳",
-                id: "File"
+                id: "File",
+                required: false
             })
             await pushSelect("ExperimentType", '@Url.Action("FormExperimentType", "DropDownList")');
 
@@ -170,7 +171,13 @@
             form.append("TAWSN", document.getElementById("TAWSN").value);
             form.append("EDate", document.getElementById("EDate").value);
             if (fileUploader.hasFile()) {
-                form.append("EDFile", fileUploader.getFile());
+                let file = fileUploader.getFile()
+                if (file?.size) {
+                    form.append("EDFile", file);
+                }
+                else {
+                    form.append("EDFile", file.name);
+                }
             }
             dataItems.calc().forEach((item, i) => {
                 form.append(`ExperimentalDataItem[${i}].DataName`, item.DataName);
