@@ -100,7 +100,7 @@
                                         value="1" step="any" required />
                                 </td>
                                 <td id="d-Unit">
-                                    <select class="form-select" id="Unit" name="Unit" required></select>
+                                    <input class="form-control readonly" id="Unit" name="Unit" required disabled>
                                 </td>
                                 <td id="d-SRContent">
                                     <input class="form-control" type="text" id="SRContent" name="SRContent"
@@ -142,8 +142,20 @@
             this.list = $("#item-area")
             this.init = async function () {
                 await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
-                //await pushSelect("StockName", '@Url.Action("StockName", "DropDownList")');
-                await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
+                this.list.on("change", "#StockType", async function (e) {
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")[0]
+                    let id = item.id
+                    //await pushSelect(`${id} #StockName`, `@Url.Action("StockName", "DropDownList")?StockType=${e.target.value}`);
+                })
+                this.list.on("change", "#StockName", async function (e) {
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")[0]
+                    let id = item.id
+                    $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SSN=${e.target.value}`, (res) => {
+                        item.find("#Unit").val(res.Unit)
+                    })
+                })
 
                 const observer = new ResizeObserver((entries) => {
                     for (const entry of entries) {

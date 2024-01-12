@@ -8,6 +8,11 @@
             .edit-area .form {
                 align-items: flex-start;
             }
+
+            .datatable-large {
+                max-width: 100%;
+                width: 1132px;
+            }
         }
     </style>
 }
@@ -19,7 +24,7 @@
     </div>
 </div>
 
-<div class="datatable datatable-grid mt-5 w-auto" style="max-width:982px;">
+<div class="datatable datatable-large mt-5">
     <form class="datatable-body overflow-auto">
         <table class="datatable-table" style="width: max-content;" id="StoresRequisitionItem">
         </table>
@@ -66,6 +71,7 @@
                     StockType: "潤滑劑",
                     StockName: "軸承潤滑劑B",
                     Amount: "10",
+                    RemainingAmount: "9",
                     Unit: "罐",
                     SRContent: "OOXX",
                 },
@@ -74,6 +80,7 @@
                     StockType: "潤滑劑",
                     StockName: "軸承潤滑劑B",
                     Amount: "10",
+                    RemainingAmount: "9",
                     Unit: "罐",
                     SRContent: "OOXX",
                 },
@@ -82,6 +89,7 @@
                     StockType: "潤滑劑",
                     StockName: "軸承潤滑劑B",
                     Amount: "10",
+                    RemainingAmount: "9",
                     Unit: "罐",
                     SRContent: "OOXX",
                 }
@@ -110,6 +118,7 @@
                 { id: "StockType", title: "品項", width: "150px" },
                 { id: "StockName", title: "品名", width: "250px" },
                 { id: "Amount", title: "數量", width: "120px" },
+                { id: "RemainingAmount", title: "剩餘可領取數量", width: "150px" },
                 { id: "Unit", title: "單位", width: "100px" },
                 { id: "SRContent", title: "領用原因", width: "200px" },
             ]
