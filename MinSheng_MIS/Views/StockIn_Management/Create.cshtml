@@ -173,7 +173,7 @@
             sampleTr = new SampleTr();
 
             $('#StockName').combobox({
-                //url: `@Url.Action("StockName", "DropDownList")?StockType=${$("#StockType").val()}`,
+                url: `@Url.Action("FormStockName", "DropDownList")?StockType=${$("#StockType").val()}`,
                 method: 'GET',
                 textField: 'Text',
                 valueField: 'Value',

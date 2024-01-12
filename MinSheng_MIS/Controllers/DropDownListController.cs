@@ -787,24 +787,25 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region StockInfoList 品名及對應SN
+        #region FormStockName 品名
         /// <summary>
-        /// 以品名對庫存(表[ComputationalStock])進行模糊搜尋
+        /// 以庫存種類對庫存(表[ComputationalStock])進行搜尋
         /// </summary>
-        /// <param name="str">使用者輸入字串</param>
-        /// <returns></returns>
+        /// <param name="StockType">使用者選擇的庫存類型</param>
+        /// <returns>所有指定種類下的品名及對應SN的Option List</returns>
         [HttpGet]
-        public ActionResult StockInfoList(string str)
+        public ActionResult FormStockName(string StockType)
         {
             List<JObject> list = new List<JObject>();
-            if (!string.IsNullOrEmpty(str))
+            var query = db.ComputationalStock.Select(x => new { x.SISN, x.StockType, x.StockName });
+            if (!string.IsNullOrEmpty(StockType))
+                query = query.Where(x => x.StockType == StockType);
+
+            list = query.AsEnumerable().Select(a => new JObject
             {
-                list = db.ComputationalStock.Where(x => x.StockName.Contains(str)).Select(a => new JObject
-                {
-                    { "Text", a.StockName },
-                    { "Value", a.SISN }
-                }).ToList();
-            }
+                { "Text", a.StockName },
+                { "Value", a.SISN }
+            }).ToList();
 
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
