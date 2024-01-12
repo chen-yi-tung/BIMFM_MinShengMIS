@@ -52,7 +52,9 @@
 
 @section scripts {
     <script>
-        const apiUrl = null;
+        const SRSN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("Audit_Data", "StoresRequisition_Management")' + `/${SRSN}`;
+        //const apiUrl = null;
         const SerializedName = [
             { text: "領用編號", value: "SRSN" },
             { text: "領用人員", value: "SRMyName" },
@@ -104,11 +106,11 @@
                         return `
                         <div class="d-flex justify-content-center" style="gap:1rem;">
                             <div class="form-group">
-                                <input type="radio" id="AuditResult_${i}_1" value="1" name="AuditResult_${i}" required>
+                                <input type="radio" id="AuditResult_${i}_1" value="2" name="AuditResult_${i}" required>
                                 <label for="AuditResult_${i}_1">退件</label>
                             </div>
                             <div class="form-group">
-                                <input type="radio" id="AuditResult_${i}_2" value="2" name="AuditResult_${i}" required>
+                                <input type="radio" id="AuditResult_${i}_2" value="3" name="AuditResult_${i}" required>
                                 <label for="AuditResult_${i}_2">通過</label>
                             </div>
                         </div>
@@ -158,10 +160,11 @@
             if (!isValidity) return;
 
             var form = new FormData();
+            form.append("SRSN", SRSN);
             form.append("AuditContent", document.getElementById("AuditContent").value);
 
             $("[name^='AuditResult']:checked").toArray().forEach((item, i) => {
-                form.append(`StoresRequisitionItem[${i}].AuditResult`, item.value);
+                form.append(`AuditResult[${i}]`, item.value);
             })
 
             console.log(Object.fromEntries(form.entries()));

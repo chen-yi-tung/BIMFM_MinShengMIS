@@ -152,9 +152,74 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 審核領用申請
-        public ActionResult Audit()
+        public ActionResult Audit(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+
+        public async Task<ActionResult> Audit_Data(string id)
+        {
+            var request = await db.StoresRequisition.FirstOrDefaultAsync(x => x.SRSN == id);
+            if (request == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SRSN is Undefined.");
+
+            var TypeDics = Surface.StockType();
+            var UnitDics = Surface.Unit();
+            SR_ViewModel<Audit_ItemViewModel> model = new SR_ViewModel<Audit_ItemViewModel>
+            {
+                SRSN = request.SRSN,
+                SRMyName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == request.SRUserName)?.Result.MyName,
+                SRDept = request.SRDept,
+                SRContent = request.SRContent,
+                StoresRequisitionItem = request.StoresRequisitionItem.Select(x => new Audit_ItemViewModel
+                {
+                    SRISN = x.SRSN,
+                    StockType = TypeDics.TryGetValue(x.ComputationalStock?.StockType, out var mapType) ? mapType : "undefined",
+                    StockName = x.ComputationalStock?.StockName,
+                    Amount = x.Amount,
+                    RemainingAmount = (double)x.ComputationalStock?.StockAmount,
+                    Unit = UnitDics.TryGetValue(x.ComputationalStock?.Unit, out var mapUnit) ? mapUnit : "undefined",
+                    SRContent = x.SRContent
+                }).ToList()
+            };
+            return Content(JsonConvert.SerializeObject(model), "application/json");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AuditStoresRequisition(SR_Audit sr_audit)
+        {
+            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+            var request = await db.StoresRequisition.Where(x => x.SRSN == sr_audit.SRSN).FirstOrDefaultAsync();
+            if (request == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SRSN is Undefined.");
+            else if (request.SRState != "1") return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Cannot be Audited!");
+            else if (sr_audit.AuditResult.Count != request.StoresRequisitionItem.Count) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Then count of AuditResult is not correct!");
+
+            // 編輯領用申請單審核部分
+            request.AuditUserID = User.Identity.Name;
+            request.AuditDate = DateTime.Now;
+            request.AuditContent = sr_audit.AuditContent;
+            request.SRState = "2"; //=審核完成
+            // 編輯領用申請單項目審核結果
+            for (int i = 0; i < request.StoresRequisitionItem.Count; i++)
+            {
+                var item = request.StoresRequisitionItem.ElementAt(i);
+                item.AuditResult = sr_audit.AuditResult[i];
+                switch (item.AuditResult)
+                {
+                    case "2":
+                        item.PickUpStatus = "2";
+                        break;
+                    case "3":
+                        item.PickUpStatus = "3";
+                        break;
+                    default: break;
+                }
+            }
+
+            db.StoresRequisition.AddOrUpdate(request);
+            await db.SaveChangesAsync();
+
+            return Content("Succeed");
         }
         #endregion
 
