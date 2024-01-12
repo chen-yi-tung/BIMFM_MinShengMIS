@@ -1,10 +1,13 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Surfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -57,9 +60,37 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 領用申請詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+
+        public async Task<ActionResult> Read_Data(string id)
+        {
+            var request = await db.StoresRequisition.FirstOrDefaultAsync(x => x.SRSN == id);
+            if (request == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SRSN is Undefined.");
+
+            var TypeDics = Surface.StockType();
+            var UnitDics = Surface.Unit();
+            var ItemStateDics = Surface.PickUpStatus();
+            SR_ViewModel model = new SR_ViewModel
+            {
+                SRSN = request.SRSN,
+                SRMyName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == request.SRUserName)?.Result.MyName,
+                SRDept = request.SRDept,
+                SRContent = request.SRContent,
+                StoresRequisitionItem = request.StoresRequisitionItem.Select(x => new SR_Item_ViewModel
+                {
+                    PickUpStatusName = ItemStateDics.TryGetValue(x.PickUpStatus, out var mapPick) ? mapPick : "undefined",
+                    StockType = TypeDics.TryGetValue(x.ComputationalStock?.StockType, out var mapType) ? mapType : "undefined",
+                    StockName = x.ComputationalStock?.StockName,
+                    Amount = x.Amount,
+                    Unit = UnitDics.TryGetValue(x.ComputationalStock?.Unit, out var mapUnit) ? mapUnit : "undefined",
+                    SRContent = x.SRContent
+                }).ToList()
+            };
+            return Content(JsonConvert.SerializeObject(model), "application/json");
         }
         #endregion
 

@@ -31,7 +31,9 @@
 
 @section scripts {
     <script>
-        const apiUrl = null;
+        const SRSN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("Read_Data", "StoresRequisition_Management")' + `/${SRSN}`;
+        //const apiUrl = null;
         const SerializedName = [
             { text: "領用編號", value: "SRSN" },
             { text: "領用人員", value: "SRMyName" },
