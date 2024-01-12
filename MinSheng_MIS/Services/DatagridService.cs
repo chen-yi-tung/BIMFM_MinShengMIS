@@ -2723,7 +2723,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 領用申請管理 TODO
+        #region 領用申請管理
         public JObject GetJsonForGrid_StoresRequisition_Management(System.Web.Mvc.FormCollection form)
         {
             //解析查詢字串
@@ -2808,7 +2808,7 @@ namespace MinSheng_MIS.Services
                     var itemObject = new JObject
                     {
                         { "SRSN", item.SRSN },
-                        { "SRState", SRState },
+                        { "SRState", item.SRState },
                         { "SRStateName", StateDics[item.SRState] },
                         { "SRDateTime", item.SRDateTime.ToString("yyyy/MM/dd") },
                         { "SRMyName", item.SRMyName },
