@@ -286,7 +286,7 @@
           <Property Name="EDRSN" Type="char" MaxLength="9" Nullable="false" />
           <Property Name="TAWSN" Type="char" MaxLength="9" Nullable="false" />
           <Property Name="EDate" Type="datetime" Nullable="false" />
-          <Property Name="EDFile" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="EDFile" Type="nvarchar" MaxLength="200" />
           <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="UploadDateTime" Type="datetime" Nullable="false" />
         </EntityType>
@@ -2216,7 +2216,7 @@
           <Property Name="EDRSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
           <Property Name="TAWSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
           <Property Name="EDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EDFile" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="EDFile" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="UploadUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="UploadDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="ExperimentalData" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalData_ExperimentalDataRecord" FromRole="ExperimentalDataRecord" ToRole="ExperimentalData" />
