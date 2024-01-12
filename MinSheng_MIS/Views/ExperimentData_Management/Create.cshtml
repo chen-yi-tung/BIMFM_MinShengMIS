@@ -76,9 +76,10 @@
             addButtonEvent();
             fileUploader = new FileUploader({
                 container: "#FileUploader",
-                className: "form-group w-lg-532px required",
+                className: "form-group w-lg-532px",
                 label: "實驗數據上傳",
-                id: "File"
+                id: "File",
+                required: false
             })
 
             await pushSelect("ExperimentType", '@Url.Action("FormExperimentType", "DropDownList")');

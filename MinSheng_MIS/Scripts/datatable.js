@@ -5,6 +5,7 @@
  * @property {function (value):string?} formatter - use to formatter td data
  * @property {boolean} image - set true if value is image
  * @property {boolean} url - set true if value is url
+ * @property {boolean} pre - set true will wrap value in pre
  */
 
 
@@ -59,6 +60,13 @@ function createTableInner(data, sn) {
             <tr>
                 <td class="datatable-table-th">${e.text}</td>
                 <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putFile(data[e.value]) : nullString}</td>
+            </tr>`;
+        }
+        else if (e.pre == true) {
+            html = `
+            <tr>
+                <td class="datatable-table-th">${e.text}</td>
+                <td class="datatable-table-td" id="d-${e.value}"><pre>${data[e.value] ?? nullString}</pre></td>
             </tr>`;
         }
         else {

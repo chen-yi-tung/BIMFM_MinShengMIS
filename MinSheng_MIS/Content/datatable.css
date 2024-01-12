@@ -72,6 +72,16 @@ th.datatable-header,
     word-break: break-word;
 }
 
+.datatable-table pre {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 16px;
+    text-align: left;
+    width: fit-content;
+    margin: 0 auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
 .datatable-table tr+tr td {
     border-top-width: var(--datatable-border-width);
 }
