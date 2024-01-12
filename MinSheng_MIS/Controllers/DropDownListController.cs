@@ -812,6 +812,22 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region GetUnitText 單位
+        /// <summary>
+        /// 以庫存項目編碼對庫存(表[ComputationalStock])進行搜尋
+        /// </summary>
+        /// <param name="SISN">使用者選擇的庫存名稱value</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetUnitText(string SISN)
+        {
+            var Dics = Surface.Unit();
+            var unit = db.ComputationalStock.Where(x => x.SISN == SISN).AsEnumerable().Select(x => new JObject { { "Unit", Dics[x.Unit] } }).FirstOrDefault();
+            string text = JsonConvert.SerializeObject(unit);
+            return Content(text, "application/json");
+        }
+        #endregion
+
         //--警示訊息管理--
         #region WMType 事件等級
         [HttpGet]

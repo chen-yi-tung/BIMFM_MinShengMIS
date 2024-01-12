@@ -1,6 +1,11 @@
-﻿using System;
+﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Services;
+using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -8,6 +13,7 @@ namespace MinSheng_MIS.Controllers
 {
     public class StoresRequisition_ManagementController : Controller
     {
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         // GET: StoresRequisition_Management
         #region 領用申請管理
         public ActionResult Management()
@@ -20,6 +26,40 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Create()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateStoresRequisition([Bind(Exclude = "SRSN")] SR_Info sr_info)
+        {
+            ModelState.Remove("SRSN");
+            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+            DateTime now = DateTime.Now;
+            // 新增領用申請單
+            var count = await db.StoresRequisition.Where(x => x.SRDateTime == now.Date).CountAsync() + 1;  // 領用申請單流水碼
+            var request = new StoresRequisition
+            {
+                SRSN = "R" + now.ToString("yyMMdd") + count.ToString().PadLeft(3, '0'),
+                SRState = "1", //=待審核
+                SRUserName = sr_info.SRUserName,
+                SRDept = sr_info.SRDept,
+                SRDateTime = now,
+                SRContent = sr_info.SRContent
+            };
+            db.StoresRequisition.Add(request);
+            // 新增領用申請單項目
+            ICollection<StoresRequisitionItem> items = AddOrUpdateList<StoresRequisitionItem>(sr_info.StoresRequisitionItem, request.SRSN);
+            db.StoresRequisitionItem.AddRange(items);
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return Content("Succeed");
         }
         #endregion
 
@@ -41,6 +81,24 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Audit()
         {
             return View();
+        }
+        #endregion
+
+        #region Helper
+        private static ICollection<T> AddOrUpdateList<T>(List<SR_Item> list, string SRSN) where T : StoresRequisitionItem, new()
+        {
+            ICollection<T> result = list.Select(x => new T
+            {
+                SRISN = SRSN + (list.IndexOf(x) + 1).ToString().PadLeft(3, '0'),
+                SRSN = SRSN,
+                SISN = x.SISN,
+                Amount = x.Amount,
+                TakeAmount = 0,
+                SRContent = x.SRContent,
+                AuditResult = "1",
+                PickUpStatus = "1",
+            }).ToList();
+            return result;
         }
         #endregion
     }
