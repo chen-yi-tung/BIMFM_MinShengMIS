@@ -99,9 +99,7 @@
                                     <input class="form-control" type="number" id="Amount" name="Amount" min="1"
                                         value="1" step="any" required />
                                 </td>
-                                <td id="d-Unit">
-                                    <input class="form-control readonly" id="Unit" name="Unit" required disabled>
-                                </td>
+                                <td id="d-Unit">-</td>
                                 <td id="d-SRContent">
                                     <input class="form-control" type="text" id="SRContent" name="SRContent"
                                         maxlength="200" />
@@ -154,7 +152,7 @@
                     let id = item.attr("id")
                     $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SISN=${e.target.value}`, (res) => {
                         console.log(res)
-                        item.find("#Unit").val(res.Unit)
+                        item.find("#d-Unit").text(res?.Unit || "-")
                     })
                 })
 
