@@ -151,7 +151,7 @@ namespace MinSheng_MIS.Controllers
         /// <returns>
         /// {
         ///     "IsDuplicate": true/false,          // true表示已有此品項，false表示未有此品項(需要確認是否需要新增或更改為已有的單位)
-        ///     "Units":[ {Text: "", Value: ""} ]   // IsDuplicate為false時給予已有的單位列表
+        ///     "Unit":[ {Text: "", Value: ""} ]    // IsDuplicate為false時給予已有的單位列表(照理說只會有一個)
         /// }
         /// </returns>
         [HttpPost]
@@ -160,7 +160,7 @@ namespace MinSheng_MIS.Controllers
             var result = new JObject
             {
                 { "IsDuplicate", true},
-                { "Units", null}
+                { "Unit", null}
             };
 
             if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
