@@ -89,8 +89,8 @@
                 AuditDate: "2023/05/03"
             },
             {
-                SRState: "1",
-                SRStateName: "待審核",
+                SRState: "2",
+                SRStateName: "審核完成",
                 SRSN: "SR230203001",
                 SRDateTime: "2023/05/02",
                 SRMyName: "王大明",
@@ -117,7 +117,7 @@
                 frozenColumns: [[
                     dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                    dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit", { disabled: row.SRStateName != "待審核" })),
+                    dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit", { disabled: row.SRState != "1" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('SRSN'),
