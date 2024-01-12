@@ -304,26 +304,54 @@
 
                 let e = $(".edit-area")
 
-                let data = {
-                    StockType: e.find("#StockType").val(),
-                    "d-StockType": e.find("#StockType option:selected").text(),
-                    "d-StockName": e.find("#StockName").val(),
-                    "d-MName": e.find("#MName").val(),
-                    "d-Size": e.find("#Size").val(),
-                    "d-Brand": e.find("#Brand").val(),
-                    "d-Model": e.find("#Model").val(),
-                    "d-Amount": e.find("#Amount").val(),
-                    Unit: e.find("#Unit").val(),
-                    "d-Unit": e.find("#Unit option:selected").text(),
-                    ExpiryDate: e.find("#ExpiryDate").val(),
-                    Location: e.find("#Location").val(),
+                //TODO 檢查有無重複
+                var form = new FormData();
+                form.append("StockType", e.find("#StockType").val())
+                form.append("StockName", e.find("#StockName").val())
+                form.append("Unit", e.find("#Unit").val())
+
+                $.ajax({
+                    url: '@Url.Action("CheckDuplicateStockItem", "StockIn_Management")',
+                    data: form,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    success() {
+                        //同品項同品名同單位
+                        if (res.IsDuplicate) {
+                            createStockIn()
+                            return
+                        }
+                        //有不同單位
+                        console.log(res.Units)
+                        createDialogModal({ id: "DialogModal-Error", inner: `產生失敗！` })
+                        //[ {Text: "", Value: ""} ]
+                    }
+                })
+
+                function createStockIn() {
+                    let data = {
+                        StockType: e.find("#StockType").val(),
+                        "d-StockType": e.find("#StockType option:selected").text(),
+                        "d-StockName": e.find("#StockName").val(),
+                        "d-MName": e.find("#MName").val(),
+                        "d-Size": e.find("#Size").val(),
+                        "d-Brand": e.find("#Brand").val(),
+                        "d-Model": e.find("#Model").val(),
+                        "d-Amount": e.find("#Amount").val(),
+                        Unit: e.find("#Unit").val(),
+                        "d-Unit": e.find("#Unit option:selected").text(),
+                        ExpiryDate: e.find("#ExpiryDate").val(),
+                        Location: e.find("#Location").val(),
+                    }
+
+                    $("#POSNItem").closest(".datatable").removeClass("d-none")
+                    sampleTr.list.children().remove()
+                    for (let i = 0; i < $("#RFIDAmount").val(); i++) {
+                        sampleTr.create(data)
+                    }
                 }
 
-                $("#POSNItem").closest(".datatable").removeClass("d-none")
-                sampleTr.list.children().remove()
-                for (let i = 0; i < $("#RFIDAmount").val(); i++) {
-                    sampleTr.create(data)
-                }
             })
 
             $("#back").click(function () {
