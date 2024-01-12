@@ -69,6 +69,7 @@ th.datatable-header,
 
 .datatable-table td {
     padding: 6px;
+    word-break: break-word;
 }
 
 .datatable-table tr+tr td {
