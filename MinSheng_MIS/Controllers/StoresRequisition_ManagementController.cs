@@ -36,7 +36,7 @@ namespace MinSheng_MIS.Controllers
 
             DateTime now = DateTime.Now;
             // 新增領用申請單
-            var count = await db.StoresRequisition.Where(x => x.SRDateTime == now.Date).CountAsync() + 1;  // 領用申請單流水碼
+            var count = await db.StoresRequisition.Where(x => DbFunctions.TruncateTime(x.SRDateTime) == now.Date).CountAsync() + 1;  // 領用申請單流水碼
             var request = new StoresRequisition
             {
                 SRSN = "R" + now.ToString("yyMMdd") + count.ToString().PadLeft(3, '0'),
@@ -50,14 +50,7 @@ namespace MinSheng_MIS.Controllers
             // 新增領用申請單項目
             ICollection<StoresRequisitionItem> items = AddOrUpdateList<StoresRequisitionItem>(sr_info.StoresRequisitionItem, request.SRSN);
             db.StoresRequisitionItem.AddRange(items);
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            await db.SaveChangesAsync();
 
             return Content("Succeed");
         }

@@ -12,7 +12,10 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         [Required]
         public string PRUserName { get; set; } //請購人
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "請購部門")]
         public string PRDept { get; set; } //請購部門
+        [Required]
         public List<PR_Item> PurchaseRequisitionItem { get; set; } // 請購單項目
         //--------------------------------------------
         [Required]
