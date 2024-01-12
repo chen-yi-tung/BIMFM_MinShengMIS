@@ -172,7 +172,7 @@
 
             sampleTr = new SampleTr();
 
-            $('#StockName').combobox({
+            $("#StockName").combobox({
                 url: `@Url.Action("FormStockName", "DropDownList")?StockType=${$("#StockType").val()}`,
                 method: 'GET',
                 textField: 'Text',
@@ -181,9 +181,6 @@
                 validateOnCreate: false,
                 //prompt: "搜尋庫存是否有同品項品名",
                 cls: "form-control",
-                data: [
-                    { Text: "aaa", Value: "aaa" }
-                ],
                 onSelect(record) {
                     console.log("record:", record)
                     //取得該品名資訊
@@ -194,7 +191,13 @@
                         $("#Unit").val(res.Unit)
                     })
                 }
-            });
+            })
+            $("#StockType").change((e) => {
+                $("#StockName").combobox("resetValidation")
+                $("#StockName").combobox("clear")
+                $("#StockName").combobox("reload", `@Url.Action("FormStockName", "DropDownList")?StockType=${$("#StockType").val()}`)
+                $("#Unit").val("")
+            })
 
 
             addButtonEvent();
@@ -304,31 +307,36 @@
 
                 let e = $(".edit-area")
 
+                createStockIn();
+
                 //TODO 檢查有無重複
-                var form = new FormData();
-                form.append("StockType", e.find("#StockType").val())
-                form.append("StockName", e.find("#StockName").val())
-                form.append("Unit", e.find("#Unit").val())
+                function CheckDuplicateStockItem() {
+                    const form = new FormData();
+                    form.append("StockType", e.find("#StockType").val())
+                    form.append("StockName", e.find("#StockName").val())
+                    form.append("Unit", e.find("#Unit").val())
 
-                $.ajax({
-                    url: '@Url.Action("CheckDuplicateStockItem", "StockIn_Management")',
-                    data: form,
-                    type: "POST",
-                    contentType: false,
-                    processData: false,
-                    success() {
-                        //同品項同品名同單位
-                        if (res.IsDuplicate) {
-                            createStockIn()
-                            return
+                    $.ajax({
+                        url: '@Url.Action("CheckDuplicateStockItem", "StockIn_Management")',
+                        data: form,
+                        type: "POST",
+                        contentType: false,
+                        processData: false,
+                        success() {
+                            //同品項同品名同單位
+                            if (res.IsDuplicate) {
+                                createStockIn()
+                                return
+                            }
+                            //有不同單位
+                            console.log(res.Units)
+                            createDialogModal({ id: "DialogModal-Error", inner: `產生失敗！` })
+                            //[ {Text: "", Value: ""} ]
                         }
-                        //有不同單位
-                        console.log(res.Units)
-                        createDialogModal({ id: "DialogModal-Error", inner: `產生失敗！` })
-                        //[ {Text: "", Value: ""} ]
-                    }
-                })
+                    })
+                }
 
+                //產生標籤列表
                 function createStockIn() {
                     let data = {
                         StockType: e.find("#StockType").val(),
