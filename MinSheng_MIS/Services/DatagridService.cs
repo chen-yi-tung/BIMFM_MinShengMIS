@@ -2547,7 +2547,7 @@ namespace MinSheng_MIS.Services
                           p.PRN,
                           p.PRDate,
                           p.PRDept,
-                          PRUserName = ug.MyName
+                          PRUserName = ug != null ? ug.MyName : null
                       };
 
             //查詢請購單狀態
@@ -2645,7 +2645,7 @@ namespace MinSheng_MIS.Services
                            s.Amount,
                            csg.Unit,
                            rg.StockInDateTime,
-                           StockInMyName = ug.MyName
+                           StockInMyName = ug != null ? ug.MyName : null
                        } by rg.SIRSN into result
                        let first = result.FirstOrDefault()
                        select new
@@ -2724,6 +2724,110 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 領用申請管理 TODO
+        public JObject GetJsonForGrid_StoresRequisition_Management(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var SRState = form["SRState"]?.ToString();
+            var SRSN = form["SRSN"]?.ToString();
+            var SRMyName = form["SRMyName"]?.ToString();
+            var SRDept = form["SRDept"]?.ToString();
+            var AuditMyName = form["AuditMyName"]?.ToString();
+            var DateType = form["DateType"]?.ToString();
+            var DateStart = form["DateStart"]?.ToString();
+            var DateEnd = form["DateEnd"]?.ToString();
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+
+            var rpT = (from sr in db.StoresRequisition
+                       join u in db.AspNetUsers on sr.SRUserName equals u.UserName into SRUserGroup
+                       join u in db.AspNetUsers on sr.AuditUserID equals u.UserName into AuditUserGroup
+                       from SR_ug in SRUserGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                       from Audit_ug in AuditUserGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                       select new
+                       {
+                           sr.SRSN,
+                           sr.SRState,
+                           sr.SRDateTime,
+                           SRMyName = SR_ug != null ? SR_ug.MyName : null,
+                           sr.SRDept,
+                           sr.AuditDate,
+                           AuditMyName = Audit_ug != null ? Audit_ug.MyName : null
+                       });
+
+            //查詢狀態
+            if (!string.IsNullOrEmpty(SRState)) rpT = rpT.Where(x => x.SRState == SRState);
+            //查詢單號 (模糊查詢)
+            if (!string.IsNullOrEmpty(SRSN)) rpT = rpT.Where(x => x.SRSN.Contains(SRSN));
+            //查詢申請人員 (模糊查詢)
+            if (!string.IsNullOrEmpty(SRMyName)) rpT = rpT.Where(x => x.SRMyName.Contains(SRMyName));
+            //查詢申請部門 (模糊查詢)
+            if (!string.IsNullOrEmpty(SRDept)) rpT = rpT.Where(x => x.SRDept.Contains(SRDept));
+            //查詢審核人員 (模糊查詢)
+            if (!string.IsNullOrEmpty(AuditMyName)) rpT = rpT.Where(x => x.AuditMyName.Contains(AuditMyName));
+            //查詢領用申請/審核日期
+            if (!string.IsNullOrEmpty(DateType))
+            {
+                //日期(起)
+                if (!string.IsNullOrEmpty(DateStart) && DateTime.Parse(DateStart) != DateTime.MinValue)
+                {
+                    DateTime start = DateTime.Parse(DateStart);  // 轉為DateTime
+                    rpT = rpT.Where($"{DateType} >= @0", start);
+                }
+                //日期(迄)
+                if (!string.IsNullOrEmpty(DateEnd) && DateTime.Parse(DateEnd) != DateTime.MinValue)
+                {
+                    DateTime end = DateTime.Parse(DateEnd);
+                    rpT = rpT.Where($"{DateType} <= @0", end);
+                }
+            }
+
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderByDescending(x => x.SRSN);
+
+            //記住總筆數
+            int Total = rpT.Count();
+            //切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+
+            if (rpT != null || Total > 0)
+            {
+                var StateDics = Surface.SRState();
+                var UnitDics = Surface.Unit();
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "SRSN", item.SRSN },
+                        { "SRState", SRState },
+                        { "SRStateName", StateDics[item.SRState] },
+                        { "SRDateTime", item.SRDateTime.ToString("yyyy/MM/dd") },
+                        { "SRMyName", item.SRMyName },
+                        { "SRDept", item.SRDept },
+                        { "AuditMyName", item.AuditMyName },
+                    };
+
+                    ja.Add(itemObject);
+                }
+            }
+
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
+
+            return jo;
+        }
         #endregion
 
         #region 出庫管理 TODO
@@ -2900,7 +3004,7 @@ namespace MinSheng_MIS.Services
                           m.MTitle,
                           m.MContent,
                           m.UploadDateTime,
-                          UploadUserName = ug.MyName
+                          UploadUserName = ug != null ? ug.MyName : null
                       };
 
 
