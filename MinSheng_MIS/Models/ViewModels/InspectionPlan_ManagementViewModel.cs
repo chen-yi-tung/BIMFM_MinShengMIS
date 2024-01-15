@@ -935,5 +935,70 @@ namespace MinSheng_MIS.Models.ViewModels
 			}
 		}
 		#endregion
+
 	}
+
+    #region 巡檢資訊管理-資料結構
+    public class InspectionPlanInformation
+	{
+		public List<InspectionCompleteState> Inspection_Complete_State { get; set; } //巡檢總計畫完成狀態
+		public List<InsepctionEquipmentState> Inspection_Equipment_State { get; set; } //巡檢總設備狀態
+		public List<InspectionAllMember> Inspection_All_Members { get; set; } //巡檢人員表格
+		public List<InspectionAberrantLevel> Inspection_Aberrant_Level { get; set; } //緊急事件 等級占比
+		public List<InspectionAberrantResolve> Inspection_Aberrant_Resolve { get; set; } //緊急事件 處理狀況
+		public List<EquipmentMaintainAndRepairStatistics> Equipment_Maintain_And_Repair_Statistics { get; set; } //設備保養及維修進度統計
+		public List<EquipmentLevelRate> Equipment_Level_Rate { get; set; } //設備故障等級分布
+		public List<EquipmentTypeRate> Equipment_Type_Rate { get; set; } //設備故障類型占比
+
+    }
+	public class InspectionCompleteState 
+	{
+		public string label { get; set; } //計畫狀態
+		public int value { get; set; } //計畫數量
+	}
+	public class InsepctionEquipmentState
+	{
+		public string label { get; set; } //設備狀態
+		public int value { get; set; } //設備數量
+	}
+	public class InspectionAllMember
+	{
+		public string MyName { get; set; } //人員姓名
+		public string PlanNum { get; set; } //巡檢總數
+		public string MaintainNum { get; set; } //保養總數
+		public string RepairNum { get; set; } //維修總數
+		public string CompleteNum { get; set; } //巡檢完成數
+		public string CompletionRate{ get; set; } //完成率
+	}
+	public class InspectionAberrantLevel
+	{
+        public string label { get; set; } //等級
+        public int value { get; set; } //數量
+	}
+	public class InspectionAberrantResolve
+	{
+        public string label { get; set; } //狀態
+        public int value { get; set; } //數量
+    }
+	public class EquipmentMaintainAndRepairStatistics
+	{
+        public string label { get; set; } //狀態
+        public List<MaintainAndRepair> value { get; set; } //數量
+    }
+	public class MaintainAndRepair
+	{
+		public int Maintain { get; set; } //維護
+		public int Repair { get; set; } //維修
+	}
+	public class EquipmentLevelRate
+	{
+        public string label { get; set; } //等級
+        public int value { get; set; } //數量
+    }
+	public class EquipmentTypeRate
+	{
+        public string label { get; set; } //類型
+        public int value { get; set; } //數量
+    }
+    #endregion
 }
