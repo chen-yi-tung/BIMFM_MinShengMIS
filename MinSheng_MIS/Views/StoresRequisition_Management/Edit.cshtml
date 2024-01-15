@@ -282,7 +282,7 @@
             console.log(Object.fromEntries(form.entries()));
 
             $.ajax({
-                url: '@Url.Action("CreateStoresRequisition", "StoresRequisition_Management")',
+                url: '@Url.Action("EditStoresRequisition", "StoresRequisition_Management")',
                 data: form,
                 type: "POST",
                 contentType: false,
