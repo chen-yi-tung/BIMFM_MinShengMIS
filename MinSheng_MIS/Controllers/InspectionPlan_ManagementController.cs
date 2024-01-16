@@ -703,7 +703,7 @@ namespace MinSheng_MIS.Controllers
         {
             #region 檢索年份月份處理
             //檢查年分與月份，若為空則填入當下年份月份，若有值則將民國轉西元。
-            if (year1.HasValue)
+            if (year1.HasValue && month1.HasValue)
             {
                 year1 += 1911;
             }
@@ -713,7 +713,7 @@ namespace MinSheng_MIS.Controllers
                 month1 = DateTime.Today.Month;
             }
 
-            if(year2.HasValue)
+            if(year2.HasValue && month2.HasValue)
             {
                 year2 += 1911;
             }
@@ -729,11 +729,9 @@ namespace MinSheng_MIS.Controllers
 
             JObject InspectionPlanInformation = new JObject();
 
-            //巡檢相關
-            var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate <= EndDate);
-
             #region 巡檢總計畫完成狀態
             JArray Inspection_Complete_State = new JArray();
+            var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate <= EndDate);
             var InspectionPlanStatedic = Surface.InspectionPlanState();
             foreach(var item in InspectionPlanStatedic)
             {
