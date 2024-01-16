@@ -12,6 +12,7 @@ namespace MinSheng_MIS.Services
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
+        #region 巡檢計畫完成狀態
         public JArray GetInspection_Complete_State(DateTime StartDate, DateTime EndDate) //巡檢計畫完成狀態
         {
             JArray Inspection_Complete_State = new JArray();
@@ -29,7 +30,9 @@ namespace MinSheng_MIS.Services
             }
             return Inspection_Complete_State;
         }
+        #endregion
 
+        #region 巡檢設備統計
         public JArray GetInspection_Equipment_State(DateTime StartDate, DateTime EndDate) //巡檢設備統計
         {
             JArray Inspection_Equipment_State = new JArray();
@@ -45,16 +48,18 @@ namespace MinSheng_MIS.Services
                                       join x4 in db.EquipmentMaintainItem on x3.EMISN equals x4.EMISN
                                       select new { x4.ESN }).Distinct(); //該檢索時間段所保養的設備
             var intersection = RepairEquipments.Intersect(MaintainEquipments); //找出在該檢索時間段有做保養及維修之設備
-            JObject rm = new JObject { { "label", "保養" }, { "value", MaintainEquipments.Count() } };
+            JObject rm = new JObject { { "label", "保養" }, { "value", MaintainEquipments.Count() - intersection.Count() } };
             Inspection_Equipment_State.Add(rm);
-            JObject r = new JObject { { "label", "維修" }, { "value", RepairEquipments.Count() } };
+            JObject r = new JObject { { "label", "維修" }, { "value", RepairEquipments.Count() - intersection.Count() } };
             Inspection_Equipment_State.Add(r);
             JObject m = new JObject { { "label", "保養+維修" }, { "value", intersection.Count() } };
             Inspection_Equipment_State.Add(m);
 
             return Inspection_Equipment_State;
         }
+        #endregion
 
+        #region 巡檢人員清單
         public JArray GetInspection_All_Members(DateTime StartDate, DateTime EndDate) //巡檢人員清單
         {
             JArray Inspection_All_Members = new JArray();
@@ -83,7 +88,9 @@ namespace MinSheng_MIS.Services
             }
             return Inspection_All_Members;
         }
+        #endregion
 
+        #region 緊急事件等級占比
         public JArray GetInspection_Aberrant_Level(DateTime StartDate, DateTime EndDate) //緊急事件等級占比
         {
             JArray Inspection_Aberrant_Level = new JArray();
@@ -98,7 +105,9 @@ namespace MinSheng_MIS.Services
             }
             return Inspection_Aberrant_Level;
         }
+        #endregion
 
+        #region 緊急事件處理狀況
         public JArray GetInspection_Aberrant_Resolve(DateTime StartDate, DateTime EndDate) //緊急事件處理狀況
         {
             JArray Inspection_Aberrant_Resolve = new JArray();
@@ -113,7 +122,9 @@ namespace MinSheng_MIS.Services
             }
             return Inspection_Aberrant_Resolve;
         }
+        #endregion
 
+        #region 設備保養及維修進度統計
         public JArray GetEquipment_Maintain_And_Repair_Statistics(DateTime StartDate, DateTime EndDate) //設備保養及維修進度統計
         {
             JArray Equipment_Maintain_And_Repair_Statistics = new JArray();
@@ -138,7 +149,9 @@ namespace MinSheng_MIS.Services
             }
             return Equipment_Maintain_And_Repair_Statistics;
         }
+        #endregion
 
+        #region 設備故障等級分布
         public JArray GetEquipment_Level_Rate(DateTime StartDate, DateTime EndDate) //設備故障等級分布
         {
             JArray Equipment_Level_Rate = new JArray();
@@ -153,7 +166,9 @@ namespace MinSheng_MIS.Services
             }
             return Equipment_Level_Rate;
         }
+        #endregion
 
+        #region 設備故障類型占比
         public JArray GetEquipment_Type_Rate(DateTime StartDate, DateTime EndDate) //設備故障類型占比
         {
             JArray Equipment_Type_Rate = new JArray();
@@ -173,5 +188,6 @@ namespace MinSheng_MIS.Services
             }
             return Equipment_Type_Rate;
         }
+        #endregion
     }
 }
