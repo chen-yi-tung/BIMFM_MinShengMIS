@@ -205,6 +205,10 @@
     overflow: hidden;
 }
 
+.sample-path-draw-area:has(.label-area) .viewer3Dcontainer{
+    border-bottom-left-radius: 0px;
+}
+
 #viewer3d {
     position: absolute;
     width: 100%;
@@ -389,11 +393,19 @@
     border-bottom-right-radius: 5px;
     max-width: max-content;
 }
+
 .label-area .cube{
     display: inline-block;
     width: 0.8rem;
     height: 0.8rem;
     border-radius: 0.4rem;
+}
+
+.label-area .line{
+    display: inline-block;
+    width: 2.5rem;
+    height: 0.5rem;
+    margin-bottom: 0.1rem;
 }
 
 .cube-bluetooth{
@@ -410,6 +422,10 @@
 
 .cube-both{
     background-color: #DB8400 !important;
+}
+
+.line-record{
+    background-color: #5FDC91 !important;
 }
 
 .path-title-edit-group{

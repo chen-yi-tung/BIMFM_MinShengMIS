@@ -1,6 +1,7 @@
 ﻿//import "https://pixijs.download/v7.2.2/pixi.js";
 
 function ForgeDrawController() {
+    var initialized = false;
     var app;
     var view;
     var stage;
@@ -192,9 +193,33 @@ function ForgeDrawController() {
             .drawRect(0, 0, rect.width, rect.height)
         layer.stage.addChild(bg);
 
-
+        initialized = true;
         callback();
         return app;
+    }
+
+    /**
+     * like arcgis.js *.when() function
+     * do callback when ForgeDraw.initialized is true
+     * @param {function} callback 
+     * @returns {boolean}
+     */
+    async function when(callback) {
+        let timer = null;
+        const wait = () => new Promise(resolve => {
+            timer ? clearTimeout(timer) : void 0;
+            timer = setTimeout(() => {
+                resolve()
+            }, 1000)
+        })
+        try {
+            while (!initialized) {
+                await wait()
+            }
+            callback?.()
+        }
+        catch { return false }
+        return true
     }
 
     function getScreenShot() {
@@ -227,6 +252,7 @@ function ForgeDrawController() {
         observer.disconnect();
         app.destroy(true, true);
 
+        initialized = false;
         app = null;
         view = null;
         stage = null;
@@ -1143,6 +1169,7 @@ function ForgeDrawController() {
         "DevicePoint": DevicePoint,
         "Stage": Stage,
         "init": init,
+        "when": when,
         "resize": resize,
         "destroy": destroy,
         "readLineData": readLineData,

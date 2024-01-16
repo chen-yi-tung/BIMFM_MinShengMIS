@@ -268,19 +268,21 @@ function createAccordionItem(options, i) {
 
 /**
  * @typedef {object} DataDetailModalOptions
- * @property {string?} className - use to DataDetailModal custom class
- * @property {string} title - use to modal-title
- * @property {string} id - use to set modal id
+ * @property {string?} className - DataDetailModal custom class
+ * @property {string} title - modal-title
+ * @property {string} id - set modal id
+ * @property {boolean | string | function()} locate - locate url
  * @property {*[]} data
  * @property {SerializedName[]} sn
  * 
  * @param {DataDetailModalOptions} options 
  */
 function createDataDetailModal(options) {
-    let ModalJQ, ModalBs, inner;
+    let ModalJQ, ModalBs, inner, locate;
     readData(options.data);
     function readData(data) {
         inner = createTableInner(data, options.sn);
+        locate = options?.locate ? `<div class="modal-footer justify-content-center"><a type="button" class="btn btn-search" href="${options.locate?.() || options.locate}" target="_blank">定位</a></div>`: "";
         const html = `
         <div class="modal fade data-detail-modal ${options.className ?? ''}" tabindex="-1" id="${options.id ?? ''}">
             <div class="modal-dialog modal-dialog-centered">
@@ -292,9 +294,7 @@ function createDataDetailModal(options) {
                     <div class="modal-body">
                         <table class="datatable-table">${inner}</table>
                     </div>
-                    <div class="modal-footer justify-content-center">
-                        <a type="button" class="btn btn-search" href="" target="_blank">定位</a>
-                    </div>
+                    ${locate}
                 </div>
             </div>
         </div>
