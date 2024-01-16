@@ -283,6 +283,7 @@
             
             sampleTr.calc().forEach((item, i) => {
                 form.append(`StockOutItem[${i}].SSN`,item.SSN)
+                form.append(`StockOutItem[${i}].SISN`, item.SISN)
                 form.append(`StockOutItem[${i}].OutAmount`,item.OutAmount)
             })
 

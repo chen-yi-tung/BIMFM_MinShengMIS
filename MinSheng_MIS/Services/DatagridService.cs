@@ -2830,7 +2830,102 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 出庫管理 TODO
+        #region 出庫管理
+        public JObject GetJsonForGrid_StockOut_Management(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var SORSN = form["SORSN"]?.ToString();
+            var SRSN = form["SRSN"]?.ToString();
+            var StockOutMyName = form["StockOutMyName"]?.ToString();
+            var ReceiverMyName = form["ReceiverMyName"]?.ToString();
+            var StockOutContent = form["StockOutContent"]?.ToString();
+            var StockOutDateStart = form["StockOutDateStart"]?.ToString();
+            var StockOutDateEnd = form["StockOutDateEnd"]?.ToString();
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+
+            var rpT = (from so in db.StockOutRecord
+                       join u in db.AspNetUsers on so.StockOutUserName equals u.UserName into SOUserGroup
+                       join u in db.AspNetUsers on so.ReceiverUserName equals u.UserName into RUserGroup
+                       from SO_ug in SOUserGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                       from R_ug in RUserGroup.DefaultIfEmpty() // 使用 DefaultIfEmpty 進行左外部連接
+                       select new
+                       {
+                           so.SORSN,
+                           so.SRSN,
+                           StockOutMyName = SO_ug != null ? SO_ug.MyName : null,
+                           ReceiverMyName = R_ug != null ? R_ug.MyName : null,
+                           so.StockOutContent,
+                           so.StockOutDateTime
+                       });
+
+            //查詢出庫單號 (模糊查詢)
+            if (!string.IsNullOrEmpty(SORSN)) rpT = rpT.Where(x => x.SORSN.Contains(SORSN));
+            //查詢領用單號 (模糊查詢)
+            if (!string.IsNullOrEmpty(SRSN)) rpT = rpT.Where(x => x.SRSN.Contains(SRSN));
+            //查詢出庫人員 (模糊查詢)
+            if (!string.IsNullOrEmpty(StockOutMyName)) rpT = rpT.Where(x => x.StockOutMyName.Contains(StockOutMyName));
+            //查詢領取人員 (模糊查詢)
+            if (!string.IsNullOrEmpty(ReceiverMyName)) rpT = rpT.Where(x => x.ReceiverMyName.Contains(ReceiverMyName));
+            //查詢說明 (模糊查詢)
+            if (!string.IsNullOrEmpty(StockOutContent)) rpT = rpT.Where(x => x.StockOutContent.Contains(StockOutContent));
+            //查詢入庫日期(起)
+            if (!string.IsNullOrEmpty(StockOutDateStart) && DateTime.Parse(StockOutDateStart) != DateTime.MinValue)
+            {
+                DateTime start = DateTime.Parse(StockOutDateStart);  // 轉為DateTime
+                rpT = rpT.Where(x => x.StockOutDateTime >= start);
+            }
+            //查詢入庫日期(迄)
+            if (!string.IsNullOrEmpty(StockOutDateEnd) && DateTime.Parse(StockOutDateEnd) != DateTime.MinValue)
+            {
+                DateTime end = DateTime.Parse(StockOutDateEnd);
+                rpT = rpT.Where(x => x.StockOutDateTime <= end);
+            }
+
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderByDescending(x => x.SORSN);
+
+            //記住總筆數
+            int Total = rpT.Count();
+            //切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+
+            if (rpT != null || Total > 0)
+            {
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "SORSN", item.SORSN },
+                        { "SRSN", item.SRSN },
+                        { "StockOutMyName", item.StockOutMyName },
+                        { "ReceiverMyName", item.ReceiverMyName },
+                        { "StockOutDateTime", item.StockOutDateTime?.ToString("yyyy/MM/dd HH:mm:ss") },
+                        { "StockOutContent", item.StockOutContent },
+                    };
+
+                    ja.Add(itemObject);
+                }
+            }
+
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
+
+            return jo;
+        }
         #endregion
 
         #region 庫存管理 TODO

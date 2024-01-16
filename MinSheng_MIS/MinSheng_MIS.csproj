@@ -464,6 +464,7 @@
     <Compile Include="Models\ViewModels\NewMaintainItems.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemViewModel.cs" />
     <Compile Include="Models\ViewModels\StockIn_ManagementViewModels.cs" />
+    <Compile Include="Models\ViewModels\StockOut_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\StoresRequisition_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\TestingAndAnalysisWorkflowViewModels.cs" />
     <Compile Include="Models\ViewModels\WarningMessage_ManagementViewModel.cs" />
@@ -484,6 +485,7 @@
     <Compile Include="Services\EquipmentOperatingManualService.cs" />
     <Compile Include="Services\Helper.cs" />
     <Compile Include="Services\MeetingMinutesService.cs" />
+    <Compile Include="Services\PlanInformationService.cs" />
     <Compile Include="Services\WarningMessageService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Surfaces\Surface.cs" />
