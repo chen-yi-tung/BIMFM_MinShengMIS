@@ -26,26 +26,45 @@
     // #endregion
 
     // #region chart
-    Inspection_Complete_State()
-    Inspection_Equipment_State()
-    Inspection_All_Members()
-    Inspection_Aberrant_Level()
-    Inspection_Aberrant_Resolve()
-    Equipment_Maintain_And_Repair_Statistics()
-    Equipment_Level_Rate()
-    Equipment_Type_Rate()
+    $.ajax({
+        url: `/InspectionPlan_Management/GetIspectionPlanInformation`,
+        data: {
+            year1: $("#StartYear").val(),
+            month1: $("#StartMonth").val(),
+            year2: $("#EndYear").val(),
+            month2: $("#EndMonth").val(),
+        },
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json;charset=utf-8",
+        success: generate,
+        error: generate
+    })
+    function generate(res) {
+        console.log(res)
+        Inspection_Complete_State(res?.Inspection_Complete_State)
+        Inspection_Equipment_State(res?.Inspection_Equipment_State)
+        Inspection_All_Members(res?.Inspection_All_Members)
+        Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
+        Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
+        Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
+        Equipment_Level_Rate(res?.Equipment_Level_Rate)
+        Equipment_Type_Rate(res?.Equipment_Type_Rate)
+    }
+
     // #endregion
 
     // #region chart function
     //巡檢總計畫完成狀態
-    function Inspection_Complete_State() {
+    function Inspection_Complete_State(res) {
         const container = document.getElementById('Inspection_Complete_State');
         const ctx = getOrCreateElement(container, 'canvas')
-        const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
-        const data = [
-            { label: "已完成", value: 10 },
-            { label: "執行中", value: 16 },
+        const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0", "#E77272"]
+        const data = res || [
             { label: "待執行", value: 15 },
+            { label: "巡檢中", value: 10 },
+            { label: "巡檢完成", value: 16 },
+            { label: "巡檢未完成", value: 16 },
         ]
         ctx.width = 160
         ctx.height = 160
@@ -71,7 +90,7 @@
                             {
                                 string: (() => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label == "已完成").value
+                                    let value = data.find(x => x.label == "巡檢完成").value
                                     return (Math.floor(value / total * 1000) / 10) + "%"
                                 })(),
                                 color: "#fff",
@@ -95,12 +114,12 @@
             ]
         })
     }
-    //巡檢總設備狀態
-    function Inspection_Equipment_State() {
+    //巡檢設備統計
+    function Inspection_Equipment_State(res) {
         const container = document.getElementById('Inspection_Equipment_State');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
-        const data = [
+        const data = res || [
             { label: "維修+保養", value: 128 },
             { label: "維修", value: 19 },
             { label: "保養", value: 15 }
@@ -129,7 +148,7 @@
                             {
                                 string: (() => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label == "維修+保養").value
+                                    let value = data.find(x => x.label.includes("保養+維修")).value
                                     return (Math.floor(value / total * 1000) / 10) + "%"
                                 })(),
                                 color: "#fff",
@@ -154,18 +173,37 @@
         })
     }
     //巡檢人員表格
-    function Inspection_All_Members() {
+    function Inspection_All_Members(res) {
         const row = $("#Inspection_All_Members .row")
-        for (let i = 0; i < 20; i++) {
-            $("#Inspection_All_Members .simplebar-content").append(row.clone())
+        const list = $("#Inspection_All_Members .simplebar-content")
+        if (!res) {
+            for (let i = 0; i < 20; i++) { list.append(row.clone()) }
+            return
         }
+        row.remove()
+        res.forEach((e) => {
+            let item = row.clone()
+            item.find("#MyName").text(e.MyName)
+            item.find("#PlanNum").text(e.PlanNum)
+            item.find("#MaintainNum").text(e.MaintainNum)
+            item.find("#RepairNum").text(e.RepairNum)
+
+            item.find("#CompleteNum").text(e.CompleteNum)
+            item.find("#CompletionRate").text(e.CompletionRate*100 + "%")
+            if (e.CompletionRate < 0.5) {
+                item.find(".text-success").removeClass("text-success").addClass("text-danger")
+            }
+            
+            list.append(item)
+        })
+
     }
     //緊急事件 等級占比
-    function Inspection_Aberrant_Level() {
+    function Inspection_Aberrant_Level(res) {
         const container = document.getElementById('Inspection_Aberrant_Level');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#2CB6F0", "#E77272"]
-        const data = [
+        const data = res || [
             { label: "一般", value: 20 },
             { label: "緊急", value: 15 }
         ]
@@ -210,11 +248,11 @@
         })
     }
     //緊急事件 處理狀況
-    function Inspection_Aberrant_Resolve() {
+    function Inspection_Aberrant_Resolve(res) {
         const container = document.getElementById('Inspection_Aberrant_Resolve');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#72E998", "#E77272", "#4269AC"]
-        const data = [
+        const data = res || [
             { label: "待處理", value: 53 },
             { label: "處理中", value: 53 },
             { label: "處理完成", value: 15 }
@@ -272,11 +310,11 @@
         })
     }
     //設備保養及維修進度統計
-    function Equipment_Maintain_And_Repair_Statistics() {
+    function Equipment_Maintain_And_Repair_Statistics(res) {
         const container = document.getElementById('Equipment_Maintain_And_Repair_Statistics');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#4269AC", "#72BEE9", "#BC72E9", "#FFAB2E", "#B7B7B7", "#72E998", "#E77272"]
-        const data = [
+        const data = res || [
             { label: "已派工", value: { Maintain: 7, Repair: 8 } },
             { label: "施工中", value: { Maintain: 8, Repair: 5 } },
             { label: "待審核", value: { Maintain: 12, Repair: 8 } },
@@ -370,12 +408,12 @@
         }
     }
     //設備故障等級分布
-    function Equipment_Level_Rate() {
+    function Equipment_Level_Rate(res) {
         const container = document.getElementById('Equipment_Level_Rate');
         const ctx = getOrCreateElement(container, 'canvas')
 
         const backgroundColor = ["#72E998", "#E9CD68", "#E77272"]
-        const data = [
+        const data = res || [
             { label: "一般", value: 15 },
             { label: "緊急", value: 7 },
             { label: "最速件", value: 3 },
@@ -411,12 +449,12 @@
         })
     }
     //設備故障類型占比
-    function Equipment_Type_Rate() {
+    function Equipment_Type_Rate(res) {
         const container = document.getElementById('Equipment_Type_Rate');
         const ctx = getOrCreateElement(container, 'canvas')
 
         const backgroundColor = ["#9E66C1", "#2CB6F0", "#72E998", "#E9CD68", "#E77272"]
-        const data = [
+        const data = res || [
             { label: "類型一", value: 2 },
             { label: "類型二", value: 3 },
             { label: "類型三", value: 3 },

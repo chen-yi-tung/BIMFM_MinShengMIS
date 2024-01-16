@@ -61,14 +61,14 @@
         <label for="StartYear">年度</label>
         <select name="StartYear" id="StartYear" class="form-select">
             <option value="111">111</option>
-            <option value="112">112</option>
+            <option value="112" selected>112</option>
             <option value="113">113</option>
         </select>
     </div>
     <div class="form-group">
         <label for="StartMonth">月份</label>
         <select name="StartMonth" id="StartMonth" class="form-select">
-            <option value="1">一月</option>
+            <option value="1" selected>一月</option>
             <option value="2">二月</option>
             <option value="3">三月</option>
             <option value="4">四月</option>
@@ -89,7 +89,7 @@
         <label for="EndYear">年度</label>
         <select name="EndYear" id="EndYear" class="form-select">
             <option value="111">111</option>
-            <option value="112">112</option>
+            <option value="112" selected>112</option>
             <option value="113">113</option>
         </select>
     </div>
@@ -107,7 +107,7 @@
             <option value="9">九月</option>
             <option value="10">十月</option>
             <option value="11">十一月</option>
-            <option value="12">十二月</option>
+            <option value="12" selected>十二月</option>
         </select>
     </div>
 </div>
@@ -136,12 +136,12 @@
             </div>
             <div class="tbody" id="Inspection_All_Members" data-simplebar data-simplebar-auto-hide="false" data-simplebar-force-visible="y">
                 <div class="row">
-                    <div class="col">王OO</div>
-                    <div class="col">28</div>
-                    <div class="col">28</div>
-                    <div class="col">28</div>
-                    <div class="col text-success">28</div>
-                    <div class="col text-success">100%</div>
+                    <div class="col" id="MyName">王OO</div>
+                    <div class="col" id="PlanNum">28</div>
+                    <div class="col" id="MaintainNum">28</div>
+                    <div class="col" id="RepairNum">28</div>
+                    <div class="col text-success" id="CompleteNum">28</div>
+                    <div class="col text-success" id="CompletionRate">100%</div>
                 </div>
             </div>
         </div>
