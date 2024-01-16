@@ -748,7 +748,7 @@ namespace MinSheng_MIS.Controllers
             //巡檢總計畫完成狀態
             InspectionPlanInformation.Add("Inspection_Complete_State", fun.GetInspection_Complete_State(StartDate, EndDate));
             //巡檢設備統計
-            InspectionPlanInformation.Add("Inspection_Equipment_State", fun.GetInspection_Equipment_State(StartDate, EndDate));
+            InspectionPlanInformation.Add("", fun.GetInspection_Equipment_State(StartDate, EndDate));
             //巡檢人員清單
             InspectionPlanInformation.Add("Inspection_All_Members", fun.GetInspection_All_Members(StartDate, EndDate));
             //緊急事件等級占比
