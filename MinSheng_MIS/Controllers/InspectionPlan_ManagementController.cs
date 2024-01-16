@@ -735,12 +735,15 @@ namespace MinSheng_MIS.Controllers
             #region 巡檢總計畫完成狀態
             JArray Inspection_Complete_State = new JArray();
             var InspectionPlanStatedic = Surface.InspectionPlanState();
-            for (int i = 1; i <= 3; i++)
+            foreach(var item in InspectionPlanStatedic)
             {
-                JObject jo = new JObject();
-                jo.Add("label", InspectionPlanStatedic[i.ToString()]);
-                jo.Add("value", Convert.ToInt32(inspectionplan.Where(x => x.PlanState == i.ToString()).Count()));
-                Inspection_Complete_State.Add(jo);
+                if(item.Key != "5")
+                {
+                    JObject jo = new JObject();
+                    jo.Add("label", item.Value);
+                    jo.Add("value", Convert.ToInt32(inspectionplan.Where(x => x.PlanState == item.Key).Count()));
+                    Inspection_Complete_State.Add(jo);
+                }
             }
             InspectionPlanInformation.Add("Inspection_Complete_State", Inspection_Complete_State);
             #endregion
