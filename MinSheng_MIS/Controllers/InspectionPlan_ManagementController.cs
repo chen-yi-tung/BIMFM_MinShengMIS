@@ -837,16 +837,14 @@ namespace MinSheng_MIS.Controllers
                     where x2.PlanDate >= StartDate && x2.PlanDate <= EndDate
                     select new { x1.IPRSN, x1.RepairState };
 
-            foreach(var item in InspectionPlanRepairStateDic)
+            foreach (var item in InspectionPlanRepairStateDic)
             {
                 JObject jo = new JObject();
-                JArray value = new JArray();
                 JObject mr = new JObject();
                 mr.Add("Maintain", MaintainList.Where(x => x.MaintainState == item.Key).Count());
                 mr.Add("Repair", RepairList.Where(x => x.RepairState == item.Key).Count());
-                value.Add(mr);
                 jo.Add("label", item.Value);
-                jo.Add("value", value);
+                jo.Add("value", mr);
                 Equipment_Maintain_And_Repair_Statistics.Add(jo);
             }
             InspectionPlanInformation.Add("Equipment_Maintain_And_Repair_Statistics", Equipment_Maintain_And_Repair_Statistics);
