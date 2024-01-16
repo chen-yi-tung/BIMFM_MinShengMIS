@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MinSheng_MIS.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,6 +10,7 @@ namespace MinSheng_MIS.Services
 {
     public static class Helper
     {
+        private static string html_newLine = "<br>";
         /// <summary>
         /// 未通過Data Annotaion的錯誤
         /// </summary>
@@ -32,6 +34,17 @@ namespace MinSheng_MIS.Services
                 };
         }
 
-
+        public static string HandleErrorMessageList(List<string> list, string errorType = null)
+        {
+            string result = string.Empty;
+            if (!string.IsNullOrEmpty(errorType)) result += html_newLine + errorType;
+            // html列表
+            if (!list.Any()) return null;
+            result += "<ul>";
+            foreach (string error in list)
+                result += $"<li>{error}</li>";
+            result += "</ul>";
+            return result;
+        }
     }
 }
