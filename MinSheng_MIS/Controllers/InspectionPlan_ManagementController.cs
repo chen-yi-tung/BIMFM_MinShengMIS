@@ -821,6 +821,35 @@ namespace MinSheng_MIS.Controllers
 
             #region 設備故障類型占比 //前五多故障設備種類
             JArray Equipment_Type_Rate = new JArray();
+            //統計該區間設備故障類型占比
+            var RepairEquipment = from x1 in db.EquipmentReportForm
+                          where x1.Date >= StartDate && x1.Date <= EndDate
+                          join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
+                          group x1 by new { x2.System, x2.SubSystem } into grouped
+                          orderby grouped.Count() descending
+                          select new { Type = grouped.Key, Count = grouped.Count() };
+            var typenum = 5;
+            if(RepairEquipment.Count() < 5)
+            {
+                typenum = RepairEquipment.Count();
+            }
+            int c = 1;
+            foreach(var item in RepairEquipment)
+            {
+                if(c <= typenum)
+                {
+                    JObject jo = new JObject();
+                    jo.Add("label", item.Type.System + " " + item.Type.SubSystem);
+                    jo.Add("value", item.Count);
+                    Equipment_Type_Rate.Add(jo);
+                    c++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            InspectionPlanInformation.Add("Equipment_Type_Rate", Equipment_Type_Rate);
             #endregion
 
             string result = JsonConvert.SerializeObject(InspectionPlanInformation);
