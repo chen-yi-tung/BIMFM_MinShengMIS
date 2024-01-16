@@ -101,7 +101,7 @@
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
         const data = [
-            { label: "運轉", value: 128 },
+            { label: "維修+保養", value: 128 },
             { label: "維修", value: 19 },
             { label: "保養", value: 15 }
         ]
@@ -129,7 +129,7 @@
                             {
                                 string: (() => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label == "運轉").value
+                                    let value = data.find(x => x.label == "維修+保養").value
                                     return (Math.floor(value / total * 1000) / 10) + "%"
                                 })(),
                                 color: "#fff",
@@ -213,10 +213,11 @@
     function Inspection_Aberrant_Resolve() {
         const container = document.getElementById('Inspection_Aberrant_Resolve');
         const ctx = getOrCreateElement(container, 'canvas')
-        const backgroundColor = ["#72E998", "#4269AC", "#E77272"]
+        const backgroundColor = ["#72E998", "#E77272", "#4269AC"]
         const data = [
-            { label: "已處理", value: 53 },
-            { label: "未處理", value: 15 }
+            { label: "待處理", value: 53 },
+            { label: "處理中", value: 53 },
+            { label: "處理完成", value: 15 }
         ]
         ctx.width = 160
         ctx.height = 160
@@ -242,7 +243,7 @@
                             {
                                 string: (() => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label == "已處理").value
+                                    let value = data.find(x => x.label == "處理完成").value
                                     return (Math.floor(value / total * 1000) / 10) + "%"
                                 })(),
                                 color: "#E77272",
