@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -122,9 +123,42 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 出庫詳情
-        public ActionResult Read()
+        public ActionResult Read(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+
+        public async Task<ActionResult> Read_Data(string id)
+        {
+            var record = await db.StockOutRecord.FirstOrDefaultAsync(x => x.SORSN == id);
+            if (record == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SORSN is Undefined.");
+
+            var UserDics = await db.AspNetUsers.Where(x => x.IsEnabled == true).ToDictionaryAsync(k => k.UserName, v => v.MyName);
+            var TypeDics = Surface.StockType();
+            var UnitDics = Surface.Unit();
+            SO_ViewModel model = new SO_ViewModel
+            {
+                SORSN = record.SORSN,
+                SRSN = record.SRSN,
+                StockOutDateTime = record.StockOutDateTime?.ToString("yyyy/MM/dd HH:mm:ss"),
+                StockOutMyName = UserDics[record.StockOutUserName],
+                ReceiverMyName = UserDics[record.ReceiverUserName],
+                StockOutContent = record.StockOutContent,
+                StockOutItem = record.StockOutItem.Select(x => new SO_Item_ViewModel
+                {
+                    SSN = x.SSN,
+                    StockType = x.Stock.ComputationalStock != null ? TypeDics[x.Stock.ComputationalStock.StockType] : null,
+                    StockName = x.Stock.ComputationalStock?.StockName,
+                    MName = x.Stock.StockInRecord.MName,
+                    Size = x.Stock.StockInRecord.Size,
+                    Brand = x.Stock.StockInRecord.Brand,
+                    Model = x.Stock.StockInRecord.Model,
+                    OutAmount = x.Amount,
+                    Unit = x.Stock.ComputationalStock != null ? UnitDics[x.Stock.ComputationalStock.Unit] : null
+                }).ToList()
+            };
+            return Content(JsonConvert.SerializeObject(model), "application/json");
         }
         #endregion
 

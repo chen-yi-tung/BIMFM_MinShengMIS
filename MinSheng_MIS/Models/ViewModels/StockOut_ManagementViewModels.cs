@@ -37,4 +37,28 @@ namespace MinSheng_MIS.Models.ViewModels
         [Required]
         public double OutAmount { get; set; }
     }
+
+    public class SO_ViewModel
+    {
+        public string SORSN { get; set; }
+        public string SRSN { get; set; }
+        public string StockOutDateTime { get; set; }
+        public string StockOutMyName { get; set; }
+        public string ReceiverMyName { get; set; }
+        public string StockOutContent { get; set; }
+        public List<SO_Item_ViewModel> StockOutItem { get; set; }
+    }
+
+    public class SO_Item_ViewModel
+    {
+        public string SSN { get; set; }
+        public string StockType { get; set; }
+        public string StockName { get; set; }
+        public string MName { get; set; }
+        public string Size { get; set; }
+        public string Brand { get; set; }
+        public string Model { get; set; }
+        public string Unit { get; set; }
+        public double OutAmount { get; set; }
+    }
 }
