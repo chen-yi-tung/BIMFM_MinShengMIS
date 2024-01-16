@@ -197,6 +197,12 @@
                     await pushSelect(`${id} #StockName`, `@Url.Action("FormStockName", "DropDownList")?StockType=${e.target.value}`);
                 })
                 this.list.on("change", "#StockName", async function (e) {
+                    if (!sampleTr.checkDuplicate()) {
+                        e.target.value = ""
+                        createDialogModal({ id: "DialogModal-Error", inner: `有重複的品項品名！` })
+                        return
+                    }
+
                     console.log(e.target)
                     let item = $(e.target).closest("tr[id]")
                     let id = item.attr("id")
@@ -229,12 +235,12 @@
                 item.attr('id', this.count);
                 this.list.append(item);
                 if (data != null) {
-                    item.find("#StockType").val(data.StockType)
                     pushSelect(`${item.attr("id")} #StockName`,
                         `@Url.Action("FormStockName", "DropDownList")?StockType=${data.StockType}`)
                         .then(() => {
-                            item.find("#StockName").val(data.StockName)
+                            item.find("#StockName").val(data.SISN)
                         });
+                    item.find("#StockType").val(data.StockType)
                     item.find("#Amount").val(data.Amount)
                     item.find("#d-Unit").text(data.Unit)
                     item.find("#SRContent").val(data.SRContent)
@@ -253,6 +259,13 @@
             }
             this.checkValidity = () => {
                 return this.list.children().length > 0
+            }
+            this.checkDuplicate = () => {
+                let sisns = this.list.children().toArray().map((e) => {
+                    return $(e).find("#StockName").val()
+                }).filter(e => e || void 0)
+                let sets = new Set([...sisns])
+                return sisns.length == [...sets].length
             }
             return this;
         }
