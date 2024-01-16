@@ -461,7 +461,7 @@
             { label: "類型四", value: 1 },
             { label: "類型五", value: 3 },
         ]
-        ctx.width = 160
+        //ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
             type: 'doughnut',
@@ -480,15 +480,9 @@
                 //layout: { padding: 4 },
                 plugins: {
                     legend, tooltip,
-                    htmlLegend: {
-                        percentage: false,
-                        value: false
-                    }
                 }
             },
-            plugins: [
-                chartPlugins.htmlLegend
-            ]
+            plugins: []
         })
     }
     // #endregion

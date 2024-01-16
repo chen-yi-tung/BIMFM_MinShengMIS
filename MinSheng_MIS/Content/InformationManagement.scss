@@ -139,8 +139,31 @@
             grid-area: main;
             padding: 0;
 
-            .hstack {
-                padding: 2.5rem 0;
+            .grid {
+                display: grid;
+                grid-template-columns: 1fr max-content 1fr;
+                grid-template-rows: repeat(2, auto);
+                padding: 1.5rem 0rem;
+                align-items: flex-start;
+
+                [role='chart'] {
+
+                    #Inspection_Complete_State {
+                        .legend-catalog {
+                            gap: 0.6rem;
+                        }
+                    }
+                }
+            }
+
+            .subgrid {
+                grid-row: span 4;
+                display: grid;
+                grid-template-rows: subgrid;
+            }
+
+            .vr {
+                grid-row: span 4;
             }
 
             .legend-container {
@@ -184,6 +207,7 @@
                 }
 
                 .tbody {
+                    max-height: 30rem;
                     height: 30rem;
 
                     .simplebar-content {
@@ -345,14 +369,24 @@
             "side1 minx1"
             "side2 minx2";
 
-        :is(.minx1, .minx2) {
-            .horizontal {
-                width: max-content !important;
+        .info-box {
+            &:is(.minx1, .minx2) {
+                .horizontal {
+                    width: max-content !important;
+                }
+
+                .legend-container {
+                    width: max-content;
+                    flex: 0 0 auto;
+                }
             }
 
-            .legend-container {
-                width: max-content;
-                flex: 0 0 auto;
+            &.main {
+                .table {
+                    .tbody {
+                        height: auto;
+                    }
+                }
             }
         }
     }
@@ -366,14 +400,16 @@
             "side2 side2"
             "minx1 minx2";
 
-        .side1 {
-            #Inspection_Aberrant_Level {
-                width: max-content !important;
-            }
+        .info-box {
+            &.side1 {
+                #Inspection_Aberrant_Level {
+                    width: max-content;
+                }
 
-            #Inspection_Aberrant_Resolve {
-                width: max-content !important;
-                min-width: 20rem !important;
+                #Inspection_Aberrant_Resolve {
+                    width: max-content;
+                    min-width: 20rem;
+                }
             }
         }
     }
@@ -396,35 +432,23 @@
             "side1"
             "side2"
             "minx1"
-            "minx2";
+            "minx2"
+        ;
 
-        .main {
-            .hstack {
-                flex-direction: column;
-                gap: 2rem;
-
-                .vr {
-                    min-height: unset;
-                    height: 1px;
-                    width: 100%;
+        .info-box {
+            &.main {
+                .grid {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 2rem;
+                    margin-bottom: 2rem;
                 }
 
-                [role='chart'] {
-
-                    #Inspection_Complete_State,
-                    #Inspection_Equipment_State {
-                        width: max-content !important;
-                        min-width: 20rem !important;
-                    }
+                [role='chart'] div[id] {
+                    width: max-content !important;
+                    min-width: 20rem !important;
                 }
-
-            }
-        }
-
-        .side1 {
-            .hstack {
-                flex-direction: column;
-                gap: 2rem;
 
                 .vr {
                     min-height: unset;
@@ -433,19 +457,33 @@
                 }
             }
 
-            #Inspection_Aberrant_Level {
-                width: max-content !important;
-                min-width: 20rem !important;
+            &.side1 {
+                .hstack {
+                    flex-direction: column;
+                    gap: 2rem;
+                }
+
+                .vr {
+                    min-height: unset;
+                    height: 1px;
+                    width: 100%;
+                }
+
+                #Inspection_Aberrant_Level {
+                    width: max-content;
+                    min-width: 20rem;
+                }
+            }
+
+            &.side2 {
+                .bar {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
             }
         }
 
-        .side2 {
-            .bar {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-        }
     }
 
     @include max-576 {
@@ -471,63 +509,49 @@
             }
         }
 
-        .main {
-            .table {
-                overflow-y: hidden !important;
-                overflow-x: auto !important;
-
-                .thead {
-                    width: max-content;
-
-                    .col {
-                        width: 8rem;
-                    }
+        .info-box {
+            &.main {
+                .subgrid {
+                    width: 100%;
                 }
 
-                .tbody {
-                    width: calc(8rem*6);
+                .table {
+                    overflow-y: hidden !important;
+                    overflow-x: auto !important;
 
-                    .col {
-                        width: 8rem;
+                    .thead {
+                        width: max-content;
+
+                        .col {
+                            width: 8rem;
+                        }
                     }
-                }
-            }
 
-            .hstack {
-                [role='chart'] {
-                    
-                    #Inspection_Complete_State,
-                    #Inspection_Equipment_State {
-                        padding: 0 2.5rem !important;
-                        min-width: max-content !important;
-                        max-width: 16.875rem !important;
-                        width: 100% !important;
+                    .tbody {
+                        width: calc(8rem*6);
 
-                        .legend-container {
-                            padding-left: 5vw;
-                            padding-right: 5vw;
+                        .col {
+                            width: 8rem;
                         }
                     }
                 }
             }
-        }
 
-        .side1 {
-            .hstack[role='chart'] {
-
-                #Inspection_Aberrant_Level,
-                #Inspection_Aberrant_Resolve {
+            &:is(.main, .side1) {
+                [role='chart'] div[id] {
                     min-width: max-content !important;
                     max-width: 16.875rem !important;
                     width: 100% !important;
+                    margin-left: auto;
+                    margin-right: auto;
 
                     .legend-container {
                         padding-left: 5vw;
                         padding-right: 5vw;
                     }
+
                 }
             }
         }
-
     }
 }
