@@ -1,4 +1,65 @@
 ﻿window.addEventListener('load', () => {
+    // #region init
+    const StartYear = $("#StartYear"),
+        StartMonth = $("#StartMonth"),
+        EndYear = $("#EndYear"),
+        EndMonth = $("#EndMonth");
+
+    search();
+    $("#search").click(search)
+    function search() {
+        let data = {
+            year1: StartYear.val(),
+            month1: StartMonth.val(),
+            year2: EndYear.val(),
+            month2: EndMonth.val(),
+        }
+
+        if (parseInt(data.year1) > parseInt(data.year2)) {
+            data = {
+                year1: EndYear.val(),
+                month1: EndMonth.val(),
+                year2: StartYear.val(),
+                month2: StartMonth.val(),
+            }
+        }
+        else if (parseInt(data.month1) > parseInt(data.month2)) {
+            data = {
+                year1: StartYear.val(),
+                month1: EndMonth.val(),
+                year2: EndYear.val(),
+                month2: StartMonth.val(),
+            }
+        }
+
+        StartYear.val(data.year1)
+        StartMonth.val(data.month1)
+        EndYear.val(data.year2)
+        EndMonth.val(data.month2)
+
+        $.ajax({
+            url: "/InspectionPlan_Management/GetIspectionPlanInformation",
+            data,
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: generate,
+            error: generate
+        })
+    }
+    function generate(res) {
+        console.log(res)
+        Inspection_Complete_State(res?.Inspection_Complete_State)
+        Inspection_Equipment_State(res?.Inspection_Equipment_State)
+        Inspection_All_Members(res?.Inspection_All_Members)
+        Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
+        Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
+        Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
+        Equipment_Level_Rate(res?.Equipment_Level_Rate)
+        Equipment_Type_Rate(res?.Equipment_Type_Rate)
+    }
+    // #endregion
+
     // #region chart options
     const family = 'Noto Sans TC, sans-serif'
     const legend = { display: false }
@@ -20,36 +81,8 @@
     const shadowPlugin = {
         color: 'rgba(0,0,0,0.25)',
         blur: 4,
-        offset: { x: 0, y: 4 }
-    }
-
-    // #endregion
-
-    // #region chart
-    $.ajax({
-        url: `/InspectionPlan_Management/GetIspectionPlanInformation`,
-        data: {
-            year1: $("#StartYear").val(),
-            month1: $("#StartMonth").val(),
-            year2: $("#EndYear").val(),
-            month2: $("#EndMonth").val(),
-        },
-        type: "GET",
-        dataType: "json",
-        contentType: "application/json;charset=utf-8",
-        success: generate,
-        error: generate
-    })
-    function generate(res) {
-        console.log(res)
-        Inspection_Complete_State(res?.Inspection_Complete_State)
-        Inspection_Equipment_State(res?.Inspection_Equipment_State)
-        Inspection_All_Members(res?.Inspection_All_Members)
-        Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
-        Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
-        Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
-        Equipment_Level_Rate(res?.Equipment_Level_Rate)
-        Equipment_Type_Rate(res?.Equipment_Type_Rate)
+        offset: { x: 0, y: 4 },
+        drawWhenEmpty: false
     }
 
     // #endregion
@@ -66,6 +99,10 @@
             { label: "巡檢完成", value: 16 },
             { label: "巡檢未完成", value: 16 },
         ]
+
+        let chart = Chart.getChart(ctx)
+        if (chart) { chart.destroy() }
+
         ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
@@ -91,7 +128,7 @@
                                 string: (() => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
                                     let value = data.find(x => x.label == "巡檢完成").value
-                                    return (Math.floor(value / total * 1000) / 10) + "%"
+                                    return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
                                 })(),
                                 color: "#fff",
                                 font: { family, weight: 500, size: 20 }
@@ -110,7 +147,8 @@
             plugins: [
                 chartPlugins.shadowPlugin,
                 chartPlugins.centerText,
-                chartPlugins.htmlLegend
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }
@@ -124,6 +162,10 @@
             { label: "維修", value: 19 },
             { label: "保養", value: 15 }
         ]
+
+        let chart = Chart.getChart(ctx)
+        if (chart) { chart.destroy() }
+
         ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
@@ -149,7 +191,7 @@
                                 string: (() => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
                                     let value = data.find(x => x.label.includes("保養+維修")).value
-                                    return (Math.floor(value / total * 1000) / 10) + "%"
+                                    return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
                                 })(),
                                 color: "#fff",
                                 font: { family, weight: 500, size: 20 }
@@ -168,19 +210,20 @@
             plugins: [
                 chartPlugins.shadowPlugin,
                 chartPlugins.centerText,
-                chartPlugins.htmlLegend
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }
     //巡檢人員表格
     function Inspection_All_Members(res) {
-        const row = $("#Inspection_All_Members .row")
+        const row = $("#Inspection_All_Members .row").first()
         const list = $("#Inspection_All_Members .simplebar-content")
         if (!res) {
             for (let i = 0; i < 20; i++) { list.append(row.clone()) }
             return
         }
-        row.remove()
+        list.empty()
         res.forEach((e) => {
             let item = row.clone()
             item.find("#MyName").text(e.MyName)
@@ -189,14 +232,16 @@
             item.find("#RepairNum").text(e.RepairNum)
 
             item.find("#CompleteNum").text(e.CompleteNum)
-            item.find("#CompletionRate").text(e.CompletionRate*100 + "%")
+            item.find("#CompletionRate").text(Math.floor(e.CompletionRate * 100 * 100) / 100 + "%")
             if (e.CompletionRate < 0.5) {
                 item.find(".text-success").removeClass("text-success").addClass("text-danger")
             }
-            
+            else {
+                item.find(".text-success").removeClass("text-danger").addClass("text-success")
+            }
+
             list.append(item)
         })
-
     }
     //緊急事件 等級占比
     function Inspection_Aberrant_Level(res) {
@@ -207,6 +252,10 @@
             { label: "一般", value: 20 },
             { label: "緊急", value: 15 }
         ]
+
+        let chart = Chart.getChart(ctx)
+        if (chart) { chart.destroy() }
+
         ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
@@ -243,7 +292,8 @@
             plugins: [
                 chartPlugins.pieBackground,
                 chartPlugins.centerText,
-                chartPlugins.htmlLegend
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }
@@ -257,6 +307,10 @@
             { label: "處理中", value: 53 },
             { label: "處理完成", value: 15 }
         ]
+
+        let chart = Chart.getChart(ctx)
+        if (chart) { chart.destroy() }
+
         ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
@@ -282,7 +336,7 @@
                                 string: (() => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
                                     let value = data.find(x => x.label == "處理完成").value
-                                    return (Math.floor(value / total * 1000) / 10) + "%"
+                                    return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
                                 })(),
                                 color: "#E77272",
                                 font: { family, weight: 500, size: 20 }
@@ -305,11 +359,13 @@
             plugins: [
                 chartPlugins.pieBackground,
                 chartPlugins.centerText,
-                chartPlugins.htmlLegend
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }
     //設備保養及維修進度統計
+    const mediaQueryList = window.matchMedia("(max-width:700px)")
     function Equipment_Maintain_And_Repair_Statistics(res) {
         const container = document.getElementById('Equipment_Maintain_And_Repair_Statistics');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -382,14 +438,11 @@
             plugins: [chartPlugins.htmlLegend]
         })
 
-        window.matchMedia("(max-width:700px)").addEventListener("change", (e) => {
-            //console.log("(max-width:700px)", e.matches)
-            onMediaChange(e.matches)
-        })
+        mediaQueryList.onchange = onMediaChange
+        onMediaChange(mediaQueryList)
 
-        onMediaChange(window.matchMedia("(max-width:700px)").matches)
-
-        function onMediaChange(matches) {
+        function onMediaChange(evt) {
+            const matches = evt.matches
             let chart = Chart.getChart(ctx)
             if (chart) {
                 chart.destroy();
@@ -418,6 +471,10 @@
             { label: "緊急", value: 7 },
             { label: "最速件", value: 3 },
         ]
+
+        let chart = Chart.getChart(ctx)
+        if (chart) { chart.destroy() }
+
         ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
@@ -444,7 +501,8 @@
                 }
             },
             plugins: [
-                chartPlugins.htmlLegend
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }
@@ -461,6 +519,10 @@
             { label: "類型四", value: 1 },
             { label: "類型五", value: 3 },
         ]
+
+        let chart = Chart.getChart(ctx)
+        if (chart) { chart.destroy() }
+
         //ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
@@ -482,7 +544,7 @@
                     legend, tooltip,
                 }
             },
-            plugins: []
+            plugins: [chartPlugins.emptyDoughnut]
         })
     }
     // #endregion

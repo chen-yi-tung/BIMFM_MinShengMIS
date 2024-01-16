@@ -3,8 +3,11 @@ const chartPlugins = {
     pieBackground: {
         id: "pieBackground",
         beforeDatasetsDraw(chart, args, options) {
-            const { chartArea: { left, top, right, bottom }, ctx } = chart;
-            const { backgroundColor, borderWidth, borderColor, shadow = false } = options;
+            const { chartArea: { left, top, right, bottom }, ctx, data: { datasets } } = chart;
+            const { backgroundColor, borderWidth, borderColor, shadow = false, drawWhenEmpty = false } = options;
+
+            if (!drawWhenEmpty && !hasDataInDatasets(datasets)) { return }
+
             const x = (left + right) / 2;
             const y = (top + bottom) / 2;
             const r = Math.min(right - left, bottom - top) / 2;
@@ -31,8 +34,11 @@ const chartPlugins = {
     shadowPlugin: {
         id: "shadowPlugin",
         beforeDraw(chart, args, options) {
-            const { chartArea: { left, top, right, bottom }, ctx } = chart;
-            const { color = 'rgba(0,0,0,0.25)', blur = 4, offset = { x: 4, y: 4 } } = options;
+            const { chartArea: { left, top, right, bottom }, ctx, data: { datasets } } = chart;
+            const { color = 'rgba(0,0,0,0.25)', blur = 4, offset = { x: 4, y: 4 }, drawWhenEmpty = false } = options;
+
+            if (!drawWhenEmpty && !hasDataInDatasets(datasets)) { return }
+
             const x = (left + right) / 2;
             const y = (top + bottom) / 2;
             const r = Math.min(right - left, bottom - top) / 2;
@@ -57,8 +63,11 @@ const chartPlugins = {
     centerText: {
         id: "centerText",
         beforeDatasetsDraw(chart, args, options) {
-            const { chartArea: { left, top, right, bottom }, ctx } = chart;
-            const { text, inline = false, verticalAlign = 'baseline' } = options;
+            const { chartArea: { left, top, right, bottom }, ctx, data: { datasets } } = chart;
+            const { text, inline = false, verticalAlign = 'baseline', drawWhenEmpty = false } = options;
+
+            if (!drawWhenEmpty && !hasDataInDatasets(datasets)) { return }
+
             const lines = Array.isArray(text) ? text : [text];
             let x = (left + right) / 2;
             let y = (top + bottom) / 2;
@@ -128,11 +137,11 @@ const chartPlugins = {
             if (statistics) {
                 const { value, unit } = statistics
                 const e = getOrCreateElement(legend, ".legend-statistics")
-                if (value) {
+                if (value != void 0) {
                     const v = getOrCreateElement(e, "span.value")
                     v.textContent = value
                 }
-                if (unit) {
+                if (unit != void 0) {
                     const u = getOrCreateElement(e, "span.unit")
                     u.textContent = unit
                 }
@@ -165,7 +174,7 @@ const chartPlugins = {
                 if (percentage) {
                     const percentage = document.createElement('div')
                     percentage.className = 'percentage'
-                    percentage.textContent = Math.floor(data[s.index] / total * 100)
+                    percentage.textContent = (Math.floor(data[s.index] / total * 100) || 0)
                     li.appendChild(percentage)
                 }
 
@@ -184,6 +193,55 @@ const chartPlugins = {
             })
 
             //legend.insertAdjacentHTML(``)
+        }
+    },
+    emptyDoughnut: {
+        id: "emptyDoughnut",
+        afterDraw(chart, args, options) {
+            const { datasets } = chart.data;
+            const { color, backgroundColor = 'rgba(0, 0, 0, 0)', borderColor, width = 2, radiusDecrease = 1, family = 'Noto Sans TC, sans-serif' } = options;
+            if (!hasDataInDatasets(datasets)) {
+                const { chartArea: { left, top, right, bottom }, ctx } = chart;
+                const centerX = (left + right) / 2;
+                const centerY = (top + bottom) / 2;
+                const r = Math.min(right - left, bottom - top) / 2;
+
+                let textColor = Chart.helpers.color(color)
+                if (!textColor.valid) {
+                    textColor = Chart.helpers.color(backgroundColor)
+                    if (textColor.rgb.a !== 0) {
+                        textColor.negate().greyscale().alpha(1)
+                    }
+                    else {
+                        let container = chart.canvas
+                        textColor = Chart.helpers.color(getComputedStyle(container).backgroundColor)
+                        while (textColor.rgb.a == 0) {
+                            container = container.parentElement
+                            textColor = Chart.helpers.color(getComputedStyle(container).backgroundColor)
+                        }
+                        textColor.negate().greyscale().alpha(1)
+                    }
+                }
+
+                ctx.beginPath();
+                ctx.lineWidth = width;
+                ctx.strokeStyle = borderColor || textColor.clone().alpha(0.5).rgbString();
+                ctx.arc(centerX, centerY, (r - radiusDecrease), 0, 2 * Math.PI);
+                ctx.fillStyle = backgroundColor
+                ctx.fill();
+                ctx.stroke();
+
+                chartPlugins.centerText.beforeDatasetsDraw(chart, args, {
+                    text: [
+                        {
+                            string: "無資料",
+                            color: textColor.rgbString(),
+                            font: { family, weight: 500, size: 16 }
+                        }
+                    ],
+                    drawWhenEmpty: true
+                })
+            }
         }
     }
 }
@@ -207,5 +265,17 @@ function getOrCreateElement(container, selector, tag = null) {
 
     container.append(element)
     return element
+}
+function hasDataInDatasets(datasets) {
+    let hasData = false;
+    for (let i = 0; i < datasets.length; i++) {
+        const data = datasets[i].data;
+        //hasData |= dataset.data.length > 0;
+        for (let j = 0; j < data.length; j++) {
+            //console.log(chart.canvas.parentNode.id, data[j], data[j] > 0)
+            hasData |= data[j] > 0;
+        }
+    }
+    return hasData
 }
 // #endregion
