@@ -698,6 +698,7 @@ namespace MinSheng_MIS.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult GetIspectionPlanInformation(int? year1 = null, int? month1 = null, int? year2 = null, int? month2 = null)
         {
             #region 檢索年份月份處理
@@ -745,7 +746,27 @@ namespace MinSheng_MIS.Controllers
             #endregion
 
             #region 巡檢總設備狀態
-
+            JArray Inspection_Equipment_State = new JArray();
+            var RepairEquipments = (from x1 in db.InspectionPlanRepair
+                                  join x2 in db.InspectionPlan on x1.IPSN equals x2.IPSN
+                                  where x2.PlanDate >= StartDate && x2.PlanDate <= EndDate
+                                  join x3 in db.EquipmentReportForm on x1.RSN equals x3.RSN
+                                  select new { x3.ESN })
+                                  .Distinct();
+            var MaintainEquipments = (from x1 in db.InspectionPlanMaintain
+                                      join x2 in db.InspectionPlan on x1.IPSN equals x2.IPSN
+                                      where x2.PlanDate >= StartDate && x2.PlanDate <= EndDate
+                                      join x3 in db.EquipmentMaintainFormItem on x1.EMFISN equals x3.EMFISN
+                                      join x4 in db.EquipmentMaintainItem on x3.EMISN equals x4.EMISN
+                                      select new { x4.ESN}).Distinct();
+            var intersection = RepairEquipments.Intersect(MaintainEquipments); //找出在該檢索時間段有做保養及維修之設備
+            JObject rm = new JObject {{ "label"," 保養" },{"value", MaintainEquipments.Count()}};
+            Inspection_Equipment_State.Add(rm);
+            JObject r = new JObject { { "label", " 維修" }, { "value", RepairEquipments.Count() } };
+            Inspection_Equipment_State.Add(r);
+            JObject m = new JObject { { "label", " 保養+維修" }, { "value", intersection.Count() } };
+            Inspection_Equipment_State.Add(m);
+            InspectionPlanInformation.Add("Inspection_Equipment_State", Inspection_Equipment_State);
             #endregion
 
             #region 巡檢人員清單
@@ -755,7 +776,7 @@ namespace MinSheng_MIS.Controllers
             foreach(var planmember in UserNameList)
             {
                 JObject jo = new JObject();
-                jo.Add("MyName", db.AspNetUsers.Where(x => x.UserName == planmember).FirstOrDefault().ToString()); //人員姓名
+                jo.Add("MyName", db.AspNetUsers.Where(x => x.UserName == planmember).FirstOrDefault().MyName.ToString()); //人員姓名
                 var memberIPSN = db.InspectionPlanMember.Where(x => x.UserID == planmember && IPSNList.Contains(x.IPSN)).Select(x => x.IPSN).ToList();
 
                 int PlanNum = memberIPSN.Count();//巡檢總數
@@ -769,7 +790,7 @@ namespace MinSheng_MIS.Controllers
                 jo.Add("MaintainNum", MaintainNum);
                 jo.Add("RepairNum", RepairNum);
                 jo.Add("CompleteNum", FinishPlanNum + FinishMaintainNum + FinishRepairNum);
-                jo.Add("CompletionRate", (FinishPlanNum + FinishMaintainNum + FinishRepairNum)/(PlanNum + MaintainNum + RepairNum));
+                jo.Add("CompletionRate", (float)(FinishPlanNum + FinishMaintainNum + FinishRepairNum) / (PlanNum + MaintainNum + RepairNum));
                 Inspection_All_Members.Add(jo);
             }
             InspectionPlanInformation.Add("Inspection_All_Members", Inspection_All_Members);
@@ -802,13 +823,37 @@ namespace MinSheng_MIS.Controllers
             #endregion
 
             #region 設備保養及維修進度統計
+            JArray Equipment_Maintain_And_Repair_Statistics = new JArray();
+            var InspectionPlanRepairStateDic = Surface.InspectionPlanRepairState();
+            var MaintainList = from x1 in db.InspectionPlanMaintain
+                    join x2 in db.InspectionPlan on x1.IPSN equals x2.IPSN
+                    where x2.PlanDate >= StartDate && x2.PlanDate <= EndDate
+                    select new { x1.IPMSN, x1.MaintainState };
+            var RepairList = from x1 in db.InspectionPlanRepair
+                    join x2 in db.InspectionPlan on x1.IPSN equals x2.IPSN
+                    where x2.PlanDate >= StartDate && x2.PlanDate <= EndDate
+                    select new { x1.IPRSN, x1.RepairState };
 
+            foreach(var item in InspectionPlanRepairStateDic)
+            {
+                JObject jo = new JObject();
+                JArray value = new JArray();
+                JObject mr = new JObject();
+                mr.Add("Maintain", MaintainList.Where(x => x.MaintainState == item.Key).Count());
+                mr.Add("Repair", RepairList.Where(x => x.RepairState == item.Key).Count());
+                value.Add(mr);
+                jo.Add("label", item.Value);
+                jo.Add("value", value);
+                Equipment_Maintain_And_Repair_Statistics.Add(jo);
+            }
+            InspectionPlanInformation.Add("Equipment_Maintain_And_Repair_Statistics", Equipment_Maintain_And_Repair_Statistics);
             #endregion
 
-            var reportList = db.EquipmentReportForm.Where(x => x.Date >= StartDate && x.Date <= EndDate);
             #region 設備故障等級分布
             JArray Equipment_Level_Rate = new JArray();
+            var reportList = db.EquipmentReportForm.Where(x => x.Date >= StartDate && x.Date <= EndDate);
             var ReportLevelDic = Surface.ReportLevel();
+
             for(int i = 1; i <=3; i++)
             {
                 JObject jo = new JObject();
@@ -819,7 +864,7 @@ namespace MinSheng_MIS.Controllers
             InspectionPlanInformation.Add("Equipment_Level_Rate", Equipment_Level_Rate);
             #endregion
 
-            #region 設備故障類型占比 //前五多故障設備種類
+            #region 設備故障類型占比
             JArray Equipment_Type_Rate = new JArray();
             //統計該區間設備故障類型占比
             var RepairEquipment = from x1 in db.EquipmentReportForm
@@ -828,7 +873,7 @@ namespace MinSheng_MIS.Controllers
                           group x1 by new { x2.System, x2.SubSystem } into grouped
                           orderby grouped.Count() descending
                           select new { Type = grouped.Key, Count = grouped.Count() };
-            var typenum = 5;
+            var typenum = 5; //前五多故障設備種類
             if(RepairEquipment.Count() < 5)
             {
                 typenum = RepairEquipment.Count();
