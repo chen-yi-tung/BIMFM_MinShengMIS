@@ -484,6 +484,7 @@
     <Compile Include="Services\EquipmentOperatingManualService.cs" />
     <Compile Include="Services\Helper.cs" />
     <Compile Include="Services\MeetingMinutesService.cs" />
+    <Compile Include="Services\PlanInformationService.cs" />
     <Compile Include="Services\WarningMessageService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Surfaces\Surface.cs" />
