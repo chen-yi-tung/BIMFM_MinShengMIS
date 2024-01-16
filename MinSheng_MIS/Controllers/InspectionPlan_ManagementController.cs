@@ -763,11 +763,11 @@ namespace MinSheng_MIS.Controllers
                                       join x4 in db.EquipmentMaintainItem on x3.EMISN equals x4.EMISN
                                       select new { x4.ESN}).Distinct();
             var intersection = RepairEquipments.Intersect(MaintainEquipments); //找出在該檢索時間段有做保養及維修之設備
-            JObject rm = new JObject {{ "label"," 保養" },{"value", MaintainEquipments.Count()}};
+            JObject rm = new JObject {{ "label","保養" },{"value", MaintainEquipments.Count()}};
             Inspection_Equipment_State.Add(rm);
-            JObject r = new JObject { { "label", " 維修" }, { "value", RepairEquipments.Count() } };
+            JObject r = new JObject { { "label", "維修" }, { "value", RepairEquipments.Count() } };
             Inspection_Equipment_State.Add(r);
-            JObject m = new JObject { { "label", " 保養+維修" }, { "value", intersection.Count() } };
+            JObject m = new JObject { { "label", "保養+維修" }, { "value", intersection.Count() } };
             Inspection_Equipment_State.Add(m);
             InspectionPlanInformation.Add("Inspection_Equipment_State", Inspection_Equipment_State);
             #endregion
