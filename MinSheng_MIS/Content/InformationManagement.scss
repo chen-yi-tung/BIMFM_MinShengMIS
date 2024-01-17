@@ -179,10 +179,6 @@
                 border-bottom-right-radius: 0.325rem;
                 overflow: hidden;
 
-                .text-success {
-                    color: #72E998 !important;
-                }
-
                 .row {
                     --bs-gutter-x: 0rem !important;
 
@@ -205,8 +201,26 @@
                     max-height: 30rem;
                     height: 30rem;
 
+                    @include max-1600 {
+                        height: auto;
+                    }
+
                     .simplebar-content {
                         padding-right: 2.75rem !important;
+
+                        &:empty {
+                            min-height: 15rem;
+
+                            &::after {
+                                content: "無資料";
+                                color: #cbcbcb;
+                                margin: 0;
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                            }
+                        }
                     }
 
                     .row {
@@ -214,6 +228,14 @@
 
                         &:nth-of-type(odd) {
                             background: rgba(46, 75, 111, 0.60);
+                        }
+
+                        [data-complete=true] {
+                            color: #72E998;
+                        }
+
+                        [data-complete=false] {
+                            color: #E77272;
                         }
                     }
                 }
@@ -373,14 +395,6 @@
                 .legend-container {
                     width: max-content;
                     flex: 0 0 auto;
-                }
-            }
-
-            &.main {
-                .table {
-                    .tbody {
-                        height: auto;
-                    }
                 }
             }
         }

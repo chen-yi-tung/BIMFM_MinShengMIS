@@ -234,10 +234,10 @@
             item.find("#CompleteNum").text(e.CompleteNum)
             item.find("#CompletionRate").text(Math.floor(e.CompletionRate * 100 * 100) / 100 + "%")
             if (e.CompletionRate < 0.5) {
-                item.find(".text-success").removeClass("text-success").addClass("text-danger")
+                item.find("[data-complete]").attr("data-complete", false)
             }
             else {
-                item.find(".text-success").removeClass("text-danger").addClass("text-success")
+                item.find("[data-complete]").attr("data-complete", true)
             }
 
             list.append(item)
