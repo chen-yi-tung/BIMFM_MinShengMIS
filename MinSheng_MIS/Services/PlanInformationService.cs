@@ -210,5 +210,21 @@ namespace MinSheng_MIS.Services
             return Inspection_Plan_List;
         }
         #endregion
+
+        #region 當前巡檢狀況
+        public JObject GetInspection_Member(DateTime StartDate, DateTime EndDate)
+        {
+            JObject Inspection_Member = new JObject();
+            var PlanList = (from x1 in db.InspectionPlan
+                        where x1.PlanDate >= StartDate && x1.PlanDate < EndDate && x1.PlanState == "2" //今日巡檢中計畫
+                        join x2 in db.InspectionPlanMember on x1.IPSN equals x2.IPSN
+                        select x2.PMSN).ToList();
+            Inspection_Member.Add("Inspection_Members_All", PlanList.Count()); //目前巡檢人數
+            Inspection_Member.Add("Inspection_Members_Notice", db.WarningMessage.Where(x => PlanList.Any(plan => x.PMSN.Contains(plan.ToString())) && x.WMState != "3" && x.WMType == "1").Count()); //偏離路線人數
+            Inspection_Member.Add("Inspection_Members_Alert", db.WarningMessage.Where(x => PlanList.Any(plan => x.PMSN.Contains(plan.ToString())) && x.WMState != "3" && x.WMType == "2").Count()); //狀態異常人數
+
+            return Inspection_Member;
+        }
+        #endregion
     }
 }

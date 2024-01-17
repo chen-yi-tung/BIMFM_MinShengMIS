@@ -794,7 +794,7 @@ namespace MinSheng_MIS.Controllers
             //緊急事件處理狀況
             InspectionPlanInformation.Add("Inspection_Aberrant_Resolve", fun.GetInspection_Aberrant_Resolve(StartDate, EndDate));
             //當前巡檢狀況
-
+            InspectionPlanInformation.Add("Inspection_Member", fun.GetInspection_Member(StartDate, EndDate));
             //本日巡檢計畫列表
             InspectionPlanInformation.Add("Inspection_Plan_List", fun.GetInspection_Plan_List(StartDate, EndDate));
             //本日設備故障等及分布
