@@ -9,9 +9,11 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Razor.Parser.SyntaxTree;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -165,9 +167,27 @@ namespace MinSheng_MIS.Controllers
         #region 取得領取申請單資訊
         public ActionResult GetRequisitionInfo(string id)
         {
-            //var stockInfo = db.ComputationalStock.Where(x => x.SISN == SISN).Select(x => new { x.StockType, x.StockName, x.Unit }).FirstOrDefault();
-            //return Content(JsonConvert.SerializeObject(stockInfo), "application/json");
-            return null;
+            var request = db.StoresRequisition.FirstOrDefault(x => x.SRSN == id);
+            if (request == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SRSN is Undefined.");
+            else if (request.SRState == "1") return Content($"<br>此領用申請單尚未審核！", "application/json; charset=utf-8");
+            else if (request.StoresRequisitionItem.Where(x => x.PickUpStatus == "3" || x.PickUpStatus == "4").Count() < 1) return Content($"<br>此領用申請單未有可領取項目！", "application/json; charset=utf-8");
+
+            var PickUpStatusDics = Surface.PickUpStatus();
+            var TypeDics = Surface.StockType();
+            var UnitDics = Surface.Unit();
+            List<SR_Item_ViewModel> result = request.StoresRequisitionItem.Select(x => new SR_Item_ViewModel
+            {
+                PickUpStatus = PickUpStatusDics.TryGetValue(x.PickUpStatus, out var mapPick) ? mapPick : "undefined",
+                StockType = TypeDics.TryGetValue(x.ComputationalStock?.StockType, out var mapType) ? mapType : "undefined",
+                StockName = x.ComputationalStock?.StockName,
+                Amount = x.Amount,
+                TakeAmount = x.TakeAmount,
+                RemainingAmount = x.Amount - x.TakeAmount,
+                Unit = UnitDics.TryGetValue(x.ComputationalStock?.Unit, out var mapUnit) ? mapUnit : "undefined",
+                SISN = x. SISN
+            }).ToList();
+
+            return Content(JsonConvert.SerializeObject(result), "application/json");
         }
         #endregion
 

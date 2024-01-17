@@ -61,4 +61,16 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Unit { get; set; }
         public double OutAmount { get; set; }
     }
+
+    public class SR_Item_ViewModel
+    {
+        public string PickUpStatus { get; set; }
+        public string StockType { get; set; }
+        public string StockName { get; set; }
+        public double Amount { get; set; }
+        public double TakeAmount { get; set; }
+        public double RemainingAmount { get; set; }
+        public string Unit { get; set; }
+        public string SISN { get; set; }
+    }
 }
