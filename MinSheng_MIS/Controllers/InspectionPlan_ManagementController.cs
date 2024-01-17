@@ -772,6 +772,38 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
+        //取得即時正在巡檢的人員
+
+        //取得巡檢即時資訊(統計資訊)
+        [AllowAnonymous]
+        public ActionResult GetCurrentInformation()
+        {
+            JObject InspectionPlanInformation = new JObject();
+
+            var fun = new PlanInformationService();
+
+            DateTime StartDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
+            DateTime EndDate = StartDate.AddDays(1);
+            //本日巡檢進度
+            InspectionPlanInformation.Add("Inspection_Complete_State", fun.GetInspection_Complete_State(StartDate, EndDate));
+            //本日設備保養及維修進度統計
+            InspectionPlanInformation.Add("Equipment_Maintain_And_Repair_Statistics", fun.GetEquipment_Maintain_And_Repair_Statistics(StartDate, EndDate));
+            //本日緊急事件等級占比/處理狀況
+            //緊急事件等級占比
+            InspectionPlanInformation.Add("Inspection_Aberrant_Level", fun.GetInspection_Aberrant_Level(StartDate, EndDate));
+            //緊急事件處理狀況
+            InspectionPlanInformation.Add("Inspection_Aberrant_Resolve", fun.GetInspection_Aberrant_Resolve(StartDate, EndDate));
+            //當前巡檢狀況
+            InspectionPlanInformation.Add("Inspection_Member", fun.GetInspection_Member(StartDate, EndDate));
+            //本日巡檢計畫列表
+            InspectionPlanInformation.Add("Inspection_Plan_List", fun.GetInspection_Plan_List(StartDate, EndDate));
+            //本日設備故障等及分布
+            InspectionPlanInformation.Add("Equipment_Level_Rate", fun.GetEquipment_Level_Rate(StartDate, EndDate));
+            //本日設備故障類型占比
+            InspectionPlanInformation.Add("Equipment_Type_Rate", fun.GetEquipment_Type_Rate(StartDate, EndDate));
+
+            return Content(JsonConvert.SerializeObject(InspectionPlanInformation), "application/json");
+        }
         #endregion
 
         #region 巡檢即時位置

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace MinSheng_MIS.Services
 {
@@ -161,7 +162,7 @@ namespace MinSheng_MIS.Services
             {
                 JObject jo = new JObject();
                 jo.Add("label", item.Value);
-                jo.Add("value", reportList.Where(x => x.ReportState == item.Key).Count());
+                jo.Add("value", reportList.Where(x => x.ReportLevel == item.Key).Count());
                 Equipment_Level_Rate.Add(jo);
             }
             return Equipment_Level_Rate;
@@ -187,6 +188,42 @@ namespace MinSheng_MIS.Services
                 Equipment_Type_Rate.Add(jo);
             }
             return Equipment_Type_Rate;
+        }
+        #endregion
+
+        #region 巡檢計畫列表
+        public JArray GetInspection_Plan_List(DateTime StartDate, DateTime EndDate)
+        {
+            JArray Inspection_Plan_List = new JArray();
+
+            var PlanList = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate).OrderBy(x => x.Shift).ToList();
+            var PlanStateDic = Surface.InspectionPlanState();
+            var ShiftDic = Surface.Shift();
+            foreach (var plan in PlanList)
+            {
+                JObject jo = new JObject();
+                jo.Add("PlanState", PlanStateDic[plan.PlanState]);
+                jo.Add("IPName", plan.IPName);
+                jo.Add("Shift", ShiftDic[plan.Shift]);
+                Inspection_Plan_List.Add(jo);
+            }
+            return Inspection_Plan_List;
+        }
+        #endregion
+
+        #region 當前巡檢狀況
+        public JObject GetInspection_Member(DateTime StartDate, DateTime EndDate)
+        {
+            JObject Inspection_Member = new JObject();
+            var PlanList = (from x1 in db.InspectionPlan
+                        where x1.PlanDate >= StartDate && x1.PlanDate < EndDate && x1.PlanState == "2" //今日巡檢中計畫
+                        join x2 in db.InspectionPlanMember on x1.IPSN equals x2.IPSN
+                        select x2.PMSN).ToList();
+            Inspection_Member.Add("Inspection_Members_All", PlanList.Count()); //目前巡檢人數
+            Inspection_Member.Add("Inspection_Members_Notice", db.WarningMessage.Where(x => PlanList.Any(plan => x.PMSN.Contains(plan.ToString())) && x.WMState != "3" && x.WMType == "1").Count()); //偏離路線人數
+            Inspection_Member.Add("Inspection_Members_Alert", db.WarningMessage.Where(x => PlanList.Any(plan => x.PMSN.Contains(plan.ToString())) && x.WMState != "3" && x.WMType == "2").Count()); //狀態異常人數
+
+            return Inspection_Member;
         }
         #endregion
     }
