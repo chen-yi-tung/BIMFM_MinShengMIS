@@ -141,7 +141,6 @@ namespace MinSheng_MIS.Services
             {
                 JObject jo = new JObject();
                 JObject mr = new JObject();
-                //保留中的需額外加總回去 保留中(待派工)、保留中(未完成)、保留中(審核未過)
                 mr.Add("Maintain", MaintainList.Where(x => x.MaintainState == item.Key).Count());
                 mr.Add("Repair", RepairList.Where(x => x.RepairState == item.Key).Count());
                 jo.Add("label", item.Value);
