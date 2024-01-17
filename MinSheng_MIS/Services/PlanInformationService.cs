@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace MinSheng_MIS.Services
 {
@@ -187,6 +188,26 @@ namespace MinSheng_MIS.Services
                 Equipment_Type_Rate.Add(jo);
             }
             return Equipment_Type_Rate;
+        }
+        #endregion
+
+        #region 巡檢計畫列表
+        public JArray GetInspection_Plan_List(DateTime StartDate, DateTime EndDate)
+        {
+            JArray Inspection_Plan_List = new JArray();
+
+            var PlanList = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate).OrderBy(x => x.Shift).ToList();
+            var PlanStateDic = Surface.InspectionPlanState();
+            var ShiftDic = Surface.Shift();
+            foreach (var plan in PlanList)
+            {
+                JObject jo = new JObject();
+                jo.Add("PlanState", PlanStateDic[plan.PlanState]);
+                jo.Add("IPName", plan.IPName);
+                jo.Add("Shift", ShiftDic[plan.Shift]);
+                Inspection_Plan_List.Add(jo);
+            }
+            return Inspection_Plan_List;
         }
         #endregion
     }
