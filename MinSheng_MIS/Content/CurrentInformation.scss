@@ -161,7 +161,8 @@
 
                 .plan-people-heart {
                     display: flex;
-                    align-items: center;
+                    align-items: baseline;
+                    gap: 0.16rem;
 
                     .icon-heart {
                         color: #DB6565;
@@ -175,13 +176,13 @@
                     }
 
                     .value {
-                        min-width: 2em;
-                        text-align: end;
+                        color: #606060;
+                        font-size: 1rem;
+                        font-weight: 500;
                     }
 
-                    .value,
                     .unit {
-                        color: #606060;
+                        color: #909090;
                         font-size: 0.75rem;
                         font-weight: 500;
                     }
@@ -190,6 +191,12 @@
                 .plan-people-locate {
                     display: flex;
                     align-items: center;
+
+                    .icon-marker {
+                        margin-left: -0.1rem;
+                        margin-right: 0.26rem;
+                        font-size: 1.2rem;
+                    }
 
                     .value {
                         color: #606060;
@@ -861,5 +868,23 @@
                 }
             }
         }
+    }
+}
+
+#PlanState {
+    &[data-state='1'] {
+        color: #72E998;
+    }
+
+    &[data-state='2'] {
+        color: #E9CD68;
+    }
+
+    &[data-state='3'] {
+        color: #2CB6F0;
+    }
+
+    &[data-state='4'] {
+        color: #E77272;
     }
 }
