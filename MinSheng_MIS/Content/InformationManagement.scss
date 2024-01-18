@@ -40,6 +40,21 @@
     }
 }
 
+%empty_data {
+    &:empty {
+        min-height: 15rem;
+        &::after {
+            content: "無資料";
+            color: #cbcbcb;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+}
+
 .date-search-area {
     padding-top: 0.72rem;
     padding-bottom: 1.22rem;
@@ -208,19 +223,7 @@
                     .simplebar-content {
                         padding-right: 2.75rem !important;
 
-                        &:empty {
-                            min-height: 15rem;
-
-                            &::after {
-                                content: "無資料";
-                                color: #cbcbcb;
-                                margin: 0;
-                                position: absolute;
-                                top: 50%;
-                                left: 50%;
-                                transform: translate(-50%, -50%);
-                            }
-                        }
+                        @extend %empty_data;
                     }
 
                     .row {

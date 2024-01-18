@@ -61,24 +61,24 @@
             <option value="">選擇計畫</option>
         </select>
         <div class="plan-people-list" id="Plan_People_List" data-simplebar>
-            <div class="plan-people">
+            <a class="plan-people" href="/InspectionPlan_Management/CurrentPosition">
                 <div class="plan-people-group">
                     <div class="plan-people-info">
-                        <span class="name">Pt01 王大明</span>
+                        <span class="name" id="MyName">Pt01 王大明</span>
                     </div>
                     <div class="plan-people-locate">
                         <span class="label">即時位置：</span>
-                        <span class="value">進流抽水站B2F</span>
+                        <span class="value" id="Location">進流抽水站B2F</span>
                     </div>
                     <div class="plan-people-heart">
                         <i class="icon-heart"></i>
                         <span class="label">心率：</span>
-                        <span class="value">110</span>
+                        <span class="value" id="HeartBeat">110</span>
                         <span class="unit">下/分</span>
                     </div>
                     <button class="btn" id="goToLocation"><i class="icon-arrow-right"></i></button>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
     <div class="info-area">
@@ -126,29 +126,9 @@
                 <div class="tbody" id="Inspection_Plan_List" data-simplebar data-simplebar-auto-hide="false"
                     data-simplebar-force-visible="y">
                     <div class="row">
-                        <div class="col text-success">已完成</div>
-                        <div class="col col-7">AC區巡檢計畫</div>
-                        <div class="col">早A班</div>
-                    </div>
-                    <div class="row">
-                        <div class="col text-success">已完成</div>
-                        <div class="col col-7">A區OOXX巡檢計畫</div>
-                        <div class="col">早A班</div>
-                    </div>
-                    <div class="row">
-                        <div class="col text-info">待執行</div>
-                        <div class="col col-7">A區特殊OOXX巡檢計畫</div>
-                        <div class="col">早A班</div>
-                    </div>
-                    <div class="row">
-                        <div class="col text-warning">執行中</div>
-                        <div class="col col-7">A區特殊OOXX巡檢計畫</div>
-                        <div class="col">早A班</div>
-                    </div>
-                    <div class="row">
-                        <div class="col text-warning">執行中</div>
-                        <div class="col col-7">A區特殊OOXX巡檢計畫</div>
-                        <div class="col">早A班</div>
+                        <div id="PlanState" class="col"></div>
+                        <div id="IPName" class="col col-7"></div>
+                        <div id="Shift" class="col"></div>
                     </div>
                 </div>
             </div>

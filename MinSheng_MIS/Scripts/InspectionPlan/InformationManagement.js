@@ -219,11 +219,13 @@
     function Inspection_All_Members(res) {
         const row = $("#Inspection_All_Members .row").first()
         const list = $("#Inspection_All_Members .simplebar-content")
+        list.empty()
+
         if (!res) {
             for (let i = 0; i < 20; i++) { list.append(row.clone()) }
             return
         }
-        list.empty()
+        
         res.forEach((e) => {
             let item = row.clone()
             item.find("#MyName").text(e.MyName)

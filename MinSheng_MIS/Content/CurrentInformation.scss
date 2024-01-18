@@ -46,6 +46,21 @@
     }
 }
 
+%empty_data {
+    &:empty {
+
+        &::after {
+            content: "無資料";
+            color: #cbcbcb;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+}
+
 .btn-alert {
     position: absolute;
     top: var(--navbar-height);
@@ -82,10 +97,16 @@
             flex: 1 0 auto;
             height: 0rem;
 
+            .simplebar-content-wrapper:has(.simplebar-content:empty) {
+                min-height: 3rem;
+            }
+
             .simplebar-content {
                 display: flex;
                 flex-direction: column;
                 gap: 0.75rem;
+
+                @extend %empty_data;
             }
 
             .plan-people {
@@ -99,6 +120,7 @@
                 box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
                 border: 3px solid #fff;
                 cursor: pointer;
+                text-decoration: none;
 
                 &:hover {
                     border: 3px solid #e0e0e0;
@@ -304,6 +326,10 @@
                         color: #5CE2FF;
                     }
                 }
+
+                .legend-catalog {
+                    gap: 0.6rem;
+                }
             }
         }
 
@@ -414,6 +440,8 @@
 
                     .simplebar-content {
                         padding-right: 2.5rem !important;
+
+                        @extend %empty_data;
                     }
 
                     .row {
