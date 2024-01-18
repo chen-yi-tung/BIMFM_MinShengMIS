@@ -789,7 +789,7 @@
           <Property Name="FillinDateTime" Type="datetime" Nullable="false" />
           <Property Name="FillinUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="FillinState" Type="char" MaxLength="1" Nullable="false" />
-          <Property Name="Memo" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Memo" Type="nvarchar(max)" />
         </EntityType>
         <Association Name="FK_CompletionReportImage_InspectionPlan">
           <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
@@ -2791,7 +2791,7 @@
           <Property Name="FillinDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="FillinUserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="FillinState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="Memo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Memo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="WarningMessage" Relationship="Bimfm_MinSheng_MISModel.FK_WarningMessageFillinRecord_WarningMessage" FromRole="WarningMessageFillinRecord" ToRole="WarningMessage" />
         </EntityType>
         <Association Name="FK_Floor_Info_AreaInfo">
