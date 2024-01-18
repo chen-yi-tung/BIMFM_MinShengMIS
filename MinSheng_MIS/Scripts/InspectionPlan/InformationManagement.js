@@ -1,4 +1,4 @@
-﻿window.addEventListener('load',async () => {
+﻿window.addEventListener('load', async () => {
     // #region chart options
     const family = 'Noto Sans TC, sans-serif'
     const legend = { display: false }
@@ -27,67 +27,105 @@
     // #endregion
 
     // #region init
-    const StartYear = $("#StartYear"),
-        StartMonth = $("#StartMonth"),
-        EndYear = $("#EndYear"),
-        EndMonth = $("#EndMonth");
 
-    search();
-    $("#search").click(search)
-    function search() {
-        $(".info-area").addClass("loading")
+    //預設最小民國年分
+    const MIN_YEAR = 112;
+    //最大民國年分 => 今年
+    const MAX_YEAR = new Date().getFullYear() - 1911;
+    //目前月份
+    const MAX_MONTH = new Date().getMonth() + 1;
+    //預設民國年分
+    //const DEFAULT_YEAR = MAX_YEAR;
+    const DEFAULT_YEAR = 112;
 
-        let data = {
-            year1: StartYear.val(),
-            month1: StartMonth.val(),
-            year2: EndYear.val(),
-            month2: EndMonth.val(),
+    init()
+    async function init() {
+        const StartYear = $("#StartYear"),
+            StartMonth = $("#StartMonth"),
+            EndYear = $("#EndYear"),
+            EndMonth = $("#EndMonth");
+
+        for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
+            StartYear.append(`<option value="${y}">${y}年度</option>`)
+            EndYear.append(`<option value="${y}">${y}年度</option>`)
         }
+        StartYear.change(maxMonth)
+        EndYear.change(maxMonth)
 
-        if (parseInt(data.year1) > parseInt(data.year2)) {
-            data = {
-                year1: EndYear.val(),
-                month1: EndMonth.val(),
-                year2: StartYear.val(),
-                month2: StartMonth.val(),
+        StartYear.val(DEFAULT_YEAR)
+        StartYear.change()
+        EndYear.val(DEFAULT_YEAR)
+        EndYear.change()
+
+        function maxMonth() {
+            const options = [].slice.call(this.nextElementSibling.children)
+            const selectedMonth = parseInt(this.nextElementSibling.value)
+            if (this.value == MAX_YEAR) {
+                options.forEach((o) => { o.hidden = o.value > MAX_MONTH })
+                this.nextElementSibling.value = Math.min(selectedMonth, MAX_MONTH);
+                return
             }
+            options.forEach((o) => { o.hidden = false });
         }
-        else if (parseInt(data.month1) > parseInt(data.month2)) {
-            data = {
+
+
+        search();
+        $("#search").click(search)
+        function search() {
+            $(".info-area").addClass("loading")
+
+            let data = {
                 year1: StartYear.val(),
-                month1: EndMonth.val(),
+                month1: StartMonth.val(),
                 year2: EndYear.val(),
-                month2: StartMonth.val(),
+                month2: EndMonth.val(),
             }
+
+            if (parseInt(data.year1) > parseInt(data.year2)) {
+                data = {
+                    year1: EndYear.val(),
+                    month1: EndMonth.val(),
+                    year2: StartYear.val(),
+                    month2: StartMonth.val(),
+                }
+            }
+            else if (parseInt(data.month1) > parseInt(data.month2)) {
+                data = {
+                    year1: StartYear.val(),
+                    month1: EndMonth.val(),
+                    year2: EndYear.val(),
+                    month2: StartMonth.val(),
+                }
+            }
+
+            StartYear.val(data.year1)
+            StartMonth.val(data.month1)
+            EndYear.val(data.year2)
+            EndMonth.val(data.month2)
+
+            $.ajax({
+                url: "/InspectionPlan_Management/GetIspectionPlanInformation",
+                data,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: generate,
+                error: generate
+            })
         }
+        function generate(res) {
+            console.log(res)
+            Inspection_Complete_State(res?.Inspection_Complete_State)
+            Inspection_Equipment_State(res?.Inspection_Equipment_State)
+            Inspection_All_Members(res?.Inspection_All_Members)
+            Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
+            Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
+            Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
+            Equipment_Level_Rate(res?.Equipment_Level_Rate)
+            Equipment_Type_Rate(res?.Equipment_Type_Rate)
 
-        StartYear.val(data.year1)
-        StartMonth.val(data.month1)
-        EndYear.val(data.year2)
-        EndMonth.val(data.month2)
-
-        $.ajax({
-            url: "/InspectionPlan_Management/GetIspectionPlanInformation",
-            data,
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: generate,
-            error: generate
-        })
-    }
-    function generate(res) {
-        console.log(res)
-        Inspection_Complete_State(res?.Inspection_Complete_State)
-        Inspection_Equipment_State(res?.Inspection_Equipment_State)
-        Inspection_All_Members(res?.Inspection_All_Members)
-        Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
-        Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
-        Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
-        Equipment_Level_Rate(res?.Equipment_Level_Rate)
-        Equipment_Type_Rate(res?.Equipment_Type_Rate)
-
-        $(".info-area").removeClass("loading")
+            $(".info-area").removeClass("loading")
+        }
     }
     // #endregion
 
