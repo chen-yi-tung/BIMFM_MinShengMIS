@@ -245,13 +245,13 @@ namespace MinSheng_MIS.Services
             foreach(var member in inspectorlist)
             {
                 var currentdata = db.InspectionTrack.Where(x => x.PMSN == member.PMSN).OrderByDescending(x => x.ITSN).FirstOrDefault();
-                JObject jo = new JObject {
-                    { "PMSN", member.PMSN},
-                    { "IPSN", "Pt" + member.IPSN.Substring(Math.Max(0, member.IPSN.Length - 2))},
-                    { "MyName", member.MyName},
-                    { "Location", db.Floor_Info.Find(currentdata).AreaInfo.Area.ToString() + " " + db.Floor_Info.Find(currentdata.FSN).FloorName.ToString()},
-                    { "Heartbeat", currentdata.Heartbeat}
-                };
+                JObject jo = new JObject();
+                jo.Add("PMSN", member.PMSN);
+                jo.Add("IPSN", "Pt" + member.IPSN.Substring(Math.Max(0, member.IPSN.Length - 2)));
+                jo.Add("MyName", member.MyName); 
+                jo.Add("Location", db.Floor_Info.Find(currentdata.FSN).AreaInfo.Area.ToString() + " " + db.Floor_Info.Find(currentdata.FSN).FloorName.ToString());
+                jo.Add("Heartbeat", currentdata.Heartbeat);
+                Plan_People_List.Add(jo);
 
             }
             return Plan_People_List;
