@@ -26,47 +26,72 @@
     // #endregion
 
     // #region init
-    generate();
-    selectIPlan();
-    await pushSelect("SelectIPlan", "/DropDownList/TodayPlanList")
-    $("#SelectIPlan").change(selectIPlan)
-    function selectIPlan() {
-        $("#Plan_People_List").addClass("loading")
+    const UPDATE_TIME = 5000;
+    const DateTimeFormat = new Intl.DateTimeFormat('zh', {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    })
+    let updateTimer = null;
+    init()
+    async function init() {
+        await pushSelect("SelectIPlan", "/DropDownList/TodayPlanList")
+        $("#SelectIPlan").change(() => { selectIPlan() })
 
-        let data = { IPSN: this?.value || null }
-        $.ajax({
-            url: "/InspectionPlan_Management/GetPlan_People_List",
-            data,
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success(res) { Plan_People_List(res?.Plan_People_List) },
-            error(res) { Plan_People_List([]) }
-        })
-    }
-    function generate(res) {
-        $(".info-area").addClass("loading")
+        updater()
 
-        $.ajax({
-            url: "/InspectionPlan_Management/GetCurrentInformation",
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: generate,
-            error: generate
-        })
-        function generate(res) {
-            console.log(res)
-            Inspection_Complete_State(res?.Inspection_Complete_State)
-            Inspection_Member(res?.Inspection_Member)
-            Inspection_Plan_List(res?.Inspection_Plan_List)
-            Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
-            Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
-            Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
-            Equipment_Level_Rate(res?.Equipment_Level_Rate)
-            Equipment_Type_Rate(res?.Equipment_Type_Rate)
+        function selectIPlan() {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: `/InspectionPlan_Management/GetPlan_People_List?IPSN=${$("#SelectIPlan").val()}`,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success(res) {
+                        Plan_People_List(res?.Plan_People_List)
+                        resolve()
+                    },
+                    error(res) {
+                        Plan_People_List([])
+                        resolve()
+                    }
+                })
+            })
+        }
+        function updateData() {
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: "/InspectionPlan_Management/GetCurrentInformation",
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: generate,
+                    error: generate
+                })
+                function generate(res) {
+                    //console.log(res)
+                    Inspection_Complete_State(res?.Inspection_Complete_State)
+                    Inspection_Member(res?.Inspection_Member)
+                    Inspection_Plan_List(res?.Inspection_Plan_List)
+                    Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
+                    Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
+                    Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
+                    Equipment_Level_Rate(res?.Equipment_Level_Rate)
+                    Equipment_Type_Rate(res?.Equipment_Type_Rate)
 
-            $(".info-area").removeClass("loading")
+                    $(".info-area").removeClass("loading")
+                    resolve()
+                }
+            })
+        }
+        async function updater() {
+            clearTimeout(updateTimer)
+            await Promise.all([updateData(), selectIPlan()])
+            $(".update-time .value").text(DateTimeFormat.format(new Date()))
+            updateTimer = setTimeout(updater, UPDATE_TIME)
         }
     }
     // #endregion
@@ -106,6 +131,14 @@
             { label: "巡檢完成", value: 16 },
             { label: "巡檢未完成", value: 16 },
         ]
+
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.datasets[0].data = data.map(x => x.value)
+            chart.update()
+            return
+        }
+
         ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
@@ -128,11 +161,11 @@
                     centerText: {
                         text: [
                             {
-                                string: (() => {
+                                string: () => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
                                     let value = data.find(x => x.label == "巡檢完成").value
                                     return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
-                                })(),
+                                },
                                 color: "#fff",
                                 font: { family, weight: 500, size: 20 }
                             }
@@ -200,7 +233,11 @@
         ]
 
         let chart = Chart.getChart(ctx)
-        if (chart) { chart.destroy() }
+        if (chart) {
+            chart.data.datasets[0].data = data.map(x => x.value)
+            chart.update()
+            return
+        }
 
         ctx.width = 160
         ctx.height = 160
@@ -255,7 +292,11 @@
         ]
 
         let chart = Chart.getChart(ctx)
-        if (chart) { chart.destroy() }
+        if (chart) {
+            chart.data.datasets[0].data = data.map(x => x.value)
+            chart.update()
+            return
+        }
 
         ctx.width = 160
         ctx.height = 160
@@ -279,11 +320,11 @@
                     centerText: {
                         text: [
                             {
-                                string: (() => {
+                                string: () => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
                                     let value = data.find(x => x.label == "處理完成").value
                                     return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
-                                })(),
+                                },
                                 color: "#E77272",
                                 font: { family, weight: 500, size: 20 }
                             },
@@ -382,8 +423,13 @@
         })
 
         let chart = Chart.getChart(ctx)
-        if (chart) { chart.destroy() }
-
+        if (chart) {
+            data.forEach(({ label, value: { Maintain, Repair } }, i) => {
+                chart.data.datasets[i].data = [Maintain, Repair]
+            })
+            chart.update()
+            return
+        }
         ctx.width = 200
         ctx.height = 400
         new Chart(ctx, options('x'))
@@ -401,7 +447,11 @@
         ]
 
         let chart = Chart.getChart(ctx)
-        if (chart) { chart.destroy() }
+        if (chart) {
+            chart.data.datasets[0].data = data.map(x => x.value)
+            chart.update()
+            return
+        }
 
         ctx.width = 160
         ctx.height = 160
@@ -419,7 +469,6 @@
             },
             options: {
                 responsive: false,
-                //layout: { padding: 4 },
                 plugins: {
                     legend, tooltip,
                     htmlLegend: {
@@ -449,7 +498,11 @@
         ]
 
         let chart = Chart.getChart(ctx)
-        if (chart) { chart.destroy() }
+        if (chart) {
+            chart.data.datasets[0].data = data.map(x => x.value)
+            chart.update()
+            return
+        }
 
         //ctx.width = 160
         ctx.height = 160

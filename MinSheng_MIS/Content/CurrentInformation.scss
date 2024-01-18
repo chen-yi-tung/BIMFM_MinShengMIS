@@ -76,6 +76,23 @@
     align-items: stretch;
     gap: 1rem;
     margin-top: 1.5rem;
+    position: relative;
+
+    .update-time {
+        position: absolute;
+        top: -2rem;
+        right: 0;
+
+        .label {
+            font-size: 1rem;
+            color: #ddd;
+        }
+
+        .value {
+            font-size: 1rem;
+            color: #fff;
+        }
+    }
 
     .info-list {
         display: flex;
@@ -232,6 +249,7 @@
 
     @include max-1400 {
         flex-direction: column;
+        margin-top: 2.5rem;
 
         .info-list {
             width: 100%;

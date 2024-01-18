@@ -111,17 +111,19 @@ const chartPlugins = {
                 ctx.textAlign = inline ? 'left' : 'center'
                 ctx.textBaseLine = 'middle'
 
+                let text = typeof string == 'function' ? string() : string
+
                 if (inline) {
-                    let m = ctx.measureText(string)
+                    let m = ctx.measureText(text)
                     _y += m?.[va] ?? 0
                     measure && (maxSize = Math.max(maxSize, m.actualBoundingBoxAscent))
-                    !measure && ctx.fillText(string, _x, _y)
+                    !measure && ctx.fillText(text, _x, _y)
                     _x += m.width
                     _y = y
                 }
                 else {
                     _y += lineHeight * size
-                    !measure && ctx.fillText(string, _x, _y)
+                    !measure && ctx.fillText(text, _x, _y)
                 }
                 ctx.restore()
             }
@@ -139,7 +141,8 @@ const chartPlugins = {
                 const e = getOrCreateElement(legend, ".legend-statistics")
                 if (value != void 0) {
                     const v = getOrCreateElement(e, "span.value")
-                    v.textContent = value
+                    let text = typeof value == 'function' ? value() : value
+                    v.textContent = text
                 }
                 if (unit != void 0) {
                     const u = getOrCreateElement(e, "span.unit")
