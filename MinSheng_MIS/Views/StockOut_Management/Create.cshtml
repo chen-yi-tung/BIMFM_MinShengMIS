@@ -217,20 +217,21 @@
                 })
 
                 this.sample = $(`<tr id="sample-input-tr">
-                                        <td id="d-SSN"></td>
-                                        <td id="d-StockType"></td>
-                                        <td id="d-StockName"></td>
-                                        <td id="d-MName"></td>
-                                        <td id="d-Size"></td>
-                                        <td id="d-Brand"></td>
-                                        <td id="d-Model"></td>
-                                        <td id="d-ExpiryDate"></td>
-                                        <td id="d-_OutAmount"><input type="number" class="form-control" step="any" min="0" required>
-                                        </td>
-                                        <td id="d-Unit"></td>
-                                        <td id="d-RemainingAmount"></td>
-                                        <td><button type="button" class="btn-delete-item"></button></td>
-                                    </tr>`);
+                    <input type="text" id="SISN" hidden>
+                    <td id="d-SSN"></td>
+                    <td id="d-StockType"></td>
+                    <td id="d-StockName"></td>
+                    <td id="d-MName"></td>
+                    <td id="d-Size"></td>
+                    <td id="d-Brand"></td>
+                    <td id="d-Model"></td>
+                    <td id="d-ExpiryDate"></td>
+                    <td id="d-_OutAmount"><input type="number" class="form-control" step="any" min="0" required>
+                    </td>
+                    <td id="d-Unit"></td>
+                    <td id="d-RemainingAmount"></td>
+                    <td><button type="button" class="btn-delete-item"></button></td>
+                </tr>`);
             }
             this.create = function (data = null) {
                 let item = this.sample.clone();
@@ -240,6 +241,7 @@
                     for (const [k, v] of Object.entries(data)) {
                         item.find("#d-" + k).text(v)
                     }
+                    item.find("#SISN").val(data.SISN)
                     item.find("#d-_OutAmount")
                         .html(`<input type="number" class="form-control" step="any" min="0" max="${data.RemainingAmount}" required value="${data.OutAmount}">`)
                 }
@@ -249,6 +251,7 @@
                 return this.list.children().toArray().map((e) => {
                     return {
                         SSN: $(e).find("#d-SSN").text(),
+                        SISN: $(e).find("#SISN").val(),
                         OutAmount: $(e).find("#OutAmount").val(),
                     }
                 })
