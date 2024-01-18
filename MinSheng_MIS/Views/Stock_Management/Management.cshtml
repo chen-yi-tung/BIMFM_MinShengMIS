@@ -99,7 +99,7 @@
         $(async function () {
             //await AreaFloorEvent();
             await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
-            Initialize_DataGrid();
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
 
@@ -108,7 +108,7 @@
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
                 data: fakeData,
-                method: 'GET',
+                method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'SISN',
                 //sortName: 'SISN',
