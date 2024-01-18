@@ -92,6 +92,7 @@
             font-weight: 500;
             margin-bottom: 0.75rem;
             padding: 0.35rem 1rem;
+            max-width: 100%;
         }
 
         .plan-people-list {
@@ -100,7 +101,7 @@
 
             &.loading {
                 .plan-people {
-                    display: none;
+                    opacity: 0;
                 }
             }
 
@@ -130,6 +131,7 @@
                 border: 3px solid #fff;
                 cursor: pointer;
                 text-decoration: none;
+                opacity: 1;
 
                 &:hover {
                     border: 3px solid #e0e0e0;
@@ -247,7 +249,7 @@
                 }
 
                 .plan-people {
-                    flex: 1 0 auto;
+                    flex: 0 0 auto;
                     width: 13rem;
                 }
             }
