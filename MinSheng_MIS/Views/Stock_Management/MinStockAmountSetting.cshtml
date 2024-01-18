@@ -60,6 +60,8 @@
             StockType: "備料",
             StockName: "藥劑-1",
             Unit: "罐",
+            ExpiryDate: "2020-01-01",
+            MinStockAmount: "1"
         }
 
         function readData(url = null) {
@@ -78,12 +80,8 @@
             function onSuccess(res) {
                 console.log(res);
                 $("#StockItemInfo").append(createTableInner(res, SerializedName));
-                if (res.StockItem) {
-                    $("#StockItem").append(createTableGrid(res.StockItem, GridOptions))
-                }
-                else {
-                    $("#StockItem").parents(".datatable").remove();
-                }
+                $("#ExpiryDate").val(res.ExpiryDate)
+                $("#MinStockAmount").val(res.MinStockAmount)
             }
             function onError(res) {
                 console.log(res);
