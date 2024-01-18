@@ -334,20 +334,14 @@ function createDataDetailModal(options) {
  * @param {DialogModalOptions} options 
  */
 function createDialogModal(options) {
-
+    //if inner is html then use the html title tag text content
+    let htmlTitle = options.inner?.match(/(?<=<title>)([\s\S]+)(?=<\/title>)/g)?.[0]
     let modal = $(`
         <div class="modal fade modal-delete ${options.className ?? ''}" id="${options.id ?? ''}" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    ${options.title ? `
-                    <div class="modal-header">
-                        <h5 class="modal-title">${options.title}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    `: ''}
-                    <div class="modal-body text-center">
-                        ${options.inner ?? ''}
-                    </div>
+                    ${options.title ? `<div class="modal-header"><h5 class="modal-title">${options.title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>`: ''}
+                    <div class="modal-body text-center">${htmlTitle ?? options.inner ?? ''}</div>
                     <div class="modal-footer justify-content-center"></div>
                 </div>
             </div>

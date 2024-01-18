@@ -32,7 +32,7 @@
         <form class="form d-lg-contents">
             <div class="form-group w-lg-100 w-xl-250px required">
                 <label for="SRSN">領用申請單號</label>
-                <input class="form-control" id="SRSN" name="SRSN" type="text" maxlength="10" />
+                <input class="form-control" id="SRSN" name="SRSN" type="text" maxlength="10" minlength="10" required />
             </div>
 
             <div class="form-group w-lg-45 w-xl-250px required">
@@ -96,9 +96,6 @@
 
 @section scripts {
     <script>
-
-        const apiUrl = null;
-
         const SerializedName = {
             thead: true,
             columns: [
@@ -172,9 +169,32 @@
         $(async function () {
             await pushSelect("StockOutUserName", '@Url.Action("AllMyName", "DropDownList")');
             await pushSelect("ReceiverUserName", '@Url.Action("AllMyName", "DropDownList")');
+            $("#SRSN").on("change", function () {
+                if (!this.reportValidity()) {
+                    return
+                }
+                $.ajax({
+                    url: `/StockOut_Management/GetRequisitionInfo/${this.value}`,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success(res) {
+                        console.log(res)
+                        $("#StockItemInfo").append(createTableGrid(res, SerializedName));
+                    },
+                    error(res) {
+                        createDialogModal({ id: "DialogModal-Error", inner: `${res.responseText || ""}` })
+                        $("#SRSN").val("")
+                    }
+                })
+            })
             sampleTr = new SampleTr();
             addButtonEvent();
-            readData(apiUrl);
+
+            //fakedata ui
+            fakeData?.StockOutItem?.forEach((item) => {
+                sampleTr.create(item)
+            })
         })
 
         function SampleTr() {
@@ -197,20 +217,20 @@
                 })
 
                 this.sample = $(`<tr id="sample-input-tr">
-                        <td id="d-SSN"></td>
-                        <td id="d-StockType"></td>
-                        <td id="d-StockName"></td>
-                        <td id="d-MName"></td>
-                        <td id="d-Size"></td>
-                        <td id="d-Brand"></td>
-                        <td id="d-Model"></td>
-                        <td id="d-ExpiryDate"></td>
-                        <td id="d-_OutAmount"><input type="number" class="form-control" step="any" min="0" required>
-                        </td>
-                        <td id="d-Unit"></td>
-                        <td id="d-RemainingAmount"></td>
-                        <td id="d-"><button type="button" class="btn-delete-item"></button></td>
-                    </tr>`);
+                                        <td id="d-SSN"></td>
+                                        <td id="d-StockType"></td>
+                                        <td id="d-StockName"></td>
+                                        <td id="d-MName"></td>
+                                        <td id="d-Size"></td>
+                                        <td id="d-Brand"></td>
+                                        <td id="d-Model"></td>
+                                        <td id="d-ExpiryDate"></td>
+                                        <td id="d-_OutAmount"><input type="number" class="form-control" step="any" min="0" required>
+                                        </td>
+                                        <td id="d-Unit"></td>
+                                        <td id="d-RemainingAmount"></td>
+                                        <td><button type="button" class="btn-delete-item"></button></td>
+                                    </tr>`);
             }
             this.create = function (data = null) {
                 let item = this.sample.clone();
@@ -240,31 +260,6 @@
             return this;
         }
 
-        function readData(url = null) {
-
-            url == null ? onSuccess(fakeData) :   //fakeData
-                $.ajax({
-                    url: url,
-                    data: JSON.stringify(jsonData),
-                    type: "POST",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
-
-            function onSuccess(res) {
-                console.log(res);
-                $("#StockItemInfo").append(createTableGrid(res.StoresRequisitionItem, SerializedName));
-                res?.StockOutItem?.forEach((item) => {
-                    sampleTr.create(item)
-                })
-            }
-            function onError(res) {
-                console.log(res);
-            }
-        }
-
         function save() {
             let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
             console.log("todo save():", isValidity)
@@ -276,15 +271,15 @@
             }
 
             let form = new FormData();
-            form.append("SRSN",$("#SRSN").val())
-            form.append("StockOutUserName",$("#StockOutUserName").val())
-            form.append("ReceiverUserName",$("#ReceiverUserName").val())
-            form.append("StockOutContent",$("#StockOutContent").val())
-            
+            form.append("SRSN", $("#SRSN").val())
+            form.append("StockOutUserName", $("#StockOutUserName").val())
+            form.append("ReceiverUserName", $("#ReceiverUserName").val())
+            form.append("StockOutContent", $("#StockOutContent").val())
+
             sampleTr.calc().forEach((item, i) => {
-                form.append(`StockOutItem[${i}].SSN`,item.SSN)
+                form.append(`StockOutItem[${i}].SSN`, item.SSN)
                 form.append(`StockOutItem[${i}].SISN`, item.SISN)
-                form.append(`StockOutItem[${i}].OutAmount`,item.OutAmount)
+                form.append(`StockOutItem[${i}].OutAmount`, item.OutAmount)
             })
 
             return;
