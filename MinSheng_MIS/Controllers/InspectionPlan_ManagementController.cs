@@ -1,4 +1,5 @@
-﻿using Microsoft.Ajax.Utilities;
+﻿using Antlr.Runtime.Misc;
+using Microsoft.Ajax.Utilities;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
@@ -773,8 +774,17 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         //取得即時正在巡檢的人員
-
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetPlan_People_List(string IPSN = null)
+        {
+            JObject Plan_People_List = new JObject();
+            var fun = new PlanInformationService();
+            Plan_People_List.Add("Plan_People_List", fun.GetPlan_People_List(IPSN));
+            return Content(JsonConvert.SerializeObject(Plan_People_List), "application/json");
+        }
         //取得巡檢即時資訊(統計資訊)
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult GetCurrentInformation()
         {

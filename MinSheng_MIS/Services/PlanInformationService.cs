@@ -226,5 +226,34 @@ namespace MinSheng_MIS.Services
             return Inspection_Member;
         }
         #endregion
+
+        #region 當前巡檢人員列表
+        public JArray GetPlan_People_List(string IPSN)
+        {
+            JArray Plan_People_List = new JArray();
+            var inspectorlist = from x1 in db.InspectionPlan
+                                where x1.PlanState == "2" && x1.PlanDate >= DateTime.Today && x1.PlanDate < DateTime.Today.AddDays(1)
+                                join x2 in db.InspectionPlanMember on x1.IPSN equals x2.IPSN
+                                join x3 in db.AspNetUsers on x2.UserID equals x3.UserName
+                                select new {x1.IPSN, x2.PMSN, x3.MyName};
+            if (string.IsNullOrEmpty(IPSN))
+            {
+                inspectorlist = inspectorlist.Where(x => x.IPSN == IPSN);
+            }
+            foreach(var member in inspectorlist)
+            {
+                var currentdata = db.InspectionTrack.Where(x => x.PMSN == member.PMSN).OrderByDescending(x => x.ITSN).FirstOrDefault();
+                JObject jo = new JObject {
+                    { "PMSN", member.PMSN},
+                    { "IPSN", "Pt" + member.IPSN.Substring(Math.Max(0, member.IPSN.Length - 2))},
+                    { "MyName", member.MyName},
+                    { "Location", db.Floor_Info.Find(currentdata).AreaInfo.Area.ToString() + " " + db.Floor_Info.Find(currentdata.FSN).FloorName.ToString()},
+                    { "Heartbeat", currentdata.Heartbeat}
+                };
+
+            }
+            return Plan_People_List;
+        }
+        #endregion
     }
 }
