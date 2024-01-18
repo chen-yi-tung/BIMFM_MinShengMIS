@@ -33,6 +33,7 @@ namespace MinSheng_MIS.Controllers
         #region 請購申請
         public ActionResult Create()
         {
+            ViewBag.UserName = User.Identity.Name;
             return View();
         }
 
