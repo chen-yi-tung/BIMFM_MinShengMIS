@@ -781,6 +781,7 @@ namespace MinSheng_MIS.Controllers
             JObject Plan_People_List = new JObject();
             var fun = new PlanInformationService();
             Plan_People_List.Add("Plan_People_List", fun.GetPlan_People_List(IPSN));
+
             return Content(JsonConvert.SerializeObject(Plan_People_List), "application/json");
         }
         //取得巡檢即時資訊(統計資訊)
@@ -789,7 +790,6 @@ namespace MinSheng_MIS.Controllers
         public ActionResult GetCurrentInformation()
         {
             JObject InspectionPlanInformation = new JObject();
-
             var fun = new PlanInformationService();
 
             DateTime StartDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
@@ -798,7 +798,7 @@ namespace MinSheng_MIS.Controllers
             InspectionPlanInformation.Add("Inspection_Complete_State", fun.GetInspection_Complete_State(StartDate, EndDate));
             //本日設備保養及維修進度統計
             InspectionPlanInformation.Add("Equipment_Maintain_And_Repair_Statistics", fun.GetEquipment_Maintain_And_Repair_Statistics(StartDate, EndDate));
-            //本日緊急事件等級占比/處理狀況
+            //---本日緊急事件等級占比/處理狀況--------------------------------------------------------------------------------
             //緊急事件等級占比
             InspectionPlanInformation.Add("Inspection_Aberrant_Level", fun.GetInspection_Aberrant_Level(StartDate, EndDate));
             //緊急事件處理狀況
