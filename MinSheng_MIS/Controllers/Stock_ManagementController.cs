@@ -59,7 +59,7 @@ namespace MinSheng_MIS.Controllers
                     SIRSN = x.SIRSN,
                     RemainingAmount = x.RemainingAmount,
                     StockInMyName = UserDics[x.StockInRecord.StockInUserName]
-                }).ToList()
+                }).Where(x => x.RemainingAmount > 0).ToList()
             };
             return Content(JsonConvert.SerializeObject(model), "application/json");
         }
