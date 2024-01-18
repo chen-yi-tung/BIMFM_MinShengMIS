@@ -236,7 +236,7 @@ namespace MinSheng_MIS.Services
                                 join x2 in db.InspectionPlanMember on x1.IPSN equals x2.IPSN
                                 join x3 in db.AspNetUsers on x2.UserID equals x3.UserName
                                 select new {x1.IPSN, x2.PMSN, x3.MyName};
-            if (string.IsNullOrEmpty(IPSN))
+            if (!string.IsNullOrEmpty(IPSN))
             {
                 inspectorlist = inspectorlist.Where(x => x.IPSN == IPSN);
             }
