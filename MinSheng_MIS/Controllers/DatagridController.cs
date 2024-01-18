@@ -220,7 +220,15 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region Stock_Management 庫存管理 TODO
+        #region Stock_Management 庫存管理
+        [HttpPost]
+        public ActionResult Stock_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_Stock_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
 
