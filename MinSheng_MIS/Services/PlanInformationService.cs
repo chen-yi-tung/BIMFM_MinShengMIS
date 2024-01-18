@@ -231,8 +231,10 @@ namespace MinSheng_MIS.Services
         public JArray GetPlan_People_List(string IPSN)
         {
             JArray Plan_People_List = new JArray();
+            DateTime StartDate = DateTime.Today;
+            DateTime EndDate = DateTime.Today.AddDays(1);
             var inspectorlist = from x1 in db.InspectionPlan
-                                where x1.PlanState == "2" && x1.PlanDate >= DateTime.Today && x1.PlanDate < DateTime.Today.AddDays(1)
+                                where x1.PlanState == "2" && x1.PlanDate >= StartDate && x1.PlanDate < EndDate
                                 join x2 in db.InspectionPlanMember on x1.IPSN equals x2.IPSN
                                 join x3 in db.AspNetUsers on x2.UserID equals x3.UserName
                                 select new {x1.IPSN, x2.PMSN, x3.MyName};
