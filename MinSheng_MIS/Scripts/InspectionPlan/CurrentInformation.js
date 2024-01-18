@@ -28,7 +28,7 @@
     // #region init
     generate();
     selectIPlan();
-    await pushSelect("SelectIPlan", "/DropDownList/InspectionPlan")
+    await pushSelect("SelectIPlan", "/DropDownList/TodayPlanList")
     $("#SelectIPlan").change(selectIPlan)
     function selectIPlan() {
         $("#Plan_People_List").addClass("loading")
@@ -180,10 +180,10 @@
             item.find("#Shift").text(e.Shift)
 
             switch (e.PlanState) {
-                case "待執行": PlanState.addClass("text-info"); break;
-                case "巡檢中": PlanState.addClass("text-warning"); break;
-                case "巡檢完成": PlanState.addClass("text-success"); break;
-                case "巡檢未完成": PlanState.addClass("text-danger"); break;
+                case "待執行": PlanState.attr("data-state", 1); break;
+                case "巡檢中": PlanState.attr("data-state", 2); break;
+                case "巡檢完成": PlanState.attr("data-state", 3); break;
+                case "巡檢未完成": PlanState.attr("data-state", 4); break;
             }
 
             list.append(item)
@@ -451,7 +451,7 @@
         let chart = Chart.getChart(ctx)
         if (chart) { chart.destroy() }
 
-        ctx.width = 160
+        //ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
             type: 'doughnut',

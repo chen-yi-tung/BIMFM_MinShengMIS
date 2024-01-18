@@ -8,6 +8,8 @@
 
     @Scripts.Render("https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js")
     @Scripts.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js")
+    <script src="/Scripts/BigScreen/ChartPlugin.js" defer></script>
+    <script src="/Scripts/InspectionPlan/InformationManagement.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -160,8 +162,3 @@
         <div id="Equipment_Type_Rate"></div>
     </div>
 </div>
-
-@section scripts {
-    @Scripts.Render("~/Scripts/BigScreen/ChartPlugin.js")
-    @Scripts.Render("~/Scripts/InspectionPlan/InformationManagement.js")
-}
