@@ -1,4 +1,31 @@
-﻿window.addEventListener('load', () => {
+﻿window.addEventListener('load',async () => {
+    // #region chart options
+    const family = 'Noto Sans TC, sans-serif'
+    const legend = { display: false }
+    const tooltip = {
+        bodyFont: { family, size: 12 },
+        callbacks: {
+            title: () => '',
+            label: (context) => {
+                let label = context.label ?? '';
+                let value = context.formattedValue ?? '';
+                return ` ${label}：${value}`;
+            }
+        }
+    }
+    const pieBackground = {
+        backgroundColor: "#fff",
+        shadow: { color: "rgba(0, 0, 0, 0.25)", blur: 4, offset: { x: 0, y: 4 } }
+    }
+    const shadowPlugin = {
+        color: 'rgba(0,0,0,0.25)',
+        blur: 4,
+        offset: { x: 0, y: 4 },
+        drawWhenEmpty: false
+    }
+
+    // #endregion
+
     // #region init
     const StartYear = $("#StartYear"),
         StartMonth = $("#StartMonth"),
@@ -62,33 +89,6 @@
 
         $(".info-area").removeClass("loading")
     }
-    // #endregion
-
-    // #region chart options
-    const family = 'Noto Sans TC, sans-serif'
-    const legend = { display: false }
-    const tooltip = {
-        bodyFont: { family, size: 12 },
-        callbacks: {
-            title: () => '',
-            label: (context) => {
-                let label = context.label ?? '';
-                let value = context.formattedValue ?? '';
-                return ` ${label}：${value}`;
-            }
-        }
-    }
-    const pieBackground = {
-        backgroundColor: "#fff",
-        shadow: { color: "rgba(0, 0, 0, 0.25)", blur: 4, offset: { x: 0, y: 4 } }
-    }
-    const shadowPlugin = {
-        color: 'rgba(0,0,0,0.25)',
-        blur: 4,
-        offset: { x: 0, y: 4 },
-        drawWhenEmpty: false
-    }
-
     // #endregion
 
     // #region chart function

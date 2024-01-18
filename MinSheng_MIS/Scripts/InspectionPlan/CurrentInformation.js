@@ -1,50 +1,4 @@
 ﻿window.addEventListener('load', async () => {
-    // #region init
-    generate();
-    //selectIPlan();
-    //await pushSelect("SelectIPlan", "/DropDownList/InspectionPlan")
-    $("#SelectIPlan").change(selectIPlan)
-    function selectIPlan() {
-        $("#Plan_People_List").addClass("loading")
-
-        let data = { IPSN: this?.value || null }
-        $.ajax({
-            url: "/InspectionPlan_Management/GetPlan_People_List",
-            data,
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: Plan_People_List,
-            error: () => { Plan_People_List([]) }
-        })
-    }
-    function generate(res) {
-        $(".info-area").addClass("loading")
-
-        $.ajax({
-            url: "/InspectionPlan_Management/GetCurrentInformation",
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-            success: generate,
-            error: generate
-        })
-        function generate(res) {
-            console.log(res)
-            Inspection_Complete_State(res?.Inspection_Complete_State)
-            Inspection_Members(res?.Inspection_Members)
-            Inspection_Plan_List(res?.Inspection_Plan_List)
-            Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
-            Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
-            Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
-            Equipment_Level_Rate(res?.Equipment_Level_Rate)
-            Equipment_Type_Rate(res?.Equipment_Type_Rate)
-
-            $(".info-area").removeClass("loading")
-        }
-    }
-    // #endregion
-
     // #region chart options
     const family = 'Noto Sans TC, sans-serif'
     const legend = { display: false }
@@ -71,6 +25,52 @@
 
     // #endregion
 
+    // #region init
+    generate();
+    selectIPlan();
+    await pushSelect("SelectIPlan", "/DropDownList/InspectionPlan")
+    $("#SelectIPlan").change(selectIPlan)
+    function selectIPlan() {
+        $("#Plan_People_List").addClass("loading")
+
+        let data = { IPSN: this?.value || null }
+        $.ajax({
+            url: "/InspectionPlan_Management/GetPlan_People_List",
+            data,
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success(res) { Plan_People_List(res?.Plan_People_List) },
+            error(res) { Plan_People_List([]) }
+        })
+    }
+    function generate(res) {
+        $(".info-area").addClass("loading")
+
+        $.ajax({
+            url: "/InspectionPlan_Management/GetCurrentInformation",
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: generate,
+            error: generate
+        })
+        function generate(res) {
+            console.log(res)
+            Inspection_Complete_State(res?.Inspection_Complete_State)
+            Inspection_Member(res?.Inspection_Member)
+            Inspection_Plan_List(res?.Inspection_Plan_List)
+            Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
+            Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
+            Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
+            Equipment_Level_Rate(res?.Equipment_Level_Rate)
+            Equipment_Type_Rate(res?.Equipment_Type_Rate)
+
+            $(".info-area").removeClass("loading")
+        }
+    }
+    // #endregion
+
     // #region chart function
     //本日巡檢人員列表
     function Plan_People_List(res) {
@@ -86,8 +86,8 @@
         res.forEach((e) => {
             let item = row.clone()
             item.find("#MyName").text(e.IPSN + ' ' + e.MyName)
-            item.find("#Location").text(e.Area + e.Floor)
-            item.find("#HeartBeat").text(e.HeartBeat)
+            item.find("#Location").text(e.Location)
+            item.find("#Heartbeat").text(e.Heartbeat)
             item.attr("href", `/InspectionPlan_Management/CurrentPosition/${e.PMSN}`)
 
             list.append(item)
@@ -99,7 +99,7 @@
     function Inspection_Complete_State(res) {
         const container = document.getElementById('Inspection_Complete_State');
         const ctx = getOrCreateElement(container, 'canvas')
-        const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
+        const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0", "#E77272"]
         const data = res || [
             { label: "待執行", value: 15 },
             { label: "巡檢中", value: 10 },
@@ -156,7 +156,7 @@
         })
     }
     //當前巡檢狀況
-    function Inspection_Members(res) {
+    function Inspection_Member(res) {
         $("#Inspection_Members_All").text(res?.Inspection_Members_All || 0)
         $("#Inspection_Members_Notice").text(res?.Inspection_Members_Notice || 0)
         $("#Inspection_Members_Alert").text(res?.Inspection_Members_Alert || 0)
@@ -174,14 +174,16 @@
 
         res.forEach((e) => {
             let item = row.clone()
-            item.find("#PlanState").text(e.PlanState)
+            let PlanState = item.find("#PlanState")
+            PlanState.text(e.PlanState)
             item.find("#IPName").text(e.IPName)
             item.find("#Shift").text(e.Shift)
 
             switch (e.PlanState) {
-                case "待執行": item.find("#PlanState").addClass("text-info"); break;
-                case "執行中": item.find("#PlanState").addClass("text-warning"); break;
-                case "已完成": item.find("#PlanState").addClass("text-success"); break;
+                case "待執行": PlanState.addClass("text-info"); break;
+                case "巡檢中": PlanState.addClass("text-warning"); break;
+                case "巡檢完成": PlanState.addClass("text-success"); break;
+                case "巡檢未完成": PlanState.addClass("text-danger"); break;
             }
 
             list.append(item)
