@@ -141,6 +141,28 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 當日巡檢計畫下拉選單
+        [HttpGet]
+        public ActionResult TodayPlanList()
+        {
+            List<JObject> list = new List<JObject>();
+            var planlist = db.InspectionPlan.Where(x => x.PlanDate == DateTime.Today).ToList();
+
+            foreach (var plan in planlist)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", plan.IPSN },
+                    { "Value", plan.IPSN }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
         #region MaintainState相關 保養單狀態
         [HttpGet]
         public ActionResult MaintainRecord_MaintainState()
