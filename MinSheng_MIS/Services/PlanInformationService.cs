@@ -233,26 +233,27 @@ namespace MinSheng_MIS.Services
             JArray Plan_People_List = new JArray();
             DateTime StartDate = DateTime.Today;
             DateTime EndDate = DateTime.Today.AddDays(1);
+            //找出今日的所有計畫人員
             var inspectorlist = from x1 in db.InspectionPlan
                                 where x1.PlanState == "2" && x1.PlanDate >= StartDate && x1.PlanDate < EndDate
                                 join x2 in db.InspectionPlanMember on x1.IPSN equals x2.IPSN
                                 join x3 in db.AspNetUsers on x2.UserID equals x3.UserName
                                 select new {x1.IPSN, x2.PMSN, x3.MyName};
-            if (!string.IsNullOrEmpty(IPSN))
+            if (!string.IsNullOrEmpty(IPSN)) //若前台有篩選計畫，則只列出該計畫編號之人員
             {
                 inspectorlist = inspectorlist.Where(x => x.IPSN == IPSN);
             }
-            foreach(var member in inspectorlist)
+            foreach (var member in inspectorlist)
             {
                 var currentdata = db.InspectionTrack.Where(x => x.PMSN == member.PMSN).OrderByDescending(x => x.ITSN).FirstOrDefault();
-                JObject jo = new JObject();
-                jo.Add("PMSN", member.PMSN);
-                jo.Add("IPSN", "Pt" + member.IPSN.Substring(Math.Max(0, member.IPSN.Length - 2)));
-                jo.Add("MyName", member.MyName); 
-                jo.Add("Location", db.Floor_Info.Find(currentdata.FSN).AreaInfo.Area.ToString() + " " + db.Floor_Info.Find(currentdata.FSN).FloorName.ToString());
-                jo.Add("Heartbeat", currentdata.Heartbeat);
+                JObject jo = new JObject{
+                    {"PMSN", member.PMSN}, //巡檢計畫人員編號
+                    {"IPSN", "Pt" + member.IPSN.Substring(Math.Max(0, member.IPSN.Length - 2))}, //計畫編號(縮寫)
+                    {"MyName", member.MyName}, //巡檢人員名稱
+                    {"Location", db.Floor_Info.Find(currentdata.FSN).AreaInfo.Area.ToString() + " " + db.Floor_Info.Find(currentdata.FSN).FloorName.ToString()}, //巡檢人員所在位置
+                    { "Heartbeat", currentdata.Heartbeat} //巡檢人員心率
+                };
                 Plan_People_List.Add(jo);
-
             }
             return Plan_People_List;
         }
