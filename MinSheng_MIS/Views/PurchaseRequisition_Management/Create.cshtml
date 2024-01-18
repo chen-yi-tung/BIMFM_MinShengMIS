@@ -126,6 +126,8 @@
         let sampleTr;
 
         $(async function () {
+            await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
+            $("#PRUserName").val('@ViewBag.UserName')
             addButtonEvent();
             sampleTr = new SampleTr();
         })
@@ -134,10 +136,9 @@
             this.count = 0;
             this.list = $("#item-area")
             this.init = async function () {
-                await pushSelect("PRUserName", '@Url.Action("AllMyName", "DropDownList")');
                 await pushSelect("Kind", '@Url.Action("StockType", "DropDownList")');
                 await pushSelect("Unit", '@Url.Action("Unit", "DropDownList")');
-
+                
                 const observer = new ResizeObserver((entries) => {
                     for (const entry of entries) {
                         let style = getComputedStyle(entry.target)
