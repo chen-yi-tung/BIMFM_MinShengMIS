@@ -8,6 +8,8 @@
     search();
     $("#search").click(search)
     function search() {
+        $(".info-area").addClass("loading")
+
         let data = {
             year1: StartYear.val(),
             month1: StartMonth.val(),
@@ -57,6 +59,8 @@
         Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
         Equipment_Level_Rate(res?.Equipment_Level_Rate)
         Equipment_Type_Rate(res?.Equipment_Type_Rate)
+
+        $(".info-area").removeClass("loading")
     }
     // #endregion
 
@@ -225,7 +229,7 @@
             for (let i = 0; i < 20; i++) { list.append(row.clone()) }
             return
         }
-        
+
         res.forEach((e) => {
             let item = row.clone()
             item.find("#MyName").text(e.MyName)

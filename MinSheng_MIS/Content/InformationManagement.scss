@@ -43,6 +43,7 @@
 %empty_data {
     &:empty {
         min-height: 15rem;
+
         &::after {
             content: "無資料";
             color: #cbcbcb;
@@ -51,6 +52,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            width: max-content;
         }
     }
 }
@@ -124,6 +126,7 @@
 }
 
 .info-area {
+    position: relative;
     display: grid;
     grid-template-columns: 48vw 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
@@ -133,12 +136,43 @@
         "main minx1 minx2";
     gap: 1rem;
 
+    &::after {
+        content: "";
+        position: absolute;
+        top: calc(50% - 4rem);
+        left: calc(50% - 4rem);
+        width: 8rem;
+        height: 8rem;
+        border-radius: 50%;
+        border-width: 1rem;
+        border-style: solid;
+        border-color: currentColor;
+        border-right-color: transparent;
+        color: #0457D1;
+        opacity: 0;
+        transition: opacity 0.5s;
+        transform: translate(-50%, -50%);
+    }
+
+    &.loading {
+        .info-box {
+            opacity: 0.5;
+        }
+
+        &::after {
+            opacity: 1;
+            transform: unset;
+            animation: .75s linear infinite spinner-border;
+        }
+    }
+
     .info-box {
         border-radius: 0.3125rem;
         border: 1px solid #5CE2FF;
         background: #22365ee6;
         color: #fff;
         padding: 1.5rem 0rem;
+        transition: opacity 0.5s;
 
         h5 {
             text-align: center;
@@ -200,6 +234,7 @@
                     &>.col {
                         padding-top: 0.25rem;
                         padding-bottom: 0.25rem;
+                        min-height: 1.5rem;
                     }
 
                 }
@@ -323,6 +358,12 @@
     }
 
     [role='chart'] {
+        &>div[id] {
+            &:empty {
+                height: 160px;
+                width: 160px !important;
+            }
+        }
 
         .legend-container {
             color: inherit;

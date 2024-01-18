@@ -1,12 +1,15 @@
-﻿window.addEventListener('load', () => {
+﻿window.addEventListener('load', async () => {
     // #region init
-    selectIPlan();
     generate();
+    //selectIPlan();
+    //await pushSelect("SelectIPlan", "/DropDownList/InspectionPlan")
     $("#SelectIPlan").change(selectIPlan)
     function selectIPlan() {
-        let data = this?.value || ""
+        $("#Plan_People_List").addClass("loading")
+
+        let data = { IPSN: this?.value || null }
         $.ajax({
-            url: "/InspectionPlan_Management/SelectIPlan",
+            url: "/InspectionPlan_Management/GetPlan_People_List",
             data,
             type: "GET",
             dataType: "json",
@@ -16,6 +19,8 @@
         })
     }
     function generate(res) {
+        $(".info-area").addClass("loading")
+
         $.ajax({
             url: "/InspectionPlan_Management/GetCurrentInformation",
             type: "GET",
@@ -34,6 +39,8 @@
             Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
             Equipment_Level_Rate(res?.Equipment_Level_Rate)
             Equipment_Type_Rate(res?.Equipment_Type_Rate)
+
+            $(".info-area").removeClass("loading")
         }
     }
     // #endregion
@@ -78,7 +85,7 @@
         }
         res.forEach((e) => {
             let item = row.clone()
-            item.find("#MyName").text(e.MyName)
+            item.find("#MyName").text(e.IPSN + ' ' + e.MyName)
             item.find("#Location").text(e.Area + e.Floor)
             item.find("#HeartBeat").text(e.HeartBeat)
             item.attr("href", `/InspectionPlan_Management/CurrentPosition/${e.PMSN}`)
@@ -86,6 +93,7 @@
             list.append(item)
         })
 
+        $("#Plan_People_List").removeClass("loading")
     }
     //本日巡檢計畫進度
     function Inspection_Complete_State(res) {

@@ -8,6 +8,9 @@
 
     @Scripts.Render("https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js")
     @Scripts.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js")
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/BigScreen/ChartPlugin.js" defer></script>
+    <script src="/Scripts/InspectionPlan/CurrentInformation.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -60,20 +63,20 @@
         <select class="form-select" name="SelectIPlan" id="SelectIPlan">
             <option value="">選擇計畫</option>
         </select>
-        <div class="plan-people-list" id="Plan_People_List" data-simplebar>
+        <div class="plan-people-list loading" id="Plan_People_List" data-simplebar>
             <a class="plan-people" href="/InspectionPlan_Management/CurrentPosition">
                 <div class="plan-people-group">
                     <div class="plan-people-info">
-                        <span class="name" id="MyName">Pt01 王大明</span>
+                        <span class="name" id="MyName">-</span>
                     </div>
                     <div class="plan-people-locate">
                         <span class="label">即時位置：</span>
-                        <span class="value" id="Location">進流抽水站B2F</span>
+                        <span class="value" id="Location">-</span>
                     </div>
                     <div class="plan-people-heart">
                         <i class="icon-heart"></i>
                         <span class="label">心率：</span>
-                        <span class="value" id="HeartBeat">110</span>
+                        <span class="value" id="HeartBeat">-</span>
                         <span class="unit">下/分</span>
                     </div>
                     <button class="btn" id="goToLocation"><i class="icon-arrow-right"></i></button>
@@ -81,7 +84,7 @@
             </a>
         </div>
     </div>
-    <div class="info-area">
+    <div class="info-area loading">
         <div class="info-box hori">
             <h5>本日緊急事件等級占比 / 處理狀況</h5>
             <div class="hstack" role="chart">
@@ -103,15 +106,15 @@
             <div class="d-flex">
                 <div class="color-card h shadow" style="--c: #40D1FF;">
                     <div class="label" style="--c: #0088D4;">目前巡檢人數</div>
-                    <div class="value" id="Inspection_Members_All">10</div>
+                    <div class="value" id="Inspection_Members_All">-</div>
                 </div>
                 <div class="color-card h shadow" style="--c: #FFCD1D;">
                     <div class="label" style="--c: #FF891D;">偏離路線人數</div>
-                    <div class="value" id="Inspection_Members_Notice">5</div>
+                    <div class="value" id="Inspection_Members_Notice">-</div>
                 </div>
                 <div class="color-card h shadow" style="--c: #FF6F6F;">
                     <div class="label" style="--c: #FF3838;">狀態異常人數</div>
-                    <div class="value" id="Inspection_Members_Alert">2</div>
+                    <div class="value" id="Inspection_Members_Alert">-</div>
                 </div>
             </div>
         </div>
@@ -143,8 +146,3 @@
         </div>
     </div>
 </div>
-
-@section scripts {
-    @Scripts.Render("~/Scripts/BigScreen/ChartPlugin.js")
-    @Scripts.Render("~/Scripts/InspectionPlan/CurrentInformation.js")
-}
