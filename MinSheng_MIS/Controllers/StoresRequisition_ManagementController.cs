@@ -37,6 +37,7 @@ namespace MinSheng_MIS.Controllers
         {
             ModelState.Remove("SRSN");
             if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+            if (sr_info.StoresRequisitionItem.GroupBy(x => x.SISN).Any(g => g.Count() > 1)) return Content($"<br>同品項品名請統整為單筆領用項目！", "application/json; charset=utf-8");
 
             DateTime now = DateTime.Now;
             // 新增領用申請單
@@ -134,6 +135,7 @@ namespace MinSheng_MIS.Controllers
             var request = await db.StoresRequisition.Where(x => x.SRSN == sr_info.SRSN).FirstOrDefaultAsync();
             if (request == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "SRSN is Undefined.");
             else if (request.SRState != "1") return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Cannot be Edited!");
+            if (sr_info.StoresRequisitionItem.GroupBy(x => x.SISN).Any(g => g.Count() > 1)) return Content($"<br>同品項品名請統整為單筆領用項目！", "application/json; charset=utf-8");
 
             // 編輯領用申請單
             request.SRUserName = sr_info.SRUserName;
