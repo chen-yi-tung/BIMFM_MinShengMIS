@@ -61,7 +61,7 @@
     <script>
         var getGridJSON = '@Url.Action("Stock_Management", "Datagrid")';
         var DataGrid;
-        
+
 
         const fakeData = [
             {
@@ -149,6 +149,26 @@
 
             $("#create").click(function () {
                 window.open(`${baseUrl}/Create`, "_self");
+            });
+
+            $("#export").click(function () {
+                let form = new FormData($(".search-area form")[0])
+                $.ajax({
+                    url: `/Stock_Management/Export`,
+                    type: "POST",
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    success(res) {
+                        if (result.FileDownloadName == '' || result.FileContents.length == 0) return
+                        const bytes = new Uint8Array(result.FileContents);
+                        const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = result.FileDownloadName;
+                        link.click();
+                    }
+                });
             });
         }
     </script>
