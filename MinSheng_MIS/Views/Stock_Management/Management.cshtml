@@ -159,7 +159,7 @@
                     data: form,
                     processData: false,
                     contentType: false,
-                    success(res) {
+                    success(result) {
                         if (result.FileDownloadName == '' || result.FileContents.length == 0) return
                         const bytes = new Uint8Array(result.FileContents);
                         const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
