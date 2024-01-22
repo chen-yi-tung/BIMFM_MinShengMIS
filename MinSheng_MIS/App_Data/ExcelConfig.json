@@ -1,0 +1,117 @@
+{
+  "Stock_Management": {
+    "Title": "庫存管理",
+    "Config": [
+      {
+        "Column": "SISN",
+        "Name": "庫存編號",
+        "Width": "15"
+      },
+      {
+        "Column": "MinStockAmount",
+        "Name": "警戒值數量",
+        "Width": "15"
+      },
+      {
+        "Column": "AvailableStockAmount",
+        "Name": "庫存可用數量",
+        "Width": "17"
+      },
+      {
+        "Column": "StockType",
+        "Name": "品項",
+        "Width": "25"
+      },
+      {
+        "Column": "StockName",
+        "Name": "品名",
+        "Width": "120"
+      },
+      {
+        "Column": "StockAmount",
+        "Name": "庫存實際量",
+        "Width": "17"
+      },
+      {
+        "Column": "Unit",
+        "Name": "單位",
+        "Width": "10"
+      }
+    ]
+  },
+  "StockIn_Management": {
+    "Title": "入庫管理",
+    "Config": [
+      {
+        "Column": "SIRSN",
+        "Name": "入庫編號",
+        "Width": "25"
+      },
+      {
+        "Column": "StockType",
+        "Name": "品項",
+        "Width": "20"
+      },
+      {
+        "Column": "StockName",
+        "Name": "品名",
+        "Width": "120"
+      },
+      {
+        "Column": "TotalAmount",
+        "Name": "總數量",
+        "Width": "10"
+      },
+      {
+        "Column": "Unit",
+        "Name": "單位",
+        "Width": "10"
+      },
+      {
+        "Column": "StockInDateTime",
+        "Name": "入庫時間",
+        "Width": "20"
+      },
+      {
+        "Column": "StockInMyName",
+        "Name": "入庫人員",
+        "Width": "25"
+      }
+    ]
+  },
+  "StockOut_Management": {
+    "Title": "出庫管理",
+    "Config": [
+      {
+        "Column": "SORSN",
+        "Name": "出庫單號",
+        "Width": "25"
+      },
+      {
+        "Column": "SRSN",
+        "Name": "領用單號",
+        "Width": "25"
+      },
+      {
+        "Column": "StockOutMyName",
+        "Name": "出庫人員",
+        "Width": "25"
+      },
+      {
+        "Column": "StockOutDateTime",
+        "Name": "出庫日期",
+        "Width": "20"
+      },
+      {
+        "Column": "ReceiverMyName",
+        "Name": "領取人員",
+        "Width": "25"
+      },
+      {
+        "Column": "StockOutContent",
+        "Name": "說明",
+        "Width": "200"
+      }
+    ]
+  }
+}

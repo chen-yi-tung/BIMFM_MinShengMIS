@@ -1,10 +1,18 @@
-﻿using System;
+﻿using MiniExcelLibs;
+using MiniExcelLibs.Attributes;
+using MiniExcelLibs.OpenXml;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.UI.WebControls;
 
 namespace MinSheng_MIS.Services
 {
@@ -199,6 +207,43 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 匯出Excel
+        /// <summary>
+        /// 匯出Excel
+        /// </summary>
+        /// <param name="ser">伺服器位址取得</param>
+        /// <param name="data">匯出資料</param>
+        /// <param name="ctrlName">控制器名稱</param>
+        /// <returns></returns>
+        public static Object ExportExcel(HttpServerUtilityBase ser, JToken data, string ctrlName)
+        {
+            IEnumerable<Dictionary<string, object>> rows = data.ToObject<IEnumerable<Dictionary<string, object>>>();
+
+            // 讀取Json file匯入config
+            var jo = Helper.ReadJsonFile(ser, ExcelConfigJsonPath);
+            var setting = jo[ctrlName];
+
+            var config = new OpenXmlConfiguration
+            {
+                DynamicColumns = setting["Config"].Select((x, index) => new DynamicExcelColumn($"{x["Column"]}")
+                {
+                    Index = index,
+                    Name = x["Name"].ToString(),
+                    Width = Convert.ToInt32(x["Width"])
+                }).ToArray()
+            };
+
+            var memoryStream = new MemoryStream();
+            memoryStream.SaveAs(rows, configuration: config);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return new
+            {
+                FileDownloadName = $"{setting["Title"]}.xlsx",
+                FileContents = memoryStream.ToArray()
+            };
+        }
+        #endregion
+
         #region Helper
         public static string UrlMaker(params string[] parts)
         {
@@ -209,6 +254,10 @@ namespace MinSheng_MIS.Services
                 return "/" + url;
             }
         }
+        #endregion
+
+        #region 參數
+        private static string ExcelConfigJsonPath = "~/App_Data/ExcelConfig.json";
         #endregion
     }
 }

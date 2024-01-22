@@ -1,4 +1,5 @@
 ﻿using MinSheng_MIS.Models.ViewModels;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,10 +35,16 @@ namespace MinSheng_MIS.Services
                 };
         }
 
-        public static string HandleErrorMessageList(List<string> list, string errorType = null)
+        /// <summary>
+        /// 將錯誤訊息清單改寫成html
+        /// </summary>
+        /// <param name="list">錯誤訊息清單</param>
+        /// <param name="errorTitle">錯誤訊息主題</param>
+        /// <returns></returns>
+        public static string HandleErrorMessageList(List<string> list, string errorTitle = null)
         {
             string result = string.Empty;
-            if (!string.IsNullOrEmpty(errorType)) result += html_newLine + errorType;
+            if (!string.IsNullOrEmpty(errorTitle)) result += html_newLine + errorTitle;
             // html列表
             if (!list.Any()) return null;
             result += "<ul>";
@@ -45,6 +52,20 @@ namespace MinSheng_MIS.Services
                 result += $"<li>{error}</li>";
             result += "</ul>";
             return result;
+        }
+
+        /// <summary>
+        /// 讀取伺服器內的Json檔案
+        /// </summary>
+        /// <param name="ser">伺服器位址取得</param>
+        /// <param name="path">檔案相對根目錄的路徑(ex:"~/Content/...")</param>
+        /// <returns>JObject</returns>
+        public static JObject ReadJsonFile(HttpServerUtilityBase ser, string path)
+        {
+            string fullpath = ser.MapPath(path); //取得檔案在Server上的實體路徑
+            string content = System.IO.File.ReadAllText(fullpath);
+            JObject jo = JObject.Parse(content);
+            return jo;
         }
     }
 }

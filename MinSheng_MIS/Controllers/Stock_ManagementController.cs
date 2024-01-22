@@ -88,5 +88,42 @@ namespace MinSheng_MIS.Controllers
             return Json(new { Message = "Succeed" });
         }
         #endregion
+
+        #region 庫存匯出
+        [HttpPost]
+        public ActionResult Export(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_Stock_Management(form);
+            string ctrlName = this.ControllerContext.RouteData.Values["controller"].ToString();
+            var result = ComFunc.ExportExcel(Server, a["rows"], ctrlName);
+
+            return Json(result);
+
+            //IEnumerable<Dictionary<string, object>> rows = a["rows"].ToObject<IEnumerable<Dictionary<string, object>>>();
+
+            //var config = new OpenXmlConfiguration
+            //{
+            //    DynamicColumns = new DynamicExcelColumn[] {
+            //        new DynamicExcelColumn("SISN"){Index=0,Name="庫存編號",Width=10},
+            //        new DynamicExcelColumn("MinStockAmount"){Index=1,Name="警戒值數量",Width=15},
+            //        new DynamicExcelColumn("AvailableStockAmount"){Index=2,Name="庫存可用數量",Width=15},
+            //        new DynamicExcelColumn("StockType"){Index=3,Name="品項",Width=15},
+            //        new DynamicExcelColumn("StockName"){Index=4,Name="品名",Width=15},
+            //        new DynamicExcelColumn("StockAmount"){Index=5,Name="庫存實際量",Width=15},
+            //        new DynamicExcelColumn("Unit"){Index=6,Name="單位",Width=15},
+            //    }
+            //};
+
+            //var memoryStream = new MemoryStream();
+            //memoryStream.SaveAs(rows, configuration: config);
+            //memoryStream.Seek(0, SeekOrigin.Begin);
+            //return Json(new
+            //{
+            //    FileDownloadName = "demo.xlsx",
+            //    FileContents = memoryStream.ToArray()
+            //});
+        }
+        #endregion
     }
 }

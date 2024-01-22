@@ -164,6 +164,19 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 出庫匯出
+        [HttpPost]
+        public ActionResult Export(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_StockOut_Management(form);
+            string ctrlName = this.ControllerContext.RouteData.Values["controller"].ToString();
+            var result = ComFunc.ExportExcel(Server, a["rows"], ctrlName);
+
+            return Json(result);
+        }
+        #endregion
+
         #region 取得領取申請單資訊
         public ActionResult GetRequisitionInfo(string id)
         {

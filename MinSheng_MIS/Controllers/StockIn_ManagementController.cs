@@ -143,6 +143,19 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 入庫匯出
+        [HttpPost]
+        public ActionResult Export(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_StockIn_Management(form);
+            string ctrlName = this.ControllerContext.RouteData.Values["controller"].ToString();
+            var result = ComFunc.ExportExcel(Server, a["rows"], ctrlName);
+
+            return Json(result);
+        }
+        #endregion
+
         #region 入庫檢查
         /// <summary>
         /// 是否在計算型庫存中有同庫存品項
