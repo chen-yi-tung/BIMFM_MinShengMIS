@@ -12,6 +12,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string StockType { get; set; }
         public string StockName { get; set; }
         public double StockAmount { get; set; }
+        public double AvailableStockAmount { get; set; }
         public string Unit { get; set; }
         public double MinStockAmount { get; set; }
         public string ExpiryDate { get; set; }

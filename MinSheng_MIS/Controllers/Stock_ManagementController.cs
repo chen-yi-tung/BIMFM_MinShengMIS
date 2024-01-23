@@ -45,7 +45,8 @@ namespace MinSheng_MIS.Controllers
                 StockType = Surface.StockType()[C_Stock.StockType],
                 StockName = C_Stock.StockName,
                 StockAmount = C_Stock.StockAmount,
-                Unit = Surface.Unit()[C_Stock.Unit],
+                AvailableStockAmount = C_Stock.Stock.Where(x => x.ExpiryDate >= C_Stock.ExpiryDate && x.ExpiryDate >= DateTime.Now.Date).Sum(x => x.RemainingAmount),
+                Unit = Surface.Unit().TryGetValue(C_Stock.Unit, out var mapUnit) ? mapUnit : "undefined",
                 MinStockAmount = C_Stock.MinStockAmount,
                 ExpiryDate = C_Stock.ExpiryDate?.ToString("yyyy-MM-dd"),
                 StockItem = C_Stock.Stock.Select(x => new StockItem

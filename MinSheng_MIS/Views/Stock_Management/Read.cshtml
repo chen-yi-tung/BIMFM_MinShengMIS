@@ -29,9 +29,11 @@
             { text: "庫存編號", value: "SISN" },
             { text: "品項", value: "StockType" },
             { text: "品名", value: "StockName" },
-            { text: "數量", value: "StockAmount" },
+            { text: "庫存實際量", value: "StockAmount" },
+            { text: "庫存可用數量", value: "AvailableStockAmount" },
             { text: "單位", value: "Unit" },
-            { text: "警戒值", value: "MinStockAmount" },
+            { text: "警戒值數量", value: "MinStockAmount" },
+            { text: "警戒值有效期限", value: "ExpiryDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
         ]
 
         const GridOptions = {
@@ -40,8 +42,8 @@
                 { id: "SSN", title: "RFID標籤(外)" },
                 { id: "Brand", title: "廠牌" },
                 { id: "Model", title: "型號" },
-                { id: "StockInDateTime", title: "入庫日期" },
-                { id: "ExpiryDate", title: "到期日" },
+                { id: "StockInDateTime", title: "入庫日期", formatter: (val) => val?.replaceAll("-", "/") || "-" },
+                { id: "ExpiryDate", title: "到期日", formatter: (val) => val?.replaceAll("-", "/") || "-" },
                 { id: "Location", title: "擺放位置" },
                 { id: "SIRSN", title: "入庫單號" },
                 { id: "RemainingAmount", title: "庫存數量" },
