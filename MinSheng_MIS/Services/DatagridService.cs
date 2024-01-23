@@ -2974,7 +2974,10 @@ namespace MinSheng_MIS.Services
                     var itemObject = new JObject
                     {
                         { "MinStockAmount", item.MinStockAmount },
-                        { "AvailableStockAmount", item.Stock.Where(x => x.ExpiryDate >= DateTime.Now.Date).Count() },
+                        // AvailableStockAmount計算:
+                        // 1. 仍在物品有效期 x.ExpiryDate >= DateTime.Now.Date
+                        // 2. 警戒值期限內的有效數量 x.ExpiryDate >= item.ExpiryDate(警戒值期限)
+                        { "AvailableStockAmount", item.Stock.Where(x => x.ExpiryDate >= item.ExpiryDate && x.ExpiryDate >= DateTime.Now.Date).Sum(x => x.Amount) },
                         { "SISN", item.SISN },
                         { "StockType", item.StockType != null ? TypeDics[item.StockType] : null },
                         { "StockName", item.StockName },

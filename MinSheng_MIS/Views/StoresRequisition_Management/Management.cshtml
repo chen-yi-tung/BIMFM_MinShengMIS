@@ -75,7 +75,7 @@
     <script>
         var getGridJSON = '@Url.Action("StoresRequisition_Management", "Datagrid")';
         var DataGrid;
-        
+
 
         const fakeData = [
             {
@@ -103,6 +103,7 @@
         $(async function () {
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
+            await pushSelect("SRState", '@Url.Action("FormSRState", "DropDownList")');
         });
 
         function Initialize_DataGrid(getGridJSON) {

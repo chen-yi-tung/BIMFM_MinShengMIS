@@ -850,6 +850,28 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region FormSRState 領用申請狀態
+        [HttpGet]
+        public ActionResult FormSRState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.SRState();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
         //--警示訊息管理--
         #region WMType 事件等級
         [HttpGet]
