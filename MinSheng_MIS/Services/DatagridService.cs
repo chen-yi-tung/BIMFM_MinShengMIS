@@ -2567,8 +2567,8 @@ namespace MinSheng_MIS.Services
             //查詢申請日期(迄)
             if (!string.IsNullOrEmpty(DateTo) && DateTime.Parse(DateTo) != DateTime.MinValue)
             {
-                DateTime end = DateTime.Parse(DateTo);
-                rpT = rpT.Where(x => x.PRDate <= end);
+                DateTime end = DateTime.Parse(DateTo).AddDays(1);
+                rpT = rpT.Where(x => x.PRDate < end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
@@ -2676,8 +2676,8 @@ namespace MinSheng_MIS.Services
             //查詢入庫日期(迄)
             if (!string.IsNullOrEmpty(DateEnd) && DateTime.Parse(DateEnd) != DateTime.MinValue)
             {
-                DateTime end = DateTime.Parse(DateEnd);
-                rpT = rpT.Where(x => x.StockInDateTime <= end);
+                DateTime end = DateTime.Parse(DateEnd).AddDays(1);
+                rpT = rpT.Where(x => x.StockInDateTime < end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
@@ -2782,8 +2782,8 @@ namespace MinSheng_MIS.Services
                 //日期(迄)
                 if (!string.IsNullOrEmpty(DateEnd) && DateTime.Parse(DateEnd) != DateTime.MinValue)
                 {
-                    DateTime end = DateTime.Parse(DateEnd);
-                    rpT = rpT.Where($"{DateType} <= @0", end);
+                    DateTime end = DateTime.Parse(DateEnd).AddDays(1);
+                    rpT = rpT.Where($"{DateType} < @0", end);
                 }
             }
 
@@ -2884,8 +2884,8 @@ namespace MinSheng_MIS.Services
             //查詢入庫日期(迄)
             if (!string.IsNullOrEmpty(StockOutDateEnd) && DateTime.Parse(StockOutDateEnd) != DateTime.MinValue)
             {
-                DateTime end = DateTime.Parse(StockOutDateEnd);
-                rpT = rpT.Where(x => x.StockOutDateTime <= end);
+                DateTime end = DateTime.Parse(StockOutDateEnd).AddDays(1);
+                rpT = rpT.Where(x => x.StockOutDateTime < end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
@@ -3099,8 +3099,8 @@ namespace MinSheng_MIS.Services
             //查詢實驗日期(迄)
             if (!string.IsNullOrEmpty(EDateEnd) && DateTime.Parse(EDateEnd) != DateTime.MinValue)
             {
-                DateTime end = DateTime.Parse(EDateEnd);
-                rpT = rpT.Where(x => x.EDate <= end);
+                DateTime end = DateTime.Parse(EDateEnd).AddDays(1);
+                rpT = rpT.Where(x => x.EDate < end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
@@ -3258,8 +3258,8 @@ namespace MinSheng_MIS.Services
             //查詢實驗日期(迄)
             if (!string.IsNullOrEmpty(EDateEnd) && DateTime.Parse(EDateEnd) != DateTime.MinValue)
             {
-                DateTime end = DateTime.Parse(EDateEnd);
-                rpT = rpT.Where(x => x.EDDate <= end);
+                DateTime end = DateTime.Parse(EDateEnd).AddDays(1);
+                rpT = rpT.Where(x => x.EDDate < end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
