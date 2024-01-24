@@ -117,7 +117,7 @@
                 //sortName: 'SRSN',
                 frozenColumns: [[
                     dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.SRState != "1" })),
                     dg.frozenColumn('_audit', (v, row, i) => dg.eventButton(i, "審核", "audit", { disabled: row.SRState != "1" })),
                 ]],
                 columns: [[
