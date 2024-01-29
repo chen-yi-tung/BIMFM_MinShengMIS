@@ -61,11 +61,9 @@ DG.prototype.removeEvent = function (key) {
 DG.prototype.frozenColumn = function (/* field, title, width, formatter */) {
     let args = [].slice.call(arguments);
     let res = { field: args[0], width: 74, align: this.ColumnsOptions.align, formatter: args.at(-1) };
-    switch (true) {
-        case (args.length === 4):
-            res.width = args[2];
-        case (args.length === 3):
-            res.title = args[1];
+    switch (args.length) {
+        case 4: res.width = args[2];
+        case 3: res.title = args[1];
     }
     return res;
 }
@@ -73,13 +71,10 @@ DG.prototype.frozenColumn = function (/* field, title, width, formatter */) {
 DG.prototype.column = function (/* field, title, width */) {
     let args = [].slice.call(arguments);
     let res = { field: args[0], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable };
-    switch (true) {
-        case (args.length === 4):
-            res.formatter = args[3];
-        case (args.length === 3):
-            res.width = args[2];
-        case (args.length === 2):
-            res.title = args[1];
+    switch (args.length) {
+        case 4: res.formatter = args[3];
+        case 3: res.width = args[2];
+        case 2: res.title = args[1];
     }
     return res;
 }
@@ -87,11 +82,9 @@ DG.prototype.column = function (/* field, title, width */) {
 DG.prototype.formatColumn = function (/* field, title, width, formatter */) {
     let args = [].slice.call(arguments);
     let res = { field: args[0], align: this.ColumnsOptions.align, sortable: this.ColumnsOptions.sortable, formatter: args.at(-1) };
-    switch (true) {
-        case (args.length === 4):
-            res.width = args[2];
-        case (args.length === 3):
-            res.title = args[1];
+    switch (args.length) {
+        case 4: res.width = args[2];
+        case 3: res.title = args[1];
     }
     return res;
 }
