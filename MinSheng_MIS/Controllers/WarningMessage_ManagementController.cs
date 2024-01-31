@@ -86,6 +86,27 @@ namespace MinSheng_MIS.Controllers
             string result = JsonConvert.SerializeObject(warningMessage);
             return Content(result, "application/json");
         }
+		#endregion
+
+		#region 小鈴鐺警示訊息
+		[AllowAnonymous]
+		[HttpGet]
+		public ActionResult BellMessageInfo()
+		{
+			JArray messages = new JArray();
+			var messagelist = db.WarningMessage.Where(x=> x.WMState == "1"|| x.WMState == "2").ToList();
+			foreach(var m in messagelist)
+			{
+				JObject message = new JObject();
+				message.Add("WMSN", m.WMSN);
+                message.Add("Location", db.Floor_Info.Find(m.FSN).AreaInfo.Area.ToString() + db.Floor_Info.Find(m.FSN).FloorName.ToString());
+                message.Add("Message", m.Message);
+                message.Add("WMType", m.WMType);
+                messages.Add(message);
+            }
+
+            return Content(JsonConvert.SerializeObject(messages), "application/json");
+        }
         #endregion
     }
 }
