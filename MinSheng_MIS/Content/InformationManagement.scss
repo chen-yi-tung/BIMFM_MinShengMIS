@@ -123,6 +123,16 @@
         }
     }
 
+    .alert-collapse {
+        @include max-576 {
+            position: fixed;
+            top: 12.5vh;
+            left: 50%;
+            right: unset;
+            transform: translateX(-50%);
+        }
+    }
+
 }
 
 .info-area {

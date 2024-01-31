@@ -36,6 +36,8 @@
     @Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
     @Scripts.Render("https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js")
     @Scripts.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js")
+
+    <script src="/Scripts/InspectionPlan/BellMessage.js" defer></script>
 </head>
 
 <body>
@@ -320,47 +322,11 @@
                 <div id="BIM"></div>
             </div>
             <div class="position-absolute top-0 end-0 p-4">
-                <button class="btn btn-alert" data-bs-toggle="collapse" data-bs-target="#AlertCollapse">
+                <button class="btn btn-alert">
                     <i class="icon-ring"></i>
-                    <span class="badge">5</span>
+                    <span class="badge" id="AlertBadge"></span>
                     <div class="collapse alert-collapse" id="AlertCollapse">
-                        <div class="collapse-body">
-                            <a class="alert-item" target="_blank" data-level="1" data-process-state="1">
-                                <i class="icon-alert"></i>
-                                <span class="road">進流抽水站2F</span>
-                                <span class="time">13:05:20</span>
-                                <span class="title">進流抽水站2F火災</span>
-                                <span class="process-state"></span>
-                            </a>
-                            <a class="alert-item" target="_blank" data-level="1" data-process-state="1">
-                                <i class="icon-alert"></i>
-                                <span class="road">進流抽水站2F</span>
-                                <span class="time">13:05:20</span>
-                                <span class="title">進流抽水站2F火災</span>
-                                <span class="process-state"></span>
-                            </a>
-                            <a class="alert-item" target="_blank" data-level="2" data-process-state="2">
-                                <i class="icon-alert"></i>
-                                <span class="road">進流抽水站2F</span>
-                                <span class="time">13:05:20</span>
-                                <span class="title">進流抽水站2F火災</span>
-                                <span class="process-state"></span>
-                            </a>
-                            <a class="alert-item" target="_blank" data-level="2" data-process-state="3">
-                                <i class="icon-alert"></i>
-                                <span class="road">進流抽水站2F</span>
-                                <span class="time">13:05:20</span>
-                                <span class="title">進流抽水站2F火災</span>
-                                <span class="process-state"></span>
-                            </a>
-                            <a class="alert-item" target="_blank" data-level="2" data-process-state="3">
-                                <i class="icon-alert"></i>
-                                <span class="road">進流抽水站2F</span>
-                                <span class="time">13:05:20</span>
-                                <span class="title">進流抽水站2F火災</span>
-                                <span class="process-state"></span>
-                            </a>
-                        </div>
+                        <div class="collapse-body" data-simplebar data-simplebar-force-visible="y"></div>
                     </div>
                 </button>
             </div>

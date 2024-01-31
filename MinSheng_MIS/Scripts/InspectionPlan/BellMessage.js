@@ -1,21 +1,33 @@
 ﻿window.addEventListener('load', async () => {
     let updateTimer = null;
     const UPDATE_TIME = 5000;
-    const badge = $("#AlertCollapse").prev(".badge")
-    const list = $("#AlertCollapse .collapse-body")
-    updater()
+    const badge = $("#AlertBadge")
+    const collapse = $("#AlertCollapse")
+    const list = collapse.find(".simplebar-content")
+    const btn = $(".btn-alert")
+    init()
+    function init() {
+        btn.on("click", ".alert-item", (event) => {
+            event.stopPropagation()
+            event.preventDefault()
+            window.open(event.currentTarget.href, "_blank");
+        })
+        btn.on("click", (event) => { collapse.toggleClass("show") })
+        updater()
+    }
     function BellMessage(data) {
         list.empty()
         badge.text(data.length)
         data.forEach(d => {
             const item = $(`
-                <a class="alert-item" target="_blank" data-level="${d.WMType}" data-process-state="${d.WMState}">
+                <a class="alert-item" target="_blank" data-level="${d.WMType}" data-process-state="${d.WMState ?? 1}">
                     <i class="icon-alert"></i>
                     <span class="road">${d.Location}</span>
-                    <span class="time">${d.TimeOfOccurrence}</span>
+                    <span class="time">${d.TimeOfOccurrence ?? "-"}</span>
                     <span class="title">${d.Message}</span>
                     <span class="process-state"></span>
-                </a>`) 
+                </a>`)
+            item.attr("href", `/WarningMessage_Management/Read/${d.WMSN}`)
             list.append(item)
         });
     }

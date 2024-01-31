@@ -16,11 +16,11 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="date-search-area">
-    <button class="btn btn-alert float-end" data-bs-toggle="collapse" data-bs-target="#AlertCollapse">
+    <button class="btn btn-alert float-end">
         <i class="icon-ring"></i>
-        <span class="badge">5</span>
+        <span class="badge" id="AlertBadge"></span>
         <div class="collapse alert-collapse" id="AlertCollapse">
-            <div class="collapse-body"></div>
+            <div class="collapse-body" data-simplebar data-simplebar-force-visible="y"></div>
         </div>
     </button>
     <form class="form">
