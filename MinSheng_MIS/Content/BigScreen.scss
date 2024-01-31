@@ -75,11 +75,11 @@ body {
         background: #FFF2F2;
         text-decoration: none;
 
-        &[data-level='1'] {
+        &[data-level='2'] {
             --c: #DF3232;
         }
 
-        &[data-level='2'] {
+        &[data-level='1'] {
             --c: #FDB601;
         }
 
