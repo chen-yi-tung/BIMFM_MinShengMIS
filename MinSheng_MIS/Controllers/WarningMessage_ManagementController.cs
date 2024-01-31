@@ -102,6 +102,8 @@ namespace MinSheng_MIS.Controllers
                 message.Add("Location", db.Floor_Info.Find(m.FSN).AreaInfo.Area.ToString() + db.Floor_Info.Find(m.FSN).FloorName.ToString());
                 message.Add("Message", m.Message);
                 message.Add("WMType", m.WMType);
+                message.Add("WMState", m.WMState);
+                message.Add("TimeOfOccurrence", m.TimeOfOccurrence.ToString("yyyy/MM/dd HH:mm:ss"));
                 messages.Add(message);
             }
 
