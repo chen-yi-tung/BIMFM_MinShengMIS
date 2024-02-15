@@ -38,12 +38,14 @@
     //const DEFAULT_YEAR = MAX_YEAR;
     const DEFAULT_YEAR = 112;
 
+    const StartYear = $("#StartYear"),
+        StartMonth = $("#StartMonth"),
+        EndYear = $("#EndYear"),
+        EndMonth = $("#EndMonth");
+
     init()
+
     async function init() {
-        const StartYear = $("#StartYear"),
-            StartMonth = $("#StartMonth"),
-            EndYear = $("#EndYear"),
-            EndMonth = $("#EndMonth");
 
         for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
             StartYear.append(`<option value="${y}">${y}年度</option>`)
@@ -81,22 +83,7 @@
                 month2: EndMonth.val(),
             }
 
-            if (parseInt(data.year1) > parseInt(data.year2)) {
-                data = {
-                    year1: EndYear.val(),
-                    month1: EndMonth.val(),
-                    year2: StartYear.val(),
-                    month2: StartMonth.val(),
-                }
-            }
-            else if (parseInt(data.month1) > parseInt(data.month2)) {
-                data = {
-                    year1: StartYear.val(),
-                    month1: EndMonth.val(),
-                    year2: EndYear.val(),
-                    month2: StartMonth.val(),
-                }
-            }
+            data = orderDate(data)
 
             StartYear.val(data.year1)
             StartMonth.val(data.month1)
@@ -126,6 +113,26 @@
 
             $(".info-area").removeClass("loading")
         }
+    }
+    function orderDate(_data) {
+        let data = _data;
+        if (parseInt(_data.year1) > parseInt(_data.year2)) {
+            data = {
+                year1: _data.year2,
+                month1: _data.month2,
+                year2: _data.year1,
+                month2: _data.month1,
+            }
+        }
+        else if (parseInt(_data.year1) == parseInt(_data.year2) && parseInt(_data.month1) > parseInt(_data.month2)) {
+            data = {
+                year1: _data.year1,
+                month1: _data.month2,
+                year2: _data.year2,
+                month2: _data.month1,
+            }
+        }
+        return data
     }
     // #endregion
 
@@ -591,5 +598,76 @@
             plugins: [chartPlugins.emptyDoughnut]
         })
     }
+    // #endregion
+
+    // #region Qunit test
+    /*QUnit.module('orderDate', function () {
+        QUnit.test('same year and not same month', function (assert) {
+            assert.deepEqual(
+                orderDate({
+                    year1: "112", month1: "1",
+                    year2: "112", month2: "12",
+                }),
+                {
+                    year1: "112", month1: "1",
+                    year2: "112", month2: "12",
+                });
+        });
+        QUnit.test('not same year', function (assert) {
+            assert.deepEqual(
+                orderDate({
+                    year1: "112", month1: "1",
+                    year2: "113", month2: "1",
+                }),
+                {
+                    year1: "112", month1: "1",
+                    year2: "113", month2: "1",
+                });
+        });
+        QUnit.test('same year and month need order', function (assert) {
+            assert.deepEqual(
+                orderDate({
+                    year1: "112", month1: "12",
+                    year2: "112", month2: "1",
+                }),
+                {
+                    year1: "112", month1: "1",
+                    year2: "112", month2: "12",
+                });
+        });
+        QUnit.test('year need order', function (assert) {
+            assert.deepEqual(
+                orderDate({
+                    year1: "113", month1: "1",
+                    year2: "112", month2: "6",
+                }),
+                {
+                    year1: "112", month1: "6",
+                    year2: "113", month2: "1",
+                });
+        });
+        QUnit.test('not same year and not same month but no need to order', function (assert) {
+            assert.deepEqual(
+                orderDate({
+                    year1: "112", month1: "6",
+                    year2: "113", month2: "1",
+                }),
+                {
+                    year1: "112", month1: "6",
+                    year2: "113", month2: "1",
+                });
+        });
+        QUnit.test('nothing to do', function (assert) {
+            assert.deepEqual(
+                orderDate({
+                    year1: "", month1: "",
+                    year2: "", month2: "",
+                }),
+                {
+                    year1: "", month1: "",
+                    year2: "", month2: "",
+                });
+        });
+    });*/
     // #endregion
 })
