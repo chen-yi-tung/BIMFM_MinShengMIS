@@ -41,6 +41,11 @@
         </div>
 
         <div class="form-group">
+            <label for="AuditContent">審核意見</label>
+            <input class="form-control" id="AuditContent" name="AuditContent" type="text" />
+        </div>
+
+        <div class="form-group">
             <label for="DateType">日期項目選擇</label>
             <select class="form-select" name="DateType" id="DateType">
                 <option value="">請選擇</option>
@@ -128,7 +133,8 @@
                     dg.column('SRMyName', '申請人員', 180),
                     dg.column('SRDept', '申請部門', 200),
                     dg.column('AuditMyName', '審核人員', 180),
-                    //dg.column('AuditDate', '審核日期', 240),
+                    dg.column('AuditDate', '審核日期', 240),
+                    dg.column('AuditContent', '審核意見', 240),
                 ]]
             })
             dg.addEvent("read", function (row, i) {
