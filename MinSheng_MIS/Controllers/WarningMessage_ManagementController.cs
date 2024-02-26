@@ -94,7 +94,7 @@ namespace MinSheng_MIS.Controllers
 		public ActionResult BellMessageInfo()
 		{
 			JArray messages = new JArray();
-			var messagelist = db.WarningMessage.Where(x=> x.WMState == "1"|| x.WMState == "2").ToList();
+			var messagelist = db.WarningMessage.Where(x=> x.WMState == "1"|| x.WMState == "2").OrderByDescending(x => x.TimeOfOccurrence).ToList();
 			foreach(var m in messagelist)
 			{
 				JObject message = new JObject();
