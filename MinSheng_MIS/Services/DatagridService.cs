@@ -2732,6 +2732,7 @@ namespace MinSheng_MIS.Services
             var SRMyName = form["SRMyName"]?.ToString();
             var SRDept = form["SRDept"]?.ToString();
             var AuditMyName = form["AuditMyName"]?.ToString();
+            var AuditContent = form["AuditContent"]?.ToString();
             var DateType = form["DateType"]?.ToString();
             var DateStart = form["DateStart"]?.ToString();
             var DateEnd = form["DateEnd"]?.ToString();
@@ -2757,7 +2758,8 @@ namespace MinSheng_MIS.Services
                            SRMyName = SR_ug != null ? SR_ug.MyName : null,
                            sr.SRDept,
                            sr.AuditDate,
-                           AuditMyName = Audit_ug != null ? Audit_ug.MyName : null
+                           AuditMyName = Audit_ug != null ? Audit_ug.MyName : null,
+                           sr.AuditContent
                        });
 
             //查詢狀態
@@ -2770,6 +2772,8 @@ namespace MinSheng_MIS.Services
             if (!string.IsNullOrEmpty(SRDept)) rpT = rpT.Where(x => x.SRDept.Contains(SRDept));
             //查詢審核人員 (模糊查詢)
             if (!string.IsNullOrEmpty(AuditMyName)) rpT = rpT.Where(x => x.AuditMyName.Contains(AuditMyName));
+            //查詢審核意見 (模糊查詢)
+            if (!string.IsNullOrEmpty(AuditContent)) rpT = rpT.Where(x => x.AuditContent.Contains(AuditContent));
             //查詢領用申請/審核日期
             if (!string.IsNullOrEmpty(DateType))
             {
@@ -2814,6 +2818,8 @@ namespace MinSheng_MIS.Services
                         { "SRMyName", item.SRMyName },
                         { "SRDept", item.SRDept },
                         { "AuditMyName", item.AuditMyName },
+                        { "AuditDate", item.AuditDate?.ToString("yyyy/MM/dd") },
+                        { "AuditContent", item.AuditContent }
                     };
 
                     ja.Add(itemObject);
