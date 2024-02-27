@@ -233,6 +233,13 @@ namespace MinSheng_MIS.Services
                 }).ToArray()
             };
 
+            // 從rows篩選符合setting的字典
+            var setting_col = setting["Config"].Select(x => x["Column"].ToString()).ToList();
+            rows = rows.Select(x =>
+            {
+                return x.Where(k => setting_col.Contains(k.Key)).ToDictionary(k => k.Key, v => v.Value);
+            }).ToList();
+
             var memoryStream = new MemoryStream();
             memoryStream.SaveAs(rows, configuration: config);
             memoryStream.Seek(0, SeekOrigin.Begin);

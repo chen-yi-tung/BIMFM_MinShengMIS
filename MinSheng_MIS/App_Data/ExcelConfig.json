@@ -113,5 +113,70 @@
         "Width": "200"
       }
     ]
+  },
+  "MaintainForm_Management": {
+    "Title": "定期保養單管理",
+    "Config": [
+      {
+        "Column": "FormItemState",
+        "Name": "保養項目狀態",
+        "Width": "17"
+      },
+      {
+        "Column": "EState",
+        "Name": "設備狀態",
+        "Width": "13"
+      },
+      {
+        "Column": "Area",
+        "Name": "棟別",
+        "Width": "16"
+      },
+      {
+        "Column": "Floor",
+        "Name": "樓層",
+        "Width": "16"
+      },
+      {
+        "Column": "EName",
+        "Name": "設備名稱",
+        "Width": "35"
+      },
+      {
+        "Column": "PropertyCode",
+        "Name": "財產編碼",
+        "Width": "13"
+      },
+      {
+        "Column": "EMFISN",
+        "Name": "保養單項目編號",
+        "Width": "22"
+      },
+      {
+        "Column": "MIName",
+        "Name": "保養項目",
+        "Width": "25"
+      },
+      {
+        "Column": "Period",
+        "Name": "保養週期",
+        "Width": "12"
+      },
+      {
+        "Column": "Unit",
+        "Name": "保養週期單位",
+        "Width": "17"
+      },
+      {
+        "Column": "LastTime",
+        "Name": "上次保養日期",
+        "Width": "17"
+      },
+      {
+        "Column": "Date",
+        "Name": "最近應保養日期",
+        "Width": "20"
+      }
+    ]
   }
 }

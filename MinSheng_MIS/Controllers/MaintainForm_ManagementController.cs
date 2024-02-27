@@ -70,5 +70,18 @@ namespace MinSheng_MIS.Controllers
             return Content(result, "application/json");
         }
         #endregion
+
+        #region 定期保養匯出
+        [HttpPost]
+        public ActionResult Export(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_MaintainForm(form);
+            string ctrlName = this.ControllerContext.RouteData.Values["controller"].ToString();
+            var result = ComFunc.ExportExcel(Server, a["rows"], ctrlName);
+
+            return Json(result);
+        }
+        #endregion
     }
 }
