@@ -5,7 +5,7 @@
       {
         "Column": "SISN",
         "Name": "庫存編號",
-        "Width": "15"
+        "Width": "20"
       },
       {
         "Column": "MinStockAmount",
@@ -25,7 +25,7 @@
       {
         "Column": "StockName",
         "Name": "品名",
-        "Width": "120"
+        "Width": "50"
       },
       {
         "Column": "StockAmount",
@@ -45,7 +45,7 @@
       {
         "Column": "SIRSN",
         "Name": "入庫編號",
-        "Width": "25"
+        "Width": "20"
       },
       {
         "Column": "StockType",
@@ -55,7 +55,7 @@
       {
         "Column": "StockName",
         "Name": "品名",
-        "Width": "120"
+        "Width": "50"
       },
       {
         "Column": "TotalAmount",
@@ -75,7 +75,7 @@
       {
         "Column": "StockInMyName",
         "Name": "入庫人員",
-        "Width": "25"
+        "Width": "20"
       }
     ]
   },
@@ -85,17 +85,17 @@
       {
         "Column": "SORSN",
         "Name": "出庫單號",
-        "Width": "25"
+        "Width": "20"
       },
       {
         "Column": "SRSN",
         "Name": "領用單號",
-        "Width": "25"
+        "Width": "20"
       },
       {
         "Column": "StockOutMyName",
         "Name": "出庫人員",
-        "Width": "25"
+        "Width": "20"
       },
       {
         "Column": "StockOutDateTime",
@@ -105,12 +105,12 @@
       {
         "Column": "ReceiverMyName",
         "Name": "領取人員",
-        "Width": "25"
+        "Width": "20"
       },
       {
         "Column": "StockOutContent",
         "Name": "說明",
-        "Width": "200"
+        "Width": "100"
       }
     ]
   },
@@ -145,7 +145,7 @@
       {
         "Column": "PropertyCode",
         "Name": "財產編碼",
-        "Width": "13"
+        "Width": "15"
       },
       {
         "Column": "EMFISN",
@@ -175,6 +175,261 @@
       {
         "Column": "Date",
         "Name": "最近應保養日期",
+        "Width": "20"
+      }
+    ]
+  },
+  "MaintainRecord_Management": {
+    "Title": "巡檢保養紀錄管理",
+    "Config": [
+      {
+        "Column": "IPSN",
+        "Name": "計畫編號",
+        "Width": "15"
+      },
+      {
+        "Column": "IPName",
+        "Name": "計畫名稱",
+        "Width": "25"
+      },
+      {
+        "Column": "PlanDate",
+        "Name": "計畫日期",
+        "Width": "15"
+      },
+      {
+        "Column": "MaintainState",
+        "Name": "保養單狀態",
+        "Width": "15"
+      },
+      {
+        "Column": "Area",
+        "Name": "棟別",
+        "Width": "16"
+      },
+      {
+        "Column": "Floor",
+        "Name": "樓層",
+        "Width": "16"
+      },
+      {
+        "Column": "PropertyCode",
+        "Name": "財產編碼",
+        "Width": "15"
+      },
+      {
+        "Column": "ESN",
+        "Name": "設備編號",
+        "Width": "15"
+      },
+      {
+        "Column": "EName",
+        "Name": "設備名稱",
+        "Width": "35"
+      },
+      {
+        "Column": "EMFISN",
+        "Name": "保養項目編號",
+        "Width": "22"
+      },
+      {
+        "Column": "MIName",
+        "Name": "保養項目",
+        "Width": "25"
+      },
+      {
+        "Column": "Period",
+        "Name": "保養週期",
+        "Width": "12"
+      },
+      {
+        "Column": "Unit",
+        "Name": "保養週期單位",
+        "Width": "17"
+      },
+      {
+        "Column": "LastTime",
+        "Name": "上次保養日期",
+        "Width": "17"
+      },
+      {
+        "Column": "Date",
+        "Name": "本次保養日期",
+        "Width": "20"
+      },
+      {
+        "Column": "NextTime",
+        "Name": "下次保養日期",
+        "Width": "20"
+      },
+      {
+        "Column": "MaintainUserName",
+        "Name": "保養人員",
+        "Width": "20"
+      },
+      {
+        "Column": "AuditUserName",
+        "Name": "審核人員",
+        "Width": "20"
+      },
+      {
+        "Column": "AuditDate",
+        "Name": "審核日期",
+        "Width": "20"
+      }
+    ]
+  },
+  "Report_Management": {
+    "Title": "報修單管理",
+    "Config": [
+      {
+        "Column": "ReportState",
+        "Name": "報修單狀態",
+        "Width": "15"
+      },
+      {
+        "Column": "ReportLevel",
+        "Name": "報修等級",
+        "Width": "13"
+      },
+      {
+        "Column": "Area",
+        "Name": "棟別",
+        "Width": "16"
+      },
+      {
+        "Column": "Floor",
+        "Name": "樓層",
+        "Width": "16"
+      },
+      {
+        "Column": "ReportSource",
+        "Name": "報修來源",
+        "Width": "15"
+      },
+      {
+        "Column": "RSN",
+        "Name": "報修單號",
+        "Width": "15"
+      },
+      {
+        "Column": "Date",
+        "Name": "報修時間",
+        "Width": "20"
+      },
+      {
+        "Column": "PropertyCode",
+        "Name": "財產編碼",
+        "Width": "13"
+      },
+      {
+        "Column": "ESN",
+        "Name": "設備編號",
+        "Width": "15"
+      },
+      {
+        "Column": "EName",
+        "Name": "設備名稱",
+        "Width": "35"
+      },
+      {
+        "Column": "MyName",
+        "Name": "報修人員",
+        "Width": "20"
+      },
+      {
+        "Column": "ReportContent",
+        "Name": "報修內容",
+        "Width": "50"
+      }
+    ]
+  },
+  "RepairRecord_Management": {
+    "Title": "巡檢維修紀錄管理",
+    "Config": [
+      {
+        "Column": "IPSN",
+        "Name": "計畫編號",
+        "Width": "15"
+      },
+      {
+        "Column": "IPName",
+        "Name": "計畫名稱",
+        "Width": "25"
+      },
+      {
+        "Column": "PlanDate",
+        "Name": "計畫日期",
+        "Width": "15"
+      },
+      {
+        "Column": "RepairState",
+        "Name": "維修單狀態",
+        "Width": "15"
+      },
+      {
+        "Column": "ReportLevel",
+        "Name": "報修等級",
+        "Width": "13"
+      },
+      {
+        "Column": "Area",
+        "Name": "棟別",
+        "Width": "16"
+      },
+      {
+        "Column": "Floor",
+        "Name": "樓層",
+        "Width": "16"
+      },
+      {
+        "Column": "RSN",
+        "Name": "報修單號",
+        "Width": "15"
+      },
+      {
+        "Column": "Date",
+        "Name": "報修時間",
+        "Width": "20"
+      },
+      {
+        "Column": "PropertyCode",
+        "Name": "財產編碼",
+        "Width": "13"
+      },
+      {
+        "Column": "ESN",
+        "Name": "設備編號",
+        "Width": "15"
+      },
+      {
+        "Column": "EName",
+        "Name": "設備名稱",
+        "Width": "35"
+      },
+      {
+        "Column": "ReportContent",
+        "Name": "報修內容",
+        "Width": "50"
+      },
+      {
+        "Column": "InformantUserID",
+        "Name": "報修人員",
+        "Width": "20"
+      },
+      {
+        "Column": "RepairUserID",
+        "Name": "施工人員",
+        "Width": "20"
+      },
+      {
+        "Column": "AuditUserID",
+        "Name": "審核人員",
+        "Width": "20"
+      },
+      {
+        "Column": "AuditDate",
+        "Name": "審核日期",
         "Width": "20"
       }
     ]

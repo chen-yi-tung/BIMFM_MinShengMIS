@@ -1,6 +1,7 @@
 ﻿using Microsoft.Owin;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -105,6 +106,19 @@ namespace MinSheng_MIS.Controllers
             }
             var result = MaintainRecord_Management_ViewModel.Supplement_Submit(formCollection, Server, imgList, fileList);
             return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 巡檢保養紀錄匯出
+        [HttpPost]
+        public ActionResult Export(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_MaintainRecord_Management(form);
+            string ctrlName = this.ControllerContext.RouteData.Values["controller"].ToString();
+            var result = ComFunc.ExportExcel(Server, a["rows"], ctrlName);
+
+            return Json(result);
         }
         #endregion
     }

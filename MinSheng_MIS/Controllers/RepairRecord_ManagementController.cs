@@ -1,4 +1,5 @@
 ﻿using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -112,6 +113,19 @@ namespace MinSheng_MIS.Controllers
             }
             string result = repairRecord_Management_ReadViewModel.UpdateSuppleData(formCollection, Server, imgList, fileList);
             return Content(result, "application/json");
+        }
+        #endregion
+
+        #region 巡檢維修紀錄匯出
+        [HttpPost]
+        public ActionResult Export(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_RepairRecord_Management(form);
+            string ctrlName = this.ControllerContext.RouteData.Values["controller"].ToString();
+            var result = ComFunc.ExportExcel(Server, a["rows"], ctrlName);
+
+            return Json(result);
         }
         #endregion
     }
