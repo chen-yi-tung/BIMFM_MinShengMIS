@@ -129,6 +129,7 @@
 
             $("#export").click(function () {
                 let form = new FormData($(".search-area form")[0])
+                form.append("rows", DataGrid.datagrid("getData").total)
                 $.ajax({
                     url: `/StockOut_Management/Export`,
                     type: "POST",
