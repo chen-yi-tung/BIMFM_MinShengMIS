@@ -68,197 +68,189 @@
 								href="javascript:document.getElementById('logoutForm').submit()">登出</a>
 						</form>
 					</div>
-					<ul class="navbar-nav justify-content-start flex-grow-1 pe-3 pt-lg-0" id="nav-collapse">
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#nav-collapse-1" role="button"
-							   data-bs-toggle="collapse" aria-expanded="false">
-								巡檢管理
-							</a>
-							<ul class="collapse" id="nav-collapse-1" data-bs-parent="#nav-collapse">
-								<li>
-									<a class="dropdown-item" href="/InspectionPlan_Management/Management">巡檢計畫管理</a>
-								</li>
-								<li><a class="dropdown-item" href="/SamplePath_Management/Management">巡檢路線模板管理</a></li>
-								<li><a class="dropdown-item" href="/InspectionPlan_Management/CurrentInformation">巡檢即時位置</a></li>
-								<li><a class="dropdown-item" href="/InspectionPlan_Management/InformationManagement">巡檢資訊管理</a></li>
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#nav-collapse-2" role="button"
-							   data-bs-toggle="collapse" aria-expanded="false">
-								定期保養管理
-							</a>
-							<ul class="collapse" id="nav-collapse-2" data-bs-parent="#nav-collapse">
-								<li><a class="dropdown-item" href="/MaintainForm_Management/Management">定期保養單管理</a></li>
-								<li><a class="dropdown-item" href="/MaintainItem_Management/Management">保養項目管理</a></li>
-								<li>
-									<a class="dropdown-item"
-									   href="/EquipmentMaintainPeriod_Management/Management">設備保養週期管理</a>
-								</li>
-								<li>
-									<a class="dropdown-item" href="/MaintainRecord_Management/Management">巡檢保養紀錄管理</a>
-								</li>
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#nav-collapse-3" role="button"
-							   data-bs-toggle="collapse" aria-expanded="false">
-								報修管理
-							</a>
-							<ul class="collapse" id="nav-collapse-3" data-bs-parent="#nav-collapse">
-								<li><a class="dropdown-item" href="/Report_Management/Management">報修單管理</a></li>
-								<li>
-									<a class="dropdown-item" href="/RepairRecord_Management/Management">巡檢維修紀錄管理</a>
-								</li>
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#nav-collapse-4" role="button"
-							   data-bs-toggle="collapse" aria-expanded="false">
-								設備管理
-							</a>
-							<ul class="collapse" id="nav-collapse-4" data-bs-parent="#nav-collapse">
-								<li><a class="dropdown-item" href="/EquipmentInfo_Management/Management">資產管理</a></li>
-								<li>
-									<a class="dropdown-item" href="/AsBuiltDrawing_Management/Management">竣工圖說管理</a>
-								</li>
-								<li><a class="dropdown-item" href="/DesignDiagrams/Management">設計圖說</a></li>
-								<li><a class="dropdown-item" href="/EquipmentOperatingManual/Management">操作手冊</a></li>
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#nav-collapse-5" role="button"
-							   data-bs-toggle="collapse" aria-expanded="false">
-								庫存管理
-							</a>
-							<ul class="collapse" id="nav-collapse-5" data-bs-parent="#nav-collapse">
-								<li>
-									<a class="dropdown-item" href="/PurchaseRequisition_Management/Management">請購管理</a>
-								</li>
-								@*<li><a class="dropdown-item" href="/InquiryPlan_Management/Management">詢價計畫管理</a></li>*@
-								@*<li><a class="dropdown-item" href="/PurchaseOrder_Management/Management">採購管理</a></li>*@
-								<li><a class="dropdown-item" href="/StockIn_Management/Management">入庫管理</a></li>
-								<li>
-									<a class="dropdown-item" href="/StoresRequisition_Management/Management">領用申請管理</a>
-								</li>
-								<li><a class="dropdown-item" href="/StockOut_Management/Management">出庫管理</a></li>
-								<li><a class="dropdown-item" href="/Stock_Management/Management">庫存管理</a></li>
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#nav-collapse-6" role="button"
-							   data-bs-toggle="collapse" aria-expanded="false">
-								實驗室管理
-							</a>
-							<ul class="collapse" id="nav-collapse-6" data-bs-parent="#nav-collapse">
-								<li><a class="dropdown-item" href="/TestingAndAnalysisWorkflow/Management">採驗分析流程建立</a></li>
-								<li><a class="dropdown-item" href="/LaboratoryLabel_Management/Management">實驗室標籤管理</a></li>
-								<li><a class="dropdown-item" href="/LaboratoryMaintenance_Management/Management">實驗室維護管理</a></li>
-								<li><a class="dropdown-item" href="/ExperimentData_Management/Management">實驗數據管理</a></li>
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link" href="/WarningMessage_Management/Management" role="button">
-								警示訊息管理
-							</a>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#nav-collapse-7" role="button"
-							   data-bs-toggle="collapse" aria-expanded="false">
-								文件管理
-							</a>
-							<ul class="collapse" id="nav-collapse-7" data-bs-parent="#nav-collapse">
-								<li><a class="dropdown-item" href="/MonthlyReport_Management/Management">月報管理</a></li>
-								<li><a class="dropdown-item" href="/MeetingMinutes_Management/Management">會議紀錄管理</a></li>
-							</ul>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#nav-collapse-8" role="button"
-							   data-bs-toggle="collapse" aria-expanded="false">
-								系統管理
-							</a>
-							<ul class="collapse" id="nav-collapse-8" data-bs-parent="#nav-collapse">
-								<li><a class="dropdown-item" href="/Account_Management/Management">帳號管理</a></li>
-								<li>
-									<a class="dropdown-item" href="/ManufacturerInfo_Management/Management">廠商管理</a>
-								</li>
-								<li><a class="dropdown-item" href="/Account_Management/ChangePassword">密碼變更</a></li>
-							</ul>
-						</li>
+                    <ul class="navbar-nav justify-content-start flex-grow-1 pe-3 pt-lg-0" id="nav-collapse">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#nav-collapse-1" role="button"
+                               data-bs-toggle="collapse" aria-expanded="false">
+                                巡檢管理
+                            </a>
+                            <ul class="collapse" id="nav-collapse-1" data-bs-parent="#nav-collapse">
+                                <li>
+                                    <a class="dropdown-item" href="/InspectionPlan_Management/Management">巡檢計畫管理</a>
+                                </li>
+                                <li><a class="dropdown-item" href="/SamplePath_Management/Management">巡檢路線模板管理</a></li>
+                                <li><a class="dropdown-item" href="/InspectionPlan_Management/CurrentInformation">巡檢即時位置</a></li>
+                                <li><a class="dropdown-item" href="/InspectionPlan_Management/InformationManagement">巡檢資訊管理</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#nav-collapse-2" role="button"
+                               data-bs-toggle="collapse" aria-expanded="false">
+                                定期保養管理
+                            </a>
+                            <ul class="collapse" id="nav-collapse-2" data-bs-parent="#nav-collapse">
+                                <li><a class="dropdown-item" href="/MaintainForm_Management/Management">定期保養單管理</a></li>
+                                <li><a class="dropdown-item" href="/MaintainItem_Management/Management">保養項目管理</a></li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="/EquipmentMaintainPeriod_Management/Management">設備保養週期管理</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/MaintainRecord_Management/Management">巡檢保養紀錄管理</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#nav-collapse-3" role="button"
+                               data-bs-toggle="collapse" aria-expanded="false">
+                                報修管理
+                            </a>
+                            <ul class="collapse" id="nav-collapse-3" data-bs-parent="#nav-collapse">
+                                <li><a class="dropdown-item" href="/Report_Management/Management">報修單管理</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="/RepairRecord_Management/Management">巡檢維修紀錄管理</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#nav-collapse-4" role="button"
+                               data-bs-toggle="collapse" aria-expanded="false">
+                                設備管理
+                            </a>
+                            <ul class="collapse" id="nav-collapse-4" data-bs-parent="#nav-collapse">
+                                <li><a class="dropdown-item" href="/EquipmentInfo_Management/Management">資產管理</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="/AsBuiltDrawing_Management/Management">竣工圖說管理</a>
+                                </li>
+                                <li><a class="dropdown-item" href="/DesignDiagrams/Management">設計圖說</a></li>
+                                <li><a class="dropdown-item" href="/EquipmentOperatingManual/Management">操作手冊</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#nav-collapse-5" role="button"
+                               data-bs-toggle="collapse" aria-expanded="false">
+                                庫存管理
+                            </a>
+                            <ul class="collapse" id="nav-collapse-5" data-bs-parent="#nav-collapse">
+                                @*<li><a class="dropdown-item" href="/PurchaseRequisition_Management/Management">請購管理</a></li>*@
+                                @*<li><a class="dropdown-item" href="/InquiryPlan_Management/Management">詢價計畫管理</a></li>*@
+                                @*<li><a class="dropdown-item" href="/PurchaseOrder_Management/Management">採購管理</a></li>*@
+                                <li><a class="dropdown-item" href="/StockIn_Management/Management">入庫管理</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="/StoresRequisition_Management/Management">領用申請管理</a>
+                                </li>
+                                <li><a class="dropdown-item" href="/StockOut_Management/Management">出庫管理</a></li>
+                                <li><a class="dropdown-item" href="/Stock_Management/Management">庫存管理</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#nav-collapse-6" role="button"
+                               data-bs-toggle="collapse" aria-expanded="false">
+                                實驗室管理
+                            </a>
+                            <ul class="collapse" id="nav-collapse-6" data-bs-parent="#nav-collapse">
+                                <li><a class="dropdown-item" href="/TestingAndAnalysisWorkflow/Management">採驗分析流程建立</a></li>
+                                <li><a class="dropdown-item" href="/LaboratoryLabel_Management/Management">實驗室標籤管理</a></li>
+                                <li><a class="dropdown-item" href="/LaboratoryMaintenance_Management/Management">實驗室維護管理</a></li>
+                                <li><a class="dropdown-item" href="/ExperimentData_Management/Management">實驗數據管理</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="/WarningMessage_Management/Management" role="button">
+                                警示訊息管理
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#nav-collapse-7" role="button"
+                               data-bs-toggle="collapse" aria-expanded="false">
+                                文件管理
+                            </a>
+                            <ul class="collapse" id="nav-collapse-7" data-bs-parent="#nav-collapse">
+                                <li><a class="dropdown-item" href="/MonthlyReport_Management/Management">月報管理</a></li>
+                                <li><a class="dropdown-item" href="/MeetingMinutes_Management/Management">會議紀錄管理</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#nav-collapse-8" role="button"
+                               data-bs-toggle="collapse" aria-expanded="false">
+                                系統管理
+                            </a>
+                            <ul class="collapse" id="nav-collapse-8" data-bs-parent="#nav-collapse">
+                                <li><a class="dropdown-item" href="/Account_Management/Management">帳號管理</a></li>
+                                @*<li><a class="dropdown-item" href="/ManufacturerInfo_Management/Management">廠商管理</a></li>*@
+                                <li><a class="dropdown-item" href="/Account_Management/ChangePassword">密碼變更</a></li>
+                            </ul>
+                        </li>
 
-						<li class="nav-item dropdown">
-							<a class="nav-link" href="/BigScreen/Index" role="button">
-								大屏
-							</a>
-						</li>
+        @*<li class="nav-item dropdown"><a class="nav-link" href="/BigScreen/Index" role="button">大屏</a></li>*@
 
-					</ul>
+                            </ul>
 
-				</div>
-			</div>
-		</div>
+                        </div>
+                    </div>
+                </div>
 
-		<div class="container-fluid render-body">
-			@RenderBody()
-		</div>
-	</div>
-	<script>
-		//根據 ControllerName 開啟對應 dropdown collapse
-		switch ('@ControllerName') {
-			//巡檢管理
-			case 'InspectionPlan_Management':
-			case 'SamplePath_Management':
-				$("#nav-collapse-1").addClass('show');
-				break;
-			//定期保養管理
-			case 'MaintainForm_Management':
-			case 'MaintainItem_Management':
-			case 'EquipmentMaintainPeriod_Management':
-			case 'MaintainRecord_Management':
-				$("#nav-collapse-2").addClass('show');
-				break;
-			//報修管理
-			case 'Report_Management':
-			case 'RepairRecord_Management':
-				$("#nav-collapse-3").addClass('show');
-				break;
-			//設備管理
-			case 'EquipmentInfo_Management':
-			case 'AsBuiltDrawing_Management':
-			case 'DesignDiagrams':
-			case 'EquipmentOperatingManual':
-				$("#nav-collapse-4").addClass('show');
-				break;
-			//庫存管理
-			case 'PurchaseRequisition_Management':
-			case 'StockIn_Management':
-			case 'StoresRequisition_Management':
-			case 'StockOut_Management':
-			case 'Stock_Management':
-				$("#nav-collapse-5").addClass('show');
-				break;
-			//實驗室管理
-			case 'TestingAndAnalysisWorkflow':
-			case 'LaboratoryLabel_Management':
-			case 'LaboratoryMaintenance_Management':
-			case 'ExperimentData_Management':
-				$("#nav-collapse-6").addClass('show');
-				break;
-			//警示訊息管理
-			//--
-			//文件管理
-			case 'MonthlyReport_Management':
-			case 'MeetingMinutes_Management':
-				$("#nav-collapse-7").addClass('show');
-				break;
-			//系統管理
-			case 'Account_Management':
-			case 'ManufacturerInfo_Management':
-				$("#nav-collapse-8").addClass('show');
-				break;
-		}
-	</script>
-	@RenderSection("scripts", required: false)
-</body>
+                <div class="container-fluid render-body">
+                    @RenderBody()
+                </div>
+            </div>
+            <script>
+                //根據 ControllerName 開啟對應 dropdown collapse
+                switch ('@ControllerName') {
+                    //巡檢管理
+                    case 'InspectionPlan_Management':
+                    case 'SamplePath_Management':
+                        $("#nav-collapse-1").addClass('show');
+                        break;
+                    //定期保養管理
+                    case 'MaintainForm_Management':
+                    case 'MaintainItem_Management':
+                    case 'EquipmentMaintainPeriod_Management':
+                    case 'MaintainRecord_Management':
+                        $("#nav-collapse-2").addClass('show');
+                        break;
+                    //報修管理
+                    case 'Report_Management':
+                    case 'RepairRecord_Management':
+                        $("#nav-collapse-3").addClass('show');
+                        break;
+                    //設備管理
+                    case 'EquipmentInfo_Management':
+                    case 'AsBuiltDrawing_Management':
+                    case 'DesignDiagrams':
+                    case 'EquipmentOperatingManual':
+                        $("#nav-collapse-4").addClass('show');
+                        break;
+                    //庫存管理
+                    case 'PurchaseRequisition_Management':
+                    case 'StockIn_Management':
+                    case 'StoresRequisition_Management':
+                    case 'StockOut_Management':
+                    case 'Stock_Management':
+                        $("#nav-collapse-5").addClass('show');
+                        break;
+                    //實驗室管理
+                    case 'TestingAndAnalysisWorkflow':
+                    case 'LaboratoryLabel_Management':
+                    case 'LaboratoryMaintenance_Management':
+                    case 'ExperimentData_Management':
+                        $("#nav-collapse-6").addClass('show');
+                        break;
+                    //警示訊息管理
+                    //--
+                    //文件管理
+                    case 'MonthlyReport_Management':
+                    case 'MeetingMinutes_Management':
+                        $("#nav-collapse-7").addClass('show');
+                        break;
+                    //系統管理
+                    case 'Account_Management':
+                    case 'ManufacturerInfo_Management':
+                        $("#nav-collapse-8").addClass('show');
+                        break;
+                }
+            </script>
+            @RenderSection("scripts", required: false)
+        </body>
 
-</html>
+        </html>
