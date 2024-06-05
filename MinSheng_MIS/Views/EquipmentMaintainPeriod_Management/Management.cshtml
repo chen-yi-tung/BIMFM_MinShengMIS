@@ -1,0 +1,227 @@
+﻿@{
+    ViewBag.Title = "設備保養週期管理";
+}
+
+@section styles {
+    @Html.Partial("DataGridScripts", true)
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="Area">棟別</label>
+            <select class="form-select" name="ASN" id="ASN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
+        <div class="form-group">
+            <label for="Floor">樓層</label>
+            <select class="form-select" name="FSN" id="FSN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
+        <div class="form-group">
+            <label for="System">系統別</label>
+            <select class="form-select" name="System" id="System">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="SubSystem">子系統別</label>
+            <select class="form-select" name="SubSystem" id="SubSystem">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <input class="form-control" id="EName" name="EName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="IsEnable">啟用狀態</label>
+            <select class="form-select" name="IsEnable" id="IsEnable">
+                <option value="">請選擇</option>
+                <option value="0">停用</option>
+                <option value="1">啟用</option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <label for="checkall" class="btn btn-search mb-2">
+        <input type="checkbox" class="form-check-input" id="checkall">
+        全選本頁啟用狀態
+    </label>
+    <table id="DataGrid"></table>
+</div>
+
+<div class="d-flex justify-content-center mt-3 mb-5" style="gap:1rem">
+    <button type="button" class="btn btn-search" id="save">儲存本頁變更</button>
+</div>
+
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("EquipmentMaintainPeriod_Management", "Datagrid")';
+        var DataGrid;
+        
+
+        const fakeData = [
+            {
+                EMISN: "000003",
+                IsEnable: 1,
+                Area: "A棟",
+                Floor: "1F",
+                System: "處理",
+                SubSystem: "前處理",
+                ESN: "E00001",
+                EName: "除物皮帶輸送機",
+                MISN: "E00001_000001",
+                MIName: "軸承潤滑",
+                Unit: "月",
+                Period: "1",
+                LastTime: "2022/12/01",
+                NextTime: "2023/01/01",
+            }
+        ]
+
+        $(async function () {
+            await AreaFloorEvent();
+            await pushSelect("System", '@Url.Action("System", "DropDownList")');
+            const Systems = document.getElementById('System')
+            Systems.addEventListener("change", function () {
+                pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+            });
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+            addSaveClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'EMISN',
+                //sortName: 'EMISN',
+                //remoteSort: true,
+                frozenColumns: [[
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    //dg.frozenColumn('_locate', (v, row, i) => dg.eventButton(i, "定位", "locate", { disabled: row.DBID == null || row.DBID == "" })),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('EMISN'),
+                    dg.formatColumn('IsEnable', '啟用狀態', 100, function (val, row, index) {
+                        return `<input type="checkbox" class="form-check-input check-item" data-index="${index}" ${!!val ? "checked" : ""}/>`;
+                    }),
+                    dg.column('Area', '棟別', 130),
+                    dg.column('Floor', '樓層', 80),
+                    dg.column('System', '系統別', 100),
+                    dg.column('SubSystem', '子系統別', 120),
+                    dg.column('ESN', '設備編號', 100),
+                    dg.column('EState', '設備狀態', 100),
+                    dg.column('EName', '設備名稱', 220),
+                    dg.column('MISN', '保養項目編號', 130),
+                    dg.column('MIName', '項目名稱', 150),
+                    dg.column('Unit', '保養週期單位', 130),
+                    dg.column('Period', '保養週期', 100),
+                    dg.column('LastTime', '上次保養日期', 150),
+                    dg.column('NextTime', '最近應保養日期', 150),
+                    dg.hiddenColumn('DBID')
+                ]]
+            })
+
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.EMISN}`, "_self")
+            })
+            dg.addEvent("locate", function (row, i) {
+                window.open(`${baseUrl}/Locate/${row.EMISN}`, "_blank")
+            })
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+                pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+        }
+
+        //save onClick Function
+        function addSaveClickEvent() {
+            $("#checkall").change(function (e) {
+                let checked = e.target.checked;
+                $(".check-item").prop("checked", checked);
+            })
+
+            $("#save").click(function (e) { //儲存本頁變更
+                let cbs = $(".check-item");
+                let data = DataGrid.datagrid('getRows').map((e, i) => {
+                    return { EMISN: e.EMISN, IsEnable: cbs[i].checked };
+                });
+
+                console.log("onclick save:", data);
+
+                $.ajax({
+                    url: '@Url.Action("IsEnableEdit", "EquipmentMaintainPeriod_Management")',
+                    data: JSON.stringify(data),
+                    method: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+                function onSuccess(res) {
+                    console.log(res);
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "儲存本頁變更完成！",
+                    })
+                }
+
+                function onError(res) {
+                    console.log(res);
+                    createDialogModal({
+                        id: "DialogModal-Error",
+                        inner: "儲存本頁變更失敗！",
+                    })
+                }
+            })
+        }
+    </script>
+}

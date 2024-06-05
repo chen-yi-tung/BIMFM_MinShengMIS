@@ -1,0 +1,113 @@
+﻿@{
+    ViewBag.Title = "請購詳情";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
+
+<h2>請購詳情</h2>
+
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="FormInfo"></table>
+    </div>
+</div>
+
+<div class="datatable mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="Items"></table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        const PRN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("Read_Data", "PurchaseRequisition_Management")' + `/${PRN}`;
+
+        const SerializedName = [
+            { text: "請購單號", value: "PRN" },
+            { text: "請購人", value: "PRUserName" },
+            { text: "請購單狀態", value: "PRStateName" },
+            { text: "請購部門", value: "PRDept" },
+            { text: "請購申請日", value: "PRDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
+            { text: "審核日期", value: "AuditDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
+            { text: "審核結果說明", value: "AuditResult" },
+            { text: "相關文件", value: "FilePath" },
+        ]
+        const GridOptions = {
+            thead: true,
+            columns: [
+                { id: "KindName", title: "類別" },
+                { id: "ItemName", title: "品名" },
+                { id: "Size", title: "尺寸" },
+                { id: "PRAmount", title: "數量" },
+                { id: "UnitName", title: "單位" },
+                { id: "ApplicationPurpose", title: "申請用途" }
+            ]
+        }
+
+        const fakeData = {
+            PRN: "230101001",
+            PMSN: "1",
+            PRUserName: "黃助理",
+            PRState: "已處理",
+            PRDept: "人資部",
+            PRDate: "2021-12-10 05:01:10",
+            AuditDate: "2022-01-01",
+            AuditResult: '審核通過',
+            FilePath: "test.pdf",
+            PurchaseRequisitionItem: [
+                {
+                    Kind: "電子",
+                    ItemName: "LG手機",
+                    Size: "12寸",
+                    PRAmount: "4",
+                    Unit: "台",
+                    ApplicationPurpose: "測試"
+                },
+                {
+                    Kind: "電子",
+                    ItemName: "LG手機",
+                    Size: "12寸",
+                    PRAmount: "4",
+                    Unit: "台",
+                    ApplicationPurpose: "測試"
+                },
+                {
+                    Kind: "耗材",
+                    ItemName: "螺絲",
+                    Size: "12cm",
+                    PRAmount: "4",
+                    Unit: "包",
+                    ApplicationPurpose: "修補破損"
+                }
+            ]
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#FormInfo").append(createTableInner(res, SerializedName));
+                $("#Items").append(createTableGrid(res.PurchaseRequisitionItem, GridOptions));
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        window.onload = function () {
+            readData(apiUrl);
+        }
+    </script>
+}

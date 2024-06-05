@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "報修單詳情";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+}
+<h2>@ViewBag.Title</h2>
+
+<div class="datatable mt-5">
+    <div class="datatable-header">報修資料</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="ReportDetail"></table>
+    </div>
+</div>
+
+<section id="InspectionPlanRepairList"></section>
+
+@section scripts {
+    <script>
+        const RSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "Report_Management")' + `/${RSN}`;
+        //let apiUrl = null
+        const SerializedName = [
+            { text: "報修單號", value: "RSN" },
+            { text: "報修時間", value: "Date" },
+            { text: "報修等級", value: "ReportLevel" },
+            { text: "報修人員", value: "MyName" },
+            { text: "本報修單狀態", value: "ReportState" },
+            { text: "區域", value: "Area" },
+            { text: "樓層", value: "Floor" },
+            { text: "財產編碼", value: "PropertyCode" },
+            { text: "設備編號", value: "ESN" },
+            { text: "設備名稱", value: "EName" },
+            { text: "報修說明", value: "ReportContent" },
+            { text: "報修照片", value: "ImgPath" },
+        ]
+        const fakeData = {
+            "RSN": "R23022001",
+            "Date": "2023/2/20 09:00:00",
+            "ReportLevel": "施工中",
+            "MyName": "賈皓麟",
+            "ReportState": "審核未過",
+            "Area": "前處理機房",
+            "Floor": "B1F",
+            "PropertyCode": "35435",
+            "ESN": "E00003",
+            "EName": "粗攔物除物皮帶輸送機",
+            "ReportContent": "壞透透",
+            "ImgPath": [
+                "/Pictures/安妮雅.jfif"
+            ],
+            "InspectionPlanList": [
+                {
+                    "InspectionPlan": {
+                        "IPSN": "P23022203",
+                        "IPName": "維修設備E00003",
+                        "PlanDate": "2023/2/22",
+                        "PlanState": "巡檢完成",
+                        "Shift": "2",
+                        "MyName": "賈皓麟、羅紹齊"
+                    },
+                    "InspectionPlanRepair": {
+                        "RepairState": "審核未過",
+                        "RepairContent": "好了",
+                        "MyName": "賈皓麟",
+                        "RepairDate": "2023/2/22",
+                        "ImgPath": []
+                    },
+                    "RepairSupplementaryInfo": [],
+                    "RepairAuditInfo": [
+                        {
+                            "MyName": "陳進國",
+                            "AuditDate": "2023/2/22",
+                            "AuditResult": "審核未過",
+                            "AuditMemo": "沒修好",
+                            "ImgPath": []
+                        }
+                    ]
+                },
+                {
+                    "InspectionPlan": {
+                        "IPSN": "P23022301",
+                        "IPName": "再次維修設備E00003",
+                        "PlanDate": "2023/2/23",
+                        "PlanState": "巡檢完成",
+                        "Shift": "2",
+                        "MyName": "賈皓麟、羅紹齊"
+                    },
+                    "InspectionPlanRepair": {
+                        "RepairState": "審核未過",
+                        "RepairContent": "好了",
+                        "MyName": "賈皓麟",
+                        "RepairDate": "2023/2/23",
+                        "ImgPath": []
+                    },
+                    "RepairSupplementaryInfo": [],
+                    "RepairAuditInfo": [
+                        {
+                            "MyName": "陳進國",
+                            "AuditDate": "2023/2/23",
+                            "AuditResult": "審核未過",
+                            "AuditMemo": "還是沒修好",
+                            "ImgPath": []
+                        }
+                    ]
+                }
+            ]
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#ReportDetail").append(createTableInner(res, SerializedName));
+                InspectionPlanRepair("#InspectionPlanRepairList", res.InspectionPlanList);
+
+
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        window.onload = function () {
+
+            readData(apiUrl);
+        }
+
+    </script>
+}

@@ -1,0 +1,230 @@
+﻿@{
+    ViewBag.Title = "編輯竣工圖";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+    <style>
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                grid-template-columns: 250px 250px;
+            }
+        }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="edit-area edit-area-small">
+    <form class="form pt-0">
+        <div class="form-group required" hidden>
+            <label for="ADSN">竣工圖編號</label>
+            <input class="form-control" id="ADSN" name="ADSN" type="text" maxlength="50" required />
+        </div>
+        <div class="form-group required">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN" required disabled>
+                <option value="">請選擇</option>
+            </select>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
+
+        <div class="form-group required">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN" required disabled>
+                <option value="">請選擇</option>
+            </select>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
+
+        <div class="form-group required">
+            <label for="DSystemID">系統別</label>
+            <select class="form-select" name="DSystemID" id="DSystemID" required disabled>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group required">
+            <label for="DSubSystemID">子系統別</label>
+            <select class="form-select" name="DSubSystemID" id="DSubSystemID" required readonly disabled>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group required">
+            <label for="ImgNum">圖號</label>
+            <input class="form-control" id="ImgNum" name="ImgNum" type="text" maxlength="200" required />
+        </div>
+
+        <div class="form-group required">
+            <label for="ImgName">圖名</label>
+            <input class="form-control" id="ImgName" name="ImgName" type="text" maxlength="200" required />
+        </div>
+
+        <div class="form-group required">
+            <label for="ImgVersion">版本</label>
+            <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" maxlength="50" required />
+        </div>
+
+        <div id="FileUploader"></div>
+
+    </form>
+</div>
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">儲存</button>
+</div>
+
+@section scripts {
+    <script>
+
+        const ADSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "AsBuiltDrawing_Management")' + `/${ADSN}`;
+        //let apiUrl = null;
+
+        const fakeData = {
+            ASN: "1",
+            FSN: "1_1",
+            System: "BT",
+            SubSystem: "BT-11",
+            ImgNum: "M7-126",
+            ImgName: "空調控制配置平面圖",
+            UploadDate: "2023/04/11 10:30:26",
+            ImgVersion: "1.0",
+            ImgPath: "2023-03-30_B.png",
+        }
+
+        var fileUploader
+        $(async function () {
+            $("#_checkFilePath").prop("checked", true);
+            await AreaFloorEvent();
+            await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
+
+            const Systems = document.getElementById('DSystemID')
+            Systems.addEventListener("change", function () {
+                pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?System=${$('#System').val()}`);
+            });
+            addButtonEvent();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group g-col-2 required",
+                label: "檔案上傳",
+                id: "ImgFile",
+                customValidity: true
+            })
+
+            readData(apiUrl);
+        });
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+
+                for (const [k, v] of Object.entries(res)) {
+                    switch (k) {
+                        case "FSN":
+                            await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")?ASN=' + res.ASN);
+                            $(`#${k}`).val(v);
+                            break;
+                        case "DSubSystemID":
+                            await pushSelect("DSubSystemID", '@Url.Action("DSubSystem", "DropDownList")?DSystemID=' + res.DSystemID);
+                            $(`#${k}`).val(v);
+                            break;
+                        case "ImgPath":
+                            fileUploader.setFile(res.ImgPath)
+                            break;
+                        default:
+                            $(`#${k}`).val(v);
+                            break;
+                    }
+                }
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
+
+            var form = new FormData();
+            form.append("ADSN", document.getElementById("ADSN").value);
+            form.append("ImgNum", document.getElementById("ImgNum").value);
+            form.append("ImgName", document.getElementById("ImgName").value);
+            form.append("ImgVersion", document.getElementById("ImgVersion").value);
+            if (fileUploader.hasFile()) {
+                form.append("ImgPath", fileUploader.getFile());
+            }
+
+            console.log(Object.fromEntries(form.entries()));
+
+            $.ajax({
+                url: "/AsBuiltDrawing_Management/Edit",
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/AsBuiltDrawing_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#ImgPath").change(function (e) {
+                console.log(this.files);
+                if (this.files && this.files.length !== 0) {
+                    let file = this.files[0];
+                    $("#ImgPathName").text(file.name);
+                    $("#ImgPathGroup").removeClass('d-none');
+                    $("#_checkFilePath").prop("checked", true);
+                }
+            })
+
+            $("#ImgPathDelete").click(function () {
+                $("#ImgPath").val('');
+                $("#ImgPathName").text('');
+                $("#ImgPathGroup").addClass('d-none');
+                $("#_checkFilePath").prop("checked", false);
+            })
+
+            $("#submit").click(function () {
+                save();
+            })
+        }
+    </script>
+}

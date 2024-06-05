@@ -1,0 +1,88 @@
+﻿@{
+    ViewBag.Title = "刪除帳號";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="AccountInfo"></table>
+    </div>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
+</div>
+
+@section scripts {
+    <script>
+        const UserName = '@ViewBag.id';
+        const apiUrl = '@Url.Action("Delete_LoadData", "Account_Management")' + `/${UserName}`;
+
+        const SerializedName = [
+            { text: "帳號", value: "UserName" },
+            { text: "姓名", value: "MyName" },
+            { text: "權限", value: "Authority" },
+            { text: "信箱", value: "Email" },
+            { text: "電話", value: "PhoneNumber" },
+            { text: "單位", value: "Apartment" },
+            { text: "職稱", value: "Title" },
+        ]
+
+        const fakeData = {
+            UserName: "Admin",
+            MyName: "Admin",
+            Authority: "管理人員",
+            Email: "Admin123@gmail.com",
+            PhoneNumber: "0900123123",
+            Apartment: "Admin",
+            Title: "Admin",
+        }
+
+        window.onload = function () {
+            readData(apiUrl);
+            addButtonEvent();
+        }
+
+        function readData(url) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+            function onSuccess(res) {
+                console.log(res);
+                $("#AccountInfo").append(createTableInner(res, SerializedName));
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+            $("#delete").click(function () {
+                createDeleteDialog({
+                    url: '@Url.Action("Delete_Account", "Account_Management")' + `/${UserName}`,
+                    type: "DELETE",
+                    data: UserName,
+                    onSuccess() {
+                        window.location.href = '@Url.Action("Management", "Account_Management")';
+                    }
+                })
+            });
+        }
+
+    </script>
+}

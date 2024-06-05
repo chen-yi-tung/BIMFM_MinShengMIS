@@ -1,0 +1,331 @@
+﻿@{
+    ViewBag.Title = "領用編輯";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <style>
+        .datatable-input-area {
+            display: flex;
+            flex-direction: column;
+            max-width: 1090px;
+            margin: auto;
+            max-height: calc(100vh - var(--navbar-height));
+            max-height: calc(100dvh - var(--navbar-height));
+            gap: 1rem;
+        }
+
+        .max-w-scroll {
+            max-width: calc(1090px + 18px);
+        }
+
+        .datatable-input-area .edit-area {
+            max-height: 30rem;
+            padding: 1rem;
+            display: block;
+        }
+
+        .datatable-input-area .datatable,
+        .datatable-input-area .datatable-body {
+            max-height: 28rem;
+            margin: 0;
+        }
+
+        @@media (max-width:991.98px) {
+            .datatable-input-area .edit-area {
+                max-height: calc(100vh - var(--navbar-height) - 5rem);
+            }
+
+            .datatable-input-area .datatable,
+            .datatable-input-area .datatable-body {
+                max-height: calc(100vh - var(--navbar-height) - 7rem);
+            }
+        }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+<section style="max-width: 855px;margin: auto;">
+    <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-center" style="gap: 1rem 2rem;">
+        <form class="form d-lg-contents">
+            <div class="form-group w-lg-250px required">
+                <label for="SRUserName">申請人</label>
+                <select class="form-select" name="SRUserName" id="SRUserName" required>
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+
+            <div class="form-group w-lg-250px">
+                <label for="SRDept">申請部門</label>
+                <input class="form-control" id="SRDept" name="SRDept" type="text" maxlength="20" />
+            </div>
+
+            <div class="form-group w-lg-532px">
+                <label for="SRContent">領用原因</label>
+                <input class="form-control" id="SRContent" name="SRContent" type="text" maxlength="200" />
+            </div>
+        </form>
+    </div>
+
+</section>
+
+<section class="datatable-input-area mt-3">
+    <button type="button" class="btn btn-search align-self-start" id="create-item">+ 新增項目</button>
+    <form class="d-contents">
+        <div class="edit-area m-0">
+            <div class="datatable datatable-grid w-100 h-100">
+                <div class="datatable-body h-100 overflow-auto">
+                    <table class="datatable-table" style="width: max-content;">
+                        <thead>
+                            <tr>
+                                <th class="datatable-header required" style="width:175px"><span>品項</span></th>
+                                <th class="datatable-header required" style="width:250px"><span>品名</span></th>
+                                <th class="datatable-header required" style="width:120px"><span>數量</span></th>
+                                <th class="datatable-header required" style="width:150px"><span>單位</span></th>
+                                <th class="datatable-header" style="width:325px"><span>領用原因</span></th>
+                                <th class="datatable-header" style="width:36px"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="item-area">
+                            <tr id="sample-input-tr">
+                                <td id="d-StockType">
+                                    <select class="form-select" id="StockType" name="StockType" required></select>
+                                </td>
+                                <td id="d-StockName">
+                                    <select class="form-select" id="StockName" name="StockName" required></select>
+                                </td>
+                                <td id="d-Amount">
+                                    <input class="form-control" type="number" id="Amount" name="Amount" min="1"
+                                        value="1" step="any" required />
+                                </td>
+                                <td id="d-Unit">-</td>
+                                <td id="d-SRContent">
+                                    <input class="form-control" type="text" id="SRContent" name="SRContent"
+                                        maxlength="200" />
+                                </td>
+                                <td id="d-_delete" class="p-1 pt-2">
+                                    <button type="button" class="btn-delete-item"></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">儲存</button>
+</div>
+
+@section scripts {
+    <script>
+        const SRSN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("Edit_Data", "StoresRequisition_Management")' + `/${SRSN}`;
+        //const apiUrl = null;
+
+        const fakeData = {
+            SRSN: "000001",
+            SRUserName: "admin",
+            SRDept: "前處理",
+            SRContent: "除物皮帶輸送機",
+            StoresRequisitionItem: [
+                {
+                    StockType: "A",
+                    StockName: "A001",
+                    Amount: "1",
+                    Unit: "個",
+                    SRContent: "1",
+                },
+                {
+                    StockType: "D",
+                    StockName: "D001",
+                    Amount: "1",
+                    Unit: "個",
+                    SRContent: "1",
+                }
+            ]
+        }
+
+        let sampleTr;
+
+        function readData(url = null) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    //data: JSON.stringify(jsonData),
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                });
+
+            function onSuccess(res) {
+                console.log(res);
+                for (const [k, v] of Object.entries(res)) {
+                    $("#" + k).val(v)
+                }
+                res?.StoresRequisitionItem.forEach((item) => {
+                    sampleTr.create(item)
+                })
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        $(async function () {
+            sampleTr = new SampleTr();
+            await sampleTr.init()
+            await pushSelect("SRUserName", '@Url.Action("AllMyName", "DropDownList")');
+            addButtonEvent();
+            readData(apiUrl);
+        });
+
+        function SampleTr() {
+            this.count = 0;
+            this.list = $("#item-area")
+            this.init = async function () {
+                await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+                this.list.on("change", "#StockType", async function (e) {
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")[0]
+                    let id = item.id
+                    await pushSelect(`${id} #StockName`, `@Url.Action("FormStockName", "DropDownList")?StockType=${e.target.value}`);
+                })
+                this.list.on("change", "#StockName", async function (e) {
+                    if (!sampleTr.checkDuplicate()) {
+                        e.target.value = ""
+                        createDialogModal({ id: "DialogModal-Error", inner: `有重複的品項品名！` })
+                        return
+                    }
+
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")
+                    let id = item.attr("id")
+                    $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SISN=${e.target.value}`, (res) => {
+                        console.log(res)
+                        item.find("#d-Unit").text(res?.Unit || "-")
+                    })
+                })
+
+                const observer = new ResizeObserver((entries) => {
+                    for (const entry of entries) {
+                        let style = getComputedStyle(entry.target)
+                        let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
+                        let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
+                        $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
+                        //console.log(`${h} >= ${mh} ${h >= mh}`)
+                    }
+                })
+                observer.observe(this.list.closest(".datatable-body")[0])
+
+                this.list.on("click", ".btn-delete-item", function (e) {
+                    $(this).parent().parent().remove();
+                })
+
+                this.sample = $("#sample-input-tr").clone();
+                $("#sample-input-tr").remove();
+            }
+            this.create = function (data = null) {
+                let item = this.sample.clone();
+                item.attr('id', this.count);
+                this.list.append(item);
+                if (data != null) {
+                    pushSelect(`${item.attr("id")} #StockName`,
+                        `@Url.Action("FormStockName", "DropDownList")?StockType=${data.StockType}`)
+                        .then(() => {
+                            item.find("#StockName").val(data.SISN)
+                        });
+                    item.find("#StockType").val(data.StockType)
+                    item.find("#Amount").val(data.Amount)
+                    item.find("#d-Unit").text(data.Unit)
+                    item.find("#SRContent").val(data.SRContent)
+                }
+
+                this.count++;
+            }
+            this.calc = function () {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        SISN: $(e).find("#StockName").val(),
+                        Amount: $(e).find("#Amount").val(),
+                        SRContent: $(e).find("#SRContent").val()
+                    }
+                })
+            }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
+            }
+            this.checkDuplicate = () => {
+                let sisns = this.list.children().toArray().map((e) => {
+                    return $(e).find("#StockName").val()
+                }).filter(e => e || void 0)
+                let sets = new Set([...sisns])
+                return sisns.length == [...sets].length
+            }
+            return this;
+        }
+
+        function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
+
+            var form = new FormData();
+
+            form.append("SRSN", SRSN);
+            form.append("SRUserName", document.getElementById("SRUserName").value);
+            form.append("SRDept", document.getElementById("SRDept").value);
+            form.append("SRContent", document.getElementById("SRContent").value);
+
+            if (!sampleTr.checkValidity()) {
+                onError({ responseText: "請至少新增一個領用申請項目！" })
+                return;
+            }
+            sampleTr.calc().forEach((item, i) => {
+                form.append(`StoresRequisitionItem[${i}].SISN`, item.SISN);
+                form.append(`StoresRequisitionItem[${i}].Amount`, item.Amount);
+                form.append(`StoresRequisitionItem[${i}].SRContent`, item.SRContent);
+            })
+
+            console.log(Object.fromEntries(form.entries()));
+
+            $.ajax({
+                url: '@Url.Action("EditStoresRequisition", "StoresRequisition_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/StoresRequisition_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+            $("#create-item").click(function () {
+                sampleTr.create();
+            });
+            $("#submit").click(function () {
+                save();
+            });
+        }
+    </script>
+}

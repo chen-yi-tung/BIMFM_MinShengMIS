@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "月報刪除";
+}
+@section styles {
+    <link rel="stylesheet" href="/Content/samplepath.css">
+    <script src="/Scripts/datatable.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
+    <div class="datatable-body">
+        <table class="datatable-table"></table>
+    </div>
+</div>
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
+</div>
+
+@section scripts {
+    <script>
+        const MRSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
+        const fakeData = {
+            MRSN: "1",
+            ReportTitle: "2023-5月月報",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023/5/22",
+            ReportContent: "OOXX",
+            FilePath: "/Files/a.pdf"
+        }
+
+        const sn = [
+            { text: "月報名稱", value: "ReportTitle" },
+            { text: "上傳者", value: "UploadUserName" },
+            { text: "上傳日期", value: "UploadDateTime" },
+            { text: "內容說明", value: "ReportContent" },
+            { text: "月報檔案", value: "FilePath" },
+        ]
+
+
+        $(function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
+
+        function readData(url = null) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+                $(".datatable-table").append(createTableInner(res, sn))
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+            $("#delete").click(function () {
+                createDeleteDialog({
+                    url: '@Url.Action("Delete_MonthlyReport", "MonthlyReport_Management")?MRSN=' + MRSN,
+                    type: "DELETE",
+                    data: MRSN,
+                    onSuccess() {
+                        window.location.href = '@Url.Action("Management", "MonthlyReport_Management")';
+                    }
+                })
+            });
+        }
+    </script>
+}

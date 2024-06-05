@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Title = "實驗室標籤管理";
+}
+
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="ExperimentType">實驗類型</label>
+            <input class="form-control" id="ExperimentType" name="ExperimentType" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ExperimentName">實驗名稱</label>
+            <input class="form-control" id="ExperimentName" name="ExperimentName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EDateStart">標籤日期(起)</label>
+            <input class="form-control" id="EDateStart" name="EDateStart" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="EDateEnd">標籤日期(迄)</label>
+            <input class="form-control" id="EDateEnd" name="EDateEnd" type="date" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("LaboratoryLabel_Management", "Datagrid")';
+        var DataGrid;
+        
+
+        const fakeData = [
+            {
+                ELSN: "1",
+                ExperimentType: "水質分析",
+                ExperimentName: "汙水管水質檢測分析實驗",
+                EDate: "2023/08/14"
+            }
+        ]
+
+        $(async function () {
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'ELSN',
+                //sortName: 'ELSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('ELSN'),
+                    dg.column('ExperimentType', '實驗類型', 200),
+                    dg.column('ExperimentName', '實驗名稱', 400),
+                    dg.column('EDate', '標籤日期', 200),
+                ]]
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.ELSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.ELSN}`, "_self")
+            })
+
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

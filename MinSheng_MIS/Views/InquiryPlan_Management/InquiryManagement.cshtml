@@ -1,0 +1,301 @@
+﻿
+@{
+    ViewBag.Title = "詢價管理";
+}
+
+<link rel="stylesheet" href="/Content/samplepath.css">
+<link rel="stylesheet" href="/Content/tagbox.css">
+<link rel="stylesheet" href="/Content/datagrid-modal.css">
+
+<style>
+
+    .datagrid-modal .modal-middle {
+        height: calc(100vh - 38em);
+    }
+    .datatable-table td{
+        width:178px !important;
+    }
+
+    #QuotationItemInfo td:first-child {
+        background-color: #c6e1ff;
+        position: sticky;
+        left: 0;
+        z-index: 10;
+        width: 200px !important;
+    }
+
+
+
+</style>
+
+<h2>@ViewBag.Title</h2>
+<input class="form-control" id="IOISN" name="IOISN" type="text" hidden />
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="InquiryItemInfo"></table>
+    </div>
+</div>
+
+<div class="datatable datatable mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="InquiryItem">
+        </table>
+    </div>
+</div>
+
+<div class="datatable datatable mt-5">
+    <div class="datatable-body position-relative">
+        <span class="areaTitle">詢價結果</span>
+        <div class="overflow-auto">
+            <table class="datatable-table" id="QuotationItemInfo" style="table-layout: fixed;">
+                <tr id="MFRName_Place">
+                    <td class="datatable-table-th">廠商</td>
+                </tr>
+                <tr id="QSN_Place">
+                    <td class="datatable-table-th">詢價單</td>
+                </tr>
+                <tr id="ExcludeTaxTotal_Place">
+                    <td class="datatable-table-th">未稅總價</td>
+                </tr>
+                <tr id="DeliveryLocation_Place">
+                    <td class="datatable-table-th">交期</td>
+                </tr>
+                <tr id="QuotationFile_Place">
+                    <td class="datatable-table-th">報價單或其他資料</td>
+                </tr>
+            </table>
+        </div>      
+    </div>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-search" id="print">列印</button>
+    <button class="btn btn-export" id="submit">提交送審</button>
+</div>
+
+<div class="modal fade datagrid-modal" tabindex="-1" id="DatagridModal-InquiryPlanGroup">
+    <div class="modal-dialog modal-fullscreen modal-middle modal-middle modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <input class="form-control" id="PRIN" name="PRIN" type="text" hidden />
+                <h2>詢價項目詳情</h2>
+                <div class="datatable datatable mt-5">
+                    <div class="datatable-body">
+                        <table class="datatable-table" id="GroupInfo">
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/Scripts/datatable.js"></script>
+<script src="~/Scripts/InquiryPlan/GetjsonResult.js"></script>
+<script>
+    @*var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
+    eqList = eqList.replace("\r", "").replace("\n", "");
+    var equipmentList = JSON.parse(eqList);
+    console.log(equipmentList);*@
+    addButtonEvent()
+    const apiUrl = null;
+
+    const SerializedName = [
+        { text: "狀態", value: "IOState" },
+        { text: "單號", value: "IOSN" },
+        { text: "詢價人", value: "InquiryUserName" },
+    ]
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "Kind", title: "類別" },
+            { id: "ItemName", title: "品名"},
+            { id: "Size", title: "尺寸" },
+            { id: "Amount", title: "數量"},
+            { id: "Unit", title: "單位" },
+            {
+                id: "detail", title: "詳情", formatter: (val) => {
+                //return val ? `<button class="btn btn-grid-main" name="button" onclick="editUser1(' + index + ')">詳情</button>` : "-"
+                    return `<button class="btn btn-datagrid" name="button" data-bs-toggle="modal" data-bs-target="#DatagridModal-InquiryPlanGroup" onclick="InquiryInfoModal()">詳情</button>`
+            }
+        }
+        ],
+    }
+
+
+    const GridOptions2 = {
+        thead: true,
+        columns: [
+            { id: "Kind", title: "類別" },
+            { id: "ItemName", title: "品名" },
+            { id: "Size", title: "尺寸" },
+            { id: "Amount", title: "數量" },
+            { id: "Unit", title: "單位" },
+            { id: "ApplicationPurpose", title: "申請用途" },
+            { id: "EstimatedDate", title: "預計交期" },
+            
+        ],
+    }
+
+    const NullOption = {
+        thead: false,
+        columns: [
+            { id: "Kind", title: "類別" },
+            { id: "ItemName", title: "品名" },
+            { id: "Size", title: "尺寸" },
+            { id: "Amount", title: "數量" },
+            { id: "Unit", title: "單位" },
+            { id: "ApplicationPurpose", title: "申請用途" },
+            { id: "EstimatedDate", title: "預計交期" },
+        ],
+    }
+
+    const fakeData = {
+        IOState:"詢價中",
+        IOSN: "1120301001",
+        InquiryUserName: "王大明",
+        InquiryItem: [
+            {
+                Kind: "備料",
+                ItemName: "藥劑-1",
+                Size: "1L",
+                Amount:"10",
+                Unit:"罐",
+            },
+            {
+                Kind: "備料",
+                ItemName: "藥劑-2",
+                Size: "1L",
+                Amount: "10",
+                Unit: "罐",
+            },
+        ]
+    }
+
+    const InquiryItemDetail = {
+        IOSN: "1120301001",
+        InquiryGroupItem: [
+            {
+                Kind: "備料",
+                ItemName: "藥劑-1",
+                Size: "1L",
+                Amount: "10",
+                Unit: "罐",
+                ApplicationPurpose: "",
+                EstimatedDate: "",
+                IsMerge:1,
+                InquiryItem: [
+                    {
+                        Kind: "備料",
+                        ItemName: "藥劑-1",
+                        Size: "1L",
+                        Amount: "5",
+                        Unit: "罐",
+                        ApplicationPurpose: "123OOOOXX",
+                        EstimatedDate: "2023/03/01"
+                    },
+                    {
+                        Kind: "備料",
+                        ItemName: "藥劑-1",
+                        Size: "1L",
+                        Amount: "5",
+                        Unit: "罐",
+                        ApplicationPurpose: "123",
+                        EstimatedDate: "2023/03/02"
+                    }
+                ]
+            }
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :   //fakeData
+            $.ajax({
+                url: url,
+                data: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#InquiryItemInfo").append(createTableInner(res, SerializedName));
+            if (res.InquiryItem) {
+                $("#InquiryItem").append(createTableGrid(res.InquiryItem, GridOptions))
+            }
+            else {
+                $("#InquiryItem").parents(".datatable").remove();
+            }
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+    }
+
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("todo save():", isValidity)
+        if (!isValidity) return;
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+
+
+        $("#submit").click(function () {
+            save();
+            window.location.href = "/InquiryPlan_Management/Print";
+
+        })
+    }
+
+
+    function InquiryInfoModal(url = null) {
+
+        url == null ? onSuccess(InquiryItemDetail) :   //fakeData
+            $.ajax({
+                url: url,
+                data: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+
+            console.log("GroupItem:", res)
+            $("#GroupInfo")[0].innerHTML = ``
+            $("#GroupInfo").append(createTableGrid(res.InquiryGroupItem, GridOptions2));
+            $("#GroupInfo").append(createTableGrid(res.InquiryGroupItem[0].InquiryItem, NullOption));
+            $("#GroupInfo").children("thead").css("box-shadow", "0px 2px 5px 0px #cfcfcf");
+            $("#GroupInfo").children("tbody").eq(1).css("background", "#d6eaf5");
+        }
+        function onError(res) {
+            console.log(res);
+        }
+
+    }
+    getJSONresult();
+    
+
+</script>
+

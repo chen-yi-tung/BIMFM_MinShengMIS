@@ -1,0 +1,339 @@
+﻿.datatable {
+    --datatable-header-bg: #C6E1FF;
+    --datatable-header-color: #3D3D3D;
+    --datatable-body-bg: #F3FBFF;
+    --datatable-border-color: #8A9BA5;
+    --datatable-border-width: 1px;
+    --datatable-accordion-header-bg: #D7E5F5;
+    --datatable-accordion-header-color: #3D3D3D;
+    margin: auto;
+    border-color: var(--datatable-border-color);
+    border-style: solid;
+    border-width: var(--datatable-border-width);
+    width: 100%;
+}
+
+.datatable-table td,
+.datatable-accordion .accordion-header,
+.datatable-accordion .accordion-button,
+.datatable-accordion .accordion-item,
+th.datatable-header,
+.data-detail-modal .datatable-table {
+    border-color: var(--datatable-border-color);
+    border-style: solid;
+    border-width: 0;
+}
+
+.datatable+.datatable {
+    border-top-width: 0;
+}
+
+.datatable-header {
+    background: var(--datatable-header-bg);
+    color: var(--datatable-header-color);
+    text-align: center;
+    padding: 6px;
+    border-color: var(--datatable-border-color);
+    border-style: solid;
+    border-width: 0;
+    border-top-width: var(--datatable-border-width);
+    border-bottom-width: var(--datatable-border-width);
+}
+
+.datatable-secondary {
+    --datatable-header-bg: #4B85A3;
+    --datatable-header-color: #ffffff;
+}
+
+.datatable-secondary .accordion .datatable-header{
+    --datatable-header-bg: #E7F6FF;
+}
+
+.datatable-secondary>.datatable-body>.accordion>.accordion-item>.accordion-header>.accordion-button {
+    --datatable-accordion-header-bg: #C5ECFF;
+}
+
+.datatable-body {
+    background: var(--datatable-body-bg);
+}
+
+.datatable-body.overflow-auto .datatable-table{
+    min-width: max-content;
+}
+
+.datatable-table {
+    color: #3D3D3D;
+    text-align: center;
+    width: 100%;
+}
+
+.datatable-table td {
+    padding: 6px;
+    word-break: break-word;
+}
+
+.datatable-table pre {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 16px;
+    text-align: left;
+    width: fit-content;
+    margin: 0 auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.datatable-table tr+tr td {
+    border-top-width: var(--datatable-border-width);
+}
+
+.datatable-table .datatable-table-th {
+    border-right-width: var(--datatable-border-width);
+    width: 30%;
+}
+
+.datatable-img-area {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 7px 12px;
+    gap: 18px;
+}
+
+.datatable-img-item {
+    background: #AFD5FF;
+    border-radius: 5px;
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+    flex: 0 0 auto;
+}
+
+.datatable-img-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    cursor: pointer;
+}
+
+/* .datatable-accordion .accordion-button:not(.collapsed) {
+    border-bottom-width: var(--datatable-border-width);
+} */
+
+.datatable-accordion .accordion-item {
+    border-bottom-width: var(--datatable-border-width);
+}
+
+.datatable-accordion+.datatable-accordion .accordion-header {
+    border-top-width: var(--datatable-border-width);
+}
+
+.datatable-accordion .accordion-header .accordion-button {
+    padding: 8px 12px;
+    color: var(--datatable-accordion-header-color);
+    background: var(--datatable-accordion-header-bg);
+}
+
+.datatable-accordion .accordion-body {
+    padding: 0;
+}
+
+/* datatable small */
+
+/* .datatable-small {
+    width: 100%;
+} */
+
+/* th.datatable-header+th.datatable-header {
+    border-left-width: var(--datatable-border-width);
+    
+} */
+.datatable-small{
+    --datatable-table-th-width: 200px;
+}
+.datatable-small .datatable-table-th {
+    background: var(--datatable-header-bg);
+}
+
+/* datatable small grid */
+
+.datatable-table th.datatable-header{
+    font-weight: normal;
+    border-bottom-width: var(--datatable-border-width);
+}
+.datatable-table th.datatable-header+th.datatable-header{
+    border-left-width: var(--datatable-border-width);
+}
+
+.datatable-table td:not(.datatable-table-th)+td {
+    border-left-width: var(--datatable-border-width);
+}
+
+
+/* .datatable-small-grid {
+    width: 100%;
+} */
+
+/* input */
+
+.datatable .form-select,
+.datatable .form-control {
+    filter: drop-shadow(0 0 2px hsla(0, 0%, 0%, 0.25));
+    color: #494949;
+    border: 0;
+    border-radius: 0.375rem;
+}
+
+.datatable .form-control {
+    padding: 0.2rem 0.75rem;
+}
+
+.datatable .form-select {
+    padding: 0.2rem 2.25rem 0.2rem 0.75rem;
+}
+
+.datatable-table td:has(.form-select, .form-control) {
+    padding: 6px 24px;
+}
+
+.datatable .form-check-input[type=checkbox] {
+    --check-color: #357BAD;
+    border-width: 2px;
+    background-color: transparent;
+    border-color: var(--check-color);
+}
+
+.datatable-header .form-check-input[type=checkbox] {
+    --check-color: #fff;
+}
+
+.datatable-header.required span{
+    position: relative;
+}
+.datatable-header.required span::before{
+    content: '*';
+    position: absolute;
+    color: red;
+    left: -10px;
+}
+
+.datatable .form-check-input:indeterminate[type=checkbox] {
+    background-color: var(--check-color);
+    border-color: var(--check-color);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
+}
+
+.datatable .form-check-input:checked[type=checkbox] {
+    background-color: var(--check-color);
+    border-color: var(--check-color);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+.datatable-header .form-check-input:indeterminate[type=checkbox] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
+}
+
+.datatable-header .form-check-input:checked[type=checkbox] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+/* data-detail-modal */
+.data-detail-modal {
+    --bs-modal-bg: #D9EFFD;
+    --bs-modal-header-padding: 0.6em 1em;
+    --bs-modal-padding: 0;
+    --bs-modal-border-radius: 0;
+    --datatable-border-width: 1px;
+    --datatable-border-color: #8A9BA5;
+}
+
+.data-detail-modal .datatable-table {
+    border-width: 1px 0;
+}
+
+.data-detail-modal .datatable-table-th {
+    width: 9em;
+    padding-right: 1em;
+    text-align: end;
+    background-color: #E1EDF5;
+}
+
+.data-detail-modal .datatable-table-td {
+    padding-left: 1em;
+    text-align: start;
+    background-color: #FFFFFF;
+}
+
+.data-detail-modal .modal-footer {
+    padding: 0.4em;
+}
+
+/* easyui */
+
+.datatable-easyui .datagrid {
+    --theme-datagrid-thead-bg: #C6E1FF;
+    --theme-datagrid-thead-hover-bg: #adc6e2;
+    --theme-datagrid-thead-color: #3d3d3d;
+}
+
+.datatable-easyui .datagrid-wrap {
+    height: inherit !important;
+}
+
+.datatable-easyui .datagrid-sort-icon {
+    opacity: 0.8;
+    filter: brightness(200%);
+}
+
+.datatable-easyui .datagrid-sort-asc .datagrid-sort-icon,
+.datatable-easyui .datagrid-sort-desc .datagrid-sort-icon {
+    opacity: 0.8;
+    filter: brightness(90%);
+}
+
+/* RWD */
+
+@media (min-width: 992px) {
+    .datatable {
+        max-width: 100%;
+        width: 914px;
+    }
+
+    .datatable-grid {
+        max-width: 914px;
+        width: auto;
+    }
+
+    .datatable-fill {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .datatable-small {
+        width: 504px;
+    }
+
+    .datatable-small-grid {
+        width: 550px;
+    }
+
+    .datatable-small .datatable-table-th {
+        width: var(--datatable-table-th-width);
+    }
+
+    .datatable-table-th {
+        width: 300px;
+    }
+
+    .datatable-img-area {
+        padding: 7px 60px;
+        gap: 30px;
+    }
+
+    .datatable-img-item {
+        width: 97px;
+    }
+
+    .edit-area .datatable-grid{
+        max-width: 100%;
+    }
+}

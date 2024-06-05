@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "實驗室維護管理詳情";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
+    <div class="datatable-body">
+        <table class="datatable-table"></table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        const LMSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("Read_Data", "LaboratoryMaintenance_Management")' + `/${LMSN}`;
+        //let apiUrl = null;
+
+        const fakeData = {
+            LMSN: "1",
+            MType: "人員維護",
+            MTitle: "水質分析室緊急逃生路線",
+            MContent: "緊急逃生說明",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023/11/11 12:01:01",
+            FilePath: "/Files/a.pdf"
+        }
+
+        const sn = [
+            { text: "維護類型", value: "MType" },
+            { text: "標題", value: "MTitle" },
+            { text: "說明", value: "MContent" },
+            { text: "上傳者", value: "UploadUserName" },
+            { text: "上傳日期時間", value: "UploadDateTime" },
+            { text: "維護檔案", value: "FilePath" },
+        ]
+
+
+        $(function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+                $(".datatable-table").append(createTableInner(res, sn))
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+        }
+    </script>
+}

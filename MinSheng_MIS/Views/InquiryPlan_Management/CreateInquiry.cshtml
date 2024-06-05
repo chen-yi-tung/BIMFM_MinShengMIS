@@ -1,0 +1,204 @@
+﻿
+@{
+    ViewBag.Title = "新增詢價單";
+}
+
+<h2>@ViewBag.Title</h2>
+<input class="form-control" id="IOISN" name="IOISN" type="text" hidden />
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="InquiryItemInfo"></table>
+    </div>
+</div>
+
+<div class="datatable datatable mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="InquiryItem">
+        </table>
+    </div>
+</div>
+
+    
+<div class="edit-area edit-area-small flex-wrap flex-md-row position-relative mt-5" style="gap: 1rem 2rem;">
+    <span class="areaTitle">廠商資料</span>
+    <form class="form d-lg-contents">
+        <div class="form-group w-lg-250px ">
+            <label for="MFRDropDownList">匯入現有的供應商</label>
+            <select class="form-select" name="MFRDropDownList" id="MFRDropDownList">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group w-lg-250px ">
+            <label for="MFRName">其他供應商</label>
+            <input class="form-control" id="MFRName" name="MFRName" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-250px ">
+            <label for="ContactPerson">聯絡人</label>
+            <input class="form-control" id="ContactPerson" name="ContactPerson" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-250px ">
+            <label for="MFRTelNO">電話</label>
+            <input class="form-control" id="MFRTelNO" name="MFRTelNO" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-250px ">
+            <label for="MFRMBPhone">手機</label>
+            <input class="form-control" id="MFRMBPhone" name="MFRMBPhone" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-250px ">
+            <label for="MFREmail">電子郵件</label>
+            <input class="form-control" id="MFREmail" name="MFREmail" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-75 px-xxl-4">
+            <label for="MFRAddress">地址</label>
+            <input class="form-control" id="MFRAddress" name="MFRAddress" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-75 px-xxl-4">
+            <label for="MFRWeb">網站</label>
+            <input class="form-control" id="MFRWeb" name="MFRWeb" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-75 px-xxl-4">
+            <label for="MFRMainProduct">主要商品</label>
+            <input class="form-control" id="MFRMainProduct" name="MFRMainProduct" type="text" maxlength="50" required="">
+        </div>
+
+    </form>
+</div>
+
+
+
+<div class="edit-area edit-area-small flex-wrap flex-md-row position-relative mt-5" style="gap: 1rem 2rem;">
+    <span class="areaTitle">交貨資訊</span>
+    <form class="form d-lg-contents">
+        <div class="form-group w-lg-250px ">
+            <label for="PaymentMethod">付款方式</label>
+            <input class="form-control" id="PaymentMethod" name="PaymentMethod" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-250px ">
+            <label for="DeliveryMethod">交貨方式</label>
+            <input class="form-control" id="DeliveryMethod" name="DeliveryMethod" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-250px ">
+            <label for="DeliveryDate">交貨時間</label>
+            <input class="form-control" id="DeliveryDate" name="DeliveryDate" type="text" maxlength="50" required="">
+        </div>
+
+        <div class="form-group w-lg-250px ">
+            <label for="DeliveryLocation">交貨地點</label>
+            <input class="form-control" id="DeliveryLocation" name="DeliveryLocation" type="text" maxlength="50" required="">
+        </div>
+    </form>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增及列印</button>
+</div>
+
+<script src="/Scripts/datatable.js"></script>
+<script>
+    @*var eqList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@Model.JsonStr));
+    eqList = eqList.replace("\r", "").replace("\n", "");
+    var equipmentList = JSON.parse(eqList);
+    console.log(equipmentList);*@
+    addButtonEvent()
+    const apiUrl = null;
+
+    const SerializedName = [
+        { text: "單號", value: "IOSN" },
+        { text: "詢價人", value: "InquiryUserName" },
+    ]
+
+    const GridOptions = {
+        thead: true,
+        columns: [
+            { id: "Kind", title: "類別" },
+            { id: "ItemName", title: "品名"},
+            { id: "Size", title: "尺寸" },
+            { id: "Amount", title: "數量"},
+            { id: "Unit", title: "單位"},
+        ]
+    }
+
+    const fakeData = {
+        IOSN: "1120301001",
+        InquiryUserName: "王大明",
+        InquiryItem: [
+            {
+                Kind: "潤滑劑",
+                ItemName: "軸承潤滑劑B",
+                Size: "1L",
+                Amount:"10",
+                Unit:"罐",
+            },
+            {
+                Kind: "潤滑劑",
+                ItemName: "軸承潤滑劑C",
+                Size: "1L",
+                Amount: "10",
+                Unit: "罐",
+            }
+        ]
+    }
+
+    function readData(url = null) {
+
+        url == null ? onSuccess(fakeData) :   //fakeData
+            $.ajax({
+                url: url,
+                data: JSON.stringify(jsonData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+        function onSuccess(res) {
+            console.log(res);
+            $("#InquiryItemInfo").append(createTableInner(res, SerializedName));
+            if (res.InquiryItem) {
+                $("#InquiryItem").append(createTableGrid(res.InquiryItem, GridOptions))
+            }
+            else {
+                $("#InquiryItem").parents(".datatable").remove();
+            }
+        }
+        function onError(res) {
+            console.log(res);
+        }
+    }
+
+    window.onload = function () {
+        readData(apiUrl);
+    }
+
+    function save() {
+        let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+        console.log("todo save():", isValidity)
+        if (!isValidity) return;
+    }
+
+    function addButtonEvent() {
+        $("#back").click(function () {
+            history.back();
+        })
+
+
+        $("#submit").click(function () {
+            save();
+            window.location.href = "/InquiryPlan_Management/Print";
+            
+        })
+    }
+</script>
+

@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "實驗標籤詳情";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table" id="LaboratoryLabelInfo"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-small-grid mt-5">
+    <div class="datatable-header">實驗標籤</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="LaboratoryLabelItem">
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        const ELSN = '@ViewBag.id'
+        const apiUrl = '@Url.Action("Read_Data", "LaboratoryLabel_Management")' + `/${ELSN}`;
+        //const apiUrl = null;
+
+        const SerializedName = [
+            { text: "實驗類型", value: "ExperimentType" },
+            { text: "實驗名稱", value: "ExperimentName" },
+            { text: "實驗日期", value: "EDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
+            { text: "上傳者", value: "UploadUserName" },
+            { text: "上傳日期時間", value: "UploadDateTime" },
+        ]
+
+        const GridOptions = {
+            thead: false,
+            columns: [
+                { id: "index", title: "項目編號", width: "10%" },
+                { id: "data", title: "項目名稱", width: "90%" },
+            ]
+        }
+
+        const fakeData = {
+            ExperimentType: "水質分析",
+            ExperimentName: "汙水管水質檢測分析實驗",
+            TAWSN: "1",
+            EDate: "2023/08/14",
+            UploadUserName: "王大明",
+            UploadDateTime: "2023/08/13",
+            LaboratoryLabelItem: [
+                {
+                    ELISN: "230814001_001",
+                    LabelName: "2023/08/14_5M樣品_1",
+                },
+                {
+                    ELISN: "230814001_002",
+                    LabelName: "2023/08/14_5M樣品_2",
+                }
+            ]
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :   //fakeData
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#LaboratoryLabelInfo").append(createTableInner(res, SerializedName));
+                res.LaboratoryLabelItem ?
+                    $("#LaboratoryLabelItem").append(createTableGrid(
+                        createIndexToArrayData(res.LaboratoryLabelItem, "LabelName"),
+                        GridOptions
+                    )) :
+                    $("#LaboratoryLabelItem").parents(".datatable").remove();
+            }
+            function onError(res) {
+                console.log(res);
+            }
+
+            function createIndexToArrayData(arr, key) {
+                return arr.map((e, i) => {
+                    return {
+                        index: i + 1,
+                        data: e[key]
+                    }
+                })
+            }
+        }
+
+        window.onload = function () {
+            readData(apiUrl);
+        }
+    </script>
+}

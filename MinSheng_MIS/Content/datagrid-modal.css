@@ -1,0 +1,110 @@
+﻿.datagrid-modal {
+	--bs-modal-bg: linear-gradient(180deg, #E9F7FF 0%, #DCE6FF 100%);
+	--bs-modal-margin: 0;
+	--bs-modal-border-radius: 5px;
+	--bs-modal-border-color: transparent;
+	--bs-modal-footer-border-color: transparent;
+}
+
+
+.datagrid-modal .modal-fullscreen {
+	width: initial;
+	max-width: none;
+	height: calc(100vh - 4em);
+	margin: 2em 5em;
+}
+
+.datagrid-modal .modal-middle {
+	width: calc(100vh - -9em);
+    max-width: none;
+    height: calc(100vh - 26em);
+    margin: 5em auto;
+}
+
+.datagrid-modal .modal-footer {
+	padding-top: 0;
+}
+
+.datagrid-modal .modal-content {
+	background: var(--bs-modal-bg);
+	border-radius: var(--bs-modal-border-radius);
+}
+
+.datagrid-modal .modal-body {
+	display: flex;
+	flex-direction: column;
+}
+
+.datagrid-modal .modal-body h2 {
+	color: #626F7E;
+	font-size: 36px;
+	margin-bottom: 0;
+}
+
+/* search-area */
+
+.datagrid-modal .search-area {
+	background: #D5E1F0;
+	box-shadow: none;
+}
+
+.datagrid-modal .search-area .form-group label {
+	color: #5B5B5B;
+}
+
+.datagrid-modal .search-area .form-control,
+.datagrid-modal .search-area .form-select {
+	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+}
+
+.datagrid-modal .search-area .form-control.readonly,
+.datagrid-modal .search-area .form-select.readonly {
+	background: #ffffff9e;
+	color: #7e7e7e !important;
+	font-size: 1rem;
+}
+
+/* datagrid */
+
+.datagrid-modal .datagrid {
+	width: 100% !important;
+	height: 100%;
+	min-height: 440px;
+	--theme-datagrid-thead-bg: #D5E1F0;
+    --theme-datagrid-thead-hover-bg: #b4c0cf;
+    --theme-datagrid-thead-color: #494949;
+}
+
+.datagrid-modal .datagrid-sort-icon {
+    opacity: 1;
+	filter: grayscale(100%) brightness(150%);
+}
+
+.datagrid-modal .datagrid-sort-asc .datagrid-sort-icon,
+.datagrid-modal .datagrid-sort-desc .datagrid-sort-icon {
+    opacity: 1;
+    filter: brightness(90%);
+}
+
+.datagrid-modal  .l-btn-icon {
+    filter: brightness(100%);
+}
+
+.datagrid-modal .datagrid .datagrid-wrap {
+	width: inherit !important;
+	height: inherit !important;
+}
+
+
+@media (max-width: 767.98px) {
+
+	.datagrid-modal .modal-fullscreen {
+		height: calc(100vh - 2em);
+		margin: 1em;
+	}
+
+	.datagrid-modal .datagrid {
+		min-height: calc(100vh - 7.875em);
+		min-height: calc(100dvh - 7.875em);
+	}
+}

@@ -1,0 +1,354 @@
+﻿@{
+    ViewBag.Title = "巡檢保養紀錄補件";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/InspectionPlanMaintain.js" defer></script>
+    <script src="/Scripts/dataTable/MaintainRecord.js" defer></script>
+    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+<section>
+    <section id="MaintainRecord"></section>
+
+    <section id="InspectionPlanMaintainList"></section>
+
+    <div class="edit-button-area mb-5">
+        <button class="btn btn-search" id="OtherMaintainRecord">本設備其他定期保養紀錄</button>
+        <button class="btn btn-back" id="RepairRecord">本設備維修紀錄</button>
+    </div>
+</section>
+
+<hr class="hr-dashed">
+
+<section>
+    <div class="edit-area edit-area-middle">
+        <form class="form form-w-100" enctype="multipart/form-data">
+            <div class="form-group d-lg-contents">
+                <label for="MaintainState">本次保養狀態</label>
+                <div>
+                    <input class="form-control readonly w-lg-auto d-lg-inline-block" type="text" id="MaintainState"
+                        name="MaintainState" readonly>
+                    <div class="form-group d-lg-contents mt-lg-0" style="margin-top: 24px;">
+                        <label for="MyName" class="mx-lg-3  w-lg-auto d-lg-inline-block">填報人員</label>
+                        <input class="form-control readonly  w-lg-auto d-lg-inline-block" type="text" id="MyName"
+                            name="MyName" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group d-lg-contents">
+                <label for="MaintainDate">填報時間</label>
+                <input class="form-control readonly" type="text" id="MaintainDate" name="MaintainDate" readonly>
+            </div>
+            <div class="form-group d-lg-contents">
+                <label for="MaintainContent" class="align-self-start">保養備註</label>
+                <textarea class="form-control" name="MaintainContent" id="MaintainContent" maxlength="200"
+                    required></textarea>
+            </div>
+
+            <div class="form-group d-lg-contents">
+                <label for="ImgPath">保養照片</label>
+                <div>
+                    <label class="btn btn-search" for="ImgPath">選擇照片</label>
+                    <input type="file" multiple accept="image/*" id="ImgPath" name="ImgPath"
+                        style="visibility: hidden; width: 0;">
+                </div>
+            </div>
+            <div class="d-lg-contents">
+                <div></div>
+                <div class="edit-img-area">
+
+                </div>
+            </div>
+
+            <hr class="hr-dashed" style="grid-column: span 2;">
+
+            <div class="form-group d-lg-contents">
+                <label for="SupplementaryUserID">補件人員</label>
+                <input class="form-control readonly" type="text" id="SupplementaryUserID" name="SupplementaryUserID"
+                    readonly>
+            </div>
+            <div class="form-group d-lg-contents required">
+                <label for="SupplementaryContent" class="align-self-start">補件說明</label>
+                <textarea class="form-control" name="SupplementaryContent" id="SupplementaryContent" maxlength="200"
+                    required></textarea>
+            </div>
+
+            <div class="form-group d-lg-contents">
+                <label for="FilePath">補件檔案</label>
+                <div>
+                    <label class="btn btn-search" for="FilePath">選擇檔案</label>
+                    <input type="file" id="FilePath" name="FilePath" style="visibility: hidden; width: 0;">
+                    <span class="d-inline-block text-white align-bottom text-break my-2 ms-lg-2">未選擇任何檔案</span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="edit-button-area mb-5">
+        <button class="btn btn-back" onclick="history.back()">返回</button>
+        <button class="btn btn-export" onclick="save()">送出</button>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+
+        const IPMSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "MaintainRecord_Management")' + `/${IPMSN}`;
+        let GetSupDataUrl = '@Url.Action("Supplement_GetData", "MaintainRecord_Management")' + `/${IPMSN}`; //Method : Get  取得下方保養資料
+        let SubmitUrl = '@Url.Action("Supplement_Submit", "MaintainRecord_Management")';//Method : Post    type = formdata    提交下方表格，除了表格本身資料要傳之外，還須提供 IPMSN
+        //let apiUrl = null
+
+        let imgFiles = [];
+        let SupFile = [];
+
+        const fakeData = {
+            EquipmentMaintainFormItem: {
+                FormItemState: "完成",
+                EMFISN: "E00003_000001_230107",
+                MIName: "軸承潤滑",
+                Unit: "月",
+                Period: "1",
+                LastTime: "2022/12/01",
+                Date: "2022/01/01",
+                ESN: "E00003",
+            },
+            InspectionPlan: {
+                IPSN: "P23010401",
+                IPName: "巡檢A區計畫",
+                PlanDate: "2023/01/08",
+                PlanState: "巡檢完成",
+                Shift: "早班",
+                MyName: "王大明、李泰順",
+            },
+            InspectionPlanMaintain: {
+                MaintainState: "完成",
+                MyName: "王大明",
+                MaintainContent: "修復完成",
+                MaintainDate: "2023/01/07 12:40:56",
+                ImgPath: [
+                    "/Content/img/bg.png"
+                ],
+            },
+            MaintainSupplementaryInfo: [
+                {
+                    MyName: "王大明",
+                    SupplementaryDate: "2023/01/10",
+                    SupplementaryContent: "OOXX",
+                    FilePath: ["/file/電燈故障.pdf"],
+                }
+            ],
+            MaintainAuditInfo: [
+                {
+                    MyName: "陳組長",
+                    AuditDate: "2023/1/12",
+                    AuditResult: "審核未過",
+                    AuditMemo: "未處理完善",
+                    ImgPath: [
+                        "/Content/img/bg.png"
+                    ],
+                }
+            ],
+            InspectionPlanList: [
+                {
+                    "InspectionPlan": {
+                        "IPSN": "P23022203",
+                        "IPName": "維修設備E00003",
+                        "PlanDate": "2023/2/22",
+                        "PlanState": "巡檢完成",
+                        "Shift": "2",
+                        "MyName": "賈皓麟、羅紹齊"
+                    },
+                    "InspectionPlanMaintain": {
+                        "MaintainState": "審核未過",
+                        "MaintainContent": "好了",
+                        "MyName": "賈皓麟",
+                        "MaintainDate": "2023/2/22",
+                        "ImgPath": []
+                    },
+                    "MaintainSupplementaryInfo": [
+                        {
+                            "MyName": "王大明",
+                            "SupplementaryDate": "2023/1/15",
+                            "SupplementaryContent": "OOXX",
+                            "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
+                        }
+                    ],
+                    "MaintainAuditInfo": [
+                        {
+                            "MyName": "陳進國",
+                            "AuditDate": "2023/2/22",
+                            "AuditResult": "審核未過",
+                            "AuditMemo": "沒修好",
+                            "ImgPath": []
+                        }
+                    ]
+                },
+            ]
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                MaintainRecord("#MaintainRecord", res);
+                InspectionPlanMaintain("#InspectionPlanMaintainList", res.InspectionPlanList);
+
+                $("#SupplementaryUserID").val($("#NavbarUserName").text());
+
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function GetSuppleData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                for (const [k, v] of Object.entries(res)) {
+                    switch (k) {
+                        case 'ImgPath':
+                            ImgPath(v);
+                            break;
+                        default:
+                            $("#" + k).val(v);
+                            break;
+                    }
+                }
+                function ImgPath(v) {
+                    v.length !== 0 && v.forEach((url) => {
+                        let CurFile;
+                        let filename = url.split("/").pop();
+                        fetch(url)
+                            .then(response => response.blob())
+                            .then(blob => {
+                                const file = new File([blob], filename, { type: blob.type });
+                                imgFiles.push(file);
+                                CurFile = file
+                            })
+                        let query = $(`
+                                <div class="edit-img-item">
+                                    <img src="${url}">
+                                    <button class="btn-delete-item"></button>
+                                </div>`);
+                        $(".edit-img-area").append(query);
+                        ImageDisplay(query.children("img"));
+                        query.children("button").click(function (event) {
+                            event.preventDefault();
+                            let index = imgFiles.findIndex((e) => e == CurFile);
+                            imgFiles.splice(index, 1);
+                            $(this).parent().remove();
+                        })
+                    })
+                }
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            const form = new FormData();
+            form.append("IPMSN", IPMSN);
+            form.append("MaintainContent", $("#MaintainContent").val());
+            for (let i = 0; i < imgFiles.length; i++) {
+                form.append(`Img${i}`, imgFiles[i]);
+            }
+
+            form.append("SupplementaryUserID", $("#NavbarUserID").val());
+            form.append("SupplementaryContent", $("#SupplementaryContent").val());
+            form.append("File", SupFile[0]);
+
+            $.ajax({
+                "url": SubmitUrl,
+                "method": "POST",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form
+            }).done(function (response) {
+                console.log(response);
+                createDialogModal({
+                    id: "DialogModal-Success",
+                    inner: "送出成功！",
+                    onHide: () => {
+                        window.location.href = '@Url.Action("Management", "MaintainRecord_Management")';
+                    }
+                })
+            });
+        }
+
+        function addButtonEvent() {
+            $("#ImgPath").change(function (e) {
+                console.log(this.files);
+                if (this.files && this.files.length !== 0) {
+                    createIamges(this.files);
+                }
+
+                function createIamges(data) {
+                    for (let i = 0; i < data.length; i++) {
+                        imgFiles.push(data[i]);
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            let query = $(`
+                            <div class="edit-img-item">
+                                <img src="${e.target.result}">
+                                <button class="btn-delete-item"></button>
+                            </div>`);
+                            $(".edit-img-area").append(query);
+                            ImageDisplay(query.children("img"));
+                            query.children("button").click(function (event) {
+                                event.preventDefault();
+                                let index = imgFiles.findIndex((e) => e == data[i]);
+                                imgFiles.splice(index, 1);
+                                $(this).parent().remove();
+                            })
+                        };
+                        reader.readAsDataURL(data[i]);
+                    }
+                }
+            });
+            $("#FilePath").change(function (e) {
+                console.log(this.files);
+                if (this.files && this.files.length !== 0) {
+                    $(this).next().text(this.files[0].name);
+                    SupFile = [];
+                    SupFile.push(this.files[0]);
+                }
+            });
+        }
+
+        window.onload = function () {
+            readData(apiUrl);
+            GetSuppleData(GetSupDataUrl);
+            addButtonEvent();
+        }
+
+    </script>
+}

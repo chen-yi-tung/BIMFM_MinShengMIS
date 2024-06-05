@@ -1,0 +1,248 @@
+﻿@{
+    ViewBag.Title = "報修單管理";
+}
+
+@section styles {
+    @Html.Partial("DataGridScripts", true)
+
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增報修</button>
+
+<div class="search-area">
+    <form class="form" method="post" action="" id="ReportManagementForm">
+
+        <div class="form-group">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
+        <div class="form-group">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="ReportState">報修單狀態</label>
+            <select class="form-select" name="ReportState" id="ReportState">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ReportLevel">報修等級</label>
+            <select class="form-select" name="ReportLevel" id="ReportLevel">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="RSN">報修單號</label>
+            <input class="form-control" id="RSN" name="RSN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <input class="form-control" id="EName" name="EName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="PropertyCode">財產編碼</label>
+            <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ReportContent">報修說明</label>
+            <input class="form-control" id="ReportContent" name="ReportContent" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="InformantUserID">報修人員</label>
+            <select class="form-select" name="InformantUserID" id="InformantUserID">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="DateFrom">日期(起)</label>
+            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateTo">日期(迄)</label>
+            <input class="form-control" id="DateTo" name="DateTo" type="date" />
+        </div>
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+            <button type="button" class="btn btn-export" id="export">匯出</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("Report_Management", "Datagrid")';
+        var DataGrid;
+
+
+        const fakeData = [
+            {
+                ReportState: "已派工",
+                ReportLevel: "最速件",
+                Area: "A棟",
+                Floor: "1F",
+                ReportSource: "APP",
+                RSN: "R23010601",
+                Date: "2023/1/6 15:00:02",
+                PropertyCode: "無",
+                ESN: "E00001",
+                EName: "日光燈",
+                ReportContent: "故障",
+                MyName: "王大明",
+            }
+        ]
+
+        $(async function () {
+            await AreaFloorEvent();
+            await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
+            await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
+            await pushSelect("InformantUserID", '@Url.Action("ReportUser", "DropDownList")');
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'RSN',
+                //sortName: 'RSN',
+                remoteSort: true,
+                frozenColumns: [[
+                    dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
+                    dg.frozenColumn('_dispatch', (v, row, i) => dg.eventButton(i, "派工", "dispatch", { disabled: row.EState == "停用" || !(row.ReportState == "待派工" || row.ReportState == "未完成" || row.ReportState == "審核未過") })),
+                    //dg.frozenColumn('_locate', (v, row, i) => dg.eventButton(i, "定位", "locate", { disabled: row.DBID == null || row.DBID == "" })),
+                    dg.frozenColumn('_cancel', "", 111, (v, row, i) => dg.eventButton(i, "取消保留", "cancel", { disabled: !(row.ReportState == "保留中(待派工)" || row.ReportState == "保留中(未完成)" || row.ReportState == "保留中(審核未過)") })),
+                ]],
+                columns: [[
+                    dg.column('ReportState', '報修單狀態', 145),
+                    dg.column('ReportLevel', '報修等級', 100),
+                    dg.column('Area', '棟別', 130),
+                    dg.column('Floor', '樓層', 80),
+                    dg.column('ReportSource', '報修來源', 100),
+                    dg.column('RSN', '報修單號', 116),
+                    dg.column('Date', '報修時間', 200),
+                    dg.column('PropertyCode', '財產編碼', 150),
+                    dg.column('ESN', '設備編號', 100),
+                    dg.hiddenColumn('EState'),
+                    dg.column('EName', '設備名稱', 220),
+                    dg.column('MyName', '報修人員', 110),
+                    dg.column('ReportContent', '報修內容', 300),
+                    dg.hiddenColumn('DBID')
+                ]]
+            })
+
+            dg.addEvent("read", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.RSN}`, "_blank")
+            })
+            dg.addEvent("dispatch", function (row, i) {
+                window.open(`${baseUrl}/Dispatch/${row.RSN}`, "_self")
+            })
+            dg.addEvent("locate", function (row, i) {
+                window.open(`${baseUrl}/Locate/${row.RSN}`, "_blank")
+            })
+            dg.addEvent("cancel", function (row, i) {
+                let url = `${baseUrl}/Cancel/${row.RSN}`
+                $.ajax({
+                    url: url,
+                    method: "Post",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success(res) {
+                        createDialogModal({
+                            id: "DialogModal-Success",
+                            inner: "取消保留成功！",
+                        })
+                        DataGrid.datagrid('clearSelections');
+                        DataGrid.datagrid('reload');
+                    },
+                    error(err) {
+                        createDialogModal({
+                            id: "DialogModal-Error",
+                            inner: "取消保留失敗！",
+                        })
+                    }
+                })
+            })
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#export").click(function () {
+                let form = new FormData($(".search-area form")[0])
+                form.append("rows", DataGrid.datagrid("getData").total)
+                $.ajax({
+                    url: `${baseUrl}/Export`,
+                    type: "POST",
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    success(result) {
+                        if (result.FileDownloadName == '' || result.FileContents.length == 0) return
+                        const bytes = new Uint8Array(result.FileContents);
+                        const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = result.FileDownloadName;
+                        link.click();
+                    }
+                });
+            });
+
+            //$("#export").click(function () {
+            //    window.open(`${baseUrl}/Export`, "_self");
+            //});
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "刪除設計圖說";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<input type="text" id="DDSN" name="DDSN" value="@ViewBag.id" hidden>
+
+<div class="datatable datatable-small mt-5">
+    <div class="datatable-body">
+        <table class="datatable-table"></table>
+    </div>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
+</div>
+
+@section scripts {
+    <script>
+        const DDSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadbodyForDelete", "DesignDiagrams")' + `/${DDSN}`;
+        // let apiUrl = null;
+
+        const fakeData = {
+            DDSN: "230502002",
+            ImgPath: "/Files/DesignDiagrams/230502002.jpg",
+            ImgName: "機電A設計圖",
+            ImgType: "機電類",
+            UploadDate: "2023/05/02",
+            DesignDiagrams: "123",
+        }
+
+        const sn = [
+            { text: "設計圖說編號", value: "DDSN" },
+            { text: "圖名", value: "ImgName" },
+            { text: "圖說種類", value: "ImgType" },
+            {
+                text: "設計圖說檔案", value: "DesignDiagrams", formatter: (v) => {
+                    if (v.split('.').at(-1).toLowerCase() === "pdf") {
+                        return `<a href="/Files/DesignDiagrams${v}" target="_blank">${v.split('/').at(-1)}</a>`;
+                    }
+                    else {
+                        return `<div class="datatable-img-area justify-content-center"><div class="datatable-img-item"><img src="${v}"/></div></div>`;
+                    }
+                }
+            },
+        ]
+
+        $(async function () {
+            addButtonEvent();
+            readData(apiUrl);
+        });
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            async function onSuccess(res) {
+                console.log(res);
+
+                $(".datatable-table").append(createTableInner(res, sn))
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#delete").click(function () {
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteDesignDiagrams", "DesignDiagrams")/' + DDSN,
+                    data: DDSN,
+                    onSuccess() {
+                        let url = '@Url.Action("Management", "DesignDiagrams")';
+                        window.location.href = url;
+                    }
+                })
+            });
+        }
+    </script>
+}

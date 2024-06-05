@@ -1,0 +1,225 @@
+﻿@{
+    ViewBag.Title = "資產管理";
+}
+
+@section styles {
+    @Html.Partial("DataGridScripts", true)
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增設備</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="EState">設備狀態</label>
+            <select class="form-select" name="EState" id="EState">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Area" name="Area" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div>
+            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+        </div>
+
+        <div class="form-group">
+            <label for="RoomName">空間名稱</label>
+            <input class="form-control" id="RoomName" name="RoomName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="System">系統別</label>
+            <select class="form-select" name="System" id="System">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="SubSystem">子系統別</label>
+            <select class="form-select" name="SubSystem" id="SubSystem">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <input class="form-control" id="EName" name="EName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Brand">廠牌</label>
+            <input class="form-control" id="Brand" name="Brand" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Model">型號</label>
+            <input class="form-control" id="Model" name="Model" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="PropertyCode">財產編碼</label>
+            <input class="form-control" id="PropertyCode" name="PropertyCode" type="text" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+@section scripts {
+    <script>
+
+        var getGridJSON = '@Url.Action("EquipmentInfo_Management", "Datagrid")';
+        var DataGrid;
+        
+
+        const fakeData = [
+            {
+                EState: "正常",
+                Area: "A棟",
+                Floor: "1F",
+                RoomName: "機房115旁",
+                System: "前處理",
+                SubSystem: "前處理",
+                ESN: "E00001",
+                EName: "除物皮帶輸送機",
+                Brand: "A廠牌",
+                Model: "A256-O8",
+                PropertyCode: "VF2ADS112",
+                FilePath: '',
+                DBID: '',
+            }
+        ]
+
+        $(async function () {
+            await AreaFloorEvent();
+            await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
+            await pushSelect("System", '@Url.Action("System", "DropDownList")');
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+
+            const Systems = document.getElementById('System')
+            Systems.addEventListener("change", function () {
+                pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+            });
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'PSSN',
+                //sortName: 'PSSN',
+                remoteSort: true,
+                frozenColumns: [[
+                    /*
+                    dg.frozenColumn('_locate', (v, row, i) => {
+                        let disabled = row.DBID == null || row.DBID == "";
+                        return dg.eventButton(i, "定位", "locate", { disabled: disabled })
+                    }),*/
+                    dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('FilePath', "", 111, (v, row, i) => {
+                        let disabled = v == null || v == "";
+                        return dg.eventButton(i, "操作手冊", "filePath", { disabled: disabled })
+                    }),
+                    dg.frozenColumn('_activate', (v, row, i) => {
+                        return row.EState == "停用" ?
+                            dg.eventButton(i, "啟用", "activate") :
+                            dg.eventButton(i, "停用", "deactivate", { className: "btn btn-datagrid btn-datagrid-secondary" })
+                    }),
+                ]],
+                columns: [[
+                    dg.column('EState', '設備狀態', 110),
+                    dg.column('Area', '棟別', 130),
+                    dg.column('Floor', '樓層', 80),
+                    dg.column('RoomName', '空間名稱', 110),
+                    dg.column('System', '系統別', 200),
+                    dg.column('SubSystem', '子系統別', 250),
+                    dg.column('ESN', '設備編號', 110),
+                    dg.column('EName', '設備名稱', 200),
+                    dg.column('Brand', '廠牌', 110),
+                    dg.column('Model', '型號', 110),
+                    dg.column('PropertyCode', '財產編碼', 150),
+                    //dg.column('EOMFilePath', '設備操作手冊路徑', 150),
+                ]]
+            })
+            dg.addEvent("locate", function (row, i) {
+                window.open(`${baseUrl}/Locate/${row.ESN}`, "_blank")
+            })
+            dg.addEvent("read", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.ESN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.ESN}`, "_self")
+            })
+            dg.addEvent("filePath", function (row, i) {
+                window.open(row.FilePath, "_blank")
+            })
+            dg.addEvent("activate", function (row, i) {
+                console.log("activate", i)
+                //todo activate
+            })
+            dg.addEvent("deactivate", function (row, i) {
+                console.log("deactivate", i)
+                //todo deactivate
+            })
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("ASN", '@Url.Action("ASN", "DropDownList")');
+                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+                pushSelect("System", '@Url.Action("System", "DropDownList")');
+                pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+                pushSelect("EState", '@Url.Action("EState", "EState")');
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/CreateEquipment`, "_self");
+            });
+        }
+    </script>
+}

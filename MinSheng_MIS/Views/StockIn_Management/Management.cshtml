@@ -1,0 +1,157 @@
+﻿@{
+    ViewBag.Title = "入庫管理";
+}
+
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增入庫</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="SIRSN">入庫編號</label>
+            <input class="form-control" id="SIRSN" name="SIRSN" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="StockType">品項</label>
+            <select class="form-select" name="StockType" id="StockType">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="StockName">品名</label>
+            <input class="form-control" id="StockName" name="StockName" type="text" />
+        </div>
+        <div class="form-group">
+            <label for="StockInMyName">入庫人員</label>
+            <input class="form-control" id="StockInMyName" name="StockInMyName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="DateStart">日期(起)</label>
+            <input class="form-control" id="DateStart" name="DateStart" type="date" max='@($"{DateTime.Now:yyyy-MM-dd}")'/>
+        </div>
+
+        <div class="form-group">
+            <label for="DateEnd">日期(迄)</label>
+            <input class="form-control" id="DateEnd" name="DateEnd" type="date" max='@($"{DateTime.Now:yyyy-MM-dd}")'/>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+            <button type="button" class="btn btn-export" id="export">匯出</button>
+        </div>
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("StockIn_Management", "Datagrid")';
+        var DataGrid;
+
+        const fakeData = [
+            {
+                SIRSN: "SI230506001",
+                StockType: "備料",
+                StockName: "軸承潤滑劑",
+                Size: "10L",
+                TotalAmount: "50",
+                Unit: "罐",
+                StockInDateTime: "2023/05/06 9:00",
+                StockInMyName: "王大明"
+            },
+            {
+                SIRSN: "SI230506001",
+                StockType: "備料",
+                StockName: "軸承潤滑劑",
+                Size: "10L",
+                TotalAmount: "50",
+                Unit: "罐",
+                StockInDateTime: "2023/05/06 9:00",
+                StockInMyName: "王大明"
+            }
+        ]
+
+        $(async function () {
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+            await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'SIRSN',
+                //sortName: 'SIRSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_read', (v, row, i) => dg.eventButton(i, "詳情", "read")),
+                ]],
+                columns: [[
+                    dg.column('SIRSN', '入庫編號', 200),
+                    dg.column('StockType', '品項', 200),
+                    dg.column('StockName', '品名', 200),
+                    dg.column('TotalAmount', '總數量', 160),
+                    dg.column('Unit', '單位', 180),
+                    dg.column('StockInDateTime', '入庫時間', 240),
+                    dg.column('StockInMyName', '入庫人員', 240)
+                ]]
+            })
+            dg.addEvent("read", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.SIRSN}`, "_blank")
+            })
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+
+            $("#export").click(function () {
+                let form = new FormData($(".search-area form")[0])
+                form.append("rows", DataGrid.datagrid("getData").total)
+                $.ajax({
+                    url: `/StockIn_Management/Export`,
+                    type: "POST",
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    success(result) {
+                        if (result.FileDownloadName == '' || result.FileContents.length == 0) return
+                        const bytes = new Uint8Array(result.FileContents);
+                        const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = result.FileDownloadName;
+                        link.click();
+                    }
+                });
+            });
+        }
+    </script>
+}

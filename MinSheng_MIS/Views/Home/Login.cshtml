@@ -1,0 +1,52 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "登入";
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 民生資訊管理系統</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/popper.min.js")
+    @Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
+
+    @Styles.Render("~/Content/login.css")
+    <script src="/Scripts/datatable.js" defer></script>
+</head>
+
+<body>
+    <div class="login-body">
+        <form method="post" class="p-3" id="form">
+            @Html.AntiForgeryToken()
+            <div class="px-4 mb-3">
+                <img class="login-logo w-100" src="/Content/img/logo.png" alt="臺北市政府工務局衛生下水道工程處">
+            </div>
+            <h1 class="login-title mb-5">民生資訊管理系統</h1>
+            <input class="form-control mb-4" type="text" id="UserID" name="UserID" value="admin" placeholder="帳號">
+            <input class="form-control mb-5" type="password" id="UserPW" name="UserPW" autocomplete="current-password" value="admin" placeholder="密碼">
+            <button class="btn btn-login" type="submit">登入</button>
+        </form>
+    </div>
+</body>
+
+</html>
+
+<script>
+    window.onload = function () {
+        var message = '@ViewBag.Message';
+        if (message != '') {
+            createDialogModal({
+                id: "DialogModal-Error", inner: message,
+                onHide: () => {
+                    // window.location.href = "/AsBuiltDrawing_Management/Management"
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "定期保養單詳情";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/InspectionPlanMaintain.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="datatable mt-5">
+    <div class="datatable-header">保養項目資料</div>
+    <div class="datatable-body">
+        <table class="datatable-table" id="FormDetail"></table>
+    </div>
+</div>
+
+<section id="InspectionPlanMaintainList"></section>
+
+@section scripts {
+    <script>
+        const EMFISN = '@ViewBag.EMFISN';
+        let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;
+        //let apiUrl = null;
+
+        const SerializedName = [
+            { text: "本保養單項目狀態", value: "FormItemState" },
+            { text: "保養單項目編號", value: "EMFISN" },
+            { text: "保養項目", value: "MIName" },
+            { text: "保養週期單位", value: "Unit" },
+            { text: "保養週期", value: "Period" },
+            { text: "上次保養", value: "LastTime" },
+            { text: "最近應保養", value: "Date" },
+            {
+                text: "設備屬性", value: "ESN", formatter: (val) => {
+                    return val ? `<button class="btn btn-search" onclick="EquipmentInfoModal('@Url.Action("ReadEquipment", "EquipmentInfo_Management")'+'/${val}')">設備資料</button>` : "-"
+                }
+            },
+        ]
+
+        const fakeData = {
+            FormItemState: "完成",
+            EMFISN: "E00003_000001_230107",
+            MIName: "軸承潤滑",
+            Unit: "月",
+            Period: "1",
+            LastTime: "2022/12/01",
+            Date: "2022/01/01",
+            ESN: "E00003",
+            InspectionPlanList: [
+                {
+                    "InspectionPlan": {
+                        "IPSN": "P23022203",
+                        "IPName": "維修設備E00003",
+                        "PlanDate": "2023/2/22",
+                        "PlanState": "巡檢完成",
+                        "Shift": "2",
+                        "MyName": "賈皓麟、羅紹齊"
+                    },
+                    "InspectionPlanMaintain": {
+                        "MaintainState": "審核未過",
+                        "MaintainContent": "好了",
+                        "MyName": "賈皓麟",
+                        "MaintainDate": "2023/2/22",
+                        "ImgPath": []
+                    },
+                    "RepairSupplementaryInfo": [
+                        {
+                            "MyName": "王大明",
+                            "SupplementaryDate": "2023/1/15",
+                            "SupplementaryContent": "OOXX",
+                            "FilePath": ["/file/電燈故障.pdf", "/file/電燈故障2.pdf"],
+                        }
+                    ],
+                    "RepairAuditInfo": [
+                        {
+                            "MyName": "陳進國",
+                            "AuditDate": "2023/2/22",
+                            "AuditResult": "審核未過",
+                            "AuditMemo": "沒修好",
+                            "ImgPath": []
+                        }
+                    ]
+                },
+            ]
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#FormDetail").append(createTableInner(res, SerializedName));
+                InspectionPlanMaintain("#InspectionPlanMaintainList", res.InspectionPlanList);
+
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+
+        window.onload = function () {
+
+            readData(apiUrl);
+        }
+    </script>
+}

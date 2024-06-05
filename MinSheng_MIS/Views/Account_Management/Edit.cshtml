@@ -1,0 +1,133 @@
+﻿@{
+    ViewBag.Title = "編輯帳號";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="edit-area edit-area-small">
+    <form class="form" action="" id="editForm" enctype="multipart/form-data">
+        <div class="form-group d-lg-contents">
+            <label for="UserName">帳號</label>
+            <input class="form-control readonly" type="text" name="UserName" id="UserName" readonly>
+        </div>
+
+        <div class="form-group d-lg-contents required">
+            <label for="MyName">姓名</label>
+            <input class="form-control" type="text" name="MyName" id="MyName" maxlength="50" required>
+        </div>
+
+        <div class="form-group d-lg-contents required">
+            <label for="Authority">權限</label>
+            <select class="form-select" name="Authority" id="Authority" required>
+                <option value="">請選擇</option>
+                <option value="1">管理人員</option>
+                <option value="2">操作人員</option>
+                <option value="3">一般人員</option>
+            </select>
+        </div>
+
+        <div class="form-group d-lg-contents required">
+            <label for="Email">信箱</label>
+            <input class="form-control" type="email" name="Email" id="Email" maxlength="256" required>
+        </div>
+
+        <div class="form-group d-lg-contents">
+            <label for="PhoneNumber">電話</label>
+            <input class="form-control" type="tel" name="PhoneNumber" id="PhoneNumber">
+        </div>
+
+        <div class="form-group d-lg-contents">
+            <label for="Apartment">單位</label>
+            <input class="form-control" type="text" name="Apartment" id="Apartment" maxlength="20">
+        </div>
+        <div class="form-group d-lg-contents">
+            <label for="Title">職稱</label>
+            <input class="form-control" type="text" name="Title" id="Title" maxlength="20">
+        </div>
+
+    </form>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">儲存</button>
+</div>
+
+@section scripts {
+    <script>
+        const UserName = '@ViewBag.id';
+        let apiUrl = '@Url.Action("Edit_LoadData", "Account_Management")' + `/${UserName}`;
+
+        const fakeData = {
+            UserName: "Admin",
+            MyName: "Admin",
+            Authority: "1",
+            Email: "Admin123@gmail.com",
+            PhoneNumber: "0900123123",
+            Apartment: "Admin",
+            Title: "Admin",
+        }
+
+        window.onload = function () {
+            readData(apiUrl);
+            addButtonEvent();
+        }
+
+        function readData(url) {
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+            function onSuccess(res) {
+                console.log(res);
+                for (const [k, v] of Object.entries(res)) {
+                    $(`#${k}`).val(v);
+                }
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+            $("#submit").click(function () {
+                console.log("onclick submit")
+                const form = document.querySelector('#editForm');
+                const formData = new FormData(form);
+                $.ajax({
+                    url: '@Url.Action("Edit_SaveData", "Account_Management")',
+                    type: "POST",
+                    dataType: 'json',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: onSuccess,
+                    error: onError
+                });
+
+                function onSuccess(res) {
+                    console.log(res);
+                    createDialogModal({
+                        id: "DialogModal-Success", inner: "儲存成功！",
+                        onHide: () => { window.location.href = "/Account_Management/Management"; }
+                    });
+                }
+                function onError(res) {
+                    console.log(res);
+                    createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+                }
+            })
+        }
+    </script>
+}

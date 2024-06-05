@@ -1,0 +1,228 @@
+﻿@{
+    ViewBag.Title = "巡檢紀錄";
+}
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+    <style>
+        .datatable-light .datatable-header {
+            background-color: #C6E1FF;
+            color: inherit;
+            font-weight: inherit;
+        }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<section id="InspectionPlanInfo"></section>
+
+<div class="datatable datatable-fill mt-5">
+    <div class="datatable-header">設備保養紀錄</div>
+    <div class="datatable-body datatable-easyui">
+        <table id="DataGrid-Maintain"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-fill mt-5">
+    <div class="datatable-header">設備維修紀錄</div>
+    <div class="datatable-body datatable-easyui">
+        <table id="DataGrid-Repair"></table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        const IPSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("Record_Data", "InspectionPlan_Management")' + `/${IPSN}`;
+        //let apiUrl = null;
+        let apiUrl_Maintain = '@Url.Action("InspectationPlan_Record_EquipMaintain", "Datagrid")';
+        let apiUrl_Repair = '@Url.Action("InspectationPlan_Record_EquipRepair", "Datagrid")';
+
+        const sn = {
+            InspectionPlan: [
+                { text: "計畫編號", value: "IPSN" },
+                { text: "計畫名稱", value: "IPName" },
+                { text: "計畫日期", value: "PlanDate" },
+                { text: "計畫執行狀態", value: "PlanState" },
+                { text: "巡檢班別", value: "Shift" },
+                { text: "巡檢人員", value: "MyName" },
+            ],
+            InspectionPlanRecord: [
+                { text: "巡檢狀態", value: "PlanState" },
+                { text: "填報人", value: "MyName" },
+                { text: "填報時間", value: "DateOfFilling" },
+                { text: "填報備註", value: "InspectionRecord" },
+                { text: "照片", value: "ImgPath" },
+            ],
+        }
+
+        const GridOptions = {
+            thead: true,
+            columns: [
+                { id: "MyName", title: "巡檢人員" },
+                { id: "WatchID", title: "手環編號" },
+                {
+                    id: "PMSN", title: "詳情", formatter: (val) => {
+                        return val ? `<a class="btn btn-search" href="/InspectionPlan_Management/TrackRecord/${val}" target="_blank">詳情</a>` : "-";
+                    }
+                },
+            ]
+        }
+
+        const fakeData = {
+            InspectionPlan: {
+                IPSN: "P23010401",
+                IPName: "IPName",
+                PlanDate: "PlanDate",
+                PlanState: "PlanState",
+                Shift: "Shift",
+                MyName: "MyName",
+            },
+            InspectionPlanRecord: {
+                PlanState: "PlanState",
+                MyName: "MyName",
+                DateOfFilling: "DateOfFilling",
+                InspectionRecord: "InspectionRecord",
+                ImgPath: [""],
+            },
+            InspectionPlanMember: [
+                {
+                    MyName: "王大明",
+                    WatchID: "11",
+                    PMSN: "PMSN",
+                },
+                {
+                    MyName: "王大明",
+                    WatchID: "11",
+                    PMSN: "PMSN",
+                },
+            ]
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#InspectionPlanInfo").append(
+                    createTableOuter({
+                        title: "巡檢計劃資訊",
+                        id: "InspectionPlan",
+                        className: "mt-5",
+                        inner: createTableInner(res.InspectionPlan, sn.InspectionPlan),
+                    }),
+                    createTableOuter({
+                        title: "巡檢完工填報",
+                        id: "InspectionPlanRecord",
+                        //className: "mt-5",
+                        inner: createTableInner(res.InspectionPlanRecord, sn.InspectionPlanRecord),
+                    }),
+                    createTableOuter({
+                        id: "InspectionPlanMember",
+                        className: "datatable-light",
+                        inner: createTableGrid(res.InspectionPlanMember, GridOptions),
+                    })
+                );
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function initDatagrid_Maintain(url) {
+            let dg = new DG();
+            dg.addEvent("detail", function (row, i) {
+                window.open(`/MaintainRecord_Management/Read/${row.IPMSN}`, "_blank")
+            })
+            return dg.init('#DataGrid-Maintain', {
+                url,
+                queryParams: { IPSN },
+                idField: 'IPMSN',
+                fit: false,
+                rownumbers: false,
+                pagination: false,
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', "", 111, (v, row, i) => dg.eventButton(i, "填報內容", "detail")),
+                    //dg.frozenColumn('_locate', (v, row, i) => dg.eventButton(i, "定位", "locate"))
+                ]],
+                columns: [[
+                    dg.hiddenColumn('IPMSN'),
+                    dg.hiddenColumn('IPSN'),
+                    dg.column('MaintainState', '保養單狀態', 120),
+                    dg.column('Area', '棟別', 130),
+                    dg.column('Floor', '樓層', 80),
+                    dg.column('ESN', '設備編號', 110),
+                    dg.column('EName', '設備名稱', 200),
+                    dg.column('EState', '設備狀態', 210),
+                    dg.column('EMFISN', '保養項目編號', 210),
+                    dg.column('MIName', '保養項目', 200),
+                    dg.column('Period', '週期', 110),
+                    dg.column('Unit', '週期單位', 150),
+                    dg.column('LastTime', '上次保養', 180),
+                    dg.column('NextTime', '下次預計保養', 180)
+                ]],
+            })
+        }
+
+        function initDatagrid_Repair(url) {
+            let dg = new DG();
+            dg.addEvent("detail", function (row, i) {
+                window.open(`/RepairRecord_Management/Read/${row.IPRSN}`, "_blank")
+            })
+            return dg.init('#DataGrid-Repair', {
+                url,
+                queryParams: { IPSN },
+                idField: 'IPRSN',
+                fit: false,
+                rownumbers: false,
+                pagination: false,
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', "", 111, (v, row, i) => dg.eventButton(i, "填報內容", "detail")),
+                    //dg.frozenColumn('_locate', (v, row, i) => dg.eventButton(i, "定位", "locate"))
+                ]],
+                columns: [[
+                    dg.hiddenColumn('IPRSN'),
+                    dg.hiddenColumn('IPSN'),
+                    dg.column('RepairState', '維修單狀態', 120),
+                    dg.column('Area', '棟別', 130),
+                    dg.column('Floor', '樓層', 80),
+                    dg.column('ESN', '設備編號', 110),
+                    dg.column('EName', '設備名稱', 200),
+                    dg.column('RSN', '報修單號', 120),
+                    dg.column('ReportLevel', '報修等級', 106),
+                    dg.column('Date', '報修時間', 180),
+                    dg.column('InformantUserID', '報修人員', 110),
+                    dg.column('ReportContent', '報修內容', 110)
+                ]],
+            })
+        }
+
+        window.onload = function () {
+            readData(apiUrl);
+            const Datagrid_Maintain = initDatagrid_Maintain(apiUrl_Maintain);
+            const Datagrid_Repair = initDatagrid_Repair(apiUrl_Repair);
+            const observer = new ResizeObserver((e) => {
+                Datagrid_Maintain.datagrid('resize');
+                Datagrid_Repair.datagrid('resize');
+            });
+            observer.observe(document.querySelector(".datatable-easyui"));
+        }
+    </script>
+}

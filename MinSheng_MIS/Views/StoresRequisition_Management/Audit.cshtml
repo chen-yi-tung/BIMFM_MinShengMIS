@@ -1,0 +1,210 @@
+﻿@{
+    ViewBag.Title = "領用審核";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <style>
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                align-items: flex-start;
+            }
+
+            .datatable-large {
+                max-width: 100%;
+                width: 1132px;
+            }
+        }
+    </style>
+}
+<h2>@ViewBag.Title</h2>
+
+<div class="datatable datatable-small mt-5">
+    <div div class="datatable-body">
+        <table class="datatable-table" id="Info"></table>
+    </div>
+</div>
+
+<div class="datatable datatable-large mt-5">
+    <form class="datatable-body overflow-auto">
+        <table class="datatable-table" style="width: max-content;" id="StoresRequisitionItem">
+        </table>
+    </form>
+</div>
+
+<div class="edit-area edit-area-small mt-5" style="gap: 1rem 2rem;">
+    <form class="form">
+        <div class="form-group d-lg-contents">
+            <label for="AuditUserID">審核人員</label>
+            <input class="form-control readonly" id="AuditUserID" name="AuditUserID" type="text" readonly
+                value='@Session["MyName"]'>
+        </div>
+        <div class="form-group d-lg-contents">
+            <label for="AuditContent">審核意見</label>
+            <textarea class="w-100" name="AuditContent" id="AuditContent" rows="5" maxlength="200"></textarea>
+        </div>
+    </form>
+</div>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-submit" id="submit">送出</button>
+</div>
+
+@section scripts {
+    <script>
+        const SRSN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("Audit_Data", "StoresRequisition_Management")' + `/${SRSN}`;
+        //const apiUrl = null;
+        const SerializedName = [
+            { text: "領用編號", value: "SRSN" },
+            { text: "領用人員", value: "SRMyName" },
+            { text: "領用部門", value: "SRDept" },
+            { text: "領用原因", value: "SRContent" }
+        ]
+
+        const fakeData = {
+            SRSN: "SR230502001",
+            SRMyName: "王大明",
+            SRDept: "機電部門",
+            SRContent: "OOXX",
+            StoresRequisitionItem: [
+                {
+                    SRISN: "PR23041201_01",
+                    StockType: "潤滑劑",
+                    StockName: "軸承潤滑劑B",
+                    Amount: "10",
+                    RemainingAmount: "9",
+                    Unit: "罐",
+                    SRContent: "OOXX",
+                },
+                {
+                    SRISN: "PR23041201_01",
+                    StockType: "潤滑劑",
+                    StockName: "軸承潤滑劑B",
+                    Amount: "10",
+                    RemainingAmount: "9",
+                    Unit: "罐",
+                    SRContent: "OOXX",
+                },
+                {
+                    SRISN: "PR23041201_01",
+                    StockType: "潤滑劑",
+                    StockName: "軸承潤滑劑B",
+                    Amount: "10",
+                    RemainingAmount: "9",
+                    Unit: "罐",
+                    SRContent: "OOXX",
+                }
+            ]
+        }
+
+        const GridOptions = {
+            thead: true,
+            columns: [
+                {
+                    id: "_result", title: "審核結果", width: "160px", formatter: (v, row, i) => {
+                        return `
+                        <div class="d-flex justify-content-center" style="gap:1rem;">
+                            <div class="form-group">
+                                <input type="radio" id="AuditResult_${i}_1" value="2" name="AuditResult_${i}" required>
+                                <label for="AuditResult_${i}_1">退件</label>
+                            </div>
+                            <div class="form-group">
+                                <input type="radio" id="AuditResult_${i}_2" value="3" name="AuditResult_${i}" required>
+                                <label for="AuditResult_${i}_2">通過</label>
+                            </div>
+                        </div>
+                        `
+                    }
+                },
+                { id: "StockType", title: "品項", width: "150px" },
+                { id: "StockName", title: "品名", width: "250px" },
+                { id: "Amount", title: "數量", width: "120px" },
+                { id: "RemainingAmount", title: "剩餘可領取數量", width: "150px" },
+                { id: "Unit", title: "單位", width: "100px" },
+                { id: "SRContent", title: "領用原因", width: "200px" },
+            ]
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :   //fakeData
+                $.ajax({
+                    url: url,
+                    //data: JSON.stringify(jsonData),
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#Info").append(createTableInner(res, SerializedName));
+                if (res.StoresRequisitionItem) {
+                    $("#StoresRequisitionItem").append(createTableGrid(res.StoresRequisitionItem, GridOptions))
+                }
+                else {
+                    $("#StoresRequisitionItem").parents(".datatable").remove();
+                }
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
+
+            var form = new FormData();
+            form.append("SRSN", SRSN);
+            form.append("AuditContent", document.getElementById("AuditContent").value);
+
+            $("[name^='AuditResult']:checked").toArray().forEach((item, i) => {
+                form.append(`AuditResult[${i}]`, item.value);
+            })
+
+            console.log(Object.fromEntries(form.entries()));
+
+            //return;
+            $.ajax({
+                url: '@Url.Action("AuditStoresRequisition", "StoresRequisition_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "修改成功！",
+                    onHide: () => { window.location.href = "/StoresRequisition_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `修改失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+
+            $("#submit").click(function () {
+                save();
+            });
+        }
+
+        window.onload = function () {
+            addButtonEvent();
+            readData(apiUrl);
+        }
+    </script>
+}

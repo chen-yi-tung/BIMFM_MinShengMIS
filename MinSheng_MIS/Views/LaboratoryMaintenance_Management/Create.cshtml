@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "新增實驗室維護管理";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <style>
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                grid-template-columns: 250px 250px;
+            }
+        }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="edit-area edit-area-small">
+    <form class="form pt-0">
+        <div class="form-group required">
+            <label for="MType">維護類型</label>
+            <input class="form-control" id="MType" name="MType" type="text" required>
+        </div>
+
+        <div class="form-group required">
+            <label for="MTitle">標題</label>
+            <input class="form-control" id="MTitle" name="MTitle" type="text" required>
+        </div>
+
+        <div class="form-group" style="grid-column: auto/span 2;">
+            <label for="MContent">說明</label>
+            <textarea class="form-control" name="MContent" id="MContent" rows="1"></textarea>
+        </div>
+
+        <div id="FileUploader"></div>
+
+    </form>
+</div>
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+
+@section scripts {
+    <script>
+        var fileUploader
+        $(async function () {
+            addButtonEvent();
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group g-col-2 required",
+                label: "維護檔案",
+                id: "File"
+            })
+        });
+
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
+
+            var form = new FormData();
+            form.append("MType", document.getElementById("MType").value);
+            form.append("MTitle", document.getElementById("MTitle").value);
+            form.append("MContent", document.getElementById("MContent").value);
+            if (fileUploader.hasFile()) {
+                form.append("MFile", fileUploader.getFile());
+            }
+            console.log(Object.fromEntries(form.entries()));
+            $.ajax({
+                url: '@Url.Action("CreateLaboratoryMaintenance", "LaboratoryMaintenance_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/LaboratoryMaintenance_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#submit").click(function () {
+                save();
+            })
+        }
+    </script>
+}

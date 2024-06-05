@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "實驗室維護管理";
+}
+
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="MType">維護類型</label>
+            <select class="form-select" name="MType" id="MType">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="MTitle">標題</label>
+            <input class="form-control" id="MTitle" name="MTitle" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="MContent">說明</label>
+            <input class="form-control" id="MContent" name="MContent" type="text" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+@section scripts {
+    <script>
+
+        var getGridJSON = '@Url.Action("LaboratoryMaintenance_Management", "Datagrid")';
+        var DataGrid;
+
+        const fakeData = [
+            {
+                LMSN: "1",
+                MType: "人員維護",
+                MTitle: "水質分析室緊急逃生路線",
+                MContent: "緊急逃生說明",
+                UploadUserName: "王大明",
+                UploadDateTime: "2023/11/11 12:01:01"
+            }
+        ]
+
+        $(async function () {
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+            await pushSelect("MType", '@Url.Action("FormMType", "DropDownList")');
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'LMSN',
+                //sortName: 'LMSN',
+                remoteSort: true,
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('LMSN'),
+                    dg.column('MType', '維護類型', 200),
+                    dg.column('MTitle', '標題', 400),
+                    dg.column('MContent', '說明', 200),
+                    dg.column('UploadUserName', '上傳者', 120),
+                    dg.column('UploadDateTime', '上傳日期時間', 200),
+                ]]
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.LMSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.LMSN}`, "_self")
+            })
+
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

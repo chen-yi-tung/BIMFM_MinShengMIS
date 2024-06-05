@@ -1,0 +1,513 @@
+﻿@{
+    ViewBag.Title = "巡檢即時位置";
+}
+@section styles{
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css"
+        type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
+    <style>
+        nav {
+            display: none !important;
+        }
+
+        .sidebar {
+            display: none !important;
+        }
+
+        .adsk-viewing-viewer {
+            background: none !important;
+        }
+
+        .viewer3Dcontainer {
+            position: absolute;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .forge-spinner {
+            display: none !important;
+        }
+
+        .pin-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 4 !important;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .pin {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .pin[id^='pin_bluetooth-'] img {
+            transform: scale(0.6);
+        }
+
+        .pin[id^='pin_person'] {
+            transform: translate(-50%, -80%);
+        }
+
+        .pin-popover {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            width: max-content;
+            display: block;
+            cursor: auto;
+            border-radius: 0.31rem;
+            background: rgba(236, 246, 255, 0.95);
+            box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.50);
+        }
+
+        .pin-popover:not([data-show]) {
+            display: none;
+        }
+
+        .pin-popover .popover-header {
+            color: #454A5B;
+            font-size: 1.25rem;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .pin-popover .popover-body {
+            width: 100%;
+            color: lightgray;
+            padding: 0 1rem 0.5rem;
+        }
+
+        .pin[id^='pin_person'] .label {
+            color: #909090;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 0.3rem;
+        }
+
+        .pin[id^='pin_person'] .value,
+        .pin[id^='pin_person'] .unit {
+            color: #606060;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .bluetooth-name {
+            background-color: #2750B9;
+            color: #fff;
+            position: absolute;
+            left: 50%;
+            top: 100%;
+            width: max-content;
+            transform: translate(-50%, -20%);
+            padding: 1px 3px;
+            border-radius: 2px;
+        }
+    </style>
+    <!-- Autodesk Forge -->
+    <script language="JavaScript" src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js"
+        defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.meshline/1.4.0/THREE.MeshLine.min.js" defer></script>
+    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
+    <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
+    <script src="/Scripts/Forge/ForgePin.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+
+    <!-- PIXI Draw -->
+    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
+    <script src="/Scripts/ForgeDraw.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
+
+    <!-- Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
+    <script src="/Scripts/Forge/SortRouteModal.js" defer></script>
+}
+<!--
+<div class="position-absolute pe-none p-5" style="inset:0;z-index: 1030;">
+    <h2>模型瀏覽</h2>
+</div>
+-->
+<div class="viewer3Dcontainer">
+    <div id="viewer3d">
+        <div class="pin-area"></div>
+    </div>
+    <div class="d-flex flex-wrap gap-3 position-absolute top-0 start-0 p-4" style="z-index: 1030; width: 27rem;">
+        <div class="form-group required">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div class="form-group required">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-search align-self-end" id="Submit">確定</button>
+        <button type="button" class="btn btn-export align-self-end" id="Play">開始播放</button>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var viewer;
+        function initializeViewer({ BIMPath, BeaconPath, callback = () => { } }) {
+            const clientContainer = document.getElementById('viewer3d')
+            const profileSettings = {
+                name: "customSettings",
+                description: "My personal settings.",
+                settings: {}, //API:https://aps.autodesk.com/en/docs/viewer/v7/reference/globals/TypeDefs/Settings/
+                persistent: [],
+                extensions: {
+                    load: ["Viewer.Toolkit"],
+                    unload: [/* "Autodesk.Section", "Autodesk.Measure", "Autodesk.Explode" */]
+                }
+            }
+            const options = {
+                keepCurrentModels: true,
+                globalOffset: { x: 0, y: 0, z: 0 }
+            };
+            const urns = [BIMPath, BeaconPath];
+
+            Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
+            viewer = new Autodesk.Viewing.GuiViewer3D(clientContainer, { profileSettings });
+            viewer.loadExtension("Viewer.Loading", {
+                loader: `<div class="lds-default">${Array(12).fill('<div></div>').join('')}</div>`
+            })
+
+            Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
+                viewer.start();
+
+                await viewer.loadExtension("Viewer.Toolkit")
+
+                //load urns
+                const models = await Promise.all(urns.map((url) => {
+                    return new Promise(async (resolve) => {
+                        if (url == null || url == undefined || url == "") return;
+                        viewer.loadModel(window.location.origin + url, options,
+                            async (model) => { await viewer.waitForLoadDone(); resolve(model); })
+                    })
+                }))
+                console.log(models)
+
+                //setting 3d view env
+                viewer.setBackgroundOpacity(0);
+                viewer.setBackgroundColor();
+                viewer.setLightPreset(16); //設定環境光源 = 雪地
+
+                for (const model of models) {
+                    await onLoadDone(model)
+                }
+                viewer.loading.hide()
+                viewer.utilities.fitToView(true)
+                callback()
+            });
+
+            async function onLoadDone(model) {
+                console.log("Model LoadDone", model.loader.basePath.split("/").at(-2));
+
+                if (model.loader.basePath.includes("Beacon")) {
+
+                    const newmat = new THREE.MeshPhongMaterial({
+                        color: 0x1010ff,
+                        emissive: 0x001061,
+                        reflectivity: 0,
+                        shininess: 0
+                    })
+                    await viewer.toolkit.changeMaterial(model, model.getRootId(), newmat)
+                    let AllBeacons = await viewer.toolkit.getAlldbIds(model.getInstanceTree(), model.getRootId())
+                    console.log("AllBeacons", AllBeacons)
+                    console.log("顏色變更完畢")
+                }
+            }
+        }
+    </script>
+    <script>
+        async function createBeaconPoint(data) {
+            //console.log(data)
+            const model = viewer.getAllModels().find((model) => model.loader.basePath.includes("Beacon"));
+            const pins = []
+            data.forEach((d) => {
+                let position = viewer.toolkit.getBoundingBox(model, d.dbId).getCenter()
+                let pin = new ForgePin({
+                    viewer,
+                    position,
+                    data: {},
+                    img: "/Content/img/bluetooth.svg",
+                    id: `bluetooth-${d.dbId}`
+                })
+
+                $(pin.e).append(`<div class="bluetooth-name">${d.deviceName}</div>`)
+
+                pin.show()
+                pin.update()
+                pins.push(pin)
+            })
+            viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
+                pins.forEach((pin) => { pin.update() })
+            })
+        }
+        async function createSamplePath() {
+            const scene = 'SamplePath'
+            const box = viewer.getAllModels().reduce((total, model) => {
+                total.union(model.getBoundingBox())
+                return total
+            }, new THREE.Box3())
+            const z = box.getCenter().z - (box.getSize().z / 2) + 3
+            viewer.overlays.addScene(scene)
+
+            const geometry = new THREE.Geometry();
+            const material = new THREE.MeshBasicMaterial({ color: 0x29B6F6 })
+
+            const { PathSampleRecord: data } = await getDataAsync(`/jsonSamples/samplePath_test.json`)
+            //console.log(data)
+
+            data.forEach(({ LocationX: x, LocationY: y }, i) => {
+                let p = createPoint(new THREE.Vector3(x, y, z))
+                geometry.mergeMesh(p)
+                if (i != 0) {
+                    let { LocationX: x2, LocationY: y2 } = data[i - 1]
+                    let eg = createExtrude(
+                        new THREE.Vector3(x2, y2, z),
+                        new THREE.Vector3(x, y, z),
+                    )
+                    geometry.mergeMesh(eg)
+                }
+            })
+            viewer.overlays.addMesh(new THREE.Mesh(geometry, material), scene)
+
+            function createExtrude(v1, v2) {
+                const radius = 0.1
+                const shape = new THREE.Shape()
+                shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
+
+                const path = new THREE.LineCurve3(v1, v2)
+
+                const geometry = new THREE.ExtrudeGeometry(shape, {
+                    steps: 1,
+                    extrudePath: path
+                })
+                const mesh = new THREE.Mesh(geometry)
+                return mesh
+                //viewer.overlays.addMesh(mesh, 'SamplePath')
+            }
+
+            function createPoint(pos) {
+                const geometry = new THREE.SphereGeometry(0.1, 16, 12);
+                const mesh = new THREE.Mesh(geometry)
+                mesh.position.copy(pos)
+                return mesh
+                //viewer.overlays.addMesh(mesh, 'SamplePath')
+            }
+        }
+        async function createPathRecord() {
+            const scene = 'PathRecord'
+            viewer.overlays.addScene(scene)
+
+            const pin = new ForgePin({
+                viewer,
+                position: new THREE.Vector3(),
+                img: "/Content/img/pin.svg",
+                id: "person-" + Math.random().toString(36).slice(2, 7)
+            });
+            pin.addPopover({
+                offset: ['0%', '140%'],
+                html: `<div class="pin-popover"><div class="popover-header"><span class="num">Pt01</span><span class="name">王大明</span></div><div class="popover-body"><img src="/Content/img/heart.svg" height="14"><span class="label">心律：</span><span class="value">110</span><span class="unit">下/分</span></div></div>`,
+                setContent: function (data) {
+                    //the function to set html content
+                    //"this" is popover
+                    const $e = $(this.e);
+                    $e.find(".value").text(data.value);
+                },
+                clickEvent: function (event) {
+                    //"this" is pin
+                    !this.popover.isShow()
+                        ? (this.popover.show(), this.setZIndex(100))
+                        : (this.popover.hide(), this.setZIndex());
+                },
+            })
+            pin.setZIndex(1)
+
+            viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
+                pin.update()
+            })
+
+            const material = new THREE.MeshBasicMaterial({ color: 0xD9C832 })
+            let count = 0
+
+            const data = await getDataAsync(`/jsonSamples/pathRecord_test.json`)
+            const height = 5
+            const len = data.length
+            let timer = null
+            this.start = () => {
+                if (timer === null) {
+                    if (viewer.overlays.hasScene(scene)) {
+                        viewer.overlays.removeScene(scene)
+                        viewer.overlays.addScene(scene)
+                    }
+                    timer = setInterval(() => { animate(data) }, 100)
+                    pin.popover.show()
+                }
+            }
+            $("#Play").click(this.start.bind(this))
+            return this
+
+            function animate(data) {
+                let { x, y, z } = data[count].position
+                z = z - height
+                let p = createPoint(new THREE.Vector3(x, y, z), material)
+                viewer.overlays.addMesh(p, scene)
+
+                pin.position.set(x, y, z)
+                pin.show()
+
+                if (count != 0) {
+                    let { x: x2, y: y2, z: z2 } = data[count - 1].position
+                    z2 = z2 - height
+                    let eg = createExtrude(
+                        new THREE.Vector3(x2, y2, z2),
+                        new THREE.Vector3(x, y, z),
+                        material
+                    )
+                    viewer.overlays.addMesh(eg, scene)
+                }
+                //viewer.impl.sceneUpdated(true)
+                if (count <= len - 2) {
+                    count++
+                    console.log('animate running')
+                }
+                else {
+                    console.log('animate end')
+                    count = 0
+                    clearInterval(timer)
+                    timer = null
+                }
+            }
+
+            function createExtrude(v1, v2, mat) {
+                const radius = 0.1
+                const shape = new THREE.Shape()
+                shape.absarc(0, 0, radius, 0, Math.PI * 2, false)
+
+                const path = new THREE.LineCurve3(v1, v2)
+
+                const geometry = new THREE.ExtrudeGeometry(shape, {
+                    steps: 1,
+                    extrudePath: path
+                })
+                const mesh = new THREE.Mesh(geometry, mat)
+                return mesh
+                //viewer.overlays.addMesh(mesh, 'SamplePath')
+            }
+
+            function createPoint(pos, mat) {
+                const geometry = new THREE.SphereGeometry(0.1, 16, 12);
+                const mesh = new THREE.Mesh(geometry, mat)
+                mesh.position.copy(pos)
+                return mesh
+                //viewer.overlays.addMesh(mesh, 'SamplePath')
+            }
+        }
+        async function hideWall() {
+            const box = viewer.getAllModels().reduce((total, model) => {
+                total.union(model.getBoundingBox())
+                return total
+            }, new THREE.Box3())
+            const z = box.getCenter().z + (box.getSize().z / 2)
+            const intersectBox = new THREE.Box3(
+                new THREE.Vector3().copy(box.min).setZ(z - 1),
+                new THREE.Vector3().copy(box.max).setZ(z + 1)
+            )
+
+            const allDbids = await new Promise(async (resolve) => {
+                const arr = []
+                const models = viewer.getAllModels()
+                for (const model of models) {
+                    let dbIds = await viewer.toolkit.getAlldbIds(model.getInstanceTree(), model.getRootId())
+                    arr.push({ model, dbIds })
+                }
+                resolve(arr)
+            })
+
+            allDbids.forEach(({ model, dbIds }) => {
+                dbIds.forEach((dbId) => {
+                    let bbox = viewer.toolkit.getBoundingBox(model, dbId)
+                    if (intersectBox.isIntersectionBox(bbox)) {
+                        viewer.hide(dbId)
+                    }
+                })
+            })
+
+            viewer.search("M_混凝土", (res) => {
+                res.forEach((dbId) => { viewer.hide(dbId) })
+            })
+        }
+    </script>
+    <script>
+        var pathRecord
+        window.addEventListener("load", async () => {
+            sortRouteModal = new SortRouteModal({
+                onSave: updatePathDisplay
+            });
+            await addAreaFloorEvent();
+            $("#Submit").click(async () => {
+                let res = await getDataAsync('@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val())
+                if (viewer != null) {
+                    DestroyViewerAndForgeDraw()
+                }
+                let { BIMPath, BeaconPath } = res
+                initializeViewer({
+                    BIMPath, BeaconPath, async callback() {
+                        hideWall()
+                        createBeaconPoint(res.BIMDevices)
+                        createSamplePath()
+                        pathRecord = await createPathRecord()
+                        const viewCube = await viewer.loadExtension('Autodesk.ViewCubeUi')
+                        viewCube.setViewCube('top')
+                    }
+                })
+            })
+
+            await autoSelectModel('1', '1_2')
+
+            async function autoSelectModel(ASN, FSN) {
+                $("#ASN").val(ASN)
+                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN}`);
+                $("#FSN").val(FSN)
+                $("#Submit").click()
+            }
+        })
+        async function addAreaFloorEvent() {
+            await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+            let ASN = document.getElementById("ASN");
+            ASN.addEventListener("change", async function () {
+                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
+            });
+        }
+    </script>
+    <script>
+        function getDataAsync(url) {
+            return new Promise((success, error) => {
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success,
+                    error
+                })
+            })
+        }
+    </script>
+}

@@ -1,0 +1,284 @@
+﻿@{
+    ViewBag.Title = "新增巡檢路線模板";
+}
+@section styles {
+    <link rel="stylesheet" href="/Content/samplepath.css">
+    <!-- Autodesk Forge -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
+        type="text/css">
+    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
+    <script language="JavaScript"
+        src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
+    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
+    <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
+    <script src="/Scripts/Forge/UpViewer.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+
+    <!-- PIXI Draw -->
+    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
+    <script src="/Scripts/ForgeDraw.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
+
+    <!-- Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
+    <script src="/Scripts/Forge/SortRouteModal.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="search-area bg-transparent">
+    <form class="form">
+        <div class="form-group required">
+            <label for="ASN">棟別</label>
+            <select class="form-select" name="ASN" id="ASN" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div class="form-group required">
+            <label for="FSN">樓層</label>
+            <select class="form-select" name="FSN" id="FSN" required>
+                <option value="">請選擇</option>
+            </select>
+        </div>
+        <div class="form-group required">
+            <label for="PathTitle">巡檢路線模板</label>
+            <input type="text" class="form-control" name="PathTitle" id="PathTitle" maxlength="50">
+        </div>
+        <div class="button-group justify-content-start">
+            <button type="button" class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
+        </div>
+    </form>
+</div>
+
+<div class="sample-path-area">
+    <h3 class="sample-path-title">巡檢路線規劃</h3>
+
+    <div class="edit-area">
+        <div class="sample-path-group-area d-none">
+            <div class="input-group sample-path-group" data-path-id="1">
+                <span class="input-group-text" id="current-path-title"></span>
+                <div type="text" class="form-control">
+                    <nav>
+                        <ol class="breadcrumb" id="current-path-display"></ol>
+                    </nav>
+                    <button class="path-btn" id="current-path-edit" data-bs-toggle="tooltip" title="手動修改路線">
+                        <i class="icon-edit"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="sample-path-draw-area d-none">
+            <input type="number" id="current-path-id" value="1" hidden>
+            <div class="sample-path-toolbar">
+                <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
+                    data-bs-placement="right" title="規劃路線">
+                    <i class="icon-pen"></i>
+                </button>
+                <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip"
+                    data-bs-placement="right" title="清除路線">
+                    <i class="icon-eraser"></i>
+                </button>
+                <hr class="m-0">
+                <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
+                    title="重新規劃路線">
+                    <i class="icon-reload"></i>
+                </button>
+                <button class="path-icon" id="path-auto" data-bs-toggle="tooltip" data-bs-placement="right"
+                    title="自動計算路線">
+                    <i class="icon-auto"></i>
+                </button>
+            </div>
+            <div class="viewer3Dcontainer">
+                <div id="viewer3d" style="margin:0;"></div>
+                <canvas id="PathCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+
+@section scripts {
+    <script>
+        function initializeDrawer(data) {
+            const view = document.querySelector("#PathCanvas");
+            ForgeDraw.init(view, viewer, function () {
+                view.addEventListener("fd.point.detecterror", function (event) {
+                    console.log("view => fd.point.detecterror");
+                    createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
+                });
+                view.addEventListener("fd.linedata.change", function (event) {
+                    console.log("view => fd.linedata.change");
+                    updatePathDisplay(calcPath());
+                });
+                view.addEventListener("fd.linedata.detail", function (event) {
+                    console.log("view => fd.linedata.detail", event.detail);
+                    if (event.detail instanceof ForgeDraw.DevicePoint) {
+                        createDevicePointDetailModal(event.detail);
+                    }
+                    else {
+                        createPointDetailModal(event.detail);
+                    }
+                });
+                view.addEventListener("fd.devicepoint.ignore", function (event) {
+                    console.log("view => fd.devicepoint.ignore");
+                    updatePathDisplay(calcPath());
+                });
+
+                createBeacons(data.BIMDevices);
+
+                addToolbarEvent();
+                addTooltip(true);
+            });
+        }
+    </script>
+
+    <script>
+        let sortRouteModal;
+        $(async function () {
+            sortRouteModal = new SortRouteModal({
+                onSave: updatePathDisplay
+            });
+            addAreaFloorEvent();
+            addButtonEvent();
+            controlToggle("path-draw", ForgeDraw.Control.DRAW);
+            sortRouteModal.autoRouteToggle(true);
+
+            $("#PathTitle").change(function () {
+                $("#current-path-title").text($(this).val())
+            })
+        });
+
+        async function addAreaFloorEvent() {
+            await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
+            let ASN = document.getElementById("ASN");
+            ASN.addEventListener("change", async function () {
+                console.log("areas change")
+                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
+                $('#Floor').val('');
+            });
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+            $("#path-create").click(function (e) {
+                e.preventDefault();
+                console.log("onclick path-create");
+                if ($("form")[0].reportValidity()) {
+                    $("#current-path-title").text($("#PathTitle").val());
+                    $(".sample-path-group-area").removeClass("d-none");
+                    $(".sample-path-draw-area").removeClass("d-none");
+
+                    let url = '@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val();
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                        success: onSuccess,
+                        error: onError
+                    })
+
+                    function onSuccess(res) {
+                        console.log(res);
+                        let { BIMPath, BeaconPath } = res;
+                        initializeViewer({
+                            BIMPath,
+                            BeaconPath,
+                            callback() { initializeDrawer(res) }
+                        });
+
+                        $("#path-create").off();
+                        $('#ASN').attr("disabled", '');
+                        $('#FSN').attr("disabled", '');
+                    }
+                    function onError(res) {
+                        console.log(res);
+                    }
+                }
+            })
+            $("#submit").click(function () {
+                //!!棟別樓層巡檢路線模板巡檢路線規劃 需有資料才傳!!
+                let pt = $("#PathTitle").val();
+                //先判斷巡檢路線模板是否有填值
+                if (pt == "") {
+                    createDialogModal({ id: "DialogModal-Error", inner: "巡檢路線模板名稱不可為空！" })
+                }
+                else {
+                    save();
+                }
+            })
+        }
+
+        function save() {
+            let PathSampleOrder = getPathSampleOrder();
+            let PathSampleRecord = getPathSampleRecord();
+
+            if (PathSampleRecord.every(e => e) === false) {
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
+                return
+            }
+            if (PathSampleOrder.length === 0 || PathSampleRecord.length === 0) {
+                createDialogModal({ id: "DialogModal-Error", inner: "新增失敗！沒有規劃路線資料！" });
+                return;
+            }
+
+            let data = {
+                PathSample: {
+                    ASN: $("#ASN").val(),
+                    FSN: $("#FSN").val(),
+                    PathTitle: $("#PathTitle").val()
+                },
+                PathSampleOrder: PathSampleOrder,
+                PathSampleRecord: PathSampleRecord
+            }
+
+            //console.log(data);
+            //console.log(JSON.stringify(data));
+
+            $.ajax({
+                url: '@Url.Action("CreateSamplePath", "SamplePath_Management")',
+                data: JSON.stringify(data),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                //console.log(res);
+                if (res.ResponseCode == 0) {
+                    createDialogModal({
+                        id: "DialogModal-Success",
+                        inner: "新增成功！",
+                        onHide: () => {
+                            let url = '@Url.Action("Management", "SamplePath_Management")';
+                            window.location.href = url;
+                        }
+                    });
+                }
+            }
+            function onError(res) {
+                //console.log(res);
+                let errtext;
+
+                switch (res.responseText) {
+                    case "duplicate title":
+                        errtext = "巡檢路線模板名稱重複！";
+                        break;
+                    default:
+                        errtext = "";
+                        break;
+                }
+
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！${errtext}` })
+            }
+        }
+    </script>
+}

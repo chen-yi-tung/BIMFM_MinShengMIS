@@ -1,0 +1,176 @@
+﻿@{
+    ViewBag.Title = "庫存管理";
+}
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+
+    <style>
+        .isMinStock {
+            background-color: rgba(255, 0, 0, 0.10);
+        }
+
+        .isMinStock td[field='AvailableStockAmount']>.datagrid-cell,
+        .isMinStock td[field='MinStockAmount']>.datagrid-cell {
+            color: rgb(229, 0, 0);
+            font-weight: 500;
+        }
+    </style>
+}
+
+
+<h2>@ViewBag.Title</h2>
+
+<div class="search-area">
+    <form class="form" method="post" action="">
+
+        <div class="form-group">
+            <label for="SISN">庫存編號</label>
+            <input class="form-control" id="SISN" name="SISN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="StockType">品項</label>
+            <select class="form-select" name="StockType" id="StockType">
+                <option value="">請選擇</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="StockName">品名</label>
+            <input class="form-control" id="StockName" name="StockName" type="text" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+            <button type="button" class="btn btn-export" id="export">匯出</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("Stock_Management", "Datagrid")';
+        var DataGrid;
+
+
+        const fakeData = [
+            {
+                MinStockAmount: "50",
+                AvailableStockAmount: "48",
+                SISN: "S0001",
+                StockType: "備料",
+                StockName: "軸承潤滑劑",
+                StockAmount: "50",
+                Unit: "罐"
+
+            },
+            {
+                MinStockAmount: "50",
+                AvailableStockAmount: "70",
+                SISN: "S0002",
+                StockType: "備料",
+                StockName: "軸承潤滑劑",
+                StockAmount: "70",
+                Unit: "罐"
+
+            },
+            {
+                MinStockAmount: "50",
+                AvailableStockAmount: "40",
+                SISN: "S0003",
+                StockType: "備料",
+                StockName: "軸承潤滑劑",
+                StockAmount: "50",
+                Unit: "罐"
+
+            }
+        ]
+
+        $(async function () {
+            //await AreaFloorEvent();
+            await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                url: getGridJSON,
+                data: fakeData,
+                method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'SISN',
+                //sortName: 'SISN',
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', "", 131, (v, row, i) => dg.eventButton(i, "警戒值設定", "edit")),
+                ]],
+                columns: [[
+                    dg.column('MinStockAmount', '警戒值數量', 150),
+                    dg.column('AvailableStockAmount', '庫存可用數量', 160),
+                    dg.column('SISN', '庫存編號', 160),
+                    dg.column('StockType', '品項', 120),
+                    dg.column('StockName', '品名', 250),
+                    dg.column('StockAmount', '庫存實際量', 150),
+                    dg.column('Unit', '單位', 120),
+                ]],
+                rowStyler: (i, row) => row.AvailableStockAmount < row.MinStockAmount ? { class: 'isMinStock' } : undefined
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Read/${row.SISN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/MinStockAmountSetting/${row.SISN}`, "_self")
+            })
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
+                pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+
+            $("#export").click(function () {
+                let form = new FormData($(".search-area form")[0])
+                form.append("rows", DataGrid.datagrid("getData").total)
+                $.ajax({
+                    url: `/Stock_Management/Export`,
+                    type: "POST",
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    success(result) {
+                        if (result.FileDownloadName == '' || result.FileContents.length == 0) return
+                        const bytes = new Uint8Array(result.FileContents);
+                        const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = result.FileDownloadName;
+                        link.click();
+                    }
+                });
+            });
+        }
+    </script>
+}

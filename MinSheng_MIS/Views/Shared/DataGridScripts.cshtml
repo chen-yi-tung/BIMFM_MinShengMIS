@@ -1,0 +1,17 @@
+﻿@model Nullable<bool>
+@{
+	string ControllerName = ViewContext.RouteData.Values["controller"] as string;
+	bool defer = true;
+	if (Model.HasValue)
+	{
+		defer = (bool)Model;
+	}
+}
+
+@Styles.Render("~/Content/easyui/themes/default/easyui.css")
+<script src="/Content/easyui/jquery.min.js" defer="@defer.ToString()"></script>
+<script src="/Content/easyui/jquery.easyui.min.js" defer="@defer.ToString()"></script>
+<script src="/Scripts/easyui-datagrid-client-paging.js" defer="@defer.ToString()"></script>
+<script>
+	var baseUrl = '/' + '@ControllerName';
+</script>

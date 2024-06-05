@@ -1,0 +1,147 @@
+﻿@{
+    ViewBag.Title = "新增設備操作手冊";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+
+    <style>
+        @@media (min-width: 992px) {
+            .edit-area .form {
+                grid-template-columns: 250px 250px;
+            }
+        }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="edit-area edit-area-small">
+    <form class="form pt-0">
+        <div class="form-group required">
+            <label for="System">系統別</label>
+            <select class="form-select" name="System" id="System" required>
+                <option value="">請選擇</option>
+            </select>
+            <input class="form-control" id="System" name="System" type="text" hidden />
+        </div>
+
+        <div class="form-group required">
+            <label for="SubSystem">子系統別</label>
+            <select class="form-select" name="SubSystem" id="SubSystem" required>
+                <option value="">請選擇</option>
+            </select>
+            <input class="form-control" id="SubSystem" name="SubSystem" type="text" hidden />
+        </div>
+
+        <div class="form-group required">
+            <label for="EName">設備名稱</label>
+            <select class="form-select" name="EName" id="EName" required>
+                <option value="">請選擇</option>
+            </select>
+            <input class="form-control" id="EName" name="EName" type="text" hidden />
+        </div>
+
+        <div class="form-group required">
+            <label for="Brand">廠牌</label>
+            <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" required />
+        </div>
+
+        <div class="form-group required">
+            <label for="Model">型號</label>
+            <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required />
+        </div>
+
+        <div id="FileUploader"></div>
+
+    </form>
+</div>
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+
+@section scripts {
+    <script>
+        var fileUploader
+        $(async function () {
+            await pushSelect("System", '@Url.Action("System", "DropDownList")');
+            addButtonEvent();
+
+            const Systems = document.getElementById('System')
+            Systems.addEventListener("change", function () {
+                pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
+            });
+
+            const SubSystems = document.getElementById('SubSystem')
+            SubSystems.addEventListener("change", function () {
+                pushSelect("EName", `@Url.Action("EName", "DropDownList")?System=${$('#System').val()}&SubSystem=${$('#SubSystem').val()}`);
+            });
+
+            fileUploader = new FileUploader({
+                container: "#FileUploader",
+                className: "form-group g-col-2 required",
+                label: "設備操作手冊檔案",
+                id: "DesignDiagrams",
+                customValidityText: "請上傳設備操作手冊"
+            })
+
+        });
+
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("todo save():", isValidity)
+            if (!isValidity) return;
+
+            var form = new FormData();
+            form.append("System", document.getElementById("System").value);
+            form.append("SubSystem", document.getElementById("SubSystem").value);
+            form.append("EName", document.getElementById("EName").value);
+            form.append("Brand", document.getElementById("Brand").value);
+            form.append("Model", document.getElementById("Model").value);
+
+            if (fileUploader.hasFile()) {
+                form.append("ManualFile", fileUploader.getFile());
+            }
+
+            console.log(Object.fromEntries(form.entries()));
+
+            $.ajax({
+                url: "/EquipmentOperatingManual/Create",
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/EquipmentOperatingManual/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
+
+            $("#submit").click(function () {
+                save();
+            })
+        }
+    </script>
+}
