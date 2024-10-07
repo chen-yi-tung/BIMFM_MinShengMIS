@@ -2005,11 +2005,11 @@
     <Content Include="Views\InspectionPlan_Management\CurrentInformation.cshtml" />
     <Content Include="Views\InspectionPlan_Management\CurrentPosition.cshtml" />
     <Content Include="Views\Shared\DataGridScripts.cshtml" />
+    <Content Include="Views\PlanManagement\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
-    <Folder Include="Views\PlanManagement\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
