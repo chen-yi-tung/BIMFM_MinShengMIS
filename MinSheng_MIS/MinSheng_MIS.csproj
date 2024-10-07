@@ -204,6 +204,7 @@
     <Compile Include="Controllers\ExperimentData_ManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InquiryPlan_ManagementController.cs" />
+    <Compile Include="Controllers\PlanManagementController.cs" />
     <Compile Include="Controllers\TestingAndAnalysisWorkflowController.cs" />
     <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
     <Compile Include="Controllers\LaboratoryLabel_ManagementController.cs" />
@@ -2008,6 +2009,7 @@
   <ItemGroup>
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
+    <Folder Include="Views\PlanManagement\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
