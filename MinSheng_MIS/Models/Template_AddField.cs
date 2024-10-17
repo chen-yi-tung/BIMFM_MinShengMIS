@@ -12,24 +12,20 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class PurchaseRequisition
+    public partial class Template_AddField
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public PurchaseRequisition()
+        public Template_AddField()
         {
-            this.PurchaseRequisitionItem = new HashSet<PurchaseRequisitionItem>();
+            this.Equipment_AddFieldValue = new HashSet<Equipment_AddFieldValue>();
         }
     
-        public string PRN { get; set; }
-        public string PRUserName { get; set; }
-        public string PRState { get; set; }
-        public string PRDept { get; set; }
-        public System.DateTime PRDate { get; set; }
-        public Nullable<System.DateTime> AuditDate { get; set; }
-        public string AuditResult { get; set; }
-        public string FileName { get; set; }
+        public string AFSN { get; set; }
+        public string TSN { get; set; }
+        public string FieldName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PurchaseRequisitionItem> PurchaseRequisitionItem { get; set; }
+        public virtual ICollection<Equipment_AddFieldValue> Equipment_AddFieldValue { get; set; }
+        public virtual Template_OneDeviceOneCard Template_OneDeviceOneCard { get; set; }
     }
 }

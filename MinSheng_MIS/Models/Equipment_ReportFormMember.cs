@@ -12,11 +12,12 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class RepairSupplementaryFile
+    public partial class Equipment_ReportFormMember
     {
-        public string FilePath { get; set; }
-        public string PRSN { get; set; }
+        public string ERFMSN { get; set; }
+        public string RSN { get; set; }
+        public string RepairUserName { get; set; }
     
-        public virtual RepairSupplementaryInfo RepairSupplementaryInfo { get; set; }
+        public virtual EquipmentReportForm EquipmentReportForm { get; set; }
     }
 }

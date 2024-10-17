@@ -33,16 +33,16 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<BIMData> BIMData { get; set; }
-        public virtual DbSet<CompletionReportImage> CompletionReportImage { get; set; }
         public virtual DbSet<ComputationalStock> ComputationalStock { get; set; }
         public virtual DbSet<DesignDiagrams> DesignDiagrams { get; set; }
         public virtual DbSet<DrawingSubSystemManagement> DrawingSubSystemManagement { get; set; }
         public virtual DbSet<DrawingSystemManagement> DrawingSystemManagement { get; set; }
-        public virtual DbSet<DrawInspectionPlanPath> DrawInspectionPlanPath { get; set; }
-        public virtual DbSet<DrawPathSample> DrawPathSample { get; set; }
+        public virtual DbSet<Equipment_AddFieldValue> Equipment_AddFieldValue { get; set; }
+        public virtual DbSet<Equipment_MaintainItemValue> Equipment_MaintainItemValue { get; set; }
+        public virtual DbSet<Equipment_MaintenanceForm> Equipment_MaintenanceForm { get; set; }
+        public virtual DbSet<Equipment_MaintenanceFormMember> Equipment_MaintenanceFormMember { get; set; }
+        public virtual DbSet<Equipment_ReportFormMember> Equipment_ReportFormMember { get; set; }
         public virtual DbSet<EquipmentInfo> EquipmentInfo { get; set; }
-        public virtual DbSet<EquipmentMaintainFormItem> EquipmentMaintainFormItem { get; set; }
-        public virtual DbSet<EquipmentMaintainItem> EquipmentMaintainItem { get; set; }
         public virtual DbSet<EquipmentOperatingManual> EquipmentOperatingManual { get; set; }
         public virtual DbSet<EquipmentReportForm> EquipmentReportForm { get; set; }
         public virtual DbSet<ExperimentalData> ExperimentalData { get; set; }
@@ -51,42 +51,24 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<ExperimentalLabel_Item> ExperimentalLabel_Item { get; set; }
         public virtual DbSet<Floor_Info> Floor_Info { get; set; }
         public virtual DbSet<InspectionPlan> InspectionPlan { get; set; }
-        public virtual DbSet<InspectionPlanFloorPath> InspectionPlanFloorPath { get; set; }
-        public virtual DbSet<InspectionPlanMaintain> InspectionPlanMaintain { get; set; }
-        public virtual DbSet<InspectionPlanMember> InspectionPlanMember { get; set; }
-        public virtual DbSet<InspectionPlanPath> InspectionPlanPath { get; set; }
-        public virtual DbSet<InspectionPlanRepair> InspectionPlanRepair { get; set; }
-        public virtual DbSet<InspectionTrack> InspectionTrack { get; set; }
         public virtual DbSet<LaboratoryMaintenance> LaboratoryMaintenance { get; set; }
-        public virtual DbSet<MaintainAuditImage> MaintainAuditImage { get; set; }
-        public virtual DbSet<MaintainAuditInfo> MaintainAuditInfo { get; set; }
-        public virtual DbSet<MaintainCompletionImage> MaintainCompletionImage { get; set; }
-        public virtual DbSet<MaintainItem> MaintainItem { get; set; }
-        public virtual DbSet<MaintainSupplementaryFile> MaintainSupplementaryFile { get; set; }
-        public virtual DbSet<MaintainSupplementaryInfo> MaintainSupplementaryInfo { get; set; }
         public virtual DbSet<ManufacturerInfo> ManufacturerInfo { get; set; }
         public virtual DbSet<MeetingMinutes> MeetingMinutes { get; set; }
         public virtual DbSet<MonthlyReport> MonthlyReport { get; set; }
         public virtual DbSet<PathSample> PathSample { get; set; }
         public virtual DbSet<PathSampleOrder> PathSampleOrder { get; set; }
-        public virtual DbSet<PurchaseRequisition> PurchaseRequisition { get; set; }
-        public virtual DbSet<PurchaseRequisitionItem> PurchaseRequisitionItem { get; set; }
-        public virtual DbSet<RepairAuditImage> RepairAuditImage { get; set; }
-        public virtual DbSet<RepairAuditInfo> RepairAuditInfo { get; set; }
-        public virtual DbSet<RepairCompletionImage> RepairCompletionImage { get; set; }
-        public virtual DbSet<RepairSupplementaryFile> RepairSupplementaryFile { get; set; }
-        public virtual DbSet<RepairSupplementaryInfo> RepairSupplementaryInfo { get; set; }
-        public virtual DbSet<ReportImage> ReportImage { get; set; }
-        public virtual DbSet<Stock> Stock { get; set; }
-        public virtual DbSet<StockInRecord> StockInRecord { get; set; }
-        public virtual DbSet<StockOutItem> StockOutItem { get; set; }
-        public virtual DbSet<StockOutRecord> StockOutRecord { get; set; }
-        public virtual DbSet<StoresRequisition> StoresRequisition { get; set; }
-        public virtual DbSet<StoresRequisitionItem> StoresRequisitionItem { get; set; }
+        public virtual DbSet<RFID> RFID { get; set; }
+        public virtual DbSet<StockChangesRecord> StockChangesRecord { get; set; }
+        public virtual DbSet<StockType> StockType { get; set; }
         public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<SystemLogs> SystemLogs { get; set; }
         public virtual DbSet<SystemManagement> SystemManagement { get; set; }
+        public virtual DbSet<Template_AddField> Template_AddField { get; set; }
+        public virtual DbSet<Template_CheckItem> Template_CheckItem { get; set; }
+        public virtual DbSet<Template_MaintainItemSetting> Template_MaintainItemSetting { get; set; }
+        public virtual DbSet<Template_OneDeviceOneCard> Template_OneDeviceOneCard { get; set; }
+        public virtual DbSet<Template_ReportingItem> Template_ReportingItem { get; set; }
         public virtual DbSet<TestingAndAnalysis_DataName> TestingAndAnalysis_DataName { get; set; }
         public virtual DbSet<TestingAndAnalysis_LabelName> TestingAndAnalysis_LabelName { get; set; }
         public virtual DbSet<TestingAndAnalysisWorkflow> TestingAndAnalysisWorkflow { get; set; }

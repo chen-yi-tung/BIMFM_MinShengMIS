@@ -12,12 +12,14 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class InspectionPlanFloorPath
+    public partial class Equipment_AddFieldValue
     {
-        public string FPSN { get; set; }
-        public string PSN { get; set; }
-        public string DeviceID { get; set; }
+        public string EAFVSN { get; set; }
+        public string ESN { get; set; }
+        public string AFSN { get; set; }
+        public string Value { get; set; }
     
-        public virtual InspectionPlanPath InspectionPlanPath { get; set; }
+        public virtual EquipmentInfo EquipmentInfo { get; set; }
+        public virtual Template_AddField Template_AddField { get; set; }
     }
 }

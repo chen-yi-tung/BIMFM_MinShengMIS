@@ -17,6 +17,7 @@ namespace MinSheng_MIS.Models
         public string DDSN { get; set; }
         public string ImgName { get; set; }
         public string ImgType { get; set; }
+        public string UploadUser { get; set; }
         public System.DateTime UploadDate { get; set; }
         public string ImgPath { get; set; }
     }

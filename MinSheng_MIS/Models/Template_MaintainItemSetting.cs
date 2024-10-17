@@ -12,26 +12,20 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class EquipmentMaintainFormItem
+    public partial class Template_MaintainItemSetting
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public EquipmentMaintainFormItem()
+        public Template_MaintainItemSetting()
         {
-            this.InspectionPlanMaintain = new HashSet<InspectionPlanMaintain>();
+            this.Equipment_MaintainItemValue = new HashSet<Equipment_MaintainItemValue>();
         }
     
-        public string EMFISN { get; set; }
-        public string EMISN { get; set; }
-        public System.DateTime LastTime { get; set; }
-        public System.DateTime Date { get; set; }
-        public Nullable<System.DateTime> NextTime { get; set; }
-        public string Unit { get; set; }
-        public int Period { get; set; }
-        public string FormItemState { get; set; }
-        public bool StockState { get; set; }
+        public string MISSN { get; set; }
+        public string TSN { get; set; }
+        public string MaintainName { get; set; }
     
-        public virtual EquipmentMaintainItem EquipmentMaintainItem { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InspectionPlanMaintain> InspectionPlanMaintain { get; set; }
+        public virtual ICollection<Equipment_MaintainItemValue> Equipment_MaintainItemValue { get; set; }
+        public virtual Template_OneDeviceOneCard Template_OneDeviceOneCard { get; set; }
     }
 }

@@ -14,6 +14,13 @@ namespace MinSheng_MIS.Models
     
     public partial class Floor_Info
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Floor_Info()
+        {
+            this.EquipmentInfo = new HashSet<EquipmentInfo>();
+            this.RFID = new HashSet<RFID>();
+        }
+    
         public string FSN { get; set; }
         public int ASN { get; set; }
         public string FloorName { get; set; }
@@ -22,5 +29,9 @@ namespace MinSheng_MIS.Models
         public string ViewName { get; set; }
     
         public virtual AreaInfo AreaInfo { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EquipmentInfo> EquipmentInfo { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RFID> RFID { get; set; }
     }
 }

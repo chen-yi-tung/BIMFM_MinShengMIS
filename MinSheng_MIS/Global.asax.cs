@@ -21,8 +21,8 @@ namespace MinSheng_MIS
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             #region 檢查是否需產生設備保養單項目
-            Check_EquipmentFormItem c = new Check_EquipmentFormItem();
-            c.CheckEquipmentFormItem();
+            //Check_EquipmentFormItem c = new Check_EquipmentFormItem();
+            //c.CheckEquipmentFormItem();
             #endregion
 
             //#region 檢查巡檢計畫是否過期還沒開始巡檢
@@ -38,8 +38,8 @@ namespace MinSheng_MIS
         async void Wtimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             #region 檢查是否需產生設備保養單項目
-            Check_EquipmentFormItem c = new Check_EquipmentFormItem();
-            c.CheckEquipmentFormItem();
+            //Check_EquipmentFormItem c = new Check_EquipmentFormItem();
+            //c.CheckEquipmentFormItem();
             #endregion
             //#region 檢查巡檢計畫是否過期還沒開始巡檢
             //Check_InspectionPlan checkplan = new Check_InspectionPlan();

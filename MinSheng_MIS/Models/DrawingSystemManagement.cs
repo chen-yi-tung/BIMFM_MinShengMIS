@@ -22,7 +22,6 @@ namespace MinSheng_MIS.Models
     
         public int DSystemID { get; set; }
         public string DSystem { get; set; }
-        public bool SystemIsEnable { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawingSubSystemManagement> DrawingSubSystemManagement { get; set; }

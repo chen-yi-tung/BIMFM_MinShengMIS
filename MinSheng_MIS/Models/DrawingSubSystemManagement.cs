@@ -17,7 +17,6 @@ namespace MinSheng_MIS.Models
         public string DSubSystemID { get; set; }
         public int DSystemID { get; set; }
         public string DSubSystem { get; set; }
-        public bool SubSystemIsEnable { get; set; }
     
         public virtual DrawingSystemManagement DrawingSystemManagement { get; set; }
     }

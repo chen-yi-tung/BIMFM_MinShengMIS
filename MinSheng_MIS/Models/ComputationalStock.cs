@@ -17,21 +17,19 @@ namespace MinSheng_MIS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ComputationalStock()
         {
-            this.Stock = new HashSet<Stock>();
-            this.StoresRequisitionItem = new HashSet<StoresRequisitionItem>();
+            this.StockChangesRecord = new HashSet<StockChangesRecord>();
         }
     
         public string SISN { get; set; }
-        public string StockType { get; set; }
+        public int StockTypeSN { get; set; }
+        public string StockStatus { get; set; }
         public string StockName { get; set; }
         public string Unit { get; set; }
         public double StockAmount { get; set; }
         public double MinStockAmount { get; set; }
-        public Nullable<System.DateTime> ExpiryDate { get; set; }
     
+        public virtual StockType StockType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Stock> Stock { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<StoresRequisitionItem> StoresRequisitionItem { get; set; }
+        public virtual ICollection<StockChangesRecord> StockChangesRecord { get; set; }
     }
 }

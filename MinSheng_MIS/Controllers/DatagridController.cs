@@ -16,14 +16,14 @@ namespace MinSheng_MIS.Controllers
     {
         //--巡檢管理--
         #region InspectionPlan_Management 巡檢計畫管理
-        [HttpPost]
-        public ActionResult InspectionPlan_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_InspectionPlan(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult InspectionPlan_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_InspectionPlan(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region SamplePath_Management 巡檢路線模板管理
@@ -38,107 +38,107 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region InspectationPlan_Record_EquipMaintain 巡檢紀錄_設備保養紀錄
-        [HttpPost]
-        public ActionResult InspectationPlan_Record_EquipMaintain(FormCollection form)
-        {
-            var service = new DatagridService();
-            string result = service.GetJsonForGrid_InspectationPlan_Record_EquipMaintain(form);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult InspectationPlan_Record_EquipMaintain(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    string result = service.GetJsonForGrid_InspectationPlan_Record_EquipMaintain(form);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region InspectationPlan_Record_EquipRepair 巡檢紀錄_設備維修紀錄
-        [HttpPost]
-        public ActionResult InspectationPlan_Record_EquipRepair(FormCollection form)
-        {
-            var service = new DatagridService();
-            string result = service.GetJsonForGrid_InspectationPlan_Record_EquipRepair(form);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult InspectationPlan_Record_EquipRepair(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    string result = service.GetJsonForGrid_InspectationPlan_Record_EquipRepair(form);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
 
         //--定期保養管理--
         #region MaintainForm_Management 定期保養單管理
-        [HttpPost]
-        public ActionResult MaintainForm_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_MaintainForm(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult MaintainForm_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_MaintainForm(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region MaintainItem_Management 保養項目管理
-        [HttpPost]
-        public ActionResult MaintainItem_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_MaintainItem(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult MaintainItem_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_MaintainItem(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region EquipmentMaintainPeriod_Management 設備保養週期管理
-        [HttpPost]
-        public ActionResult EquipmentMaintainPeriod_Management(FormCollection form)
-        {
-            JObject jo = new JObject();
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_EquipmentMaintainPeriod_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult EquipmentMaintainPeriod_Management(FormCollection form)
+        //{
+        //    JObject jo = new JObject();
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_EquipmentMaintainPeriod_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region MaintainRecord_Management 巡檢保養紀錄管理
-        [HttpPost]
-        public ActionResult MaintainRecord_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_MaintainRecord_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult MaintainRecord_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_MaintainRecord_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
 
         //--報修管理--
         #region Report_Management 報修管理
-        [HttpPost]
-        public ActionResult Report_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_Report_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult Report_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_Report_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region RepairRecord_Management 巡檢維修紀錄管理
-        [HttpPost]
-        public ActionResult RepairRecord_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_RepairRecord_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult RepairRecord_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_RepairRecord_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
 
         //--設備管理--
         #region EquipmentInfo_Management 資產管理
-        [HttpPost]
-        public ActionResult EquipmentInfo_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_EquipmentInfo(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult EquipmentInfo_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_EquipmentInfo(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region AsBuiltDrawing_Management 竣工圖說管理
@@ -164,71 +164,71 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region EquipmentOperatingManual 設備操作手冊
-        [HttpPost]
-        public ActionResult EquipmentOperatingManual(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_EquipmentOperatingManual(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult EquipmentOperatingManual(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_EquipmentOperatingManual(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
 
         //--庫存管理--
         #region PurchaseRequisition_Management 請購管理
-        [HttpPost]
-        public ActionResult PurchaseRequisition_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_PurchaseRequisition_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult PurchaseRequisition_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_PurchaseRequisition_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region StockIn_Management 入庫管理
-        [HttpPost]
-        public ActionResult StockIn_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_StockIn_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult StockIn_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_StockIn_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region StoresRequisition_Management 領用申請管理
-        [HttpPost]
-        public ActionResult StoresRequisition_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_StoresRequisition_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult StoresRequisition_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_StoresRequisition_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region StockOut_Management 出庫管理
-        [HttpPost]
-        public ActionResult StockOut_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_StockOut_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult StockOut_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_StockOut_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
         #region Stock_Management 庫存管理
-        [HttpPost]
-        public ActionResult Stock_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_Stock_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult Stock_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_Stock_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
 
@@ -280,14 +280,14 @@ namespace MinSheng_MIS.Controllers
 
         //--警示訊息管理--
         #region WarningMessage_Management 警示訊息管理
-        [HttpPost]
-        public ActionResult WarningMessage_Management(FormCollection form)
-        {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_WarningMessage_Management(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult WarningMessage_Management(FormCollection form)
+        //{
+        //    var service = new DatagridService();
+        //    var a = service.GetJsonForGrid_WarningMessage_Management(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
 
 

@@ -22,5 +22,6 @@ namespace MinSheng_MIS.Models
         public string ImgName { get; set; }
         public string ImgVersion { get; set; }
         public System.DateTime UploadDate { get; set; }
+        public string UploadUser { get; set; }
     }
 }

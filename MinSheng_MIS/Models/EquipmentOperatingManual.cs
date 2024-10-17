@@ -15,8 +15,6 @@ namespace MinSheng_MIS.Models
     public partial class EquipmentOperatingManual
     {
         public string EOMSN { get; set; }
-        public string System { get; set; }
-        public string SubSystem { get; set; }
         public string EName { get; set; }
         public string Brand { get; set; }
         public string Model { get; set; }

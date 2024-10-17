@@ -12,21 +12,28 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class InspectionPlanMember
+    public partial class StockChangesRecord
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public InspectionPlanMember()
+        public StockChangesRecord()
         {
-            this.InspectionTrack = new HashSet<InspectionTrack>();
+            this.RFID = new HashSet<RFID>();
         }
     
-        public string PMSN { get; set; }
-        public string IPSN { get; set; }
-        public string UserID { get; set; }
-        public string WatchID { get; set; }
+        public string SARSN { get; set; }
+        public string SISN { get; set; }
+        public string ChangeType { get; set; }
+        public string ChangeWay { get; set; }
+        public double NumberOfChanges { get; set; }
+        public double CurrentInventory { get; set; }
+        public string Registrar { get; set; }
+        public System.DateTime ChangeTime { get; set; }
+        public string PurchaseOrder { get; set; }
+        public string Recipient { get; set; }
+        public string Memo { get; set; }
     
-        public virtual InspectionPlan InspectionPlan { get; set; }
+        public virtual ComputationalStock ComputationalStock { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InspectionTrack> InspectionTrack { get; set; }
+        public virtual ICollection<RFID> RFID { get; set; }
     }
 }

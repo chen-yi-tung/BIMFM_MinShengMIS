@@ -12,13 +12,12 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class DrawInspectionPlanPath
+    public partial class Template_CheckItem
     {
-        public string ISN { get; set; }
-        public string PSN { get; set; }
-        public decimal LocationX { get; set; }
-        public decimal LocationY { get; set; }
+        public string CISN { get; set; }
+        public string TSN { get; set; }
+        public string CheckItemName { get; set; }
     
-        public virtual InspectionPlanPath InspectionPlanPath { get; set; }
+        public virtual Template_OneDeviceOneCard Template_OneDeviceOneCard { get; set; }
     }
 }

@@ -12,14 +12,12 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class StockOutItem
+    public partial class Equipment_MaintenanceFormMember
     {
-        public string SOISN { get; set; }
-        public string SORSN { get; set; }
-        public string SSN { get; set; }
-        public double Amount { get; set; }
+        public string EMFMSN { get; set; }
+        public string EMFSN { get; set; }
+        public string Maintainer { get; set; }
     
-        public virtual Stock Stock { get; set; }
-        public virtual StockOutRecord StockOutRecord { get; set; }
+        public virtual Equipment_MaintenanceForm Equipment_MaintenanceForm { get; set; }
     }
 }

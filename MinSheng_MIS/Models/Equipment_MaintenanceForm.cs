@@ -12,37 +12,33 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class EquipmentReportForm
+    public partial class Equipment_MaintenanceForm
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public EquipmentReportForm()
+        public Equipment_MaintenanceForm()
         {
-            this.Equipment_ReportFormMember = new HashSet<Equipment_ReportFormMember>();
+            this.Equipment_MaintenanceFormMember = new HashSet<Equipment_MaintenanceFormMember>();
         }
     
-        public string RSN { get; set; }
+        public string EMFSN { get; set; }
         public string ESN { get; set; }
-        public System.DateTime ReportTime { get; set; }
-        public string ReportLevel { get; set; }
-        public string ReportContent { get; set; }
-        public string InformatUserID { get; set; }
-        public string ReportState { get; set; }
-        public string ReportSource { get; set; }
-        public string ReportImg { get; set; }
+        public string MaintainName { get; set; }
+        public string Period { get; set; }
+        public Nullable<System.DateTime> lastMaintainDate { get; set; }
+        public System.DateTime NextMaintainDate { get; set; }
+        public string Status { get; set; }
         public string Dispatcher { get; set; }
         public Nullable<System.DateTime> DispatcherTime { get; set; }
-        public Nullable<System.DateTime> DueDate { get; set; }
-        public Nullable<System.DateTime> RepairTime { get; set; }
-        public string RepairImg { get; set; }
-        public string RepairContent { get; set; }
-        public string RepairtId { get; set; }
+        public Nullable<System.DateTime> ReportTime { get; set; }
+        public string ReportContent { get; set; }
+        public string ReportId { get; set; }
         public string AuditId { get; set; }
         public Nullable<System.DateTime> AuditTime { get; set; }
         public Nullable<bool> AuditResult { get; set; }
         public string AuditReason { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Equipment_ReportFormMember> Equipment_ReportFormMember { get; set; }
         public virtual EquipmentInfo EquipmentInfo { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Equipment_MaintenanceFormMember> Equipment_MaintenanceFormMember { get; set; }
     }
 }

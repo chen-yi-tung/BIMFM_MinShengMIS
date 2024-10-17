@@ -17,33 +17,42 @@ namespace MinSheng_MIS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public EquipmentInfo()
         {
+            this.Equipment_AddFieldValue = new HashSet<Equipment_AddFieldValue>();
+            this.Equipment_MaintainItemValue = new HashSet<Equipment_MaintainItemValue>();
+            this.Equipment_MaintenanceForm = new HashSet<Equipment_MaintenanceForm>();
             this.EquipmentReportForm = new HashSet<EquipmentReportForm>();
+            this.RFID = new HashSet<RFID>();
         }
     
         public string ESN { get; set; }
-        public string System { get; set; }
-        public string SubSystem { get; set; }
         public string EName { get; set; }
-        public string Area { get; set; }
-        public string Floor { get; set; }
-        public string Room { get; set; }
-        public string RoomName { get; set; }
-        public string SourceSpace { get; set; }
-        public string SourceObject { get; set; }
-        public string PropertyCode { get; set; }
-        public string Brand { get; set; }
-        public Nullable<System.DateTime> InstallDate { get; set; }
-        public Nullable<System.DateTime> GuaranteeDeadline { get; set; }
-        public Nullable<int> DBID { get; set; }
-        public string RFID { get; set; }
-        public string EState { get; set; }
+        public string No { get; set; }
         public string FSN { get; set; }
-        public Nullable<decimal> LocationX { get; set; }
-        public Nullable<decimal> LocationY { get; set; }
+        public string Brand { get; set; }
+        public string Vendor { get; set; }
         public string Model { get; set; }
-        public string SubSystemID { get; set; }
+        public string ContactPhone { get; set; }
+        public string OperatingVoltage { get; set; }
+        public string OtherInfo { get; set; }
+        public Nullable<System.DateTime> InstallDate { get; set; }
+        public string Memo { get; set; }
+        public Nullable<int> DBID { get; set; }
+        public string EState { get; set; }
+        public string TSN { get; set; }
+        public bool IsDelete { get; set; }
+        public string EPhoto { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Equipment_AddFieldValue> Equipment_AddFieldValue { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Equipment_MaintainItemValue> Equipment_MaintainItemValue { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Equipment_MaintenanceForm> Equipment_MaintenanceForm { get; set; }
+        public virtual Floor_Info Floor_Info { get; set; }
+        public virtual Template_OneDeviceOneCard Template_OneDeviceOneCard { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EquipmentReportForm> EquipmentReportForm { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RFID> RFID { get; set; }
     }
 }

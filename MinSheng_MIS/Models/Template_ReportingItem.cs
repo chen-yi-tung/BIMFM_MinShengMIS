@@ -12,11 +12,13 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class MaintainCompletionImage
+    public partial class Template_ReportingItem
     {
-        public string ImgPath { get; set; }
-        public string IPMSN { get; set; }
+        public string RISN { get; set; }
+        public string TSN { get; set; }
+        public string ReportingItemName { get; set; }
+        public string Unit { get; set; }
     
-        public virtual InspectionPlanMaintain InspectionPlanMaintain { get; set; }
+        public virtual Template_OneDeviceOneCard Template_OneDeviceOneCard { get; set; }
     }
 }

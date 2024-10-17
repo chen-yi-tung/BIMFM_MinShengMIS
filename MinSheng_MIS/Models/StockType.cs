@@ -12,24 +12,18 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class MaintainSupplementaryInfo
+    public partial class StockType
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public MaintainSupplementaryInfo()
+        public StockType()
         {
-            this.MaintainSupplementaryFile = new HashSet<MaintainSupplementaryFile>();
+            this.ComputationalStock = new HashSet<ComputationalStock>();
         }
     
-        public string PMSN { get; set; }
-        public string IPMSN { get; set; }
-        public string SupplementaryUserID { get; set; }
-        public System.DateTime SupplementaryDate { get; set; }
-        public string SupplementaryContent { get; set; }
+        public int StockTypeSN { get; set; }
+        public string StockType1 { get; set; }
     
-        public virtual InspectionPlanMaintain InspectionPlanMaintain { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MaintainSupplementaryFile> MaintainSupplementaryFile { get; set; }
-        public virtual MaintainSupplementaryInfo MaintainSupplementaryInfo1 { get; set; }
-        public virtual MaintainSupplementaryInfo MaintainSupplementaryInfo2 { get; set; }
+        public virtual ICollection<ComputationalStock> ComputationalStock { get; set; }
     }
 }

@@ -198,33 +198,18 @@
     <Compile Include="Controllers\DatagridController.cs" />
     <Compile Include="Controllers\DesignDiagramsController.cs" />
     <Compile Include="Controllers\DropDownListController.cs" />
-    <Compile Include="Controllers\EquipmentInfo_ManagementController.cs" />
-    <Compile Include="Controllers\EquipmentMaintainPeriod_ManagementController.cs" />
-    <Compile Include="Controllers\EquipmentOperatingManualController.cs" />
     <Compile Include="Controllers\ExperimentData_ManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InquiryPlan_ManagementController.cs" />
     <Compile Include="Controllers\PlanManagementController.cs" />
     <Compile Include="Controllers\TestingAndAnalysisWorkflowController.cs" />
-    <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
     <Compile Include="Controllers\LaboratoryLabel_ManagementController.cs" />
     <Compile Include="Controllers\LaboratoryMaintenance_ManagementController.cs" />
-    <Compile Include="Controllers\MaintainForm_ManagementController.cs" />
-    <Compile Include="Controllers\MaintainItem_ManagementController.cs" />
-    <Compile Include="Controllers\MaintainRecord_ManagementController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ManufacturerInfo_ManagementController.cs" />
     <Compile Include="Controllers\MeetingMinutes_ManagementController.cs" />
     <Compile Include="Controllers\MonthlyReport_ManagementController.cs" />
     <Compile Include="Controllers\PurchaseOrder_ManagementController.cs" />
-    <Compile Include="Controllers\PurchaseRequisition_ManagementController.cs" />
-    <Compile Include="Controllers\RepairRecord_ManagementController.cs" />
-    <Compile Include="Controllers\Report_ManagementController.cs" />
-    <Compile Include="Controllers\SamplePath_ManagementController.cs" />
-    <Compile Include="Controllers\StockIn_ManagementController.cs" />
-    <Compile Include="Controllers\StockOut_ManagementController.cs" />
-    <Compile Include="Controllers\Stock_ManagementController.cs" />
-    <Compile Include="Controllers\StoresRequisition_ManagementController.cs" />
     <Compile Include="Controllers\WarningMessage_ManagementController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -251,9 +236,6 @@
     <Compile Include="Models\BIMData.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CompletionReportImage.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ComputationalStock.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -269,25 +251,28 @@
     <Compile Include="Models\DrawingSystemManagement.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DrawInspectionPlanPath.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\DrawPathSample.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\EquipmentInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\EquipmentMaintainFormItem.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\EquipmentMaintainItem.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\EquipmentOperatingManual.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\EquipmentReportForm.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Equipment_AddFieldValue.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Equipment_MaintainItemValue.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Equipment_MaintenanceForm.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Equipment_MaintenanceFormMember.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Equipment_ReportFormMember.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ExperimentalData.cs">
@@ -309,24 +294,6 @@
     <Compile Include="Models\InspectionPlan.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\InspectionPlanFloorPath.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\InspectionPlanMaintain.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\InspectionPlanMember.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\InspectionPlanPath.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\InspectionPlanRepair.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\InspectionTrack.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\LaboratoryMaintenance.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -339,28 +306,13 @@
     <Compile Include="Models\MonthlyReport.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\PurchaseRequisition.cs">
+    <Compile Include="Models\RFID.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\PurchaseRequisitionItem.cs">
+    <Compile Include="Models\StockChangesRecord.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Stock.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\StockInRecord.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\StockOutItem.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\StockOutRecord.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\StoresRequisition.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\StoresRequisitionItem.cs">
+    <Compile Include="Models\StockType.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SubSystemManagement.cs">
@@ -370,6 +322,21 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SystemManagement.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Template_AddField.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Template_CheckItem.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Template_MaintainItemSetting.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Template_OneDeviceOneCard.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Template_ReportingItem.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TestingAndAnalysisWorkflow.cs">
@@ -391,29 +358,10 @@
     <Compile Include="Models\ViewModels\EquipmentOperatingManualViewModel.cs" />
     <Compile Include="Models\ViewModels\ExperimentalLabelViewModels.cs" />
     <Compile Include="Models\ViewModels\ExperimentData_ManagementViewModels.cs" />
-    <Compile Include="Models\ViewModels\InspectionPlan_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\JsonResponseViewModel.cs" />
-    <Compile Include="Models\MaintainAuditImage.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MaintainAuditInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MaintainCompletionImage.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MaintainItem.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ViewModels\LaboratoryMaintenance_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\MaintainItemQuery.cs" />
     <Compile Include="Models\ViewModels\MaintainItemViewModel.cs" />
-    <Compile Include="Models\MaintainSupplementaryFile.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MaintainSupplementaryInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Model1.Context.cs">
       <AutoGen>True</AutoGen>
@@ -436,36 +384,14 @@
     <Compile Include="Models\PathSampleOrder.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\RepairAuditImage.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\RepairAuditInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\RepairCompletionImage.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\RepairSupplementaryFile.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\RepairSupplementaryInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\ReportImage.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ViewModels\MaintainRecord_Management_ViewModel.cs" />
     <Compile Include="Models\ViewModels\ManufacturerInfo_ViewModel.cs" />
     <Compile Include="Models\ViewModels\MeetingMinutes_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\PathSampleViewModel.cs" />
     <Compile Include="Models\ViewModels\PurchaseRequisition_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\ReadInspectionPlanPathData.cs" />
-    <Compile Include="Models\ViewModels\RepairRecord_Management_ReadViewModel.cs" />
-    <Compile Include="Models\ViewModels\ReadEqMaintainItemFormViewModel.cs" />
-    <Compile Include="Models\ViewModels\ReportManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\NewMaintainItems.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemViewModel.cs" />
     <Compile Include="Models\ViewModels\StockIn_ManagementViewModels.cs" />
@@ -482,16 +408,11 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AsBuiltDrawingService.cs" />
-    <Compile Include="Services\Check_EquipmentFormItem.cs" />
-    <Compile Include="Services\Check_InspectionPlan.cs" />
     <Compile Include="Services\ComFunc.cs" />
     <Compile Include="Services\DatagridService.cs" />
-    <Compile Include="Services\EquipmentInfo_ManagementService.cs" />
     <Compile Include="Services\DesignDiagramsService.cs" />
-    <Compile Include="Services\EquipmentOperatingManualService.cs" />
     <Compile Include="Services\Helper.cs" />
     <Compile Include="Services\MeetingMinutesService.cs" />
-    <Compile Include="Services\PlanInformationService.cs" />
     <Compile Include="Services\WarningMessageService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Surfaces\Surface.cs" />
@@ -1850,6 +1771,10 @@
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\popper.min.js" />
     <Content Include="Scripts\tool.js" />
+    <Content Include="Views\MaintainRecord_Management\Audit.cshtml" />
+    <Content Include="Views\MaintainRecord_Management\Management.cshtml" />
+    <Content Include="Views\MaintainRecord_Management\Read.cshtml" />
+    <Content Include="Views\MaintainRecord_Management\Supplement.cshtml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1897,10 +1822,6 @@
     <Content Include="Views\SamplePath_Management\Delete.cshtml" />
     <Content Include="Views\MaintainForm_Management\Management.cshtml" />
     <Content Include="Views\MaintainForm_Management\Read.cshtml" />
-    <Content Include="Views\MaintainRecord_Management\Management.cshtml" />
-    <Content Include="Views\MaintainRecord_Management\Read.cshtml" />
-    <Content Include="Views\MaintainRecord_Management\Audit.cshtml" />
-    <Content Include="Views\MaintainRecord_Management\Supplement.cshtml" />
     <Content Include="Views\RepairRecord_Management\Management.cshtml" />
     <Content Include="Views\RepairRecord_Management\Read.cshtml" />
     <Content Include="Views\RepairRecord_Management\Audit.cshtml" />

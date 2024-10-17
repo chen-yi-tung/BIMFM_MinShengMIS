@@ -17,7 +17,6 @@ namespace MinSheng_MIS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PathSample()
         {
-            this.DrawPathSample = new HashSet<DrawPathSample>();
             this.PathSampleOrder = new HashSet<PathSampleOrder>();
         }
     
@@ -25,8 +24,6 @@ namespace MinSheng_MIS.Models
         public string PathTitle { get; set; }
         public string FSN { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DrawPathSample> DrawPathSample { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PathSampleOrder> PathSampleOrder { get; set; }
     }

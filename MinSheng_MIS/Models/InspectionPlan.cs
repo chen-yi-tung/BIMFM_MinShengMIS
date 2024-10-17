@@ -14,44 +14,10 @@ namespace MinSheng_MIS.Models
     
     public partial class InspectionPlan
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public InspectionPlan()
-        {
-            this.CompletionReportImage = new HashSet<CompletionReportImage>();
-            this.InspectionPlanMaintain = new HashSet<InspectionPlanMaintain>();
-            this.InspectionPlanMaintain1 = new HashSet<InspectionPlanMaintain>();
-            this.InspectionPlanMember = new HashSet<InspectionPlanMember>();
-            this.InspectionPlanPath = new HashSet<InspectionPlanPath>();
-            this.InspectionPlanRepair = new HashSet<InspectionPlanRepair>();
-        }
-    
         public string IPSN { get; set; }
         public string IPName { get; set; }
         public System.DateTime PlanDate { get; set; }
-        public string Shift { get; set; }
-        public int MaintainAmount { get; set; }
-        public int RepairAmount { get; set; }
         public string PlanState { get; set; }
         public string PlanCreateUserID { get; set; }
-        public string InformatUserID { get; set; }
-        public Nullable<System.DateTime> DateOfFilling { get; set; }
-        public string InspectionRecord { get; set; }
-        public string InspectionStateOfFilling { get; set; }
-        public string MaintainUserID { get; set; }
-        public string RepairUserID { get; set; }
-        public Nullable<System.DateTime> PlanStartTime { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CompletionReportImage> CompletionReportImage { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InspectionPlanMaintain> InspectionPlanMaintain { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InspectionPlanMaintain> InspectionPlanMaintain1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InspectionPlanMember> InspectionPlanMember { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InspectionPlanPath> InspectionPlanPath { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InspectionPlanRepair> InspectionPlanRepair { get; set; }
     }
 }
