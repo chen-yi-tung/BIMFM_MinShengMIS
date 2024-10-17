@@ -83,7 +83,7 @@ namespace MinSheng_MIS.Controllers
                 if (result == SignInStatus.Success)
                 {
                     Session["MyName"] = userdata.MyName;
-                    return RedirectToAction("Management", "InspectionPlan_Management");
+                    return RedirectToAction("Management", "MeetingMinutes_Management");
                 }
             }
             ViewBag.Message = "登入嘗試失敗!";
