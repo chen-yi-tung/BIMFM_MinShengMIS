@@ -8,20 +8,23 @@
 <html>
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>@ViewBag.Title - 民生資訊管理系統</title>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-	<link href="/Content/icomoon-v1.0/style.css" rel="stylesheet">
-	@Styles.Render("~/Content/css")
-	@Scripts.Render("~/bundles/modernizr")
-	@Scripts.Render("~/bundles/jquery")
-	@Scripts.Render("~/Scripts/popper.min.js")
-	@Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
-	@RenderSection("styles", required: false)
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 民生資訊管理系統</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="/Content/icomoon-v1.0/style.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/popper.min.js")
+    @Scripts.Render("~/Scripts/share.js")
+    @Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
+    @RenderSection("styles", required: false)
 </head>
 
 <body>
@@ -75,10 +78,10 @@
                                 巡檢管理
                             </a>
                             <ul class="collapse" id="nav-collapse-1" data-bs-parent="#nav-collapse">
-                                <li>
-                                    <a class="dropdown-item" href="/InspectionPlan_Management/Management">巡檢計畫管理</a>
-                                </li>
+                                <li><a class="dropdown-item" href="/InspectionPlan_Management/Management">巡檢計畫管理</a></li>
+                                <li><a class="dropdown-item" href="/PlanManagement/Management">工單管理</a></li>
                                 <li><a class="dropdown-item" href="/SamplePath_Management/Management">巡檢路線模板管理</a></li>
+                                <li><a class="dropdown-item" href="#">每日巡檢時程安排模板</a></li>
                                 <li><a class="dropdown-item" href="/InspectionPlan_Management/CurrentInformation">巡檢即時位置</a></li>
                                 <li><a class="dropdown-item" href="/InspectionPlan_Management/InformationManagement">巡檢資訊管理</a></li>
                             </ul>

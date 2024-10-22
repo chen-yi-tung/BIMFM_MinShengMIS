@@ -1,11 +1,12 @@
 ﻿.btn {
     border-radius: 5px;
     font-size: 18px;
-    --bs-btn-disabled-color:#e2e2e2;
-    --bs-btn-disabled-bg:#708298;
-    --bs-btn-disabled-border-color:#708298;
+    --bs-btn-disabled-color: #e2e2e2;
+    --bs-btn-disabled-bg: #708298;
+    --bs-btn-disabled-border-color: #708298;
     --bs-btn-disabled-opacity: 0.36;
     transition: all .15s ease-in-out;
+    width: fit-content;
 }
 .btn.pe-none{
     opacity: 0.6;
@@ -19,6 +20,15 @@
     --bs-btn-border-width: 1px;
     --bs-btn-border-color: rgba(92, 151, 237, 0.5);
     --bs-btn-hover-border-color: rgba(92, 151, 237, 0.5);
+    --bs-btn-active-bg: var(--bs-btn-hover-bg);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-border-color: var(--bs-btn-hover-border-color);
+}
+.btn-sort {
+    border: none;
+    background: transparent;
+    color: #44BCC2;
+    font-size: 20px;
 }
 
 .btn-create-item,
@@ -27,6 +37,9 @@
     --bs-btn-color: white;
     --bs-btn-hover-bg: #3daaaf;
     --bs-btn-hover-color: white;
+    --bs-btn-active-bg: var(--bs-btn-hover-bg);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-border-color: var(--bs-btn-hover-border-color);
 }
 
 .btn-cancel,
@@ -36,6 +49,9 @@
     --bs-btn-color: white;
     --bs-btn-hover-bg: #91a19d;
     --bs-btn-hover-color: white;
+    --bs-btn-active-bg: var(--bs-btn-hover-bg);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-border-color: var(--bs-btn-hover-border-color);
 }
 
 .btn-submit,
@@ -47,6 +63,9 @@
     --bs-btn-border-width: 1.5px;
     --bs-btn-border-color: #5C97ED;
     --bs-btn-hover-border-color: #5C97ED;
+    --bs-btn-active-bg: var(--bs-btn-hover-bg);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-border-color: var(--bs-btn-hover-border-color);
 }
 
 .btn-datagrid {
@@ -56,6 +75,9 @@
     --bs-btn-hover-color: white;
     --bs-btn-padding-x: 10px;
     --bs-btn-padding-y: 3px;
+    --bs-btn-active-bg: var(--bs-btn-hover-bg);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-border-color: var(--bs-btn-hover-border-color);
 }
 
 .btn-datagrid-secondary {

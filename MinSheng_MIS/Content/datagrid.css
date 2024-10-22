@@ -1,5 +1,5 @@
 ﻿.datagrid-area {
-    margin-top: 28px;
+    margin-top: 8px;
 }
 
 /* easyui */
@@ -150,4 +150,18 @@
     border: none !important;
     outline: none !important;
     padding: 0 !important;
+}
+
+.datagrid input[type="radio"] {
+    width: 18px;
+    height: 18px;
+}
+.panel-noscroll {
+    overflow: visible !important;
+}
+.panel, .panel-body, .datagrid-view {
+    width: 100% !important;
+}
+.datagrid-table .datagrid-header-inner {
+    background: #C6E1FF;
 }

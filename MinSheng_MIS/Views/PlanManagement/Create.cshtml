@@ -1,0 +1,772 @@
+﻿@{
+    ViewBag.Title = "新增 工單";
+}
+@section styles {
+    @Styles.Render("~/Content/easyui/themes/default/easyui.css")
+    <link rel="stylesheet" href="/Content/datagrid-modal.css">
+    <link rel="stylesheet" href="~/Content/datatable.css">
+
+    <script src="/Content/easyui/jquery.min.js" defer></script>
+    <script src="/Content/easyui/jquery.easyui.min.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="~/Scripts/PlanManagement/CreateDataGrids.js" defer></script>
+    @*<script src="/Scripts/PlanManagement/Create.js" defer></script>*@
+    <script src="/Scripts/datatable.js"></script>
+}
+
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    <div class="mt-4">
+        <div class="edit-area edit-area-lg flex-lg-row flex-wrap justify-content-lg-end px-4 py-4">
+            <form class="form d-lg-contents p-0">
+                <div class="form-group-zone">
+                    <div class="form-group required">
+                        <label for="PlanName">工單名稱</label>
+                        <input type="text" class="form-control" name="PlanName" id="PlanName" maxlength="20" required>
+                    </div>
+                    <div class="form-group required">
+                        <label for="PlanDate">工單日期</label>
+                        <input type="date" class="form-control" name="PlanDate" id="PlanDate" maxlength="20" required>
+                    </div>
+                </div>
+                <hr class="hr-default" />
+
+                <div class="datatable-easyui w-100 d-none">
+                    <table id="Template-datagrid"></table>
+                </div>
+                @*參考領用編輯頁*@
+                <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal" data-bs-target="#AutoLink">+ 自動代入每日巡檢模板</button>
+
+                <div class="m-0 w-100 text-center">
+                    <div class="datatable datatable-grid w-100 h-100">
+                        <div class="datatable-body h-100 overflow-auto">
+                            <table class="datatable-table">
+                                <thead>
+                                    <tr>
+                                        <th class="datatable-header" style="width:40px"><span></span></th>
+                                        <th class="datatable-header" style="width:40px"><span></span></th>
+                                        <th class="datatable-header required" style="width:130px"><span>巡檢時間(起)</span></th>
+                                        <th class="datatable-header required" style="width:130px"><span>巡檢時間(迄)</span></th>
+                                        <th class="datatable-header required" style="width:250px"><span>巡檢路線名稱</span></th>
+                                        <th class="datatable-header required" style="width:120px"><span>巡檢數量</span></th>
+                                        <th class="datatable-header required" style="width:120px"><span>巡檢頻率</span></th>
+                                        <th class="datatable-header" style="width:150px"><span></span></th>
+                                        <th class="datatable-header required" style="width:325px"><span>執行人員</span></th>
+                                        <th class="datatable-header" style="width:36px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="item-area">
+                                    <tr id="sample-input-tr">
+                                        <td id="d-Num">1</td>
+                                        <td id="d-Sort">
+                                            <button type="button" class="btn-sort">
+                                                <i class="fa-solid fa-bars"></i>
+                                            </button>
+                                        </td>
+                                        <td id="StartTime">
+                                            <input class="form-control" type="time" id="StartTime" name="StartTime" min="1" value="1" step="any" required />
+
+                                        </td>
+                                        <td id="EndTime">
+                                            <input class="form-control" type="time" id="EndTime" name="EndTime" min="1" value="1" step="any" required />
+                                        </td>
+                                        <td id="Name">
+                                            <select class="form-select" id="d-Name" name="Name" required></select>
+                                        </td>
+                                        <td id="Quantity">10</td>
+                                        <td id="Frequency">每3小時</td>
+                                        <td id="Info">
+                                            <button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo">巡檢路線資訊</button>
+                                        </td>
+                                        <td id="UserID">
+                                            <select class="form-select" id="UserID" name="UserID" required></select>
+                                        </td>
+                                        <td id="d-_delete" class="p-1 pt-2">
+                                            <button type="button" class="btn-delete-item"></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <button type="button" class="addItemBtn" id="addItem"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+
+@*巡檢路線資訊POP UP*@
+<div class="modal fade datagrid-modal" tabindex="-1" id="PlanInfo">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content height-fit">
+            <div class="modal-body align-items-center">
+                <h2>巡檢路線資訊</h2>
+                <div class="datatable datatable-small">
+                    <div class="datatable-body">
+                        <table class="datatable-table" id="PathDetail"></table>
+                    </div>
+                </div>
+                <div class="datatable datatable-grid datatable-fill">
+                    <div class="datatable-body overflow-auto">
+                        <table class="datatable-table" id="DeviceInfo">
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-export" data-bs-dismiss="modal">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*每日巡檢時程模板POP UP*@
+<div class="modal fade datagrid-modal" tabindex="-1" id="AutoLink">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>每日巡檢時程模板</h2>
+                <div class="search-area">
+                    <form class="form">
+                        <div class="form-group">
+                            <label for="EName">巡檢路線名稱</label>
+                            <input class="form-control" id="EName" name="EName" type="text" />
+                        </div>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-search" id="search">查詢</button>
+                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="modal-datagrid"></table>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="add-row">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        $(async function () {
+            addButtonEvent();
+            addTemplateItem();
+            delTemplateItem();
+            autoLinkDG_Controller = new IPDG(ALDGOptions);
+            //await addDropDownList();
+            //await addAreaFloorEvent();
+            readData(apiUrl);
+        })
+
+        const SerializedName = [
+            { text: "巡檢路線名稱", value: "生物處理機台巡檢" },
+        ]
+        const GridOptions = {
+            thead: true,
+            columns: [
+                { id: "InterCode", title: "RFID內碼" },
+                { id: "ExterCode", title: "RFID外碼" },
+                { id: "EName", title: "設備名稱" },
+                { id: "ESN", title: "設備編號" },
+                { id: "Area", title: "棟別" },
+                { id: "Floor", title: "樓層" },
+                { id: "Brand", title: "廠牌" },
+                { id: "Model", title: "型號" },
+                { id: "Frequency", title: "巡檢頻率" },
+            ]
+        }
+        let fakeData = {
+            SIRSN: "1120301001",
+            StockInMyName: "王大明",
+            ExternalRFID: [
+                {
+                    InterCode: "XSCXCZS",
+                    ExterCode: "XSCXCZS",
+                    EName: "螺旋發送機1",
+                    ESN: "SP-0202A",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Brand: "A廠牌",
+                    Model: "XMA-56",
+                    Frequency: "每2小時",
+                },
+                {
+                    InterCode: "XSCXCZS",
+                    ExterCode: "XSCXCZS",
+                    EName: "螺旋發送機2",
+                    ESN: "SP-0202A",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Brand: "B廠牌",
+                    Model: "XMA-56",
+                    Frequency: "每2小時",
+                },
+                {
+                    InterCode: "XSCXCZS",
+                    ExterCode: "XSCXCZS",
+                    EName: "螺旋發送機3",
+                    ESN: "SP-0202A",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Brand: "C廠牌",
+                    Model: "XMA-56",
+                    Frequency: "每2小時",
+                },
+            ]
+        }
+        let EditFakeData = {
+            "IPSN": "P12345",
+            "IPName": "AAA",
+            "PlanCreateUserID": "Admin",
+            "PlanDate": "2023-04-13",
+            "PlanState": "執行中",
+            "Shift": "1",
+            "UserID": ["A101204", "KennyTest"],
+            "MaintainUserID": "A101204",
+            "RepairUserID": "A101204",
+            "MaintainEquipment": [
+                {
+                    "StockState": "無",
+                    "FormItemState": "保留中(待派工)",
+                    "EMFISN": "E00024_000035_230407",
+                    "Period": 1,
+                    "Unit": "月",
+                    "LastTime": "2023/03/07",
+                    "Date": "2023/04/07",
+                    "EState": "正常",
+                    "Area": "生物處理單元",
+                    "Floor": "管廊底",
+                    "ESN": "E00024",
+                    "EName": "加氯消毒池混和井攪拌機",
+                    "MIName": "加氯保養測試1"
+                },
+                {
+                    "StockState": "無",
+                    "FormItemState": "保留中(待派工)",
+                    "EMFISN": "E00020_000048_230329",
+                    "Period": 3,
+                    "Unit": "日",
+                    "LastTime": "2023/03/29",
+                    "Date": "2023/03/29",
+                    "EState": "正常",
+                    "Area": "生物處理單元",
+                    "Floor": "管廊底",
+                    "ESN": "E00020",
+                    "EName": "二沉池刮泥機",
+                    "MIName": "二沉池保養一"
+                },
+                {
+                    "StockState": "無",
+                    "FormItemState": "保留中(待派工)",
+                    "EMFISN": "E00021_000048_230329",
+                    "Period": 3,
+                    "Unit": "日",
+                    "LastTime": "2023/03/29",
+                    "Date": "2023/03/29",
+                    "EState": "正常",
+                    "Area": "生物處理單元",
+                    "Floor": "管廊頂",
+                    "ESN": "E00021",
+                    "EName": "二沉池刮泥機",
+                    "MIName": "二沉池保養一"
+                }
+            ],
+            "RepairEquipment": [
+                {
+                    "StockState": "有",
+                    "ReportState": "保留中(待派工)",
+                    "ESN": "E00143",
+                    "RSN": "R23032901",
+                    "ReportLevel": "緊急",
+                    "Date": "2023/03/29 09:00:00",
+                    "ReportContent": "壞壞JUDY",
+                    "InformatUserID": "賈皓麟",
+                    "EState": "報修中",
+                    "Area": "進流抽水站",
+                    "Floor": "B2F",
+                    "EName": "二沉池刮泥機"
+                },
+                {
+                    "StockState": "無",
+                    "ReportState": "保留中(待派工)",
+                    "ESN": "E00002",
+                    "RSN": "R23022606",
+                    "ReportLevel": "一般",
+                    "Date": "2023/02/26 14:00:00",
+                    "ReportContent": "假資料",
+                    "InformatUserID": "賈皓麟",
+                    "EState": "報修中",
+                    "Area": "前處理機房",
+                    "Floor": "B1F",
+                    "EName": "粗攔物除物皮帶輸送機"
+                },
+                {
+                    "StockState": "無",
+                    "ReportState": "保留中(待派工)",
+                    "ESN": "E00002",
+                    "RSN": "R23022605",
+                    "ReportLevel": "一般",
+                    "Date": "2023/02/26 13:00:00",
+                    "ReportContent": "假資料",
+                    "InformatUserID": "賈皓麟",
+                    "EState": "報修中",
+                    "Area": "前處理機房",
+                    "Floor": "B1F",
+                    "EName": "粗攔物除物皮帶輸送機"
+                }
+            ],
+            "InspectionPlanPaths": [
+                {
+                    "PathSample": {
+                        "PSSN": null,
+                        "Area": "進流抽水站",
+                        "Floor": "B2F",
+                        "ASN": "1",
+                        "FSN": "1_2",
+                        "PathTitle": "進流抽水站 B2F 巡檢路線",
+                        "BIMPath": "/BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+                        "Beacon": [
+                            {
+                                "dbId": 3078,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00028"
+                            },
+                            {
+                                "dbId": 3239,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00029"
+                            },
+                            {
+                                "dbId": 3162,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00030"
+                            },
+                            {
+                                "dbId": 3113,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00031"
+                            }
+                        ]
+                    },
+                    "PathSampleOrder": [
+                        "E00028",
+                        "E00028",
+                        "E00031",
+                        "E00029",
+                        "E00029",
+                        "E00030",
+                        "E00143"
+                    ],
+                    "PathSampleRecord": [
+                        {
+                            "LocationX": 4.343302473135253,
+                            "LocationY": -71.36540038498816
+                        },
+                        {
+                            "LocationX": 20.78023159302441,
+                            "LocationY": -10.403119589648426
+                        },
+                        {
+                            "LocationX": -23.74512070642215,
+                            "LocationY": 7.074121320960913
+                        },
+                        {
+                            "LocationX": -37.269176311394254,
+                            "LocationY": -69.28477646705846
+                        }
+                    ],
+                    "MaintainEquipment": [
+                        "E00028",
+                        "E00029"
+                    ],
+                    "RepairEquipment": [
+                        "E00143"
+                    ],
+                    "BothEquipment": []
+                },
+                {
+                    "PathSample": {
+                        "PSSN": null,
+                        "Area": "進流抽水站",
+                        "Floor": "B2F",
+                        "ASN": "1",
+                        "FSN": "1_2",
+                        "PathTitle": "進流抽水站 B2F 巡檢路線",
+                        "BIMPath": "/BimModels/Site01/Resource/3D View/林口(一)/林口(一).svf",
+                        "Beacon": [
+                            {
+                                "dbId": 3078,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00028"
+                            },
+                            {
+                                "dbId": 3239,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00029"
+                            },
+                            {
+                                "dbId": 3162,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00030"
+                            },
+                            {
+                                "dbId": 3113,
+                                "deviceType": "藍芽",
+                                "deviceName": "E00031"
+                            }
+                        ]
+                    },
+                    "PathSampleOrder": [
+                        "E00031",
+                        "E00028",
+                        "E00028",
+                        "E00143",
+                        "E00030",
+                        "E00029",
+                        "E00029"
+                    ],
+                    "PathSampleRecord": [
+                        {
+                            "LocationX": 18.699608986978998,
+                            "LocationY": -25.591673713233597
+                        },
+                        {
+                            "LocationX": -8.140441162223595,
+                            "LocationY": -73.23796191112488
+                        },
+                        {
+                            "LocationX": -46.42392164399074,
+                            "LocationY": -53.47203469079287
+                        },
+                        {
+                            "LocationX": -15.838749737361553,
+                            "LocationY": -28.504547675636672
+                        },
+                        {
+                            "LocationX": -48.712607977139854,
+                            "LocationY": -9.570870022476527
+                        },
+                        {
+                            "LocationX": -29.778930130178928,
+                            "LocationY": 7.9063708881328125
+                        },
+                        {
+                            "LocationX": 23.276980320096186,
+                            "LocationY": -20.39011439571091
+                        }
+                    ],
+                    "MaintainEquipment": [
+                        "E00028",
+                        "E00029"
+                    ],
+                    "RepairEquipment": [
+                        "E00143"
+                    ],
+                    "BothEquipment": []
+                }
+            ]
+        }
+        const IPSN = '@ViewBag.id';
+        ////let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
+        let apiUrl = null;
+        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
+        let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
+        let sampleTr;
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                console.log("fakeData", fakeData);
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                fakeData = res;
+                $("#PathDetail").append(createTableInner(res, SerializedName));
+                $("#DeviceInfo").append(createTableGrid(res.ExternalRFID, GridOptions))
+                //sortRouteModal.autoRouteToggle(false);
+
+                //$("#PlanDate").attr('disabled', '');
+                //$("#IPName").val(res.IPName);
+                //$("#UserID").tagbox('setValues', res.UserID);
+                //$("#RepairUserID").val(res.RepairUserID);
+
+                //if (res.MaintainEquipment.length > 0) {
+                //    maintainDG_Controller.changeEditAreaCss()
+                //    maintainDG_Controller.initResultDatagrid(maintainDG_Controller.edg)
+                //    maintainDG_Controller.edg.datagrid('loadData', res.MaintainEquipment);
+                //}
+                //if (res.RepairEquipment.length > 0) {
+                //    repairDG_Controller.changeEditAreaCss()
+                //    repairDG_Controller.initResultDatagrid(repairDG_Controller.edg)
+                //    repairDG_Controller.edg.datagrid('loadData', res.RepairEquipment);
+                //}
+
+                //getDeviceData([...res.MaintainEquipment.map(e => e.ESN), ...res.RepairEquipment.map(e => e.ESN)]);
+
+                //res.InspectionPlanPaths.forEach((e, i, arr) => {
+                //    sessionStorage.setItem(`P${i + 1}_pathData`, JSON.stringify(e));
+                //    pathGroup.create(e);
+                //})
+
+                //$(".sample-path-draw-area").removeClass('d-none');
+
+                //$("#current-path-id").val(1);
+
+                //let { BIMPath, BeaconPath } = res.InspectionPlanPaths[0].PathSample
+
+                //initializeViewer({
+                //    BIMPath, BeaconPath,
+                //    callback: () => { initializeDrawer(1, true) }
+                //});
+
+                //res?.StoresRequisitionItem.forEach((item) => {
+                //    //sampleTr.create(item)
+                //})
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            let data = getCreateSaveData(IPSN);
+
+            console.log(data);
+
+            if (!data) return;
+
+            $.ajax({
+                url: SubmitUrl,
+                data: JSON.stringify(data),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` })
+            }
+        }
+
+        function deleteIP() {
+            $.ajax({
+                url: delUrl,
+                type: "DELETE",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "刪除成功！",
+                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
+            }
+        }
+
+        //$(async function () {
+        //    sampleTr = new SampleTr();
+        //    await sampleTr.init()
+        //    addButtonEvent();
+        //    maintainDG_Controller = new IPDG(MDGOptions);
+        //    repairDG_Controller = new IPDG(RDGOptions);
+        //    await addDropDownList();
+        //    await addAreaFloorEvent();
+        //    controlToggle("path-draw", ForgeDraw.Control.DRAW);
+        //    sortRouteModal.autoRouteToggle(true);
+
+        //    $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
+
+        //    window.addEventListener("beforeunload", (event) => {
+        //        sessionStorage.clear();
+        //    });
+
+        //    addSaveSamplePathEvent();
+
+        //    $("#delete").click(deleteIP);
+
+        //    readData(apiUrl);
+        //})
+        @*function SampleTr() {
+            this.count = 0;
+            this.list = $("#item-area")
+            this.init = async function () {
+                await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+                this.list.on("change", "#StockType", async function (e) {
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")[0]
+                    let id = item.id
+                    await pushSelect(`${id} #StockName`, `@Url.Action("FormStockName", "DropDownList")?StockType=${e.target.value}`);
+                })
+                this.list.on("change", "#StockName", async function (e) {
+                    if (!sampleTr.checkDuplicate()) {
+                        e.target.value = ""
+                        createDialogModal({ id: "DialogModal-Error", inner: `有重複的品項品名！` })
+                        return
+                    }
+
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")
+                    let id = item.attr("id")
+                    $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SISN=${e.target.value}`, (res) => {
+                        console.log(res)
+                        item.find("#d-Unit").text(res?.Unit || "-")
+                    })
+                })
+
+                const observer = new ResizeObserver((entries) => {
+                    for (const entry of entries) {
+                        let style = getComputedStyle(entry.target)
+                        let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
+                        let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
+                        $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
+                        //console.log(`${h} >= ${mh} ${h >= mh}`)
+                    }
+                })
+                observer.observe(this.list.closest(".datatable-body")[0])
+
+                this.list.on("click", ".btn-delete-item", function (e) {
+                    $(this).parent().parent().remove();
+                })
+
+                this.sample = $("#sample-input-tr").clone();
+                $("#sample-input-tr").remove();
+            }
+            this.create = function (data = null) {
+                let item = this.sample.clone();
+                item.attr('id', this.count);
+                this.list.append(item);
+                if (data != null) {
+                    pushSelect(`${item.attr("id")} #StockName`,
+                        `@Url.Action("FormStockName", "DropDownList")?StockType=${data.StockType}`)
+                        .then(() => {
+                            item.find("#StockName").val(data.SISN)
+                        });
+                    item.find("#StockType").val(data.StockType)
+                    item.find("#Amount").val(data.Amount)
+                    item.find("#d-Unit").text(data.Unit)
+                    item.find("#SRContent").val(data.SRContent)
+                }
+
+                this.count++;
+            }
+            this.calc = function () {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        SISN: $(e).find("#StockName").val(),
+                        Amount: $(e).find("#Amount").val(),
+                        SRContent: $(e).find("#SRContent").val()
+                    }
+                })
+            }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
+            }
+            this.checkDuplicate = () => {
+                let sisns = this.list.children().toArray().map((e) => {
+                    return $(e).find("#StockName").val()
+                }).filter(e => e || void 0)
+                let sets = new Set([...sisns])
+                return sisns.length == [...sets].length
+            }
+            return this;
+        }*@
+        function addTemplateItem() {
+            let itemArea = document.getElementById('item-area');
+            let addItem = document.getElementById('addItem');
+
+            addItem.onclick = function () {
+                let newNumber = itemArea.querySelectorAll('tr').length + 1;
+                itemArea.insertAdjacentHTML('beforeend', `<tr id="sample-input-tr">
+                                                                <td id="d-Num">${newNumber}</td>
+                                                                <td id="d-Sort">
+                                                                    <button type="button" class="btn-sort">
+                                                                        <i class="fa-solid fa-bars"></i>
+                                                                    </button>
+                                                                </td>
+                                                                <td id="StartTime">
+                                                                    <input class="form-control" type="time" id="StartTime" name="StartTime" min="1" value="1" step="any" required />
+                                                                </td>
+                                                                <td id="EndTime">
+                                                                    <input class="form-control" type="time" id="EndTime" name="EndTime" min="1" value="1" step="any" required />
+                                                                </td>
+                                                                <td id="Name">
+                                                                    <select class="form-select" id="d-Name" name="Name" required></select>
+                                                                </td>
+                                                                <td id="Quantity">-</td>
+                                                                <td id="Frequency">-</td>
+                                                                <td id="Info">
+                                                                    <button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo">巡檢路線資訊</button>
+                                                                </td>
+                                                                <td id="UserID">
+                                                                    <select class="form-select" id="UserID" name="UserID" required></select>
+                                                                </td>
+                                                                <td id="d-_delete" class="p-1 pt-2">
+                                                                    <button type="button" class="btn-delete-item"></button>
+                                                                </td>
+                                                            </tr>`);
+                delTemplateItem();
+            }
+        }
+
+        function delTemplateItem() {
+            let delBtns = document.querySelectorAll('.btn-delete-item');
+            delBtns.forEach(function (delBtn) {
+                delBtn.onclick = function () {
+                    let tr = delBtn.closest('tr');
+                    if (tr) {
+                        tr.remove();
+                        reorderNumbers();
+                    }
+                };
+            });
+        }
+
+        //當刪除新增的模板後，需重新排序次序
+        function reorderNumbers() {
+            let itemArea = document.getElementById('item-area');
+            let rows = itemArea.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                let numCell = row.querySelector('#d-Num');
+                if (numCell) {
+                    numCell.textContent = index + 1;
+                }
+            });
+        }
+    </script>
+}

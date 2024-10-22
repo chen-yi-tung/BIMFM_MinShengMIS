@@ -23,8 +23,11 @@ body {
 }
 
 .render-body {
-    padding: calc(var(--navbar-height)) 2rem 2rem;
+    padding: 2rem 2rem;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 h2 {

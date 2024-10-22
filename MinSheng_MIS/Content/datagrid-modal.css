@@ -30,9 +30,15 @@
 	border-radius: var(--bs-modal-border-radius);
 }
 
+.modal-fullscreen .height-fit {
+	height: fit-content;
+	max-height: 100%;
+}
+
 .datagrid-modal .modal-body {
 	display: flex;
 	flex-direction: column;
+	gap: 16px;
 }
 
 .datagrid-modal .modal-body h2 {
@@ -95,9 +101,12 @@
 	height: inherit !important;
 }
 
+/*.modal-fullscreen .modal-content {
+	height: fit-content;
+	max-height: 100%;
+}*/
 
 @media (max-width: 767.98px) {
-
 	.datagrid-modal .modal-fullscreen {
 		height: calc(100vh - 2em);
 		margin: 1em;

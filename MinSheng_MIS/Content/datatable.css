@@ -11,6 +11,7 @@
     border-style: solid;
     border-width: var(--datatable-border-width);
     width: 100%;
+    text-align: center;
 }
 
 .datatable-table td,
@@ -24,9 +25,9 @@ th.datatable-header,
     border-width: 0;
 }
 
-.datatable+.datatable {
+/*.datatable+.datatable {
     border-top-width: 0;
-}
+}*/
 
 .datatable-header {
     background: var(--datatable-header-bg);
@@ -53,10 +54,6 @@ th.datatable-header,
     --datatable-accordion-header-bg: #C5ECFF;
 }
 
-.datatable-body {
-    background: var(--datatable-body-bg);
-}
-
 .datatable-body.overflow-auto .datatable-table{
     min-width: max-content;
 }
@@ -65,6 +62,7 @@ th.datatable-header,
     color: #3D3D3D;
     text-align: center;
     width: 100%;
+    background: var(--datatable-body-bg);
 }
 
 .datatable-table td {
