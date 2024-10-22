@@ -202,6 +202,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InquiryPlan_ManagementController.cs" />
     <Compile Include="Controllers\PlanManagementController.cs" />
+    <Compile Include="Controllers\SamplePath_ManagementController.cs" />
     <Compile Include="Controllers\TestingAndAnalysisWorkflowController.cs" />
     <Compile Include="Controllers\LaboratoryLabel_ManagementController.cs" />
     <Compile Include="Controllers\LaboratoryMaintenance_ManagementController.cs" />
