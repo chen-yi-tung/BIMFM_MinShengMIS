@@ -198,6 +198,7 @@
     <Compile Include="Controllers\DatagridController.cs" />
     <Compile Include="Controllers\DesignDiagramsController.cs" />
     <Compile Include="Controllers\DropDownListController.cs" />
+    <Compile Include="Controllers\EquipmentInfo_ManagementController.cs" />
     <Compile Include="Controllers\ExperimentData_ManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InquiryPlan_ManagementController.cs" />
@@ -1843,11 +1844,7 @@
     <Content Include="Views\Account_Management\Edit.cshtml" />
     <Content Include="Views\Account_Management\Delete.cshtml" />
     <Content Include="Views\Account_Management\ChangePassword.cshtml" />
-    <Content Include="Views\EquipmentInfo_Management\Management.cshtml" />
-    <Content Include="Views\EquipmentInfo_Management\Read.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\Edit.cshtml" />
-    <Content Include="Views\EquipmentInfo_Management\Disable.cshtml" />
-    <Content Include="Views\EquipmentInfo_Management\CreateEquipment.cshtml" />
     <Content Include="Views\ManufacturerInfo_Management\Management.cshtml" />
     <Content Include="Views\ManufacturerInfo_Management\Create.cshtml" />
     <Content Include="Views\ManufacturerInfo_Management\Read.cshtml" />
@@ -1934,6 +1931,10 @@
     <Content Include="Views\PlanManagement\Create.cshtml" />
     <Content Include="Views\PlanManagement\Read.cshtml" />
     <Content Include="Views\PlanManagement\Edit.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Create.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Detail.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Index.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Disable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Datagrid\" />
