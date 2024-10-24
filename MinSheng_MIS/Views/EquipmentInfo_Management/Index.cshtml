@@ -1,0 +1,191 @@
+﻿@{
+    ViewBag.Title = "資產管理";
+}
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<button class="btn btn-create" id="create">新增設備</button>
+<div class="search-area">
+    <form class="form" method="post" action="">
+        <div class="form-group">
+            <label for="EName">設備名稱</label>
+            <input class="form-control" id="EName" name="EName" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="ESN">設備編號</label>
+            <input class="form-control" id="ESN" name="ESN" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Area">棟別</label>
+            <select class="form-select" name="Area" id="Area"></select>
+        </div>
+
+        <div class="form-group">
+            <label for="Floor">樓層</label>
+            <select class="form-select" name="Floor" id="Floor"></select>
+        </div>
+
+        <div class="form-group">
+            <label for="Brand">設備廠牌</label>
+            <input class="form-control" id="Brand" name="Brand" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Company">設備廠商</label>
+            <input class="form-control" id="Company" name="Company" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Model">設備型號</label>
+            <input class="form-control" id="Model" name="Model" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Tel">連絡電話</label>
+            <input class="form-control" id="Tel" name="Tel" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Voltage">使用電壓</label>
+            <input class="form-control" id="Voltage" name="Voltage" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="Other">其他耗材資料</label>
+            <input class="form-control" id="Other" name="Other" type="text" />
+        </div>
+
+        <div class="form-group">
+            <label for="InstallDateFrom">安裝日期(起)</label>
+            <input class="form-control" id="InstallDateFrom" name="InstallDateFrom" type="date" />
+        </div>
+
+        <div class="form-group">
+            <label for="InstallDateTo">安裝日期(迄)</label>
+            <input class="form-control" id="InstallDateTo" name="InstallDateTo" type="date" />
+        </div>
+
+        <div class="form-group col-2fr">
+            <label for="Memo">備註</label>
+            <input class="form-control" id="Memo" name="Memo" type="text" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-search" id="search">查詢</button>
+            <button type="button" class="btn btn-clear" id="clear">清除</button>
+        </div>
+    </form>
+</div>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+@section scripts {
+    <script>
+        //const baseUrl = '/PlanManagement/';
+        var getGridJSON = '@Url.Action("EquipmentInfo_Management", "Datagrid")';
+        var DataGrid;
+
+        const fakedata = [
+            {
+                EName: "軸承潤滑劑",
+                ESN: 'T-1361662',
+                InstallDate: "2024/10/02",
+                Area: "A棟",
+                Floor: "2F",
+                Brand: "國際牌",
+                Model: "E5-572-593Y",
+            },
+            {
+                EName: "軸承潤滑劑",
+                ESN: 'T-1361662',
+                InstallDate: "2024/10/02",
+                Area: "A棟",
+                Floor: "2F",
+                Brand: "國際牌",
+                Model: "E5-572-593Y",
+            },
+            {
+                EName: "軸承潤滑劑",
+                ESN: 'T-1361662',
+                InstallDate: "2024/10/02",
+                Area: "A棟",
+                Floor: "2F",
+                Brand: "國際牌",
+                Model: "E5-572-593Y",
+            },
+        ]
+
+        $(async function () {
+            await
+            //await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
+            Initialize_DataGrid(fakedata);
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                //url: getGridJSON,
+                data: getGridJSON,
+                //method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'IPSN',
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.PlanState != "待執行" })),
+                    dg.frozenColumn('FilePath', "", 111, (v, row, i) => {
+                        let disabled = v == null || v == "";
+                        return dg.eventButton(i, "操作手冊", "filePath", { disabled: disabled })
+                    }),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete", disabled: row.PlanState != "待執行" })),
+                ]],
+                columns: [[
+                    dg.column('EName', '設備名稱', 200),
+                    dg.column('ESN', '設備編號', 200),
+                    dg.column('InstallDate', '安裝日期', 200),
+                    dg.column('Area', '棟別', 200),
+                    dg.column('Floor', '樓層', 200),
+                    dg.column('Brand', '設備廠牌', 300),
+                    dg.column('Model', '設備型號', 600),
+                ]]
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Detail/${row.IPSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.IPSN}`, "_self")
+            })
+            dg.addEvent("filePath", function (row, i) {
+                window.open(row.FilePath, "_blank")
+            })
+            dg.addEvent("delete", function (row, i) {
+                window.open(`${baseUrl}/Delete/${row.IPSN}`, "_self")
+            })
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

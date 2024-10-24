@@ -113,3 +113,13 @@
 .btn-delete-item:focus{
     --btn-bg: #ca5c5c;
 }
+
+.btn-location {
+    --bs-btn-bg: #F49D37;
+    --bs-btn-color: white;
+    --bs-btn-hover-bg: #E78D24;
+    --bs-btn-hover-color: white;
+    --bs-btn-active-bg: var(--bs-btn-hover-bg);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-border-color: var(--bs-btn-hover-border-color);
+}
