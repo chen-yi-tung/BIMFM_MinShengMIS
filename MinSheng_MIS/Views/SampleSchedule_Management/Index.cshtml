@@ -1,0 +1,101 @@
+﻿@{
+    ViewBag.Title = "每日巡檢時程模板管理";
+}
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="dg-tool-bar">
+    <button class="btn btn-create" id="create">新增模板</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
+
+            <div class="form-group">
+                <label for="PathTitle">巡檢模板名稱</label>
+                <input class="form-control" id="PathTitle" name="PathTitle" type="text" />
+            </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <div class="datagrid-area">
+        <table id="DataGrid"></table>
+    </div>
+
+    @section scripts {
+        <script>
+        var getGridJSON = '@Url.Action("SamplePath_Management", "Datagrid")';
+        var DataGrid;
+
+
+        const fakeData = [
+            {
+                PSSN: "000001",
+                PathTitle: "A棟1F路線",
+                Num: "10",
+            }
+        ]
+
+        $(async function () {
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                //url: getGridJSON,
+                data: fakeData,
+                //method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'PSSN',
+                //sortName: 'PSSN',
+                remoteSort: true,
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
+                ]],
+                columns: [[
+                    dg.hiddenColumn('PSSN'),
+                    dg.column('PathTitle', '巡檢模板名稱', 500),
+                    dg.column('Num', '巡檢數量', 200),
+                ]]
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Detail/${row.PSSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.PSSN}`, "_self")
+            })
+            dg.addEvent("delete", function (row, i) {
+                window.open(`${baseUrl}/Delete/${row.PSSN}`, "_self")
+            })
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+                @*pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');*@
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+        </script>
+    }

@@ -1,29 +1,46 @@
-﻿using Microsoft.Ajax.Utilities;
-using MinSheng_MIS.Models;
-using MinSheng_MIS.Models.ViewModels;
-using MinSheng_MIS.Services;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-//using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
-using System.Web.Http;
-using System.Web.Http.Results;
 using System.Web.Mvc;
-using WebGrease.Css.Extensions;
-using static MinSheng_MIS.Models.ViewModels.PathSampleViewModel;
-using PathSample = MinSheng_MIS.Models.PathSample;
 
 namespace MinSheng_MIS.Controllers
 {
-	public class SamplePath_ManagementController : Controller
-	{
-		Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-	}
+    public class SamplePath_ManagementController : Controller
+    {
+        #region 巡檢路線模板管理
+        public ActionResult Index()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 新增 巡檢路線模板
+        public ActionResult Create()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 編輯 巡檢路線模板
+        public ActionResult Edit()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 巡檢路線模板 詳情
+        public ActionResult Detail()
+        {
+            return View();
+        }
+        #endregion
+
+        #region 巡檢路線模板 刪除
+        public ActionResult Delete()
+        {
+            return View();
+        }
+        #endregion
+    }
 }

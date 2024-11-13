@@ -1,13 +1,13 @@
-﻿/*每日巡檢時程模板*/
-const ALDGOptions = {
-    mdg: '#AutoLink .modal-datagrid',
+﻿/*新增巡檢設備*/
+const AEDGOptions = {
+    mdg: '#AddPath .modal-datagrid',
     edg: '#Template-datagrid',
-    id: "AutoLink",
+    id: "AddPath",
     type: "Template",
-    initDatagridUrl: "/Datagrid/PlanManagement",
-    appendDataUrl: "/PlanManagement/AddReportForm",
+    initDatagridUrl: "/Datagrid/SampleSchedule_Management",
+    appendDataUrl: "/SampleSchedule_Management/AddReportForm",
     appendDataKey: "RSN",
-    removeDataUrl: "/PlanManagement/DeleteReportForm",
+    removeDataUrl: "/SampleSchedule_Management/DeleteReportForm",
     removeDataKey: "RSN",
     filterCheckKey: "",
     datagridOptions: {
@@ -19,22 +19,23 @@ const ALDGOptions = {
         checkOnSelect: false,
     },
     columns: [[
-        { field: 'Name', title: '每日巡檢時程模板', align: 'center', width: 400, sortable: true },
+        { field: 'PName', title: '巡檢路線名稱', align: 'center', width: 250, sortable: true },
+        { field: 'PNum', title: '巡檢數量', align: 'center', width: 130, sortable: true },
         {
             field: '_info', align: 'center', width: 150, formatter: (val, row, index) => {
                 return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="read"
-                            onclick="window.open('PlanManagement/Detail/${ row.IPSN }', "_blank")"
+                            onclick="window.open('SampleSchedule_Management/Detail/${row.IPSN}', "_blank")"
                         >巡檢排程資訊</button>`;
             }
         },
     ]],
     frozenColumns: [[
-        /*{ field: '_select', checkbox: true, },*/
-        {
-            field: 'action', align: 'center', width: 40, formatter: function (value, row, index) {
-                return `<input type="radio" name="dgRadio">`;
-            },
-        },
+        { field: '_select', checkbox: true, },
+        //{
+        //    field: 'action', align: 'center', width: 40, formatter: function (value, row, index) {
+        //        return `<input type="radio" name="dgRadio">`;
+        //    },
+        //},
     ]],
     pageOptions: {
         pageSize: 10,
@@ -45,11 +46,11 @@ const ALDGOptions = {
         displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
     },
     evnet: {
-        detail: (row, index) => { window.open(`/PlanManagement/Read/${row.RSN}`, "_blank"); },
+        detail: (row, index) => { window.open(`/SampleSchedule_Management/Detail/${row.RSN}`, "_blank"); },
     }
 }
 
-function PIDG(options) {
+function AEDG(options) {
     const self = this;
     this.options = options;
     this.mdg = $(this.options.mdg);
@@ -140,25 +141,18 @@ function PIDG(options) {
                 //method: 'POST',
                 data: [
                     {
-                        IPSN: "1120301001",
-                        Name: "前處理機房巡檢"
+                        PName: "前處理機房巡檢",
+                        PNum: "10",
                     },
                     {
-                        IPSN: "1120301002",
-                        Name: "生物處理機台巡檢"
+                        PName: "前處理機房巡檢",
+                        PNum: "10",
                     },
                     {
-                        IPSN: "1120301003",
-                        Name: "2"
+                        PName: "生物處理機台巡檢",
+                        PNum: "6",
                     },
-                    {
-                        IPSN: "1120301004",
-                        Name: "3"
-                    },
-                    {
-                        IPSN: "1120301005",
-                        Name: "4"
-                    },
+
                 ],
                 queryParams: getQueryParams(`#${self.options.id} form`),
                 fit: true,
@@ -203,7 +197,7 @@ function PIDG(options) {
     return this;
 }
 
-PIDG.prototype.changeEditAreaCss = function (reserve = false) {
+AEDG.prototype.changeEditAreaCss = function (reserve = false) {
     let selfJQ = this.createBtn;
     let parent = selfJQ.parent();
 
@@ -220,18 +214,18 @@ PIDG.prototype.changeEditAreaCss = function (reserve = false) {
     parent.siblings(".datatable-easyui").removeClass("d-none");
     parent.siblings(".form-group").removeClass("d-none");
 }
-PIDG.prototype.loadDatagrid = function (id) {
+AEDG.prototype.loadDatagrid = function (id) {
     let dg = $(`#${id} .modal-datagrid`);
     dg.datagrid("load", getQueryParams(`#${id} form`));
 }
-PIDG.prototype.getCheckbox = function (dg, index) {
+AEDG.prototype.getCheckbox = function (dg, index) {
     return dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].querySelector("input[type=radio]");
 }
-PIDG.prototype.getChecked = function (dg, index) {
+AEDG.prototype.getChecked = function (dg, index) {
     let dom = this.getCheckbox(dg, index);
     return dom ? dom.checked : null;
 }
-PIDG.prototype.filterCheck = function (dg, data, key) {
+AEDG.prototype.filterCheck = function (dg, data, key) {
     if (key !== '') {
         data.rows.forEach((row, index) => {
             switch (row[key]) {
@@ -241,11 +235,11 @@ PIDG.prototype.filterCheck = function (dg, data, key) {
                     dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].innerHTML = ""
                     break;
             }
+            dg.datagrid('getPanel').find('.datagrid-header-check')[0].innerHTML = ""
         })
-        dg.datagrid('getPanel').find('.datagrid-header-check')[0].innerHTML = ""
     }
 }
-PIDG.prototype.addRowEvent = function () {
+AEDG.prototype.addRowEvent = function () {
     if (this.mdg.datagrid("getChecked").length !== 0) {
 
         this.addRowBtn.off("click");
@@ -264,13 +258,13 @@ PIDG.prototype.addRowEvent = function () {
         this.addRowBtn.click();
     }
 }
-PIDG.prototype.addSpinner = function (btn) {
+AEDG.prototype.addSpinner = function (btn) {
     $(btn).append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
 }
-PIDG.prototype.removeSpinner = function (btn) {
+AEDG.prototype.removeSpinner = function (btn) {
     $(btn).children(".spinner-border").remove();
 }
-PIDG.prototype.addButtonEvent = function (dg) {
+AEDG.prototype.addButtonEvent = function (dg) {
     let self = this;
     $(dg.datagrid("getPanel")).on("click", "button[data-btn-type]", function () {
         let btn = $(this);

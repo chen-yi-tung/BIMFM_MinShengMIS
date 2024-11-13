@@ -10,46 +10,49 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create" id="create">新增工單</button>
-<div class="search-area">
-    <form class="form" method="post" action="">
-        <div class="form-group">
-            <label for="IPSN">工單編號</label>
-            <input class="form-control" id="IPSN" name="IPSN" type="text" />
-        </div>
+<div class="dg-tool-bar">
+    <button class="btn btn-create" id="create">新增工單</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
+            <div class="form-group">
+                <label for="IPSN">工單編號</label>
+                <input class="form-control" id="IPSN" name="IPSN" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="PlanState">工單狀態</label>
-            <select class="form-select" name="PlanState" id="PlanState"></select>
-        </div>
+            <div class="form-group">
+                <label for="PlanState">工單狀態</label>
+                <select class="form-select" name="PlanState" id="PlanState"></select>
+            </div>
 
-        <div class="form-group">
-            <label for="IPName">工單名稱</label>
-            <input class="form-control" id="IPName" name="IPName" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="IPName">工單名稱</label>
+                <input class="form-control" id="IPName" name="IPName" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="DateFrom">工單日期(起)</label>
-            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="DateFrom">工單日期(起)</label>
+                <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+            </div>
 
-        <div class="form-group">
-            <label for="DateTo">工單日期(迄)</label>
-            <input class="form-control" id="DateTo" name="DateTo" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="DateTo">工單日期(迄)</label>
+                <input class="form-control" id="DateTo" name="DateTo" type="date" />
+            </div>
 
-        <div class="form-group f-2">
-            <label for="UserID">執行人員</label>
-            <select type="text" class="form-select" name="UserID" id="UserID"></select>
-        </div>
+            <div class="form-group col-2fr">
+                <label for="UserID">執行人員</label>
+                <select type="text" class="form-select" name="UserID" id="UserID"></select>
+            </div>
 
-        <div class="button-group">
-            <button type="button" class="btn btn-search" id="search">查詢</button>
-            <button type="button" class="btn btn-clear" id="clear">清除</button>
-        </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
 
-    </form>
+        </form>
+    </div>
 </div>
+
 
 <div class="datagrid-area">
     <table id="DataGrid"></table>
@@ -58,10 +61,10 @@
 @section scripts {
     <script>
         //const baseUrl = '/PlanManagement/';
-        var getGridJSON = '@Url.Action("InspectionPlan_Management", "Datagrid")';
+        var getGridJSON = '@Url.Action("PlanManagement_Management", "Datagrid")';
         var DataGrid;
 
-        const fakedata = [
+        const fakeData = [
             {
                 IPSN: "P23010401",
                 PlanState: '待執行',
@@ -88,7 +91,7 @@
         $(async function () {
             await
             //await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
-            Initialize_DataGrid(fakedata);
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
 
@@ -96,10 +99,11 @@
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 //url: getGridJSON,
-                data: getGridJSON,
+                data: fakeData,
                 //method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'IPSN',
+                remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.PlanState != "待執行" })),
@@ -114,7 +118,7 @@
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Read/${row.IPSN}`, "_blank")
+                window.open(`${baseUrl}/Detail/${row.IPSN}`, "_blank")
             })
             dg.addEvent("edit", function (row, i) {
                 window.open(`${baseUrl}/Edit/${row.IPSN}`, "_self")

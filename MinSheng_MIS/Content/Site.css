@@ -27,7 +27,7 @@ body {
     overflow: auto;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 24px;
 }
 
 h2 {
@@ -35,6 +35,7 @@ h2 {
     color: white;
     font-weight: 500;
     font-size: 46px;
+    margin: 0;
 }
 
 .spinner-area {
@@ -64,6 +65,17 @@ h2 {
     background: rgba(0, 0, 0, 0.24);
     overflow: hidden;
     animation: fade-in .3s forwards;
+}
+
+input[type=radio] {
+    margin-right: 4px;
+}
+
+.upload-tips {
+    display: flex;
+    flex-direction: column;
+    width: -webkit-fill-available;
+    color: #919191;
 }
 
 @keyframes fade-in {
@@ -160,9 +172,9 @@ h2 {
         position: relative !important;
     }
 
-    .d-lg-contents {
+    /*.d-lg-contents {
         display: contents !important;
-    }
+    }*/
 
     .w-lg-25 {
         width: 25% !important;

@@ -128,8 +128,9 @@ function getAllParams(selector = null) {
 function FileUploader({
     container,
     className = "form-group required g-col-2",
-    buttonAreaClassName = "edit-button-area position-relative justify-content-start align-items-start mt-1 flex-wrap flex-lg-nowrap",
+    buttonAreaClassName = "edit-button-area position-relative p-3 bg-white d-flex flex-column",
     buttonText = "選擇檔案",
+    icon = "",
     label = "",
     id = "File",
     accept = [".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".csv"],
@@ -143,19 +144,27 @@ function FileUploader({
         <div class="${className}">
             <label for="${id}">${label}</label>
             <div class="${buttonAreaClassName}">
-                <div class="d-lg-contents d-flex w-100" style="gap: 14px;">
-                    <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0 align-self-start">
-                        <span>${buttonText}</span>
-                        <input id="${id}" name="${id}" type="file" class="form-file-input" 
-                        ${accept && Array.isArray(accept) && accept.length > 0 ? `accept="${accept.join(",")}"` : ''}
-                        ${required && !customValidity ? 'required' : ''}
-                        ${multiple ? 'multiple' : ''}>
-                        ${required && customValidity ? `
-                        <input type="checkbox" id="_checkFile" name="_checkFile" class="form-file-input" required
-                            oninvalid="this.setCustomValidity(this.validity.valueMissing ? '${customValidityText}' : '')">
-                        ` : ''}
-                    </label>
+                <div class="d-flex gap-2">
+                    <div class="d-lg-contents d-flex" style="gap: 14px; min-width: fit-content;">
+                        <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0 align-self-start">
+                            ${icon ? `<i class="fa-solid fa-${icon}"></i>` : ""}
+                            <span>${buttonText}</span>
+                            <input id="${id}" name="${id}" type="file" class="form-file-input" 
+                            ${accept && Array.isArray(accept) && accept.length > 0 ? `accept="${accept.join(",")}"` : ''}
+                            ${required && !customValidity ? 'required' : ''}
+                            ${multiple ? 'multiple' : ''}>
+                            ${required && customValidity ? `
+                            <input type="checkbox" id="_checkFile" name="_checkFile" class="form-file-input" required
+                                oninvalid="this.setCustomValidity(this.validity.valueMissing ? '${customValidityText}' : '')">
+                            ` : ''}
+                        </label>
+                    </div>
+                    <div class="upload-tips">
+                        <div>檔案格式支援 .jpg、.jpeg、.png 或 .pdf。</div>
+                        <div>檔案大小不得超過 10MB。</div>
+                    </div>
                 </div>
+                <hr class="hr-default">
                 <div id="FileGroup" class="form-file-list"></div>
             </div>
         </div>`

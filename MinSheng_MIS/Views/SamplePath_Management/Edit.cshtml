@@ -1,174 +1,267 @@
 ﻿@{
-    ViewBag.Title = "編輯巡檢路線模板";
+    ViewBag.Title = "編輯 巡檢路線模板";
 }
 @section styles {
-    <link rel="stylesheet" href="/Content/samplepath.css">
-    <!-- Autodesk Forge -->
-    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css?v=v7.60"
-        type="text/css">
-    <link rel="stylesheet" href="/Content/loading.css" type="text/css">
-    <script language="JavaScript"
-        src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=v7.60" defer></script>
-    <script src="/Scripts/Forge/Viewer.Loading.js" defer></script>
-    <script src="/Scripts/Forge/Viewer.Toolkit.js" defer></script>
-    <script src="/Scripts/Forge/UpViewer.js" defer></script>
+    @Styles.Render("~/Content/easyui/themes/default/easyui.css")
+    <link rel="stylesheet" href="/Content/datagrid-modal.css">
+    <link rel="stylesheet" href="~/Content/datatable.css">
+
+    <script src="/Content/easyui/jquery.min.js" defer></script>
+    <script src="/Content/easyui/jquery.easyui.min.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
-
-    <!-- PIXI Draw -->
-    <script src="https://pixijs.download/v7.2.2/pixi.js" defer></script>
-    <script src="/Scripts/ForgeDraw.js" defer></script>
-    <script src="/Scripts/datatable.js" defer></script>
-    <script src="/Scripts/Forge/ForgeDrawFunction.js" defer></script>
-
-    <!-- Drag and Drop -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
-    <script src="/Scripts/Forge/SortRouteModal.js" defer></script>
+    <script src="~/Scripts/SamplePath_Management/CreateDataGrids.js" defer></script>
+    @*<script src="/Scripts/SamplePath_Management/Create.js" defer></script>*@
+    <script src="/Scripts/datatable.js"></script>
 }
+
 
 <h2>@ViewBag.Title</h2>
 
-<div class="search-area bg-transparent">
-    <form class="form">
-        <input type="text" id="PSSN" name="PSSN" hidden>
-
-        <div class="form-group required">
-            <label for="ASN">棟別</label>
-            <select class="form-select" name="ASN" id="ASN" disabled>
-                <option value="">請選擇</option>
-            </select>
-        </div>
-        <div class="form-group required">
-            <label for="FSN">樓層</label>
-            <select class="form-select" name="FSN" id="FSN" disabled>
-                <option value="">請選擇</option>
-            </select>
-        </div>
-
-        <div class="form-group required">
-            <label for="PathTitle">巡檢路線模板</label>
-            <input type="text" class="form-control" name="PathTitle" id="PathTitle" maxlength="50">
-        </div>
-        <div class="button-group justify-content-start">
-            <button class="btn btn-search m-auto m-md-0 m-lg-auto m-xl-0" id="path-create">確認</button>
-        </div>
-
-    </form>
-</div>
-
-<div class="sample-path-area">
-    <h3 class="sample-path-title">巡檢路線規劃</h3>
-
-    <div class="edit-area">
-        <div class="sample-path-group-area d-none">
-            <div class="input-group sample-path-group" data-path-id="1">
-                <span class="input-group-text" id="current-path-title"></span>
-                <div type="text" class="form-control">
-                    <nav>
-                        <ol class="breadcrumb" id="current-path-display"></ol>
-                    </nav>
-                    <button class="path-btn" id="current-path-edit" data-bs-toggle="tooltip" title="手動修改路線">
-                        <i class="icon-edit"></i>
-                    </button>
+<section>
+    <div class="edit-area edit-area-full flex-lg-row">
+        <form class="form justify-content-lg-end">
+            <div class="form-group-zone">
+                <div class="form-group required">
+                    <label for="SampleName">巡檢模板名稱</label>
+                    <input type="text" class="form-control" name="SampleName" id="SampleName" maxlength="20" required>
+                </div>
+                <div class="form-group required">
+                    <label for="PFrequency">巡檢頻率</label>
+                    <select class="form-select" name="PFrequency" id="PFrequency" required></select>
                 </div>
             </div>
-        </div>
-        <div class="sample-path-draw-area d-none">
-            <input type="number" id="current-path-id" value="1" hidden>
-            <div class="sample-path-toolbar">
-                <button class="path-icon path-icon-radio" id="path-draw" data-bs-toggle="tooltip"
-                    data-bs-placement="right" title="規劃路線">
-                    <i class="icon-pen"></i>
-                </button>
-                <button class="path-icon path-icon-radio" id="path-eraser" data-bs-toggle="tooltip"
-                    data-bs-placement="right" title="清除路線">
-                    <i class="icon-eraser"></i>
-                </button>
-                <hr class="m-0">
-                <button class="path-icon" id="path-reload" data-bs-toggle="tooltip" data-bs-placement="right"
-                    title="重新規劃路線">
-                    <i class="icon-reload"></i>
-                </button>
-                <button class="path-icon" id="path-auto" data-bs-toggle="tooltip" data-bs-placement="right"
-                    title="自動計算路線">
-                    <i class="icon-auto"></i>
-                </button>
+            <hr class="hr-default" />
+
+            <div class="datatable-easyui w-100 d-none">
+                <table id="Template-datagrid"></table>
             </div>
-            <div class="viewer3Dcontainer">
-                <div id="viewer3d" style="margin:0;"></div>
-                <canvas id="PathCanvas"></canvas>
+            <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal" data-bs-target="#AddEquipment">+ 新增巡檢設備</button>
+
+            <div class="m-0 w-100 text-center">
+                <div class="datatable datatable-grid w-100 h-100">
+                    <div class="datatable-body h-100 overflow-auto">
+                        <table class="datatable-table">
+                            <thead>
+                                <tr>
+                                    <th class="datatable-header" style="width:40px"><span></span></th>
+                                    <th class="datatable-header" style="width:40px"><span></span></th>
+                                    <th class="datatable-header" style="width:130px"><span>RFID內碼</span></th>
+                                    <th class="datatable-header" style="width:130px"><span>RFID外碼</span></th>
+                                    <th class="datatable-header" style="width:250px"><span>RFID名稱</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>RFID棟別</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>RFID樓層</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>RFID備註</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>設備名稱</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>設備編號</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>廠牌</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>型號</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>巡檢頻率</span></th>
+                                    <th class="datatable-header" style="width:48px"></th>
+                                    <th class="datatable-header" style="width:48px"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="item-area">
+                                <tr id="sample-input-tr">
+                                    <td id="d-Num">1</td>
+                                    <td id="d-Sort">
+                                        <button type="button" class="btn-sort">
+                                            <i class="fa-solid fa-bars"></i>
+                                        </button>
+                                    </td>
+                                    <td id="InterCode">XSCXCZS</td>
+                                    <td id="ExterCode">XSCXCZS</td>
+                                    <td id="RFIDName">前處理機房巡檢</td>
+                                    <td id="Area">前處理區</td>
+                                    <td id="Floor">1F</td>
+                                    <td id="Memo">備註備註備註</td>
+                                    <td id="EName">螺旋發送機</td>
+                                    <td id="ESN">SP-0202A</td>
+                                    <td id="Brand">XX廠牌</td>
+                                    <td id="Model">W004N</td>
+                                    <td id="Frequency">每2小時</td>
+                                    <td id="d-_delete" class="p-2">
+                                        <button type="button" class="btn btn-location" data-bs-toggle="modal" data-bs-target="#Location"><i class="fa-solid fa-location-dot"></i></button>
+                                    </td>
+                                    <td id="d-_delete" class="p-1 pt-2">
+                                        <button type="button" class="btn-delete-item"></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
-</div>
+</section>
+
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
+@*新增巡檢設備POP UP*@
+<div class="modal fade datagrid-modal" tabindex="-1" id="AddEquipment">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>請勾選欲新增的設備</h2>
+                <div class="search-area">
+                    <form class="form">
+                        <div class="form-group">
+                            <label for="InterCode">RFID內碼</label>
+                            <input class="form-control" id="InterCode" name="InterCode" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ExterCode">RFID外碼</label>
+                            <input class="form-control" id="ExterCode" name="ExterCode" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="EName">設備名稱</label>
+                            <input class="form-control" id="EName" name="EName" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ESN">設備編號</label>
+                            <input class="form-control" id="ESN" name="ESN" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Area">棟別</label>
+                            <select class="form-select" name="Area" id="Area"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Floor">樓層</label>
+                            <select class="form-select" name="Floor" id="Floor"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Brand">廠牌</label>
+                            <input class="form-control" id="Brand" name="Brand" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Model">型號</label>
+                            <input class="form-control" id="Model" name="Model" type="text" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Frequency">巡檢頻率</label>
+                            <input class="form-control" id="Frequency" name="Frequency" type="text" />
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-search" id="search">查詢</button>
+                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="modal-datagrid"></table>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="add-row">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*定位資訊POP UP*@
+<div class="modal fade datagrid-modal" tabindex="-1" id="Location">
+    <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>定位資訊</h3>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script>
-        function initializeDrawer(data) {
-            var view = document.querySelector("#PathCanvas");
-            ForgeDraw.init(view, viewer, function () {
-                view.addEventListener("fd.point.detecterror", function (event) {
-                    console.log("view => fd.point.detecterror");
-                    createDialogModal({ id: "DialogModal-Error", inner: "座標點位於模型外，無法定位！" })
-                });
-                view.addEventListener("fd.linedata.change", function (event) {
-                    console.log("view => fd.linedata.change");
-                    updatePathDisplay(calcPath());
-                });
-                view.addEventListener("fd.linedata.detail", function (event) {
-                    console.log("view => fd.linedata.detail", event.detail);
-                    if (event.detail instanceof ForgeDraw.DevicePoint) {
-                        createDevicePointDetailModal(event.detail);
-                    }
-                    else {
-                        createPointDetailModal(event.detail);
-                    }
-                });
-                view.addEventListener("fd.devicepoint.ignore", function (event) {
-                    console.log("view => fd.devicepoint.ignore");
-                    updatePathDisplay(calcPath());
-                });
+        const IPSN = '@ViewBag.id';
+        ////let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
+        let apiUrl = null;
+        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
+        let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
+        let sampleTr;
 
-                createBeacons(data.PathSample.BIMDevices);
-                createLinePath(data.PathSampleRecord);
-
-                updatePathDisplay(data.PathSampleOrder);
-
-                addToolbarEvent();
-                addTooltip(true);
-            });
-        }
-    </script>
-
-    <script>
-        const PSSN = '@ViewBag.PSSN';
-        let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")' + `/${PSSN}`;
-
-        let fakeData;
-        let sortRouteModal;
         $(async function () {
-            sortRouteModal = new SortRouteModal({
-                onSave: updatePathDisplay
-            });
-            await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-
             addButtonEvent();
-            controlToggle("path-draw", ForgeDraw.Control.DRAW);
-            sortRouteModal.autoRouteToggle(false);
-
-            $("#PathTitle").change(function () {
-                $("#current-path-title").text($(this).val())
-            })
-
+            delTemplateItem();
+            addEquipmentDG_Controller = new AEDG(AEDGOptions);
+            //await addDropDownList();
+            //await addAreaFloorEvent();
             readData(apiUrl);
-        });
+        })
+
+        const SerializedName = [
+            { text: "巡檢路線名稱", value: "生物處理機台巡檢" },
+        ]
+        const GridOptions = {
+            thead: true,
+            columns: [
+                { id: "InterCode", title: "RFID內碼" },
+                { id: "ExterCode", title: "RFID外碼" },
+                { id: "EName", title: "設備名稱" },
+                { id: "ESN", title: "設備編號" },
+                { id: "Area", title: "棟別" },
+                { id: "Floor", title: "樓層" },
+                { id: "Brand", title: "廠牌" },
+                { id: "Model", title: "型號" },
+                { id: "Frequency", title: "巡檢頻率" },
+            ]
+        }
+        let fakeData = {
+            SIRSN: "1120301001",
+            StockInMyName: "王大明",
+            SampleItem: [
+                {
+                    InterCode: "XSCXCZS",
+                    ExterCode: "XSCXCZS",
+                    EName: "螺旋發送機1",
+                    ESN: "SP-0202A",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Brand: "A廠牌",
+                    Model: "XMA-56",
+                    Frequency: "每2小時",
+                },
+                {
+                    InterCode: "XSCXCZS",
+                    ExterCode: "XSCXCZS",
+                    EName: "螺旋發送機2",
+                    ESN: "SP-0202A",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Brand: "B廠牌",
+                    Model: "XMA-56",
+                    Frequency: "每2小時",
+                },
+                {
+                    InterCode: "XSCXCZS",
+                    ExterCode: "XSCXCZS",
+                    EName: "螺旋發送機3",
+                    ESN: "SP-0202A",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Brand: "C廠牌",
+                    Model: "XMA-56",
+                    Frequency: "每2小時",
+                },
+            ]
+        }
+
 
         function readData(url = null) {
 
             url == null ? onSuccess(fakeData) :
+                console.log("fakeData", fakeData);
                 $.ajax({
                     url: url,
                     type: "GET",
@@ -178,86 +271,39 @@
                     error: onError
                 })
 
-            async function onSuccess(res) {
-                console.log(res);
-                fakeData = res;
-                let ps = res.PathSample;
+            function onSuccess(res) {
+                console.log("res", res);
+                $("#PathDetail").append(createTableInner(res, SerializedName));
 
-                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ps.ASN}`);
-
-
-                $("#PSSN").val(ps.PSSN);
-                $("#ASN").val(ps.ASN);
-                $("#FSN").val(ps.FSN);
-                $("#PathTitle").val(ps.PathTitle);
-
-                $("#path-create").click();
+                res.EItem ?
+                $("#EInfo").append(createTableGrid(
+                    createIndexToArrayData(res.EItem), GridOptions)) :
+                    $("#EInfo").parents(".datatable").remove();
             }
             function onError(res) {
                 console.log(res);
             }
-        }
 
-        function addButtonEvent() {
-            $("#back").click(function () {
-                history.back();
-            })
-            $("#path-create").click(function (e) {
-                e.preventDefault();
-                console.log("onclick path-create");
-                if ($("form")[0].reportValidity()) {
-
-                    $("#current-path-title").text($("#PathTitle").val());
-                    $(".sample-path-group-area").removeClass("d-none");
-                    $(".sample-path-draw-area").removeClass("d-none");
-
-                    if (!viewer) {
-                        const { BIMPath, BeaconPath } = fakeData.PathSample;
-                        initializeViewer({
-                            BIMPath,
-                            BeaconPath,
-                            callback: () => { initializeDrawer(fakeData) }
-                        });
+            //在每列加上次序
+            function createIndexToArrayData(arr) {
+                return arr.map((e, i) => {
+                    return {
+                        Index: i + 1,
+                        ...e
                     }
-
-                }
-            })
-            $("#submit").click(function () {
-                console.log("onclick submit")
-                if ($("#PathTitle").val() == "") {
-                    errtext = "巡檢路線模板名稱不可為空!";
-                    createDialogModal({ id: "DialogModal-Error", inner: `${errtext}` })
-                }
-                else {
-                    save();
-                }
-            })
+                })
+            }
         }
 
         function save() {
-            let PathSampleOrder = getPathSampleOrder();
-            let PathSampleRecord = getPathSampleRecord();
-
-            if (PathSampleRecord.every(e => e) === false) {
-                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！路線超出模型範圍！` })
-                return
-            }
-
-            let data = {
-                PathSample: {
-                    PSSN: $("#PSSN").val(),
-                    ASN: $("#ASN").val(),
-                    FSN: $("#FSN").val(),
-                    PathTitle: $("#PathTitle").val()
-                },
-                PathSampleOrder: PathSampleOrder,
-                PathSampleRecord: PathSampleRecord
-            }
+            let data = getCreateSaveData(IPSN);
 
             console.log(data);
 
+            if (!data) return;
+
             $.ajax({
-                url: '@Url.Action("EditSamplePath", "SamplePath_Management")',
+                url: SubmitUrl,
                 data: JSON.stringify(data),
                 type: "POST",
                 dataType: "json",
@@ -267,34 +313,171 @@
             })
 
             function onSuccess(res) {
-                //console.log(res);
-
-                if (res.ResponseCode == 0) {
-                    createDialogModal({
-                        id: "DialogModal-Success",
-                        inner: "編輯成功！",
-                        onHide: () => {
-                            let url = '@Url.Action("Management", "SamplePath_Management")';
-                            window.location.href = url;
-                        }
-                    });
-                }
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                });
             }
             function onError(res) {
-                //console.log(res);
-                let errtext;
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` })
+            }
+        }
 
-                switch (res.responseText) {
-                    case "duplicate title":
-                        errtext = "巡檢路線模板名稱重複！";
-                        break;
-                    default:
-                        errtext = "";
-                        break;
+        function deleteIP() {
+            $.ajax({
+                url: delUrl,
+                type: "DELETE",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "刪除成功！",
+                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
+            }
+        }
+
+        //$(async function () {
+        //    sampleTr = new SampleTr();
+        //    await sampleTr.init()
+        //    addButtonEvent();
+        //    maintainDG_Controller = new IPDG(MDGOptions);
+        //    repairDG_Controller = new IPDG(RDGOptions);
+        //    await addDropDownList();
+        //    await addAreaFloorEvent();
+        //    controlToggle("path-draw", ForgeDraw.Control.DRAW);
+        //    sortRouteModal.autoRouteToggle(true);
+
+        //    $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
+
+        //    window.addEventListener("beforeunload", (event) => {
+        //        sessionStorage.clear();
+        //    });
+
+        //    addSaveSamplePathEvent();
+
+        //    $("#delete").click(deleteIP);
+
+        //    readData(apiUrl);
+        //})
+        @*function SampleTr() {
+            this.count = 0;
+            this.list = $("#item-area")
+            this.init = async function () {
+                await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+                this.list.on("change", "#StockType", async function (e) {
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")[0]
+                    let id = item.id
+                    await pushSelect(`${id} #StockName`, `@Url.Action("FormStockName", "DropDownList")?StockType=${e.target.value}`);
+                })
+                this.list.on("change", "#StockName", async function (e) {
+                    if (!sampleTr.checkDuplicate()) {
+                        e.target.value = ""
+                        createDialogModal({ id: "DialogModal-Error", inner: `有重複的品項品名！` })
+                        return
+                    }
+
+                    console.log(e.target)
+                    let item = $(e.target).closest("tr[id]")
+                    let id = item.attr("id")
+                    $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SISN=${e.target.value}`, (res) => {
+                        console.log(res)
+                        item.find("#d-Unit").text(res?.Unit || "-")
+                    })
+                })
+
+                const observer = new ResizeObserver((entries) => {
+                    for (const entry of entries) {
+                        let style = getComputedStyle(entry.target)
+                        let mh = parseInt(style.getPropertyValue("max-height").match(/(\d)+/)?.[0])
+                        let h = parseInt(style.getPropertyValue("height").match(/(\d)+/)?.[0])
+                        $(".datatable-input-area").toggleClass("max-w-scroll", h >= mh)
+                        //console.log(`${h} >= ${mh} ${h >= mh}`)
+                    }
+                })
+                observer.observe(this.list.closest(".datatable-body")[0])
+
+                this.list.on("click", ".btn-delete-item", function (e) {
+                    $(this).parent().parent().remove();
+                })
+
+                this.sample = $("#sample-input-tr").clone();
+                $("#sample-input-tr").remove();
+            }
+            this.create = function (data = null) {
+                let item = this.sample.clone();
+                item.attr('id', this.count);
+                this.list.append(item);
+                if (data != null) {
+                    pushSelect(`${item.attr("id")} #StockName`,
+                        `@Url.Action("FormStockName", "DropDownList")?StockType=${data.StockType}`)
+                        .then(() => {
+                            item.find("#StockName").val(data.SISN)
+                        });
+                    item.find("#StockType").val(data.StockType)
+                    item.find("#Amount").val(data.Amount)
+                    item.find("#d-Unit").text(data.Unit)
+                    item.find("#SRContent").val(data.SRContent)
                 }
 
-                createDialogModal({ id: "DialogModal-Error", inner: `編輯失敗！${errtext}` })
+                this.count++;
             }
+            this.calc = function () {
+                return this.list.children().toArray().map((e) => {
+                    return {
+                        SISN: $(e).find("#StockName").val(),
+                        Amount: $(e).find("#Amount").val(),
+                        SRContent: $(e).find("#SRContent").val()
+                    }
+                })
+            }
+            this.checkValidity = () => {
+                return this.list.children().length > 0
+            }
+            this.checkDuplicate = () => {
+                let sisns = this.list.children().toArray().map((e) => {
+                    return $(e).find("#StockName").val()
+                }).filter(e => e || void 0)
+                let sets = new Set([...sisns])
+                return sisns.length == [...sets].length
+            }
+            return this;
+        }*@
+        function delTemplateItem() {
+            let delBtns = document.querySelectorAll('.btn-delete-item');
+            delBtns.forEach(function (delBtn) {
+                delBtn.onclick = function () {
+                    let tr = delBtn.closest('tr');
+                    if (tr) {
+                        tr.remove();
+                        reorderNumbers();
+                    }
+                };
+            });
+        }
+
+        //當刪除新增的模板後，需重新排序次序
+        function reorderNumbers() {
+            let itemArea = document.getElementById('item-area');
+            let rows = itemArea.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                let numCell = row.querySelector('#d-Num');
+                if (numCell) {
+                    numCell.textContent = index + 1;
+                }
+            });
         }
     </script>
 }

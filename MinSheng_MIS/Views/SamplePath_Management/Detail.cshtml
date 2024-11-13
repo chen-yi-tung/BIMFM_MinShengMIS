@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "巡檢路線模板 刪除";
+    ViewBag.Title = "巡檢路線模板 詳情";
 }
 @section styles {
     <link rel="stylesheet" href="/Content/datagrid-modal.css">
@@ -29,11 +29,6 @@
     </div>
 </section>
 
-<div class="edit-button-area">
-    <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-delete" id="delete">刪除</button>
-</div>
-
 @*定位資訊POP UP*@
 <div class="modal fade datagrid-modal" tabindex="-1" id="Location">
     <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
@@ -48,12 +43,11 @@
 
 @section scripts {
     <script>
-        @*const IPSN = '@ViewBag.id';*@
-        let apiUrl = null;
+         const IPSN = '@ViewBag.id';
+         let apiUrl = null;
         /*let sampleTr;*/
 
         $(async function () {
-            addButtonEvent();
             readData(apiUrl);
         })
         //每日巡檢時程模板 詳情
@@ -126,7 +120,7 @@
             ]
         }
 
-        
+       
         function readData(url = null) {
 
             url == null ? onSuccess(fakeData) :
@@ -161,23 +155,6 @@
                     }
                 })
             }
-        }
-
-        function addButtonEvent() {
-            $("#back").click(function () {
-                history.back();
-            });
-            $("#delete").click(function () {
-                let PSSN = $("#PSSN").val();
-                createDeleteDialog({
-                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
-                    data: PSSN,
-                    onSuccess() {
-                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
-                        window.location.href = url;
-                    }
-                })
-            });
         }
 
 

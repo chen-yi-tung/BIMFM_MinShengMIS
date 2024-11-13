@@ -57,33 +57,33 @@
             <div id="body-InspectionPlan-${i}" class="accordion-collapse collapse" aria-labelledby="header-InspectionPlan-${i}">
                 <div class="accordion-body">
                     ${createTableOuter({
-            title: "計劃資訊",
-            id: "InspectionPlan",
-            className: "border-0 w-100",
-            inner: createTableInner(data.InspectionPlan, sn.InspectionPlan),
-        })}
+                        title: "計劃資訊",
+                        id: "InspectionPlan",
+                        className: "border-0 w-100",
+                        inner: createTableInner(data.InspectionPlan, sn.InspectionPlan),
+                    })}
                     ${createTableOuter({
-            title: "維修資料",
-            id: "InspectionPlanRepair",
-            className: "border-0 w-100",
-            inner: createTableInner(data.InspectionPlanRepair, sn.InspectionPlanRepair),
-        })}
+                        title: "維修資料",
+                        id: "InspectionPlanRepair",
+                        className: "border-0 w-100",
+                        inner: createTableInner(data.InspectionPlanRepair, sn.InspectionPlanRepair),
+                    })}
                     ${data.RepairSupplementaryInfo ? createAccordion({
-            title: "補件資料",
-            id: `OtherRepairSupplementaryInfo-${i}`,
-            className: "border-0 w-100",
-            sn: sn.RepairSupplementaryInfo,
-            data: data.RepairSupplementaryInfo,
-            itemTitleKey: "SupplementaryDate"
-        }) : ""}
+                        title: "補件資料",
+                        id: `OtherRepairSupplementaryInfo-${i}`,
+                        className: "border-0 w-100",
+                        sn: sn.RepairSupplementaryInfo,
+                        data: data.RepairSupplementaryInfo,
+                        itemTitleKey: "SupplementaryDate"
+                    }) : ""}
                     ${data.RepairAuditInfo ? createAccordion({
-            title: "審核資料",
-            id: `OtherRepairAuditInfo-${i}`,
-            className: "border-0 w-100",
-            sn: sn.RepairAuditInfo,
-            data: data.RepairAuditInfo,
-            itemTitleKey: "AuditDate"
-        }) : ""}
+                        title: "審核資料",
+                        id: `OtherRepairAuditInfo-${i}`,
+                        className: "border-0 w-100",
+                        sn: sn.RepairAuditInfo,
+                        data: data.RepairAuditInfo,
+                        itemTitleKey: "AuditDate"
+                    }) : ""}
                 </div>
             </div>
         </div>

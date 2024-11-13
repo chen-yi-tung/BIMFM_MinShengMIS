@@ -1,0 +1,243 @@
+﻿@{
+    ViewBag.Title = "每日巡檢時程模板 詳情";
+}
+@section styles {
+    <link rel="stylesheet" href="/Content/datagrid-modal.css">
+    <link rel="stylesheet" href="~/Content/datatable.css">
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
+    <script src="/Scripts/dataTable/PlanRecord.js" defer></script>
+    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
+}
+
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table" id="PlanDetail"></table>
+            </div>
+        </div>
+        <div class="datatable datatable-grid datatable-md">
+            <div class="datatable-body overflow-auto">
+                <table class="datatable-table" id="PlanRecord">
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
+</div>
+
+@*巡檢路線資訊POP UP*@
+<div class="modal fade datagrid-modal" tabindex="-1" id="PlanInfo">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content height-fit">
+            <div class="modal-body align-items-center">
+                <h2>巡檢路線資訊</h2>
+                <div class="datatable datatable-small">
+                    <div class="datatable-body">
+                        <table class="datatable-table" id="PathDetail"></table>
+                    </div>
+                </div>
+                <div class="datatable datatable-grid datatable-fill">
+                    <div class="datatable-body overflow-auto">
+                        <table class="datatable-table" id="EInfo">
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-export" data-bs-dismiss="modal">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        @*const IPSN = '@ViewBag.id';*@
+        let apiUrl = null;
+        /*let sampleTr;*/
+
+        $(async function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
+        //每日巡檢時程模板 詳情
+        const SerializedName_Sample = [
+            { text: "巡檢路線名稱", value: "PName" },
+        ]
+        const GridOptions_Sample = {
+            thead: true,
+            columns: [
+                { id: "Index", title: "" },
+                { id: "PTime", title: "巡檢時間" },
+                { id: "PName", title: "巡檢路線名稱" },
+                { id: "Frequency", title: "巡檢頻率" },
+                { id: "PNum", title: "巡檢數量" },
+                { id: "Btn", title: "" },
+            ]
+        }
+        let fakeData_Sample = {
+            SIRSN: "1120301001",
+            PName: "前處理機房巡檢",
+            SampleItem: [
+                {
+                    PTime: "00:00～01:00",
+                    PName: "前處理機房巡檢",
+                    Frequency: "每3小時",
+                    PNum: "10",
+                },
+                {
+                    PTime: "01:00~02:00",
+                    PName: "前處理機房巡檢",
+                    Frequency: "每3小時",
+                    PNum: "10",
+                },
+                {
+                    PTime: "02:00~03:00",
+                    PName: "生物處理機台巡檢",
+                    Frequency: "每3小時",
+                    PNum: "4",
+                },
+            ]
+        }
+
+        //巡檢路線資訊
+        const SerializedName_Path = [
+            { text: "巡檢路線名稱", value: "PName" },
+            { text: "巡檢時間", value: "PTime" },
+        ]
+        const GridOptions_Path = {
+            thead: true,
+            columns: [
+                { id: "Index", title: "" },
+                { id: "InterCode", title: "RFID內碼" },
+                { id: "ExterCode", title: "RFID外碼" },
+                { id: "EName", title: "設備名稱" },
+                { id: "ESN", title: "設備編號" },
+                { id: "Area", title: "棟別" },
+                { id: "Floor", title: "樓層" },
+                { id: "Brand", title: "廠牌" },
+                { id: "Model", title: "型號" },
+                { id: "Frequency", title: "巡檢頻率" },
+            ]
+        }
+        let fakeData_Path = {
+            SIRSN: "1120301001",
+            PName: "前處理機房巡檢",
+            PTime: "00:00~01:00",
+            EItem: [
+                {
+                    InterCode: "XSCXCZS",
+                    ExterCode: "XSCXCZS",
+                    EName: "螺旋發送機1",
+                    ESN: "SP-0202A",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Brand: "A廠牌",
+                    Model: "XMA-56",
+                    Frequency: "每2小時",
+                },
+                {
+                    InterCode: "XSCXCZS",
+                    ExterCode: "XSCXCZS",
+                    EName: "螺旋發送機2",
+                    ESN: "SP-0202A",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Brand: "B廠牌",
+                    Model: "XMA-56",
+                    Frequency: "每2小時",
+                },
+                {
+                    InterCode: "XSCXCZS",
+                    ExterCode: "XSCXCZS",
+                    EName: "螺旋發送機3",
+                    ESN: "SP-0202A",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Brand: "C廠牌",
+                    Model: "XMA-56",
+                    Frequency: "每2小時",
+                },
+            ]
+        }
+        
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData_Sample) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log("res", res);
+                $("#PlanDetail").append(createTableInner(res, SerializedName_Sample));
+                res.SampleItem ?
+                    $("#PlanRecord").append(createTableGrid(
+                        createIndexToArrayData(res.SampleItem), GridOptions_Sample)) :
+                    $("#PlanRecord").parents(".datatable").remove();
+            }
+
+            function onError(res) {
+                console.log(res);
+            }
+
+        }
+
+        //在每列加上次序
+        function createIndexToArrayData(arr) {
+            return arr.map((e, i) => {
+                return {
+                    Index: i + 1,
+                    ...e,
+                    Btn: `<button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo" onclick="PushData(fakeData_Path)">巡檢路線資訊</button>`
+                }
+            })
+        }
+
+        function PushData(res) {
+            console.log("res", res);
+            $("#PathDetail").append(createTableInner(res, SerializedName_Path));
+            res.EItem ?
+                $("#EInfo").append(createTableGrid(
+                    createIndexToArrayData(res.EItem), GridOptions_Path)) :
+                $("#EInfo").parents(".datatable").remove();
+        }
+
+        // 監聽Modal關閉後移除表格
+        $('#PlanInfo').on('hide.bs.modal', function () {
+            $("#PathDetail").empty();
+            $("#EInfo").empty();
+        });
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+            $("#delete").click(function () {
+                let PSSN = $("#PSSN").val();
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
+                    data: PSSN,
+                    onSuccess() {
+                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
+                        window.location.href = url;
+                    }
+                })
+            });
+        }
+    </script>
+}

@@ -80,6 +80,19 @@
     --bs-btn-active-border-color: var(--bs-btn-hover-border-color);
 }
 
+.btn-other {
+    --bs-btn-bg: #FFEDA7;
+    --bs-btn-color: #BF7547;
+    --bs-btn-hover-bg: #FFE48B;
+    --bs-btn-hover-color: #BF7547;
+    --bs-btn-border-width: 1px;
+    --bs-btn-border-color: #FFD590;
+    --bs-btn-hover-border-color: #FFD590;
+    --bs-btn-active-bg: var(--bs-btn-hover-bg);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-border-color: var(--bs-btn-hover-border-color);
+}
+
 .btn-datagrid-secondary {
     --bs-btn-bg: #708298;
     --bs-btn-hover-bg: #657589;

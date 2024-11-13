@@ -1,5 +1,5 @@
 ﻿.datagrid-area {
-    margin-top: 8px;
+    width: 100%;
 }
 
 /* easyui */
@@ -156,9 +156,9 @@
     width: 18px;
     height: 18px;
 }
-.panel-noscroll {
+/*.panel-noscroll {
     overflow: visible !important;
-}
+}*/
 .panel, .panel-body, .datagrid-view {
     width: 100% !important;
 }

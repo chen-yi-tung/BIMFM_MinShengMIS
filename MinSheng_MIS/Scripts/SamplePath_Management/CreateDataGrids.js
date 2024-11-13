@@ -1,13 +1,13 @@
-﻿/*每日巡檢時程模板*/
-const ALDGOptions = {
-    mdg: '#AutoLink .modal-datagrid',
+﻿/*新增巡檢設備*/
+const AEDGOptions = {
+    mdg: '#AddEquipment .modal-datagrid',
     edg: '#Template-datagrid',
-    id: "AutoLink",
+    id: "AddEquipment",
     type: "Template",
-    initDatagridUrl: "/Datagrid/PlanManagement",
-    appendDataUrl: "/PlanManagement/AddReportForm",
+    initDatagridUrl: "/Datagrid/SamplePath_Management",
+    appendDataUrl: "/SamplePath_Management/AddReportForm",
     appendDataKey: "RSN",
-    removeDataUrl: "/PlanManagement/DeleteReportForm",
+    removeDataUrl: "/SamplePath_Management/DeleteReportForm",
     removeDataKey: "RSN",
     filterCheckKey: "",
     datagridOptions: {
@@ -19,22 +19,25 @@ const ALDGOptions = {
         checkOnSelect: false,
     },
     columns: [[
-        { field: 'Name', title: '每日巡檢時程模板', align: 'center', width: 400, sortable: true },
-        {
-            field: '_info', align: 'center', width: 150, formatter: (val, row, index) => {
-                return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="read"
-                            onclick="window.open('PlanManagement/Detail/${ row.IPSN }', "_blank")"
-                        >巡檢排程資訊</button>`;
-            }
-        },
+        { field: 'EquipStatenum', hidden: true },
+        { field: 'InterCode', title: 'RFID內碼', align: 'center', width: 130, sortable: true },
+        { field: 'ExterCode', title: 'RFID外碼', align: 'center', width: 130, sortable: true },
+        { field: 'EName', title: '設備名稱', align: 'center', width: 250, sortable: true },
+        { field: 'EStatus', title: '設備狀態', align: 'center', width: 120, sortable: true },
+        { field: 'ESN', title: '設備編號', align: 'center', width: 120, sortable: true },
+        { field: 'Area', title: '棟別', align: 'center', width: 120, sortable: true },
+        { field: 'Floor', title: '樓層', align: 'center', width: 120, sortable: true },
+        { field: 'Brand', title: '廠牌', align: 'center', width: 120, sortable: true },
+        { field: 'Model', title: '型號', align: 'center', width: 120, sortable: true },
+        { field: 'Frequency', title: '巡檢頻率', align: 'center', width: 120, sortable: true },
     ]],
     frozenColumns: [[
-        /*{ field: '_select', checkbox: true, },*/
-        {
-            field: 'action', align: 'center', width: 40, formatter: function (value, row, index) {
-                return `<input type="radio" name="dgRadio">`;
-            },
-        },
+        { field: '_select', checkbox: true, },
+        //{
+        //    //field: 'action', align: 'center', width: 40, formatter: function (value, row, index) {
+        //    //    return `<input type="radio" name="dgRadio">`;
+        //    //},
+        //},
     ]],
     pageOptions: {
         pageSize: 10,
@@ -45,11 +48,11 @@ const ALDGOptions = {
         displayMsg: '顯示 {from} 到 {to} 筆資料，共 {total} 筆資料'
     },
     evnet: {
-        detail: (row, index) => { window.open(`/PlanManagement/Read/${row.RSN}`, "_blank"); },
+        detail: (row, index) => { window.open(`/SamplePath_Management/Read/${row.RSN}`, "_blank"); },
     }
 }
 
-function PIDG(options) {
+function AEDG(options) {
     const self = this;
     this.options = options;
     this.mdg = $(this.options.mdg);
@@ -140,25 +143,30 @@ function PIDG(options) {
                 //method: 'POST',
                 data: [
                     {
-                        IPSN: "1120301001",
-                        Name: "前處理機房巡檢"
+                        InterCode: "XSCXCZS",
+                        ExterCode: "XSCXCZS",
+                        EName: "螺旋發送機",
+                        EStatus: "正常",
+                        ESN: "SP-0202A",
+                        Area: "前處理機房",
+                        Floor: "1F",
+                        Brand: "XX廠牌",
+                        Model: "W004N",
+                        Frequency: "每2小時"
                     },
                     {
-                        IPSN: "1120301002",
-                        Name: "生物處理機台巡檢"
+                        InterCode: "XSCXCZS",
+                        ExterCode: "XSCXCZS",
+                        EName: "螺旋發送機",
+                        EStatus: "正常",
+                        ESN: "SP-0202A",
+                        Area: "前處理機房",
+                        Floor: "1F",
+                        Brand: "XX廠牌",
+                        Model: "W004N",
+                        Frequency: "每2小時"
                     },
-                    {
-                        IPSN: "1120301003",
-                        Name: "2"
-                    },
-                    {
-                        IPSN: "1120301004",
-                        Name: "3"
-                    },
-                    {
-                        IPSN: "1120301005",
-                        Name: "4"
-                    },
+
                 ],
                 queryParams: getQueryParams(`#${self.options.id} form`),
                 fit: true,
@@ -203,7 +211,7 @@ function PIDG(options) {
     return this;
 }
 
-PIDG.prototype.changeEditAreaCss = function (reserve = false) {
+AEDG.prototype.changeEditAreaCss = function (reserve = false) {
     let selfJQ = this.createBtn;
     let parent = selfJQ.parent();
 
@@ -220,18 +228,18 @@ PIDG.prototype.changeEditAreaCss = function (reserve = false) {
     parent.siblings(".datatable-easyui").removeClass("d-none");
     parent.siblings(".form-group").removeClass("d-none");
 }
-PIDG.prototype.loadDatagrid = function (id) {
+AEDG.prototype.loadDatagrid = function (id) {
     let dg = $(`#${id} .modal-datagrid`);
     dg.datagrid("load", getQueryParams(`#${id} form`));
 }
-PIDG.prototype.getCheckbox = function (dg, index) {
+AEDG.prototype.getCheckbox = function (dg, index) {
     return dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].querySelector("input[type=radio]");
 }
-PIDG.prototype.getChecked = function (dg, index) {
+AEDG.prototype.getChecked = function (dg, index) {
     let dom = this.getCheckbox(dg, index);
     return dom ? dom.checked : null;
 }
-PIDG.prototype.filterCheck = function (dg, data, key) {
+AEDG.prototype.filterCheck = function (dg, data, key) {
     if (key !== '') {
         data.rows.forEach((row, index) => {
             switch (row[key]) {
@@ -241,11 +249,11 @@ PIDG.prototype.filterCheck = function (dg, data, key) {
                     dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].innerHTML = ""
                     break;
             }
+            dg.datagrid('getPanel').find('.datagrid-header-check')[0].innerHTML = ""
         })
-        dg.datagrid('getPanel').find('.datagrid-header-check')[0].innerHTML = ""
     }
 }
-PIDG.prototype.addRowEvent = function () {
+AEDG.prototype.addRowEvent = function () {
     if (this.mdg.datagrid("getChecked").length !== 0) {
 
         this.addRowBtn.off("click");
@@ -264,13 +272,13 @@ PIDG.prototype.addRowEvent = function () {
         this.addRowBtn.click();
     }
 }
-PIDG.prototype.addSpinner = function (btn) {
+AEDG.prototype.addSpinner = function (btn) {
     $(btn).append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
 }
-PIDG.prototype.removeSpinner = function (btn) {
+AEDG.prototype.removeSpinner = function (btn) {
     $(btn).children(".spinner-border").remove();
 }
-PIDG.prototype.addButtonEvent = function (dg) {
+AEDG.prototype.addButtonEvent = function (dg) {
     let self = this;
     $(dg.datagrid("getPanel")).on("click", "button[data-btn-type]", function () {
         let btn = $(this);

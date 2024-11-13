@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "新增 工單";
+    ViewBag.Title = "編輯 每日巡檢時程模板";
 }
 @section styles {
     @Styles.Render("~/Content/easyui/themes/default/easyui.css")
@@ -9,8 +9,8 @@
     <script src="/Content/easyui/jquery.min.js" defer></script>
     <script src="/Content/easyui/jquery.easyui.min.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
-    <script src="~/Scripts/PlanManagement/CreateDataGrids.js" defer></script>
-    @*<script src="/Scripts/PlanManagement/Create.js" defer></script>*@
+    <script src="~/Scripts/SampleSchedule_Management/CreateDataGrids.js" defer></script>
+    @*<script src="/Scripts/SampleSchedule_Management/Create.js" defer></script>*@
     <script src="/Scripts/datatable.js"></script>
 }
 
@@ -22,12 +22,8 @@
         <form class="form justify-content-lg-end">
             <div class="form-group-zone">
                 <div class="form-group required">
-                    <label for="PlanName">工單名稱</label>
-                    <input type="text" class="form-control" name="PlanName" id="PlanName" maxlength="20" required>
-                </div>
-                <div class="form-group required">
-                    <label for="PlanDate">工單日期</label>
-                    <input type="date" class="form-control" name="PlanDate" id="PlanDate" maxlength="20" required>
+                    <label for="SampleName">巡檢模板名稱</label>
+                    <input type="text" class="form-control" name="SampleName" id="SampleName" maxlength="20" required>
                 </div>
             </div>
             <hr class="hr-default" />
@@ -35,7 +31,7 @@
             <div class="datatable-easyui w-100 d-none">
                 <table id="Template-datagrid"></table>
             </div>
-            <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal" data-bs-target="#AutoLink">+ 自動代入每日巡檢模板</button>
+            <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal" data-bs-target="#AddPath">+ 新增巡檢路線</button>
 
             <div class="m-0 w-100 text-center">
                 <div class="datatable datatable-grid w-100 h-100">
@@ -48,10 +44,9 @@
                                     <th class="datatable-header required" style="width:130px"><span>巡檢時間(起)</span></th>
                                     <th class="datatable-header required" style="width:130px"><span>巡檢時間(迄)</span></th>
                                     <th class="datatable-header required" style="width:250px"><span>巡檢路線名稱</span></th>
-                                    <th class="datatable-header required" style="width:120px"><span>巡檢數量</span></th>
                                     <th class="datatable-header required" style="width:120px"><span>巡檢頻率</span></th>
+                                    <th class="datatable-header required" style="width:120px"><span>巡檢數量</span></th>
                                     <th class="datatable-header" style="width:150px"><span></span></th>
-                                    <th class="datatable-header required" style="width:325px"><span>執行人員</span></th>
                                     <th class="datatable-header" style="width:36px"></th>
                                 </tr>
                             </thead>
@@ -78,9 +73,6 @@
                                     <td id="Info">
                                         <button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo">巡檢路線資訊</button>
                                     </td>
-                                    <td id="UserID">
-                                        <select class="form-select" id="UserID" name="UserID" required></select>
-                                    </td>
                                     <td id="d-_delete" class="p-1 pt-2">
                                         <button type="button" class="btn-delete-item"></button>
                                     </td>
@@ -97,7 +89,36 @@
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-export" id="submit">新增</button>
+    <button class="btn btn-export" id="submit">儲存</button>
+</div>
+
+@*新增巡檢路線POP UP*@
+<div class="modal fade datagrid-modal" tabindex="-1" id="AddPath">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>請勾選欲代入的巡檢路線</h2>
+                <div class="search-area">
+                    <form class="form">
+                        <div class="form-group">
+                            <label for="PName">巡檢路線名稱</label>
+                            <input class="form-control" id="PName" name="PName" type="text" />
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn btn-search" id="search">查詢</button>
+                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="modal-datagrid"></table>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="add-row">確定</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @*巡檢路線資訊POP UP*@
@@ -125,34 +146,6 @@
     </div>
 </div>
 
-@*每日巡檢時程模板POP UP*@
-<div class="modal fade datagrid-modal" tabindex="-1" id="AutoLink">
-    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h2>每日巡檢時程模板</h2>
-                <div class="search-area">
-                    <form class="form">
-                        <div class="form-group">
-                            <label for="EName">巡檢路線名稱</label>
-                            <input class="form-control" id="EName" name="EName" type="text" />
-                        </div>
-                        <div class="button-group">
-                            <button type="button" class="btn btn-search" id="search">查詢</button>
-                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
-                        </div>
-                    </form>
-                </div>
-                <table class="modal-datagrid"></table>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                <button type="button" class="btn btn-export" id="add-row">確定</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 @section scripts {
     <script>
@@ -167,7 +160,7 @@
             addButtonEvent();
             addTemplateItem();
             delTemplateItem();
-            autoLinkDG_Controller = new PIDG(ALDGOptions);
+            addEquipmentDG_Controller = new AEDG(AEDGOptions);
             //await addDropDownList();
             //await addAreaFloorEvent();
             readData(apiUrl);
@@ -175,6 +168,7 @@
 
         const SerializedName = [
             { text: "巡檢路線名稱", value: "PName" },
+            { text: "巡檢頻率", value: "PFrequency" },
         ]
         const GridOptions = {
             thead: true,
@@ -193,7 +187,8 @@
         }
         let fakeData = {
             SIRSN: "1120301001",
-            PName: "生物處理機台巡檢",
+            PName: "前處理機房巡檢",
+            PFrequency: "每3小時",
             EItem: [
                 {
                     InterCode: "XSCXCZS",
@@ -231,6 +226,7 @@
             ]
         }
 
+
         function readData(url = null) {
 
             url == null ? onSuccess(fakeData) :
@@ -245,8 +241,7 @@
                 })
 
             function onSuccess(res) {
-                console.log(res);
-                fakeData = res;
+                console.log("res", res);
                 $("#PathDetail").append(createTableInner(res, SerializedName));
 
                 res.EItem ?
@@ -455,9 +450,6 @@
                                                                 <td id="Frequency">-</td>
                                                                 <td id="Info">
                                                                     <button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo">巡檢路線資訊</button>
-                                                                </td>
-                                                                <td id="UserID">
-                                                                    <select class="form-select" id="UserID" name="UserID" required></select>
                                                                 </td>
                                                                 <td id="d-_delete" class="p-1 pt-2">
                                                                     <button type="button" class="btn-delete-item"></button>

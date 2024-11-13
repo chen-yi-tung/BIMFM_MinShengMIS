@@ -36,7 +36,7 @@ function createTableOuter(options) {
  * @param {*[]} data - the data need show
  * @param {SerializedName[]} sn 
  * @returns {string} TableInner
- */
+ */ 
 function createTableInner(data, sn) {
     const nullString = "-";
     return sn.map((e) => {
@@ -69,6 +69,13 @@ function createTableInner(data, sn) {
                 <td class="datatable-table-td" id="d-${e.value}"><pre>${data[e.value] ?? nullString}</pre></td>
             </tr>`;
         }
+        else if (e.colspan == true) {
+            html = `
+            <tr>
+                <td class="datatable-table-th">${e.text}</td>
+                <td class="datatable-table-td" colspan=3 id="d-${e.value}">${data[e.value] ?? nullString}</td>
+            </tr>`;
+        }
         else {
             switch (e.value) {
                 case "ImgPath":
@@ -84,6 +91,72 @@ function createTableInner(data, sn) {
                             <td class="datatable-table-th">${e.text}</td>
                             <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putFile(data[e.value]) : nullString}</td>
                         </tr>`;
+                    break;
+                case "InspectItems": {
+                    const rows = data[e.value]?.length || 0;
+                    if (rows === 0) {
+                        html = '';
+                        break;
+                    }
+                    const first = data[e.value][0];
+                    const isDanger = first.State === '異常';
+                    html = `
+                        <tr>
+                            <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
+                            <td class="datatable-table-td datatable-table-sort">1</td>
+                            <td class="datatable-table-td text-start ps-2">
+                                <div>${first.Item}</div>
+                            </td> 
+                            <td class="datatable-table-td" style="width: 100px;">
+                                <div class="${isDanger ? 'text-danger' : ''}">${first.State}</div>
+                            </td>
+                        </tr>
+                        ${data.InspectItems?.slice(1).map((item, i) => {
+                            const isDanger = item.State === '異常';
+                            return `<tr>
+                                <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
+                                <td class="datatable-table-td text-start ps-2">
+                                    <div>${item.Item}</div>
+                                </td>
+                                <td class="datatable-table-td" style="width: 100px;">
+                                    <div class="${isDanger ? 'text-danger' : ''}">${item.State}</div>
+                                </td>
+                            </tr>`
+                        }).join('')}
+                    `
+                }
+                    break;
+                case "ReportItems": {
+                    const rows = data[e.value]?.length || 0;
+                    if (rows === 0) {
+                        html = '';
+                        break;
+                    }
+                    const first = data[e.value][0];
+                    html = `
+                        <tr>
+                            <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
+                            <td class="datatable-table-td datatable-table-sort">1</td>
+                            <td class="datatable-table-td text-start ps-2">
+                                <div>${first.Item}</div>
+                            </td>
+                            <td class="datatable-table-td" style="width: 100px;">
+                                <div>${first.Value} ${first.Init}</div>
+                            </td>
+                        </tr>
+                        ${data.ReportItems?.slice(1).map((item, i) => `
+                        <tr>
+                            <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
+                            <td class="datatable-table-td text-start ps-2">
+                                <div>${item.Item}</div>
+                            </td>
+                            <td class="datatable-table-td" style="width: 100px;">
+                                <div>${item.Value} ${item.Init}</div>
+                            </td>
+                        </tr>
+                        `).join('')}
+                        `;
+                }
                     break;
                 default:
                     html = `
@@ -139,7 +212,7 @@ function createTableInner(data, sn) {
  */
 function createTableGrid(data, options) {
     const nullString = "-";
-    console.log(options)
+    console.log("options", options)
     let columns = options.columns;
     let thead = options.thead == true ? `<thead><tr>${createThs(columns)}</tr></thead>` : "";
     let tbody = `<tbody>${createTrs(columns, data)}</tbody>`;
@@ -203,7 +276,6 @@ function createAccordionOuter(options) {
     </div>
     `;
 }
-
 /**
  * @typedef {object} AccordionOptions
  * @property {string?} className - use to datatable custom class
@@ -217,17 +289,17 @@ function createAccordionOuter(options) {
  * @returns {string} Accordion
  */
 function createAccordion(options) {
+    console.log("o",options)
     if (options.data.length === 0) {
         return "";
     }
     return `
-    <div class="datatable ${options.className ?? ""}">
-        <div class="datatable-header">${options.title ?? ''}</div>
+    <div class="datatable border-0 ${options.className ?? ""} ${options.id === 'EquipmentItem' ? 'sub-accordion' : ''}">
         <div class="datatable-body">
-            <div class="accordion accordion-flush datatable-accordion" id="accordion-${options.id ?? ''}">
-                ${options.data.map((d, i) => {
-        return createAccordionItem(options, i)
-    }).join("")}
+            <div class="accordion accordion-flush datatable-accordion d-flex flex-column" style="gap: 12px" id="accordion-${options.id ?? ''}">
+               ${options.data.map((d, i) => {
+                   return createAccordionItem(options, i)
+               }).join("")}
             </div>
         </div>
     </div>
@@ -240,23 +312,64 @@ function createAccordion(options) {
  * @returns {string} TableOuter
  */
 function createAccordionItem(options, i) {
+    console.log("createAccordionItem", options)
+    const subContent = `
+        <div class="subDatatable ${options.className ?? ""} ${options.id === 'EquipmentItem' ? 'sub-accordion' : ''}">
+            <div class="datatable-body">
+                <div class="accordion accordion-flush datatable-accordion" id="subAccordion-${options.id ?? ''}">
+                    ${createSubAccordionItem(options, i)}
+                </div>
+            </div>
+        </div>
+    `
     return `
-    <div class="accordion-item" id="${options.id}-${i}">
-        <h2 class="accordion-header" id="header-${options.id}-${i}">
-            <button class="accordion-button collapsed" type="button"
+            <div class="accordion-item" id="${options.id}-${i}">
+                <h2 class="accordion-header" id="header-${options.id}-${i}">
+                    <button class="accordion-button collapsed type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sub-body-${options.id}-${i}" aria-expanded="false"
+                        aria-controls="body-${options.id}-${i}">
+                        <i class="fa-solid fa-clipboard-list me-1" style="color: #2C5984;"></i>
+                        ${options.data[i][options.itemTitleKey]} (${options.data[i][options.itemTime]})
+                    </button>
+                </h2>
+                <div id="sub-body-${options.id}-${i}" class="accordion-collapse collapse"
+                    aria-labelledby="header-${options.id}-${i}">
+                    <div class="accordion-body">
+                        <div class="datatable border-0 w-100">
+                            <div class="datatable-body">
+                                <table class="datatable-table">
+                                    ${createTableInner(options.data[i], options.sn)}
+                                </table>
+                                    ${options.state === '完成' ? (options.layer === 2 ? subContent : "") : ""}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+}
+
+function createSubAccordionItem(options, i) {
+    const equip = options.data[i].EquipmentItem
+    return equip.map((t, index) => {
+        return `
+        <div class="accordion-item" id="${options.id}_${i+1}-${index+1}">
+        <h2 class="accordion-header" id="header-${options.id}_${i+1}-${index+1}">
+            <button class="accordion-button collapsed type="button"
                 data-bs-toggle="collapse"
-                data-bs-target="#body-${options.id}-${i}" aria-expanded="false"
-                aria-controls="body-${options.id}-${i}">
-                ${options.data[i][options.itemTitleKey]}
+                data-bs-target="#body-${options.id}_${i+1}-${index+1}" aria-expanded="false"
+                aria-controls="body-${options.id}_${i+1}-${index+1}">
+                ${t.IName}
             </button>
         </h2>
-        <div id="body-${options.id}-${i}" class="accordion-collapse collapse"
-            aria-labelledby="header-${options.id}-${i}">
+        <div id="body-${options.id}_${i+1}-${index+1}" class="accordion-collapse collapse"
+            aria-labelledby="header-${options.id}_${i+1}-${index+1}">
             <div class="accordion-body">
                 <div class="datatable border-0 w-100">
                     <div class="datatable-body">
-                        <table class="datatable-table">
-                            ${createTableInner(options.data[i], options.sn)}
+                         <table class="datatable-table">
+                            ${createTableInner(t, options.subsn)}
                         </table>
                     </div>
                 </div>
@@ -264,8 +377,8 @@ function createAccordionItem(options, i) {
         </div>
     </div>
     `;
+    }).join("");
 }
-
 /**
  * @typedef {object} DataDetailModalOptions
  * @property {string?} className - DataDetailModal custom class
@@ -281,7 +394,7 @@ function createDataDetailModal(options) {
     let ModalJQ, ModalBs, inner, locate;
     readData(options.data);
     function readData(data) {
-        inner = createTableInner(data, options.sn);
+        inner = createTableInner(data, options.sn );
         locate = options?.locate ? `<div class="modal-footer justify-content-center"><a type="button" class="btn btn-search" href="${options.locate?.() || options.locate}" target="_blank">定位</a></div>`: "";
         const html = `
         <div class="modal fade data-detail-modal ${options.className ?? ''}" tabindex="-1" id="${options.id ?? ''}">
@@ -398,12 +511,14 @@ function createDeleteDialog(options) {
     let modal = createDialogModal({
         id: "DialogModal-Delete",
         inner: `
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
-                <path
-                    d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-            </svg>
-            確認是否刪除？
+            <div class="d-flex justify-content-center align-items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                    class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                </svg>
+                確認是否刪除？
+            </div>
         `,
         button: [
             { className: "btn btn-cancel", cancel: true, text: "取消", },

@@ -1,0 +1,313 @@
+﻿@{
+    ViewBag.Title = "工單 刪除";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+               <table class="datatable-table" id="PlanDetail"></table>
+            </div>
+        </div>
+
+        <section id="RepairRecord" class="info-zone">
+            <div class="zone-title">巡檢紀錄</div>
+        </section>
+    </div>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
+</div>
+
+
+@section scripts {
+    <script>
+        const IPRSN = '@ViewBag.id';
+        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${IPRSN}`;
+        let apiUrl = null;
+
+        $(async function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
+
+        const SerializedName = [
+            { text: "工單編號", value: "PSN" },
+            { text: "工單狀態", value: "State" },
+            { text: "工單名稱", value: "PName" },
+            { text: "工單日期", value: "PTime" },
+        ]
+
+        const fakeData = {
+            PSN: "P336448226",
+            State: "完成",
+            PName: "巡檢工單名稱",
+            PTime: "2024/10/02",
+            InspectionRecord: [
+                {
+                    IName: "第一個巡檢前處理機房巡檢",
+                    ITime: "00:00～01:00",
+                    IState: "完成",
+                    Ifrequency: "每3小時",
+                    INum: "10",
+                    EquipmentItem: [
+                        {
+                            IName: "設備1 - 螺旋發送機",
+                            Model: "SP-0202A",
+                            Location: "生物處理機房 電器儀控室層1",
+                            InspectItems: [
+                                {
+                                    Item: "檢查項目1",
+                                    State: "異常"
+                                },
+                                {
+                                    Item: "檢查項目2",
+                                    State: "正常"
+                                },
+                            ],
+                            ReportItems: [
+                                {
+                                    Item: "填報列表1",
+                                    Value: "44",
+                                    Init: "PA"
+                                },
+                                {
+                                    Item: "填報列表2",
+                                    Value: "85",
+                                    Init: "%"
+                                },
+                                {
+                                    Item: "填報列表3",
+                                    Value: "30",
+                                    Init: "˚C"
+                                },
+                            ],
+                        },
+                        {
+                            IName: "設備2 - 螺旋發送機",
+                            Model: "SP-0202A",
+                            Location: "生物處理機房 電器儀控室層2",
+                            InspectItems: [
+                                {
+                                    Item: "螺絲是否正常轉緊",
+                                    State: "正常"
+                                },
+                                {
+                                    Item: "電壓是否正常(有無漏電狀況發生)",
+                                    State: "正常"
+                                },
+                                {
+                                    Item: "出口端是否正常出藥",
+                                    State: "異常"
+                                },
+                                {
+                                    Item: "設備是否正常無漏水333",
+                                    State: "正常"
+                                },
+                            ],
+                            ReportItems: [
+                                {
+                                    Item: "螺絲是否正常轉緊測試11",
+                                    Value: "20",
+                                    Init: "PA"
+                                },
+                                {
+                                    Item: "氧氣濃度測試22",
+                                    Value: "96",
+                                    Init: "%"
+                                },
+                                {
+                                    Item: "溫度測試33",
+                                    Value: "28",
+                                    Init: "˚C"
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    IName: "第二個巡檢前處理機房巡檢",
+                    ITime: "01:00～02:00",
+                    IState: "進行中",
+                    Ifrequency: "每2小時",
+                    INum: "30",
+                    EquipmentItem: [
+                        {
+                            IName: "螺旋發送機2-1",
+                            Model: "SP-0202A",
+                            Location: "生物處理機房 電器儀控室層3",
+                            InspectItems: [
+                                {
+                                    Item: "螺絲是否正常轉緊測試1",
+                                    State: "正常"
+                                },
+                                {
+                                    Item: "電壓是否正常(有無漏電狀況發生)測試2",
+                                    State: "正常"
+                                },
+                                {
+                                    Item: "出口端是否正常出藥測試3",
+                                    State: "異常"
+                                },
+                                {
+                                    Item: "設備是否正常無漏水測試4",
+                                    State: "正常"
+                                },
+                            ],
+                            ReportItems: [
+                                {
+                                    Item: "螺絲是否正常轉緊",
+                                    Value: "20",
+                                    Init: "PA"
+                                },
+                                {
+                                    Item: "氧氣濃度",
+                                    Value: "96",
+                                    Init: "%"
+                                },
+                                {
+                                    Item: "溫度",
+                                    Value: "28",
+                                    Init: "˚C"
+                                },
+                            ],
+                        },
+                        {
+                            IName: "螺旋發送機2-2",
+                            Model: "SP-0202A",
+                            Location: "生物處理機房 電器儀控室層4",
+                            InspectItems: [
+                                {
+                                    Item: "螺絲是否正常轉緊",
+                                    State: "正常"
+                                },
+                                {
+                                    Item: "電壓是否正常(有無漏電狀況發生)",
+                                    State: "正常"
+                                },
+                                {
+                                    Item: "出口端是否正常出藥",
+                                    State: "異常"
+                                },
+                                {
+                                    Item: "設備是否正常無漏水",
+                                    State: "正常"
+                                },
+                            ],
+                            ReportItems: [
+                                {
+                                    Item: "螺絲是否正常轉緊",
+                                    Value: "20",
+                                    Init: "PA"
+                                },
+                                {
+                                    Item: "氧氣濃度",
+                                    Value: "96",
+                                    Init: "%"
+                                },
+                                {
+                                    Item: "溫度",
+                                    Value: "28",
+                                    Init: "˚C"
+                                },
+                            ],
+                        },
+                        {
+                            IName: "螺旋發送機2-3",
+                            Model: "SP-0202A",
+                            Location: "生物處理機房 電器儀控室層5",
+                            InspectItems: [
+                                {
+                                    Item: "螺絲是否正常轉緊",
+                                    State: "正常"
+                                },
+                                {
+                                    Item: "電壓是否正常(有無漏電狀況發生)",
+                                    State: "正常"
+                                },
+                                {
+                                    Item: "出口端是否正常出藥",
+                                    State: "異常"
+                                },
+                                {
+                                    Item: "設備是否正常無漏水",
+                                    State: "正常"
+                                },
+                            ],
+                            ReportItems: [
+                                {
+                                    Item: "螺絲是否正常轉緊",
+                                    Value: "20",
+                                    Init: "PA"
+                                },
+                                {
+                                    Item: "氧氣濃度",
+                                    Value: "96",
+                                    Init: "%"
+                                },
+                                {
+                                    Item: "溫度",
+                                    Value: "28",
+                                    Init: "˚C"
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#PlanDetail").append(createTableInner(res, SerializedName));
+
+                RepairRecord("#RepairRecord", res);
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+            $("#delete").click(function () {
+                let PSSN = $("#PSSN").val();
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
+                    data: PSSN,
+                    onSuccess() {
+                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
+                        window.location.href = url;
+                    }
+                })
+            });
+        }
+
+
+
+    </script>
+}

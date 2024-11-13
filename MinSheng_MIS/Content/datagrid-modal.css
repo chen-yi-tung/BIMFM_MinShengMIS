@@ -30,7 +30,43 @@
 	border-radius: var(--bs-modal-border-radius);
 }
 
-.modal-fullscreen .height-fit {
+.datagrid-modal.show {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.modal-screen-md {
+	justify-content: center;
+	height: fit-content;
+	margin: 2em 5em;
+	max-width: unset;
+	height: 100%;
+}
+
+.modal-screen-md .modal-content {
+	max-width: 960px;
+}
+
+.modal-screen-md .modal-body {
+    padding-left: 64px;
+    padding-right: 64px;
+}
+
+.modal-screen-md .form-group-zone {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.modal-body {
+	gap: 24px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+/* .modal-fullscreen .height-fit {
 	height: fit-content;
 	max-height: 100%;
 }
@@ -39,7 +75,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
-}
+} */
 
 .datagrid-modal .modal-body h2 {
 	color: #626F7E;
@@ -47,7 +83,7 @@
 	margin-bottom: 0;
 }
 
-/* search-area */
+/* search-area  */
 
 .datagrid-modal .search-area {
 	background: #D5E1F0;
@@ -70,7 +106,7 @@
 	font-size: 1rem;
 }
 
-/* datagrid */
+/* datagrid  */
 
 .datagrid-modal .datagrid {
 	width: 100% !important;
@@ -101,10 +137,10 @@
 	height: inherit !important;
 }
 
-/*.modal-fullscreen .modal-content {
+/* .modal-fullscreen .modal-content {
 	height: fit-content;
 	max-height: 100%;
-}*/
+} */
 
 @media (max-width: 767.98px) {
 	.datagrid-modal .modal-fullscreen {
