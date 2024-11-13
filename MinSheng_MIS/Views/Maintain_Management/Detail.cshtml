@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "定期保養單 詳情";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/InspectionPlanMaintain.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+<section>
+    <div class="info-area edit-area-md">
+        <div class="datatable">
+            <div class="datatable-header">保養資料</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="MaintainDetail"></table>
+            </div>
+        </div>
+
+        <div class="datatable">
+            <div class="datatable-header">保養填報</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="ReportDetail"></table>
+            </div>
+        </div>
+
+        <div class="datatable">
+            <div class="datatable-header">審核填報</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="ReviewDetail"></table>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        const EMFISN = '@ViewBag.EMFISN';
+        //let apiUrl = '@Url.Action("ReadBody", "Maintain_Management")' + `/${EMFISN}`;
+        let apiUrl = null;
+
+        window.onload = function () {
+            readData(apiUrl);
+        }
+
+        const MaintainDetailItem = [
+            { text: "保養單號", value: "MSN" },
+            { text: "保養單狀態", value: "State" },
+            { text: "保養項目", value: "MaintainItem" },
+            { text: "執行人員", value: "UserID" },
+            { text: "設備名稱", value: "EName" },
+            { text: "設備狀態", value: "EState" },
+            { text: "設備編號", value: "ESN" },
+            { text: "所在地點", value: "Location" },
+            {
+                text: "設備屬性", value: "ESN", formatter: (val) => {
+                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail', '_blank')">設備資料</button>` : "-"
+                }
+            },
+            { text: "保養週期", value: "Cycle" },
+            { text: "上次保養日", value: "LastDate" },
+            { text: "最近應保養日", value: "RecentDate" },
+        ]
+
+        const ReportDetailItem = [
+            { text: "保養結果", value: "MaintainResult" },
+            { text: "填報者", value: "Maintainer" },
+            { text: "填報時間", value: "MaintainTime" },
+            { text: "保養填報", value: "MaintainContent" },
+        ]
+
+        const ReviewDetailItem = [
+            { text: "審核結果", value: "ReviewResult" },
+            { text: "審核者", value: "Reviewer" },
+            { text: "審核時間", value: "ReviewTime" },
+            { text: "審核意見", value: "ReviewContent" },
+        ]
+
+        const fakeData = {
+            MSN: "E00003_000001_230107",
+            State: "待派工",
+            MaintainItem: "皮帶之保養",
+            UserID: "王曉明、任趙仁",
+            EName: "軸承潤滑",
+            EState: "正常",
+            ESN: "E00003",
+            Location: "生物處理機房 軸電器儀控室層",
+            Cycle: "3次/週",
+            LastDate: "2022/01/01",
+            RecentDate: "2024/01/01",
+            MaintainResult: "完成",
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#MaintainDetail").append(createTableInner(res, MaintainDetailItem));
+                $("#ReportDetail").append(createTableInner(res, ReportDetailItem));
+                $("#ReviewDetail").append(createTableInner(res, ReviewDetailItem));
+
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+        </script>
+    }

@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "定期保養單 審核";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/InspectionPlanMaintain.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    <div class="info-area edit-area-md">
+        <div class="datatable">
+            <div class="datatable-header">保養資料</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="MaintainDetail"></table>
+            </div>
+        </div>
+
+        <div class="datatable">
+            <div class="datatable-header">保養填報</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="ReportDetail"></table>
+            </div>
+        </div>
+        <hr class="hr-dashed">
+        <div class="edit-area flex-wrap flex-md-row justify-content-lg-between" style="gap: 1rem 2rem;">
+            <form class="form">
+                <div class="form-group-zone">
+                    <div class="form-group">
+                        <label for="Reviewer">審核者</label>
+                        <input class="form-control" id="Reviewer" name="Reviewer" type="text" disabled />
+                    </div>
+
+                    <div class="form-group col-3fr required">
+                        <label for="ReviewContent">審核意見</label>
+                        <textarea class="form-control" id="ReviewContent" name="ReviewContent" rows="3" cols="50" required></textarea>
+                    </div>
+
+                    <div class="form-group radio-group required">
+                        <label for="ReviewResult">審核結果</label>
+                        <div class="d-flex gap-4">
+                            <label class="" for="ReviewResult_1">
+                                <input type="radio" class="form-check-input" id="ReviewResult_1" name="ReviewResult" value="1">
+                                通過
+                            </label>
+                            <label class="" for="ReviewResult_2">
+                                <input type="radio" class="form-check-input" id="ReviewResult_2" name="ReviewResult" value="2">
+                                不通過
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">送出</button>
+</div>
+
+
+@section scripts {
+    <script>
+
+        const EMFISN = '@ViewBag.EMFISN';
+        //let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;
+        let apiUrl = null;
+
+        window.onload = function () {
+            addButtonEvent();
+            readData(apiUrl);
+        }
+
+        const MaintainDetailItem = [
+            { text: "保養單號", value: "MSN" },
+            { text: "保養單狀態", value: "State" },
+            { text: "保養項目", value: "MaintainItem" },
+            { text: "執行人員", value: "UserID" },
+            { text: "設備名稱", value: "EName" },
+            { text: "設備狀態", value: "EState" },
+            { text: "設備編號", value: "ESN" },
+            { text: "所在地點", value: "Location" },
+            { text: "設備屬性", value: "ESN", formatter: (val) => {
+                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail', '_blank')">設備資料</button>` : "-"
+                }
+            },
+            { text: "保養週期", value: "Cycle" },
+            { text: "上次保養日", value: "LastDate" },
+            { text: "最近應保養日", value: "RecentDate" },
+        ]
+
+        const ReportDetailItem = [
+            { text: "保養結果", value: "MaintainResult" },
+            { text: "填報者", value: "Maintainer" },
+            { text: "填報時間", value: "MaintainTime" },
+            { text: "保養填報", value: "MaintainContent" },
+        ]
+
+        const fakeData = {
+            MSN: "E00003_000001_230107",
+            State: "待派工",
+            MaintainItem: "皮帶之保養",
+            UserID: "王曉明、任趙仁",
+            EName: "軸承潤滑",
+            EState: "正常",
+            ESN: "E00003",
+            Location: "生物處理機房 軸電器儀控室層",
+            Cycle: "3次/週",
+            LastDate: "2022/01/01",
+            RecentDate: "2024/01/01",
+            MaintainResult: "完成",
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#MaintainDetail").append(createTableInner(res, MaintainDetailItem));
+                $("#ReportDetail").append(createTableInner(res, ReportDetailItem));
+
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+    </script>
+}

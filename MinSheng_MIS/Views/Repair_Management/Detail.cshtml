@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "報修單 詳情";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/InspectionPlanMaintain.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
+    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+<section>
+    <div class="info-area edit-area-md">
+        <div class="datatable">
+            <div class="datatable-header">報修資料</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="ReportDetail"></table>
+            </div>
+        </div>
+
+        <div class="datatable">
+            <div class="datatable-header">維修資料</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="RepairDetail"></table>
+            </div>
+        </div>
+
+        <div class="datatable">
+            <div class="datatable-header">審核填報</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="ReviewDetail"></table>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        const EMFISN = '@ViewBag.EMFISN';
+        //let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;
+        let apiUrl = null;
+
+        window.onload = function () {
+            readData(apiUrl);
+        }
+
+        const ReportDetailItem = [
+            { text: "報修單號", value: "RSN" },
+            { text: "報修單狀態", value: "State" },
+            { text: "報修等級", value: "RepairLevel" },
+            { text: "報修時間", value: "RepairTime" },
+            { text: "報修內容", value: "ReportContent" },
+            { text: "報修照片", value: "ImgPath" },
+            { text: "執行人員", value: "UserID" },
+            { text: "所在地點", value: "Location" },
+            { text: "設備編號", value: "ESN" },
+            { text: "設備名稱", value: "EName" },
+            {
+                text: "設備屬性", value: "ESN", formatter: (val) => {
+                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail', '_blank')">設備資料</button>` : "-"
+                }
+            },
+        ]
+
+        const RepairDetailItem = [
+            { text: "維修結果", value: "RepairResult" },
+            { text: "填報者", value: "Repairer" },
+            { text: "填報時間", value: "RepairTime" },
+            { text: "維修填報", value: "RepairContent" },
+        ]
+
+        const ReviewDetailItem = [
+            { text: "審核結果", value: "ReviewResult" },
+            { text: "審核者", value: "Reviewer" },
+            { text: "審核時間", value: "ReviewTime" },
+            { text: "審核意見", value: "ReviewContent" },
+        ]
+
+        const fakeData = {
+            RSN: "E00003_000001_230107",
+            State: "待派工",
+            RepairLevel: "最速件",
+            RepairTime: "2022/01/01 11:09",
+            ReportContent: "已完成螺旋機電池更換，經測試後可正常操作。",
+            ImgPath: [
+                "/Pictures/安妮雅.jfif"
+            ],
+            UserID: "王曉明、任趙仁",
+            Location: "生物處理機房 軸電器儀控室層",
+            ESN: "E00003",
+            EName: "軸承潤滑",
+            RepairResult: "完成",
+        }
+
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                $("#ReportDetail").append(createTableInner(res, ReportDetailItem));
+                $("#RepairDetail").append(createTableInner(res, RepairDetailItem));
+                $("#ReviewDetail").append(createTableInner(res, ReviewDetailItem));
+
+                ImageDisplay(".datatable-img-item>img");
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+    </script>
+}
