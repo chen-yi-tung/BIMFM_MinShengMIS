@@ -31,7 +31,6 @@
             <div class="datatable-easyui w-100 d-none">
                 <table id="Template-datagrid"></table>
             </div>
-            <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal" data-bs-target="#AddPath">+ 新增巡檢路線</button>
 
             <div class="m-0 w-100 text-center">
                 <div class="datatable datatable-grid w-100 h-100">
@@ -93,7 +92,7 @@
 </div>
 
 @*新增巡檢路線POP UP*@
-<div class="modal fade datagrid-modal" tabindex="-1" id="AddPath">
+@*<div class="modal fade datagrid-modal" tabindex="-1" id="AddPath">
     <div class="modal-dialog modal-fullscreen modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
@@ -119,7 +118,7 @@
             </div>
         </div>
     </div>
-</div>
+</div>*@
 
 @*巡檢路線資訊POP UP*@
 <div class="modal fade datagrid-modal" tabindex="-1" id="PlanInfo">
@@ -160,7 +159,6 @@
             addButtonEvent();
             addTemplateItem();
             delTemplateItem();
-            addEquipmentDG_Controller = new AEDG(AEDGOptions);
             //await addDropDownList();
             //await addAreaFloorEvent();
             readData(apiUrl);

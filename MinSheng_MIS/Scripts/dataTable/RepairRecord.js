@@ -1,110 +1,118 @@
 ﻿function RepairRecord(selector, data) {
     console.log("data" ,data)
-    const sn = {
-        //EquipmentReportItem: [
-        //    { text: "報修單狀態", value: "ReportState" },
-        //    { text: "報修單號", value: "RSN" },
-        //    { text: "報修時間", value: "Date" },
-        //],
-        EquipmentItem: [
-            { text: "設備名稱", value: "IName", colspan: true },
-            { text: "設備型號", value: "Model", colspan: true },
-            { text: "所在位置", value: "Location", colspan: true },
-            { text: "檢查項目", value: "InspectItems" },
-            { text: "填報列表", value: "ReportItems" },
-        ],
-        //RepairSupplementaryInfo: [
-        //    { text: "補件人", value: "MyName" },
-        //    { text: "補件日期", value: "SupplementaryDate" },
-        //    { text: "補件說明", value: "SupplementaryContent" },
-        //    { text: "補件檔案", value: "FilePath" },
-        //],
-    };
+    //const sn = {
+    //    EquipmentItem: [
+    //        { text: "設備名稱", value: "IName", colspan: true },
+    //        { text: "設備型號", value: "Model", colspan: true },
+    //        { text: "所在位置", value: "Location", colspan: true },
+    //        { text: "檢查項目", value: "InspectItems" },
+    //        { text: "填報列表", value: "ReportItems" },
+    //    ],
+    //};
     console.log('selector', $(selector));
-    
-        //createTableOuter({
-        //    title: "報修資料",
-        //    id: "EquipmentReportItem",
-        //    className: "mt-5",
-        //    inner: createTableInner(data.EquipmentReportItem, sn.EquipmentReportItem),
-        //}),
-        //createAccordion({
-        //    id: `EquipmentItem`,
-        //    sn: sn.EquipmentItem,
-        //    data: data.EquipmentItem,
-        //    itemTitleKey: "IName"
-        //}) : "",
+    console.log('data.IName', data.IName);
 
-        //createTableOuter({
-        //    title: "計劃資訊",
-        //    id: "InspectionPlan",
-        //    inner: createTableInner(data.InspectionPlan, sn.InspectionPlan),
-        //}),
-        //createTableOuter({
-        //    title: "維修填報",
-        //    id: "InspectionPlanRepair",
-        //    inner: createTableInner(data.InspectionPlanRepair, sn.InspectionPlanRepair),
-        //}),
+    $(selector).append(
+        data.InspectionRecord ?
+            createAccordion({
+                id: `InspectionRecord`,
+                state: data.State,
+                sn: [
+                        { text: "巡檢狀態", value: "IState" },
+                        { text: "巡檢頻率", value: "Ifrequency" },
+                        { text: "巡檢數量", value: "INum" },
+                ],
+                subsn: [
+                    { text: "所在位置", value: "Location", colspan: true },
+                    { text: "檢查項目", value: "InspectItems", type: "dualCol" },
+                    { text: "填報列表", value: "ReportItems", type: "dualCol" },
+                ],
+                data: data.InspectionRecord,
+                itemTitleKey: `IName`,
+                itemSubTitleKey: `ITime`,
+                layer: 2,
+                icon: "clipboard-list",
+            })
+            : "",
+    )
+}
 
+function InspectionRecord(selector, data) {
+    console.log("InspectionRecord data", data)
+    console.log('InspectionRecord selector', $(selector));
 
-        //data.InspectionRecord?.EquipmentItem?
-        //    createAccordion({
-        //        id: `EquipmentItem`,
-        //        sn: sn.EquipmentItem,
-        //        data: data.EquipmentItem,
-        //        itemTitleKey: "IName"
-        //    }) : "",
+    $(selector).append(
+        data.InspectionRecord ?
+            createInspectionTable({
 
-        //data.InspectionRecord?.forEach((record, i) => {
-        //    const accordionElement = createMainAccordion(
-        //        {
-        //            id: `InspectionRecord_${i}`,
-        //            sn: [
-        //                { text: "巡檢狀態", value: "IState", colspan: true },
-        //                { text: "巡檢頻率", value: "Ifrequency", colspan: true },
-        //                { text: "巡檢數量", value: "INum", colspan: true },
-        //            ],
-        //            data: record,
-        //            itemTitleKey: "IName",
-        //            layer: 2,
-        //        },
-        //        i
-        //    )
-        //    $(selector).append(accordionElement);
-        //})
+                id: `InspectionRecord`,
+                sn: [
+                    { text: "巡檢頻率", value: "Ifrequency", colspan: "3" },
+                    { text: "檢查項目", value: "InspectItems", colspan: "2", itemNum: true },
+                    { text: "填報項目名稱/單位", value: "ReportItems", type: "dualCol" },
+                ],
+                data: data.InspectionRecord,
+            })
+            : "",
+    )
+}
 
+function EquipmentRFID(selector, data) {
+    console.log("EquipmentRFID data", data)
+    console.log('EquipmentRFID selector', $(selector));
 
-            $(selector).append(
-                data.InspectionRecord ?
-                    createAccordion({
-                        id: `InspectionRecord`,
-                        state: data.State,
-                        sn: [
-                                { text: "巡檢狀態", value: "IState" },
-                                { text: "巡檢頻率", value: "Ifrequency" },
-                                { text: "巡檢數量", value: "INum" },
-                        ],
-                        subsn: [
-                                    { text: "所在位置", value: "Location", colspan: true },
-                                    { text: "檢查項目", value: "InspectItems" },
-                                    { text: "填報列表", value: "ReportItems" },
-                        ],
-                        data: data.InspectionRecord,
-                        itemTitleKey: `IName`,
-                        itemTime: `ITime`,
-                        layer: 2,
-                    })
-                    : "",
-            )
+    $(selector).append(
+        data.RFID ?
+            createAccordion({
+                id: `RFID`,
+                sn: [
+                    { text: "RFID名稱", value: "IName" },
+                    { text: "RFID內碼", value: "InterCode" },
+                    { text: "RFID外碼", value: "ExterCode" },
+                    { text: "棟別", value: "Area" },
+                    { text: "樓層", value: "Floor" },
+                    { text: "定位", value: "Location" },
+                    { text: "備註", value: "Memo" },
+                ],
+                data: data.RFID,
+                itemTitleKey: `IName`,
+            })
+            : "",
+    )
+}
 
-    //let ESN = data.EquipmentReportItem.ESN;
+function MaintainInfo(selector, data) {
+    console.log("MaintainInfo data", data)
+    console.log('MaintainInfo selector', $(selector));
 
-    //$("#MaintainRecord").click(function () {
-    //    let url = `/MaintainRecord_Management/Management?ESN=${ESN}`;
-    //    window.open(url, "_blank");
-    //});
-    //$("#OtherRepairRecord").click(function () {
-    //    let url = `/RepairRecord_Management/Management?ESN=${ESN}`;
-    //    window.open(url, "_blank");
-    //});
+    $(selector).append(
+        data.SampleInfo.MaintainItems ?
+            createInspectionTable({
+                id: `MaintainInfo`,
+                sn: [
+                    { text: "保養項目/週期", value: "MaintainItems", type: "dualCol" },
+                ],
+                data: data.SampleInfo,
+            })
+            : "",
+    )
+}
+
+function InspectionInfo(selector, data) {
+    console.log("InspectionInfo data", data)
+    console.log('InspectionInfo selector', $(selector));
+
+    $(selector).append(
+        data.SampleInfo.InspectionItems ?
+            createInspectionTable({
+                id: `InspectionInfo`,
+                sn: [
+                    { text: "巡檢頻率", value: "Ifrequency", colspan: "3" },
+                    { text: "檢查項目", value: "InspectItems", colspan: "2", itemNum: "true" },
+                    { text: "填報項目名稱/單位", value: "ReportItems", type: "dualCol" },
+                ],
+                data: data.SampleInfo.InspectionItems,
+            })
+            : "",
+    )
 }

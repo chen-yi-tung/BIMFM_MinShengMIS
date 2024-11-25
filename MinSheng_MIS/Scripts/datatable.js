@@ -40,7 +40,7 @@ function createTableOuter(options) {
 function createTableInner(data, sn) {
     const nullString = "-";
     return sn.map((e) => {
-        let html;
+        let html = "";
         if (e.formatter) {
             html = `
             <tr>
@@ -77,7 +77,7 @@ function createTableInner(data, sn) {
             </tr>`;
         }
         else {
-            switch (e.value) {
+            switch (e.type) {
                 case "ImgPath":
                     html = `
                         <tr>
@@ -92,47 +92,17 @@ function createTableInner(data, sn) {
                             <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putFile(data[e.value]) : nullString}</td>
                         </tr>`;
                     break;
-                case "InspectItems": {
+                case "dualCol": {
+                    console.log("11/25 e:", e );
+                    console.log("11/25 data:", data);
+
                     const rows = data[e.value]?.length || 0;
                     if (rows === 0) {
                         html = '';
                         break;
                     }
                     const first = data[e.value][0];
-                    const isDanger = first.State === '異常';
-                    html = `
-                        <tr>
-                            <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
-                            <td class="datatable-table-td datatable-table-sort">1</td>
-                            <td class="datatable-table-td text-start ps-2">
-                                <div>${first.Item}</div>
-                            </td> 
-                            <td class="datatable-table-td" style="width: 100px;">
-                                <div class="${isDanger ? 'text-danger' : ''}">${first.State}</div>
-                            </td>
-                        </tr>
-                        ${data.InspectItems?.slice(1).map((item, i) => {
-                            const isDanger = item.State === '異常';
-                            return `<tr>
-                                <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
-                                <td class="datatable-table-td text-start ps-2">
-                                    <div>${item.Item}</div>
-                                </td>
-                                <td class="datatable-table-td" style="width: 100px;">
-                                    <div class="${isDanger ? 'text-danger' : ''}">${item.State}</div>
-                                </td>
-                            </tr>`
-                        }).join('')}
-                    `
-                }
-                    break;
-                case "ReportItems": {
-                    const rows = data[e.value]?.length || 0;
-                    if (rows === 0) {
-                        html = '';
-                        break;
-                    }
-                    const first = data[e.value][0];
+                    const isDanger = first.Value === '異常';
                     html = `
                         <tr>
                             <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
@@ -140,31 +110,62 @@ function createTableInner(data, sn) {
                             <td class="datatable-table-td text-start ps-2">
                                 <div>${first.Item}</div>
                             </td>
-                            <td class="datatable-table-td" style="width: 100px;">
-                                <div>${first.Value} ${first.Init}</div>
+                            <td class="datatable-table-td" style="width: 160px;">
+                                <div class="${isDanger ? 'text-danger' : ''}">${first.Value} ${first.Init ? first.Init : ""}</div>
                             </td>
                         </tr>
-                        ${data.ReportItems?.slice(1).map((item, i) => `
-                        <tr>
-                            <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
-                            <td class="datatable-table-td text-start ps-2">
-                                <div>${item.Item}</div>
-                            </td>
-                            <td class="datatable-table-td" style="width: 100px;">
-                                <div>${item.Value} ${item.Init}</div>
-                            </td>
-                        </tr>
-                        `).join('')}
+                        ${data[e.value]?.slice(1).map((item, i) => {
+                        const isDanger = item.Value === '異常';
+                        return `<tr>
+                                    <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
+                                    <td class="datatable-table-td text-start ps-2">
+                                        <div>${item.Item}</div>
+                                    </td>
+                                    <td class="datatable-table-td" style="width: 160px;">
+                                        <div class="${isDanger ? 'text-danger' : ''}">${item.Value} ${item.Init ? item.Init : ""}</div>
+                                    </td>
+                                </tr>
+                                `}).join('')}
                         `;
                 }
                     break;
-                default:
-                    html = `
-                        <tr>
-                            <td class="datatable-table-th">${e.text}</td>
-                            <td class="datatable-table-td" id="d-${e.value}">${data[e.value] ?? nullString}</td>
-                        </tr>`;
-                    break;
+                default: {
+                    if (e.itemNum) {
+                        //為避免後端傳來的不是陣列，若不是陣列則先轉為陣列
+                        let arr = data[e.value];
+                        if (!Array.isArray(arr)) { arr = [data[e.value]] }
+
+                        console.log("中華隊冠軍 data", data);
+                        console.log("中華隊冠軍 e", e);
+
+                        const rows = data[e.value]?.length || 0;
+                        if (rows === 0) {
+                            html = '';
+                            break;
+                        }
+                        const first = data[e.value][0];
+                        html = `<tr>
+                                    <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
+                                    <td class="datatable-table-td datatable-table-sort">1</td>
+                                    <td class="datatable-table-td text-start" id="d-${e.value}" colspan="${e.colspan}" ${e.colspan ? `colspan="${e.colspan}"` : ""}>${first.value}</td>
+                                </tr>
+
+                            ${data[e.value]?.slice(1).map((item, i) => {
+                                return `<tr>
+                                             <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
+                                             <td class="datatable-table-td text-start" id="d-${e.value}" colspan="${e.colspan}" ${e.colspan ? `colspan="${e.colspan}"` : ""}>${item.value ?? nullString}</td>
+                                        </tr>`;
+                            }).join("")}
+                        `
+                    } else {
+                        html = `
+                            <tr>
+                                <td class="datatable-table-th">${e.text}</td>
+                                <td class="datatable-table-td" id="d-${e.value}" ${e.colspan ? `colspan="${e.colspan}"` : ""}>${data[e.value] ?? nullString}</td>
+                            </tr>`;
+                    }
+                }
+                       
             }
         }
         return html;
@@ -288,6 +289,23 @@ function createAccordionOuter(options) {
  * @param {AccordionOptions} options 
  * @returns {string} Accordion
  */
+
+
+function createInspectionTable(options) {
+    if (options.data.length === 0) {
+        return "";
+    }
+    return `
+    <div class="datatable border-0 w-100">
+        <div class="datatable-body">
+            <table class="datatable-table">
+               ${createTableInner(options.data, options.sn)}
+            </table>
+        </div>
+    </div>
+    `;
+}
+
 function createAccordion(options) {
     console.log("o",options)
     if (options.data.length === 0) {
@@ -313,11 +331,12 @@ function createAccordion(options) {
  */
 function createAccordionItem(options, i) {
     console.log("createAccordionItem", options)
+    console.log("options.state", options.state)
     const subContent = `
         <div class="subDatatable ${options.className ?? ""} ${options.id === 'EquipmentItem' ? 'sub-accordion' : ''}">
             <div class="datatable-body">
                 <div class="accordion accordion-flush datatable-accordion" id="subAccordion-${options.id ?? ''}">
-                    ${createSubAccordionItem(options, i)}
+                    ${options.layer === 2 ? createSubAccordionItem(options, i) : ""}
                 </div>
             </div>
         </div>
@@ -329,8 +348,8 @@ function createAccordionItem(options, i) {
                         data-bs-toggle="collapse"
                         data-bs-target="#sub-body-${options.id}-${i}" aria-expanded="false"
                         aria-controls="body-${options.id}-${i}">
-                        <i class="fa-solid fa-clipboard-list me-1" style="color: #2C5984;"></i>
-                        ${options.data[i][options.itemTitleKey]} (${options.data[i][options.itemTime]})
+                        ${options.icon ? `<i class="fa-solid fa-${options.icon} me-1" style="color: #2C5984;"></i>` : ""}
+                        ${options.data[i][options.itemTitleKey]} ${options.itemSubTitleKey ? `(${options.data[i][options.itemSubTitleKey]})` : ""}
                     </button>
                 </h2>
                 <div id="sub-body-${options.id}-${i}" class="accordion-collapse collapse"
@@ -341,7 +360,7 @@ function createAccordionItem(options, i) {
                                 <table class="datatable-table">
                                     ${createTableInner(options.data[i], options.sn)}
                                 </table>
-                                    ${options.state === '完成' ? (options.layer === 2 ? subContent : "") : ""}
+                                    ${options.state === '完成' ? subContent : ""}
                             </div>
                         </div>
                     </div>

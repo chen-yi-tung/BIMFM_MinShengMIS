@@ -39,9 +39,9 @@
 .modal-screen-md {
 	justify-content: center;
 	height: fit-content;
-	margin: 2em 5em;
+	margin: 24px;
 	max-width: unset;
-	height: 100%;
+	height: 90%;
 }
 
 .modal-screen-md .modal-content {
@@ -49,13 +49,12 @@
 }
 
 .modal-screen-md .modal-body {
-    padding-left: 64px;
-    padding-right: 64px;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 
 .modal-screen-md .form-group-zone {
-	display: flex;
-	flex-direction: column;
+	grid-template-columns: unset;
 	gap: 16px;
 }
 
@@ -151,5 +150,26 @@
 	.datagrid-modal .datagrid {
 		min-height: calc(100vh - 7.875em);
 		min-height: calc(100dvh - 7.875em);
+	}
+}
+
+@media (min-width: 768px) {
+	.modal-screen-md .modal-body {
+		padding-left: 64px;
+		padding-right: 64px;
+	}
+	.modal-screen-md {
+		margin: 16px 5em;
+	}
+	.modal-screen-md .form-group-zone {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+@media (min-width: 992px) {
+	.modal-screen-md .form-group-zone {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.modal-screen-md {
+		margin: 3em 5em;
 	}
 }

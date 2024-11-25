@@ -144,9 +144,9 @@ function FileUploader({
         <div class="${className}">
             <label for="${id}">${label}</label>
             <div class="${buttonAreaClassName}">
-                <div class="d-flex gap-2">
-                    <div class="d-lg-contents d-flex" style="gap: 14px; min-width: fit-content;">
-                        <label for="${id}" type="button" class="btn btn-search w-lg-auto w-100 h-100 mt-0 flex-shrink-0 align-self-start">
+                <div class="d-flex gap-2 align-items-center">
+                    <div class="d-lg-contents d-flex" style="height: fit-content;">
+                        <label for="${id}" type="button" class="btn btn-search mt-0 align-self-start" style="width: max-content;">
                             ${icon ? `<i class="fa-solid fa-${icon}"></i>` : ""}
                             <span>${buttonText}</span>
                             <input id="${id}" name="${id}" type="file" class="form-file-input" 
@@ -164,14 +164,18 @@ function FileUploader({
                         <div>檔案大小不得超過 10MB。</div>
                     </div>
                 </div>
-                <hr class="hr-default">
+                <hr class="form-file-hr">
                 <div id="FileGroup" class="form-file-list"></div>
             </div>
         </div>`
     }
     const temp_item = (name) => {
         return `<div class="form-file-item" data-file-name="${name}">
-                    <a id="FileName" class="form-file-name" target="_blank"></a>
+                    <img class="form-file-preview"/>
+                    <div class="d-flex flex-column">
+                        <a id="FileName" class="form-file-name" target="_blank"></a>
+                        <div class="form-file-size"></div>
+                    </div>
                     <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
                 </div>`
     }
@@ -263,6 +267,9 @@ function FileUploader({
             let input = this.input.get(0)
             if (!multiple) { this.clearAllFile() }
             if (input.files && input.files.length !== 0) {
+                this.element.find(".form-file-hr").css("display", "block");
+                this.element.find("#FileGroup").css("display", "flex");
+
                 for (let i = 0; i < input.files.length; i++) {
                     let file = input.files[i];
                     let container = $(temp_item(file.name))
@@ -270,12 +277,32 @@ function FileUploader({
                     list.append(container);
                     this.items.push({ container, file })
 
+                    //顯示檔名+附檔名
                     let fileName = container.find("#FileName")
                     fileName.text(file.name);
                     fileName.removeAttr("href");
 
+                    //顯示檔案大小，單位換算成MB
+                    let fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                    container.find(".form-file-size").text(`${fileSizeMB} MB`);
+
+                    //顯示縮圖
+                    if (file.type.startsWith("image/")) {
+                        const reader = new FileReader(); //轉換為Base64格式
+                        reader.onload = function (event) {
+                            let img = container.find(".form-file-preview");
+                            img.attr("src", event.target.result);
+                            img.css("display", "block");
+                        };
+                        reader.readAsDataURL(file);
+                    }
+
                     this.check && this.check.prop("checked", true);
                 }
+            } else {
+                // 當沒有檔案時，隱藏<hr>
+                this.element.find(".form-file-hr").css("display", "none");
+                this.element.find("#FileGroup").css("display", "none");
             }
             input.value = null
         })
@@ -288,6 +315,8 @@ function FileUploader({
                 this.items.splice(index, 1)
             }
             if (this.items.length == 0) {
+                this.element.find(".form-file-hr").css("display", "none");
+                this.element.find("#FileGroup").css("display", "none");
                 this.check && this.check.prop("checked", false);
             }
         })

@@ -10,87 +10,89 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create" id="create">新增設備</button>
-<div class="search-area">
-    <form class="form" method="post" action="">
-        <div class="form-group">
-            <label for="EName">設備名稱</label>
-            <input class="form-control" id="EName" name="EName" type="text" />
-        </div>
+<div class="dg-tool-bar">
+    <button class="btn btn-create" id="create">新增設備</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
+            <div class="form-group">
+                <label for="EName">設備名稱</label>
+                <input class="form-control" id="EName" name="EName" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="ESN">設備編號</label>
-            <input class="form-control" id="ESN" name="ESN" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="ESN">設備編號</label>
+                <input class="form-control" id="ESN" name="ESN" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="Area">棟別</label>
-            <select class="form-select" name="Area" id="Area"></select>
-        </div>
+            <div class="form-group">
+                <label for="Area">棟別</label>
+                <select class="form-select" name="Area" id="Area"></select>
+            </div>
 
-        <div class="form-group">
-            <label for="Floor">樓層</label>
-            <select class="form-select" name="Floor" id="Floor"></select>
-        </div>
+            <div class="form-group">
+                <label for="Floor">樓層</label>
+                <select class="form-select" name="Floor" id="Floor"></select>
+            </div>
 
-        <div class="form-group">
-            <label for="Brand">設備廠牌</label>
-            <input class="form-control" id="Brand" name="Brand" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="Brand">設備廠牌</label>
+                <input class="form-control" id="Brand" name="Brand" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="Company">設備廠商</label>
-            <input class="form-control" id="Company" name="Company" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="Company">設備廠商</label>
+                <input class="form-control" id="Company" name="Company" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="Model">設備型號</label>
-            <input class="form-control" id="Model" name="Model" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="Model">設備型號</label>
+                <input class="form-control" id="Model" name="Model" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="Tel">連絡電話</label>
-            <input class="form-control" id="Tel" name="Tel" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="Tel">連絡電話</label>
+                <input class="form-control" id="Tel" name="Tel" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="Voltage">使用電壓</label>
-            <input class="form-control" id="Voltage" name="Voltage" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="Voltage">使用電壓</label>
+                <input class="form-control" id="Voltage" name="Voltage" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="Other">其他耗材資料</label>
-            <input class="form-control" id="Other" name="Other" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="Other">其他耗材資料</label>
+                <input class="form-control" id="Other" name="Other" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="InstallDateFrom">安裝日期(起)</label>
-            <input class="form-control" id="InstallDateFrom" name="InstallDateFrom" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="InstallDateFrom">安裝日期(起)</label>
+                <input class="form-control" id="InstallDateFrom" name="InstallDateFrom" type="date" />
+            </div>
 
-        <div class="form-group">
-            <label for="InstallDateTo">安裝日期(迄)</label>
-            <input class="form-control" id="InstallDateTo" name="InstallDateTo" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="InstallDateTo">安裝日期(迄)</label>
+                <input class="form-control" id="InstallDateTo" name="InstallDateTo" type="date" />
+            </div>
 
-        <div class="form-group col-2fr">
-            <label for="Memo">備註</label>
-            <input class="form-control" id="Memo" name="Memo" type="text" />
-        </div>
+            <div class="form-group col-2fr">
+                <label for="Memo">備註</label>
+                <input class="form-control" id="Memo" name="Memo" type="text" />
+            </div>
 
-        <div class="button-group">
-            <button type="button" class="btn btn-search" id="search">查詢</button>
-            <button type="button" class="btn btn-clear" id="clear">清除</button>
-        </div>
-    </form>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<div class="datagrid-area">
-    <table id="DataGrid"></table>
-</div>
+    <div class="datagrid-area">
+        <table id="DataGrid"></table>
+    </div>
 
-@section scripts {
-    <script>
+    @section scripts {
+        <script>
         //const baseUrl = '/PlanManagement/';
         var getGridJSON = '@Url.Action("EquipmentInfo_Management", "Datagrid")';
         var DataGrid;
@@ -142,12 +144,12 @@
                 idField: 'IPSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.PlanState != "待執行" })),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
                     dg.frozenColumn('FilePath', "", 111, (v, row, i) => {
                         let disabled = v == null || v == "";
-                        return dg.eventButton(i, "操作手冊", "filePath", { disabled: disabled })
+                        return dg.eventButton(i, "操作手冊", "filePath")
                     }),
-                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete", disabled: row.PlanState != "待執行" })),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
                     dg.column('EName', '設備名稱', 200),
@@ -187,5 +189,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-    </script>
-}
+        </script>
+    }

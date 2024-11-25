@@ -135,4 +135,10 @@
     --bs-btn-active-bg: var(--bs-btn-hover-bg);
     --bs-btn-active-color: var(--bs-btn-hover-color);
     --bs-btn-active-border-color: var(--bs-btn-hover-border-color);
+    display: flex;
+    gap: 4px;
+}
+
+.btn-location i {
+    align-self: center;
 }

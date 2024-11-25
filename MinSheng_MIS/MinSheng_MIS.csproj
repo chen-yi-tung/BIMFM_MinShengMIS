@@ -203,6 +203,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InquiryPlan_ManagementController.cs" />
     <Compile Include="Controllers\Maintain_ManagementController.cs" />
+    <Compile Include="Controllers\OneDeviceOneCard_ManagementController.cs" />
     <Compile Include="Controllers\PlanManagementController.cs" />
     <Compile Include="Controllers\Repair_ManagementController.cs" />
     <Compile Include="Controllers\SamplePath_ManagementController.cs" />
@@ -1506,11 +1507,13 @@
     <Content Include="Content\img\bs-logo.png" />
     <Content Include="Content\img\gis-marker.png" />
     <Content Include="Content\img\heart.svg" />
+    <Content Include="Content\img\inner-map.jpg" />
     <Content Include="Content\img\loginBG.png" />
     <Content Include="Content\img\logo.png" />
     <Content Include="Content\img\new_bg.png" />
     <Content Include="Content\img\pin.svg" />
     <Content Include="Content\img\Search.svg" />
+    <Content Include="Content\img\test.jpg" />
     <Content Include="Content\img\weather\heavy-rain.png" />
     <Content Include="Content\InformationManagement.css" />
     <Content Include="Content\login.css" />
@@ -1707,6 +1710,7 @@
     <Content Include="BimModels\02\Resource\objects_vals.json.gz" />
     <Content Include="BimModels\02\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\02\viewable.json" />
+    <Content Include="Scripts\dataTable\RFIDInfoModal.js" />
     <Content Include="Scripts\dataTable\LocationModal.js" />
     <Content Include="Scripts\dataTable\PlanRecord.js" />
     <Content Include="Scripts\Forge\ForgePin.js" />
@@ -1849,8 +1853,6 @@
     <Content Include="Views\Account_Management\Edit.cshtml" />
     <Content Include="Views\Account_Management\Delete.cshtml" />
     <Content Include="Views\Account_Management\ChangePassword.cshtml" />
-    <Content Include="Views\EquipmentInfo_Management\Detail.cshtml" />
-    <Content Include="Views\EquipmentInfo_Management\Edit.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\Disable.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\Create.cshtml" />
     <Content Include="Views\ManufacturerInfo_Management\Management.cshtml" />
@@ -1943,7 +1945,6 @@
     <Content Include="Views\Repair_Management\Create.cshtml" />
     <Content Include="Views\Repair_Management\Detail.cshtml" />
     <Content Include="Views\Repair_Management\Review.cshtml" />
-    <Content Include="Views\Maintain_Management\Create.cshtml" />
     <Content Include="Views\Maintain_Management\Detail.cshtml" />
     <Content Include="Views\Maintain_Management\Index.cshtml" />
     <Content Include="Views\Maintain_Management\Review.cshtml" />
@@ -1958,6 +1959,14 @@
     <Content Include="Views\PlanManagement\Edit.cshtml" />
     <Content Include="Views\PlanManagement\Detail.cshtml" />
     <Content Include="Views\PlanManagement\Delete.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Detail.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Edit.cshtml" />
+    <Content Include="Views\EquipmentInfo_Management\Delete.cshtml" />
+    <Content Include="Views\OneDeviceOneCard_Management\Create.cshtml" />
+    <Content Include="Views\OneDeviceOneCard_Management\Delete.cshtml" />
+    <Content Include="Views\OneDeviceOneCard_Management\Detail.cshtml" />
+    <Content Include="Views\OneDeviceOneCard_Management\Edit.cshtml" />
+    <Content Include="Views\OneDeviceOneCard_Management\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Datagrid\" />

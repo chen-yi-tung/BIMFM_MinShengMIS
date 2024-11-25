@@ -76,6 +76,7 @@ input[type=radio] {
     flex-direction: column;
     width: -webkit-fill-available;
     color: #919191;
+    font-size: 14px;
 }
 
 @keyframes fade-in {

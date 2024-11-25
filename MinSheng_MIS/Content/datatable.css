@@ -4,7 +4,7 @@
     --datatable-body-bg: #F3FBFF;
     --datatable-border-color: #8A9BA5;
     --datatable-border-width: 1px;
-    --datatable-accordion-header-bg: #D7E5F5;
+    --datatable-accordion-header-bg: #bfddff;
     --datatable-accordion-header-color: #3D3D3D;
     border-color: var(--datatable-border-color);
     border-style: solid;
@@ -104,7 +104,7 @@ th.datatable-header,
 .datatable-table .datatable-table-th {
     border-right-width: var(--datatable-border-width);
     width: 30%;
-    background-color: var(--datatable-accordion-header-bg);
+    background-color: #d5e9ff;
 }
 
 .subDatatable .datatable-table .datatable-table-th {

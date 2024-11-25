@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "設備 詳情";
+    ViewBag.Title = "設備 刪除";
 }
 @section styles {
     <script src="/Scripts/datatable.js" defer></script>
@@ -70,6 +70,11 @@
         </div>
     </div>
 </section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
+</div>
             
 
 
@@ -81,6 +86,7 @@
         let apiUrl = null;
 
         $(async function () {
+            addButtonEvent();
             readData(apiUrl);
         })
 
@@ -268,7 +274,7 @@
                 $("#OriginalInfo").append(createTableInner(res, SerializedName));
                 $("#SampleInfo").append(createTableInner(res.SampleInfo, SampleName));
                 $("#AddField").append(createTableInner(preprocessedData, fakeData.SampleInfo.AddField));
-               
+
 
                 EquipmentRFID("#EquipmentRFID", res);
                 MaintainInfo("#MaintainInfo", res);
@@ -280,7 +286,23 @@
             }
         }
 
-        
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+            $("#delete").click(function () {
+                let PSSN = $("#PSSN").val();
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
+                    data: PSSN,
+                    onSuccess() {
+                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
+                        window.location.href = url;
+                    }
+                })
+            });
+        }
+
 
     </script>
 }

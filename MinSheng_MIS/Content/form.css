@@ -32,7 +32,7 @@
 }
 
 .form-file-list{
-    display: flex;
+    display: none;
     flex-direction: column;
     text-align: left;
     align-items: center;
@@ -46,27 +46,37 @@
     justify-content: space-between;
     text-align: left;
     border-radius: 0.5rem;
-    padding: 0.15rem 0.5rem;
     background-color: rgba(255, 255, 255, 0.25);
     width: 100%;
+    gap: 8px;
 }
 
 .form-file-name {
     display: inline-block;
     word-wrap: break-word !important;
     word-break: break-word !important;
-    margin: 0.375rem;
     margin-right: 0.5rem;
 }
 
 .form-file-name,
 .form-file-name:hover {
     text-decoration: none;
-    color: #fff;
+    color: #000E22;
 }
 
 .form-file-name[href]:hover {
     color: #44BCC2;
+}
+
+.form-file-size {
+    color: #AEAEAE;
+}
+
+.form-file-preview {
+    display: none;
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 5px;
 }
 
 
@@ -156,7 +166,7 @@
 .edit-button-area {
     display: flex;
     justify-content: center;
-    gap: 14px;
+    gap: 8px;
     width: 100%;
 }
 
@@ -170,19 +180,19 @@
     background: rgba(21, 52, 85, 0.5);
     width: 100%;
     padding: 1rem;
-    row-gap: 24px;
+    row-gap: 16px;
     display: flex;
     flex-direction: column;
     border-radius: 5px;
     padding: 1rem 1.5rem;
 }
 
-.edit-area-sm .form {
+/*.edit-area-xs .form {
     width: 576px;
-}
+}*/
 
 .edit-area .form-group-zone {
-    gap: 24px 32px;
+    gap: 8px 32px;
 }
 
 .edit-area-hr {
@@ -218,6 +228,9 @@
     content: '';
 }
 
+.form-control, .form-select {
+    border-radius: 0;
+}
 .edit-area label {
     grid-column-start: 1;
     color: white;
@@ -228,7 +241,6 @@
 .edit-area .form-control,
 .edit-area .form-select {
     grid-column-start: 2;
-    border-radius: 0;
     color: #7E7E7E;
 }
 
@@ -254,6 +266,14 @@
     width: 100%;
     color: #FFF;
     border-width: medium;
+}
+
+.form-file-hr {
+    display: none;
+    color: #C8E0F4;
+    width: 100%;
+    opacity: 1;
+    margin: 0;
 }
 
 .hr-dashed {
@@ -365,35 +385,40 @@
     background-color: #F3FBFF;
 }
 
-.edit-area-md {
-    width: 100%;
-    max-width: 855px;
-    margin: auto;
-}
-
 .edit-area-lg {
     width: 100%;
     max-width: 1094px;
     margin: auto;
 }
 
-.form-scan {
-    display: flex;
-    flex-direction: column;
+.edit-area-md {
+    width: 100%;
+    max-width: 855px;
+    margin: auto;
 }
 
-.form-scan label, .form-scan button {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+.edit-area-sm {
+    width: 100%;
+    max-width: 700px;
+    margin: auto;
 }
 
 .group-title {
-    color: #CCFCFF;
+    color: #80EBD9;
     font-weight: 500;
+    font-size: 24px
 }
 
-.edit-area-sm .form-group-zone {
+.group-sb-title {
+    display: flex;
+    color: #CCFCFF;
+    font-size: 18px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.edit-area-xs .form-group-zone {
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
@@ -419,6 +444,19 @@
 .zone-title {
     color: #80EBD9;
     font-size: 20px;
+}
+
+.edit-item-init {
+    display: grid;
+    /* flex-direction: row;*/
+    gap: 12px;
+    background: rgb(255, 255, 255, 0.5);
+    border-radius: 5px;
+    padding: 8px;
+    grid-template-columns: 2fr 1fr;
+}
+.edit-item-init .form-control {
+    grid-column-start: unset;
 }
 
 @media (max-width: 768px) {
@@ -479,7 +517,7 @@
         width: calc(100% / 3 * 3);
     }*/
 
-        .edit-area.edit-area-small {
+        .edit-area.edit-area-xs {
             max-width: 816px;
             margin-left: auto;
             margin-right: auto;
