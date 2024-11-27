@@ -363,6 +363,7 @@
     font-size: 18px;
     padding: 5px 12px;
     margin-top: 16px;
+    width: fit-content;
 }
 
 .detail-info {
@@ -416,6 +417,7 @@
     gap: 8px;
     align-items: center;
     margin-bottom: 8px;
+    width: 100%;
 }
 
 .edit-area-xs .form-group-zone {
@@ -456,6 +458,29 @@
     grid-template-columns: 2fr 1fr;
 }
 .edit-item-init .form-control {
+    grid-column-start: unset;
+}
+
+.report-item-init {
+    display: grid;
+    grid-template-columns: 5fr 2fr 24px;
+    color: #FFF;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+.key-value-pair {
+    display: grid;
+    grid-template-columns: 5fr 2fr;
+    background: rgb(255, 255, 255, 0.5);
+    border-radius: 4px;
+    padding: 8px;
+    align-items: center;
+    width: 100%;
+}
+
+.key-value-pair .form-control {
     grid-column-start: unset;
 }
 

@@ -1,0 +1,252 @@
+﻿@{
+    ViewBag.Title = "新增 一機一卡模板";
+}
+@section styles {
+    <script src="/Content/easyui/jquery.min.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
+
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    <div class="edit-area edit-area-sm flex-lg-row">
+        <form class="form">
+            <div class="form-group-zone">
+                <div class="form-group required">
+                    <label for="SampleName">模板名稱</label>
+                    <input type="text" class="form-control" name="SampleName" id="SampleName" maxlength="20" required>
+                </div>
+            </div>
+            <hr class="hr-default" />
+            <div class="d-flex flex-column w-100 align-items-center">
+                <div class="group-sb-title">
+                    <i class="fa-solid fa-map-pin"></i>
+                    <div>增設基本資料欄位</div>
+                </div>
+                <div class="d-flex flex-column gap-2 w-100" id="AddItemsArea">
+                    <div class="d-flex gap-3 align-items-center">
+                        <input type="text" class="form-control" name="AddItemName" id="AddItemName" />
+                        <button type="button" class="btn-delete-item"></button>
+                    </div>
+                </div>
+                <button type="button" class="addItemBtn" onclick="addTemplateItem('AddItemsArea')"><i class="fa-solid fa-plus"></i></button>
+            </div>
+
+            <div class="d-flex flex-column w-100 align-items-center">
+                <div class="group-sb-title">
+                    <i class="fa-solid fa-map-pin"></i>
+                    <div>保養項目名稱</div>
+                </div>
+                <div class="d-flex flex-column gap-2 w-100" id="MaintainItemsArea">
+                    <div class="d-flex gap-3 align-items-center">
+                        <input type="text" class="form-control" name="MaintainName" id="MaintainName" />
+                        <button type="button" class="btn-delete-item"></button>
+                    </div>
+                </div>
+                <button type="button" class="addItemBtn" onclick="addTemplateItem('MaintainItemsArea')"><i class="fa-solid fa-plus"></i></button>
+            </div>
+
+            <div class="d-flex flex-column w-100 align-items-center">
+                <div class="group-sb-title">
+                    <i class="fa-solid fa-map-pin"></i>
+                    <div>巡檢項目設定</div>
+                </div>
+                <div class="d-flex flex-column gap-2 w-100" id="item-area">
+                    <div class="form-group d-grid" style="grid-template-columns: 1fr 24px; column-gap: 1rem; ">
+                        <label for="Ifrequency">巡檢頻率</label>
+                        <div></div>
+                        <select class="form-select" style="grid-column-start: unset;">
+                            <option value="1">1小時</option>
+                            <option value="2">2小時</option>
+                            <option value="3">3小時</option>
+                            <option value="4">4小時</option>
+                            <option value="5">6小時</option>
+                            <option value="6">8小時</option>
+                            <option value="7">12小時</option>
+                            <option value="8">24小時</option>
+                        </select>
+                    </div>
+                    <div class="form-group d-flex flex-column align-items-center">
+                        <label for="InspectItemName" class="w-100">檢查項目名稱</label>
+                        <div class="d-flex flex-column gap-2 w-100" id="InspectItemsArea">
+                            <div class="d-flex gap-3 align-items-center">
+                                <input type="text" class="form-control" name="InspectItemName-1" id="InspectItemName-1" maxlength="20">
+                                <button type="button" class="btn-delete-item"></button>
+                            </div>
+                        </div>
+                        <button type="button" class="addItemBtn" onclick="addTemplateItem('InspectItemsArea')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group d-flex flex-column align-items-center w-100">
+                    <label for="" class="w-100">填報項目名稱/單位</label>
+                    <div class="d-flex flex-column gap-2" id="ReportItemsArea">
+                        <div class="d-flex gap-3 align-items-center">
+                            <div class="key-value-pair gap-2">
+                                <input type="text" class="form-control" name="ReportItemName-1" id="ReportItemName-1" maxlength="20" placeholder="檢查項目名稱">
+                                <input type="text" class="form-control" name="ReportItemInit-1" id="ReportItemInit-1" maxlength="20" placeholder="單位">
+                            </div>
+                            <button type="button" class="btn-delete-item"></button>
+                        </div>
+                    </div>
+                    <button type="button" class="addItemBtn" onclick="addTemplateItem('ReportItemsArea')"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">新增</button>
+</div>
+
+
+@section scripts {
+    <script>
+        const IPSN = '@ViewBag.id';
+        ////let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
+        let apiUrl = null;
+        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
+        let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
+        let sampleTr;
+
+        $(async function () {
+            addButtonEvent();
+            delTemplateItem();
+            //await addDropDownList();
+            //await addAreaFloorEvent();
+            readData(apiUrl);
+        })
+
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                console.log("fakeData", fakeData);
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+                fakeData = res;
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            let data = getCreateSaveData(IPSN);
+
+            console.log(data);
+
+            if (!data) return;
+
+            $.ajax({
+                url: SubmitUrl,
+                data: JSON.stringify(data),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` })
+            }
+        }
+
+        function deleteIP() {
+            $.ajax({
+                url: delUrl,
+                type: "DELETE",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "刪除成功！",
+                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
+            }
+        }
+
+        function addTemplateItem(zoneID) {
+            let itemArea = document.getElementById(zoneID);
+            let addButton = itemArea.parentElement.querySelector('.addItemBtn');
+
+            if (itemArea.children.length < 100) {
+                if (zoneID === "ReportItemsArea") {
+                    itemArea.insertAdjacentHTML('beforeend', `
+                        <div class="d-flex gap-3 align-items-center">
+                            <div class="key-value-pair gap-2">
+                                <input type="text" class="form-control" name="ReportItemName-1" id="ReportItemName-1" maxlength="20" placeholder="檢查項目名稱">
+                                <input type="text" class="form-control" name="ReportItemInit-1" id="ReportItemInit-1" maxlength="20" placeholder="單位">
+                            </div>
+                            <button type="button" class="btn-delete-item"></button>
+                        </div>
+                    `);
+                } else {
+                    itemArea.insertAdjacentHTML('beforeend', `
+                        <div class="d-flex gap-3 align-items-center">
+                            <input type="text" class="form-control" />
+                            <button type="button" class="btn-delete-item"></button>
+                        </div>
+                    `);
+                }
+                delTemplateItem(zoneID);
+            }
+
+            //新增上限為100筆
+            if (itemArea.children.length >= 100 && addButton) {
+                addButton.remove();
+            }
+        }
+
+        function delTemplateItem(zoneID) {
+            const itemArea = document.getElementById(zoneID);
+            const delBtns = document.querySelectorAll('.btn-delete-item');
+
+            delBtns.forEach(button => {
+                button.onclick = function () {
+                    button.parentElement.remove();
+                    if (itemArea) {
+                        if (itemArea.children.length < 100 && !itemArea.parentElement.querySelector('.addItemBtn')) {
+                            let newButton = document.createElement('button');
+                            newButton.type = 'button';
+                            newButton.className = 'addItemBtn';
+                            newButton.innerHTML = '<i class="fa-solid fa-plus"></i>';
+                            newButton.setAttribute('onclick', `addTemplateItem('${zoneID}')`);
+                            itemArea.parentElement.appendChild(newButton);
+                        }
+                    }
+                };
+            });
+        }
+    </script>
+}

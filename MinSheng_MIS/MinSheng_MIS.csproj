@@ -1710,6 +1710,7 @@
     <Content Include="BimModels\02\Resource\objects_vals.json.gz" />
     <Content Include="BimModels\02\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\02\viewable.json" />
+    <Content Include="Scripts\dataTable\OneDeviceOneCard.js" />
     <Content Include="Scripts\dataTable\RFIDInfoModal.js" />
     <Content Include="Scripts\dataTable\LocationModal.js" />
     <Content Include="Scripts\dataTable\PlanRecord.js" />
@@ -1963,10 +1964,10 @@
     <Content Include="Views\EquipmentInfo_Management\Edit.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\Delete.cshtml" />
     <Content Include="Views\OneDeviceOneCard_Management\Create.cshtml" />
-    <Content Include="Views\OneDeviceOneCard_Management\Delete.cshtml" />
-    <Content Include="Views\OneDeviceOneCard_Management\Detail.cshtml" />
-    <Content Include="Views\OneDeviceOneCard_Management\Edit.cshtml" />
     <Content Include="Views\OneDeviceOneCard_Management\Index.cshtml" />
+    <Content Include="Views\OneDeviceOneCard_Management\Edit.cshtml" />
+    <Content Include="Views\OneDeviceOneCard_Management\Detail.cshtml" />
+    <Content Include="Views\OneDeviceOneCard_Management\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Datagrid\" />

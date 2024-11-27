@@ -1,0 +1,127 @@
+﻿@{
+    ViewBag.Title = "一機一卡模板管理";
+}
+@section styles {
+    @Html.Partial("DataGridScripts")
+
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="dg-tool-bar">
+    <button class="btn btn-create" id="create">新增模板</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
+            <div class="form-group">
+                <label for="IPName">模板名稱</label>
+                <input class="form-control" id="IPName" name="IPName" type="text" />
+            </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+@section scripts {
+    <script>
+        //const baseUrl = '/PlanManagement/';
+        var getGridJSON = '@Url.Action("PlanManagement_Management", "Datagrid")';
+        var DataGrid;
+
+        const fakeData = [
+            {
+                IPSN: "P23010401",
+                SamplePath: "前處理機房巡檢",
+                AddItemsNum: '10',
+                MaintainNum: "2",
+                InspectNum: "3",
+                LastUpdater: "任趙仁",
+                LastUpdateTime: "2023/06/08 16:04",
+            },
+            {
+                IPSN: "P23010401",
+                SamplePath: "前處理機房巡檢",
+                AddItemsNum: '16',
+                MaintainNum: "3",
+                InspectNum: "6",
+                LastUpdater: "黃欣",
+                LastUpdateTime: "2023/06/09 13:21",
+            },
+            {
+                IPSN: "P23010401",
+                SamplePath: "前處理機房巡檢",
+                AddItemsNum: '6',
+                MaintainNum: "4",
+                InspectNum: "8",
+                LastUpdater: "王大明",
+                LastUpdateTime: "2023/06/11 17:30",
+            },
+        ]
+
+        $(async function () {
+            await
+            //await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
+            Initialize_DataGrid(getGridJSON);
+            addSearchAreaClickEvent();
+        });
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                //url: getGridJSON,
+                data: fakeData,
+                //method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'IPSN',
+                remoteSort: true,
+                frozenColumns: [[
+                    dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete"})),
+                ]],
+                columns: [[
+                    dg.column('SamplePath', '模板名稱', 300),
+                    dg.column('AddItemsNum', '變動屬性欄位數量', 200),
+                    dg.column('MaintainNum', '保養項目數量', 200),
+                    dg.column('InspectNum', '巡檢項目數量', 200),
+                    dg.column('LastUpdater', '最後更新者', 200),
+                    dg.column('LastUpdateTime', '最後更新時間', 200),
+                ]]
+            })
+            dg.addEvent("detail", function (row, i) {
+                window.open(`${baseUrl}/Detail/${row.IPSN}`, "_blank")
+            })
+            dg.addEvent("edit", function (row, i) {
+                window.open(`${baseUrl}/Edit/${row.IPSN}`, "_self")
+            })
+            dg.addEvent("delete", function (row, i) {
+                window.open(`${baseUrl}/Delete/${row.IPSN}`, "_self")
+            })
+        }
+
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#clear").click(function () {
+                $(".search-area form")[0].reset();
+            });
+
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+
+            $("#create").click(function () {
+                window.open(`${baseUrl}/Create`, "_self");
+            });
+        }
+    </script>
+}

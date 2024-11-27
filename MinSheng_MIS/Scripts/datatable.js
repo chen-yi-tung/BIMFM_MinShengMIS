@@ -93,9 +93,6 @@ function createTableInner(data, sn) {
                         </tr>`;
                     break;
                 case "dualCol": {
-                    console.log("11/25 e:", e );
-                    console.log("11/25 data:", data);
-
                     const rows = data[e.value]?.length || 0;
                     if (rows === 0) {
                         html = '';
@@ -134,9 +131,6 @@ function createTableInner(data, sn) {
                         //為避免後端傳來的不是陣列，若不是陣列則先轉為陣列
                         let arr = data[e.value];
                         if (!Array.isArray(arr)) { arr = [data[e.value]] }
-
-                        console.log("中華隊冠軍 data", data);
-                        console.log("中華隊冠軍 e", e);
 
                         const rows = data[e.value]?.length || 0;
                         if (rows === 0) {

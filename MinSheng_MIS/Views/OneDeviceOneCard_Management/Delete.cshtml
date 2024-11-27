@@ -1,0 +1,214 @@
+﻿@{
+    ViewBag.Title = "一機一卡模板 刪除";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/dataTable/OneDeviceOneCard.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    <div class="info-area edit-area-md">
+        <div class="d-flex flex-column gap-2 w-100">
+            <div class="datatable">
+                <div class="datatable-body">
+                    <table class="datatable-table" id="SampleInfo"></table>
+                </div>
+            </div>
+            <hr class="hr-default">
+            <div class="d-flex flex-column w-100">
+                <div class="group-sb-title">
+                    <i class="fa-solid fa-map-pin"></i>
+                    <div>增設基本資料欄位</div>
+                </div>
+                <div class="datatable">
+                    <div class="datatable-body">
+                        <table class="datatable-table" id="AddField"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column w-100">
+                <div class="group-sb-title">
+                    <i class="fa-solid fa-map-pin"></i>
+                    <div>保養資訊</div>
+                </div>
+                <div class="datatable">
+                    <div class="datatable-body">
+                        <table class="datatable-table" id="MaintainInfo"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column w-100">
+                <div class="group-sb-title">
+                    <i class="fa-solid fa-map-pin"></i>
+                    <div>巡檢資訊</div>
+                </div>
+                <div class="datatable">
+                    <div class="datatable-body">
+                        <table class="datatable-table" id="InspectionInfo"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
+</div>        
+
+
+
+@section scripts {
+    <script>
+        const IPRSN = '@ViewBag.id';
+        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${IPRSN}`;
+        let apiUrl = null;
+
+        $(async function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
+
+
+        const fakeData = {
+            SN: "000123",
+            SampleName: "電燈",
+            AddField: [
+                {
+                    SN: "F0001",
+                    value: "馬力數",
+                },
+                {
+                    SN: "F0002",
+                    value: "起動方式",
+                },
+                {
+                    SN: "F0003",
+                    value: "額定電流",
+                },
+                {
+                    SN: "F0004",
+                    value: "油料編號",
+                },
+            ],
+            MaintainItems: [
+                {
+                    SN: "I0001",
+                    value: "外部清潔與保養",
+                },
+                {
+                    SN: "I0002",
+                    value: "各部螺絲鎖定",
+                },
+                {
+                    SN: "I0003",
+                    value: "檢查管路是否通暢",
+                },
+                {
+                    SN: "I0004",
+                    value: "軸承潤滑油添加",
+                },
+            ],
+            InspectionItems: {
+                Ifrequency: "1小時",
+                InspectItems: [
+                    {
+                        SN: "000123",
+                        value: "馬達是否正常運轉"
+                    },
+                    {
+                        SN: "000124",
+                        value: "管線是否正常無漏液"
+                    },
+                    {
+                        SN: "000125",
+                        value: "出口端是否正常出藥"
+                    },
+                    {
+                        SN: "000126",
+                        value: "設備是否正常無漏水"
+                    },
+                ],
+                ReportItems: [
+                    {
+                        SN: "I0001",
+                        Item: "馬達電壓",
+                        Value: "v"
+                    },
+                    {
+                        SN: "I0002",
+                        Item: "電流",
+                        Value: "A"
+                    },
+                    {
+                        SN: "I0003",
+                        Item: "水壓",
+                        Value: "Pa"
+                    },
+                    {
+                        SN: "I0004",
+                        Item: "流量",
+                        Value: "CMH"
+                    },
+                ]
+            }
+        }
+
+        // 預處理函式：將陣列轉為物件結構
+        function preprocessData(array) {
+            const result = {};
+            array.forEach((item) => {
+                result[item.value] = item.value;
+                result[item.text] = item.text;
+            });
+            return result;
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log(res);
+
+                SampleInfo('#SampleInfo', res);
+                AddField('#AddField', res);
+                MaintainInfo("#MaintainInfo", res);
+                InspectionInfo("#InspectionInfo", res);
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+    $("#back").click(function () {
+        history.back();
+    });
+    $("#delete").click(function () {
+        let PSSN = $("#PSSN").val();
+        createDeleteDialog({
+            url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
+            data: PSSN,
+            onSuccess() {
+                let url = '@Url.Action("Index", "SampleSchedule_Management")';
+                window.location.href = url;
+            }
+        })
+    });
+}
+
+
+    </script>
+}
