@@ -107,18 +107,18 @@
                     <form class="form w-100 p-0">
                         <div class="form-group-zone">
                             <div class="form-group col-3fr required">
-                                <label for="PlanName">預計保養日期</label>
-                                <input type="date" class="form-control" name="PlanName" id="PlanName" maxlength="20" required>
+                                <label for="Modal_ShouldMaintainDate">預計保養日期</label>
+                                <input type="date" class="form-control" name="Modal_ShouldMaintainDate" id="Modal_ShouldMaintainDate" maxlength="20" required>
                             </div>
                             <div class="form-group col-3fr required">
-                                <label for="PlanDate">執行人員</label>
-                                <select type="text" class="form-select" name="UserID" id="UserID" required></select>
+                                <label for="Modal_UserID">執行人員</label>
+                                <select type="text" class="form-select" name="Modal_UserID" id="Modal_UserID" required></select>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal" id="modal_back">返回</button>
                     <button type="button" class="btn btn-export" id="add-row">確定</button>
                 </div>
             </div>
@@ -135,7 +135,7 @@
             {
                 State: "待派工",
                 MSN: "P23010401",
-                ShouldMaintainDate: '2023/01/04',
+                ShouldMaintainDate: '2023/01/03',
                 MaintainDate: "2023/01/04",
                 EState: "正常",
                 Area: "進流抽水站",
@@ -224,8 +224,9 @@
                     { field: 'ck', checkbox: true }, // 新增 checkbox
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_review', (v, row, i) => dg.eventButton(i, "審核", "review", { disabled: row.State != "待審核" })),
+                    //dg.frozenColumn('_assign', (v, row, i) => dg.eventButton(i, "派工", "assign", { disabled: row.State != "待派工", className: "btn btn-datagrid btn-other" })),
                     dg.frozenColumn('_assign', (v, row, i) =>
-                        `<button onclick="dg.eventButton(${i}, '派工', '_assign')" ${row.State !== "待派工" ? "disabled" : ""} class="btn btn-datagrid btn-other" data-bs-toggle="modal" data-bs-target="#addMultiAssign" data-title="定期保養單 派工">派工</button>`)
+                        `<button ${row.State !== "待派工" ? "disabled" : ""} class="btn btn-datagrid btn-other" data-bs-toggle="modal" data-bs-target="#addMultiAssign" data-title="定期保養單 派工" data-date="${row.ShouldMaintainDate}">派工</button>`)
                 ]],
                 columns: [[
                     dg.column('State', '保養單狀態', 150),
@@ -253,10 +254,28 @@
         // 判斷被點擊的按鈕(批量派工/派工)，更換modal標題
         document.getElementById('addMultiAssign').addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
+            console.log("button", button)
             var title = button.getAttribute('data-title');
+            console.log("title", title)
+            
+            var date = button.getAttribute('data-date').replace(/\//g, '-');
+            console.log("date", date)
+
             var modalTitle = document.querySelector('#addMultiAssign h2');
             modalTitle.textContent = title;
+           
+
+            var dateInput = document.getElementById('Modal_ShouldMaintainDate');
+            console.log("dateInput", dateInput)
+            dateInput.value = date || ''; 
         })
+
+        var backButton = document.getElementById('modal_back');
+        backButton.addEventListener('click', function () {
+            var dateInput = document.getElementById('Modal_ShouldMaintainDate');
+            dateInput.value = '';
+        });
+            
 
         //search area onClick Function
         function addSearchAreaClickEvent() {

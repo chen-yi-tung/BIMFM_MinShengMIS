@@ -193,21 +193,21 @@
         }
 
         function addButtonEvent() {
-    $("#back").click(function () {
-        history.back();
-    });
-    $("#delete").click(function () {
-        let PSSN = $("#PSSN").val();
-        createDeleteDialog({
-            url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
-            data: PSSN,
-            onSuccess() {
-                let url = '@Url.Action("Index", "SampleSchedule_Management")';
-                window.location.href = url;
-            }
-        })
-    });
-}
+            $("#back").click(function () {
+                history.back();
+            });
+            $("#delete").click(function () {
+                let PSSN = $("#PSSN").val();
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
+                    data: PSSN,
+                    onSuccess() {
+                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
+                        window.location.href = url;
+                    }
+                })
+            });
+        }
 
 
     </script>
