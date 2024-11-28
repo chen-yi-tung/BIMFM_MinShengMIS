@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "庫存品項 詳情";
+}
+@section styles {
+    @Html.Partial("DataGridScripts")
+    <link rel="stylesheet" href="/Content/datagrid-modal.css">
+    <link rel="stylesheet" href="~/Content/datatable.css">
+    <script src="/Scripts/datagrid-management.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/datatable.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table" id="PlanDetail"></table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
+
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("EquipmentInfo_Management", "Datagrid")';
+        var DataGrid;
+        const IPSN = '@ViewBag.id';
+        let apiUrl = null;
+
+        $(async function () {
+            readData(apiUrl);
+            await
+            Initialize_DataGrid(fakeData.Log);
+        })
+        const SerializedName = [
+            { text: "類別", value: "Type" },
+            { text: "品項名稱", value: "SName" },
+            { text: "狀態", value: "Status" },
+            { text: "數量", value: "Num" },
+            { text: "單位", value: "Init" },
+            { text: "警戒值", value: "WarningVal" },
+        ]
+        let fakeData = {
+            SIRSN: "1120301001",
+            Type: "潤滑劑",
+            SName: "軸承潤滑劑",
+            Status: "低於警戒值",
+            Num: "18",
+            Init: "罐",
+            WarningVal: "20",
+            Log: [
+                {
+                    DateTime: "2023/03/14 12:40:56",
+                    Registrant: "李偉唐",
+                    InboundNum: "8",
+                    Document: "採購單據.jpg",
+                    Taker: "王巧子",
+                    OutboundNum: "-",
+                    StockNum: "18",
+                    Memo: "備註備註備註",
+                },
+                {
+                    DateTime: "2023/03/14 12:40:56",
+                    Registrant: "李偉唐",
+                    InboundNum: "8",
+                    Document: "採購單據.jpg",
+                    Taker: "王巧子",
+                    OutboundNum: "-",
+                    StockNum: "18",
+                    Memo: "備註備註備註",
+                },
+                {
+                    DateTime: "2023/03/14 12:40:56",
+                    Registrant: "李偉唐",
+                    InboundNum: "8",
+                    Document: "採購單據.jpg",
+                    Taker: "王巧子",
+                    OutboundNum: "-",
+                    StockNum: "18",
+                    Memo: "備註備註備註",
+                },
+            ]
+        }
+
+        function Initialize_DataGrid(getGridJSON) {
+            let dg = new DG();
+            DataGrid = dg.init("#DataGrid", {
+                //url: getGridJSON,
+                data: getGridJSON,
+                //method: 'POST',
+                queryParams: getQueryParams(),
+                idField: 'IPSN',
+                columns: [[
+                    dg.column('DateTime', '日期時間', 220),
+                    dg.column('Registrant', '登記人', 160),
+                    dg.column('InboundNum', '入庫數量', 140),
+                    dg.formatColumn('Document', '採購單據', 300, function (val, row, index) {
+                        return `<a href="#" class="" >${row.Document}</a>`;
+                    }),
+                    dg.column('Taker', '取用人', 160),
+                    dg.column('OutboundNum', '出庫數量', 140),
+                    dg.column('StockNum', '庫存數量', 140),
+                    dg.column('Memo', '備註', 300),
+                ]]
+            })
+        }
+
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log("res", res);
+                const tableRow = createTableInner(res, SerializedName);
+                $("#PlanDetail").append(tableRow);
+
+                if (res.Status === "低於警戒值") {
+                    $("#PlanDetail").find('#d-Status').css("color", "red");
+                }
+
+                if (res.WarningVal > res.Num) {
+                    $("#PlanDetail").find('#d-Num').css("color", "red");
+                }
+            }
+
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+
+    </script>
+}

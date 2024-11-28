@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "庫存品項 刪除";
+}
+@section styles {
+    @Html.Partial("DataGridScripts")
+    <link rel="stylesheet" href="/Content/datagrid-modal.css">
+    <link rel="stylesheet" href="~/Content/datatable.css">
+    <script src="/Scripts/datatable.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table" id="PlanDetail"></table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-delete" id="delete">刪除</button>
+</div>
+
+@section scripts {
+    <script>
+        const IPSN = '@ViewBag.id';
+        let apiUrl = null;
+
+        $(async function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
+        const SerializedName = [
+            { text: "類別", value: "Type" },
+            { text: "品項名稱", value: "SName" },
+            { text: "單位", value: "Init" },
+            { text: "警戒值", value: "WarningVal" },
+        ]
+        let fakeData = {
+            SIRSN: "1120301001",
+            Type: "潤滑劑",
+            SName: "軸承潤滑劑",
+            Init: "罐",
+            WarningVal: "20",
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })
+
+            function onSuccess(res) {
+                console.log("res", res);
+                $("#PlanDetail").append(createTableInner(res, SerializedName));
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            });
+            $("#delete").click(function () {
+                let PSSN = $("#PSSN").val();
+                createDeleteDialog({
+                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
+                    data: PSSN,
+                    onSuccess() {
+                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
+                        window.location.href = url;
+                    }
+                })
+            });
+        }
+
+    </script>
+}

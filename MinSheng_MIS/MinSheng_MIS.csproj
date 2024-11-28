@@ -208,6 +208,7 @@
     <Compile Include="Controllers\Repair_ManagementController.cs" />
     <Compile Include="Controllers\SamplePath_ManagementController.cs" />
     <Compile Include="Controllers\SampleSchedule_ManagementController.cs" />
+    <Compile Include="Controllers\Stock_ManagementController.cs" />
     <Compile Include="Controllers\TestingAndAnalysisWorkflowController.cs" />
     <Compile Include="Controllers\LaboratoryLabel_ManagementController.cs" />
     <Compile Include="Controllers\LaboratoryMaintenance_ManagementController.cs" />
@@ -1711,6 +1712,7 @@
     <Content Include="BimModels\02\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\02\viewable.json" />
     <Content Include="Scripts\dataTable\OneDeviceOneCard.js" />
+    <Content Include="Scripts\dataTable\RFIDResultModal.js" />
     <Content Include="Scripts\dataTable\RFIDInfoModal.js" />
     <Content Include="Scripts\dataTable\LocationModal.js" />
     <Content Include="Scripts\dataTable\PlanRecord.js" />
@@ -1794,6 +1796,7 @@
     <Content Include="Views\MaintainRecord_Management\Management.cshtml" />
     <Content Include="Views\MaintainRecord_Management\Read.cshtml" />
     <Content Include="Views\MaintainRecord_Management\Supplement.cshtml" />
+    <Content Include="Views\Stock_Management\CreateInbound.cshtml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1887,7 +1890,7 @@
     <Content Include="Views\StockIn_Management\Management.cshtml" />
     <Content Include="Views\StockIn_Management\Create.cshtml" />
     <Content Include="Views\StockIn_Management\Read.cshtml" />
-    <Content Include="Views\Stock_Management\Management.cshtml" />
+    <Content Include="Views\Stock_Management\Index.cshtml" />
     <Content Include="Views\Stock_Management\Read.cshtml" />
     <Content Include="Views\Stock_Management\MinStockAmountSetting.cshtml" />
     <Content Include="Views\StoresRequisition_Management\Management.cshtml" />
@@ -1968,6 +1971,11 @@
     <Content Include="Views\OneDeviceOneCard_Management\Edit.cshtml" />
     <Content Include="Views\OneDeviceOneCard_Management\Detail.cshtml" />
     <Content Include="Views\OneDeviceOneCard_Management\Delete.cshtml" />
+    <Content Include="Views\Stock_Management\Create.cshtml" />
+    <Content Include="Views\Stock_Management\Edit.cshtml" />
+    <Content Include="Views\Stock_Management\Detail.cshtml" />
+    <Content Include="Views\Stock_Management\Delete.cshtml" />
+    <Content Include="Views\Stock_Management\CreateOutbound.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Datagrid\" />

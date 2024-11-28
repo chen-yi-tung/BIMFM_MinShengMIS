@@ -467,8 +467,8 @@ function createDialogModal(options) {
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     ${options.title ? `<div class="modal-header"><h5 class="modal-title">${options.title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>`: ''}
-                    <div class="modal-body text-center">${htmlTitle ?? options.inner ?? ''}</div>
-                    <div class="modal-footer justify-content-center"></div>
+                    <div class="modal-body text-center pb-2">${htmlTitle ?? options.inner ?? ''}</div>
+                    <div class="modal-footer justify-content-center pb-4"></div>
                 </div>
             </div>
         </div>

@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "編輯 庫存品項";
+}
+@section styles {
+    <script src="/Scripts/datatable.js" defer></script>
+    <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+}
+
+<h2>@ViewBag.Title</h2>
+
+<section>
+    <div class="edit-area edit-area-xs flex-lg-row">
+        <form class="form">
+            <div class="form-group-zone">
+                <div class="form-group required">
+                    <label for="Type">類別</label>
+                    <select class="form-select" name="Type" id="Type" required>
+                        <option value="0">請選擇</option>
+                        <option value="1">選項一</option>
+                        <option value="2">潤滑劑</option>
+                    </select>
+                </div>
+                <div class="form-group required">
+                    <label for="SName">品項名稱</label>
+                    <input type="text" class="form-control" name="SName" id="SName" maxlength="20" required>
+                </div>
+                <div class="form-group required">
+                    <label for="Init">單位</label>
+                    <input type="text" class="form-control" name="Init" id="Init" maxlength="20" required>
+                </div>
+                <div class="form-group required">
+                    <label for="WarningVal">警戒值</label>
+                    <input type="text" class="form-control" name="WarningVal" id="WarningVal" maxlength="20" required>
+                </div>
+
+            </div>
+
+            <div class="datatable-easyui w-100 d-none">
+                <table id="Template-datagrid"></table>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<div class="edit-button-area">
+    <button class="btn btn-back" id="back">返回</button>
+    <button class="btn btn-export" id="submit">儲存</button>
+</div>
+
+@section scripts {
+    <script>
+        let apiUrl = null;
+
+        $(async function () {
+            readData(apiUrl);
+            //await AreaFloorEvent();
+            addButtonEvent();
+        });
+
+        let fakeData = {
+            Type: "2",
+            SName: "軸承潤滑劑",
+            Init: "罐",
+            WarningVal: "20"
+        }
+
+        function readData(url = null) {
+
+            url == null ? onSuccess(fakeData) :
+                console.log("fakeData", fakeData);
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+            function onSuccess(res) {
+                console.log("res:", res);
+                for (const [k, v] of Object.entries(res)) {
+                    $(`#${k}`).val(v);
+                }
+            }
+            function onError(res) {
+                console.log(res);
+            }
+        }
+
+        function save() {
+            $.ajax({
+                url: "/EquipmentInfo_Management/Create",
+                data: fd,//JSON.stringify(fd),
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //dataType: "json",
+                //contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+
+            function onSuccess(res) {
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+    </script>
+}
