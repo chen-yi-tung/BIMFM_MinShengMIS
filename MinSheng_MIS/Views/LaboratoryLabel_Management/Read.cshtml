@@ -7,22 +7,26 @@
 
 <h2>@ViewBag.Title</h2>
 
-<div class="datatable datatable-small mt-5">
-    <div class="datatable-body">
-        <table class="datatable-table" id="LaboratoryLabelInfo"></table>
-    </div>
-</div>
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table" id="LaboratoryLabelInfo"></table>
+            </div>
+        </div>
 
-<div class="datatable datatable-small-grid mt-5">
-    <div class="datatable-header">實驗標籤</div>
-    <div class="datatable-body">
-        <table class="datatable-table" id="LaboratoryLabelItem">
-        </table>
+        <div class="datatable datatable-small-grid">
+            <div class="datatable-header">實驗標籤</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="LaboratoryLabelItem">
+                </table>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
-@section scripts {
-    <script>
+        @section scripts {
+            <script>
         const ELSN = '@ViewBag.id'
         const apiUrl = '@Url.Action("Read_Data", "LaboratoryLabel_Management")' + `/${ELSN}`;
         //const apiUrl = null;
@@ -101,5 +105,5 @@
         window.onload = function () {
             readData(apiUrl);
         }
-    </script>
-}
+            </script>
+        }

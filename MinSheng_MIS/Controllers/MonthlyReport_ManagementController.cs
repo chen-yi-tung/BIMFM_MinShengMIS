@@ -17,7 +17,7 @@ namespace MinSheng_MIS.Controllers
         // GET: MonthlyReport_Management
 
         #region 月報管理
-        public ActionResult Management()
+        public ActionResult Index()
         {
             return View();
         }

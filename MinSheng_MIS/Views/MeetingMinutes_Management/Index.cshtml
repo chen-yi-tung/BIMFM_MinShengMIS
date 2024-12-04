@@ -10,52 +10,53 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create" id="create">新增會議記錄</button>
-<div class="search-area">
-    <form class="form" method="post" action="">
+<div class="dg-tool-bar">
+    <button class="btn btn-create" id="create">新增會議記錄</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
 
-        <div class="form-group">
-            <label for="MeetingTopic">會議主題</label>
-            <input class="form-control" id="MeetingTopic" name="MeetingTopic" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="MeetingTopic">會議主題</label>
+                <input class="form-control" id="MeetingTopic" name="MeetingTopic" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="Chairperson">會議主席</label>
-            <input class="form-control" id="Chairperson" name="Chairperson" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="Chairperson">會議主席</label>
+                <input class="form-control" id="Chairperson" name="Chairperson" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="MeetingVenue">會議地點</label>
-            <input class="form-control" id="MeetingVenue" name="MeetingVenue" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="MeetingVenue">會議地點</label>
+                <input class="form-control" id="MeetingVenue" name="MeetingVenue" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="DateFrom">日期(起)</label>
-            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="DateFrom">日期(起)</label>
+                <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+            </div>
 
-        <div class="form-group">
-            <label for="DateTo">日期(迄)</label>
-            <input class="form-control" id="DateTo" name="DateTo" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="DateTo">日期(迄)</label>
+                <input class="form-control" id="DateTo" name="DateTo" type="date" />
+            </div>
 
-        <div class="button-group">
-            <button type="button" class="btn btn-search" id="search">查詢</button>
-            <button type="button" class="btn btn-clear" id="clear">清除</button>
-        </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
+        </form>
+    </div>
 
-    </form>
+    <div class="datagrid-area">
+        <table id="DataGrid"></table>
+    </div>
 </div>
-
-<div class="datagrid-area">
-    <table id="DataGrid"></table>
-</div>
-@section scripts {
-    <script>
+    @section scripts {
+        <script>
 
         var getGridJSON = '@Url.Action("MeetingMinutes_Management", "Datagrid")';
         var DataGrid;
-        
+
 
         const fakeData = [
             {
@@ -139,5 +140,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-    </script>
-}
+        </script>
+    }

@@ -23,7 +23,7 @@ namespace MinSheng_MIS.Controllers
 		static readonly string folderPath = "Files/MeetingMinutes";
 
 		#region 會議記錄管理
-		public ActionResult Management()
+		public ActionResult Index()
 		{
 			return View();
 		}

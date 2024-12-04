@@ -14,35 +14,40 @@
 }
 
 <h2>@ViewBag.Title</h2>
-<div class="edit-area edit-area-small">
-    <form class="form pt-0">
-        <input type="text" name="MRSN" id="MRSN" hidden>
-        <div class="form-group required">
-            <label for="ReportTitle">月報名稱</label>
-            <input class="form-control" id="ReportTitle" name="ReportTitle" type="text" required>
-        </div>
 
-        <div class="form-group required">
-            <label for="YearMonth">年月份</label>
-            <input class="form-control" id="YearMonth" name="YearMonth" type="month">
-        </div>
+<section>
+    <div class="edit-area edit-area-sm flex-lg-row">
+        <form class="form">
+            <div class="form-group-zone">
+                <input type="text" name="MRSN" id="MRSN" hidden>
+                <div class="form-group required">
+                    <label for="ReportTitle">月報名稱</label>
+                    <input class="form-control" id="ReportTitle" name="ReportTitle" type="text" required>
+                </div>
 
-        <div class="form-group" style="grid-column: auto/span 2;">
-            <label for="ReportContent">內容說明</label>
-            <textarea class="form-control" name="ReportContent" id="ReportContent" rows="3" maxlength="200"></textarea>
-        </div>
+                <div class="form-group required">
+                    <label for="YearMonth">年月份</label>
+                    <input class="form-control" id="YearMonth" name="YearMonth" type="month">
+                </div>
 
-        <div id="FileUploader"></div>
+                <div class="form-group" style="grid-column: auto/span 2;">
+                    <label for="ReportContent">內容說明</label>
+                    <textarea class="form-control" name="ReportContent" id="ReportContent" rows="3" maxlength="200"></textarea>
+                </div>
 
-    </form>
-</div>
+                <div id="FileUploader"></div>
+            </div>
+        </form>
+    </div>
+</section>
+
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
-@section scripts {
-    <script>
+    @section scripts {
+        <script>
         const MRSN = '@ViewBag.id';
         const apiUrl = '@Url.Action("ReadBody", "MonthlyReport_Management")' + `/${MRSN}`;
         const fakeData = {
@@ -134,7 +139,7 @@
                 else {
                     createDialogModal({
                         id: "DialogModal-Success", inner: "儲存成功！",
-                        onHide: () => { window.location.href = "/MonthlyReport_Management/Management"; }
+                        onHide: () => { window.location.href = "/MonthlyReport_Management/Index"; }
                     });
                 }
             }
@@ -153,5 +158,5 @@
                 save();
             })
         }
-    </script>
-}
+        </script>
+    }

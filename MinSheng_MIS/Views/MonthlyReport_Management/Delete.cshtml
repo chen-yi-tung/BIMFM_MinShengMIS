@@ -7,15 +7,20 @@
 }
 
 <h2>@ViewBag.Title</h2>
-<div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
-    <div class="datatable-body">
-        <table class="datatable-table"></table>
+
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table"></table>
+            </div>
+        </div>
+        <div class="edit-button-area">
+            <button class="btn btn-back" id="back">返回</button>
+            <button class="btn btn-delete" id="delete">刪除</button>
+        </div>
     </div>
-</div>
-<div class="edit-button-area">
-    <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-delete" id="delete">刪除</button>
-</div>
+</section>
 
 @section scripts {
     <script>
@@ -74,7 +79,7 @@
                     type: "DELETE",
                     data: MRSN,
                     onSuccess() {
-                        window.location.href = '@Url.Action("Management", "MonthlyReport_Management")';
+                        window.location.href = '@Url.Action("Index", "MonthlyReport_Management")';
                     }
                 })
             });

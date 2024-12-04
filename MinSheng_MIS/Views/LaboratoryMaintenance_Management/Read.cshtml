@@ -6,14 +6,19 @@
 }
 
 <h2>@ViewBag.Title</h2>
-<div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
-    <div class="datatable-body">
-        <table class="datatable-table"></table>
-    </div>
-</div>
 
-@section scripts {
-    <script>
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table"></table>
+            </div>
+        </div>
+    </div>
+</section>
+
+        @section scripts {
+            <script>
         const LMSN = '@ViewBag.id';
         let apiUrl = '@Url.Action("Read_Data", "LaboratoryMaintenance_Management")' + `/${LMSN}`;
         //let apiUrl = null;
@@ -69,5 +74,5 @@
                 history.back();
             })
         }
-    </script>
-}
+            </script>
+        }

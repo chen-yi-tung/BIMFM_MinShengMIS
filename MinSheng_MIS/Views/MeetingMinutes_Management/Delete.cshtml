@@ -12,11 +12,15 @@
 
 <h2>@ViewBag.Title</h2>
 
-<div class="datatable mt-5">
-    <div class="datatable-body">
-        <table class="datatable-table" id="FormDetail"></table>
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table" id="FormDetail"></table>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
@@ -88,7 +92,7 @@
                     data: MMSN,
                     type: "Delete",
                     onSuccess() {
-                        window.location.href = '@Url.Action("Management", "MeetingMinutes_Management")';
+                        window.location.href = '@Url.Action("Index", "MeetingMinutes_Management")';
                     }
                 })
             });

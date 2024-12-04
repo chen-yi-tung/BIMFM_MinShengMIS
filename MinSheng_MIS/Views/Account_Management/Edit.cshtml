@@ -7,57 +7,58 @@
 
 <h2>@ViewBag.Title</h2>
 
-<div class="edit-area edit-area-small">
-    <form class="form" action="" id="editForm" enctype="multipart/form-data">
-        <div class="form-group d-lg-contents">
-            <label for="UserName">帳號</label>
-            <input class="form-control readonly" type="text" name="UserName" id="UserName" readonly>
-        </div>
+<section>
+    <div class="edit-area edit-area-xs flex-lg-row">
+        <form class="form" action="" enctype="multipart/form-data" id="editForm">
+            <div class="form-group d-lg-contents">
+                <label for="UserName">帳號</label>
+                <input class="form-control readonly" type="text" name="UserName" id="UserName" readonly>
+            </div>
 
-        <div class="form-group d-lg-contents required">
-            <label for="MyName">姓名</label>
-            <input class="form-control" type="text" name="MyName" id="MyName" maxlength="50" required>
-        </div>
+            <div class="form-group d-lg-contents required">
+                <label for="MyName">姓名</label>
+                <input class="form-control" type="text" name="MyName" id="MyName" maxlength="50" required>
+            </div>
 
-        <div class="form-group d-lg-contents required">
-            <label for="Authority">權限</label>
-            <select class="form-select" name="Authority" id="Authority" required>
-                <option value="">請選擇</option>
-                <option value="1">管理人員</option>
-                <option value="2">操作人員</option>
-                <option value="3">一般人員</option>
-            </select>
-        </div>
+            <div class="form-group d-lg-contents required">
+                <label for="Authority">權限</label>
+                <select class="form-select" name="Authority" id="Authority" required>
+                    <option value="">請選擇</option>
+                    <option value="1">管理人員</option>
+                    <option value="2">操作人員</option>
+                    <option value="3">一般人員</option>
+                </select>
+            </div>
 
-        <div class="form-group d-lg-contents required">
-            <label for="Email">信箱</label>
-            <input class="form-control" type="email" name="Email" id="Email" maxlength="256" required>
-        </div>
+            <div class="form-group d-lg-contents required">
+                <label for="Email">信箱</label>
+                <input class="form-control" type="email" name="Email" id="Email" maxlength="256" required>
+            </div>
 
-        <div class="form-group d-lg-contents">
-            <label for="PhoneNumber">電話</label>
-            <input class="form-control" type="tel" name="PhoneNumber" id="PhoneNumber">
-        </div>
+            <div class="form-group d-lg-contents">
+                <label for="PhoneNumber">電話</label>
+                <input class="form-control" type="tel" name="PhoneNumber" id="PhoneNumber">
+            </div>
 
-        <div class="form-group d-lg-contents">
-            <label for="Apartment">單位</label>
-            <input class="form-control" type="text" name="Apartment" id="Apartment" maxlength="20">
-        </div>
-        <div class="form-group d-lg-contents">
-            <label for="Title">職稱</label>
-            <input class="form-control" type="text" name="Title" id="Title" maxlength="20">
-        </div>
-
-    </form>
-</div>
+            <div class="form-group d-lg-contents">
+                <label for="Apartment">單位</label>
+                <input class="form-control" type="text" name="Apartment" id="Apartment" maxlength="20">
+            </div>
+            <div class="form-group d-lg-contents">
+                <label for="Title">職稱</label>
+                <input class="form-control" type="text" name="Title" id="Title" maxlength="20">
+            </div>
+        </form>
+    </div>
+</section>
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-submit" id="submit">儲存</button>
 </div>
 
-@section scripts {
-    <script>
+            @section scripts {
+                <script>
         const UserName = '@ViewBag.id';
         let apiUrl = '@Url.Action("Edit_LoadData", "Account_Management")' + `/${UserName}`;
 
@@ -120,7 +121,7 @@
                     console.log(res);
                     createDialogModal({
                         id: "DialogModal-Success", inner: "儲存成功！",
-                        onHide: () => { window.location.href = "/Account_Management/Management"; }
+                        onHide: () => { window.location.href = "/Account_Management/Index"; }
                     });
                 }
                 function onError(res) {
@@ -129,5 +130,5 @@
                 }
             })
         }
-    </script>
-}
+                </script>
+            }

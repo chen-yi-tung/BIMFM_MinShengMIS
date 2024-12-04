@@ -12,87 +12,89 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create" id="create">新增竣工圖</button>
-<div class="search-area">
-    <form class="form" method="post" action="">
+<div class="dg-tool-bar">
+    <button class="btn btn-create" id="create">新增竣工圖</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
 
-        <div class="form-group">
-            <label for="ASN">棟別</label>
-            <select class="form-select" name="ASN" id="ASN">
-                <option value="">請選擇</option>
-            </select>
-        </div>
-        <div>
-            <input class="form-control" id="Area" name="Area" type="text" hidden />
-        </div>
+            <div class="form-group">
+                <label for="ASN">棟別</label>
+                <select class="form-select" name="ASN" id="ASN">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+            @*<div>
+                <input class="form-control" id="Area" name="Area" type="text" hidden />
+            </div>*@
 
-        <div class="form-group">
-            <label for="FSN">樓層</label>
-            <select class="form-select" name="FSN" id="FSN">
-                <option value="">請選擇</option>
-            </select>
-        </div>
-        <div>
-            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
-        </div>
+            <div class="form-group">
+                <label for="FSN">樓層</label>
+                <select class="form-select" name="FSN" id="FSN">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+            @*<div>
+                <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+            </div>*@
 
-        <div class="form-group">
-            <label for="DSystemID">系統別</label>
-            <select class="form-select" name="DSystemID" id="DSystemID">
-                <option value="">請選擇</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="DSystemID">系統別</label>
+                <select class="form-select" name="DSystemID" id="DSystemID">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="DSubSystemID">子系統別</label>
-            <select class="form-select" name="DSubSystemID" id="DSubSystemID">
-                <option value="">請選擇</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="DSubSystemID">子系統別</label>
+                <select class="form-select" name="DSubSystemID" id="DSubSystemID">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="ImgNum">圖號</label>
-            <input class="form-control" id="ImgNum" name="ImgNum" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="ImgNum">圖號</label>
+                <input class="form-control" id="ImgNum" name="ImgNum" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="ImgName">圖名</label>
-            <input class="form-control" id="ImgName" name="ImgName" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="ImgName">圖名</label>
+                <input class="form-control" id="ImgName" name="ImgName" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="ImgVersion">版本</label>
-            <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="ImgVersion">版本</label>
+                <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="DateFrom">日期(起)</label>
-            <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="DateFrom">日期(起)</label>
+                <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+            </div>
 
-        <div class="form-group">
-            <label for="DateTo">日期(迄)</label>
-            <input class="form-control" id="DateTo" name="DateTo" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="DateTo">日期(迄)</label>
+                <input class="form-control" id="DateTo" name="DateTo" type="date" />
+            </div>
 
-        <div class="button-group">
-            <button type="button" class="btn btn-search" id="search">查詢</button>
-            <button type="button" class="btn btn-clear" id="clear">清除</button>
-        </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
 
-    </form>
+        </form>
+    </div>
+
+    <div class="datagrid-area">
+        <table id="DataGrid"></table>
+    </div>
 </div>
 
-<div class="datagrid-area">
-    <table id="DataGrid"></table>
-</div>
-
-@section scripts {
-    <script>
+    @section scripts {
+        <script>
 
         var getGridJSON = '@Url.Action("AsBuiltDrawing_Management", "Datagrid")';
         var DataGrid;
-        
+
 
         const fakeData = [
             {
@@ -110,7 +112,7 @@
 
         $(async function () {
             await AreaFloorEvent();
-            await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
+            ////await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
 
@@ -174,5 +176,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-    </script>
-}
+        </script>
+    }

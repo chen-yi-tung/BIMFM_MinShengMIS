@@ -17,10 +17,7 @@
         <form class="form d-lg-contents">
             <div class="group-title">基本資料</div>
             <div class="form-group-zone">
-                <div class="form-group col-3fr">
-                    <label for="Pic">照片</label>
-                    <div id="FileUploader"></div>
-                </div>
+                <div id="FileUploader"></div>
                 <div class="form-group required">
                     <label for="EName">設備名稱</label>
                     <input class="form-control" id="EName" name="EName" type="text" required />
@@ -270,10 +267,10 @@
             delTemplateItem();
             fileUploader = new FileUploader({
                 container: "#FileUploader",
-                className: "form-group w-100",
+                className: "form-group col-3fr",
                 icon: "plus",
                 buttonText: "上傳照片",
-                label: "",
+                label: "照片",
                 id: "File"
             })
         });

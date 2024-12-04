@@ -12,56 +12,58 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create" id="create">新增設計圖</button>
-<div class="search-area">
-    <form class="form" method="post" action="">
+<div class="dg-tool-bar">
+    <button type="button" class="btn btn-create" id="create">新增設計圖</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
 
-        <div class="form-group">
-            <label for="ImgNum">圖名</label>
-            <input class="form-control" id="ImgName" name="ImgName" type="text" />
-        </div>
-        <div>
-            <input class="form-control" id="Area" name="Area" type="text" hidden />
-        </div>
+            <div class="form-group">
+                <label for="ImgNum">圖名</label>
+                <input class="form-control" id="ImgName" name="ImgName" type="text" />
+            </div>
+            @*<div>
+                <input class="form-control" id="Area" name="Area" type="text" hidden />
+            </div>*@
 
-        <div class="form-group">
-            <label for="ImgType">圖說種類</label>
-            <select class="form-select" name="ImgType" id="ImgType">
-                <option value="">請選擇</option>
-            </select>
-        </div>
-        <div>
-            <input class="form-control" id="Floor" name="Floor" type="text" hidden />
-        </div>
+            <div class="form-group">
+                <label for="ImgType">圖說種類</label>
+                <select class="form-select" name="ImgType" id="ImgType">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
+            @*<div>
+                <input class="form-control" id="Floor" name="Floor" type="text" hidden />
+            </div>*@
 
-        <div class="form-group">
-            <label for="DateStart">上傳日期(起)</label>
-            <input class="form-control" id="DateStart" name="DateStart" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="DateStart">上傳日期(起)</label>
+                <input class="form-control" id="DateStart" name="DateStart" type="date" />
+            </div>
 
-        <div class="form-group">
-            <label for="DateEnd">上傳日期(迄)</label>
-            <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
-        </div>
+            <div class="form-group">
+                <label for="DateEnd">上傳日期(迄)</label>
+                <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
+            </div>
 
-        <div class="button-group">
-            <button type="button" class="btn btn-search" id="search">查詢</button>
-            <button type="button" class="btn btn-clear" id="clear">清除</button>
-        </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
 
-    </form>
+        </form>
+    </div>
+
+    <div class="datagrid-area">
+        <table id="DataGrid"></table>
+    </div>
 </div>
 
-<div class="datagrid-area">
-    <table id="DataGrid"></table>
-</div>
-
-@section scripts {
-    <script>
+    @section scripts {
+        <script>
 
         var getGridJSON = '@Url.Action("DesignDiagrams_Management", "Datagrid")';
         var DataGrid;
-        
+
 
         const fakeData = [
             {
@@ -129,5 +131,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-    </script>
-}
+        </script>
+    }

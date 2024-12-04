@@ -22,7 +22,7 @@ namespace MinSheng_MIS.Controllers
 
         // GET: LaboratoryLabel_Management
         #region 實驗室標籤管理
-        public ActionResult Management()
+        public ActionResult Index()
 		{
 			return View();
 		}

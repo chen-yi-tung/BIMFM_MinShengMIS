@@ -10,11 +10,15 @@
 
 <input type="text" id="DDSN" name="DDSN" value="@ViewBag.id" hidden>
 
-<div class="datatable datatable-small mt-5">
-    <div class="datatable-body">
-        <table class="datatable-table"></table>
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table"></table>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
@@ -90,7 +94,7 @@
                     url: '@Url.Action("DeleteDesignDiagrams", "DesignDiagrams")/' + DDSN,
                     data: DDSN,
                     onSuccess() {
-                        let url = '@Url.Action("Management", "DesignDiagrams")';
+                        let url = '@Url.Action("Index", "DesignDiagrams")';
                         window.location.href = url;
                     }
                 })

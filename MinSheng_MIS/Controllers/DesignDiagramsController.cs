@@ -20,7 +20,7 @@ namespace MinSheng_MIS.Controllers
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
         #region 設計圖說管理
-        public ActionResult Management()
+        public ActionResult Index()
         {
             return View();
         }

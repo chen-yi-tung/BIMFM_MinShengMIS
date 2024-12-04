@@ -205,19 +205,28 @@ function createTableInner(data, sn) {
  * @param {TableGridOptions} options 
  * @returns {string} TableGrid
  */
-function createTableGrid(data, options) {
+function createTableGrid(data, options, tableZoneID, appendOnly) {
     const nullString = "-";
-    console.log("options", options)
     let columns = options.columns;
-    let thead = options.thead == true ? `<thead><tr>${createThs(columns)}</tr></thead>` : "";
-    let tbody = `<tbody>${createTrs(columns, data)}</tbody>`;
-    return thead + tbody;
+    if (!appendOnly) {
+        let thead = options.thead == true ? `<thead><tr>${createThs(columns)}</tr></thead>` : "";
+        let tbody = `<tbody id="item-area">${createTrs(columns, data)}</tbody>`;
+        return thead + tbody;
+    } else {
+        return createTrs(options.columns, [data]);
+    }
+
+
     function createThs(op) {
-        return op.map(o => {
+        let ths = op.map(o => {
             let w = typeof o.width == "string" ? o.width : o.width + "px";
             let th = `<th class="datatable-header ${o.required ? "required" : ''}" style="${o.width ? `width:${w}` : ''}"><span>${o.title}</span></th>`;
             return th;
         }).join("");
+        if (options.delBtn) {
+            ths += `<th class="datatable-header" style="width: 48px; text-align: center;"></th>`;
+        }
+        return ths;
     }
 
     function createTrs(op, ds) {
@@ -228,26 +237,48 @@ function createTableGrid(data, options) {
     }
 
     function createTds(op, d, i) {
-        return op.map((o) => {
-            let td
+        let tds = op.map((o) => {
             let width = ""
             if (options.thead == false) {
                 let w = typeof o.width == "string" ? o.width : o.width + "px";
                 width = `style="${o.width ? `width:${w}` : ''}"`;
             }
             if (o.formatter) {
-                td = `
-                <td id="d-${o.id}" ${width}>
-                    ${o.formatter(d[o.id], d, i)}
-                </td>`;
+                return `<td id="d-${o.id}" ${width}>${o.formatter(d[o.id], d, i)}</td>`;
             }
             else {
-                td = `<td id="d-${o.id}" ${width}>${d[o.id] ?? nullString}</td>`;
+                return `<td id="d-${o.id}" ${width}>${d[o.id] ?? nullString}</td>`;
             }
-            return td;
         }).join("");
+        if (options.delBtn) {
+            tds += `<td><button type="button" class="btn-delete-item" data-row="${i}" onclick="delTemplateItem(this, '${tableZoneID}')"></button></td>`;
+        }
+        return tds;
     }
 }
+
+function delTemplateItem(delBtn, tableZoneID) {
+    if (!delBtn || !(delBtn instanceof HTMLElement)) {
+        console.error("無效的按鈕元素:", delBtn);
+        return;
+    }
+
+    let tr = delBtn.closest('tr');
+    if (tr) {
+        tr.remove();
+        checkTableEmpty(tableZoneID);
+    }
+}
+
+function checkTableEmpty(tableZoneID) {
+    const tbody = document.getElementById('item-area');
+    const datatable = document.getElementById(tableZoneID);
+    if (tbody.children.length === 0 && datatable) {
+        datatable.style.display = 'none';
+    }
+}
+
+
 
 /**
  * @typedef {object} AccordionOuterOptions

@@ -1,7 +1,8 @@
-﻿function RFIDResultModal(data) {
+﻿function RFIDResultModal(data, Options, tableZoneID) {
     console.log("Data為: ", data);
     const sn = [,
-        { text: "RFID", value: "RFIDName" },
+        { text: "RFID內碼", value: "InterCode" },
+        { text: "RFID外碼", value: "ExterCode" },
         { text: "類別", value: "Type" },
         { text: "品項名稱", value: "ItemName" },
         { text: "領取數量", value: "Num" },
@@ -14,7 +15,8 @@
 
     /*function readData(data) {*/
 
-        console.log("data-detail-modal readData: ", data);
+    console.log("data-detail-modal readData: ", data);
+    
     if (data.result) {
         const html = `
         <div class="modal fade data-detail-modal" tabindex="-1">
@@ -27,23 +29,41 @@
                     <div class="modal-body">
                         <table class="datatable-table">${createTableInner(data.info, sn)}</table>
                     </div>
+
                     <div class="modal-footer justify-content-center">
                         <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                        <button type="button" class="btn btn-export" id="add-row">確定</button>
+                        <button type="button" class="btn btn-export" id="add_row">確定</button>
                     </div>
                 </div>
             </div>
         </div>
         `;
+        
         ModalJQ = $(html);
         ModalBs = new bootstrap.Modal(ModalJQ[0]);
 
-        ModalBs.show();
+        //點擊確定新增此RFID按鈕
+        ModalJQ.find("#add_row").on('click', function () {
+            const datatable = document.getElementById(tableZoneID);
+            console.log("確認這裡tableZoneID", tableZoneID);
+
+            if (datatable) {
+                const style = window.getComputedStyle(datatable);
+                const isHidden = style.display === 'none';
+                if (isHidden) {
+                    datatable.style.display = 'block';
+                }
+                const appendOnly = true;
+                createRFIDForm(data.info, Options, tableZoneID, appendOnly);
+            }
+            ModalBs.hide();
+        });
 
         ModalJQ[0].addEventListener("hidden.bs.modal", () => {
             ModalBs.dispose();
             ModalJQ.remove();
         })
+        ModalBs.show();
     } else {
         let modal = createDialogModal({
             id: "DialogModal-Delete",
@@ -65,4 +85,14 @@
         
         
     /*}*/
+}
+
+function createRFIDForm(data, Options, tableZoneID, appendOnly) {
+    const modalTableBody = $(`#RFIDForm tbody`);
+    if (!modalTableBody.length) {
+        console.error("Modal table not found!");
+        return;
+    }
+    const newRow = createTableGrid(data, Options, tableZoneID, appendOnly);
+    modalTableBody.append(newRow);
 }

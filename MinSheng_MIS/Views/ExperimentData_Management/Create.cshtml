@@ -30,38 +30,42 @@
 
 <h2>@ViewBag.Title</h2>
 
-<section style="max-width: 855px;margin: auto;">
-    <div class="edit-area bg-transparent flex-wrap flex-md-row justify-content-lg-center" style="gap: 1rem 2rem;">
-        <form class="form d-lg-contents">
-            <div class="form-group w-lg-250px required">
-                <label for="EDate">實驗日期</label>
-                <input class="form-control" id="EDate" name="EDate" type="date" required />
-            </div>
+<section>
+    <div class="edit-area edit-area-sm flex-lg-row">
+        <form class="form">
+            <div class="form-group-zone">
+                <div class="form-group required">
+                    <label for="EDate">實驗日期</label>
+                    <input class="form-control" id="EDate" name="EDate" type="date" required />
+                </div>
 
-            <div class="form-group w-lg-250px required">
-                <label for="ExperimentType">實驗類型</label>
-                <select class="form-select" name="ExperimentType" id="ExperimentType" required>
-                    <option value="">請選擇</option>
-                </select>
-            </div>
+                <div class="form-group required">
+                    <label for="ExperimentType">實驗類型</label>
+                    <select class="form-select" name="ExperimentType" id="ExperimentType" required>
+                        <option value="">請選擇</option>
+                    </select>
+                </div>
 
-            <div class="form-group w-lg-532px required">
-                <label for="TAWSN">實驗名稱</label>
-                <select class="form-select" name="TAWSN" id="TAWSN" required>
-                    <option value="">請選擇</option>
-                </select>
+                <div class="form-group col-2fr required">
+                    <label for="TAWSN">實驗名稱</label>
+                    <select class="form-select" name="TAWSN" id="TAWSN" required>
+                        <option value="">請選擇</option>
+                    </select>
+                </div>
+                <div id="FileUploader"></div>
             </div>
-            <div id="FileUploader"></div>
+            <hr class="hr-default">
+            <div class="form-group d-flex flex-column align-items-center">
+                <h3 class="edit-title w-100">數據填寫</h3>
+                <div class="edit-area flex-wrap w-100" style="gap: 1rem 2rem;">
+                    <div class="form-group d-flex flex-column align-items-center w-100 gap-2" id="item-list"></div>
+                </div>
+                <button type="button" class="addItemBtn" id="create-item"><i class="fa-solid fa-plus"></i></button>
+            </div>
         </form>
     </div>
 </section>
-<section class="w-lg-532px m-auto">
-    <h3 class="edit-title">數據填寫</h3>
-    <div class="edit-area flex-wrap flex-md-row justify-content-lg-center mt-2 p-4" style="gap: 1rem 2rem;">
-        <form class="form d-lg-contents p-0" id="item-list"></form>
-        <button class="btn btn-create-item w-100" id="create-item">+新增</button>
-    </div>
-</section>
+
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
@@ -76,7 +80,7 @@
             addButtonEvent();
             fileUploader = new FileUploader({
                 container: "#FileUploader",
-                className: "form-group w-lg-532px",
+                className: "form-group col-2fr",
                 label: "實驗數據上傳",
                 id: "File",
                 required: false
@@ -135,7 +139,7 @@
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Success", inner: "新增成功！",
-                    onHide: () => { window.location.href = "/ExperimentData_Management/Management"; }
+                    onHide: () => { window.location.href = "/ExperimentData_Management/Index"; }
                 });
             }
             function onError(res) {

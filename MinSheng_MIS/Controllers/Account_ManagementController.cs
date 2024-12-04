@@ -49,7 +49,7 @@ namespace MinSheng_MIS.Controllers
         // GET: Account_Management
 
         #region 帳號管理
-        public ActionResult Management()
+        public ActionResult Index()
         {
             return View();
         }

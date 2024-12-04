@@ -17,7 +17,7 @@ namespace MinSheng_MIS.Controllers
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         // GET: AsBuiltDrawing_Management
         #region 竣工圖管理
-        public ActionResult Management()
+        public ActionResult Index()
         {
             return View();
         }

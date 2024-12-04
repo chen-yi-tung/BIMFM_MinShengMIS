@@ -679,7 +679,7 @@ namespace MinSheng_MIS.Controllers
         //{
         //    List<JObject> list = new List<JObject>();
         //    var DSubSystemlist = new List<DrawingSubSystemManagement>();
-            
+
         //    if (string.IsNullOrEmpty(DSystemID))
         //    {
         //        DSubSystemlist = db.DrawingSubSystemManagement.Where(x => x.SubSystemIsEnable == true).ToList();

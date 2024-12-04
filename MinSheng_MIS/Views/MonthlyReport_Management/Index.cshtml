@@ -11,47 +11,49 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create" id="create">新增月報</button>
-<div class="search-area">
-    <form class="form" method="post" action="">
+<div class="dg-tool-bar">
+    <button class="btn btn-create" id="create">新增月報</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
 
-        <div class="form-group">
-            <label for="ReportTitle">月報名稱</label>
-            <input class="form-control" id="ReportTitle" name="ReportTitle" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="ReportTitle">月報名稱</label>
+                <input class="form-control" id="ReportTitle" name="ReportTitle" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="UploadUserName">上傳者</label>
-            <input class="form-control" id="UploadUserName" name="UploadUserName" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="UploadUserName">上傳者</label>
+                <input class="form-control" id="UploadUserName" name="UploadUserName" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="DateFrom">年月份(起)</label>
-            <input class="form-control" id="DateFrom" name="DateFrom" type="month" />
-        </div>
+            <div class="form-group">
+                <label for="DateFrom">年月份(起)</label>
+                <input class="form-control" id="DateFrom" name="DateFrom" type="month" />
+            </div>
 
-        <div class="form-group">
-            <label for="DateTo">年月份(迄)</label>
-            <input class="form-control" id="DateTo" name="DateTo" type="month" />
-        </div>
+            <div class="form-group">
+                <label for="DateTo">年月份(迄)</label>
+                <input class="form-control" id="DateTo" name="DateTo" type="month" />
+            </div>
 
-        <div class="button-group">
-            <button type="button" class="btn btn-search" id="search">查詢</button>
-            <button type="button" class="btn btn-clear" id="clear">清除</button>
-        </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
 
-    </form>
+        </form>
+    </div>
+
+    <div class="datagrid-area">
+        <table id="DataGrid"></table>
+    </div>
 </div>
 
-<div class="datagrid-area">
-    <table id="DataGrid"></table>
-</div>
-
-@section scripts {
-    <script>
+    @section scripts {
+        <script>
         var getGridJSON = '@Url.Action("MonthlyReport_Management", "Datagrid")';
         var DataGrid;
-        
+
 
         const fakeData = [
             {
@@ -119,5 +121,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-    </script>
-}
+        </script>
+    }

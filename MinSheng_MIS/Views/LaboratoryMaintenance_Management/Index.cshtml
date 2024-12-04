@@ -11,41 +11,43 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create" id="create">新增</button>
-<div class="search-area">
-    <form class="form" method="post" action="">
+<div class="dg-tool-bar">
+    <button class="btn btn-create" id="create">新增</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
 
-        <div class="form-group">
-            <label for="MType">維護類型</label>
-            <select class="form-select" name="MType" id="MType">
-                <option value="">請選擇</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="MType">維護類型</label>
+                <select class="form-select" name="MType" id="MType">
+                    <option value="">請選擇</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="MTitle">標題</label>
-            <input class="form-control" id="MTitle" name="MTitle" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="MTitle">標題</label>
+                <input class="form-control" id="MTitle" name="MTitle" type="text" />
+            </div>
 
-        <div class="form-group">
-            <label for="MContent">說明</label>
-            <input class="form-control" id="MContent" name="MContent" type="text" />
-        </div>
+            <div class="form-group">
+                <label for="MContent">說明</label>
+                <input class="form-control" id="MContent" name="MContent" type="text" />
+            </div>
 
-        <div class="button-group">
-            <button type="button" class="btn btn-search" id="search">查詢</button>
-            <button type="button" class="btn btn-clear" id="clear">清除</button>
-        </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
 
-    </form>
+        </form>
+    </div>
+
+    <div class="datagrid-area">
+        <table id="DataGrid"></table>
+    </div>
 </div>
 
-<div class="datagrid-area">
-    <table id="DataGrid"></table>
-</div>
-
-@section scripts {
-    <script>
+    @section scripts {
+        <script>
 
         var getGridJSON = '@Url.Action("LaboratoryMaintenance_Management", "Datagrid")';
         var DataGrid;
@@ -113,5 +115,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-    </script>
-}
+        </script>
+    }

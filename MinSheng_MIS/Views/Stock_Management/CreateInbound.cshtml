@@ -83,10 +83,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="form-group col-3fr">
-                    <label for="Pic">採購單據</label>
-                    <div id="FileUploader"></div>
-                </div>
+                <div id="FileUploader"></div>
                 <div class="form-group col-3fr">
                     <label for="Memo">備註</label>
                     <textarea class="form-control" id="Memo" name="Memo" rows="3" cols="50" required></textarea>
@@ -151,12 +148,11 @@
             readData(apiUrl);
             //await AreaFloorEvent();
             addButtonEvent();
-            delTemplateItem();
+            //delTemplateItem();
             fileUploader = new FileUploader({
                 container: "#FileUploader",
-                className: "form-group w-100",
-                buttonText: "選擇檔案",
-                label: "",
+                className: "form-group col-3fr",
+                label: "檔案上傳",
                 id: "File"
             })
         });
@@ -276,6 +272,9 @@
         }
 
         function addButtonEvent() {
+            $("#back").click(function () {
+                history.back();
+            })
             $("#submit").click(function () {
                 let PSSN = $("#PSSN").val();
                 createCreateStockDialog({

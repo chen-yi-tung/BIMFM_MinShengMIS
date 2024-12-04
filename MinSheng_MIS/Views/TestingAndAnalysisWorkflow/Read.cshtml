@@ -7,30 +7,35 @@
 }
 
 <h2>@ViewBag.Title</h2>
-<div class="datatable datatable-small mt-5">
-    <div class="datatable-body">
-        <table class="datatable-table" id="FormInfo"></table>
-    </div>
-</div>
 
-<div class="datatable datatable-small-grid mt-5">
-    <div class="datatable-header">實驗標籤</div>
-    <div class="datatable-body">
-        <table class="datatable-table" id="LabelNames">
-        </table>
-    </div>
-</div>
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table" id="FormInfo"></table>
+            </div>
+        </div>
 
-<div class="datatable datatable-small-grid mt-5">
-    <div class="datatable-header">實驗數據欄位</div>
-    <div class="datatable-body">
-        <table class="datatable-table" id="DataNames">
-        </table>
-    </div>
-</div>
+        <div class="datatable datatable-small-grid">
+            <div class="datatable-header">實驗標籤</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="LabelNames">
+                </table>
+            </div>
+        </div>
 
-@section scripts {
-    <script>
+        <div class="datatable datatable-small-grid">
+            <div class="datatable-header">實驗數據欄位</div>
+            <div class="datatable-body">
+                <table class="datatable-table" id="DataNames">
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+    @section scripts {
+        <script>
         const TAWSN = '@ViewBag.id';
         let apiUrl = '@Url.Action("Read_Data", "TestingAndAnalysisWorkflow")' + `/${TAWSN}`;
         //let apiUrl = null;
@@ -133,5 +138,5 @@
                 history.back();
             })
         }
-    </script>
-}
+        </script>
+    }

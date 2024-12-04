@@ -10,63 +10,65 @@
 
 <h2>@ViewBag.Title</h2>
 
-<button class="btn btn-create" id="create">新增帳號</button>
-<div class="search-area">
-    <form class="form" method="post" action="">
+<div class="dg-tool-bar">
+    <button class="btn btn-create" id="create">新增帳號</button>
+    <div class="search-area">
+        <form class="form" method="post" action="">
 
-        <div class="form-group">
-            <label for="UserName">帳號</label>
-            <input class="form-control" id="UserName" name="UserName" type="text" />
-        </div>
-        <div class="form-group">
-            <label for="MyName">姓名</label>
-            <input class="form-control" id="MyName" name="MyName" type="text" />
-        </div>
-        <div class="form-group">
-            <label for="Authority">權限</label>
-            <select class="form-select" name="Authority" id="Authority">
-                <option value="">請選擇</option>
-                <option value="1">管理人員</option>
-                <option value="2">操作人員</option>
-                <option value="3">一般人員</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="UserName">帳號</label>
+                <input class="form-control" id="UserName" name="UserName" type="text" />
+            </div>
+            <div class="form-group">
+                <label for="MyName">姓名</label>
+                <input class="form-control" id="MyName" name="MyName" type="text" />
+            </div>
+            <div class="form-group">
+                <label for="Authority">權限</label>
+                <select class="form-select" name="Authority" id="Authority">
+                    <option value="">請選擇</option>
+                    <option value="1">管理人員</option>
+                    <option value="2">操作人員</option>
+                    <option value="3">一般人員</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="Email">信箱</label>
-            <input class="form-control" id="Email" name="Email" type="text" />
-        </div>
-        <div class="form-group">
-            <label for="PhoneNumber">電話</label>
-            <input class="form-control" id="PhoneNumber" name="PhoneNumber" type="text" />
-        </div>
-        <div class="form-group">
-            <label for="Apartment">單位</label>
-            <input class="form-control" id="Apartment" name="Apartment" type="text" />
-        </div>
-        <div class="form-group">
-            <label for="Title">職稱</label>
-            <input class="form-control" id="Title" name="Title" type="text">
-        </div>
+            <div class="form-group">
+                <label for="Email">信箱</label>
+                <input class="form-control" id="Email" name="Email" type="text" />
+            </div>
+            <div class="form-group">
+                <label for="PhoneNumber">電話</label>
+                <input class="form-control" id="PhoneNumber" name="PhoneNumber" type="text" />
+            </div>
+            <div class="form-group">
+                <label for="Apartment">單位</label>
+                <input class="form-control" id="Apartment" name="Apartment" type="text" />
+            </div>
+            <div class="form-group">
+                <label for="Title">職稱</label>
+                <input class="form-control" id="Title" name="Title" type="text">
+            </div>
 
-        <div class="button-group">
-            <button type="button" class="btn btn-search" id="search">查詢</button>
-            <button type="button" class="btn btn-clear" id="clear">清除</button>
-        </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-search" id="search">查詢</button>
+                <button type="button" class="btn btn-clear" id="clear">清除</button>
+            </div>
 
-    </form>
+        </form>
+    </div>
+
+    <div class="datagrid-area">
+        <table id="DataGrid"></table>
+    </div>
 </div>
 
-<div class="datagrid-area">
-    <table id="DataGrid"></table>
-</div>
-
-@section scripts {
-    <script>
+    @section scripts {
+        <script>
 
         var getGridJSON = '@Url.Action("Account_Management", "Datagrid")';
         var DataGrid;
-        
+
 
         const fakedata = [
             {
@@ -119,7 +121,7 @@
                 ]]
             })
             dg.addEvent("edit", function (row, i) {
-                window.open(`${baseUrl}/Edit/${row.UserName}`, "_blank")
+                window.open(`${baseUrl}/Edit/${row.UserName}`, "_self")
             })
             dg.addEvent("delete", function (row, i) {
                 window.open(`${baseUrl}/Delete/${row.UserName}`, "_self")
@@ -140,5 +142,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-    </script>
-}
+        </script>
+    }

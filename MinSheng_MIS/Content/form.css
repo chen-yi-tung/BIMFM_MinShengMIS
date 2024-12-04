@@ -218,9 +218,9 @@
     content: unset !important;
 }
 
-.form-group > label[for="File"] {
+/*.form-group > label[for="File"] {
     display: none;
-}
+}*/
 
 .edit-area .form-group.required label.btn::before {
     content: '';
@@ -528,6 +528,7 @@
     display: inline-block;
     opacity: 1;
     padding: 0;
+    z-index: 1;
 }
 
     .tooltip .tooltiptext {

@@ -10,11 +10,15 @@
 
 <input type="text" id="EOMSN" name="EOMSN" value="@ViewBag.id" hidden>
 
-<div class="datatable datatable-small mt-5">
-    <div class="datatable-body">
-        <table class="datatable-table"></table>
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table"></table>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
@@ -94,7 +98,7 @@
                     url: '@Url.Action("DeleteEOM", "EquipmentOperatingManual")/' + EOMSN,
                     data: EOMSN,
                     onSuccess() {
-                        let url = '@Url.Action("Management", "EquipmentOperatingManual")';
+                        let url = '@Url.Action("Index", "EquipmentOperatingManual")';
                         window.location.href = url;
                     }
                 })

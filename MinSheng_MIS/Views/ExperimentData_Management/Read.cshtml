@@ -19,21 +19,27 @@
 }
 
 <h2>@ViewBag.Title</h2>
-<div class="datatable datatable-small mt-5" style="--datatable-table-th-width: 150px;">
-    <div class="datatable-body">
-        <table class="datatable-table" id="FormInfo"></table>
-    </div>
-</div>
 
-<div class="datatable datatable-small mt-5">
-    <div class="datatable-header">實驗數據</div>
-    <div class="datatable-body datatable-easyui">
-        <table id="DataGrid"></table>
-    </div>
-</div>
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small" style="--datatable-table-th-width: 150px;">
+            <div class="datatable-body">
+                <table class="datatable-table" id="FormInfo"></table>
+            </div>
+        </div>
 
-@section scripts {
-    <script>
+        <div class="datatable datatable-small">
+            <div class="datatable-header">實驗數據</div>
+            <div class="datatable-body datatable-easyui">
+                <table id="DataGrid"></table>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+        @section scripts {
+            <script>
         const EDRSN = '@ViewBag.id';
         let apiUrl = '@Url.Action("Read_Data", "ExperimentData_Management")' + `/${EDRSN}`;
         //let apiUrl = null;
@@ -132,5 +138,5 @@
                 history.back();
             })
         }
-    </script>
-}
+            </script>
+        }

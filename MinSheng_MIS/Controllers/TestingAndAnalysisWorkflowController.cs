@@ -24,7 +24,7 @@ namespace MinSheng_MIS.Controllers
         static readonly string folderPath = "Files/TestingAndAnalysisWorkflow";
         // GET: TestingAndAnalysisWorkflow
         #region 採驗分析流程建立
-        public ActionResult Management()
+        public ActionResult Index()
 		{
 			return View();
 		}

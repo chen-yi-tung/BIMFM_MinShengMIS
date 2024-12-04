@@ -21,7 +21,7 @@ namespace MinSheng_MIS.Controllers
         static readonly string folderPath = "Files/ExperimentalDataRecord";
         // GET: ExperimentData_Management
         #region 實驗數據管理
-        public ActionResult Management()
+        public ActionResult Index()
 		{
 			return View();
 		}

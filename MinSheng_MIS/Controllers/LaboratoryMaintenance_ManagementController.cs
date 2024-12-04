@@ -19,7 +19,7 @@ namespace MinSheng_MIS.Controllers
         static readonly string folderPath = "Files/LaboratoryMaintenance";
         // GET: LaboratoryMaintenance_Management
         #region 實驗室維護管理
-        public ActionResult Management()
+        public ActionResult Index()
 		{
 			return View();
 		}

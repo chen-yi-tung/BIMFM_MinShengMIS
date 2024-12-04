@@ -19,7 +19,7 @@ namespace MinSheng_MIS.Controllers
 		Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
 		#region 警示訊息管理
-		public ActionResult Management()
+		public ActionResult Index()
 		{
 			return View();
 		}
