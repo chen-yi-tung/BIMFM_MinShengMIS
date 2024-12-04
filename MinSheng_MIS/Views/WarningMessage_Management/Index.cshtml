@@ -142,7 +142,7 @@
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Read/${row.WMSN}`, "_blank")
+                window.open(`${baseUrl}/Detail/${row.WMSN}`, "_blank")
             })
             dg.addEvent("edit", function (row, i) {
                 window.open(`${baseUrl}/Edit/${row.WMSN}`, "_self")

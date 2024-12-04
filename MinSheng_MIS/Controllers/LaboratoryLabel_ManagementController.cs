@@ -94,7 +94,7 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 實驗標籤詳情
-        public ActionResult Read(string id)
+        public ActionResult Detail(string id)
 		{
             ViewBag.id = id;
             return View();

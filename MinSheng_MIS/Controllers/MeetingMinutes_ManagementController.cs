@@ -152,7 +152,7 @@ namespace MinSheng_MIS.Controllers
 		#endregion
 
 		#region 會議記錄詳情
-		public ActionResult Read(string id)
+		public ActionResult Detail(string id)
 		{
 			ViewBag.id = id;
 			return View();

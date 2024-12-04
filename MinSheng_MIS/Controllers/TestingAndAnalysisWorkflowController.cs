@@ -141,7 +141,7 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 採樣分析流程詳情
-        public ActionResult Read(string id)
+        public ActionResult Detail(string id)
         {
             ViewBag.id = id;
             return View();
