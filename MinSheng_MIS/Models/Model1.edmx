@@ -138,6 +138,23 @@
           <Property Name="StockAmount" Type="float" Nullable="false" />
           <Property Name="MinStockAmount" Type="float" Nullable="false" />
         </EntityType>
+        <EntityType Name="DailyInspectionSample">
+          <Key>
+            <PropertyRef Name="DailyTemplateSN" />
+          </Key>
+          <Property Name="DailyTemplateSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="TemplateName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DailyInspectionSampleContent">
+          <Key>
+            <PropertyRef Name="ScheduleSN" />
+          </Key>
+          <Property Name="ScheduleSN" Type="char" MaxLength="14" Nullable="false" />
+          <Property Name="DailyTemplateSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="StartTime" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="EndTime" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="PlanPathSN" Type="char" MaxLength="9" Nullable="false" />
+        </EntityType>
         <EntityType Name="DesignDiagrams">
           <Key>
             <PropertyRef Name="DDSN" />
@@ -328,6 +345,22 @@
           <Property Name="BeaconPath" Type="nvarchar" MaxLength="100" />
           <Property Name="ViewName" Type="nchar" MaxLength="20" />
         </EntityType>
+        <EntityType Name="InspectionDefaultOrder">
+          <Key>
+            <PropertyRef Name="DefaultOrder" />
+          </Key>
+          <Property Name="DefaultOrder" Type="char" MaxLength="14" Nullable="false" />
+          <Property Name="PlanPathSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="RFIDInternalCode" Type="varchar" MaxLength="24" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InspectionPathSample">
+          <Key>
+            <PropertyRef Name="PlanPathSN" />
+          </Key>
+          <Property Name="PlanPathSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="PathName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Frequency" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="InspectionPlan">
           <Key>
             <PropertyRef Name="IPSN" />
@@ -337,6 +370,69 @@
           <Property Name="PlanDate" Type="datetime" Nullable="false" />
           <Property Name="PlanState" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="PlanCreateUserID" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="CreateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_Equipment">
+          <Key>
+            <PropertyRef Name="IPESN" />
+          </Key>
+          <Property Name="IPESN" Type="char" MaxLength="25" Nullable="false" />
+          <Property Name="IPTSN" Type="char" MaxLength="13" Nullable="false" />
+          <Property Name="ESN" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="ReportUserName" Type="nvarchar" MaxLength="128" />
+          <Property Name="FillinTime" Type="datetime" />
+          <Property Name="Memo" Type="nvarchar" MaxLength="250" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_EquipmentCheckItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="char" MaxLength="28" Nullable="false" />
+          <Property Name="IPESN" Type="char" MaxLength="25" Nullable="false" />
+          <Property Name="CheckItemName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CheckResult" Type="char" MaxLength="1" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_EquipmentReportingItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="char" MaxLength="28" Nullable="false" />
+          <Property Name="IPESN" Type="char" MaxLength="25" Nullable="false" />
+          <Property Name="ReportValue" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ReportContent" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_Member">
+          <Key>
+            <PropertyRef Name="IPTMSN" />
+          </Key>
+          <Property Name="IPTMSN" Type="char" MaxLength="15" Nullable="false" />
+          <Property Name="IPTSN" Type="char" MaxLength="13" Nullable="false" />
+          <Property Name="UserID" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_RFIDOrder">
+          <Key>
+            <PropertyRef Name="InspectionOrder" />
+          </Key>
+          <Property Name="InspectionOrder" Type="char" MaxLength="18" Nullable="false" />
+          <Property Name="IPTSN" Type="char" MaxLength="13" Nullable="false" />
+          <Property Name="IPESN" Type="char" MaxLength="25" Nullable="false" />
+          <Property Name="RFIDInternalCode" Type="varchar" MaxLength="24" Nullable="false" />
+          <Property Name="Status" Type="char" MaxLength="1" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_Time">
+          <Key>
+            <PropertyRef Name="IPTSN" />
+          </Key>
+          <Property Name="IPTSN" Type="char" MaxLength="13" Nullable="false" />
+          <Property Name="IPSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="StartTime" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="EndTime" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="PlanPathSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="PathName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="InspectionNum" Type="int" Nullable="false" />
+          <Property Name="Frequency" Type="int" Nullable="false" />
+          <Property Name="InspectionState" Type="char" MaxLength="1" Nullable="false" />
         </EntityType>
         <EntityType Name="LaboratoryMaintenance">
           <Key>
@@ -420,7 +516,7 @@
           <Key>
             <PropertyRef Name="RFIDInternalCode" />
           </Key>
-          <Property Name="RFIDInternalCode" Type="char" MaxLength="24" Nullable="false" />
+          <Property Name="RFIDInternalCode" Type="varchar" MaxLength="24" Nullable="false" />
           <Property Name="SARSN" Type="char" MaxLength="13" />
           <Property Name="ESN" Type="char" MaxLength="12" />
           <Property Name="RFIDExternalCode" Type="varchar(max)" Nullable="false" />
@@ -606,6 +702,30 @@
             </Principal>
             <Dependent Role="ComputationalStock">
               <PropertyRef Name="StockTypeSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DailyInspectionSampleContent_DailyInspectionSample">
+          <End Role="DailyInspectionSample" Type="Self.DailyInspectionSample" Multiplicity="1" />
+          <End Role="DailyInspectionSampleContent" Type="Self.DailyInspectionSampleContent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DailyInspectionSample">
+              <PropertyRef Name="DailyTemplateSN" />
+            </Principal>
+            <Dependent Role="DailyInspectionSampleContent">
+              <PropertyRef Name="DailyTemplateSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DailyInspectionSampleContent_InspectionPathSample">
+          <End Role="InspectionPathSample" Type="Self.InspectionPathSample" Multiplicity="1" />
+          <End Role="DailyInspectionSampleContent" Type="Self.DailyInspectionSampleContent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPathSample">
+              <PropertyRef Name="PlanPathSN" />
+            </Principal>
+            <Dependent Role="DailyInspectionSampleContent">
+              <PropertyRef Name="PlanPathSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -857,6 +977,126 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_InspectionDefaultOrder_InspectionDefaultOrder">
+          <End Role="RFID" Type="Self.RFID" Multiplicity="1" />
+          <End Role="InspectionDefaultOrder" Type="Self.InspectionDefaultOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RFID">
+              <PropertyRef Name="RFIDInternalCode" />
+            </Principal>
+            <Dependent Role="InspectionDefaultOrder">
+              <PropertyRef Name="RFIDInternalCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionDefaultOrder_InspectionPathSample">
+          <End Role="InspectionPathSample" Type="Self.InspectionPathSample" Multiplicity="1" />
+          <End Role="InspectionDefaultOrder" Type="Self.InspectionDefaultOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPathSample">
+              <PropertyRef Name="PlanPathSN" />
+            </Principal>
+            <Dependent Role="InspectionDefaultOrder">
+              <PropertyRef Name="PlanPathSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_Equipment_EquipmentInfo">
+          <End Role="EquipmentInfo" Type="Self.EquipmentInfo" Multiplicity="1" />
+          <End Role="InspectionPlan_Equipment" Type="Self.InspectionPlan_Equipment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EquipmentInfo">
+              <PropertyRef Name="ESN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_Equipment">
+              <PropertyRef Name="ESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_Equipment_InspectionPlan_Time">
+          <End Role="InspectionPlan_Time" Type="Self.InspectionPlan_Time" Multiplicity="1" />
+          <End Role="InspectionPlan_Equipment" Type="Self.InspectionPlan_Equipment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Time">
+              <PropertyRef Name="IPTSN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_Equipment">
+              <PropertyRef Name="IPTSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment">
+          <End Role="InspectionPlan_Equipment" Type="Self.InspectionPlan_Equipment" Multiplicity="1" />
+          <End Role="InspectionPlan_EquipmentCheckItem" Type="Self.InspectionPlan_EquipmentCheckItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Equipment">
+              <PropertyRef Name="IPESN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_EquipmentCheckItem">
+              <PropertyRef Name="IPESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment">
+          <End Role="InspectionPlan_Equipment" Type="Self.InspectionPlan_Equipment" Multiplicity="1" />
+          <End Role="InspectionPlan_EquipmentReportingItem" Type="Self.InspectionPlan_EquipmentReportingItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Equipment">
+              <PropertyRef Name="IPESN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_EquipmentReportingItem">
+              <PropertyRef Name="IPESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_Member_InspectionPlan_Time">
+          <End Role="InspectionPlan_Time" Type="Self.InspectionPlan_Time" Multiplicity="1" />
+          <End Role="InspectionPlan_Member" Type="Self.InspectionPlan_Member" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Time">
+              <PropertyRef Name="IPTSN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_Member">
+              <PropertyRef Name="IPTSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_RFIDOrder_InspectionPlan_Equipment">
+          <End Role="InspectionPlan_Equipment" Type="Self.InspectionPlan_Equipment" Multiplicity="1" />
+          <End Role="InspectionPlan_RFIDOrder" Type="Self.InspectionPlan_RFIDOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Equipment">
+              <PropertyRef Name="IPESN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_RFIDOrder">
+              <PropertyRef Name="IPESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_RFIDOrder_InspectionPlan_Time">
+          <End Role="InspectionPlan_Time" Type="Self.InspectionPlan_Time" Multiplicity="1" />
+          <End Role="InspectionPlan_RFIDOrder" Type="Self.InspectionPlan_RFIDOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Time">
+              <PropertyRef Name="IPTSN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_RFIDOrder">
+              <PropertyRef Name="IPTSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_RFIDOrder_RFID">
+          <End Role="RFID" Type="Self.RFID" Multiplicity="1" />
+          <End Role="InspectionPlan_RFIDOrder" Type="Self.InspectionPlan_RFIDOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RFID">
+              <PropertyRef Name="RFIDInternalCode" />
+            </Principal>
+            <Dependent Role="InspectionPlan_RFIDOrder">
+              <PropertyRef Name="RFIDInternalCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PathSampleOrder_PathSample">
           <End Role="PathSample" Type="Self.PathSample" Multiplicity="1" />
           <End Role="PathSampleOrder" Type="Self.PathSampleOrder" Multiplicity="*" />
@@ -1036,6 +1276,8 @@
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BIMData" EntityType="Self.BIMData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ComputationalStock" EntityType="Self.ComputationalStock" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DailyInspectionSample" EntityType="Self.DailyInspectionSample" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DailyInspectionSampleContent" EntityType="Self.DailyInspectionSampleContent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DesignDiagrams" EntityType="Self.DesignDiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawingSubSystemManagement" EntityType="Self.DrawingSubSystemManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DrawingSystemManagement" EntityType="Self.DrawingSystemManagement" Schema="dbo" store:Type="Tables" />
@@ -1052,7 +1294,15 @@
           <EntitySet Name="ExperimentalLabel" EntityType="Self.ExperimentalLabel" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ExperimentalLabel_Item" EntityType="Self.ExperimentalLabel_Item" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Floor_Info" EntityType="Self.Floor_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionDefaultOrder" EntityType="Self.InspectionDefaultOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionPathSample" EntityType="Self.InspectionPathSample" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionPlan" EntityType="Self.InspectionPlan" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionPlan_Equipment" EntityType="Self.InspectionPlan_Equipment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionPlan_EquipmentCheckItem" EntityType="Self.InspectionPlan_EquipmentCheckItem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionPlan_EquipmentReportingItem" EntityType="Self.InspectionPlan_EquipmentReportingItem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionPlan_Member" EntityType="Self.InspectionPlan_Member" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionPlan_RFIDOrder" EntityType="Self.InspectionPlan_RFIDOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionPlan_Time" EntityType="Self.InspectionPlan_Time" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LaboratoryMaintenance" EntityType="Self.LaboratoryMaintenance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ManufacturerInfo" EntityType="Self.ManufacturerInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MeetingMinutes" EntityType="Self.MeetingMinutes" Schema="dbo" store:Type="Tables" />
@@ -1080,6 +1330,14 @@
           <AssociationSet Name="FK_ComputationalStock_StockType" Association="Self.FK_ComputationalStock_StockType">
             <End Role="StockType" EntitySet="StockType" />
             <End Role="ComputationalStock" EntitySet="ComputationalStock" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DailyInspectionSampleContent_DailyInspectionSample" Association="Self.FK_DailyInspectionSampleContent_DailyInspectionSample">
+            <End Role="DailyInspectionSample" EntitySet="DailyInspectionSample" />
+            <End Role="DailyInspectionSampleContent" EntitySet="DailyInspectionSampleContent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DailyInspectionSampleContent_InspectionPathSample" Association="Self.FK_DailyInspectionSampleContent_InspectionPathSample">
+            <End Role="InspectionPathSample" EntitySet="InspectionPathSample" />
+            <End Role="DailyInspectionSampleContent" EntitySet="DailyInspectionSampleContent" />
           </AssociationSet>
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -1161,6 +1419,46 @@
             <End Role="AreaInfo" EntitySet="AreaInfo" />
             <End Role="Floor_Info" EntitySet="Floor_Info" />
           </AssociationSet>
+          <AssociationSet Name="FK_InspectionDefaultOrder_InspectionDefaultOrder" Association="Self.FK_InspectionDefaultOrder_InspectionDefaultOrder">
+            <End Role="RFID" EntitySet="RFID" />
+            <End Role="InspectionDefaultOrder" EntitySet="InspectionDefaultOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionDefaultOrder_InspectionPathSample" Association="Self.FK_InspectionDefaultOrder_InspectionPathSample">
+            <End Role="InspectionPathSample" EntitySet="InspectionPathSample" />
+            <End Role="InspectionDefaultOrder" EntitySet="InspectionDefaultOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_Equipment_EquipmentInfo" Association="Self.FK_InspectionPlan_Equipment_EquipmentInfo">
+            <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_Equipment_InspectionPlan_Time" Association="Self.FK_InspectionPlan_Equipment_InspectionPlan_Time">
+            <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment" Association="Self.FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment">
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+            <End Role="InspectionPlan_EquipmentCheckItem" EntitySet="InspectionPlan_EquipmentCheckItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment" Association="Self.FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment">
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+            <End Role="InspectionPlan_EquipmentReportingItem" EntitySet="InspectionPlan_EquipmentReportingItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_Member_InspectionPlan_Time" Association="Self.FK_InspectionPlan_Member_InspectionPlan_Time">
+            <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
+            <End Role="InspectionPlan_Member" EntitySet="InspectionPlan_Member" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_RFIDOrder_InspectionPlan_Equipment" Association="Self.FK_InspectionPlan_RFIDOrder_InspectionPlan_Equipment">
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+            <End Role="InspectionPlan_RFIDOrder" EntitySet="InspectionPlan_RFIDOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_RFIDOrder_InspectionPlan_Time" Association="Self.FK_InspectionPlan_RFIDOrder_InspectionPlan_Time">
+            <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
+            <End Role="InspectionPlan_RFIDOrder" EntitySet="InspectionPlan_RFIDOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_RFIDOrder_RFID" Association="Self.FK_InspectionPlan_RFIDOrder_RFID">
+            <End Role="RFID" EntitySet="RFID" />
+            <End Role="InspectionPlan_RFIDOrder" EntitySet="InspectionPlan_RFIDOrder" />
+          </AssociationSet>
           <AssociationSet Name="FK_PathSampleOrder_PathSample" Association="Self.FK_PathSampleOrder_PathSample">
             <End Role="PathSample" EntitySet="PathSample" />
             <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
@@ -1232,6 +1530,8 @@
           <EntitySet Name="AspNetUsers" EntityType="Bimfm_MinSheng_MISModel.AspNetUsers" />
           <EntitySet Name="BIMData" EntityType="Bimfm_MinSheng_MISModel.BIMData" />
           <EntitySet Name="ComputationalStock" EntityType="Bimfm_MinSheng_MISModel.ComputationalStock" />
+          <EntitySet Name="DailyInspectionSample" EntityType="Bimfm_MinSheng_MISModel.DailyInspectionSample" />
+          <EntitySet Name="DailyInspectionSampleContent" EntityType="Bimfm_MinSheng_MISModel.DailyInspectionSampleContent" />
           <EntitySet Name="DesignDiagrams" EntityType="Bimfm_MinSheng_MISModel.DesignDiagrams" />
           <EntitySet Name="DrawingSubSystemManagement" EntityType="Bimfm_MinSheng_MISModel.DrawingSubSystemManagement" />
           <EntitySet Name="DrawingSystemManagement" EntityType="Bimfm_MinSheng_MISModel.DrawingSystemManagement" />
@@ -1248,7 +1548,15 @@
           <EntitySet Name="ExperimentalLabel" EntityType="Bimfm_MinSheng_MISModel.ExperimentalLabel" />
           <EntitySet Name="ExperimentalLabel_Item" EntityType="Bimfm_MinSheng_MISModel.ExperimentalLabel_Item" />
           <EntitySet Name="Floor_Info" EntityType="Bimfm_MinSheng_MISModel.Floor_Info" />
+          <EntitySet Name="InspectionDefaultOrder" EntityType="Bimfm_MinSheng_MISModel.InspectionDefaultOrder" />
+          <EntitySet Name="InspectionPathSample" EntityType="Bimfm_MinSheng_MISModel.InspectionPathSample" />
           <EntitySet Name="InspectionPlan" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan" />
+          <EntitySet Name="InspectionPlan_Equipment" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan_Equipment" />
+          <EntitySet Name="InspectionPlan_EquipmentCheckItem" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan_EquipmentCheckItem" />
+          <EntitySet Name="InspectionPlan_EquipmentReportingItem" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan_EquipmentReportingItem" />
+          <EntitySet Name="InspectionPlan_Member" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan_Member" />
+          <EntitySet Name="InspectionPlan_RFIDOrder" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan_RFIDOrder" />
+          <EntitySet Name="InspectionPlan_Time" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan_Time" />
           <EntitySet Name="LaboratoryMaintenance" EntityType="Bimfm_MinSheng_MISModel.LaboratoryMaintenance" />
           <EntitySet Name="ManufacturerInfo" EntityType="Bimfm_MinSheng_MISModel.ManufacturerInfo" />
           <EntitySet Name="MeetingMinutes" EntityType="Bimfm_MinSheng_MISModel.MeetingMinutes" />
@@ -1297,6 +1605,14 @@
             <End Role="ComputationalStock" EntitySet="ComputationalStock" />
             <End Role="StockChangesRecord" EntitySet="StockChangesRecord" />
           </AssociationSet>
+          <AssociationSet Name="FK_DailyInspectionSampleContent_DailyInspectionSample" Association="Bimfm_MinSheng_MISModel.FK_DailyInspectionSampleContent_DailyInspectionSample">
+            <End Role="DailyInspectionSample" EntitySet="DailyInspectionSample" />
+            <End Role="DailyInspectionSampleContent" EntitySet="DailyInspectionSampleContent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DailyInspectionSampleContent_InspectionPathSample" Association="Bimfm_MinSheng_MISModel.FK_DailyInspectionSampleContent_InspectionPathSample">
+            <End Role="InspectionPathSample" EntitySet="InspectionPathSample" />
+            <End Role="DailyInspectionSampleContent" EntitySet="DailyInspectionSampleContent" />
+          </AssociationSet>
           <AssociationSet Name="FK_DrawingSubSystemManagement_DrawingSystemManagement" Association="Bimfm_MinSheng_MISModel.FK_DrawingSubSystemManagement_DrawingSystemManagement">
             <End Role="DrawingSystemManagement" EntitySet="DrawingSystemManagement" />
             <End Role="DrawingSubSystemManagement" EntitySet="DrawingSubSystemManagement" />
@@ -1341,6 +1657,10 @@
             <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
             <End Role="EquipmentReportForm" EntitySet="EquipmentReportForm" />
           </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_Equipment_EquipmentInfo" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_EquipmentInfo">
+            <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+          </AssociationSet>
           <AssociationSet Name="FK_RFID_EquipmentInfo" Association="Bimfm_MinSheng_MISModel.FK_RFID_EquipmentInfo">
             <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
             <End Role="RFID" EntitySet="RFID" />
@@ -1364,6 +1684,42 @@
           <AssociationSet Name="FK_RFID_Floor_Info" Association="Bimfm_MinSheng_MISModel.FK_RFID_Floor_Info">
             <End Role="Floor_Info" EntitySet="Floor_Info" />
             <End Role="RFID" EntitySet="RFID" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionDefaultOrder_InspectionDefaultOrder" Association="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionDefaultOrder">
+            <End Role="RFID" EntitySet="RFID" />
+            <End Role="InspectionDefaultOrder" EntitySet="InspectionDefaultOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionDefaultOrder_InspectionPathSample" Association="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionPathSample">
+            <End Role="InspectionPathSample" EntitySet="InspectionPathSample" />
+            <End Role="InspectionDefaultOrder" EntitySet="InspectionDefaultOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_Equipment_InspectionPlan_Time" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_InspectionPlan_Time">
+            <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment">
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+            <End Role="InspectionPlan_EquipmentCheckItem" EntitySet="InspectionPlan_EquipmentCheckItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment">
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+            <End Role="InspectionPlan_EquipmentReportingItem" EntitySet="InspectionPlan_EquipmentReportingItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_RFIDOrder_InspectionPlan_Equipment" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_InspectionPlan_Equipment">
+            <End Role="InspectionPlan_Equipment" EntitySet="InspectionPlan_Equipment" />
+            <End Role="InspectionPlan_RFIDOrder" EntitySet="InspectionPlan_RFIDOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_Member_InspectionPlan_Time" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Member_InspectionPlan_Time">
+            <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
+            <End Role="InspectionPlan_Member" EntitySet="InspectionPlan_Member" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_RFIDOrder_InspectionPlan_Time" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_InspectionPlan_Time">
+            <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
+            <End Role="InspectionPlan_RFIDOrder" EntitySet="InspectionPlan_RFIDOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_RFIDOrder_RFID" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_RFID">
+            <End Role="RFID" EntitySet="RFID" />
+            <End Role="InspectionPlan_RFIDOrder" EntitySet="InspectionPlan_RFIDOrder" />
           </AssociationSet>
           <AssociationSet Name="FK_PathSampleOrder_PathSample" Association="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample">
             <End Role="PathSample" EntitySet="PathSample" />
@@ -1545,6 +1901,26 @@
           <NavigationProperty Name="StockType" Relationship="Bimfm_MinSheng_MISModel.FK_ComputationalStock_StockType" FromRole="ComputationalStock" ToRole="StockType" />
           <NavigationProperty Name="StockChangesRecord" Relationship="Bimfm_MinSheng_MISModel.FK_StockChangesRecord_ComputationalStock" FromRole="ComputationalStock" ToRole="StockChangesRecord" />
         </EntityType>
+        <EntityType Name="DailyInspectionSample">
+          <Key>
+            <PropertyRef Name="DailyTemplateSN" />
+          </Key>
+          <Property Name="DailyTemplateSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="TemplateName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DailyInspectionSampleContent" Relationship="Bimfm_MinSheng_MISModel.FK_DailyInspectionSampleContent_DailyInspectionSample" FromRole="DailyInspectionSample" ToRole="DailyInspectionSampleContent" />
+        </EntityType>
+        <EntityType Name="DailyInspectionSampleContent">
+          <Key>
+            <PropertyRef Name="ScheduleSN" />
+          </Key>
+          <Property Name="ScheduleSN" Type="String" Nullable="false" MaxLength="14" FixedLength="true" Unicode="false" />
+          <Property Name="DailyTemplateSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="StartTime" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="EndTime" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="PlanPathSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="DailyInspectionSample" Relationship="Bimfm_MinSheng_MISModel.FK_DailyInspectionSampleContent_DailyInspectionSample" FromRole="DailyInspectionSampleContent" ToRole="DailyInspectionSample" />
+          <NavigationProperty Name="InspectionPathSample" Relationship="Bimfm_MinSheng_MISModel.FK_DailyInspectionSampleContent_InspectionPathSample" FromRole="DailyInspectionSampleContent" ToRole="InspectionPathSample" />
+        </EntityType>
         <EntityType Name="DesignDiagrams">
           <Key>
             <PropertyRef Name="DDSN" />
@@ -1666,6 +2042,7 @@
           <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentInfo_Floor_Info" FromRole="EquipmentInfo" ToRole="Floor_Info" />
           <NavigationProperty Name="Template_OneDeviceOneCard" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentInfo_Template_OneDeviceOneCard" FromRole="EquipmentInfo" ToRole="Template_OneDeviceOneCard" />
           <NavigationProperty Name="EquipmentReportForm" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentReportForm_EquipmentInfo" FromRole="EquipmentInfo" ToRole="EquipmentReportForm" />
+          <NavigationProperty Name="InspectionPlan_Equipment" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_EquipmentInfo" FromRole="EquipmentInfo" ToRole="InspectionPlan_Equipment" />
           <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_EquipmentInfo" FromRole="EquipmentInfo" ToRole="RFID" />
         </EntityType>
         <EntityType Name="EquipmentOperatingManual">
@@ -1763,6 +2140,26 @@
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentInfo_Floor_Info" FromRole="Floor_Info" ToRole="EquipmentInfo" />
           <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_Floor_Info" FromRole="Floor_Info" ToRole="RFID" />
         </EntityType>
+        <EntityType Name="InspectionDefaultOrder">
+          <Key>
+            <PropertyRef Name="DefaultOrder" />
+          </Key>
+          <Property Name="DefaultOrder" Type="String" Nullable="false" MaxLength="14" FixedLength="true" Unicode="false" />
+          <Property Name="PlanPathSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionDefaultOrder" FromRole="InspectionDefaultOrder" ToRole="RFID" />
+          <NavigationProperty Name="InspectionPathSample" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionPathSample" FromRole="InspectionDefaultOrder" ToRole="InspectionPathSample" />
+        </EntityType>
+        <EntityType Name="InspectionPathSample">
+          <Key>
+            <PropertyRef Name="PlanPathSN" />
+          </Key>
+          <Property Name="PlanPathSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="PathName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Frequency" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="DailyInspectionSampleContent" Relationship="Bimfm_MinSheng_MISModel.FK_DailyInspectionSampleContent_InspectionPathSample" FromRole="InspectionPathSample" ToRole="DailyInspectionSampleContent" />
+          <NavigationProperty Name="InspectionDefaultOrder" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionPathSample" FromRole="InspectionPathSample" ToRole="InspectionDefaultOrder" />
+        </EntityType>
         <EntityType Name="InspectionPlan">
           <Key>
             <PropertyRef Name="IPSN" />
@@ -1772,6 +2169,83 @@
           <Property Name="PlanDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="PlanState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="PlanCreateUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="CreateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_Equipment">
+          <Key>
+            <PropertyRef Name="IPESN" />
+          </Key>
+          <Property Name="IPESN" Type="String" Nullable="false" MaxLength="25" FixedLength="true" Unicode="false" />
+          <Property Name="IPTSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="false" />
+          <Property Name="ESN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="false" />
+          <Property Name="ReportUserName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="FillinTime" Type="DateTime" Precision="3" />
+          <Property Name="Memo" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_EquipmentInfo" FromRole="InspectionPlan_Equipment" ToRole="EquipmentInfo" />
+          <NavigationProperty Name="InspectionPlan_Time" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_InspectionPlan_Time" FromRole="InspectionPlan_Equipment" ToRole="InspectionPlan_Time" />
+          <NavigationProperty Name="InspectionPlan_EquipmentCheckItem" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment" FromRole="InspectionPlan_Equipment" ToRole="InspectionPlan_EquipmentCheckItem" />
+          <NavigationProperty Name="InspectionPlan_EquipmentReportingItem" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment" FromRole="InspectionPlan_Equipment" ToRole="InspectionPlan_EquipmentReportingItem" />
+          <NavigationProperty Name="InspectionPlan_RFIDOrder" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_InspectionPlan_Equipment" FromRole="InspectionPlan_Equipment" ToRole="InspectionPlan_RFIDOrder" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_EquipmentCheckItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="28" FixedLength="true" Unicode="false" />
+          <Property Name="IPESN" Type="String" Nullable="false" MaxLength="25" FixedLength="true" Unicode="false" />
+          <Property Name="CheckItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CheckResult" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="InspectionPlan_Equipment" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment" FromRole="InspectionPlan_EquipmentCheckItem" ToRole="InspectionPlan_Equipment" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_EquipmentReportingItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="28" FixedLength="true" Unicode="false" />
+          <Property Name="IPESN" Type="String" Nullable="false" MaxLength="25" FixedLength="true" Unicode="false" />
+          <Property Name="ReportValue" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ReportContent" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="InspectionPlan_Equipment" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment" FromRole="InspectionPlan_EquipmentReportingItem" ToRole="InspectionPlan_Equipment" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_Member">
+          <Key>
+            <PropertyRef Name="IPTMSN" />
+          </Key>
+          <Property Name="IPTMSN" Type="String" Nullable="false" MaxLength="15" FixedLength="true" Unicode="false" />
+          <Property Name="IPTSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="false" />
+          <Property Name="UserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="InspectionPlan_Time" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Member_InspectionPlan_Time" FromRole="InspectionPlan_Member" ToRole="InspectionPlan_Time" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_RFIDOrder">
+          <Key>
+            <PropertyRef Name="InspectionOrder" />
+          </Key>
+          <Property Name="InspectionOrder" Type="String" Nullable="false" MaxLength="18" FixedLength="true" Unicode="false" />
+          <Property Name="IPTSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="false" />
+          <Property Name="IPESN" Type="String" Nullable="false" MaxLength="25" FixedLength="true" Unicode="false" />
+          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="InspectionPlan_Equipment" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_InspectionPlan_Equipment" FromRole="InspectionPlan_RFIDOrder" ToRole="InspectionPlan_Equipment" />
+          <NavigationProperty Name="InspectionPlan_Time" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_InspectionPlan_Time" FromRole="InspectionPlan_RFIDOrder" ToRole="InspectionPlan_Time" />
+          <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_RFID" FromRole="InspectionPlan_RFIDOrder" ToRole="RFID" />
+        </EntityType>
+        <EntityType Name="InspectionPlan_Time">
+          <Key>
+            <PropertyRef Name="IPTSN" />
+          </Key>
+          <Property Name="IPTSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="false" />
+          <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="StartTime" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="EndTime" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="PlanPathSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="PathName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="InspectionNum" Type="Int32" Nullable="false" />
+          <Property Name="Frequency" Type="Int32" Nullable="false" />
+          <Property Name="InspectionState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="InspectionPlan_Equipment" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_InspectionPlan_Time" FromRole="InspectionPlan_Time" ToRole="InspectionPlan_Equipment" />
+          <NavigationProperty Name="InspectionPlan_Member" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Member_InspectionPlan_Time" FromRole="InspectionPlan_Time" ToRole="InspectionPlan_Member" />
+          <NavigationProperty Name="InspectionPlan_RFIDOrder" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_InspectionPlan_Time" FromRole="InspectionPlan_Time" ToRole="InspectionPlan_RFIDOrder" />
         </EntityType>
         <EntityType Name="LaboratoryMaintenance">
           <Key>
@@ -1857,7 +2331,7 @@
           <Key>
             <PropertyRef Name="RFIDInternalCode" />
           </Key>
-          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="24" FixedLength="true" Unicode="false" />
+          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="false" />
           <Property Name="SARSN" Type="String" MaxLength="13" FixedLength="true" Unicode="false" />
           <Property Name="ESN" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
           <Property Name="RFIDExternalCode" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -1868,6 +2342,8 @@
           <Property Name="Memo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_EquipmentInfo" FromRole="RFID" ToRole="EquipmentInfo" />
           <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_Floor_Info" FromRole="RFID" ToRole="Floor_Info" />
+          <NavigationProperty Name="InspectionDefaultOrder" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionDefaultOrder" FromRole="RFID" ToRole="InspectionDefaultOrder" />
+          <NavigationProperty Name="InspectionPlan_RFIDOrder" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_RFID" FromRole="RFID" ToRole="InspectionPlan_RFIDOrder" />
           <NavigationProperty Name="StockChangesRecord" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_StockChangesRecord" FromRole="RFID" ToRole="StockChangesRecord" />
         </EntityType>
         <EntityType Name="StockChangesRecord">
@@ -2138,6 +2614,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_DailyInspectionSampleContent_DailyInspectionSample">
+          <End Type="Bimfm_MinSheng_MISModel.DailyInspectionSample" Role="DailyInspectionSample" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.DailyInspectionSampleContent" Role="DailyInspectionSampleContent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DailyInspectionSample">
+              <PropertyRef Name="DailyTemplateSN" />
+            </Principal>
+            <Dependent Role="DailyInspectionSampleContent">
+              <PropertyRef Name="DailyTemplateSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DailyInspectionSampleContent_InspectionPathSample">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPathSample" Role="InspectionPathSample" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.DailyInspectionSampleContent" Role="DailyInspectionSampleContent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPathSample">
+              <PropertyRef Name="PlanPathSN" />
+            </Principal>
+            <Dependent Role="DailyInspectionSampleContent">
+              <PropertyRef Name="PlanPathSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_DrawingSubSystemManagement_DrawingSystemManagement">
           <End Type="Bimfm_MinSheng_MISModel.DrawingSystemManagement" Role="DrawingSystemManagement" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.DrawingSubSystemManagement" Role="DrawingSubSystemManagement" Multiplicity="*" />
@@ -2270,6 +2770,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_InspectionPlan_Equipment_EquipmentInfo">
+          <End Type="Bimfm_MinSheng_MISModel.EquipmentInfo" Role="EquipmentInfo" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Equipment" Role="InspectionPlan_Equipment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EquipmentInfo">
+              <PropertyRef Name="ESN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_Equipment">
+              <PropertyRef Name="ESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RFID_EquipmentInfo">
           <End Type="Bimfm_MinSheng_MISModel.EquipmentInfo" Role="EquipmentInfo" Multiplicity="0..1" />
           <End Type="Bimfm_MinSheng_MISModel.RFID" Role="RFID" Multiplicity="*" />
@@ -2339,6 +2851,114 @@
             </Principal>
             <Dependent Role="RFID">
               <PropertyRef Name="FSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionDefaultOrder_InspectionDefaultOrder">
+          <End Type="Bimfm_MinSheng_MISModel.RFID" Role="RFID" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionDefaultOrder" Role="InspectionDefaultOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RFID">
+              <PropertyRef Name="RFIDInternalCode" />
+            </Principal>
+            <Dependent Role="InspectionDefaultOrder">
+              <PropertyRef Name="RFIDInternalCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionDefaultOrder_InspectionPathSample">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPathSample" Role="InspectionPathSample" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionDefaultOrder" Role="InspectionDefaultOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPathSample">
+              <PropertyRef Name="PlanPathSN" />
+            </Principal>
+            <Dependent Role="InspectionDefaultOrder">
+              <PropertyRef Name="PlanPathSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_Equipment_InspectionPlan_Time">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Time" Role="InspectionPlan_Time" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Equipment" Role="InspectionPlan_Equipment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Time">
+              <PropertyRef Name="IPTSN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_Equipment">
+              <PropertyRef Name="IPTSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Equipment" Role="InspectionPlan_Equipment" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_EquipmentCheckItem" Role="InspectionPlan_EquipmentCheckItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Equipment">
+              <PropertyRef Name="IPESN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_EquipmentCheckItem">
+              <PropertyRef Name="IPESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Equipment" Role="InspectionPlan_Equipment" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_EquipmentReportingItem" Role="InspectionPlan_EquipmentReportingItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Equipment">
+              <PropertyRef Name="IPESN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_EquipmentReportingItem">
+              <PropertyRef Name="IPESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_RFIDOrder_InspectionPlan_Equipment">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Equipment" Role="InspectionPlan_Equipment" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_RFIDOrder" Role="InspectionPlan_RFIDOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Equipment">
+              <PropertyRef Name="IPESN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_RFIDOrder">
+              <PropertyRef Name="IPESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_Member_InspectionPlan_Time">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Time" Role="InspectionPlan_Time" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Member" Role="InspectionPlan_Member" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Time">
+              <PropertyRef Name="IPTSN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_Member">
+              <PropertyRef Name="IPTSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_RFIDOrder_InspectionPlan_Time">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Time" Role="InspectionPlan_Time" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_RFIDOrder" Role="InspectionPlan_RFIDOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan_Time">
+              <PropertyRef Name="IPTSN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_RFIDOrder">
+              <PropertyRef Name="IPTSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_RFIDOrder_RFID">
+          <End Type="Bimfm_MinSheng_MISModel.RFID" Role="RFID" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_RFIDOrder" Role="InspectionPlan_RFIDOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RFID">
+              <PropertyRef Name="RFIDInternalCode" />
+            </Principal>
+            <Dependent Role="InspectionPlan_RFIDOrder">
+              <PropertyRef Name="RFIDInternalCode" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2603,6 +3223,25 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="DailyInspectionSample">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DailyInspectionSample">
+              <MappingFragment StoreEntitySet="DailyInspectionSample">
+                <ScalarProperty Name="TemplateName" ColumnName="TemplateName" />
+                <ScalarProperty Name="DailyTemplateSN" ColumnName="DailyTemplateSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DailyInspectionSampleContent">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DailyInspectionSampleContent">
+              <MappingFragment StoreEntitySet="DailyInspectionSampleContent">
+                <ScalarProperty Name="PlanPathSN" ColumnName="PlanPathSN" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="DailyTemplateSN" ColumnName="DailyTemplateSN" />
+                <ScalarProperty Name="ScheduleSN" ColumnName="ScheduleSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="DesignDiagrams">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.DesignDiagrams">
               <MappingFragment StoreEntitySet="DesignDiagrams">
@@ -2809,14 +3448,101 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="InspectionDefaultOrder">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionDefaultOrder">
+              <MappingFragment StoreEntitySet="InspectionDefaultOrder">
+                <ScalarProperty Name="RFIDInternalCode" ColumnName="RFIDInternalCode" />
+                <ScalarProperty Name="PlanPathSN" ColumnName="PlanPathSN" />
+                <ScalarProperty Name="DefaultOrder" ColumnName="DefaultOrder" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InspectionPathSample">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPathSample">
+              <MappingFragment StoreEntitySet="InspectionPathSample">
+                <ScalarProperty Name="Frequency" ColumnName="Frequency" />
+                <ScalarProperty Name="PathName" ColumnName="PathName" />
+                <ScalarProperty Name="PlanPathSN" ColumnName="PlanPathSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="InspectionPlan">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan">
               <MappingFragment StoreEntitySet="InspectionPlan">
+                <ScalarProperty Name="CreateTime" ColumnName="CreateTime" />
                 <ScalarProperty Name="PlanCreateUserID" ColumnName="PlanCreateUserID" />
                 <ScalarProperty Name="PlanState" ColumnName="PlanState" />
                 <ScalarProperty Name="PlanDate" ColumnName="PlanDate" />
                 <ScalarProperty Name="IPName" ColumnName="IPName" />
                 <ScalarProperty Name="IPSN" ColumnName="IPSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InspectionPlan_Equipment">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan_Equipment">
+              <MappingFragment StoreEntitySet="InspectionPlan_Equipment">
+                <ScalarProperty Name="Memo" ColumnName="Memo" />
+                <ScalarProperty Name="FillinTime" ColumnName="FillinTime" />
+                <ScalarProperty Name="ReportUserName" ColumnName="ReportUserName" />
+                <ScalarProperty Name="ESN" ColumnName="ESN" />
+                <ScalarProperty Name="IPTSN" ColumnName="IPTSN" />
+                <ScalarProperty Name="IPESN" ColumnName="IPESN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InspectionPlan_EquipmentCheckItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan_EquipmentCheckItem">
+              <MappingFragment StoreEntitySet="InspectionPlan_EquipmentCheckItem">
+                <ScalarProperty Name="CheckResult" ColumnName="CheckResult" />
+                <ScalarProperty Name="CheckItemName" ColumnName="CheckItemName" />
+                <ScalarProperty Name="IPESN" ColumnName="IPESN" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InspectionPlan_EquipmentReportingItem">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan_EquipmentReportingItem">
+              <MappingFragment StoreEntitySet="InspectionPlan_EquipmentReportingItem">
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="ReportContent" ColumnName="ReportContent" />
+                <ScalarProperty Name="ReportValue" ColumnName="ReportValue" />
+                <ScalarProperty Name="IPESN" ColumnName="IPESN" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InspectionPlan_Member">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan_Member">
+              <MappingFragment StoreEntitySet="InspectionPlan_Member">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="IPTSN" ColumnName="IPTSN" />
+                <ScalarProperty Name="IPTMSN" ColumnName="IPTMSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InspectionPlan_RFIDOrder">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan_RFIDOrder">
+              <MappingFragment StoreEntitySet="InspectionPlan_RFIDOrder">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="RFIDInternalCode" ColumnName="RFIDInternalCode" />
+                <ScalarProperty Name="IPESN" ColumnName="IPESN" />
+                <ScalarProperty Name="IPTSN" ColumnName="IPTSN" />
+                <ScalarProperty Name="InspectionOrder" ColumnName="InspectionOrder" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InspectionPlan_Time">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan_Time">
+              <MappingFragment StoreEntitySet="InspectionPlan_Time">
+                <ScalarProperty Name="InspectionState" ColumnName="InspectionState" />
+                <ScalarProperty Name="Frequency" ColumnName="Frequency" />
+                <ScalarProperty Name="InspectionNum" ColumnName="InspectionNum" />
+                <ScalarProperty Name="PathName" ColumnName="PathName" />
+                <ScalarProperty Name="PlanPathSN" ColumnName="PlanPathSN" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="IPSN" ColumnName="IPSN" />
+                <ScalarProperty Name="IPTSN" ColumnName="IPTSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

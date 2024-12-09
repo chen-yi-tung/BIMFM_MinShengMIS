@@ -34,6 +34,8 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<BIMData> BIMData { get; set; }
         public virtual DbSet<ComputationalStock> ComputationalStock { get; set; }
+        public virtual DbSet<DailyInspectionSample> DailyInspectionSample { get; set; }
+        public virtual DbSet<DailyInspectionSampleContent> DailyInspectionSampleContent { get; set; }
         public virtual DbSet<DesignDiagrams> DesignDiagrams { get; set; }
         public virtual DbSet<DrawingSubSystemManagement> DrawingSubSystemManagement { get; set; }
         public virtual DbSet<DrawingSystemManagement> DrawingSystemManagement { get; set; }
@@ -50,7 +52,15 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<ExperimentalLabel> ExperimentalLabel { get; set; }
         public virtual DbSet<ExperimentalLabel_Item> ExperimentalLabel_Item { get; set; }
         public virtual DbSet<Floor_Info> Floor_Info { get; set; }
+        public virtual DbSet<InspectionDefaultOrder> InspectionDefaultOrder { get; set; }
+        public virtual DbSet<InspectionPathSample> InspectionPathSample { get; set; }
         public virtual DbSet<InspectionPlan> InspectionPlan { get; set; }
+        public virtual DbSet<InspectionPlan_Equipment> InspectionPlan_Equipment { get; set; }
+        public virtual DbSet<InspectionPlan_EquipmentCheckItem> InspectionPlan_EquipmentCheckItem { get; set; }
+        public virtual DbSet<InspectionPlan_EquipmentReportingItem> InspectionPlan_EquipmentReportingItem { get; set; }
+        public virtual DbSet<InspectionPlan_Member> InspectionPlan_Member { get; set; }
+        public virtual DbSet<InspectionPlan_RFIDOrder> InspectionPlan_RFIDOrder { get; set; }
+        public virtual DbSet<InspectionPlan_Time> InspectionPlan_Time { get; set; }
         public virtual DbSet<LaboratoryMaintenance> LaboratoryMaintenance { get; set; }
         public virtual DbSet<ManufacturerInfo> ManufacturerInfo { get; set; }
         public virtual DbSet<MeetingMinutes> MeetingMinutes { get; set; }

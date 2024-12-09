@@ -21,6 +21,7 @@ namespace MinSheng_MIS.Models
             this.Equipment_MaintainItemValue = new HashSet<Equipment_MaintainItemValue>();
             this.Equipment_MaintenanceForm = new HashSet<Equipment_MaintenanceForm>();
             this.EquipmentReportForm = new HashSet<EquipmentReportForm>();
+            this.InspectionPlan_Equipment = new HashSet<InspectionPlan_Equipment>();
             this.RFID = new HashSet<RFID>();
         }
     
@@ -52,6 +53,8 @@ namespace MinSheng_MIS.Models
         public virtual Template_OneDeviceOneCard Template_OneDeviceOneCard { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EquipmentReportForm> EquipmentReportForm { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<InspectionPlan_Equipment> InspectionPlan_Equipment { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RFID> RFID { get; set; }
     }

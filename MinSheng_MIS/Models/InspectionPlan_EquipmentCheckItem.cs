@@ -12,13 +12,13 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class InspectionPlan
+    public partial class InspectionPlan_EquipmentCheckItem
     {
-        public string IPSN { get; set; }
-        public string IPName { get; set; }
-        public System.DateTime PlanDate { get; set; }
-        public string PlanState { get; set; }
-        public string PlanCreateUserID { get; set; }
-        public System.DateTime CreateTime { get; set; }
+        public string Id { get; set; }
+        public string IPESN { get; set; }
+        public string CheckItemName { get; set; }
+        public string CheckResult { get; set; }
+    
+        public virtual InspectionPlan_Equipment InspectionPlan_Equipment { get; set; }
     }
 }

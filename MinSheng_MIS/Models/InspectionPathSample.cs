@@ -12,31 +12,22 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class RFID
+    public partial class InspectionPathSample
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public RFID()
+        public InspectionPathSample()
         {
+            this.DailyInspectionSampleContent = new HashSet<DailyInspectionSampleContent>();
             this.InspectionDefaultOrder = new HashSet<InspectionDefaultOrder>();
-            this.InspectionPlan_RFIDOrder = new HashSet<InspectionPlan_RFIDOrder>();
         }
     
-        public string RFIDInternalCode { get; set; }
-        public string SARSN { get; set; }
-        public string ESN { get; set; }
-        public string RFIDExternalCode { get; set; }
-        public string FSN { get; set; }
-        public string Name { get; set; }
-        public Nullable<decimal> Location_X { get; set; }
-        public Nullable<decimal> Location_Y { get; set; }
-        public string Memo { get; set; }
+        public string PlanPathSN { get; set; }
+        public string PathName { get; set; }
+        public int Frequency { get; set; }
     
-        public virtual EquipmentInfo EquipmentInfo { get; set; }
-        public virtual Floor_Info Floor_Info { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DailyInspectionSampleContent> DailyInspectionSampleContent { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InspectionDefaultOrder> InspectionDefaultOrder { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InspectionPlan_RFIDOrder> InspectionPlan_RFIDOrder { get; set; }
-        public virtual StockChangesRecord StockChangesRecord { get; set; }
     }
 }
