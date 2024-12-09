@@ -333,6 +333,9 @@
     <Compile Include="Models\InspectionPlan_Time.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\InspectionTrack.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\LaboratoryMaintenance.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -443,6 +446,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\WarningMessageFillinRecord.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WatchPairing.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -434,6 +434,24 @@
           <Property Name="Frequency" Type="int" Nullable="false" />
           <Property Name="InspectionState" Type="char" MaxLength="1" Nullable="false" />
         </EntityType>
+        <!--產生期間發現錯誤:
+警告 6002: 資料表/檢視 'Bimfm_MinSheng_MIS.dbo.InspectionTrack' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
+        <EntityType Name="InspectionTrack">
+          <Key>
+            <PropertyRef Name="TrackTime" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="FSN" />
+            <PropertyRef Name="LocationX" />
+            <PropertyRef Name="LocationY" />
+            <PropertyRef Name="Heartbeat" />
+          </Key>
+          <Property Name="TrackTime" Type="datetime" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
+          <Property Name="LocationX" Type="decimal" Precision="19" Scale="11" Nullable="false" />
+          <Property Name="LocationY" Type="decimal" Precision="19" Scale="11" Nullable="false" />
+          <Property Name="Heartbeat" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="LaboratoryMaintenance">
           <Key>
             <PropertyRef Name="LMSN" />
@@ -692,6 +710,13 @@
           <Property Name="FillinUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="FillinState" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="Memo" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="WatchPairing">
+          <Key>
+            <PropertyRef Name="WatchID" />
+          </Key>
+          <Property Name="WatchID" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="UserID" Type="nvarchar" MaxLength="256" Nullable="false" />
         </EntityType>
         <Association Name="FK_ComputationalStock_StockType">
           <End Role="StockType" Type="Self.StockType" Multiplicity="1" />
@@ -1097,6 +1122,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_InspectionTrack_Floor_Info">
+          <End Role="Floor_Info" Type="Self.Floor_Info" Multiplicity="1" />
+          <End Role="InspectionTrack" Type="Self.InspectionTrack" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Floor_Info">
+              <PropertyRef Name="FSN" />
+            </Principal>
+            <Dependent Role="InspectionTrack">
+              <PropertyRef Name="FSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PathSampleOrder_PathSample">
           <End Role="PathSample" Type="Self.PathSample" Multiplicity="1" />
           <End Role="PathSampleOrder" Type="Self.PathSampleOrder" Multiplicity="*" />
@@ -1327,6 +1364,17 @@
           <EntitySet Name="Tokens" EntityType="Self.Tokens" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessage" EntityType="Self.WarningMessage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessageFillinRecord" EntityType="Self.WarningMessageFillinRecord" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WatchPairing" EntityType="Self.WatchPairing" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InspectionTrack" EntityType="Self.InspectionTrack" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [InspectionTrack].[TrackTime] AS [TrackTime], 
+    [InspectionTrack].[UserName] AS [UserName], 
+    [InspectionTrack].[FSN] AS [FSN], 
+    [InspectionTrack].[LocationX] AS [LocationX], 
+    [InspectionTrack].[LocationY] AS [LocationY], 
+    [InspectionTrack].[Heartbeat] AS [Heartbeat]
+    FROM [dbo].[InspectionTrack] AS [InspectionTrack]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_ComputationalStock_StockType" Association="Self.FK_ComputationalStock_StockType">
             <End Role="StockType" EntitySet="StockType" />
             <End Role="ComputationalStock" EntitySet="ComputationalStock" />
@@ -1459,6 +1507,10 @@
             <End Role="RFID" EntitySet="RFID" />
             <End Role="InspectionPlan_RFIDOrder" EntitySet="InspectionPlan_RFIDOrder" />
           </AssociationSet>
+          <AssociationSet Name="FK_InspectionTrack_Floor_Info" Association="Self.FK_InspectionTrack_Floor_Info">
+            <End Role="Floor_Info" EntitySet="Floor_Info" />
+            <End Role="InspectionTrack" EntitySet="InspectionTrack" />
+          </AssociationSet>
           <AssociationSet Name="FK_PathSampleOrder_PathSample" Association="Self.FK_PathSampleOrder_PathSample">
             <End Role="PathSample" EntitySet="PathSample" />
             <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
@@ -1581,6 +1633,8 @@
           <EntitySet Name="Tokens" EntityType="Bimfm_MinSheng_MISModel.Tokens" />
           <EntitySet Name="WarningMessage" EntityType="Bimfm_MinSheng_MISModel.WarningMessage" />
           <EntitySet Name="WarningMessageFillinRecord" EntityType="Bimfm_MinSheng_MISModel.WarningMessageFillinRecord" />
+          <EntitySet Name="WatchPairing" EntityType="Bimfm_MinSheng_MISModel.WatchPairing" />
+          <EntitySet Name="InspectionTrack" EntityType="Bimfm_MinSheng_MISModel.InspectionTrack" />
           <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo">
             <End Role="AreaInfo" EntitySet="AreaInfo" />
             <End Role="Floor_Info" EntitySet="Floor_Info" />
@@ -1680,6 +1734,10 @@
           <AssociationSet Name="FK_ExperimentalLabel_TestingAndAnalysisWorkflow" Association="Bimfm_MinSheng_MISModel.FK_ExperimentalLabel_TestingAndAnalysisWorkflow">
             <End Role="TestingAndAnalysisWorkflow" EntitySet="TestingAndAnalysisWorkflow" />
             <End Role="ExperimentalLabel" EntitySet="ExperimentalLabel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionTrack_Floor_Info" Association="Bimfm_MinSheng_MISModel.FK_InspectionTrack_Floor_Info">
+            <End Role="Floor_Info" EntitySet="Floor_Info" />
+            <End Role="InspectionTrack" EntitySet="InspectionTrack" />
           </AssociationSet>
           <AssociationSet Name="FK_RFID_Floor_Info" Association="Bimfm_MinSheng_MISModel.FK_RFID_Floor_Info">
             <End Role="Floor_Info" EntitySet="Floor_Info" />
@@ -2138,6 +2196,7 @@
           <Property Name="ViewName" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
           <NavigationProperty Name="AreaInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="Floor_Info" ToRole="AreaInfo" />
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentInfo_Floor_Info" FromRole="Floor_Info" ToRole="EquipmentInfo" />
+          <NavigationProperty Name="InspectionTrack" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionTrack_Floor_Info" FromRole="Floor_Info" ToRole="InspectionTrack" />
           <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_Floor_Info" FromRole="Floor_Info" ToRole="RFID" />
         </EntityType>
         <EntityType Name="InspectionDefaultOrder">
@@ -2538,6 +2597,30 @@
           <Property Name="Memo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="WarningMessage" Relationship="Bimfm_MinSheng_MISModel.FK_WarningMessageFillinRecord_WarningMessage" FromRole="WarningMessageFillinRecord" ToRole="WarningMessage" />
         </EntityType>
+        <EntityType Name="WatchPairing">
+          <Key>
+            <PropertyRef Name="WatchID" />
+          </Key>
+          <Property Name="WatchID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="UserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="InspectionTrack">
+          <Key>
+            <PropertyRef Name="TrackTime" />
+            <PropertyRef Name="UserName" />
+            <PropertyRef Name="FSN" />
+            <PropertyRef Name="LocationX" />
+            <PropertyRef Name="LocationY" />
+            <PropertyRef Name="Heartbeat" />
+          </Key>
+          <Property Name="TrackTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="LocationX" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
+          <Property Name="LocationY" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
+          <Property Name="Heartbeat" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionTrack_Floor_Info" FromRole="InspectionTrack" ToRole="Floor_Info" />
+        </EntityType>
         <Association Name="FK_Floor_Info_AreaInfo">
           <End Type="Bimfm_MinSheng_MISModel.AreaInfo" Role="AreaInfo" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="*" />
@@ -2839,6 +2922,18 @@
             </Principal>
             <Dependent Role="ExperimentalLabel">
               <PropertyRef Name="TAWSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionTrack_Floor_Info">
+          <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionTrack" Role="InspectionTrack" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Floor_Info">
+              <PropertyRef Name="FSN" />
+            </Principal>
+            <Dependent Role="InspectionTrack">
+              <PropertyRef Name="FSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3824,6 +3919,26 @@
                 <ScalarProperty Name="FillinDateTime" ColumnName="FillinDateTime" />
                 <ScalarProperty Name="WNFRSN" ColumnName="WNFRSN" />
                 <ScalarProperty Name="WMSN" ColumnName="WMSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WatchPairing">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.WatchPairing">
+              <MappingFragment StoreEntitySet="WatchPairing">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="WatchID" ColumnName="WatchID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InspectionTrack">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionTrack">
+              <MappingFragment StoreEntitySet="InspectionTrack">
+                <ScalarProperty Name="Heartbeat" ColumnName="Heartbeat" />
+                <ScalarProperty Name="LocationY" ColumnName="LocationY" />
+                <ScalarProperty Name="LocationX" ColumnName="LocationX" />
+                <ScalarProperty Name="FSN" ColumnName="FSN" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="TrackTime" ColumnName="TrackTime" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

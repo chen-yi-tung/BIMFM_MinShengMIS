@@ -85,5 +85,7 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<Tokens> Tokens { get; set; }
         public virtual DbSet<WarningMessage> WarningMessage { get; set; }
         public virtual DbSet<WarningMessageFillinRecord> WarningMessageFillinRecord { get; set; }
+        public virtual DbSet<WatchPairing> WatchPairing { get; set; }
+        public virtual DbSet<InspectionTrack> InspectionTrack { get; set; }
     }
 }

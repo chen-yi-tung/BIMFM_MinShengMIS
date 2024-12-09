@@ -18,6 +18,7 @@ namespace MinSheng_MIS.Models
         public Floor_Info()
         {
             this.EquipmentInfo = new HashSet<EquipmentInfo>();
+            this.InspectionTrack = new HashSet<InspectionTrack>();
             this.RFID = new HashSet<RFID>();
         }
     
@@ -31,6 +32,8 @@ namespace MinSheng_MIS.Models
         public virtual AreaInfo AreaInfo { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EquipmentInfo> EquipmentInfo { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<InspectionTrack> InspectionTrack { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RFID> RFID { get; set; }
     }
