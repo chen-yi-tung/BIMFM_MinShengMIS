@@ -3,6 +3,7 @@
 }
 @section styles {
     <link rel="stylesheet" href="/Content/datagrid-modal.css">
+    <link rel="stylesheet" href="/Content/EquipmentInfoManagement.css">
     <script src="/Scripts/datatable.js" defer></script>
     <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
@@ -74,53 +75,55 @@
                 </div>
                 <div class="form-group">
                     <label for="Other" class="d-flex gap-1">
-                        <div class="tooltip">
-                            <img src="data:image/svg+xml,%3Csvg%20width%3D%2225%22%20height%3D%2225%22%20viewBox%3D%220%200%2025%2025%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M12.6445%203.1499C10.7162%203.1499%208.83111%203.72173%207.22773%204.79307C5.62435%205.86442%204.37466%207.38716%203.63671%209.16874C2.89876%2010.9503%202.70567%2012.9107%203.08188%2014.802C3.45809%2016.6933%204.38668%2018.4306%205.75024%2019.7942C7.11381%2021.1578%208.85109%2022.0864%2010.7424%2022.4626C12.6337%2022.8388%2014.5941%2022.6457%2016.3757%2021.9077C18.1573%2021.1698%2019.68%2019.9201%2020.7514%2018.3167C21.8227%2016.7133%2022.3945%2014.8283%2022.3945%2012.8999C22.3918%2010.3149%2021.3637%207.83651%2019.5358%206.00863C17.7079%204.18074%2015.2296%203.15263%2012.6445%203.1499ZM12.6445%2021.1499C11.0128%2021.1499%209.41779%2020.666%208.06108%2019.7595C6.70438%2018.853%205.64695%2017.5645%205.02253%2016.057C4.39811%2014.5496%204.23473%2012.8908%204.55306%2011.2904C4.87138%209.69006%205.65712%208.22005%206.8109%207.06627C7.96469%205.91249%209.4347%205.12675%2011.035%204.80842C12.6354%204.4901%2014.2942%204.65347%2015.8017%205.2779C17.3092%205.90232%2018.5976%206.95974%2019.5042%208.31645C20.4107%209.67315%2020.8945%2011.2682%2020.8945%2012.8999C20.8921%2015.0872%2020.0221%2017.1842%2018.4754%2018.7308C16.9288%2020.2774%2014.8318%2021.1474%2012.6445%2021.1499ZM14.1445%2017.3999C14.1445%2017.5988%2014.0655%2017.7896%2013.9249%2017.9302C13.7842%2018.0709%2013.5934%2018.1499%2013.3945%2018.1499C12.9967%2018.1499%2012.6152%2017.9919%2012.3339%2017.7106C12.0526%2017.4293%2011.8945%2017.0477%2011.8945%2016.6499V12.8999C11.6956%2012.8999%2011.5049%2012.8209%2011.3642%2012.6802C11.2236%2012.5396%2011.1445%2012.3488%2011.1445%2012.1499C11.1445%2011.951%2011.2236%2011.7602%2011.3642%2011.6196C11.5049%2011.4789%2011.6956%2011.3999%2011.8945%2011.3999C12.2924%2011.3999%2012.6739%2011.5579%2012.9552%2011.8392C13.2365%2012.1205%2013.3945%2012.5021%2013.3945%2012.8999V16.6499C13.5934%2016.6499%2013.7842%2016.7289%2013.9249%2016.8696C14.0655%2017.0102%2014.1445%2017.201%2014.1445%2017.3999ZM11.1445%208.7749C11.1445%208.5524%2011.2105%208.33489%2011.3341%208.14989C11.4577%207.96488%2011.6334%207.82069%2011.839%207.73554C12.0446%207.65039%2012.2708%207.62811%2012.489%207.67152C12.7072%207.71493%2012.9077%207.82207%2013.065%207.97941C13.2224%208.13674%2013.3295%208.3372%2013.3729%208.55543C13.4163%208.77365%2013.394%208.99985%2013.3089%209.20542C13.2238%209.41099%2013.0796%209.58669%2012.8946%209.71031C12.7095%209.83392%2012.492%209.8999%2012.2695%209.8999C11.9712%209.8999%2011.685%209.78138%2011.474%209.5704C11.2631%209.35942%2011.1445%209.07327%2011.1445%208.7749Z%22%20fill%3D%22%23FFD19A%22%2F%3E%3C%2Fsvg%3E" />
-                            <span class="tooltiptext">請將RFID標籤放至讀取器上後，點選「掃描」</span>
-                        </div>
+                        <span class="form-tooltip-toggle" data-bs-placement="top-start"
+                            title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
                         RFID
                     </label>
-                    <button type="button" class="btn btn-search d-flex justify-content-center align-items-center gap-1 w-100">
-                        掃描<img src="data:image/svg+xml,%3Csvg%20width%3D%2221%22%20height%3D%2221%22%20viewBox%3D%220%200%2021%2021%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20clip-path%3D%22url(%23clip0_870_9535)%22%3E%3Cpath%20d%3D%22M10.6306%2011.1135C7.55357%2011.1135%204.47651%2011.1135%201.39945%2011.1135C1.04722%2011.1135%200.788563%2010.934%200.683074%2010.6227C0.588313%2010.3418%200.668771%2010.0155%200.919084%209.84735C1.05199%209.75789%201.23078%209.69706%201.39051%209.69348C2.148%209.67798%202.90669%209.68633%203.66478%209.68633C9.06796%209.68633%2014.4711%209.68633%2019.8743%209.68633C20.4375%209.68633%2020.8023%2010.201%2020.577%2010.6865C20.4387%2010.9841%2020.1956%2011.1159%2019.8606%2011.1159C16.7836%2011.1117%2013.7065%2011.1135%2010.6294%2011.1135H10.6306Z%22%20fill%3D%22white%22%2F%3E%3Cpath%20d%3D%22M16.6073%200.400453C17.239%200.400453%2017.8707%200.398664%2018.5025%200.400453C19.6813%200.405225%2020.6295%201.34693%2020.6337%202.52122C20.6373%203.70387%2020.6355%204.88592%2020.6337%206.06856C20.6337%206.51824%2020.3345%206.83015%2019.912%206.82717C19.5037%206.82419%2019.2087%206.50989%2019.2081%206.07274C19.2069%204.95748%2019.2081%203.84163%2019.2081%202.72638C19.2081%202.09182%2018.9471%201.82762%2018.3207%201.82762C17.0721%201.82762%2015.8235%201.82881%2014.575%201.82702C14.2114%201.82702%2013.9003%201.56044%2013.858%201.22347C13.8121%200.860271%2014.0153%200.532852%2014.3598%200.430273C14.4432%200.405225%2014.535%200.402243%2014.6232%200.402243C15.2848%200.399857%2015.9463%200.40105%2016.6073%200.40105V0.400453Z%22%20fill%3D%22white%22%2F%3E%3Cpath%20d%3D%22M4.68258%2020.3992C4.04369%2020.3992%203.4042%2020.4016%202.7653%2020.3986C1.60314%2020.3927%200.654332%2019.4462%200.650756%2018.2838C0.646584%2017.094%200.648968%2015.9042%200.650756%2014.7144C0.650756%2014.2785%200.949939%2013.9713%201.36534%2013.9719C1.77776%2013.9725%202.07575%2014.2826%202.07635%2014.7192C2.07754%2015.8571%202.07635%2016.995%202.07694%2018.1324C2.07694%2018.6858%202.36123%2018.9709%202.91311%2018.9715C4.16169%2018.9721%205.41028%2018.9715%206.65826%2018.9715C7.11181%2018.9715%207.42827%2019.2637%207.43006%2019.68C7.43185%2020.1016%207.11896%2020.3975%206.6678%2020.398C6.00626%2020.3992%205.34472%2020.398%204.68377%2020.398L4.68258%2020.3992Z%22%20fill%3D%22white%22%2F%3E%3Cpath%20d%3D%22M16.5791%2020.3993C15.9253%2020.3993%2015.2709%2020.4005%2014.6171%2020.3993C14.166%2020.3987%2013.8537%2020.1023%2013.8555%2019.6806C13.8573%2019.2608%2014.1696%2018.9727%2014.6267%2018.9727C15.8675%2018.9721%2017.1089%2018.9727%2018.3498%2018.9727C18.935%2018.9727%2019.208%2018.6984%2019.2086%2018.1115C19.2086%2016.9885%2019.2086%2015.8655%2019.2086%2014.7425C19.2086%2014.2851%2019.4976%2013.9737%2019.9184%2013.9731C20.3398%2013.972%2020.6336%2014.2845%2020.6342%2014.7377C20.6354%2015.9126%2020.6366%2017.0875%2020.6342%2018.263C20.6312%2019.454%2019.6878%2020.3957%2018.4964%2020.3999C17.8575%2020.4023%2017.218%2020.3999%2016.5791%2020.3999V20.3993Z%22%20fill%3D%22white%22%2F%3E%3Cpath%20d%3D%22M4.69246%200.400631C5.354%200.400631%206.01554%200.399438%206.67649%200.400631C7.11334%200.401824%207.42683%200.697038%207.42981%201.10557C7.43279%201.52781%207.1199%201.8272%206.67112%201.8272C5.42254%201.82839%204.17395%201.8272%202.92537%201.8272C2.35323%201.8272%202.07669%202.10333%202.07669%202.67408C2.07609%203.81915%202.07788%204.96482%202.0755%206.10989C2.0749%206.46415%201.81982%206.7689%201.49024%206.82198C1.12967%206.87983%200.779234%206.66573%200.676725%206.31684C0.654078%206.2405%200.650502%206.15581%200.650502%206.0753C0.648714%204.89265%200.646926%203.71061%200.650502%202.52796C0.654674%201.35128%201.59931%200.406595%202.77518%200.401228C3.41408%200.398246%204.05357%200.400631%204.69246%200.400631Z%22%20fill%3D%22white%22%2F%3E%3C%2Fg%3E%3Cdefs%3E%3CclipPath%20id%3D%22clip0_870_9535%22%3E%3Crect%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22white%22%20transform%3D%22translate(0.644531%200.399902)%22%2F%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3C%2Fsvg%3E" />
+                    <button type="button"
+                        class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
+                        掃描<i class="scan-icon"></i>
                     </button>
                 </div>
-               @* <div class="datatable datatable-grid w-100 mt-2 form-group col-3fr" style="display: none;" id="RFIDZone">*@
+                @* <div class="datatable datatable-grid w-100 mt-2 form-group col-3fr" style="display: none;" id="RFIDZone">*@
                 <div class="datatable datatable-grid w-100 mt-2 form-group col-3fr" id="RFIDZone">
-                        <div class="datatable-body overflow-auto">
-                            <table class="datatable-table">
-                                <thead>
-                                    <tr>
-                                        <th class="datatable-header" style="width:130px"></th>
-                                        <th class="datatable-header" style="width:130px"><span>RFID內碼</span></th>
-                                        <th class="datatable-header" style="width:130px"><span>RFID外碼</span></th>
-                                        <th class="datatable-header" style="width:250px"><span>名稱</span></th>
-                                        <th class="datatable-header" style="width:120px"><span>棟別</span></th>
-                                        <th class="datatable-header" style="width:120px"><span>樓層</span></th>
-                                        <th class="datatable-header" style="width:120px"><span>備註</span></th>
-                                        <th class="datatable-header" style="width:48px"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="item-area">
-                                    <tr id="sample-input-tr">
-                                        <td id="d-_delete" class="p-2 d-flex justify-content-center gap-2">
-                                            @*<button type="button" class="btn btn-datagrid" onclick="RFIDLocationModal('@Url.Action("ReadEquipment", "EquipmentInfo_Management")'+'/${val}')">編輯</button>*@
-                                            <button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#RFIDEquipmentInfo">編輯</button>
-                                            <button type="button" class="btn btn-location" onclick="RFIDLocationModal(urlFakeData)"><i class="fa-solid fa-location-dot"></i></button>
-                                        </td>
-                                        <td id="InterCode">XSCXCZS</td>
-                                        <td id="ExterCode">XSCXCZS</td>
-                                        <td id="RFIDName">前處理機房巡檢</td>
-                                        <td id="Area">前處理區</td>
-                                        <td id="Floor">1F</td>
-                                        <td id="Memo">備註備註備註</td>
-                                        <td id="d-_delete" class="p-1 pt-2">
-                                            <button type="button" class="btn-delete-item"></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="datatable-body overflow-auto">
+                        <table class="datatable-table">
+                            <thead>
+                                <tr>
+                                    <th class="datatable-header" style="width:130px"></th>
+                                    <th class="datatable-header" style="width:130px"><span>RFID內碼</span></th>
+                                    <th class="datatable-header" style="width:130px"><span>RFID外碼</span></th>
+                                    <th class="datatable-header" style="width:250px"><span>名稱</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>棟別</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>樓層</span></th>
+                                    <th class="datatable-header" style="width:120px"><span>備註</span></th>
+                                    <th class="datatable-header" style="width:48px"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="item-area">
+                                <tr id="sample-input-tr">
+                                    <td id="d-_delete" class="p-2 d-flex justify-content-center gap-2">
+                                        @*<button type="button" class="btn btn-datagrid" onclick="RFIDLocationModal('@Url.Action("ReadEquipment", "EquipmentInfo_Management")'+'/${val}')">編輯</button>*@
+                                        <button type="button" class="btn btn-datagrid" data-bs-toggle="modal"
+                                            data-bs-target="#RFIDEquipmentInfo">編輯</button>
+                                        <button type="button" class="btn btn-location"
+                                            onclick="RFIDLocationModal(urlFakeData)"><i
+                                                class="fa-solid fa-location-dot"></i></button>
+                                    </td>
+                                    <td id="InterCode">XSCXCZS</td>
+                                    <td id="ExterCode">XSCXCZS</td>
+                                    <td id="RFIDName">前處理機房巡檢</td>
+                                    <td id="Area">前處理區</td>
+                                    <td id="Floor">1F</td>
+                                    <td id="Memo">備註備註備註</td>
+                                    <td id="d-_delete" class="p-1 pt-2">
+                                        <button type="button" class="btn-delete-item"></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
             </div>
             <div class="datatable datatable-grid w-100 h-100" id="RFIDZone" style="display: none;">
                 <div class="datatable-body h-100 overflow-auto">
@@ -141,8 +144,11 @@
                             <tr id="sample-input-tr">
                                 <td id="d-_delete" class="p-2 d-flex justify-content-center gap-2">
                                     @*<button type="button" class="btn btn-datagrid" onclick="RFIDLocationModal('@Url.Action("ReadEquipment", "EquipmentInfo_Management")'+'/${val}')">編輯</button>*@
-                                    <button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#RFIDEquipmentInfo">編輯</button>
-                                    <button type="button" class="btn btn-location" onclick="RFIDLocationModal(urlFakeData)"><i class="fa-solid fa-location-dot"></i></button>
+                                    <button type="button" class="btn btn-datagrid" data-bs-toggle="modal"
+                                        data-bs-target="#RFIDEquipmentInfo">編輯</button>
+                                    <button type="button" class="btn btn-location"
+                                        onclick="RFIDLocationModal(urlFakeData)"><i
+                                            class="fa-solid fa-location-dot"></i></button>
                                 </td>
                                 <td id="InterCode">XSCXCZS</td>
                                 <td id="ExterCode">XSCXCZS</td>
@@ -207,15 +213,18 @@
                     <div class="form-group-zone">
                         <div class="form-group">
                             <label for="InterCode">RFID內碼</label>
-                            <input type="text" class="form-control" name="InterCode" id="InterCode" maxlength="20" disabled>
+                            <input type="text" class="form-control" name="InterCode" id="InterCode" maxlength="20"
+                                disabled>
                         </div>
                         <div class="form-group required">
                             <label for="ExterCode">RFID外碼</label>
-                            <input type="text" class="form-control" name="ExterCode" id="ExterCode" maxlength="20" required>
+                            <input type="text" class="form-control" name="ExterCode" id="ExterCode" maxlength="20"
+                                required>
                         </div>
                         <div class="form-group required">
                             <label for="RFIDName">名稱</label>
-                            <input type="text" class="form-control" name="RFIDName" id="RFIDName" maxlength="20" required>
+                            <input type="text" class="form-control" name="RFIDName" id="RFIDName" maxlength="20"
+                                required>
                         </div>
                         <div class="form-group required">
                             <label for="Area">棟別</label>
@@ -230,7 +239,8 @@
                                 新增定位
                                 <i class="fa-solid fa-location-dot"></i>
                             </button>
-                            <img src="~/Content/img/inner-map.jpg" class="align-items-end w-100" style="height: 400px; object-fit: contain;" />
+                            <img src="~/Content/img/inner-map.jpg" class="align-items-end w-100"
+                                style="height: 400px; object-fit: contain;" />
                         </div>
                         <div class="form-group col-3fr">
                             <label for="Memo">備註</label>
@@ -285,10 +295,10 @@
         })
 
         const urlFakeData = {
-                RFIDName: "軸承潤滑劑",
-                Area: "A棟",
-                Floor: "5F",
-                Location: "",
+            RFIDName: "軸承潤滑劑",
+            Area: "A棟",
+            Floor: "5F",
+            Location: "",
         }
 
         const dropdownFakedata = [

@@ -1,0 +1,12 @@
+﻿.edit-item-init {
+    display: grid;
+    /* flex-direction: row;*/
+    gap: 12px;
+    background: rgb(255, 255, 255, 0.5);
+    border-radius: 5px;
+    padding: 8px;
+    grid-template-columns: 2fr 1fr;
+}
+.edit-item-init .form-control {
+    grid-column-start: unset;
+}

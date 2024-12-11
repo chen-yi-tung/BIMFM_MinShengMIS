@@ -1,0 +1,37 @@
+﻿.tab-btn-bar {
+    display: flex;
+    gap: 16px;
+}
+
+.tab-btn {
+    border: none;
+    border-radius: 5px 5px 0 0;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 16px 48px;
+    background: rgba(21, 52, 85, 0.2);
+    font-size: 24px;
+    line-height: 1.2;
+}
+
+.tab-checked {
+    background: rgba(21, 52, 85, 0.5);
+    border-bottom: 1px solid #a6d0fc;
+    color: #fff;
+}
+
+.input-wrapper,
+.input-wrapper2 {
+    position: relative;
+}
+
+.input-wrapper .unit,
+.input-wrapper2 .unit {
+    position: absolute;
+    right: 11px;
+    top: 45px;
+    color: #7e7e7e;
+}
+
+.input-wrapper2 .unit {
+    top: 35px;
+}

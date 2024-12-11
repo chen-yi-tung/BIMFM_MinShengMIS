@@ -141,12 +141,11 @@
     function Inspection_Complete_State(res) {
         const container = document.getElementById('Inspection_Complete_State');
         const ctx = getOrCreateElement(container, 'canvas')
-        const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0", "#E77272"]
+        const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
         const data = res || [
+            { label: "已完成", value: 10 },
+            { label: "執行中", value: 16 },
             { label: "待執行", value: 15 },
-            { label: "巡檢中", value: 10 },
-            { label: "巡檢完成", value: 16 },
-            { label: "巡檢未完成", value: 16 },
         ]
 
         let chart = Chart.getChart(ctx)
@@ -176,7 +175,7 @@
                             {
                                 string: (() => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label == "巡檢完成").value
+                                    let value = data.find(x => x.label == "已完成").value
                                     return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
                                 })(),
                                 color: "#fff",
@@ -222,7 +221,7 @@
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '巡檢總設備狀態',
+                    label: '設備維修及保養統計',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -239,7 +238,7 @@
                             {
                                 string: (() => {
                                     let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label.includes("保養+維修")).value
+                                    let value = data.find(x => x.label.includes("維修+保養")).value
                                     return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
                                 })(),
                                 color: "#fff",

@@ -2307,6 +2307,7 @@
     <Content Include="Content\easyui\themes\mobile.css" />
     <Content Include="Content\easyui\themes\react.css" />
     <Content Include="Content\easyui\themes\vue.css" />
+    <Content Include="Content\EquipmentInfoManagement.css" />
     <Content Include="Content\form.css" />
     <Content Include="Content\icomoon-v1.0\demo-files\demo.css" />
     <Content Include="Content\icomoon-v1.0\demo-files\demo.js" />
@@ -2330,7 +2331,9 @@
     <Content Include="Content\InformationManagement.css" />
     <Content Include="Content\login.css" />
     <Content Include="Content\navbar.css" />
+    <Content Include="Content\OneDeviceOneCardManagement.css" />
     <Content Include="Content\samplepath.css" />
+    <Content Include="Content\StockManagement.css" />
     <Content Include="Content\tagbox.css" />
     <Content Include="favicon.ico" />
     <Content Include="Files\AsBuiltDrawing\23070701.jpg" />

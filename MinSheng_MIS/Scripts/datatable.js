@@ -36,7 +36,7 @@ function createTableOuter(options) {
  * @param {*[]} data - the data need show
  * @param {SerializedName[]} sn 
  * @returns {string} TableInner
- */ 
+ */
 function createTableInner(data, sn) {
     const nullString = "-";
     return sn.map((e) => {
@@ -145,11 +145,11 @@ function createTableInner(data, sn) {
                                 </tr>
 
                             ${data[e.value]?.slice(1).map((item, i) => {
-                                return `<tr>
+                            return `<tr>
                                              <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
                                              <td class="datatable-table-td text-start" id="d-${e.value}" colspan="${e.colspan}" ${e.colspan ? `colspan="${e.colspan}"` : ""}>${item.value ?? nullString}</td>
                                         </tr>`;
-                            }).join("")}
+                        }).join("")}
                         `
                     } else {
                         html = `
@@ -159,7 +159,7 @@ function createTableInner(data, sn) {
                             </tr>`;
                     }
                 }
-                       
+
             }
         }
         return html;
@@ -332,7 +332,7 @@ function createInspectionTable(options) {
 }
 
 function createAccordion(options) {
-    console.log("o",options)
+    console.log("o", options)
     if (options.data.length === 0) {
         return "";
     }
@@ -341,8 +341,8 @@ function createAccordion(options) {
         <div class="datatable-body">
             <div class="accordion accordion-flush datatable-accordion d-flex flex-column" style="gap: 12px" id="accordion-${options.id ?? ''}">
                ${options.data.map((d, i) => {
-                   return createAccordionItem(options, i)
-               }).join("")}
+        return createAccordionItem(options, i)
+    }).join("")}
             </div>
         </div>
     </div>
@@ -398,17 +398,17 @@ function createSubAccordionItem(options, i) {
     const equip = options.data[i].EquipmentItem
     return equip.map((t, index) => {
         return `
-        <div class="accordion-item" id="${options.id}_${i+1}-${index+1}">
-        <h2 class="accordion-header" id="header-${options.id}_${i+1}-${index+1}">
+        <div class="accordion-item" id="${options.id}_${i + 1}-${index + 1}">
+        <h2 class="accordion-header" id="header-${options.id}_${i + 1}-${index + 1}">
             <button class="accordion-button collapsed type="button"
                 data-bs-toggle="collapse"
-                data-bs-target="#body-${options.id}_${i+1}-${index+1}" aria-expanded="false"
-                aria-controls="body-${options.id}_${i+1}-${index+1}">
+                data-bs-target="#body-${options.id}_${i + 1}-${index + 1}" aria-expanded="false"
+                aria-controls="body-${options.id}_${i + 1}-${index + 1}">
                 ${t.IName}
             </button>
         </h2>
-        <div id="body-${options.id}_${i+1}-${index+1}" class="accordion-collapse collapse"
-            aria-labelledby="header-${options.id}_${i+1}-${index+1}">
+        <div id="body-${options.id}_${i + 1}-${index + 1}" class="accordion-collapse collapse"
+            aria-labelledby="header-${options.id}_${i + 1}-${index + 1}">
             <div class="accordion-body">
                 <div class="datatable border-0 w-100">
                     <div class="datatable-body">
@@ -438,8 +438,8 @@ function createDataDetailModal(options) {
     let ModalJQ, ModalBs, inner, locate;
     readData(options.data);
     function readData(data) {
-        inner = createTableInner(data, options.sn );
-        locate = options?.locate ? `<div class="modal-footer justify-content-center"><a type="button" class="btn btn-search" href="${options.locate?.() || options.locate}" target="_blank">定位</a></div>`: "";
+        inner = createTableInner(data, options.sn);
+        locate = options?.locate ? `<div class="modal-footer justify-content-center"><a type="button" class="btn btn-search" href="${options.locate?.() || options.locate}" target="_blank">定位</a></div>` : "";
         const html = `
         <div class="modal fade data-detail-modal ${options.className ?? ''}" tabindex="-1" id="${options.id ?? ''}">
             <div class="modal-dialog modal-dialog-centered">
@@ -497,7 +497,7 @@ function createDialogModal(options) {
         <div class="modal fade modal-delete ${options.className ?? ''}" id="${options.id ?? ''}" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    ${options.title ? `<div class="modal-header"><h5 class="modal-title">${options.title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>`: ''}
+                    ${options.title ? `<div class="modal-header"><h5 class="modal-title">${options.title}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>` : ''}
                     <div class="modal-body text-center pb-2">${htmlTitle ?? options.inner ?? ''}</div>
                     <div class="modal-footer justify-content-center pb-4"></div>
                 </div>
@@ -603,3 +603,45 @@ function createDeleteDialog(options) {
         }
     }
 }
+
+// form-tooltip-toggle init
+window.addEventListener('load', () => {
+    Array.from(document.querySelectorAll('.form-tooltip-toggle')).forEach((el) => {
+        let aaa;
+        const t = new bootstrap.Tooltip(el, {
+            boundary: document.body,
+            customClass: 'form-tooltip',
+            offset: [0, 0],
+            trigger: 'click',
+            popperConfig(defaultBsPopperConfig) {
+                const newPopperConfig = { ...defaultBsPopperConfig }
+                aaa = newPopperConfig;
+                const placement = el.getAttribute('data-bs-placement')
+                console.log('placement', placement);
+
+                
+                if (placement === 'auto') return defaultBsPopperConfig;
+
+                newPopperConfig.placement = placement;
+
+                if (placement === 'top-start') {
+                    const modifier_arrow = defaultBsPopperConfig.modifiers.find(x => x.name === 'arrow');
+                    const modifier_offset = defaultBsPopperConfig.modifiers.find(x => x.name === 'offset');
+                    
+                    if (modifier_arrow) {
+                        modifier_arrow.options.padding = 24;
+                    }
+                    if (modifier_offset) {
+                        modifier_offset.options.offset = [-24, 0];
+                    }
+                }
+                return newPopperConfig
+            }
+        })
+        console.log(t, aaa);
+        el.addEventListener('shown.bs.tooltip', () => {
+            console.log('shown.bs.tooltip', aaa);
+        })
+
+    })
+}, { once: true })
