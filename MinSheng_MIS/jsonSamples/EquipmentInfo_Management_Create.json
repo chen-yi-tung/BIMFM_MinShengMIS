@@ -1,0 +1,42 @@
+{
+  "TSN": null, // 一機一卡模板編號
+  // RFID
+  "RFIDList": [
+    {
+      "InternalCode": null, // RFID內碼
+      "ExternalCode": null, // RFID外碼
+      "FSN": null, // 樓層編號
+      "Name": null, // 名稱
+      "Location_X": 0.0, // X定位
+      "Location_Y": 0.0, // Y定位
+      "Memo": null // 備註
+    }
+  ],
+  // 一機一卡模板資料：增設基本資料欄位
+  "AddFieldList": [
+    {
+      "AFSN": null, // 模板增設欄位編號
+      "Value": null // 欄位值
+    }
+  ],
+  // 一機一卡模板資料：保養項目設定
+  "MaintainItemList": [
+    {
+      "MISSN": null, // 模板保養項目編號
+      "Period": null, // 週期
+      "NextMaintainDate": "0001-01-01T00:00:00" // 下次保養日期
+    }
+  ],
+  "EPhoto":null, // 設備照片
+  "EName": null, // 設備名稱
+  "No": null, // 設備編號
+  "InstallDate": "0001-01-01T00:00:00", // 安裝日期
+  "FSN": null, // 樓層編號
+  "Brand": null, // 設備廠牌
+  "Model": null, // 設備型號
+  "Vendor": null, // 設備廠商
+  "ContactPhone": null, // 連絡電話
+  "OperatingVoltage": null, // 使用電壓
+  "OtherInfo": null, // 其他耗材資料
+  "Memo": null // 備註
+}
