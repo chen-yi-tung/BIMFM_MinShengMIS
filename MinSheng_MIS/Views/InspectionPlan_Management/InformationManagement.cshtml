@@ -3,7 +3,6 @@
 }
 @section styles {
     @Styles.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css")
-    @Styles.Render("~/Content/BigScreen.css")
     @Styles.Render("~/Content/InformationManagement.css")
 
     @Scripts.Render("https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js")
@@ -68,7 +67,7 @@
                     <div id="Inspection_Equipment_State" class="horizontal catalog-line"></div>
                 </div>
             </div>
-            <div class="table w-100 placeholder-glow">
+            <div class="table w-100 placeholder-glow" data-simplebar>
                 <div class="row thead">
                     <div class="col col-2 b"></div>
                     <div class="col b">巡檢</div>

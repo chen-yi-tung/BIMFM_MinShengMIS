@@ -10,7 +10,7 @@ namespace MinSheng_MIS.Controllers
     {
 
         #region 巡檢即時位置
-        public ActionResult CurrentInformation()
+        public ActionResult CurrentPosition()
         {
             return View();
         }

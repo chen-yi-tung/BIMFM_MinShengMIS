@@ -21,11 +21,6 @@ window.addEventListener('load', async () => {
         backgroundColor: "#fff",
         shadow: { color: "rgba(0, 0, 0, 0.25)", blur: 4, offset: { x: 0, y: 4 } }
     }
-    const shadowPlugin = {
-        color: 'rgba(0,0,0,0.25)',
-        blur: 4,
-        offset: { x: 0, y: 4 }
-    }
 
     // #endregion
 
@@ -42,29 +37,26 @@ window.addEventListener('load', async () => {
     bim.createBeaconPoint()
     bim.createSamplePath()
     const pathRecord = await bim.createPathRecord()
-    const keyMng = bim.viewer.getHotkeyManager()
-    const handleKeyDown = keyMng.handleKeyDown
-    keyMng.handleKeyDown = function (e) {
-        handleKeyDown(e)
+    document.body.addEventListener('keydown', (e) => {
         console.log("keydown", e.code)
         if (e.code === 'Space') {
             pathRecord.start()
         }
-    }
-    console.log("%c請按空白鍵開始動畫","color:green;font-size: 2em;padding:0.5rem;")
+    })
+    console.log("%c請按空白鍵開始動畫", "color:green;font-size: 2em;padding:0.5rem;")
 
     // #endregion
 
     // #region chart function
-    //報修狀況
+    //本日報修、維修及保養統計
     function Equipment_State() {
         const container = document.getElementById('Equipment_State');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
         const data = [
             { label: "報修", value: 10 },
-            { label: "維修中", value: 16 },
-            { label: "保養中", value: 15 },
+            { label: "維修", value: 16 },
+            { label: "保養", value: 15 },
         ]
         ctx.width = pieSize
         ctx.height = pieSize
@@ -178,8 +170,8 @@ window.addEventListener('load', async () => {
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#2CB6F0", "#E77272"]
         const data = [
-            { label: "一般", value: 20 },
-            { label: "緊急", value: 15 }
+            { label: "軌跡偏移", value: 20 },
+            { label: "緊急按鈕", value: 15 }
         ]
         ctx.width = pieSize
         ctx.height = pieSize
@@ -232,7 +224,8 @@ window.addEventListener('load', async () => {
         const backgroundColor = ["#72E998", "#4269AC", "#E77272"]
         const data = [
             { label: "已處理", value: 53 },
-            { label: "未處理", value: 15 }
+            { label: "處理中", value: 15 },
+            { label: "待處理", value: 15 }
         ]
         ctx.width = pieSize
         ctx.height = pieSize
@@ -310,12 +303,14 @@ function BIM() {
     };
     this.viewer = null;
     this.setup = function setup(urls) {
-        this.viewer = new Autodesk.Viewing.GuiViewer3D(clientContainer, { profileSettings });
+        this.viewer = new Autodesk.Viewing.Viewer3D(clientContainer, { profileSettings });
         this.viewer.loadExtension("Viewer.Loading", { loader: `<div class="lds-default">${Array(12).fill('<div></div>').join('')}</div>` })
 
         return new Promise((resolve, reject) => {
             Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
                 this.viewer.start();
+                this.viewer.impl.controls.handleKeyDown = function (e) { }
+                this.viewer.impl.controls.handleKeyUp = function (e) { }
                 await this.viewer.loadExtension("Viewer.Toolkit")
 
                 //load urns

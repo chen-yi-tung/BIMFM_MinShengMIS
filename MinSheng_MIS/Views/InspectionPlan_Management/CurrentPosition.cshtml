@@ -3,7 +3,6 @@
 }
 @section styles {
     @Styles.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css")
-    @Styles.Render("~/Content/BigScreen.css")
     @Styles.Render("~/Content/CurrentPosition.css")
 
     @Styles.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css")
@@ -12,11 +11,11 @@
     @Scripts.Render("https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js")
     @Scripts.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js")
 }
-<div class="bigscreen-container">
-    <section class="start-area">
+<div class="cp-container">
+    <section class="start-area" data-simplebar>
         <div class="info-area">
             <div class="info-box" id="box-Equipment_State">
-                <div class="info-box-header">報修狀況</div>
+                <div class="info-box-header">本日報修、維修及保養統計</div>
                 <div class="info-box-body" role="chart">
                     <div id="Equipment_State" class="horizontal catalog-line"></div>
                 </div>
@@ -32,20 +31,49 @@
                 <div class="info-box-body p-0">
                     <div id="Equipment_Operating_State" data-simplebar>
                         <div class="item">
-                            <i class="m-light normal"></i>
-                            <span class="name">進流污水閘門</span>
+                            <span class="name">液位開關</span>
+                            <div class="boxs">
+                                <i class="box red"></i>
+                                <i class="box red"></i>
+                            </div>
                         </div>
                         <div class="item">
-                            <i class="m-light normal"></i>
-                            <span class="name">濕井進流水閘門</span>
+                            <span class="name">進流抽水泵浦</span>
+                            <div class="boxs">
+                                <i class="box red"></i>
+                                <i class="box red"></i>
+                                <i class="box red"></i>
+                                <i class="box red"></i>
+                                <i class="box red"></i>
+                                <i class="box green"></i>
+                                <i class="box orange"></i>
+                                <i class="box undefined"></i>
+                            </div>
                         </div>
                         <div class="item">
-                            <i class="m-light danger"></i>
-                            <span class="name">浸沒式流量計</span>
+                            <span class="name">防爆液位開關</span>
+                            <div class="boxs">
+                                <i class="box red"></i>
+                                <i class="box red"></i>
+                            </div>
                         </div>
                         <div class="item">
-                            <i class="m-light normal"></i>
-                            <span class="name">沉砂池空壓機</span>
+                            <span class="name">機械式粗攔污柵(防爆)</span>
+                            <div class="boxs">
+                                <i class="box red"></i>
+                                <i class="box red"></i>
+                                <i class="box green"></i>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <span class="name">粗攔污柵進流閘門1</span>
+                            <span class="value">68</span>
+                            <span class="unit">%</span>
+                        </div>
+                        <div class="item">
+                            <span class="name">粗攔污柵進流閘門2</span>
+                            <span class="value">72</span>
+                            <span class="unit">%</span>
                         </div>
                     </div>
                 </div>
@@ -53,34 +81,29 @@
             <div class="info-box" id="box-Environment">
                 <div class="info-box-header">環境資訊</div>
                 <div class="info-box-body">
-                    <div class="item" id="Environment_Temp">
-                        <span class="label">溫度</span>
+
+                    <div class="item" id="Environment_O2">
+                        <span class="label">O2</span>
                         <span class="value">24</span>
-                        <span class="unit">°C</span>
+                        <span class="unit">ppm</span>
                     </div>
-                    <div class="item" id="Environment_Hum">
-                        <span class="label">溼度</span>
+                    <div class="item" id="Environment_CH4">
+                        <span class="label">CH4</span>
                         <span class="value">66.2</span>
-                        <span class="unit">%</span>
+                        <span class="unit">ppm</span>
                     </div>
-                    <div class="item" id="Environment_CO2">
-                        <span class="label">CO2</span>
+                    <div class="item" id="Environment_H2S">
+                        <span class="label">H2S</span>
                         <span class="value">800</span>
                         <span class="unit">ppm</span>
                     </div>
-                    <div class="item" id="Environment_PM25">
-                        <span class="label">PM2.5</span>
+                    <div class="item" id="Environment_CO">
+                        <span class="label">CO</span>
                         <span class="value">0</span>
-                        <span class="unit">μg/m<sup>3</sup></span>
-                    </div>
-                    <div class="item" id="Environment_HCHO">
-                        <span class="label">HCHO</span>
-                        <span class="value">0.06</span>
                         <span class="unit">ppm</span>
                     </div>
                 </div>
             </div>
-        </div>
     </section>
     <section class="center-area">
         <div class="viewerContainer">
@@ -94,7 +117,7 @@
                 <i class="icon-ring"></i>
                 <span class="badge">5</span>
                 <div class="collapse alert-collapse" id="AlertCollapse">
-                    <div class="collapse-body">
+                    <div class="collapse-body" data-simplebar>
                         <a class="alert-item" target="_blank" data-level="1" data-process-state="1">
                             <i class="icon-alert"></i>
                             <span class="road">進流抽水站2F</span>
@@ -135,15 +158,19 @@
             </button>
         </div>
         <div class="position-absolute top-0 start-0">
-            <div id="Current_Location" class="">
+            <div id="Current_Location" data-bs-toggle="dropdown">
                 <i class="icon-marker"></i>
-                <span id="Current_Factory">民生廠</span>
                 <span id="Current_Area">進流抽水站</span>
                 <span id="Current_Floor">B2F</span>
             </div>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
         </div>
     </section>
-    <section class="end-area">
+    <section class="end-area" data-simplebar>
         <div class="info-area">
             <div class="info-box" id="box-Inspection_Aberrant">
                 <div class="info-box-header">巡檢異常狀態</div>
@@ -159,110 +186,45 @@
                 <div class="info-box-header">空間人員即時位置</div>
                 <div class="info-box-body white-big-track" data-simplebar data-simplebar-auto-hide="false"
                     data-simplebar-force-visible="y">
-                    <div class="plan-accordion" id="Inspection_Current_Pos">
-                        <select class="form-select" name="SelectIPlan" id="SelectIPlan">
-                            <option value="">選擇計畫</option>
-                        </select>
-                        <div class="plan-people active">
-                            <div class="human"><i class="icon-human"></i></div>
-                            <div class="plan-people-group">
-                                <div class="plan-people-info">
-                                    <span class="name">Pt01 王大明</span>
-                                    <i class="icon-heart"></i>
-                                    <span class="label">心率：</span>
-                                    <span class="value">110</span>
-                                    <span class="unit">下/分</span>
-                                </div>
-                                <div class="plan-people-info">
-                                    <span class="name">Pt02 任趙仁</span>
-                                    <i class="icon-heart"></i>
-                                    <span class="label">心率：</span>
-                                    <span class="value">96</span>
-                                    <span class="unit">下/分</span>
-                                </div>
-                                <div class="plan-people-locate">
-                                    <span class="label">即時位置：</span>
-                                    <span class="value">A區2F</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="plan-people">
-                            <div class="human"><i class="icon-human"></i></div>
-                            <div class="plan-people-group">
-                                <div class="plan-people-info">
-                                    <span class="name">Pt01 王大明</span>
-                                    <i class="icon-heart"></i>
-                                    <span class="label">心率：</span>
-                                    <span class="value">110</span>
-                                    <span class="unit">下/分</span>
-                                </div>
-                                <div class="plan-people-info">
-                                    <span class="name">Pt02 任趙仁</span>
-                                    <i class="icon-heart"></i>
-                                    <span class="label">心率：</span>
-                                    <span class="value">96</span>
-                                    <span class="unit">下/分</span>
-                                </div>
-                                <div class="plan-people-locate">
-                                    <span class="label">即時位置：</span>
-                                    <span class="value">A區2F</span>
+                    <div class="plan-body">
+                        <div class="plan-list-title">目前空間</div>
+                        <div class="plan-list" id="Inspection_Current_Pos">
+                            <div class="plan-person">
+                                <div class="human"><i class="icon-human"></i></div>
+                                <div class="plan-person-content">
+                                    <div class="plan-person-infos">
+                                        <div class="plan-person-info">
+                                            <span class="name">王大明</span>
+                                            <div class="plan-person-heart">
+                                                <i class="icon-heart"></i>
+                                                <span class="value">110</span>
+                                                <span class="unit">下/分</span>
+                                            </div>
+                                            <div class="plan-person-locate">
+                                                <i class="icon-locate"></i>
+                                                <span class="value">A區2F</span>
+                                            </div>
+                                        </div>
+                                        <div class="plan-person-alert">
+                                            <div class="plan-person-alert-item">
+                                                <i class="icon-heart"></i>
+                                                <span class="label">心率異常</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="plan-person-time">最後更新時間：<span>2024/12/09 15:19</span></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="plan-people">
-                            <div class="human"><i class="icon-human"></i></div>
-                            <div class="plan-people-group">
-                                <div class="plan-people-info">
-                                    <span class="name">Pt01 王大明</span>
-                                    <i class="icon-heart"></i>
-                                    <span class="label">心率：</span>
-                                    <span class="value">110</span>
-                                    <span class="unit">下/分</span>
-                                </div>
-                                <div class="plan-people-info">
-                                    <span class="name">Pt02 任趙仁</span>
-                                    <i class="icon-heart"></i>
-                                    <span class="label">心率：</span>
-                                    <span class="value">96</span>
-                                    <span class="unit">下/分</span>
-                                </div>
-                                <div class="plan-people-locate">
-                                    <span class="label">即時位置：</span>
-                                    <span class="value">A區2F</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="plan-people">
-                            <div class="human"><i class="icon-human"></i></div>
-                            <div class="plan-people-group">
-                                <div class="plan-people-info">
-                                    <span class="name">Pt01 王大明</span>
-                                    <i class="icon-heart"></i>
-                                    <span class="label">心率：</span>
-                                    <span class="value">110</span>
-                                    <span class="unit">下/分</span>
-                                </div>
-                                <div class="plan-people-info">
-                                    <span class="name">Pt02 任趙仁</span>
-                                    <i class="icon-heart"></i>
-                                    <span class="label">心率：</span>
-                                    <span class="value">96</span>
-                                    <span class="unit">下/分</span>
-                                </div>
-                                <div class="plan-people-locate">
-                                    <span class="label">即時位置：</span>
-                                    <span class="value">A區2F</span>
-                                </div>
-                            </div>
-                        </div>
+                        <hr class="plan-list-hr">
+                        <div class="plan-list-title">其他空間</div>
+                        <div class="plan-list" id="Inspection_Another_Pos"></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 </div>
-
-
 
 @section scripts {
     @Scripts.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js")

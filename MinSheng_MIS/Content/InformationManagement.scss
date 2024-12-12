@@ -255,6 +255,7 @@ main {
                 .tbody {
                     height: 1px;
                     flex: 1 1 auto;
+                    overflow-x: hidden;
 
                     @include max-1600 {
                         height: auto;
@@ -283,6 +284,16 @@ main {
                     .b {
                         border-right: 1px solid #55759e;
                     }
+                }
+
+                .simplebar-offset {
+                    padding: 0;
+                }
+
+                .simplebar-content {
+                    display: flex;
+                    flex-direction: column;
+                    height: 100%;
                 }
 
                 .simplebar-track {
@@ -314,23 +325,6 @@ main {
                         }
                     }
                 }
-
-                @include max-768 {
-                    .thead {
-                        padding-left: 0rem;
-                        padding-right: 0rem;
-                    }
-
-                    .tbody {
-                        .simplebar-content {
-                            padding-right: 0rem !important;
-                        }
-
-                        .row {
-                            padding-left: 0rem !important;
-                        }
-                    }
-                }
             }
         }
 
@@ -359,66 +353,6 @@ main {
 
         &.minx2 {
             grid-area: minx2;
-        }
-    }
-
-    [role="chart"] {
-        & > div[id] {
-            &:empty {
-                height: 160px;
-                width: 160px !important;
-            }
-        }
-
-        .legend-container {
-            color: inherit;
-
-            .legend-catalog {
-                gap: 0.75rem;
-
-                .value {
-                    font-size: 1rem;
-                }
-
-                .label {
-                    font-size: 0.875rem;
-                }
-            }
-
-            .legend-statistics {
-                margin-bottom: 0.75rem;
-            }
-        }
-
-        .horizontal {
-            height: auto;
-            gap: 1.5rem;
-        }
-
-        .catalog-line {
-            .legend-catalog {
-                gap: 1.25rem;
-            }
-        }
-
-        .bar {
-            .legend-container {
-                padding-top: 0.75rem;
-
-                .legend-catalog {
-                    width: max-content;
-                    margin-left: auto;
-                    margin-right: auto;
-                    display: grid;
-                    grid-template-columns: repeat(5, 5em);
-                    gap: 0.75rem;
-                }
-            }
-        }
-
-        & > .vr {
-            color: rgba(255, 255, 255, 0.4);
-            opacity: 1;
         }
     }
 
@@ -493,12 +427,13 @@ main {
 
         .info-box {
             &.main {
+                display: flex;
+                flex-direction: column;
                 .grid {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     gap: 2rem;
-                    margin-bottom: 2rem;
                 }
 
                 [role="chart"] div[id] {
@@ -510,6 +445,35 @@ main {
                     min-height: unset;
                     height: 1px;
                     width: 100%;
+                }
+
+                .table {
+                    --col-w: 6rem;
+                    overflow-y: hidden !important;
+                    overflow-x: auto !important;
+                    height: 500px;
+
+                    .thead {
+                        width: max-content;
+                        padding-right: 0;
+                        &:first-child > :not(:first-child) {
+                            width: calc(var(--col-w) * 3);
+                        }
+                    }
+
+                    .tbody {
+                        width: calc(var(--col-w) * 10);
+                    }
+
+                    .row {
+                        flex-wrap: nowrap;
+                        width: max-content;
+                    }
+
+                    .col {
+                        width: var(--col-w);
+                        flex: 0 0 auto;
+                    }
                 }
             }
 
@@ -542,52 +506,10 @@ main {
     }
 
     @include max-576 {
-        [role="chart"] {
-            .horizontal {
-                flex-direction: column;
-                gap: 0.5rem;
-
-                &.catalog-line {
-                    .legend-container {
-                        width: 100%;
-                    }
-                }
-            }
-
-            .bar {
-                .legend-container {
-                    .legend-catalog {
-                        grid-template-columns: repeat(2, 5em);
-                    }
-                }
-            }
-        }
-
         .info-box {
             &.main {
                 .subgrid {
                     width: 100%;
-                }
-
-                .table {
-                    overflow-y: hidden !important;
-                    overflow-x: auto !important;
-
-                    .thead {
-                        width: max-content;
-
-                        .col {
-                            width: 8rem;
-                        }
-                    }
-
-                    .tbody {
-                        width: calc(8rem * 6);
-
-                        .col {
-                            width: 8rem;
-                        }
-                    }
                 }
             }
 
@@ -603,6 +525,206 @@ main {
                         padding-left: 5vw;
                         padding-right: 5vw;
                     }
+                }
+            }
+        }
+    }
+}
+
+[role="chart"] {
+    & > div[id] {
+        margin-left: auto;
+        margin-right: auto;
+        width: max-content;
+
+        &:empty {
+            height: 160px;
+            width: 160px !important;
+        }
+    }
+
+    & > .vr {
+        color: rgba(255, 255, 255, 0.4);
+        opacity: 1;
+    }
+
+    .legend-container {
+        flex: 1 0 auto;
+        color: inherit;
+
+        .legend-statistics {
+            text-align: end;
+            margin-bottom: 0.75rem;
+
+            .value {
+                color: inherit;
+                font-size: 1.25rem;
+            }
+
+            .unit {
+                color: inherit;
+                font-size: 0.75rem;
+                margin-left: 0.25rem;
+            }
+        }
+
+        .legend-catalog {
+            --c: #8f8f8f;
+            display: flex;
+            flex-direction: column;
+            list-style: none;
+            margin-bottom: 0;
+            padding-left: 0;
+            gap: 0.75rem;
+
+            & > li {
+                display: flex;
+                flex-direction: row;
+                gap: 0.25rem;
+                align-items: center;
+                cursor: pointer;
+                transition: opacity 0.5s;
+
+                &:hover i {
+                    filter: saturate(1.8);
+                }
+
+                &[aria-disabled="true"] {
+                    opacity: 0.5;
+                }
+            }
+
+            i {
+                display: block;
+                background-color: var(--c);
+                width: 1rem;
+                height: 1rem;
+                border-radius: 2rem;
+                transition: filter 0.5s;
+            }
+
+            .label {
+                color: inherit;
+                font-size: 0.875rem;
+                flex: 1 0 auto;
+            }
+
+            .value {
+                color: inherit;
+                font-size: 1rem;
+            }
+
+            .percentage {
+                color: #fd7a01;
+                font-size: 0.75rem;
+
+                &::before {
+                    content: "(";
+                }
+
+                &::after {
+                    content: "%)";
+                }
+            }
+        }
+    }
+
+    .horizontal {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 80% !important;
+        height: auto;
+        gap: 1.5rem;
+
+        .legend-container {
+            order: 6;
+        }
+
+        .legend-catalog {
+            gap: 0.25rem;
+        }
+
+        &.catalog-line .legend-catalog {
+            gap: 0.75rem;
+        }
+    }
+
+    .vertical {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: center;
+        height: 100%;
+
+        .legend-container {
+            width: 100%;
+        }
+    }
+
+    .catalog-line {
+        .legend-catalog {
+            gap: 1.25rem;
+
+            & > li {
+                position: relative;
+                padding-top: 0.3125rem;
+            }
+
+            i {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                height: 0.3125rem;
+                border-radius: 0;
+            }
+
+            .label {
+                order: 6;
+                text-align: end;
+            }
+        }
+    }
+
+    .bar {
+        .legend-container {
+            padding-top: 0.75rem;
+
+            .legend-catalog {
+                width: max-content;
+                margin-left: auto;
+                margin-right: auto;
+                display: grid;
+                grid-template-columns: repeat(5, 5em);
+                gap: 0.75rem;
+            }
+        }
+    }
+
+    .no-statistics {
+        .legend-statistics {
+            display: none;
+        }
+    }
+
+    @include max-576 {
+        .horizontal {
+            flex-direction: column;
+            gap: 0.5rem;
+
+            &.catalog-line {
+                .legend-container {
+                    width: 100%;
+                }
+            }
+        }
+
+        .bar {
+            .legend-container {
+                .legend-catalog {
+                    grid-template-columns: repeat(2, 5em);
                 }
             }
         }
