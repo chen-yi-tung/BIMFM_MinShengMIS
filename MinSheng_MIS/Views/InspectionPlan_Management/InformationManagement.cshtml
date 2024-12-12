@@ -10,115 +10,122 @@
     @Scripts.Render("https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js")
     <script src="/Scripts/BigScreen/ChartPlugin.js" defer></script>
     <script src="/Scripts/InspectionPlan/InformationManagement.js" defer></script>
-    <script src="/Scripts/InspectionPlan/BellMessage.js" defer></script>
 }
+<main>
+    <h2>@ViewBag.Title</h2>
 
-<h2>@ViewBag.Title</h2>
+    <div class="date-search-area">
+        <form class="form">
+            <div class="form-group input-group">
+                <select name="StartYear" id="StartYear" class="form-select"></select>
+                <select name="StartMonth" id="StartMonth" class="form-select">
+                    <option value="1" selected>一月份</option>
+                    <option value="2">二月份</option>
+                    <option value="3">三月份</option>
+                    <option value="4">四月份</option>
+                    <option value="5">五月份</option>
+                    <option value="6">六月份</option>
+                    <option value="7">七月份</option>
+                    <option value="8">八月份</option>
+                    <option value="9">九月份</option>
+                    <option value="10">十月份</option>
+                    <option value="11">十一月份</option>
+                    <option value="12">十二月份</option>
+                </select>
+            </div>
+            <span class="division">~</span>
+            <div class="form-group input-group">
+                <select name="EndYear" id="EndYear" class="form-select"></select>
+                <select name="EndMonth" id="EndMonth" class="form-select">
+                    <option value="1">一月份</option>
+                    <option value="2">二月份</option>
+                    <option value="3">三月份</option>
+                    <option value="4">四月份</option>
+                    <option value="5">五月份</option>
+                    <option value="6">六月份</option>
+                    <option value="7">七月份</option>
+                    <option value="8">八月份</option>
+                    <option value="9">九月份</option>
+                    <option value="10">十月份</option>
+                    <option value="11">十一月份</option>
+                    <option value="12" selected>十二月份</option>
+                </select>
+            </div>
+            <button class="btn btn-search rounded-pill px-3" type="button" id="search">查詢</button>
+        </form>
+    </div>
 
-<div class="date-search-area">
-    <button class="btn btn-alert float-end">
-        <i class="icon-ring"></i>
-        <span class="badge" id="AlertBadge"></span>
-        <div class="collapse alert-collapse" id="AlertCollapse">
-            <div class="collapse-body" data-simplebar data-simplebar-force-visible="y"></div>
-        </div>
-    </button>
-    <form class="form">
-        <div class="form-group input-group">
-            <select name="StartYear" id="StartYear" class="form-select"></select>
-            <select name="StartMonth" id="StartMonth" class="form-select">
-                <option value="1" selected>一月份</option>
-                <option value="2">二月份</option>
-                <option value="3">三月份</option>
-                <option value="4">四月份</option>
-                <option value="5">五月份</option>
-                <option value="6">六月份</option>
-                <option value="7">七月份</option>
-                <option value="8">八月份</option>
-                <option value="9">九月份</option>
-                <option value="10">十月份</option>
-                <option value="11">十一月份</option>
-                <option value="12">十二月份</option>
-            </select>
-        </div>
-        <span class="division">~</span>
-        <div class="form-group input-group">
-            <select name="EndYear" id="EndYear" class="form-select"></select>
-            <select name="EndMonth" id="EndMonth" class="form-select">
-                <option value="1">一月份</option>
-                <option value="2">二月份</option>
-                <option value="3">三月份</option>
-                <option value="4">四月份</option>
-                <option value="5">五月份</option>
-                <option value="6">六月份</option>
-                <option value="7">七月份</option>
-                <option value="8">八月份</option>
-                <option value="9">九月份</option>
-                <option value="10">十月份</option>
-                <option value="11">十一月份</option>
-                <option value="12" selected>十二月份</option>
-            </select>
-        </div>
-        <button class="btn btn-search rounded-pill px-3" type="button" id="search">查詢</button>
-    </form>
-</div>
-
-<div class="info-area loading">
-    <div class="info-box main">
-        <div class="grid">
-            <div class="subgrid" role="chart">
-                <h5>巡檢總計畫完成狀態</h5>
-                <div id="Inspection_Complete_State" class="horizontal catalog-line"></div>
+    <div class="info-area loading">
+        <div class="info-box main">
+            <div class="grid">
+                <div role="chart">
+                    <h5>巡檢總計畫完成狀態</h5>
+                    <div id="Inspection_Complete_State" class="horizontal catalog-line"></div>
+                </div>
+                <div class="vr"></div>
+                <div role="chart">
+                    <h5>設備維修及保養統計</h5>
+                    <div id="Inspection_Equipment_State" class="horizontal catalog-line"></div>
+                </div>
             </div>
-            <div class="vr"></div>
-            <div class="subgrid" role="chart">
-                <h5>設備維修及保養統計</h5>
-                <div id="Inspection_Equipment_State" class="horizontal catalog-line"></div>
-            </div>
-        </div>
-        <div class="table w-100 placeholder-glow">
-            <div class="row thead">
-                <div class="col">人員姓名</div>
-                <div class="col">巡檢總數</div>
-                <div class="col">保養總數</div>
-                <div class="col">維修總數</div>
-                <div class="col">巡檢完成數</div>
-                <div class="col">完成率</div>
-            </div>
-            <div class="tbody" id="Inspection_All_Members" data-simplebar data-simplebar-auto-hide="false"
-                data-simplebar-force-visible="y">
-                <div class="row">
-                    <div class="col" id="MyName"></div>
-                    <div class="col" id="PlanNum"></div>
-                    <div class="col" id="MaintainNum"></div>
-                    <div class="col" id="RepairNum"></div>
-                    <div class="col" id="CompleteNum" data-complete></div>
-                    <div class="col" id="CompletionRate" data-complete></div>
+            <div class="table w-100 placeholder-glow">
+                <div class="row thead">
+                    <div class="col col-2 b"></div>
+                    <div class="col b">巡檢</div>
+                    <div class="col b">保養</div>
+                    <div class="col ">維修</div>
+                </div>
+                <div class="row thead">
+                    <div class="col col-2 b">人員姓名</div>
+                    <div class="col">總數</div>
+                    <div class="col">完成數</div>
+                    <div class="col b">完成率</div>
+                    <div class="col">總數</div>
+                    <div class="col">完成數</div>
+                    <div class="col b">完成率</div>
+                    <div class="col">總數</div>
+                    <div class="col">完成數</div>
+                    <div class="col">完成率</div>
+                </div>
+                <div class="tbody" id="Inspection_All_Members" data-simplebar data-simplebar-auto-hide="false"
+                    data-simplebar-force-visible="y">
+                    <div class="row">
+                        <div class="col col-2 b" id="MyName"></div>
+                        <div class="col" id="PlanNum"></div>
+                        <div class="col" id="PlanCompleteNum" data-complete></div>
+                        <div class="col b" id="PlanCompletionRate" data-complete></div>
+                        <div class="col" id="MaintainNum"></div>
+                        <div class="col" id="MaintainCompleteNum" data-complete></div>
+                        <div class="col b" id="MaintainCompletionRate" data-complete></div>
+                        <div class="col" id="RepairNum"></div>
+                        <div class="col" id="RepairCompleteNum" data-complete></div>
+                        <div class="col" id="RepairCompletionRate" data-complete></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="info-box side1">
-        <h5>緊急事件等級占比 / 處理狀況</h5>
-        <div class="hstack" role="chart">
-            <div id="Inspection_Aberrant_Level" class="horizontal"></div>
-            <div class="vr"></div>
-            <div id="Inspection_Aberrant_Resolve" class="horizontal catalog-line"></div>
+        <div class="info-box side1">
+            <h5>緊急事件等級占比 / 處理狀況</h5>
+            <div class="hstack" role="chart">
+                <div id="Inspection_Aberrant_Level" class="horizontal"></div>
+                <div class="vr"></div>
+                <div id="Inspection_Aberrant_Resolve" class="horizontal catalog-line"></div>
+            </div>
+        </div>
+        <div class="info-box side2" role="chart">
+            <h5>設備保養及維修進度統計</h5>
+            <div id="Equipment_Maintain_And_Repair_Statistics" class="bar"></div>
+        </div>
+        <div class="info-box minx1" role="chart">
+            <h5>設備故障等級分布</h5>
+            <div id="Equipment_Level_Rate" class="horizontal align-items-md-end"></div>
+        </div>
+        <div class="info-box minx2" role="chart">
+            <h5>設備故障類型占比</h5>
+            <div id="Equipment_Type_Rate"></div>
         </div>
     </div>
-    <div class="info-box side2" role="chart">
-        <h5>設備保養及維修進度統計</h5>
-        <div id="Equipment_Maintain_And_Repair_Statistics" class="bar"></div>
-    </div>
-    <div class="info-box minx1" role="chart">
-        <h5>設備故障等級分布</h5>
-        <div id="Equipment_Level_Rate" class="horizontal align-items-md-end"></div>
-    </div>
-    <div class="info-box minx2" role="chart">
-        <h5>設備故障類型占比</h5>
-        <div id="Equipment_Type_Rate"></div>
-    </div>
-</div>
+</main>
 
 @* <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.20.0.css">
 <script src="https://code.jquery.com/qunit/qunit-2.20.0.js"></script>
