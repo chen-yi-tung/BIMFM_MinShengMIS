@@ -74,7 +74,7 @@
 
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
-                <button type="button" class="btn btn-clear" id="clear">清除</button>
+                <button type="reset" class="btn btn-clear" id="clear">清除</button>
             </div>
 
         </form>
@@ -158,11 +158,6 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            $("#clear").click(function () {
-                $(".search-area form")[0].reset();
-                pushSelect("FSN", '@Url.Action("Floor", "DropDownList")');
-                pushSelect("DSubSystemID", '@Url.Action("DSubSystem", "DropDownList")');
-            });
 
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());

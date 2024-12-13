@@ -122,6 +122,10 @@
             asn.addEventListener('change', async function (e) {
                 await formDropdown.FSN({ id: fsnId, data: asn.value, placeholder: asn.value ? placeholder : void 0 });
             });
+
+            formDropdown.addResetEvent(asn, async () => {
+                await formDropdown.FSN({ id: fsnId, data: null });
+            })
         }
         formDropdown.setValue(id, value)
     };

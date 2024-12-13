@@ -113,13 +113,6 @@ namespace MinSheng_MIS.Controllers
                     list.Add(jo);
                 }
             }
-            else
-            {
-                    JObject jo = new JObject();
-                    jo.Add("Text", "--請先選擇棟別--");//Floor Name
-                    jo.Add("Value", ""); // FSN 
-                    list.Add(jo);
-            }
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }

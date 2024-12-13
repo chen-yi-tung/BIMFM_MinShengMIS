@@ -124,10 +124,6 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            $("#clear").click(function () {
-                $(".search-area form")[0].reset();
-                pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")');
-            });
 
             //檢索按鍵
             $("#search").click(function () {
