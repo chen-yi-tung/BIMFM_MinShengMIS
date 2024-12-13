@@ -6,6 +6,7 @@
 
     <script src="/Scripts/datagrid-management.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
+    <script src="/Scripts/AreaFloorEvent.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -62,12 +63,12 @@
     </div>
 </div>
 
-    <div class="datagrid-area">
-        <table id="DataGrid"></table>
-    </div>
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
 
-    @section scripts {
-        <script>
+@section scripts {
+    <script>
         //const baseUrl = '/PlanManagement/';
         var getGridJSON = '@Url.Action("EquipmentInfo_Management", "Datagrid")';
         var DataGrid;
@@ -104,7 +105,7 @@
 
         $(async function () {
              await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
-             //await AreaFloorEvent();
+             await AreaFloorEvent();
 
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
@@ -167,5 +168,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-        </script>
-    }
+    </script>
+}
