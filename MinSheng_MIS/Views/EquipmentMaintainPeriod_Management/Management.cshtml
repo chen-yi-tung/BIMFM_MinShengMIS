@@ -8,7 +8,7 @@
     <script src="/Scripts/datagrid-management.js" defer></script>
     <script src="/Scripts/datatable.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+    <script src="/Scripts/form-dropdown.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -113,7 +113,7 @@
         ]
 
         $(async function () {
-            await AreaFloorEvent();
+            await formDropdown.ASN();
             await pushSelect("System", '@Url.Action("System", "DropDownList")');
             const Systems = document.getElementById('System')
             Systems.addEventListener("change", function () {

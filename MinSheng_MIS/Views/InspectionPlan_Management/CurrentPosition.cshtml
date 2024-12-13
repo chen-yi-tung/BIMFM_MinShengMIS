@@ -14,95 +14,27 @@
 <div class="cp-container">
     <section class="start-area" data-simplebar>
         <div class="info-area">
-            <div class="info-box" id="box-Equipment_State">
+            <div class="info-box" id="box-ChartInspectionEquipmentState">
                 <div class="info-box-header">本日報修、維修及保養統計</div>
                 <div class="info-box-body" role="chart">
-                    <div id="Equipment_State" class="horizontal catalog-line"></div>
+                    <div id="ChartInspectionEquipmentState" class="horizontal catalog-line"></div>
                 </div>
             </div>
-            <div class="info-box" id="box-Inspection_Complete_State">
+            <div class="info-box" id="box-ChartInspectionCompleteState">
                 <div class="info-box-header">本日巡檢計畫進度</div>
                 <div class="info-box-body" role="chart">
-                    <div id="Inspection_Complete_State" class="horizontal catalog-line"></div>
+                    <div id="ChartInspectionCompleteState" class="horizontal catalog-line"></div>
                 </div>
             </div>
-            <div class="info-box" id="box-Equipment_Operating_State">
+            <div class="info-box" id="box-EquipmentOperatingState">
                 <div class="info-box-header">設備運轉狀態</div>
                 <div class="info-box-body p-0">
-                    <div id="Equipment_Operating_State" data-simplebar>
-                        <div class="item">
-                            <span class="name">液位開關</span>
-                            <div class="boxs">
-                                <i class="box red"></i>
-                                <i class="box red"></i>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <span class="name">進流抽水泵浦</span>
-                            <div class="boxs">
-                                <i class="box red"></i>
-                                <i class="box red"></i>
-                                <i class="box red"></i>
-                                <i class="box red"></i>
-                                <i class="box red"></i>
-                                <i class="box green"></i>
-                                <i class="box orange"></i>
-                                <i class="box undefined"></i>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <span class="name">防爆液位開關</span>
-                            <div class="boxs">
-                                <i class="box red"></i>
-                                <i class="box red"></i>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <span class="name">機械式粗攔污柵(防爆)</span>
-                            <div class="boxs">
-                                <i class="box red"></i>
-                                <i class="box red"></i>
-                                <i class="box green"></i>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <span class="name">粗攔污柵進流閘門1</span>
-                            <span class="value">68</span>
-                            <span class="unit">%</span>
-                        </div>
-                        <div class="item">
-                            <span class="name">粗攔污柵進流閘門2</span>
-                            <span class="value">72</span>
-                            <span class="unit">%</span>
-                        </div>
-                    </div>
+                    <div id="EquipmentOperatingState" data-simplebar></div>
                 </div>
             </div>
-            <div class="info-box" id="box-Environment">
+            <div class="info-box" id="box-EnvironmentInfo">
                 <div class="info-box-header">環境資訊</div>
-                <div class="info-box-body">
-
-                    <div class="item" id="Environment_O2">
-                        <span class="label">O2</span>
-                        <span class="value">24</span>
-                        <span class="unit">ppm</span>
-                    </div>
-                    <div class="item" id="Environment_CH4">
-                        <span class="label">CH4</span>
-                        <span class="value">66.2</span>
-                        <span class="unit">ppm</span>
-                    </div>
-                    <div class="item" id="Environment_H2S">
-                        <span class="label">H2S</span>
-                        <span class="value">800</span>
-                        <span class="unit">ppm</span>
-                    </div>
-                    <div class="item" id="Environment_CO">
-                        <span class="label">CO</span>
-                        <span class="value">0</span>
-                        <span class="unit">ppm</span>
-                    </div>
-                </div>
+                <div class="info-box-body" id="EnvironmentInfo"></div>
             </div>
     </section>
     <section class="center-area">
@@ -113,9 +45,12 @@
             <h2 class="viewbag-title">@ViewBag.Title</h2>
         </div>
         <div class="position-absolute top-0 end-0 p-4">
-            <button class="btn btn-alert" data-bs-toggle="collapse" data-bs-target="#AlertCollapse">
-                <i class="icon-ring"></i>
-                <span class="badge">5</span>
+            <div class="position-relative">
+                <button class="btn btn-alert" data-bs-toggle="collapse" data-bs-target="#AlertCollapse"
+                    data-bs-auto-close="false">
+                    <i class="icon-ring"></i>
+                    <span class="badge">5</span>
+                </button>
                 <div class="collapse alert-collapse" id="AlertCollapse">
                     <div class="collapse-body" data-simplebar>
                         <a class="alert-item" target="_blank" data-level="1" data-process-state="1">
@@ -155,13 +90,13 @@
                         </a>
                     </div>
                 </div>
-            </button>
+            </div>
         </div>
         <div class="position-absolute top-0 start-0">
-            <div id="Current_Location" data-bs-toggle="dropdown">
+            <div id="CurrentLocation" data-bs-toggle="dropdown">
                 <i class="icon-marker"></i>
-                <span id="Current_Area">進流抽水站</span>
-                <span id="Current_Floor">B2F</span>
+                <span id="CurrentArea">進流抽水站</span>
+                <span id="CurrentFloor">B2F</span>
             </div>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#">Action</a></li>
@@ -172,53 +107,26 @@
     </section>
     <section class="end-area" data-simplebar>
         <div class="info-area">
-            <div class="info-box" id="box-Inspection_Aberrant">
+            <div class="info-box" id="box-InspectionAberrant">
                 <div class="info-box-header">巡檢異常狀態</div>
                 <div class="info-box-body">
                     <div class="vstack" role="chart">
-                        <div id="Inspection_Aberrant_Level" class="horizontal catalog-line"></div>
+                        <div id="ChartInspectionAberrantLevel" class="horizontal catalog-line"></div>
                         <hr>
-                        <div id="Inspection_Aberrant_Resolve" class="horizontal catalog-line"></div>
+                        <div id="ChartInspectionAberrantResolve" class="horizontal catalog-line"></div>
                     </div>
                 </div>
             </div>
-            <div class="info-box" id="box-Inspection_Current_Pos">
+            <div class="info-box" id="box-InspectionCurrentPos">
                 <div class="info-box-header">空間人員即時位置</div>
                 <div class="info-box-body white-big-track" data-simplebar data-simplebar-auto-hide="false"
                     data-simplebar-force-visible="y">
                     <div class="plan-body">
                         <div class="plan-list-title">目前空間</div>
-                        <div class="plan-list" id="Inspection_Current_Pos">
-                            <div class="plan-person">
-                                <div class="human"><i class="icon-human"></i></div>
-                                <div class="plan-person-content">
-                                    <div class="plan-person-infos">
-                                        <div class="plan-person-info">
-                                            <span class="name">王大明</span>
-                                            <div class="plan-person-heart">
-                                                <i class="icon-heart"></i>
-                                                <span class="value">110</span>
-                                                <span class="unit">下/分</span>
-                                            </div>
-                                            <div class="plan-person-locate">
-                                                <i class="icon-locate"></i>
-                                                <span class="value">A區2F</span>
-                                            </div>
-                                        </div>
-                                        <div class="plan-person-alert">
-                                            <div class="plan-person-alert-item">
-                                                <i class="icon-heart"></i>
-                                                <span class="label">心率異常</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="plan-person-time">最後更新時間：<span>2024/12/09 15:19</span></div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="plan-list" id="InspectionCurrentPos"></div>
                         <hr class="plan-list-hr">
                         <div class="plan-list-title">其他空間</div>
-                        <div class="plan-list" id="Inspection_Another_Pos"></div>
+                        <div class="plan-list" id="InspectionAnotherPos"></div>
                     </div>
                 </div>
             </div>

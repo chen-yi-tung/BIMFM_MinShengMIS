@@ -4,7 +4,7 @@
 @section styles {
     <script src="/Scripts/datatable.js" defer></script>
     <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+    <script src="/Scripts/form-dropdown.js" defer></script>
     <style>
         @@media (min-width: 992px) {
             .edit-area .form {
@@ -101,7 +101,7 @@
         var fileUploader
         $(async function () {
             $("#_checkFilePath").prop("checked", true);
-            await AreaFloorEvent();
+            await formDropdown.ASN();
             ////await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
 
             const Systems = document.getElementById('DSystemID')

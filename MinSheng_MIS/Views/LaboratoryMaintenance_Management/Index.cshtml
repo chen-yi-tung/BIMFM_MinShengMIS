@@ -4,9 +4,6 @@
 
 @section styles {
     @Html.Partial("DataGridScripts")
-
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -64,9 +61,9 @@
         ]
 
         $(async function () {
+            await formDropdown.pushSelect({ id: "MType", url: '@Url.Action("FormMType", "DropDownList")' });
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
-            await pushSelect("MType", '@Url.Action("FormMType", "DropDownList")');
         });
 
         function Initialize_DataGrid(getGridJSON) {

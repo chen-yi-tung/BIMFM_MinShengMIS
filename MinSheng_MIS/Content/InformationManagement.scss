@@ -337,7 +337,7 @@ main {
                 padding-right: 2.5rem;
                 align-items: start;
 
-                #Inspection_Aberrant_Level {
+                #ChartInspectionAberrantLevel {
                     width: auto !important;
                 }
             }
@@ -393,11 +393,11 @@ main {
 
         .info-box {
             &.side1 {
-                #Inspection_Aberrant_Level {
+                #ChartInspectionAberrantLevel {
                     width: max-content;
                 }
 
-                #Inspection_Aberrant_Resolve {
+                #ChartInspectionAberrantResolve {
                     width: max-content;
                     min-width: 20rem;
                 }
@@ -437,8 +437,8 @@ main {
                 }
 
                 [role="chart"] div[id] {
-                    width: max-content !important;
-                    min-width: 20rem !important;
+                    width: max-content;
+                    min-width: 20rem;
                 }
 
                 .vr {
@@ -489,7 +489,7 @@ main {
                     width: 100%;
                 }
 
-                #Inspection_Aberrant_Level {
+                #ChartInspectionAberrantLevel {
                     width: max-content;
                     min-width: 20rem;
                 }
@@ -506,20 +506,45 @@ main {
     }
 
     @include max-576 {
+        %max-576-chart {
+            min-width: max-content;
+            max-width: 16.875rem;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .info-box {
             &.main {
                 .subgrid {
                     width: 100%;
                 }
+
+                [role="chart"] div[id] {
+                    @extend %max-576-chart;
+                }
             }
 
-            &:is(.main, .side1) {
-                [role="chart"] div[id] {
-                    min-width: max-content !important;
-                    max-width: 16.875rem !important;
-                    width: 100% !important;
-                    margin-left: auto;
-                    margin-right: auto;
+            &.side1 {
+                .hstack {
+                    padding-left: 0;
+                    padding-right: 0;
+                }
+
+                #ChartInspectionAberrantLevel {
+                    @extend %max-576-chart;
+                }
+
+                #ChartInspectionAberrantResolve {
+                    @extend %max-576-chart;
+                }
+            }
+
+            [role="chart"] {
+                width: 100%;
+
+                div[id] {
+                    @extend %max-576-chart;
 
                     .legend-container {
                         padding-left: 5vw;
@@ -535,7 +560,6 @@ main {
     & > div[id] {
         margin-left: auto;
         margin-right: auto;
-        width: max-content;
 
         &:empty {
             height: 160px;
@@ -549,12 +573,15 @@ main {
     }
 
     .legend-container {
+        display: flex;
+        flex-direction: column;
         flex: 1 0 auto;
         color: inherit;
 
         .legend-statistics {
             text-align: end;
             margin-bottom: 0.75rem;
+            order: 1;
 
             .value {
                 color: inherit;
@@ -576,6 +603,7 @@ main {
             margin-bottom: 0;
             padding-left: 0;
             gap: 0.75rem;
+            order: 2;
 
             & > li {
                 display: flex;
@@ -594,7 +622,7 @@ main {
                 }
             }
 
-            i {
+            .box {
                 display: block;
                 background-color: var(--c);
                 width: 1rem;
@@ -606,12 +634,15 @@ main {
             .label {
                 color: inherit;
                 font-size: 0.875rem;
+                line-height: 1.5rem;
                 flex: 1 0 auto;
+                margin: 0;
             }
 
             .value {
                 color: inherit;
                 font-size: 1rem;
+                line-height: 1.5rem;
             }
 
             .percentage {
@@ -629,11 +660,11 @@ main {
         }
     }
 
-    .horizontal {
+    & > .horizontal {
         display: flex;
         flex-direction: row;
         align-items: center;
-        width: 80% !important;
+        width: 80%;
         height: auto;
         gap: 1.5rem;
 
@@ -650,11 +681,12 @@ main {
         }
     }
 
-    .vertical {
+    & > .vertical {
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
         align-items: center;
+        width: max-content;
         height: 100%;
 
         .legend-container {
@@ -671,7 +703,7 @@ main {
                 padding-top: 0.3125rem;
             }
 
-            i {
+            .box {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -688,7 +720,8 @@ main {
         }
     }
 
-    .bar {
+    & > .bar {
+        width: max-content;
         .legend-container {
             padding-top: 0.75rem;
 

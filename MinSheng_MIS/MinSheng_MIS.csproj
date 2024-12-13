@@ -458,6 +458,7 @@
     <Compile Include="Services\DesignDiagramsService.cs" />
     <Compile Include="Services\Helper.cs" />
     <Compile Include="Services\MeetingMinutesService.cs" />
+    <Compile Include="Services\PlanInformationService.cs" />
     <Compile Include="Services\WarningMessageService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Surfaces\Surface.cs" />
@@ -2369,7 +2370,6 @@
     <Content Include="Scripts\ArcGIS\widget\searchWidget.js" />
     <Content Include="Scripts\ArcGIS\widget\selectWidget.js" />
     <Content Include="Scripts\ArcGIS\widget\settingWidget.js" />
-    <Content Include="Scripts\AreaFloorEvent.js" />
     <Content Include="Scripts\BigScreen\BigScreen.js" />
     <Content Include="Scripts\BigScreen\ChartPlugin.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -4789,6 +4789,7 @@
     <Content Include="Scripts\Forge\SortRouteModal.js" />
     <Content Include="Scripts\Forge\UpViewer.js" />
     <Content Include="Scripts\Forge\Viewer.Toolkit.js" />
+    <Content Include="Scripts\form-dropdown.js" />
     <Content Include="Scripts\ImageDisplay.js" />
     <Content Include="Scripts\InquiryPlan\GetjsonResult.js" />
     <Content Include="Scripts\InquiryPlan\CreateDataGrids.js" />

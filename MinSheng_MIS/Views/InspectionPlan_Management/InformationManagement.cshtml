@@ -50,7 +50,7 @@
                     <option value="12" selected>十二月份</option>
                 </select>
             </div>
-            <button class="btn btn-search rounded-pill px-3" type="button" id="search">查詢</button>
+            <button class="btn btn-search rounded-pill px-3" type="button" id="Search">查詢</button>
         </form>
     </div>
 
@@ -59,12 +59,12 @@
             <div class="grid">
                 <div role="chart">
                     <h5>巡檢總計畫完成狀態</h5>
-                    <div id="Inspection_Complete_State" class="horizontal catalog-line"></div>
+                    <div id="ChartInspectionCompleteState" class="horizontal catalog-line"></div>
                 </div>
                 <div class="vr"></div>
                 <div role="chart">
                     <h5>設備維修及保養統計</h5>
-                    <div id="Inspection_Equipment_State" class="horizontal catalog-line"></div>
+                    <div id="ChartInspectionEquipmentState" class="horizontal catalog-line"></div>
                 </div>
             </div>
             <div class="table w-100 placeholder-glow" data-simplebar>
@@ -86,7 +86,7 @@
                     <div class="col">完成數</div>
                     <div class="col">完成率</div>
                 </div>
-                <div class="tbody" id="Inspection_All_Members" data-simplebar data-simplebar-auto-hide="false"
+                <div class="tbody" id="InspectionMembers" data-simplebar data-simplebar-auto-hide="false"
                     data-simplebar-force-visible="y">
                     <div class="row">
                         <div class="col col-2 b" id="MyName"></div>
@@ -106,22 +106,22 @@
         <div class="info-box side1">
             <h5>緊急事件等級占比 / 處理狀況</h5>
             <div class="hstack" role="chart">
-                <div id="Inspection_Aberrant_Level" class="horizontal"></div>
+                <div id="ChartInspectionAberrantLevel" class="horizontal"></div>
                 <div class="vr"></div>
-                <div id="Inspection_Aberrant_Resolve" class="horizontal catalog-line"></div>
+                <div id="ChartInspectionAberrantResolve" class="horizontal catalog-line"></div>
             </div>
         </div>
         <div class="info-box side2" role="chart">
             <h5>設備保養及維修進度統計</h5>
-            <div id="Equipment_Maintain_And_Repair_Statistics" class="bar"></div>
+            <div id="ChartEquipmentProgressStatistics" class="bar"></div>
         </div>
         <div class="info-box minx1" role="chart">
             <h5>設備故障等級分布</h5>
-            <div id="Equipment_Level_Rate" class="horizontal align-items-md-end"></div>
+            <div id="ChartEquipmentLevelRate" class="horizontal align-items-md-end"></div>
         </div>
         <div class="info-box minx2" role="chart">
             <h5>設備故障類型占比</h5>
-            <div id="Equipment_Type_Rate"></div>
+            <div id="ChartEquipmentTypeRate" class="horizontal align-items-md-end"></div>
         </div>
     </div>
 </main>

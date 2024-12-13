@@ -2,11 +2,7 @@
     ViewBag.Title = "巡檢保養紀錄管理";
 }
 @section styles {
-    @Html.Partial("DataGridScripts", true)
-
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+    @Html.Partial("DataGridScripts")
 }
 
 <h2>@ViewBag.Title</h2>
@@ -134,7 +130,7 @@
 
 
         $(async function () {
-            await AreaFloorEvent();
+            await formDropdown.ASN();
             await pushSelect("MaintainState", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
             await pushSelect("MaintainUserID", '@Url.Action("MaintainUser", "DropDownList")');
             await pushSelect("AuditUserID", '@Url.Action("AuditUser_Maintain", "DropDownList")');

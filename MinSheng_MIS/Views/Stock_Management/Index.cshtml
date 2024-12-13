@@ -3,9 +3,6 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
-
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
 }
 <style>
     .isMinStock td[field='Status'] > .datagrid-cell,
@@ -87,7 +84,6 @@
         ]
 
         $(async function () {
-            await
             //await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
             Initialize_DataGrid(fakedata);
             addSearchAreaClickEvent();

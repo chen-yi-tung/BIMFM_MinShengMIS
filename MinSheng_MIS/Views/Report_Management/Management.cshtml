@@ -3,12 +3,8 @@
 }
 
 @section styles {
-    @Html.Partial("DataGridScripts", true)
-
+    @Html.Partial("DataGridScripts")
     <script src="/Scripts/datatable.js" defer></script>
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -129,7 +125,7 @@
         ]
 
         $(async function () {
-            await AreaFloorEvent();
+            await formDropdown.ASN();
             await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
             await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
             await pushSelect("InformantUserID", '@Url.Action("ReportUser", "DropDownList")');

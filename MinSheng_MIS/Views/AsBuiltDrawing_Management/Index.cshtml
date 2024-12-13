@@ -4,10 +4,6 @@
 
 @section styles {
     @Html.Partial("DataGridScripts", true)
-
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -111,7 +107,7 @@
         ]
 
         $(async function () {
-            await AreaFloorEvent();
+            await formDropdown.ASN();
             ////await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();

@@ -4,10 +4,6 @@
 
 @section styles {
     @Html.Partial("DataGridScripts", true)
-
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -142,7 +138,7 @@
         
 
         $(async function () {
-            await AreaFloorEvent();
+            await formDropdown.ASN();
             await pushSelect("RepairState", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
             await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
             await pushSelect("InformantUserID", '@Url.Action("InformantUserID", "DropDownList")');

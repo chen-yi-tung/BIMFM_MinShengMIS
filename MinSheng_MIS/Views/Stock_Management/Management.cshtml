@@ -4,10 +4,6 @@
 @section styles {
     @Html.Partial("DataGridScripts")
 
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
-
     <style>
         .isMinStock {
             background-color: rgba(255, 0, 0, 0.10);
@@ -97,7 +93,7 @@
         ]
 
         $(async function () {
-            //await AreaFloorEvent();
+            //await formDropdown.ASN();
             await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();

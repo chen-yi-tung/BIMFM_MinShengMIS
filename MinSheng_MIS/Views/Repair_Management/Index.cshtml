@@ -3,10 +3,7 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
-
     <link rel="stylesheet" href="/Content/datagrid-modal.css">
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -46,13 +43,13 @@
             </div>
 
             <div class="form-group">
-                <label for="Area">棟別</label>
-                <select class="form-select" name="Area" id="Area"></select>
+                <label for="ASN">棟別</label>
+                <select class="form-select" name="ASN" id="ASN"></select>
             </div>
 
             <div class="form-group">
-                <label for="Floor">樓層</label>
-                <select class="form-select" name="Floor" id="Floor"></select>
+                <label for="FSN">樓層</label>
+                <select class="form-select" name="FSN" id="FSN"></select>
             </div>
 
             <div class="form-group">
@@ -182,8 +179,7 @@
         ]
 
         $(async function () {
-            await
-            //await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
+            await formDropdown.ASN();
             Initialize_DataGrid(fakedata);
             addSearchAreaClickEvent();
         });
