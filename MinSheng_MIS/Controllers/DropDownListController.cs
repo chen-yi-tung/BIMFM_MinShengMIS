@@ -1,4 +1,5 @@
-﻿using MinSheng_MIS.Models;
+﻿using Microsoft.Owin.Security.DataHandler.Encoder;
+using MinSheng_MIS.Models;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9,6 +10,7 @@ using System.Linq.Dynamic.Core;
 using System.Security.Policy;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -125,7 +127,7 @@ namespace MinSheng_MIS.Controllers
 
             foreach (var a in Dics)
             {
-                if(a.Key != "5")
+                if (a.Key != "5")
                 {
                     JObject jo = new JObject
                     {
@@ -220,11 +222,12 @@ namespace MinSheng_MIS.Controllers
                 {
                     result.Add(a.Key, a.Value);
                 }
-            }else if(url == "CanAddToPlanReportState") //新增巡檢計畫->新增報修單 DataGrid 報修單狀態
+            }
+            else if (url == "CanAddToPlanReportState") //新增巡檢計畫->新增報修單 DataGrid 報修單狀態
             {
                 foreach (var a in abc)
                 {
-                    if(a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
+                    if (a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
                     {
                         result.Add(a.Key, a.Value);
                     }
@@ -236,24 +239,24 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region ReportLevel 報修等級
-        [System.Web.Http.HttpGet]
-        public ActionResult ReportLevel()
-        {
-            List<JObject> list = new List<JObject>();
-            var Dics = Surface.ReportLevel();
+        //[System.Web.Http.HttpGet]
+        //public ActionResult ReportLevel()
+        //{
+        //    List<JObject> list = new List<JObject>();
+        //    var Dics = Surface.ReportLevel();
 
-            foreach (var a in Dics)
-            {
-                JObject jo = new JObject
-                {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
-                };
-                list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
+        //    foreach (var a in Dics)
+        //    {
+        //        JObject jo = new JObject
+        //        {
+        //            { "Text", a.Value },
+        //            { "Value", a.Key }
+        //        };
+        //        list.Add(jo);
+        //    }
+        //    string text = JsonConvert.SerializeObject(list);
+        //    return Content(text, "application/json");
+        //}
         #endregion
 
         #region InformantUserID 使用者名稱
@@ -472,7 +475,7 @@ namespace MinSheng_MIS.Controllers
 
             foreach (var a in Dics)
             {
-                if(a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
+                if (a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
                 {
                     JObject jo = new JObject
                     {
@@ -490,14 +493,14 @@ namespace MinSheng_MIS.Controllers
 
         #region 設備狀態 下拉式選單
         [HttpGet]
-        public ActionResult EState(string url="")
+        public ActionResult EState(string url = "")
         {
             List<JObject> list = new List<JObject>();
             var Dics = Surface.EState();
 
             foreach (var a in Dics)
             {
-                if(url == "AddToPlan" && a.Key == "3")
+                if (url == "AddToPlan" && a.Key == "3")
                 {
                     continue;
                 }
@@ -912,6 +915,105 @@ namespace MinSheng_MIS.Controllers
                 list.Add(jo);
             }
 
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        //--報修管理
+        #region Floor 樓層
+        [System.Web.Http.HttpGet]
+        public ActionResult Floor(int ASN)
+        {
+            List<JObject> list = new List<JObject>();
+            var table = db.Floor_Info.Where(f => f.ASN == ASN).ToList();
+            foreach (var item in table)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.FloorName);
+                jo.Add("Value", item.FSN);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region RepairState 報修單狀態
+        [HttpGet]
+        public ActionResult ReportState()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.ReportState();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region RepairLevel 報修等級
+        [HttpGet]
+        public ActionResult ReportLevel()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.ReportLevel();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region EquipmentNoEName 設備編號/名稱
+        [System.Web.Http.HttpGet]
+        public ActionResult EquipmentNoEName(string FSN)
+        {
+            List<JObject> list = new List<JObject>();
+            var table = db.EquipmentInfo.Where(e => e.FSN == FSN).ToList();
+            foreach (var item in table)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", $"{item.No} {item.EName}");
+                jo.Add("Value", item.ESN);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region RepairUserName 執行人員
+        [System.Web.Http.HttpGet]
+        public ActionResult RepairUserName()
+        {
+            List<JObject> list = new List<JObject>();
+            var table = db.AspNetUsers.Where(a => a.Authority == "4").ToList();
+            foreach (var item in table)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.UserName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }

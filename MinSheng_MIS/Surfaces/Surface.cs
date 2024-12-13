@@ -136,14 +136,14 @@ namespace MinSheng_MIS.Surfaces
 
         //5-2-6 報修等級編碼對照
         #region ReportLevel 報修等級
-        public static Dictionary<string, string> ReportLevel()
-        {
-            var ValueOption = new Dictionary<string, string>();
-            ValueOption.Add("1", "一般");
-            ValueOption.Add("2", "緊急");
-            ValueOption.Add("3", "最速件");
-            return ValueOption;
-        }
+        //public static Dictionary<string, string> ReportLevel()
+        //{
+        //    var ValueOption = new Dictionary<string, string>();
+        //    ValueOption.Add("1", "一般");
+        //    ValueOption.Add("2", "緊急");
+        //    ValueOption.Add("3", "最速件");
+        //    return ValueOption;
+        //}
         #endregion
 
         //5-2-7 班別對照表
@@ -353,6 +353,31 @@ namespace MinSheng_MIS.Surfaces
             ValueOption.Add("1", "待處理");
             ValueOption.Add("2", "處理中");
             ValueOption.Add("3", "處理完成");
+            return ValueOption;
+        }
+        #endregion
+
+        //報修管理-報修等級
+        #region 報修單狀態 ReportState
+        public static Dictionary<string, string> ReportState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待派工");
+            ValueOption.Add("2", "待執行");
+            ValueOption.Add("3", "待審核");
+            ValueOption.Add("4", "審核通過");
+            ValueOption.Add("5", "審核未過");
+            return ValueOption;
+        }
+        #endregion
+
+        #region 報修等級 ReportLevel
+        public static Dictionary<string, string> ReportLevel()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "一般");
+            ValueOption.Add("2", "緊急");
+            ValueOption.Add("3", "最速件");
             return ValueOption;
         }
         #endregion

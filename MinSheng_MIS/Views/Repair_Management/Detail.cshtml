@@ -46,14 +46,14 @@
 
         const ReportDetailItem = [
             { text: "報修單號", value: "RSN" },
-            { text: "報修單狀態", value: "State" },
-            { text: "報修等級", value: "RepairLevel" },
-            { text: "報修時間", value: "RepairTime" },
+            { text: "報修單狀態", value: "ReportState" },
+            { text: "報修等級", value: "ReportLevel" },
+            { text: "報修時間", value: "ReportTime" },
             { text: "報修內容", value: "ReportContent" },
-            { text: "報修照片", value: "ImgPath", type: "ImgPath" },
-            { text: "執行人員", value: "UserID" },
+            { text: "報修照片", value: "ReportImg", type: "ImgPath" },
+            { text: "執行人員", value: "RepairUserName" },
             { text: "所在地點", value: "Location" },
-            { text: "設備編號", value: "ESN" },
+            { text: "設備編號", value: "No" },
             { text: "設備名稱", value: "EName" },
             {
                 text: "設備屬性", value: "ESN", formatter: (val) => {
@@ -64,16 +64,16 @@
 
         const RepairDetailItem = [
             { text: "維修結果", value: "RepairResult" },
-            { text: "填報者", value: "Repairer" },
+            { text: "填報者", value: "RepairtId" },
             { text: "填報時間", value: "RepairTime" },
             { text: "維修填報", value: "RepairContent" },
         ]
 
         const ReviewDetailItem = [
-            { text: "審核結果", value: "ReviewResult" },
-            { text: "審核者", value: "Reviewer" },
-            { text: "審核時間", value: "ReviewTime" },
-            { text: "審核意見", value: "ReviewContent" },
+            { text: "審核結果", value: "AuditResult" },
+            { text: "審核者", value: "AuditId" },
+            { text: "審核時間", value: "AuditTime" },
+            { text: "審核意見", value: "AuditReason" },
         ]
 
         const fakeData = {

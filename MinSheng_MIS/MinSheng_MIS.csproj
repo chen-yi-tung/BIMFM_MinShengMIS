@@ -436,6 +436,7 @@
     <Compile Include="Models\ViewModels\ReadInspectionPlanPathData.cs" />
     <Compile Include="Models\ViewModels\NewMaintainItems.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemViewModel.cs" />
+    <Compile Include="Models\ViewModels\Repair_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\StockIn_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\StockOut_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\Stock_ManagementViewModels.cs" />
@@ -458,6 +459,7 @@
     <Compile Include="Services\DesignDiagramsService.cs" />
     <Compile Include="Services\Helper.cs" />
     <Compile Include="Services\MeetingMinutesService.cs" />
+    <Compile Include="Services\Repair_ManagementService.cs" />
     <Compile Include="Services\WarningMessageService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Surfaces\Surface.cs" />

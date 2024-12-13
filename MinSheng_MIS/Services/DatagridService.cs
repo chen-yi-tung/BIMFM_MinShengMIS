@@ -10,6 +10,7 @@ using MinSheng_MIS.Surfaces;
 using System.Linq.Dynamic.Core;
 using System.Globalization;
 using System.Web.Mvc;
+using System.Security.Cryptography;
 
 namespace MinSheng_MIS.Services
 {
@@ -1377,6 +1378,131 @@ namespace MinSheng_MIS.Services
 
         //--報修管理--
         #region 報修管理
+        public JObject RepairManagementDataGrid(FormCollection form)
+        {
+            using (var db = new Bimfm_MinSheng_MISEntities())
+            {
+                IQueryable<EquipmentReportForm> equipmentReportFormTable = db.EquipmentReportForm.AsNoTracking();
+
+                //報修單狀態
+                if (!string.IsNullOrEmpty(form["ReportState"]?.ToString()))
+                {
+                    string reportState = form["ReportState"].ToString();
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.ReportState == reportState);
+                }
+                //報修單號
+                if (!string.IsNullOrEmpty(form["RSN"]?.ToString()))
+                {
+                    string rsn = form["RSN"].ToString();
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.RSN.Contains(rsn));
+                }
+                //報修等級
+                if (!string.IsNullOrEmpty(form["ReportLevel"]?.ToString()))
+                {
+                    string reportLevel = form["ReportLevel"].ToString();
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.ReportLevel == reportLevel);
+                }
+                //報修時間(起)
+                if (DateTime.TryParse(form["DateFrom"]?.ToString(), out DateTime dateFrom))
+                {
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.ReportTime >= dateFrom);
+                }
+                //報修時間(迄)
+                if (DateTime.TryParse(form["DateTo"]?.ToString(), out DateTime dateTo))
+                {
+                    dateTo = dateTo.AddDays(1);
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.ReportTime <= dateTo);
+                }
+                //報修內容
+                if (!string.IsNullOrEmpty(form["ReportContent"]?.ToString()))
+                {
+                    string reportContent = form["ReportContent"].ToString();
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.ReportContent.Contains(reportContent));
+                }
+                //棟別
+                if (!string.IsNullOrEmpty(form["ASN"]?.ToString()))
+                {
+                    if (!int.TryParse(form["ASN"]?.ToString(), out int asn))
+                    {
+                        equipmentReportFormTable = equipmentReportFormTable.Where(e => e.EquipmentInfo.Floor_Info.ASN == asn);
+                    }
+                }
+                //樓層
+                if (!string.IsNullOrEmpty(form["FSN"]?.ToString()))
+                {
+                    string fsn = form["FSN"].ToString();
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.EquipmentInfo.FSN == fsn);
+                }
+                //設備名稱
+                if (!string.IsNullOrEmpty(form["EName"]?.ToString()))
+                {
+                    string eName = form["EName"].ToString();
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.EquipmentInfo.EName.Contains(eName));
+                }
+                //設備編號
+                if (!string.IsNullOrEmpty(form["No"]?.ToString()))
+                {
+                    string no = form["No"].ToString();
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.EquipmentInfo.No.Contains(no));
+                }
+                //執行人員
+                if (!string.IsNullOrEmpty(form["RepairUserName"]?.ToString()))
+                {
+                    string repairUserName = form["RepairUserName"].ToString();
+                    var userRepairSet = db.Equipment_ReportFormMember.Where(e => e.RepairUserName == repairUserName).Select(e => e.RSN).ToHashSet();
+                    equipmentReportFormTable = equipmentReportFormTable.Where(a => userRepairSet.Contains(a.RSN));
+                }
+
+                equipmentReportFormTable = equipmentReportFormTable.OrderByDescending(e => e.ReportTime);
+
+                int page = 1;
+                if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+                {
+                    page = int.Parse(form["page"].ToString());
+                }
+                int rows = 10;
+                if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+                {
+                    rows = int.Parse(form["rows"]?.ToString());
+                }
+
+                int total = equipmentReportFormTable.Count();
+                List<EquipmentReportForm> equipmentReportFormList = equipmentReportFormTable.Skip((page - 1) * rows).Take(rows).ToList();
+
+                JArray ja = new JArray();
+                foreach (var item in equipmentReportFormList)
+                {
+                    JObject itemObject = new JObject();
+                    itemObject.Add("ReportState", Surface.ReportState()[item.ReportState]);
+                    itemObject.Add("RSN", item.RSN);
+                    itemObject.Add("ReportLevel", Surface.ReportLevel()[item.ReportLevel]);
+                    itemObject.Add("ReportTime", item.ReportTime.ToString("yyyy/MM/dd HH:mm"));
+                    itemObject.Add("ReportContent", item.ReportContent);
+                    itemObject.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area);
+                    itemObject.Add("FloorName", item.EquipmentInfo.Floor_Info.FloorName);
+                    itemObject.Add("EName", item.EquipmentInfo.EName);
+                    itemObject.Add("No", item.EquipmentInfo.No);
+                    itemObject.Add("RepairUserName", "");
+                    var memberlist = db.Equipment_ReportFormMember.Where(e => e.RSN == item.RSN).ToList();
+                    foreach (var member in memberlist)
+                    {
+                        if (!string.IsNullOrEmpty(itemObject["RepairUserName"]?.ToString()))
+                            itemObject["RepairUserName"] = $"{itemObject["RepairUserName"]}、{member.RepairUserName}";
+                        else
+                            itemObject["RepairUserName"] = member.RepairUserName;
+                    }
+                    ja.Add(itemObject);
+                }
+
+                JObject jo = new JObject
+                {
+                    { "rows", ja },
+                    { "total", total }
+                };
+                return jo;
+            }
+        }
+
         //public JObject GetJsonForGrid_Report_Management(System.Web.Mvc.FormCollection form)
         //{
         //    #region datagrid呼叫時的預設參數有 rows 跟 page
