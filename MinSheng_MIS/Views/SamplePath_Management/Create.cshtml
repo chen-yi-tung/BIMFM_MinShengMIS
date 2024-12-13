@@ -2,16 +2,8 @@
     ViewBag.Title = "新增 巡檢路線模板";
 }
 @section styles {
-    @Styles.Render("~/Content/easyui/themes/default/easyui.css")
-    <link rel="stylesheet" href="/Content/datagrid-modal.css">
-    <link rel="stylesheet" href="~/Content/datatable.css">
-
-    <script src="/Content/easyui/jquery.min.js" defer></script>
-    <script src="/Content/easyui/jquery.easyui.min.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
+    @Html.Partial("DataGridScripts")
     <script src="~/Scripts/SamplePath_Management/CreateDataGrids.js" defer></script>
-    @*<script src="/Scripts/SamplePath_Management/Create.js" defer></script>*@
-    <script src="/Scripts/datatable.js"></script>
 }
 
 
@@ -35,7 +27,8 @@
             <div class="datatable-easyui w-100 d-none">
                 <table id="Template-datagrid"></table>
             </div>
-            <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal" data-bs-target="#AddEquipment">+ 新增巡檢設備</button>
+            <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal"
+                data-bs-target="#AddEquipment">+ 新增巡檢設備</button>
 
             <div class="m-0 w-100 text-center">
                 <div class="datatable datatable-grid w-100 h-100">
@@ -80,7 +73,8 @@
                                     <td id="Model">W004N</td>
                                     <td id="Frequency">每2小時</td>
                                     <td id="d-_delete" class="p-2">
-                                        <button type="button" class="btn btn-location" data-bs-toggle="modal" data-bs-target="#Location"><i class="fa-solid fa-location-dot"></i></button>
+                                        <button type="button" class="btn btn-location" data-bs-toggle="modal"
+                                            data-bs-target="#Location"><i class="fa-solid fa-location-dot"></i></button>
                                     </td>
                                     <td id="d-_delete" class="p-1 pt-2">
                                         <button type="button" class="btn-delete-item"></button>
@@ -262,22 +256,22 @@
 
             url == null ? onSuccess(fakeData) :
                 console.log("fakeData", fakeData);
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
 
             function onSuccess(res) {
                 console.log("res", res);
                 $("#PathDetail").append(createTableInner(res, SerializedName));
 
                 res.EItem ?
-                $("#EInfo").append(createTableGrid(
-                    createIndexToArrayData(res.EItem), GridOptions)) :
+                    $("#EInfo").append(createTableGrid(
+                        createIndexToArrayData(res.EItem), GridOptions)) :
                     $("#EInfo").parents(".datatable").remove();
             }
             function onError(res) {
@@ -348,29 +342,29 @@
             }
         }
 
-        //$(async function () {
-        //    sampleTr = new SampleTr();
-        //    await sampleTr.init()
-        //    addButtonEvent();
-        //    maintainDG_Controller = new IPDG(MDGOptions);
-        //    repairDG_Controller = new IPDG(RDGOptions);
-        //    await addDropDownList();
-        //    await addAreaFloorEvent();
-        //    controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        //    sortRouteModal.autoRouteToggle(true);
+            //$(async function () {
+            //    sampleTr = new SampleTr();
+            //    await sampleTr.init()
+            //    addButtonEvent();
+            //    maintainDG_Controller = new IPDG(MDGOptions);
+            //    repairDG_Controller = new IPDG(RDGOptions);
+            //    await addDropDownList();
+            //    await addAreaFloorEvent();
+            //    controlToggle("path-draw", ForgeDraw.Control.DRAW);
+            //    sortRouteModal.autoRouteToggle(true);
 
-        //    $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
+            //    $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
 
-        //    window.addEventListener("beforeunload", (event) => {
-        //        sessionStorage.clear();
-        //    });
+            //    window.addEventListener("beforeunload", (event) => {
+            //        sessionStorage.clear();
+            //    });
 
-        //    addSaveSamplePathEvent();
+            //    addSaveSamplePathEvent();
 
-        //    $("#delete").click(deleteIP);
+            //    $("#delete").click(deleteIP);
 
-        //    readData(apiUrl);
-        //})
+            //    readData(apiUrl);
+            //})
         @*function SampleTr() {
             this.count = 0;
             this.list = $("#item-area")
@@ -455,18 +449,18 @@
             }
             return this;
         }*@
-        function delTemplateItem() {
-            let delBtns = document.querySelectorAll('.btn-delete-item');
-            delBtns.forEach(function (delBtn) {
-                delBtn.onclick = function () {
-                    let tr = delBtn.closest('tr');
-                    if (tr) {
-                        tr.remove();
-                        reorderNumbers();
-                    }
-                };
-            });
-        }
+            function delTemplateItem() {
+                let delBtns = document.querySelectorAll('.btn-delete-item');
+                delBtns.forEach(function (delBtn) {
+                    delBtn.onclick = function () {
+                        let tr = delBtn.closest('tr');
+                        if (tr) {
+                            tr.remove();
+                            reorderNumbers();
+                        }
+                    };
+                });
+            }
 
         //當刪除新增的模板後，需重新排序次序
         function reorderNumbers() {

@@ -3,7 +3,7 @@
 }
 
 @section styles {
-    @Html.Partial("DataGridScripts", true)
+    @Html.Partial("DataGridScripts")
 }
 
 <h2>@ViewBag.Title</h2>
@@ -54,8 +54,8 @@
     </div>
 </div>
 
-    @section scripts {
-        <script>
+@section scripts {
+    <script>
 
         var getGridJSON = '@Url.Action("DesignDiagrams_Management", "Datagrid")';
         var DataGrid;
@@ -73,7 +73,7 @@
         ]
 
         $(async function () {
-            await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
+            await formDropdown.pushSelect({ id: "ImgType", url: '@Url.Action("ImgType", "DropDownList")' });
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
@@ -123,5 +123,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-        </script>
-    }
+    </script>
+}

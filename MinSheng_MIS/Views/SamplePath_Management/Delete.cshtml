@@ -2,9 +2,7 @@
     ViewBag.Title = "巡檢路線模板 刪除";
 }
 @section styles {
-    <link rel="stylesheet" href="/Content/datagrid-modal.css">
-    <link rel="stylesheet" href="~/Content/datatable.css">
-    <script src="/Scripts/datatable.js" defer></script>
+    @Html.Partial("DataGridScripts")
     <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
     <script src="/Scripts/dataTable/PlanRecord.js" defer></script>
     <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
