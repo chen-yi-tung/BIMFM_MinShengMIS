@@ -1440,9 +1440,9 @@ namespace MinSheng_MIS.Services
                     equipmentReportFormTable = equipmentReportFormTable.Where(e => e.EquipmentInfo.EName.Contains(eName));
                 }
                 //設備編號
-                if (!string.IsNullOrEmpty(form["No"]?.ToString()))
+                if (!string.IsNullOrEmpty(form["NO"]?.ToString()))
                 {
-                    string no = form["No"].ToString();
+                    string no = form["NO"].ToString();
                     equipmentReportFormTable = equipmentReportFormTable.Where(e => e.EquipmentInfo.NO.Contains(no));
                 }
                 //執行人員
@@ -1481,7 +1481,7 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area);
                     itemObject.Add("FloorName", item.EquipmentInfo.Floor_Info.FloorName);
                     itemObject.Add("EName", item.EquipmentInfo.EName);
-                    itemObject.Add("No", item.EquipmentInfo.NO);
+                    itemObject.Add("NO", item.EquipmentInfo.NO);
                     itemObject.Add("RepairUserName", "");
                     var memberlist = db.Equipment_ReportFormMember.Where(e => e.RSN == item.RSN).ToList();
                     foreach (var member in memberlist)
