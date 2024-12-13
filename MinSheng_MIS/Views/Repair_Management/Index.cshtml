@@ -14,7 +14,7 @@
         <form class="form" method="post" action="">
             <div class="form-group">
                 <label for="State">報修單狀態</label>
-                <select class="form-select" name="State" id="State"></select>
+                <select class="form-select" name="ReportState" id="State"></select>
             </div>
 
             <div class="form-group">
@@ -24,7 +24,7 @@
 
             <div class="form-group">
                 <label for="RepairLevel">報修等級</label>
-                <select class="form-select" name="RepairLevel" id="RepairLevel"></select>
+                <select class="form-select" name="ReportLevel" id="RepairLevel"></select>
             </div>
 
             <div class="form-group">
@@ -39,7 +39,7 @@
 
             <div class="form-group">
                 <label for="RepairContant">報修內容</label>
-                <input class="form-control" id="RepairContant" name="RepairContant" type="text" />
+                <input class="form-control" id="RepairContant" name="ReportContent" type="text" />
             </div>
 
             <div class="form-group">
@@ -59,12 +59,12 @@
 
             <div class="form-group">
                 <label for="ESN">設備編號</label>
-                <input class="form-control" id="ESN" name="ESN" type="text" />
+                <input class="form-control" id="ESN" name="No" type="text" />
             </div>
 
             <div class="form-group col-2fr">
                 <label for="UserID">執行人員</label>
-                <select type="text" class="form-select" name="UserID" id="UserID"></select>
+                <select type="text" class="form-select" name="RepairUserName" id="UserID"></select>
             </div>
 
             <div class="button-group">
@@ -92,11 +92,11 @@
                         <div class="form-group-zone">
                             <div class="form-group col-3fr required">
                                 <label for="PlanName">預計維修日期</label>
-                                <input type="date" class="form-control" name="PlanName" id="PlanName" maxlength="20" required>
+                                <input type="date" class="form-control" name="DueDate" id="PlanName" maxlength="20" required>
                             </div>
                             <div class="form-group col-3fr required">
                                 <label for="PlanDate">執行人員</label>
-                                <select type="text" class="form-select" name="UserID" id="UserID" required></select>
+                                <select type="text" class="form-select" name="RepairUserName" id="UserID" required></select>
                             </div>
                         </div>
                     </form>
@@ -201,16 +201,16 @@
                         `<button onclick="dg.eventButton(${i}, '派工', '_assign')" ${row.State !== "待派工" ? "disabled" : ""} class="btn btn-datagrid btn-other" data-bs-toggle="modal" data-bs-target="#addMultiAssign" data-title="報修單 派工">派工</button>`)
                 ]],
                 columns: [[
-                    dg.column('State', '報修單狀態', 150),
+                    dg.column('ReportState', '報修單狀態', 150),
                     dg.column('RSN', '報修單號', 150),
-                    dg.column('RepairLevel', '報修等級', 150),
-                    dg.column('RepairTime', '報修時間', 200),
-                    dg.column('RepairContent', '報修內容', 300),
+                    dg.column('ReportLevel', '報修等級', 150),
+                    dg.column('ReportTime', '報修時間', 200),
+                    dg.column('ReportContent', '報修內容', 300),
                     dg.column('Area', '棟別', 200),
-                    dg.column('Floor', '樓層', 200),
+                    dg.column('FloorName', '樓層', 200),
                     dg.column('EName', '設備名稱', 300),
-                    dg.column('ESN', '設備編號', 150),
-                    dg.column('UserID', '執行人員', 300),
+                    dg.column('No', '設備編號', 150),
+                    dg.column('RepairUserName', '執行人員', 300),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {

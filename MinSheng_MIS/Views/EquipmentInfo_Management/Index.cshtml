@@ -17,18 +17,23 @@
             </div>
 
             <div class="form-group">
-                <label for="ESN">設備編號</label>
-                <input class="form-control" id="ESN" name="ESN" type="text" />
+                <label for="NO">設備編號</label>
+                <input class="form-control" id="NO" name="NO" type="text" />
             </div>
 
             <div class="form-group">
-                <label for="Area">棟別</label>
-                <select class="form-select" name="Area" id="Area"></select>
+                <label for="EState">設備狀態</label>
+                <select class="form-select" name="EState" id="EState"></select>
             </div>
 
             <div class="form-group">
-                <label for="Floor">樓層</label>
-                <select class="form-select" name="Floor" id="Floor"></select>
+                <label for="ASN">棟別</label>
+                <select class="form-select" name="ASN" id="ASN"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="FSN">樓層</label>
+                <select class="form-select" name="FSN" id="FSN"></select>
             </div>
 
             <div class="form-group">
@@ -37,43 +42,13 @@
             </div>
 
             <div class="form-group">
-                <label for="Company">設備廠商</label>
-                <input class="form-control" id="Company" name="Company" type="text" />
-            </div>
-
-            <div class="form-group">
                 <label for="Model">設備型號</label>
                 <input class="form-control" id="Model" name="Model" type="text" />
             </div>
 
             <div class="form-group">
-                <label for="Tel">連絡電話</label>
-                <input class="form-control" id="Tel" name="Tel" type="text" />
-            </div>
-
-            <div class="form-group">
-                <label for="Voltage">使用電壓</label>
-                <input class="form-control" id="Voltage" name="Voltage" type="text" />
-            </div>
-
-            <div class="form-group">
-                <label for="Other">其他耗材資料</label>
-                <input class="form-control" id="Other" name="Other" type="text" />
-            </div>
-
-            <div class="form-group">
-                <label for="InstallDateFrom">安裝日期(起)</label>
-                <input class="form-control" id="InstallDateFrom" name="InstallDateFrom" type="date" />
-            </div>
-
-            <div class="form-group">
-                <label for="InstallDateTo">安裝日期(迄)</label>
-                <input class="form-control" id="InstallDateTo" name="InstallDateTo" type="date" />
-            </div>
-
-            <div class="form-group col-2fr">
-                <label for="Memo">備註</label>
-                <input class="form-control" id="Memo" name="Memo" type="text" />
+                <label for="Vendor">設備廠商</label>
+                <input class="form-control" id="Vendor" name="Vendor" type="text" />
             </div>
 
             <div class="button-group">
@@ -84,12 +59,12 @@
     </div>
 </div>
 
-    <div class="datagrid-area">
-        <table id="DataGrid"></table>
-    </div>
+<div class="datagrid-area">
+    <table id="DataGrid"></table>
+</div>
 
-    @section scripts {
-        <script>
+@section scripts {
+    <script>
         //const baseUrl = '/PlanManagement/';
         var getGridJSON = '@Url.Action("EquipmentInfo_Management", "Datagrid")';
         var DataGrid;
@@ -97,7 +72,7 @@
         const fakedata = [
             {
                 EName: "軸承潤滑劑",
-                ESN: 'T-1361662',
+                NO: 'T-1361662',
                 InstallDate: "2024/10/02",
                 Area: "A棟",
                 Floor: "2F",
@@ -106,7 +81,7 @@
             },
             {
                 EName: "軸承潤滑劑",
-                ESN: 'T-1361662',
+                NO: 'T-1361662',
                 InstallDate: "2024/10/02",
                 Area: "A棟",
                 Floor: "2F",
@@ -115,7 +90,7 @@
             },
             {
                 EName: "軸承潤滑劑",
-                ESN: 'T-1361662',
+                NO: 'T-1361662',
                 InstallDate: "2024/10/02",
                 Area: "A棟",
                 Floor: "2F",
@@ -125,18 +100,19 @@
         ]
 
         $(async function () {
-            await
-            //await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
-            Initialize_DataGrid(fakedata);
+            await formDropdown.ASN();
+            await formDropdown.pushSelect({ id: "EState", url: '@Url.Action("EState", "DropDownList")' });
+
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
 
         function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
-                //url: getGridJSON,
-                data: getGridJSON,
-                //method: 'POST',
+                url: getGridJSON,
+                //data: getGridJSON,
+                method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'IPSN',
                 frozenColumns: [[
@@ -149,13 +125,16 @@
                     dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
+                    dg.hiddenColumn('ESN'),
                     dg.column('EName', '設備名稱', 200),
-                    dg.column('ESN', '設備編號', 200),
-                    dg.column('InstallDate', '安裝日期', 200),
+                    dg.column('NO', '設備編號', 200),
+                    dg.column('EState', '設備狀態', 200),
                     dg.column('Area', '棟別', 200),
                     dg.column('Floor', '樓層', 200),
                     dg.column('Brand', '設備廠牌', 300),
                     dg.column('Model', '設備型號', 600),
+                    dg.column('Vendor', '設備廠商', 600),
+                    dg.hiddenColumn('FilePath'),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
@@ -186,5 +165,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-        </script>
-    }
+    </script>
+}
