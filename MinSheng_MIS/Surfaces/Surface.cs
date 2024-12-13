@@ -179,6 +179,7 @@ namespace MinSheng_MIS.Surfaces
             ValueOption.Add("1", "管理人員");
             ValueOption.Add("2", "操作人員");
             ValueOption.Add("3", "一般人員");
+            ValueOption.Add("4", "巡檢人員");
             return ValueOption;
         }
         #endregion
