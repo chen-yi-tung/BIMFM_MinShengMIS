@@ -1008,9 +1008,9 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region RepairUserName 執行人員
+        #region InspectionUserName 執行人員
         [System.Web.Http.HttpGet]
-        public ActionResult RepairUserName()
+        public ActionResult InspectionUserName()
         {
             List<JObject> list = new List<JObject>();
             var table = db.AspNetUsers.Where(a => a.Authority == "4").ToList();
