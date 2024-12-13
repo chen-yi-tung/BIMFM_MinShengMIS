@@ -27,7 +27,7 @@ namespace MinSheng_MIS.Models
     
         public string ESN { get; set; }
         public string EName { get; set; }
-        public string No { get; set; }
+        public string NO { get; set; }
         public string FSN { get; set; }
         public string Brand { get; set; }
         public string Vendor { get; set; }

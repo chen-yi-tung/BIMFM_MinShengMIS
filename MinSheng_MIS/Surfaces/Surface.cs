@@ -117,7 +117,6 @@ namespace MinSheng_MIS.Surfaces
             var ValueOption = new Dictionary<string, string>();
             ValueOption.Add("1", "正常");
             ValueOption.Add("2", "報修中");
-            ValueOption.Add("3", "停用");
             return ValueOption;
         }
         #endregion

@@ -113,6 +113,13 @@ namespace MinSheng_MIS.Controllers
                     list.Add(jo);
                 }
             }
+            else
+            {
+                    JObject jo = new JObject();
+                    jo.Add("Text", "--請先選擇棟別--");//Floor Name
+                    jo.Add("Value", ""); // FSN 
+                    list.Add(jo);
+            }
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }
@@ -992,7 +999,7 @@ namespace MinSheng_MIS.Controllers
             foreach (var item in table)
             {
                 JObject jo = new JObject();
-                jo.Add("Text", $"{item.No} {item.EName}");
+                jo.Add("Text", $"{item.NO} {item.EName}");
                 jo.Add("Value", item.ESN);
                 list.Add(jo);
             }

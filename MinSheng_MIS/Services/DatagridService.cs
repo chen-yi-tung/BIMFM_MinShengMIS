@@ -1443,7 +1443,7 @@ namespace MinSheng_MIS.Services
                 if (!string.IsNullOrEmpty(form["No"]?.ToString()))
                 {
                     string no = form["No"].ToString();
-                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.EquipmentInfo.No.Contains(no));
+                    equipmentReportFormTable = equipmentReportFormTable.Where(e => e.EquipmentInfo.NO.Contains(no));
                 }
                 //執行人員
                 if (!string.IsNullOrEmpty(form["RepairUserName"]?.ToString()))
@@ -1481,7 +1481,7 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area);
                     itemObject.Add("FloorName", item.EquipmentInfo.Floor_Info.FloorName);
                     itemObject.Add("EName", item.EquipmentInfo.EName);
-                    itemObject.Add("No", item.EquipmentInfo.No);
+                    itemObject.Add("No", item.EquipmentInfo.NO);
                     itemObject.Add("RepairUserName", "");
                     var memberlist = db.Equipment_ReportFormMember.Where(e => e.RSN == item.RSN).ToList();
                     foreach (var member in memberlist)
@@ -2081,193 +2081,165 @@ namespace MinSheng_MIS.Services
 
         //--設備管理--
         #region 資產管理
-        //public JObject GetJsonForGrid_EquipmentInfo(System.Web.Mvc.FormCollection form)
-        //{
-        //    #region datagrid呼叫時的預設參數有 rows 跟 page
-        //    int page = 1;
-        //    if (!string.IsNullOrEmpty(form["page"]?.ToString()))
-        //    {
-        //        page = short.Parse(form["page"].ToString());
-        //    }
-        //    int rows = 10;
-        //    if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
-        //    {
-        //        rows = short.Parse(form["rows"]?.ToString());
-        //    }
-        //    #endregion
+        public JObject GetJsonForGrid_EquipmentInfo(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
 
-        //    #region 塞來自formdata的資料
-        //    //設備狀態
-        //    string EState = form["EState"]?.ToString();
-        //    //棟別
-        //    string ASN = form["ASN"]?.ToString();
-        //    string Area = form["Area"]?.ToString();
-        //    //樓層
-        //    string FSN = form["FSN"]?.ToString();
-        //    string Floor = form["Floor"]?.ToString();
-        //    //空間名稱
-        //    string RoomName = form["RoomName"]?.ToString();
-        //    //系統別
-        //    string System = form["System"]?.ToString();
-        //    //子系統別
-        //    string SubSystem = form["SubSystem"]?.ToString();
-        //    //設備編號
-        //    string ESN = form["ESN"]?.ToString();
-        //    //設備名稱
-        //    string EName = form["EName"]?.ToString();
-        //    //廠牌
-        //    string Brand = form["Brand"]?.ToString();
-        //    //型號
-        //    string Model = form["Model"]?.ToString();
-        //    //財產編碼
-        //    string PropertyCode = form["PropertyCode"]?.ToString();
-        //    #endregion
+            #region 塞來自formdata的資料
+            //設備名稱
+            string EName = form["EName"]?.ToString();
+            //設備編號
+            string NO = form["NO"]?.ToString();
+            //設備狀態
+            string EState = form["EState"]?.ToString();
+            //棟別
+            string ASN = form["ASN"]?.ToString();
+            //樓層
+            string FSN = form["FSN"]?.ToString();
+            //設備廠牌
+            string Brand = form["Brand"]?.ToString();
+            //型號
+            string Model = form["Model"]?.ToString();
+            //設備廠商
+            string Vendor = form["Vendor"]?.ToString();
+            #endregion
 
-        //    #region 依據查詢字串檢索資料表
-        //    var Data = from x1 in db.EquipmentInfo
-        //               join x2 in db.Floor_Info on x1.FSN equals x2.FSN
-        //               select new { x1.EState, x2.ASN, x1.Area, x1.FSN, x1.Floor, x1.RoomName, x1.System, x1.SubSystem, x1.ESN, x1.EName, x1.Brand, x1.Model, x1.PropertyCode };
+            #region 依據查詢字串檢索資料表
+            var Data = from x1 in db.EquipmentInfo
+                       join x2 in db.Floor_Info on x1.FSN equals x2.FSN
+                       join x3 in db.AreaInfo on x2.ASN equals x3.ASN
+                       select new { x1.ESN, x1.EName, x1.NO, x1.EState, x2.ASN, x3.Area, x1.FSN, x2.FloorName, x1.Brand, x1.Model, x1.Vendor, x1.ContactPhone, x1.OperatingVoltage, x1.OtherInfo, x1.InstallDate, x1.Memo};
+            if (!string.IsNullOrEmpty(EName))
+            {
+                Data = Data.Where(x => x.EName.Contains(EName));
+            }
 
-        //    if (!string.IsNullOrEmpty(EState))
-        //    {
-        //        Data = Data.Where(x => x.EState == EState);
-        //    }
-        //    if (!string.IsNullOrEmpty(ASN))
-        //    {
-        //        int intasn = Convert.ToInt32(ASN);
-        //        Data = Data.Where(x => x.ASN == intasn);
-        //    }
-        //    if (!string.IsNullOrEmpty(Area))
-        //    {
-        //        Data = Data.Where(x => x.Area == Area);
-        //    }
-        //    if (!string.IsNullOrEmpty(FSN))
-        //    {
-        //        Data = Data.Where(x => x.FSN == FSN);
-        //    }
-        //    if (!string.IsNullOrEmpty(Floor))
-        //    {
-        //        Data = Data.Where(x => x.Floor == Floor);
-        //    }
-        //    if (!string.IsNullOrEmpty(RoomName))
-        //    {
-        //        Data = Data.Where(x => x.RoomName.Contains(RoomName));
-        //    }
-        //    if (!string.IsNullOrEmpty(System))
-        //    {
-        //        Data = Data.Where(x => x.System == System);
-        //    }
-        //    if (!string.IsNullOrEmpty(SubSystem))
-        //    {
-        //        Data = Data.Where(x => x.SubSystem == SubSystem);
-        //    }
-        //    if (!string.IsNullOrEmpty(ESN))
-        //    {
-        //        Data = Data.Where(x => x.ESN == ESN);
-        //    }
-        //    if (!string.IsNullOrEmpty(EName))
-        //    {
-        //        Data = Data.Where(x => x.EName.Contains(EName));
-        //    }
-        //    if (!string.IsNullOrEmpty(Brand))
-        //    {
-        //        Data = Data.Where(x => x.Brand.Contains(Brand));
-        //    }
-        //    if (!string.IsNullOrEmpty(Model))
-        //    {
-        //        Data = Data.Where(x => x.Model.Contains(Model));
-        //    }
-        //    if (!string.IsNullOrEmpty(PropertyCode))
-        //    {
-        //        Data = Data.Where(x => x.PropertyCode == PropertyCode);
-        //    }
-        //    #endregion
+            if (!string.IsNullOrEmpty(NO))
+            {
+                Data = Data.Where(x => x.NO.Contains(NO));
+            }
 
-        //    #region datagrid remoteSort 判斷有無 sort 跟 order
-        //    IValueProvider vp = form.ToValueProvider();
-        //    if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
-        //    {
-        //        string sort = form["sort"];
-        //        string order = form["order"];
-        //        Data = OrderByField(Data, sort, order == "asc");
-        //    }
-        //    else
-        //    {
-        //        Data = Data.OrderByDescending(x => x.ESN);
-        //    }
-        //    #endregion
+            if (!string.IsNullOrEmpty(EState))
+            {
+                Data = Data.Where(x => x.EState == EState);
+            }
+            if (!string.IsNullOrEmpty(ASN))
+            {
+                int intasn = Convert.ToInt32(ASN);
+                Data = Data.Where(x => x.ASN == intasn);
+            }
 
-        //    var result = Data;
-        //    //回傳JSON陣列
-        //    JArray ja = new JArray();
-        //    //記住總筆數
-        //    int total = result.Count();
-        //    //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-        //    result = result.Skip((page - 1) * rows).Take(rows);
+            if (!string.IsNullOrEmpty(FSN))
+            {
+                Data = Data.Where(x => x.FSN == FSN);
+            }
 
-        //    var Dic = Surfaces.Surface.Authority();
+            if (!string.IsNullOrEmpty(Brand))
+            {
+                Data = Data.Where(x => x.Brand.Contains(Brand));
+            }
 
-        //    foreach (var item in result)
-        //    {
-        //        var itemObjects = new JObject();
+            if (!string.IsNullOrEmpty(Model))
+            {
+                Data = Data.Where(x => x.Model.Contains(Model));
+            }
 
-        //        itemObjects.Add("ESN", item.ESN);
-        //        if (!string.IsNullOrEmpty(item.EState))
-        //        {
-        //            var dic = Surface.EState();
-        //            itemObjects.Add("EState", dic[item.EState]);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.Area))
-        //        {
-        //            itemObjects.Add("Area", item.Area);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.Floor))
-        //        {
-        //            itemObjects.Add("Floor", item.Floor);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.RoomName))
-        //        {
-        //            itemObjects.Add("RoomName", item.RoomName);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.System))
-        //        {
-        //            itemObjects.Add("System", item.System);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.SubSystem))
-        //        {
-        //            itemObjects.Add("SubSystem", item.SubSystem);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.EName))
-        //        {
-        //            itemObjects.Add("EName", item.EName);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.Brand))
-        //        {
-        //            itemObjects.Add("Brand", item.Brand);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.Model))
-        //        {
-        //            itemObjects.Add("Model", item.Model);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.PropertyCode))
-        //        {
-        //            itemObjects.Add("PropertyCode", item.PropertyCode);
-        //        }
-        //        //FilePath
-        //        //查設備操作手冊
-        //        var filename = db.EquipmentOperatingManual.Where(x => x.System == item.System && x.SubSystem == item.SubSystem && x.EName == item.EName && x.Brand == item.Brand && x.Model == item.Model).Select(x => x.FilePath).FirstOrDefault();
-        //        if (!string.IsNullOrEmpty(filename))
-        //        {
-        //            itemObjects.Add("FilePath", "/Files/EquipmentOperatingManual" + filename);
-        //        }
-        //        ja.Add(itemObjects);
-        //    }
+            if (!string.IsNullOrEmpty(Vendor))
+            {
+                Data = Data.Where(x => x.Vendor.Contains(Vendor));
+            }
 
-        //    JObject jo = new JObject();
-        //    jo.Add("rows", ja);
-        //    jo.Add("total", total);
-        //    return jo;
-        //}
+            #endregion
+
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                Data = OrderByField(Data, sort, order == "asc");
+            }
+            else
+            {
+                Data = Data.OrderByDescending(x => x.NO);
+            }
+            #endregion
+
+            var result = Data;
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = result.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            result = result.Skip((page - 1) * rows).Take(rows);
+
+            var Dic = Surfaces.Surface.Authority();
+
+            foreach (var item in result)
+            {
+                var itemObjects = new JObject();
+
+                itemObjects.Add("ESN", item.ESN);
+                if (!string.IsNullOrEmpty(item.EName))
+                {
+                    itemObjects.Add("EName", item.EName);
+                }
+                if (!string.IsNullOrEmpty(item.NO))
+                {
+                    itemObjects.Add("NO", item.NO);
+                }
+                if (!string.IsNullOrEmpty(item.EState))
+                {
+                    var dic = Surface.EState();
+                    itemObjects.Add("EState", dic[item.EState]);
+                }
+                if (!string.IsNullOrEmpty(item.Area))
+                {
+                    itemObjects.Add("Area", item.Area);
+                }
+                if (!string.IsNullOrEmpty(item.FloorName))
+                {
+                    itemObjects.Add("Floor", item.FloorName);
+                }
+                
+                if (!string.IsNullOrEmpty(item.Brand))
+                {
+                    itemObjects.Add("Brand", item.Brand);
+                }
+                if (!string.IsNullOrEmpty(item.Model))
+                {
+                    itemObjects.Add("Model", item.Model);
+                }
+                if (!string.IsNullOrEmpty(item.Vendor))
+                {
+                    itemObjects.Add("Vendor", item.Vendor);
+                }
+                //FilePath
+                //查設備操作手冊
+                var filename = db.EquipmentOperatingManual.Where(x => x.EName == item.EName && x.Brand == item.Brand && x.Model == item.Model).Select(x => x.FilePath).FirstOrDefault();
+                if (!string.IsNullOrEmpty(filename))
+                {
+                    itemObjects.Add("FilePath", "/Files/EquipmentOperatingManual" + filename);
+                }
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            return jo;
+        }
         #endregion
 
         #region 竣工圖說管理

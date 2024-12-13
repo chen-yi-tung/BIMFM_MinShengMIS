@@ -131,14 +131,14 @@ namespace MinSheng_MIS.Controllers
 
         //--設備管理--
         #region EquipmentInfo_Management 資產管理
-        //[HttpPost]
-        //public ActionResult EquipmentInfo_Management(FormCollection form)
-        //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_EquipmentInfo(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
+        [HttpPost]
+        public ActionResult EquipmentInfo_Management(FormCollection form)
+        {
+            var service = new DatagridService();
+            var a = service.GetJsonForGrid_EquipmentInfo(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region AsBuiltDrawing_Management 竣工圖說管理

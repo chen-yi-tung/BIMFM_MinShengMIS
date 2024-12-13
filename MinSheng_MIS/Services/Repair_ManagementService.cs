@@ -83,7 +83,7 @@ namespace MinSheng_MIS.Services
                     itemObject["RepairUserName"] = member.RepairUserName;
             }
             itemObject.Add("Location", $"{item.EquipmentInfo.Floor_Info.AreaInfo.Area} {item.EquipmentInfo.Floor_Info.FloorName}");
-            itemObject.Add("No", item.EquipmentInfo.No);
+            itemObject.Add("No", item.EquipmentInfo.NO);
             itemObject.Add("EName", item.EquipmentInfo.EName);
             itemObject.Add("ESN", item.EquipmentInfo.ESN);
             itemObject.Add("RepairResult", item.RepairtId != null ? "完成" : "未完成");
