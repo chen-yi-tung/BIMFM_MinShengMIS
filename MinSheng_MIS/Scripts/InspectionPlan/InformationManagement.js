@@ -91,7 +91,7 @@
             EndMonth.val(data.month2)
 
             $.ajax({
-                url: "/InspectionPlan_Management/GetIspectionPlanInformation",
+                url: "/InspectionPlan_Management/GetInspectionPlanInformation",
                 data,
                 type: "GET",
                 dataType: "json",
@@ -200,7 +200,7 @@
             ]
         })
     }
-    //巡檢設備統計
+    //設備維修及保養統計
     function Inspection_Equipment_State(res) {
         const container = document.getElementById('Inspection_Equipment_State');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -265,33 +265,58 @@
     }
     //巡檢人員表格
     function Inspection_All_Members(res) {
+        const minRowCount = 13;
         const row = $("#Inspection_All_Members .row").first()
         const list = $("#Inspection_All_Members .simplebar-content")
         list.empty()
+        const data = res || [
+            {
+                MyName: "John Doe",
+                PlanNum: 12,
+                PlanCompleteNum: 11,
+                PlanCompletionRate: 0.916,
+                MaintainNum: 8,
+                MaintainCompleteNum: 7,
+                MaintainCompletionRate: 0.875,
+                RepairNum: 4,
+                RepairCompleteNum: 1,
+                RepairCompletionRate: 0.25,
+            }
+        ]
 
-        if (!res) {
-            for (let i = 0; i < 20; i++) { list.append(row.clone()) }
-            return
+        if (data?.length === 0) {
+            for (let i = 0; i <= minRowCount; i++) { list.append(row.clone()) }
+            return;
         }
 
-        res.forEach((e) => {
+        data.forEach((e) => {
             let item = row.clone()
             item.find("#MyName").text(e.MyName)
             item.find("#PlanNum").text(e.PlanNum)
             item.find("#MaintainNum").text(e.MaintainNum)
             item.find("#RepairNum").text(e.RepairNum)
-
-            item.find("#CompleteNum").text(e.CompleteNum)
-            item.find("#CompletionRate").text(Math.floor(e.CompletionRate * 100 * 100) / 100 + "%")
-            if (e.CompletionRate < 0.5) {
-                item.find("[data-complete]").attr("data-complete", false)
-            }
-            else {
-                item.find("[data-complete]").attr("data-complete", true)
-            }
+            calcCompletion("Plan", e)
+            calcCompletion("Maintain", e)
+            calcCompletion("Repair", e)
 
             list.append(item)
+
+            function calcCompletion(id = "Plan", data) {
+                const NumKey = `${id}CompleteNum`;
+                const RateKey = `${id}CompletionRate`;
+                item.find("#" + NumKey).text(data[NumKey])
+                item.find("#" + RateKey).text(Math.floor(data[RateKey] * 100 * 100) / 100 + "%")
+                const complete = data[RateKey] >= 0.5
+                item.find(`#${NumKey}[data-complete]`).attr("data-complete", complete)
+                item.find(`#${RateKey}[data-complete]`).attr("data-complete", complete)
+
+            }
         })
+
+        if (data.length < minRowCount) {
+            for (let i = data.length + 1; i <= minRowCount; i++) { list.append(row.clone()) }
+            return;
+        }
     }
     //緊急事件 等級占比
     function Inspection_Aberrant_Level(res) {
@@ -419,15 +444,13 @@
     function Equipment_Maintain_And_Repair_Statistics(res) {
         const container = document.getElementById('Equipment_Maintain_And_Repair_Statistics');
         const ctx = getOrCreateElement(container, 'canvas')
-        const backgroundColor = ["#4269AC", "#72BEE9", "#BC72E9", "#FFAB2E", "#B7B7B7", "#72E998", "#E77272"]
+        const backgroundColor = ["#4269AC", "#72BEE9", "#BC72E9", "#FFAB2E", "#E77272"]
         const data = res || [
-            { label: "已派工", value: { Maintain: 7, Repair: 8 } },
-            { label: "施工中", value: { Maintain: 8, Repair: 5 } },
+            { label: "待派工", value: { Maintain: 7, Repair: 8 } },
+            { label: "待執行", value: { Maintain: 8, Repair: 5 } },
             { label: "待審核", value: { Maintain: 12, Repair: 8 } },
-            { label: "未完成", value: { Maintain: 15, Repair: 10 } },
-            { label: "待補件", value: { Maintain: 3, Repair: 1 } },
-            { label: "完成", value: { Maintain: 20, Repair: 12 } },
-            { label: "審核未過", value: { Maintain: 2, Repair: 3 } }
+            { label: "審核通過", value: { Maintain: 15, Repair: 10 } },
+            { label: "審核未過", value: { Maintain: 3, Repair: 1 } },
         ]
         const options = (indexAxis = 'y') => ({
             type: 'bar',
@@ -453,7 +476,8 @@
                         stacked: true,
                         ticks: {
                             color: "#DDDCDC",
-                            font: { family, size: 14 }
+                            font: { family, size: 14 },
+                            padding: 6
                         },
                         border: {
                             color: "#DADADA"
@@ -467,7 +491,8 @@
                         stacked: true,
                         ticks: {
                             color: "#EFEFEF",
-                            font: { family, size: 14 }
+                            font: { family, size: 14 },
+                            padding: 6
                         },
                         grid: {
                             color(context) {
@@ -505,7 +530,7 @@
             }
             else {
                 ctx.width = 585
-                ctx.height = 100
+                ctx.height = 128
                 new Chart(ctx, options('y'))
             }
         }
