@@ -22,6 +22,7 @@ namespace MinSheng_MIS.Models
     
         public string EMFSN { get; set; }
         public string ESN { get; set; }
+        public string MISSN { get; set; }
         public string MaintainName { get; set; }
         public string Period { get; set; }
         public Nullable<System.DateTime> lastMaintainDate { get; set; }
@@ -38,6 +39,7 @@ namespace MinSheng_MIS.Models
         public string AuditReason { get; set; }
     
         public virtual EquipmentInfo EquipmentInfo { get; set; }
+        public virtual Template_MaintainItemSetting Template_MaintainItemSetting { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Equipment_MaintenanceFormMember> Equipment_MaintenanceFormMember { get; set; }
     }
