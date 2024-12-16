@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "ModelView";
 }
-@section styles{
+@section styles {
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css"
         type="text/css">
     <link rel="stylesheet" href="/Content/loading.css" type="text/css">
@@ -134,14 +134,8 @@
     </div>
     <div class="d-flex gap-3 position-absolute top-0 start-0 p-4" style="z-index: 1030;">
         <div class="form-group required">
-            <label for="ASN">棟別</label>
-            <select class="form-select" name="ASN" id="ASN" required>
-                <option value="">請選擇</option>
-            </select>
-        </div>
-        <div class="form-group required">
-            <label for="FSN">樓層</label>
-            <select class="form-select" name="FSN" id="FSN" required>
+            <label for="ViewName">棟別樓層</label>
+            <select class="form-select" name="ViewName" id="ViewName" required>
                 <option value="">請選擇</option>
             </select>
         </div>
@@ -149,7 +143,7 @@
     </div>
 </div>
 
-@section scripts{
+@section scripts {
     <script>
         var viewer;
         function initializeViewer({ BIMPath, callback = () => { } }) {
@@ -202,7 +196,7 @@
             });
 
             async function onLoadDone(model) {
-                console.log("onLoadDone",model)
+                console.log("onLoadDone", model)
                 //console.log("Model LoadDone", model.loader.basePath.split("/").at(-2));
                 return
             }
@@ -210,10 +204,10 @@
     </script>
     <script>
         window.addEventListener("load", async () => {
-            await addAreaFloorEvent();
+            await pushSelect("ViewName", '@Url.Action("ViewName", "DropDownList")');
             $("#Submit").click(async () => {
-                if ($("#ASN").val() != '' && $("#FSN").val() != ''){
-                    window.open("/BIM/FloorModelView","_self")
+                if ($("#ViewName").val() != '') {
+                    window.open("/BIM/FloorModelView?ViewName" + $("#ViewName").val(), "_self")
                     return
                 }
                 let BIMPath = `/BimModels/民生整棟Forge/Resource/3D 視圖/進抽站/進抽站.svf`
@@ -224,22 +218,7 @@
                     BIMPath, callback() { }
                 })
             })
-
-            await autoSelectModel('1')
-
-            async function autoSelectModel(ASN) {
-                $("#ASN").val(ASN)
-                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN}`);
-                $("#Submit").click()
-            }
         })
-        async function addAreaFloorEvent() {
-            await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-            let ASN = document.getElementById("ASN");
-            ASN.addEventListener("change", async function () {
-                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
-            });
-        }
     </script>
     <script>
         function getDataAsync(url) {

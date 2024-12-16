@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "巡檢即時位置";
 }
-@section styles{
+@section styles {
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css"
         type="text/css">
     <link rel="stylesheet" href="/Content/loading.css" type="text/css">
@@ -143,14 +143,8 @@
     </div>
     <div class="d-flex flex-wrap gap-3 position-absolute top-0 start-0 p-4" style="z-index: 1030; width: 27rem;">
         <div class="form-group required">
-            <label for="ASN">棟別</label>
-            <select class="form-select" name="ASN" id="ASN" required>
-                <option value="">請選擇</option>
-            </select>
-        </div>
-        <div class="form-group required">
-            <label for="FSN">樓層</label>
-            <select class="form-select" name="FSN" id="FSN" required>
+            <label for="ViewName">棟別樓層</label>
+            <select class="form-select" name="ViewName" id="ViewName" required>
                 <option value="">請選擇</option>
             </select>
         </div>
@@ -159,10 +153,10 @@
     </div>
 </div>
 
-@section scripts{
+@section scripts {
     <script>
         var viewer;
-        function initializeViewer({ BIMPath, BeaconPath, callback = () => { } }) {
+        function initializeViewer({ urls, callback = () => { } }) {
             const clientContainer = document.getElementById('viewer3d')
             const profileSettings = {
                 name: "customSettings",
@@ -178,7 +172,6 @@
                 keepCurrentModels: true,
                 globalOffset: { x: 0, y: 0, z: 0 }
             };
-            const urns = [BIMPath, BeaconPath];
 
             Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
             viewer = new Autodesk.Viewing.GuiViewer3D(clientContainer, { profileSettings });
@@ -191,8 +184,8 @@
 
                 await viewer.loadExtension("Viewer.Toolkit")
 
-                //load urns
-                const models = await Promise.all(urns.map((url) => {
+                //load urls
+                const models = await Promise.all(urls.map((url) => {
                     return new Promise(async (resolve) => {
                         if (url == null || url == undefined || url == "") return;
                         viewer.loadModel(window.location.origin + url, options,
@@ -460,17 +453,29 @@
             sortRouteModal = new SortRouteModal({
                 onSave: updatePathDisplay
             });
-            await addAreaFloorEvent();
+            await pushSelect("ViewName", '@Url.Action("ViewName", "DropDownList")');
             $("#Submit").click(async () => {
-                let res = await getDataAsync('@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val())
+                //let res = await getDataAsync('@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val())
                 if (viewer != null) {
                     DestroyViewerAndForgeDraw()
                 }
-                let { BIMPath, BeaconPath } = res
+
+                const type = [
+                    'AR',
+                    'E',
+                    'EL',
+                    'F',
+                    'PP',
+                    'PPO',
+                    'VE',
+                    'WW'
+                ];
+                const ViewName = '進抽站-B2F';
+                const urls = type.map((t) => `/BimModels/TopView/${t}/Resource/3D 視圖/${ViewName}/${ViewName}.svf`)
                 initializeViewer({
-                    BIMPath, BeaconPath, async callback() {
+                    urls, async callback() {
                         hideWall()
-                        createBeaconPoint(res.BIMDevices)
+                        //createBeaconPoint(res.BIMDevices)
                         createSamplePath()
                         pathRecord = await createPathRecord()
                         const viewCube = await viewer.loadExtension('Autodesk.ViewCubeUi')
@@ -478,23 +483,7 @@
                     }
                 })
             })
-
-            await autoSelectModel('1', '1_2')
-
-            async function autoSelectModel(ASN, FSN) {
-                $("#ASN").val(ASN)
-                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN}`);
-                $("#FSN").val(FSN)
-                $("#Submit").click()
-            }
         })
-        async function addAreaFloorEvent() {
-            await pushSelect("ASN", '@Url.Action("Area", "DropDownList")');
-            let ASN = document.getElementById("ASN");
-            ASN.addEventListener("change", async function () {
-                await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")' + `?ASN=${ASN.value}`);
-            });
-        }
     </script>
     <script>
         function getDataAsync(url) {

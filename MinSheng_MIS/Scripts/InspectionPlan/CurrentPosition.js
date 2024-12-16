@@ -131,8 +131,8 @@
     }
 }
 const bim = new BIM()
-const Floor = "B2F"
 const FSN = "1_1"
+const currentLocation = new CurrentLocation()
 window.addEventListener('load', async () => {
     // #region chart options
     const pieSize = 138
@@ -180,6 +180,8 @@ window.addEventListener('load', async () => {
     // #region chart
     init()
     async function init() {
+        currentLocation.init();
+
         const data = { FSN };
         const res = await $.ajax({
             url: "/InspectionPlan_Management/GetCurrentPositionData",
@@ -204,7 +206,6 @@ window.addEventListener('load', async () => {
 
         console.log(res);
 
-
         ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
         ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
         EquipmentOperatingState(res?.EquipmentOperatingState)
@@ -212,13 +213,14 @@ window.addEventListener('load', async () => {
         ChartInspectionAberrantLevel(res?.ChartInspectionAberrantLevel)
         ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
         InspectionCurrentPos(res?.InspectionCurrentPos)
-        await bim.setup([
-            `/BimModels/01/Resource/3D View/進抽站${Floor}/進抽站${Floor}.svf`,
-            `/BimModels/02/Resource/3D View/進抽站${Floor}_Beacon/進抽站${Floor}_Beacon.svf`
-        ])
-        bim.hideWall()
+
+
+        const ViewName = '進抽站-B2F';
+        await bim.setup(ViewName)
+
+        //bim.hideWall()
         bim.createBeaconPoint()
-        bim.createSamplePath()
+        /* bim.createSamplePath()
         const pathRecord = await bim.createPathRecord()
         document.body.addEventListener('keydown', (e) => {
             console.log("keydown", e.code)
@@ -226,7 +228,12 @@ window.addEventListener('load', async () => {
                 pathRecord.start()
             }
         })
-        console.log("%c請按空白鍵開始動畫", "color:green;font-size: 2em;padding:0.5rem;")
+        console.log("%c請按空白鍵開始動畫", "color:green;font-size: 2em;padding:0.5rem;") */
+
+        currentLocation.addEventListener('change', (e) => {
+            bim.destroy()
+            bim.setup(e.value)
+        })
     }
 
     // #endregion
@@ -590,7 +597,24 @@ function BIM() {
         globalOffset: { x: 0, y: 0, z: 0 }
     };
     this.viewer = null;
-    this.setup = function setup(urls) {
+    this.offset = new THREE.Vector3(0, 0, 0);
+    this.setup = function setup(ViewName) {
+        const type = [
+            'AR',
+            'E',
+            'EL',
+            'F',
+            'PP',
+            'PPO',
+            'VE',
+            'WW'
+        ];
+        const urls = type.map((t) => {
+            return {
+                type: t,
+                url: `/BimModels/TopView/${t}/Resource/3D 視圖/${ViewName}/${ViewName}.svf`
+            }
+        })
         this.viewer = new Autodesk.Viewing.Viewer3D(clientContainer, { profileSettings });
         this.viewer.loadExtension("Viewer.Loading", { loader: `<div class="lds-default">${Array(12).fill('<div></div>').join('')}</div>` })
 
@@ -602,9 +626,12 @@ function BIM() {
                 await this.viewer.loadExtension("Viewer.Toolkit")
 
                 //load urns
-                const models = await Promise.all(urls.map((url) => {
+                const models = await Promise.all(urls.map(({ url, type }) => {
                     return new Promise(async (resolve, _) => {
-                        this.viewer.loadModel(window.location.origin + url, options,
+                        this.viewer.loadModel(window.location.origin + url, {
+                            ...options,
+                            modelOverrideName: type
+                        },
                             async (model) => { await this.viewer.waitForLoadDone(); resolve(model); },
                             async (model) => { reject(model); }
                         )
@@ -890,6 +917,58 @@ function BIM() {
                 error
             })
         })
+    }
+
+    return this
+}
+
+//目前位置
+function CurrentLocation() {
+    const menu = document.querySelector(".current-location-menu")
+    const text = document.getElementById("CurrentLocation")
+    this.activeIndex = 0;
+    this.value;
+    this.data = [];
+    this.init = async () => {
+        this.data = await $.getJSON("/DropDownList/ViewName")
+        menu.replaceChildren();
+        const htmls = this.data.map((e, i) => {
+            const active = this.activeIndex === i ? 'active' : '';
+            return `<li><a class="dropdown-item ${active}" data-index="${i}">${e.Text}</a></li>`
+        })
+        menu.insertAdjacentHTML('beforeend', htmls.join(''));
+        this.updateData()
+
+        menu.addEventListener('click', (e) => {
+            const target = e?.target;
+            if (target && target.classList.contains('dropdown-item')) {
+                const index = parseInt(target.dataset.index);
+                if (this.activeIndex !== index) {
+                    this.activeIndex = index;
+                    this.updateData()
+                }
+            }
+        })
+    }
+    this.updateData = () => {
+        const d = this.data?.[this.activeIndex];
+        if (!d) return;
+        text.textContent = d.Text;
+        this.value = d.Value;
+        const items = Array.from(menu.querySelectorAll(".dropdown-item"))
+        items.forEach((e) => {
+            if (parseInt(e.dataset.index) === this.activeIndex) {
+                e.classList.add('active')
+                return
+            }
+            e.classList.remove('active')
+        })
+        console.log(items);
+
+        menu.dispatchEvent(new Event('change'))
+    }
+    this.addEventListener = (eventType, callback) => {
+        menu.addEventListener(eventType, callback.bind(this, this))
     }
 
     return this
