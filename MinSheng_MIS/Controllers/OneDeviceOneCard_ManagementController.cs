@@ -67,7 +67,7 @@ namespace MinSheng_MIS.Controllers
             }
             catch (MyCusResException ex)
             {
-                return Content(ex.Message, "application/json; charset=utf-8");
+                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
             }
             catch (Exception)
             {

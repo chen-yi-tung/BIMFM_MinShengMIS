@@ -118,7 +118,7 @@
 
 
             $.ajax({
-                url: "",
+                url: "@Url.Action("CreateDeviceCard", "OneDeviceOneCard_Management")",
                 data: JSON.stringify(sendData),
                 type: "POST",
                 contentType: "application/json",
@@ -247,7 +247,7 @@
                     }))
 
                 return {
-                    AddItemdList: addItemList.length > 0 ? addItemList : [],
+                    AddItemList: addItemList.length > 0 ? addItemList : [],
                     MaintainItemList: maintainItemList.length > 0 ? maintainItemList : [],
                     CheckItemList: checkItemList.length > 0 ? checkItemList : [],
                     ReportItemList: reportItemList.length > 0 ? reportItemList : []
