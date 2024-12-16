@@ -12,7 +12,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         [Required]
         public string PRUserName { get; set; } //請購人
-        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         [Display(Name = "請購部門")]
         public string PRDept { get; set; } //請購部門
         [Required]
@@ -31,24 +31,24 @@ namespace MinSheng_MIS.Models.ViewModels
     public class PR_Item
     {
         [Required]
-        [StringLength(50, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多50個字元。", MinimumLength = 1)]
+        [StringLength(50, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多{1}個字元。", MinimumLength = 1)]
         [Display(Name = "類別")]
         public string Kind { get; set; } //類別(選單值)
         [Required]
-        [StringLength(50, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多50個字元。", MinimumLength = 1)]
+        [StringLength(50, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多{1}個字元。", MinimumLength = 1)]
         [Display(Name = "品名")]
         public string ItemName { get; set; } //品名
-        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         [Display(Name = "尺寸")]
         public string Size { get; set; } //尺寸
         [Required]
         [Display(Name = "數量")]
         public double PRAmount { get; set; } //數量(請購量)
         [Required]
-        [StringLength(10, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多10個字元。", MinimumLength = 1)]
+        [StringLength(10, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多{1}個字元。", MinimumLength = 1)]
         [Display(Name = "單位")]
         public string Unit { get; set; } //單位(選單值)
-        [StringLength(200, ErrorMessage = "{0} 的長度最多200個字元。")]
+        [StringLength(200, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         [Display(Name = "申請用途")]
         public string ApplicationPurpose { get; set; } //申請用途
         //----------------資料顯示使用-------------------

@@ -22,7 +22,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class ED_Info
     {
         [Required]
-        [StringLength(200, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多200個字元。", MinimumLength = 1)]
+        [StringLength(200, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多{1}個字元。", MinimumLength = 1)]
         [Display(Name = "數據欄位名稱")]
         public string DataName { get; set; }
         [Required]

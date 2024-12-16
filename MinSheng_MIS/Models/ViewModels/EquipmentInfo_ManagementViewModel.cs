@@ -1,25 +1,234 @@
-﻿using System;
+﻿using MinSheng_MIS.Attributes;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.Web;
-using System.Web.Mvc;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
-    public class EquipmentInfo_ManagementViewModel
+    #region 設備-新增
+    /// <summary>
+    /// 新增設備DTO
+    /// </summary>
+    public class EquipmentInfoCreateModel : EquipInfo, ICreateEquipmentInfo, ICreateAddFieldValue, ICreateMaintainItemValue
     {
-        public string ESN { get; set; }
-        public int ASN { get; set;}
-        public string FSN { get; set; }
-        public string RoomName { get; set; }
-        public string System { get; set; }
-        public string SubSystem { get; set; }
-        public string PropertyCode { get; set; }
-        public string EName { get; set; }
-        public string Brand { get; set; }
-        public string Model { get; set; }
-        public decimal LocationX { get; set; }
-        public decimal LocationY { get; set; }
-        public HttpPostedFileBase FilePath { get; set; }
+        public string TSN { get; set; } // 一機一卡模板編號
+        public List<EquipRFID> RFIDList { get; set; } // RFID
+        public List<AddFieldValueModel> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位
+        public List<MaintainItemValueModel> MaintainItemList { get; set; } // 一機一卡模板資料：保養項目設定
+
+        internal IUpdateAddFieldValue ConvertToUpdateAddFieldValue(string esn)
+        {
+            return new UpdateAddFieldValueInstance
+            {
+                ESN = esn,
+                TSN = this.TSN,
+                AddFieldList = this.AddFieldList
+            };
+        }
+
+        internal IUpdateMaintainItemValue ConvertToUpdateMaintainItemValue(string esn)
+        {
+            return new UpdateMaintainItemValueInstance
+            {
+                ESN = esn,
+                TSN = this.TSN,
+                MaintainItemList = this.MaintainItemList
+            };
+        }
+
+        // 嵌套的內部類別用於封裝返回的實例
+        private class UpdateAddFieldValueInstance : IUpdateAddFieldValue
+        {
+            public string ESN { get; set; }
+            public string TSN { get; set; }
+            public List<AddFieldValueModel> AddFieldList { get; set; }
+        }
+
+        private class UpdateMaintainItemValueInstance : IUpdateMaintainItemValue
+        {
+            public string ESN { get; set; }
+            public string TSN { get; set; }
+            public List<MaintainItemValueModel> MaintainItemList { get; set; }
+        }
     }
+    #endregion
+
+    public class EquipInfo : IEquipmentInfo
+    {
+        //-----Implement IUpdateEquipmentInfo
+        [FileSizeLimit(5)] // 限制大小為 5 MB
+        public HttpPostedFileBase EPhoto { get; set; } //新增的照片
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "設備名稱")]
+        public string EName { get; set; } // 設備名稱
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "設備編號")]
+        public string No { get; set; } // 設備編號
+        public DateTime InstallDate { get; set; } // 安裝日期
+        [Required]
+        [StringLength(5, ErrorMessage = "{0} 的長度最多5個字元。")]
+        [Display(Name = "樓層編號")]
+        public string FSN { get; set; } // 樓層編號
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "設備廠牌")]
+        public string Brand { get; set; } // 設備廠牌
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "設備型號")]
+        public string Model { get; set; } // 設備型號
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "設備廠商")]
+        public string Vendor { get; set; } // 設備廠商
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "連絡電話")]
+        public string ContactPhone { get; set; } // 連絡電話
+        [StringLength(20, ErrorMessage = "{0} 的長度最多20個字元。")]
+        [Display(Name = "使用電壓")]
+        public string OperatingVoltage { get; set; } // 使用電壓
+        [StringLength(200, ErrorMessage = "{0} 的長度最多200個字元。")]
+        [Display(Name = "其他耗材資料")]
+        public string OtherInfo { get; set; } // 其他耗材資料
+        [StringLength(200, ErrorMessage = "{0} 的長度最多200個字元。")]
+        [Display(Name = "備註")]
+        public string Memo { get; set; } // 備註
+    }
+
+    //public class AddFieldValueViewModel
+    //{
+    //    public string AFSN { get; set; } // 模板增設欄位編號
+    //    public string Text { get; set; } // 模板增設欄位名稱
+    //    public string Value { get; set; } // 模板增設欄位值
+    //}
+
+    public class AddFieldValueModel : IAddFieldValue
+    {
+        [Required]
+        [StringLength(11, ErrorMessage = "{0} 的長度最多11個字元。")]
+        [Display(Name = "模板增設欄位編號")]
+        public string AFSN { get; set; } // 模板增設欄位編號
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "欄位值")]
+        public string Value { get; set; } // 欄位值
+    }
+
+    public class MaintainItemValueModel : IMaintainItemValue
+    {
+        [Required]
+        [StringLength(11, ErrorMessage = "{0} 的長度最多11個字元。")]
+        [Display(Name = "模板保養項目編號")]
+        public string MISSN { get; set; } // 模板保養項目編號
+        [Required]
+        [StringLength(1, ErrorMessage = "{0} 的長度最多1個字元。")]
+        [Display(Name = "週期")]
+        public string Period { get; set; } // 週期
+        [Required]
+        [Display(Name = "下次保養日期")]
+        public DateTime NextMaintainDate { get; set; } // 下次保養日期
+    }
+
+    //public class EquipmentInfo_ManagementViewModel
+    //{
+    //    public string ESN { get; set; }
+    //    public int ASN { get; set;}
+    //    public string FSN { get; set; }
+    //    public string RoomName { get; set; }
+    //    public string System { get; set; }
+    //    public string SubSystem { get; set; }
+    //    public string PropertyCode { get; set; }
+    //    public string EName { get; set; }
+    //    public string Brand { get; set; }
+    //    public string Model { get; set; }
+    //    public decimal LocationX { get; set; }
+    //    public decimal LocationY { get; set; }
+    //    public HttpPostedFileBase FilePath { get; set; }
+    //}
+
+    #region Interface
+    /// <summary>
+    /// 設備資料可變更之資訊
+    /// </summary>
+    public interface IEquipmentInfo
+    {
+        HttpPostedFileBase EPhoto { get; set; } //新增的設備照片
+        string EName { get; set; } // 設備名稱
+        string No { get; set; } // 設備編號
+        DateTime InstallDate { get; set; } // 安裝日期
+        string FSN { get; set; } // 樓層編號
+        string Brand { get; set; } // 設備廠牌
+        string Model { get; set; } // 設備型號
+        string Vendor { get; set; } // 設備廠商
+        string ContactPhone { get; set; } // 連絡電話
+        string OperatingVoltage { get; set; } // 使用電壓
+        string OtherInfo { get; set; } // 其他耗材資料
+        string Memo { get; set; } // 備註
+    }
+
+    /// <summary>
+    /// 使用者變更設備資料所需資訊
+    /// </summary>
+    public interface ICreateEquipmentInfo : IEquipmentInfo
+    {
+        string TSN { get; set; } // 一機一卡模板編號
+    }
+
+    /// <summary>
+    /// 系統變更設備資料所需資訊
+    /// </summary>
+    public interface IUpdateEquipmentInfo : ICreateEquipmentInfo { }
+
+    /// <summary>
+    /// 一機一卡增設欄位值資訊
+    /// </summary>
+    public interface IAddFieldValue
+    {
+        string AFSN { get; set; } // 模板增設欄位編號
+        string Value { get; set; } // 欄位值
+    }
+
+    /// <summary>
+    /// 使用者變更設備中一機一卡增設欄位值所需資訊
+    /// </summary>
+    public interface ICreateAddFieldValue
+    {
+        string TSN { get; set; } // 一機一卡模板編號(用於資料驗證)
+        List<AddFieldValueModel> AddFieldList { get; set; } // 增設基本資料欄位
+    }
+
+    /// <summary>
+    /// 系統變更設備中一機一卡增設欄位值所需資訊
+    /// </summary>
+    public interface IUpdateAddFieldValue : ICreateAddFieldValue
+    {
+        string ESN { get; set; } // 設備資料(EquipmentInfo)編號
+    }
+
+    /// <summary>
+    /// 一機一卡保養資訊之週期及下次保養日期
+    /// </summary>
+    public interface IMaintainItemValue
+    {
+        string MISSN { get; set; } // 模板保養項目編號
+        string Period { get; set; } // 週期
+        DateTime NextMaintainDate { get; set; } // 下次保養日期
+    }
+
+    /// <summary>
+    /// 使用者新增設備中一機一卡保養資訊的週期及下次保養日期所需資訊
+    /// </summary>
+    public interface ICreateMaintainItemValue
+    {
+        string TSN { get; set; } // 一機一卡模板編號(用於資料驗證)
+        List<MaintainItemValueModel> MaintainItemList { get; set; } // 保養資訊設定
+    }
+
+    /// <summary>
+    /// 系統變更設備中一機一卡保養資訊的週期及下次保養日期所需資訊
+    /// </summary>
+    public interface IUpdateMaintainItemValue : ICreateMaintainItemValue
+    {
+        string ESN { get; set; } // 設備資料(EquipmentInfo)編號
+    }
+    #endregion
 }

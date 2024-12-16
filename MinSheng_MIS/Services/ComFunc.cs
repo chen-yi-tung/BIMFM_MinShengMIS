@@ -9,6 +9,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -96,6 +97,16 @@ namespace MinSheng_MIS.Services
             ".doc", ".docx", ".pdf", ".DOC", ".DOCX", ".PDF"
         };
 
+        private static readonly HashSet<string> AllowedPdfContentTypes = new HashSet<string>
+        {
+            "application/pdf"
+        };
+
+        private static readonly HashSet<string> AllowedPdfExtensions = new HashSet<string>
+        {
+            ".PDF"
+        };
+
         private static readonly HashSet<string> AllowedImageContentTypes = new HashSet<string>
         {
             "image/jpeg", "image/jpg", "image/png"
@@ -105,6 +116,11 @@ namespace MinSheng_MIS.Services
         {
             ".jpeg", ".jpg", ".png", ".JPEG", ".JPG", ".PNG"
         };
+
+        public static bool IsConformedForPdf(string contentType, string extension)
+        {
+            return AllowedPdfContentTypes.Contains(contentType) && AllowedPdfExtensions.Contains(extension);
+        }
 
         public static bool IsConformedForDocument(string contentType, string extension)
         {
@@ -251,6 +267,96 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 產生下一個ID/SN
+        public string CreateNextID(string formatExpress, string latestID)
+        {
+            if (string.IsNullOrEmpty(formatExpress))
+                throw new ArgumentException("Format expression cannot be null or empty.", nameof(formatExpress));
+
+            var stringBuilder = new StringBuilder();
+            try
+            {
+                for (int i = 0; i < formatExpress.Length; i++)
+                {
+                    char currentChar = formatExpress[i];
+
+                    if (currentChar == '!')
+                        i = ProcessDateFormat(formatExpress, stringBuilder, i);
+                    else if (currentChar == '%')
+                        i = ProcessSequence(formatExpress, stringBuilder, latestID, i);
+                    else
+                        stringBuilder.Append(currentChar);
+                }
+
+                return stringBuilder.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("An error occurred while generating the next ID.", ex);
+            }
+        }
+
+        private int ProcessDateFormat(string formatExpress, StringBuilder stringBuilder, int index)
+        {
+            int endIndex = formatExpress.IndexOf('}', index);
+            if (endIndex == -1)
+                throw new FormatException("Invalid date format in the expression.");
+
+            string dateFormat = formatExpress.Substring(index + 2, endIndex - index - 2);
+            string dateValue = DateTime.Now.ToString(dateFormat);
+            stringBuilder.Append(dateValue);
+
+            return endIndex;
+        }
+
+        private int ProcessSequence(string formatExpress, StringBuilder stringBuilder, string latestID, int index)
+        {
+            int endIndex = formatExpress.IndexOf('}', index);
+            if (endIndex == -1)
+                throw new FormatException("Invalid sequence format in the expression.");
+
+            string sequenceLengthText = formatExpress.Substring(index + 2, endIndex - index - 2);
+            if (!int.TryParse(sequenceLengthText, out int sequenceLength))
+                throw new FormatException("Invalid sequence length format in the expression.");
+
+            string nextSequence = GenerateNextSequence(stringBuilder, latestID, sequenceLength);
+            stringBuilder.Append(nextSequence);
+
+            return endIndex;
+        }
+
+        //private string GenerateNextSequence(StringBuilder stringBuilder, string latestID, int sequenceLength)
+        //{
+        //    if (string.IsNullOrEmpty(latestID))
+        //        return new string('0', sequenceLength);
+
+        //    int currentIndex = stringBuilder.Length;
+        //    if (currentIndex + sequenceLength > latestID.Length)
+        //        throw new InvalidOperationException("The format is inconsistent with the latest ID.");
+
+        //    string sequenceSubstring = latestID.Substring(currentIndex, sequenceLength);
+        //    if (!int.TryParse(sequenceSubstring, out int sequenceNumber))
+        //        throw new InvalidOperationException("Failed to parse the sequence from the latest ID.");
+
+        //    sequenceNumber++;
+        //    return sequenceNumber.ToString().PadLeft(sequenceLength, '0');
+        //}
+        private string GenerateNextSequence(StringBuilder stringBuilder, string latestID, int sequenceLength)
+        {
+            if (string.IsNullOrEmpty(latestID))
+                return new string('0', sequenceLength);
+
+            // 直接遞增最後 sequenceLength 位數字
+            string lastSequence = latestID.Substring(latestID.Length - sequenceLength);
+
+            if (!long.TryParse(lastSequence, out long sequenceNumber))
+                throw new InvalidOperationException("Failed to parse the sequence from the latest ID.");
+
+            sequenceNumber++;
+            return sequenceNumber.ToString().PadLeft(sequenceLength, '0');
+        }
+        #endregion
+
         #region Helper
         public static string UrlMaker(params string[] parts)
         {
@@ -264,7 +370,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 參數
-        private static string ExcelConfigJsonPath = "~/App_Data/ExcelConfig.json";
+        private static readonly string ExcelConfigJsonPath = "~/App_Data/ExcelConfig.json";
         #endregion
     }
 }

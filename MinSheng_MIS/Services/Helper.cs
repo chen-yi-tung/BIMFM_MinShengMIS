@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -11,7 +12,7 @@ namespace MinSheng_MIS.Services
 {
     public static class Helper
     {
-        private static string html_newLine = "<br>";
+        private static readonly string html_newLine = "<br>";
         /// <summary>
         /// 未通過Data Annotaion的錯誤
         /// </summary>
@@ -66,6 +67,40 @@ namespace MinSheng_MIS.Services
             string content = System.IO.File.ReadAllText(fullpath);
             JObject jo = JObject.Parse(content);
             return jo;
+        }
+
+        public static ICollection<T> AddOrUpdateList<T, TSource>(
+            List<TSource> list,
+            string esn,
+            Func<TSource, string, T> createInstance) where T : new()
+        {
+            return list.Select(x => createInstance(x, esn)).ToList();
+        }
+
+        public static ICollection<T> AddOrUpdateList<T, TSource>(
+            IEnumerable<TSource> list,
+            string esn,
+            string initialLatestId,
+            Func<string, string, string> generateIdFunc,
+            Func<TSource, string, string, string, T> createInstance)
+        {
+            string latestId = initialLatestId;
+            var results = new List<T>();
+
+            foreach (var item in list)
+            {
+                // 生成Id
+                string newId = generateIdFunc(esn, latestId);
+
+                // 創建實例，傳遞當前 Id 和 Id 生成函數
+                var result = createInstance(item, esn, latestId, newId);
+                results.Add(result);
+
+                // 更新 latestId
+                latestId = newId;
+            }
+
+            return results;
         }
     }
 }

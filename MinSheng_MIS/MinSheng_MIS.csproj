@@ -190,6 +190,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\EnumLabel.cs" />
+    <Compile Include="Attributes\FileSizeLimit.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Account_ManagementController.cs" />
     <Compile Include="Controllers\AsBuiltDrawing_ManagementController.cs" />
@@ -348,6 +350,7 @@
     <Compile Include="Models\MonthlyReport.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MyCusExceptionModels.cs" />
     <Compile Include="Models\RFID.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -431,12 +434,14 @@
     </Compile>
     <Compile Include="Models\ViewModels\ManufacturerInfo_ViewModel.cs" />
     <Compile Include="Models\ViewModels\MeetingMinutes_ManagementViewModel.cs" />
+    <Compile Include="Models\ViewModels\OneDeviceOneCard_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\PathSampleViewModel.cs" />
     <Compile Include="Models\ViewModels\PurchaseRequisition_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\ReadInspectionPlanPathData.cs" />
     <Compile Include="Models\ViewModels\NewMaintainItems.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemViewModel.cs" />
     <Compile Include="Models\ViewModels\Repair_ManagementViewModel.cs" />
+    <Compile Include="Models\ViewModels\RFIDViewModel.cs" />
     <Compile Include="Models\ViewModels\StockIn_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\StockOut_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\Stock_ManagementViewModels.cs" />
@@ -457,9 +462,13 @@
     <Compile Include="Services\ComFunc.cs" />
     <Compile Include="Services\DatagridService.cs" />
     <Compile Include="Services\DesignDiagramsService.cs" />
+    <Compile Include="Services\EquipmentInfo_ManagementService.cs" />
     <Compile Include="Services\Helper.cs" />
     <Compile Include="Services\MeetingMinutesService.cs" />
     <Compile Include="Services\Repair_ManagementService.cs" />
+    <Compile Include="Services\OneDeviceOneCard_ManagementService.cs" />
+    <Compile Include="Services\RFIDService.cs" />
+    <Compile Include="Services\UniParams.cs" />
     <Compile Include="Services\WarningMessageService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Surfaces\Surface.cs" />
@@ -4771,6 +4780,7 @@
     <Content Include="BimModels\TopView\WW\Resource\objects_vals.json.gz" />
     <Content Include="BimModels\TopView\WW\Resource\objects_viewables.json.gz" />
     <Content Include="BimModels\TopView\WW\Thumbs.db" />
+    <Content Include="jsonSamples\EquipmentInfo_Management_Create.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\datagrid-export.js" />
     <Content Include="Scripts\datagrid-management.js" />
