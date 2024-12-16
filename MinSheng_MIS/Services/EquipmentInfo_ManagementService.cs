@@ -33,7 +33,7 @@ namespace MinSheng_MIS.Services
             {
                 ESN = await GenerateEquipmentInfoSNAsync(),
                 EName = data.EName,
-                No = data.No,
+                NO = data.No,
                 FSN = data.FSN,
                 Brand = data.Brand,
                 Vendor = data.Vendor,
@@ -83,7 +83,7 @@ namespace MinSheng_MIS.Services
             var floorSNList = await _db.Floor_Info.Select(x => x.FSN).ToListAsync(); // 取得所有樓層SN列表
 
             // 不可重複: 設備編號
-            if (await _db.EquipmentInfo.Where(x => x.No == data.No).AnyAsync())
+            if (await _db.EquipmentInfo.Where(x => x.NO == data.No).AnyAsync())
                 throw new MyCusResException("設備編號已被使用!");
             // 關聯性PK是否存在: 樓層
             if (!floorSNList.Contains(data.FSN))
