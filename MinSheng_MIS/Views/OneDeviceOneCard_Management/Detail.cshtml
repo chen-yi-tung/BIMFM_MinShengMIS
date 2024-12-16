@@ -69,87 +69,85 @@
 
 
         const fakeData = {
-            SN: "000123",
+            TSN: "000123",
             SampleName: "電燈",
-            AddField: [
+            AddItemList: [
                 {
-                    SN: "F0001",
+                    AFSN: "F0001",
                     value: "馬力數",
                 },
                 {
-                    SN: "F0002",
+                    AFSN: "F0002",
                     value: "起動方式",
                 },
                 {
-                    SN: "F0003",
+                    AFSN: "F0003",
                     value: "額定電流",
                 },
                 {
-                    SN: "F0004",
+                    AFSN: "F0004",
                     value: "油料編號",
                 },
             ],
-            MaintainItems: [
+            MaintainItemList: [
                 {
-                    SN: "I0001",
+                    MISSN: "I0001",
                     value: "外部清潔與保養",
                 },
                 {
-                    SN: "I0002",
+                    MISSN: "I0002",
                     value: "各部螺絲鎖定",
                 },
                 {
-                    SN: "I0003",
+                    MISSN: "I0003",
                     value: "檢查管路是否通暢",
                 },
                 {
-                    SN: "I0004",
+                    MISSN: "I0004",
                     value: "軸承潤滑油添加",
                 },
             ],
-            InspectionItems: {
-                Ifrequency: "1小時",
-                InspectItems: [
-                    {
-                        SN: "000123",
-                        value: "馬達是否正常運轉"
-                    },
-                    {
-                        SN: "000124",
-                        value: "管線是否正常無漏液"
-                    },
-                    {
-                        SN: "000125",
-                        value: "出口端是否正常出藥"
-                    },
-                    {
-                        SN: "000126",
-                        value: "設備是否正常無漏水"
-                    },
-                ],
-                ReportItems: [
-                    {
-                        SN: "I0001",
-                        Item: "馬達電壓",
-                        Value: "v"
-                    },
-                    {
-                        SN: "I0002",
-                        Item: "電流",
-                        Value: "A"
-                    },
-                    {
-                        SN: "I0003",
-                        Item: "水壓",
-                        Value: "Pa"
-                    },
-                    {
-                        SN: "I0004",
-                        Item: "流量",
-                        Value: "CMH"
-                    },
-                ]
-            }
+            Frequency: "1小時",
+            InspectItemList: [
+                {
+                    CISN: "000123",
+                    value: "馬達是否正常運轉"
+                },
+                {
+                    CISN: "000124",
+                    value: "管線是否正常無漏液"
+                },
+                {
+                    CISN: "000125",
+                    value: "出口端是否正常出藥"
+                },
+                {
+                    CISN: "000126",
+                    value: "設備是否正常無漏水"
+                },
+            ],
+            ReportItemList: [
+                {
+                    RISN: "I0001",
+                    Item: "馬達電壓",
+                    Value: "v"
+                },
+                {
+                    RISN: "I0002",
+                    Item: "電流",
+                    Value: "A"
+                },
+                {
+                    RISN: "I0003",
+                    Item: "水壓",
+                    Value: "Pa"
+                },
+                {
+                    RISN: "I0004",
+                    Item: "流量",
+                    Value: "CMH"
+                },
+            ]
         }
 
         // 預處理函式：將陣列轉為物件結構
