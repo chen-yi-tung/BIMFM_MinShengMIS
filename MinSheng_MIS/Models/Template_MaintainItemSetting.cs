@@ -18,6 +18,7 @@ namespace MinSheng_MIS.Models
         public Template_MaintainItemSetting()
         {
             this.Equipment_MaintainItemValue = new HashSet<Equipment_MaintainItemValue>();
+            this.Equipment_MaintenanceForm = new HashSet<Equipment_MaintenanceForm>();
         }
     
         public string MISSN { get; set; }
@@ -26,6 +27,8 @@ namespace MinSheng_MIS.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Equipment_MaintainItemValue> Equipment_MaintainItemValue { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Equipment_MaintenanceForm> Equipment_MaintenanceForm { get; set; }
         public virtual Template_OneDeviceOneCard Template_OneDeviceOneCard { get; set; }
     }
 }

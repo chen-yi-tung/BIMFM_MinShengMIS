@@ -3,9 +3,6 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
-
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -53,7 +50,7 @@
 
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
-                <button type="button" class="btn btn-clear" id="clear">清除</button>
+                <button type="reset" class="btn btn-clear" id="clear">清除</button>
             </div>
 
         </form>
@@ -131,9 +128,7 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            $("#clear").click(function () {
-                $(".search-area form")[0].reset();
-            });
+            
 
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());

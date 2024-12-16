@@ -2,8 +2,7 @@
     ViewBag.Title = "編輯設計圖說";
 }
 @section styles {
-    <script src="/Scripts/datatable.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
+    @Html.Partial("DataGridScripts")
     <style>
         @@media (min-width: 992px) {
             .edit-area .form {
@@ -63,7 +62,6 @@
         var fileUploader
         $(async function () {
             $("#_checkImgPath").prop("checked", true);
-            await pushSelect("ImgType", '@Url.Action("ImgType", "DropDownList")');
             addButtonEvent();
 
             fileUploader = new FileUploader({
@@ -96,8 +94,7 @@
                     console.log(k)
                     switch (k) {
                         case "ImgType":
-                            //await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")?ASN=' + res.ImgType);
-                            $(`#${k}`).val(v);
+                            await formDropdown.pushSelect({ id: "ImgType", url: '@Url.Action("ImgType", "DropDownList")', value: v });
                             break;
                         case "DesignDiagrams":
                             fileUploader.setFile(res.DesignDiagrams)

@@ -2,12 +2,9 @@
     ViewBag.Title = "新增 出庫填報";
 }
 @section styles {
-    <link rel="stylesheet" href="/Content/datagrid-modal.css">
+    @Html.Partial("DataGridScripts")
     <link rel="stylesheet" href="/Content/StockManagement.css">
-    <script src="/Scripts/datatable.js" defer></script>
     <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
     <script src="/Scripts/dataTable/RFIDResultModal.js" defer></script>
 }
 
@@ -123,7 +120,7 @@
 
         $(async function () {
             readData(apiUrl);
-            //await AreaFloorEvent();
+            //await formDropdown.ASN();
             addButtonEvent();
         });
 

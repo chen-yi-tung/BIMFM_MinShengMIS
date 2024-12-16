@@ -3,10 +3,6 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
-
-    <link rel="stylesheet" href="/Content/datagrid-modal.css">
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -49,13 +45,13 @@
             </div>
 
             <div class="form-group">
-                <label for="Area">棟別</label>
-                <select class="form-select" name="Area" id="Area"></select>
+                <label for="ASN">棟別</label>
+                <select class="form-select" name="ASN" id="ASN"></select>
             </div>
 
             <div class="form-group">
-                <label for="Floor">樓層</label>
-                <select class="form-select" name="Floor" id="Floor"></select>
+                <label for="FSN">樓層</label>
+                <select class="form-select" name="FSN" id="FSN"></select>
             </div>
 
             <div class="form-group">
@@ -85,7 +81,7 @@
 
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
-                <button type="button" class="btn btn-clear" id="clear">清除</button>
+                <button type="reset" class="btn btn-clear" id="clear">清除</button>
                 <button type="button" class="btn btn-export" id="export">匯出</button>
             </div>
 
@@ -127,7 +123,6 @@
 
     @section scripts {
         <script>
-        //const baseUrl = '/PlanManagement/';
         var getGridJSON = '@Url.Action("PlanManagement_Management", "Datagrid")';
         var DataGrid;
 
@@ -205,8 +200,7 @@
         ]
 
         $(async function () {
-            await
-            //await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
+            await formDropdown.ASN()
             Initialize_DataGrid(fakedata);
             addSearchAreaClickEvent();
         });
@@ -279,9 +273,7 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            $("#clear").click(function () {
-                $(".search-area form")[0].reset();
-            });
+            
 
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());

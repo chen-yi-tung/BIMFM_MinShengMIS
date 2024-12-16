@@ -2,12 +2,9 @@
     ViewBag.Title = "新增 設備";
 }
 @section styles {
-    <link rel="stylesheet" href="/Content/datagrid-modal.css">
+    @Html.Partial("DataGridScripts")
     <link rel="stylesheet" href="/Content/EquipmentInfoManagement.css">
-    <script src="/Scripts/datatable.js" defer></script>
     <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
     <script src="/Scripts/dataTable/RFIDInfoModal.js" defer></script>
 }
 
@@ -272,7 +269,7 @@
             readData(apiUrl);
             createAddItem(fakeData);
             createMaintainItem(fakeData);
-            await AreaFloorEvent();
+            await formDropdown.ASN();
             addButtonEvent();
             delTemplateItem();
             fileUploader = new FileUploader({

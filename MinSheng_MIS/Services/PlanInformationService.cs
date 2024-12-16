@@ -9,15 +9,17 @@ using System.Web.Mvc;
 
 namespace MinSheng_MIS.Services
 {
-    public class PlanInformationService
+    public class PlanInformationService : IDisposable
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
-        #region 巡檢計畫完成狀態
-        public JArray GetInspection_Complete_State(DateTime StartDate, DateTime EndDate) //巡檢計畫完成狀態
+        #region 巡檢資訊管理 Services
+
+        #region 巡檢總計畫完成狀態
+        public JArray ChartInspectionCompleteState(DateTime StartDate, DateTime EndDate)
         {
-            JArray Inspection_Complete_State = new JArray();
-            var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate);
+            JArray ChartInspectionCompleteState = new JArray();
+            /* var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate);
             var InspectionPlanStatedic = Surface.InspectionPlanState();
             foreach (var item in InspectionPlanStatedic)
             {
@@ -26,18 +28,18 @@ namespace MinSheng_MIS.Services
                     JObject jo = new JObject();
                     jo.Add("label", item.Value);
                     jo.Add("value", Convert.ToInt32(inspectionplan.Where(x => x.PlanState == item.Key).Count()));
-                    Inspection_Complete_State.Add(jo);
+                    ChartInspectionCompleteState.Add(jo);
                 }
-            }
-            return Inspection_Complete_State;
+            } */
+            return ChartInspectionCompleteState;
         }
         #endregion
 
-        #region 巡檢設備統計
-        public JArray GetInspection_Equipment_State(DateTime StartDate, DateTime EndDate) //巡檢設備統計
+        #region 設備維修及保養統計
+        public JArray ChartInspectionEquipmentState(DateTime StartDate, DateTime EndDate)
         {
-            JArray Inspection_Equipment_State = new JArray();
-            var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate);
+            JArray ChartInspectionEquipmentState = new JArray();
+            /* var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate);
             var RepairEquipments = (from x1 in inspectionplan
                                     join x2 in db.InspectionPlanRepair on x1.IPSN equals x2.IPSN
                                     join x3 in db.EquipmentReportForm on x2.RSN equals x3.RSN
@@ -50,21 +52,21 @@ namespace MinSheng_MIS.Services
                                       select new { x4.ESN }).Distinct(); //該檢索時間段所保養的設備
             var intersection = RepairEquipments.Intersect(MaintainEquipments); //找出在該檢索時間段有做保養及維修之設備
             JObject rm = new JObject { { "label", "保養" }, { "value", MaintainEquipments.Count() - intersection.Count() } };
-            Inspection_Equipment_State.Add(rm);
+            ChartInspectionEquipmentState.Add(rm);
             JObject r = new JObject { { "label", "維修" }, { "value", RepairEquipments.Count() - intersection.Count() } };
-            Inspection_Equipment_State.Add(r);
+            ChartInspectionEquipmentState.Add(r);
             JObject m = new JObject { { "label", "保養+維修" }, { "value", intersection.Count() } };
-            Inspection_Equipment_State.Add(m);
+            ChartInspectionEquipmentState.Add(m); */
 
-            return Inspection_Equipment_State;
+            return ChartInspectionEquipmentState;
         }
         #endregion
 
-        #region 巡檢人員清單
-        public JArray GetInspection_All_Members(DateTime StartDate, DateTime EndDate) //巡檢人員清單
+        #region 巡檢人員表格
+        public JArray InspectionMembers(DateTime StartDate, DateTime EndDate)
         {
-            JArray Inspection_All_Members = new JArray();
-            var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate);
+            JArray InspectionMembers = new JArray();
+            /* var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate);
             var IPSNList = inspectionplan.Select(x => x.IPSN).ToList();
             var UserNameList = db.InspectionPlanMember.Where(x => IPSNList.Contains(x.IPSN)).Select(x => x.UserID).Distinct().ToList();
             foreach (var planmember in UserNameList)
@@ -85,51 +87,51 @@ namespace MinSheng_MIS.Services
                 jo.Add("RepairNum", RepairNum);//維修總數
                 jo.Add("CompleteNum", FinishPlanNum + FinishMaintainNum + FinishRepairNum);//巡檢完成數
                 jo.Add("CompletionRate", (float)(FinishPlanNum + FinishMaintainNum + FinishRepairNum) / (PlanNum + MaintainNum + RepairNum));//完成率
-                Inspection_All_Members.Add(jo);
-            }
-            return Inspection_All_Members;
+                InspectionMembers.Add(jo);
+            } */
+            return InspectionMembers;
         }
         #endregion
 
         #region 緊急事件等級占比
-        public JArray GetInspection_Aberrant_Level(DateTime StartDate, DateTime EndDate) //緊急事件等級占比
+        public JArray ChartInspectionAberrantLevel(DateTime StartDate, DateTime EndDate)
         {
-            JArray Inspection_Aberrant_Level = new JArray();
-            var MessageList = db.WarningMessage.Where(x => x.TimeOfOccurrence >= StartDate && x.TimeOfOccurrence < EndDate);
+            JArray ChartInspectionAberrantLevel = new JArray();
+            /* var MessageList = db.WarningMessage.Where(x => x.TimeOfOccurrence >= StartDate && x.TimeOfOccurrence < EndDate);
             var WMTypeDic = Surface.WMType();
             foreach (var item in WMTypeDic)
             {
                 JObject jo = new JObject();
                 jo.Add("label", item.Value);
                 jo.Add("value", MessageList.Where(x => x.WMType == item.Key).Count());
-                Inspection_Aberrant_Level.Add(jo);
-            }
-            return Inspection_Aberrant_Level;
+                ChartInspectionAberrantLevel.Add(jo);
+            } */
+            return ChartInspectionAberrantLevel;
         }
         #endregion
 
         #region 緊急事件處理狀況
-        public JArray GetInspection_Aberrant_Resolve(DateTime StartDate, DateTime EndDate) //緊急事件處理狀況
+        public JArray ChartInspectionAberrantResolve(DateTime StartDate, DateTime EndDate)
         {
-            JArray Inspection_Aberrant_Resolve = new JArray();
-            var MessageList = db.WarningMessage.Where(x => x.TimeOfOccurrence >= StartDate && x.TimeOfOccurrence < EndDate);
+            JArray ChartInspectionAberrantResolve = new JArray();
+            /* var MessageList = db.WarningMessage.Where(x => x.TimeOfOccurrence >= StartDate && x.TimeOfOccurrence < EndDate);
             var WMStateDic = Surface.WMState();
             foreach (var item in WMStateDic)
             {
                 JObject jo = new JObject();
                 jo.Add("label", item.Value);
                 jo.Add("value", MessageList.Where(x => x.WMState == item.Key).Count());
-                Inspection_Aberrant_Resolve.Add(jo);
-            }
-            return Inspection_Aberrant_Resolve;
+                ChartInspectionAberrantResolve.Add(jo);
+            } */
+            return ChartInspectionAberrantResolve;
         }
         #endregion
 
         #region 設備保養及維修進度統計
-        public JArray GetEquipment_Maintain_And_Repair_Statistics(DateTime StartDate, DateTime EndDate) //設備保養及維修進度統計
+        public JArray ChartEquipmentProgressStatistics(DateTime StartDate, DateTime EndDate)
         {
-            JArray Equipment_Maintain_And_Repair_Statistics = new JArray();
-            var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate);
+            JArray ChartEquipmentProgressStatistics = new JArray();
+            /* var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate);
             var InspectionPlanRepairStateDic = Surface.InspectionPlanRepairState();
             var MaintainList = from x1 in inspectionplan
                                join x2 in db.InspectionPlanMaintain on x1.IPSN equals x2.IPSN
@@ -146,34 +148,34 @@ namespace MinSheng_MIS.Services
                 mr.Add("Repair", RepairList.Where(x => x.RepairState == item.Key).Count());
                 jo.Add("label", item.Value);
                 jo.Add("value", mr);
-                Equipment_Maintain_And_Repair_Statistics.Add(jo);
-            }
-            return Equipment_Maintain_And_Repair_Statistics;
+                ChartEquipmentProgressStatistics.Add(jo);
+            } */
+            return ChartEquipmentProgressStatistics;
         }
         #endregion
 
         #region 設備故障等級分布
-        public JArray GetEquipment_Level_Rate(DateTime StartDate, DateTime EndDate) //設備故障等級分布
+        public JArray ChartEquipmentLevelRate(DateTime StartDate, DateTime EndDate)
         {
-            JArray Equipment_Level_Rate = new JArray();
-            var reportList = db.EquipmentReportForm.Where(x => x.Date >= StartDate && x.Date < EndDate);
+            JArray ChartEquipmentLevelRate = new JArray();
+            /* var reportList = db.EquipmentReportForm.Where(x => x.Date >= StartDate && x.Date < EndDate);
             var ReportLevelDic = Surface.ReportLevel();
             foreach (var item in ReportLevelDic)
             {
                 JObject jo = new JObject();
                 jo.Add("label", item.Value);
                 jo.Add("value", reportList.Where(x => x.ReportLevel == item.Key).Count());
-                Equipment_Level_Rate.Add(jo);
-            }
-            return Equipment_Level_Rate;
+                ChartEquipmentLevelRate.Add(jo);
+            } */
+            return ChartEquipmentLevelRate;
         }
         #endregion
 
         #region 設備故障類型占比
-        public JArray GetEquipment_Type_Rate(DateTime StartDate, DateTime EndDate) //設備故障類型占比
+        public JArray ChartEquipmentTypeRate(DateTime StartDate, DateTime EndDate)
         {
-            JArray Equipment_Type_Rate = new JArray();
-            //統計該區間設備故障類型占比
+            JArray ChartEquipmentTypeRate = new JArray();
+            /* //統計該區間設備故障類型占比
             var RepairEquipmentType = from x1 in db.EquipmentReportForm
                                       where x1.Date >= StartDate && x1.Date < EndDate
                                       join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
@@ -185,14 +187,48 @@ namespace MinSheng_MIS.Services
                 JObject jo = new JObject();
                 jo.Add("label", item.Type.System + " " + item.Type.SubSystem);
                 jo.Add("value", item.Count);
-                Equipment_Type_Rate.Add(jo);
-            }
-            return Equipment_Type_Rate;
+                ChartEquipmentTypeRate.Add(jo);
+            } */
+            return ChartEquipmentTypeRate;
         }
         #endregion
 
+        #endregion
+
+        #region 巡檢即時位置 Services
+
+        #region 設備運轉狀態
+        public JArray EquipmentOperatingState(string FSN)
+        {
+            JArray EquipmentOperatingState = new JArray();
+            return EquipmentOperatingState;
+        }
+        #endregion
+
+        #region 環境資訊
+        public JArray EnvironmentInfo(string FSN)
+        {
+            JArray EnvironmentInfo = new JArray();
+            return EnvironmentInfo;
+        }
+        #endregion
+
+        #region 空間人員即時位置
+        public JObject InspectionCurrentPos(string FSN)
+        {
+            JObject jo = new JObject();
+            jo["current"] = new JArray();
+            jo["another"] = new JArray();
+            return jo;
+        }
+        #endregion
+
+        #endregion
+
+        #region Old Services
+
         #region 巡檢計畫列表
-        public JArray GetInspection_Plan_List(DateTime StartDate, DateTime EndDate)
+        /*public JArray GetInspection_Plan_List(DateTime StartDate, DateTime EndDate)
         {
             JArray Inspection_Plan_List = new JArray();
 
@@ -208,27 +244,27 @@ namespace MinSheng_MIS.Services
                 Inspection_Plan_List.Add(jo);
             }
             return Inspection_Plan_List;
-        }
+        }*/
         #endregion
 
         #region 當前巡檢狀況
-        public JObject GetInspection_Member(DateTime StartDate, DateTime EndDate)
+        /*public JObject GetInspection_Member(DateTime StartDate, DateTime EndDate)
         {
             JObject Inspection_Member = new JObject();
             var PlanList = (from x1 in db.InspectionPlan
-                        where x1.PlanDate >= StartDate && x1.PlanDate < EndDate && x1.PlanState == "2" //今日巡檢中計畫
-                        join x2 in db.InspectionPlanMember on x1.IPSN equals x2.IPSN
-                        select x2.PMSN).ToList();
+                            where x1.PlanDate >= StartDate && x1.PlanDate < EndDate && x1.PlanState == "2" //今日巡檢中計畫
+                            join x2 in db.InspectionPlanMember on x1.IPSN equals x2.IPSN
+                            select x2.PMSN).ToList();
             Inspection_Member.Add("Inspection_Members_All", PlanList.Count()); //目前巡檢人數
             Inspection_Member.Add("Inspection_Members_Notice", db.WarningMessage.Where(x => PlanList.Any(plan => x.PMSN.Contains(plan.ToString())) && x.WMState != "3" && x.WMType == "1").Count()); //偏離路線人數
             Inspection_Member.Add("Inspection_Members_Alert", db.WarningMessage.Where(x => PlanList.Any(plan => x.PMSN.Contains(plan.ToString())) && x.WMState != "3" && x.WMType == "2").Count()); //狀態異常人數
 
             return Inspection_Member;
-        }
+        }*/
         #endregion
 
         #region 當前巡檢人員列表
-        public JArray GetPlan_People_List(string IPSN)
+        /*public JArray GetPlan_People_List(string IPSN)
         {
             JArray Plan_People_List = new JArray();
             DateTime StartDate = DateTime.Today;
@@ -238,7 +274,7 @@ namespace MinSheng_MIS.Services
                                 where x1.PlanState == "2" && x1.PlanDate >= StartDate && x1.PlanDate < EndDate
                                 join x2 in db.InspectionPlanMember on x1.IPSN equals x2.IPSN
                                 join x3 in db.AspNetUsers on x2.UserID equals x3.UserName
-                                select new {x1.IPSN, x2.PMSN, x3.MyName};
+                                select new { x1.IPSN, x2.PMSN, x3.MyName };
             if (!string.IsNullOrEmpty(IPSN)) //若前台有篩選計畫，則只列出該計畫編號之人員
             {
                 inspectorlist = inspectorlist.Where(x => x.IPSN == IPSN);
@@ -256,7 +292,15 @@ namespace MinSheng_MIS.Services
                 Plan_People_List.Add(jo);
             }
             return Plan_People_List;
-        }
+        }*/
+
         #endregion
+
+        #endregion
+
+        public void Dispose()
+        {
+            db.Dispose();
+        }
     }
 }

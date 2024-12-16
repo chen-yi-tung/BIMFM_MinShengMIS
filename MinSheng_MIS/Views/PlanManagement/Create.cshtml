@@ -2,16 +2,8 @@
     ViewBag.Title = "新增 工單";
 }
 @section styles {
-    @Styles.Render("~/Content/easyui/themes/default/easyui.css")
-    <link rel="stylesheet" href="/Content/datagrid-modal.css">
-    <link rel="stylesheet" href="~/Content/datatable.css">
-
-    <script src="/Content/easyui/jquery.min.js" defer></script>
-    <script src="/Content/easyui/jquery.easyui.min.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
+    @Html.Partial("DataGridScripts")
     <script src="~/Scripts/PlanManagement/CreateDataGrids.js" defer></script>
-    @*<script src="/Scripts/PlanManagement/Create.js" defer></script>*@
-    <script src="/Scripts/datatable.js"></script>
 }
 
 

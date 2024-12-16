@@ -18,6 +18,7 @@ namespace MinSheng_MIS.Services
         Bimfm_MinSheng_MISEntities _db = new Bimfm_MinSheng_MISEntities();
         HttpServerUtilityBase _server = new HttpServerUtilityWrapper(HttpContext.Current.Server);
 
+        #region WEB
         public void CreateFromWeb(Repair_ManagementCreateViewModel item)
         {
             EquipmentReportForm newForm = new EquipmentReportForm();
@@ -41,6 +42,8 @@ namespace MinSheng_MIS.Services
                 newForm.ReportImg = path;
             }
             _db.EquipmentReportForm.Add(newForm);
+            EquipmentInfo equipment = _db.EquipmentInfo.Find(newForm.ESN);
+            equipment.EState = "2";
             _db.SaveChanges();
         }
 
@@ -83,7 +86,7 @@ namespace MinSheng_MIS.Services
                     itemObject["RepairUserName"] = member.RepairUserName;
             }
             itemObject.Add("Location", $"{item.EquipmentInfo.Floor_Info.AreaInfo.Area} {item.EquipmentInfo.Floor_Info.FloorName}");
-            itemObject.Add("No", item.EquipmentInfo.No);
+            itemObject.Add("No", item.EquipmentInfo.NO);
             itemObject.Add("EName", item.EquipmentInfo.EName);
             itemObject.Add("ESN", item.EquipmentInfo.ESN);
             itemObject.Add("RepairResult", item.RepairtId != null ? "完成" : "未完成");
@@ -104,8 +107,18 @@ namespace MinSheng_MIS.Services
             dbItem.AuditTime = DateTime.Now;
             dbItem.AuditReason = item.AuditReason;
             dbItem.AuditResult = item.AuditResult;
+            if (item.AuditResult)
+            {
+                EquipmentInfo equipment = _db.EquipmentInfo.Find(dbItem.ESN);
+                equipment.EState = "1";
+            }
             _db.SaveChanges();
         }
+        #endregion
+
+        #region APP
+
+        #endregion
 
         public string GetNextRSN()
         {

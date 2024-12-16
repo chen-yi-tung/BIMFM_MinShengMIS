@@ -203,7 +203,6 @@
     <Compile Include="Controllers\EquipmentInfo_ManagementController.cs" />
     <Compile Include="Controllers\ExperimentData_ManagementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\InquiryPlan_ManagementController.cs" />
     <Compile Include="Controllers\InspectionPlan_ManagementController.cs" />
     <Compile Include="Controllers\Maintain_ManagementController.cs" />
     <Compile Include="Controllers\OneDeviceOneCard_ManagementController.cs" />
@@ -217,10 +216,8 @@
     <Compile Include="Controllers\LaboratoryLabel_ManagementController.cs" />
     <Compile Include="Controllers\LaboratoryMaintenance_ManagementController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Controllers\ManufacturerInfo_ManagementController.cs" />
     <Compile Include="Controllers\MeetingMinutes_ManagementController.cs" />
     <Compile Include="Controllers\MonthlyReport_ManagementController.cs" />
-    <Compile Include="Controllers\PurchaseOrder_ManagementController.cs" />
     <Compile Include="Controllers\WarningMessage_ManagementController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -432,11 +429,9 @@
     <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ViewModels\ManufacturerInfo_ViewModel.cs" />
     <Compile Include="Models\ViewModels\MeetingMinutes_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\OneDeviceOneCard_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\PathSampleViewModel.cs" />
-    <Compile Include="Models\ViewModels\PurchaseRequisition_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\ReadInspectionPlanPathData.cs" />
     <Compile Include="Models\ViewModels\NewMaintainItems.cs" />
     <Compile Include="Models\ViewModels\ReadEqMaintainItemViewModel.cs" />
@@ -465,6 +460,7 @@
     <Compile Include="Services\EquipmentInfo_ManagementService.cs" />
     <Compile Include="Services\Helper.cs" />
     <Compile Include="Services\MeetingMinutesService.cs" />
+    <Compile Include="Services\PlanInformationService.cs" />
     <Compile Include="Services\Repair_ManagementService.cs" />
     <Compile Include="Services\OneDeviceOneCard_ManagementService.cs" />
     <Compile Include="Services\RFIDService.cs" />
@@ -2380,7 +2376,6 @@
     <Content Include="Scripts\ArcGIS\widget\searchWidget.js" />
     <Content Include="Scripts\ArcGIS\widget\selectWidget.js" />
     <Content Include="Scripts\ArcGIS\widget\settingWidget.js" />
-    <Content Include="Scripts\AreaFloorEvent.js" />
     <Content Include="Scripts\BigScreen\BigScreen.js" />
     <Content Include="Scripts\BigScreen\ChartPlugin.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -4801,6 +4796,7 @@
     <Content Include="Scripts\Forge\SortRouteModal.js" />
     <Content Include="Scripts\Forge\UpViewer.js" />
     <Content Include="Scripts\Forge\Viewer.Toolkit.js" />
+    <Content Include="Scripts\form-dropdown.js" />
     <Content Include="Scripts\ImageDisplay.js" />
     <Content Include="Scripts\InquiryPlan\GetjsonResult.js" />
     <Content Include="Scripts\InquiryPlan\CreateDataGrids.js" />
@@ -4831,10 +4827,6 @@
     <Content Include="Scripts\popper.min.js" />
     <Content Include="Scripts\share.js" />
     <Content Include="Scripts\tool.js" />
-    <Content Include="Views\MaintainRecord_Management\Audit.cshtml" />
-    <Content Include="Views\MaintainRecord_Management\Management.cshtml" />
-    <Content Include="Views\MaintainRecord_Management\Read.cshtml" />
-    <Content Include="Views\MaintainRecord_Management\Supplement.cshtml" />
     <Content Include="Views\Stock_Management\CreateInbound.cshtml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -4868,22 +4860,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Report_Management\Management.cshtml" />
-    <Content Include="Views\Report_Management\Read.cshtml" />
-    <Content Include="Views\MaintainItem_Management\Management.cshtml" />
-    <Content Include="Views\MaintainItem_Management\Create.cshtml" />
-    <Content Include="Views\MaintainItem_Management\Read.cshtml" />
-    <Content Include="Views\MaintainItem_Management\Edit.cshtml" />
-    <Content Include="Views\MaintainItem_Management\Delete.cshtml" />
-    <Content Include="Views\EquipmentMaintainPeriod_Management\Management.cshtml" />
-    <Content Include="Views\EquipmentMaintainPeriod_Management\Edit.cshtml" />
     <Content Include="Views\SamplePath_Management\Index.cshtml" />
-    <Content Include="Views\MaintainForm_Management\Management.cshtml" />
-    <Content Include="Views\MaintainForm_Management\Read.cshtml" />
-    <Content Include="Views\RepairRecord_Management\Management.cshtml" />
-    <Content Include="Views\RepairRecord_Management\Read.cshtml" />
-    <Content Include="Views\RepairRecord_Management\Audit.cshtml" />
-    <Content Include="Views\RepairRecord_Management\Supplement.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Management.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Create.cshtml" />
     <Content Include="Views\InspectionPlan_Management\Read.cshtml" />
@@ -4898,26 +4875,10 @@
     <Content Include="Views\Account_Management\ChangePassword.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\Disable.cshtml" />
     <Content Include="Views\EquipmentInfo_Management\Create.cshtml" />
-    <Content Include="Views\ManufacturerInfo_Management\Management.cshtml" />
-    <Content Include="Views\ManufacturerInfo_Management\Create.cshtml" />
-    <Content Include="Views\ManufacturerInfo_Management\Read.cshtml" />
-    <Content Include="Views\ManufacturerInfo_Management\Edit.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Index.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Create.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Edit.cshtml" />
     <Content Include="Views\AsBuiltDrawing_Management\Delete.cshtml" />
-    <Content Include="Views\PurchaseRequisition_Management\Management.cshtml" />
-    <Content Include="Views\PurchaseRequisition_Management\Create.cshtml" />
-    <Content Include="Views\InquiryPlan_Management\Management.cshtml" />
-    <Content Include="Views\InquiryPlan_Management\CreatePlan.cshtml" />
-    <Content Include="Views\InquiryPlan_Management\Read.cshtml" />
-    <Content Include="Views\InquiryPlan_Management\Edit.cshtml" />
-    <Content Include="Views\InquiryPlan_Management\CreateInquiry.cshtml" />
-    <Content Include="Views\InquiryPlan_Management\InquiryManagement.cshtml" />
-    <Content Include="Views\PurchaseOrder_Management\Management.cshtml" />
-    <Content Include="Views\PurchaseOrder_Management\Read.cshtml" />
-    <Content Include="Views\PurchaseOrder_Management\Delivery.cshtml" />
-    <Content Include="Views\PurchaseOrder_Management\Accept.cshtml" />
     <Content Include="Views\DesignDiagrams\Index.cshtml" />
     <Content Include="Views\DesignDiagrams\Create.cshtml" />
     <Content Include="Views\DesignDiagrams\Edit.cshtml" />
@@ -4926,22 +4887,9 @@
     <Content Include="Views\EquipmentOperatingManual\Create.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Edit.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Delete.cshtml" />
-    <Content Include="Views\StockIn_Management\Management.cshtml" />
-    <Content Include="Views\StockIn_Management\Create.cshtml" />
-    <Content Include="Views\StockIn_Management\Read.cshtml" />
     <Content Include="Views\Stock_Management\Index.cshtml" />
     <Content Include="Views\Stock_Management\Read.cshtml" />
     <Content Include="Views\Stock_Management\MinStockAmountSetting.cshtml" />
-    <Content Include="Views\StoresRequisition_Management\Management.cshtml" />
-    <Content Include="Views\StoresRequisition_Management\Create.cshtml" />
-    <Content Include="Views\StoresRequisition_Management\Read.cshtml" />
-    <Content Include="Views\StoresRequisition_Management\Edit.cshtml" />
-    <Content Include="Views\StoresRequisition_Management\Audit.cshtml" />
-    <Content Include="Views\StockOut_Management\Management.cshtml" />
-    <Content Include="Views\StockOut_Management\Create.cshtml" />
-    <Content Include="Views\StockOut_Management\Read.cshtml" />
-    <Content Include="Views\InquiryPlan_Management\Print.cshtml" />
-    <Content Include="Views\Report_Management\Create.cshtml" />
     <Content Include="Views\LaboratoryLabel_Management\Create.cshtml" />
     <Content Include="Views\LaboratoryLabel_Management\Edit.cshtml" />
     <Content Include="Views\LaboratoryLabel_Management\Detail.cshtml" />
@@ -4973,8 +4921,6 @@
     <Content Include="Views\WarningMessage_Management\Detail.cshtml" />
     <Content Include="Views\BIM\ModelView.cshtml" />
     <Content Include="Views\BIM\FloorModelView.cshtml" />
-    <Content Include="Views\PurchaseRequisition_Management\Read.cshtml" />
-    <Content Include="Views\PurchaseRequisition_Management\Edit.cshtml" />
     <Content Include="Views\BigScreen\Index.cshtml" />
     <Content Include="Views\InspectionPlan_Management\InformationManagement.cshtml" />
     <Content Include="Views\InspectionPlan_Management\CurrentInformation.cshtml" />
