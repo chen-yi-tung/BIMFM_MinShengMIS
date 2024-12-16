@@ -149,7 +149,7 @@
                     itemArea.insertAdjacentHTML('beforeend', `
                         <div class="d-flex gap-3 align-items-center">
                             <div class="key-value-pair gap-2">
-                                <input type="text" class="form-control" name="ReportItemName-1" id="ReportItemName-1" maxlength="20" placeholder="檢查項目名稱" required>
+                                <input type="text" class="form-control" name="ReportItemName-1" id="ReportItemName-1" maxlength="50" placeholder="檢查項目名稱" required>
                                 <input type="text" class="form-control" name="ReportItemUnit-1" id="ReportItemUnit-1" maxlength="20" placeholder="單位" required>
                             </div>
                             <button type="button" class="btn-delete-item" onclick="delInputItem(this, '${zoneID}')"></button>
@@ -247,7 +247,7 @@
                     }))
 
                 return {
-                    AddItemdList: addItemList.length > 0 ? addItemList : [],
+                    AddItemList: addItemList.length > 0 ? addItemList : [],
                     MaintainItemList: maintainItemList.length > 0 ? maintainItemList : [],
                     CheckItemList: checkItemList.length > 0 ? checkItemList : [],
                     ReportItemList: reportItemList.length > 0 ? reportItemList : []
