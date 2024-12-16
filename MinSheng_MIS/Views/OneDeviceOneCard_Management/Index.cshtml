@@ -32,7 +32,7 @@
 @section scripts {
     <script>
         //const baseUrl = '/PlanManagement/';
-        var getGridJSON = '@Url.Action("PlanManagement_Management", "Datagrid")';
+        var getGridJSON = '@Url.Action("OneDeviceOneCard_Management", "Datagrid")';
         var DataGrid;
 
         const fakeData = [
@@ -69,11 +69,11 @@
         function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
-                //url: getGridJSON,
+                url: getGridJSON,
                 data: fakeData,
-                //method: 'POST',
+                method: 'POST',
                 queryParams: getQueryParams(),
-                idField: 'IPSN',
+                idField: 'TSN',
                 remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
@@ -88,13 +88,13 @@
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Detail/${row.IPSN}`, "_blank")
+                window.open(`${baseUrl}/Detail/${row.TSN}`, "_blank")
             })
             dg.addEvent("edit", function (row, i) {
-                window.open(`${baseUrl}/Edit/${row.IPSN}`, "_self")
+                window.open(`${baseUrl}/Edit/${row.TSN}`, "_self")
             })
             dg.addEvent("delete", function (row, i) {
-                window.open(`${baseUrl}/Delete/${row.IPSN}`, "_self")
+                window.open(`${baseUrl}/Delete/${row.TSN}`, "_self")
             })
         }
 

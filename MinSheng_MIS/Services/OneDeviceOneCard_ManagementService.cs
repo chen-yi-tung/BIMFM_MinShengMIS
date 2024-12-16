@@ -138,12 +138,6 @@ namespace MinSheng_MIS.Services
             // 與既有欄位進行比對
             if (await _db.Template_ReportingItem.Where(x => x.TSN == data.TSN).AnyAsync(x => data.RIList.Select(r => r.RIName).Contains(x.ReportingItemName)))
                 throw new MyCusResException("檢查項目名稱不可重複!");
-            //// List長度限制
-            //if (data.RIList.Count() > 100)
-            //    throw new MyCusResException("填報項目不可超過100項!");
-            //// 不可重複：填報項目名稱
-            //if (ListItemDuplicated(data.RIList.Select(x => x.RIName)))
-            //    throw new MyCusResException("填報項目名稱不可重複!");
         }
         #endregion
 
