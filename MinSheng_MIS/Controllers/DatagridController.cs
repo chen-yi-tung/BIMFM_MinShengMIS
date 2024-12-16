@@ -14,13 +14,15 @@ namespace MinSheng_MIS.Controllers
 {
     public class DatagridController : Controller
     {
+        private readonly DatagridService _service = new DatagridService();
+
         //--巡檢管理--
         #region InspectionPlan_Management 巡檢計畫管理
         //[HttpPost]
         //public ActionResult InspectionPlan_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_InspectionPlan(form);
+        //    
+        //    var a = _service.GetJsonForGrid_InspectionPlan(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -30,8 +32,8 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult SamplePath_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_SamplePath(form);
+            
+            var a = _service.GetJsonForGrid_SamplePath(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -41,8 +43,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult InspectationPlan_Record_EquipMaintain(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    string result = service.GetJsonForGrid_InspectationPlan_Record_EquipMaintain(form);
+        //    
+        //    string result = _service.GetJsonForGrid_InspectationPlan_Record_EquipMaintain(form);
         //    return Content(result, "application/json");
         //}
         #endregion
@@ -51,8 +53,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult InspectationPlan_Record_EquipRepair(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    string result = service.GetJsonForGrid_InspectationPlan_Record_EquipRepair(form);
+        //    
+        //    string result = _service.GetJsonForGrid_InspectationPlan_Record_EquipRepair(form);
         //    return Content(result, "application/json");
         //}
         #endregion
@@ -63,8 +65,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult MaintainForm_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_MaintainForm(form);
+        //    
+        //    var a = _service.GetJsonForGrid_MaintainForm(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -74,8 +76,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult MaintainItem_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_MaintainItem(form);
+        //    
+        //    var a = _service.GetJsonForGrid_MaintainItem(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -86,8 +88,8 @@ namespace MinSheng_MIS.Controllers
         //public ActionResult EquipmentMaintainPeriod_Management(FormCollection form)
         //{
         //    JObject jo = new JObject();
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_EquipmentMaintainPeriod_Management(form);
+        //    
+        //    var a = _service.GetJsonForGrid_EquipmentMaintainPeriod_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -97,8 +99,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult MaintainRecord_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_MaintainRecord_Management(form);
+        //    
+        //    var a = _service.GetJsonForGrid_MaintainRecord_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -110,8 +112,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult Report_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_Report_Management(form);
+        //    
+        //    var a = _service.GetJsonForGrid_Report_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -121,8 +123,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult RepairRecord_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_RepairRecord_Management(form);
+        //    
+        //    var a = _service.GetJsonForGrid_RepairRecord_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -134,8 +136,17 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult EquipmentInfo_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_EquipmentInfo(form);
+            var a = _service.GetJsonForGrid_EquipmentInfo(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region EquipmentInfo_Management 資產管理
+        [HttpPost]
+        public ActionResult OneDeviceOneCard_Management(FormCollection form)
+        {
+            var a = _service.GetJsonForGrid_OneDeviceOneCard(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -145,8 +156,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult AsBuiltDrawing_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_AsBuiltDrawing(form);
+            var a = _service.GetJsonForGrid_AsBuiltDrawing(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -156,8 +166,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult DesignDiagrams_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_DesignDiagrams(form);
+            var a = _service.GetJsonForGrid_DesignDiagrams(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -167,8 +176,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult EquipmentOperatingManual(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_EquipmentOperatingManual(form);
+        //    
+        //    var a = _service.GetJsonForGrid_EquipmentOperatingManual(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -180,8 +189,7 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult PurchaseRequisition_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_PurchaseRequisition_Management(form);
+        //    var a = _service.GetJsonForGrid_PurchaseRequisition_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -191,8 +199,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult StockIn_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_StockIn_Management(form);
+        //    
+        //    var a = _service.GetJsonForGrid_StockIn_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -202,8 +210,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult StoresRequisition_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_StoresRequisition_Management(form);
+        //    
+        //    var a = _service.GetJsonForGrid_StoresRequisition_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -213,8 +221,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult StockOut_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_StockOut_Management(form);
+        //    
+        //    var a = _service.GetJsonForGrid_StockOut_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -224,8 +232,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult Stock_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_Stock_Management(form);
+        //    
+        //    var a = _service.GetJsonForGrid_Stock_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -237,8 +245,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult TestingAndAnalysisWorkflow(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_TestingAndAnalysisWorkflow(form);
+            var a = _service.GetJsonForGrid_TestingAndAnalysisWorkflow(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -248,8 +255,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult LaboratoryLabel_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_LaboratoryLabel_Management(form);
+            var a = _service.GetJsonForGrid_LaboratoryLabel_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -259,8 +265,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult LaboratoryMaintenance_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_LaboratoryMaintenance_Management(form);
+            var a = _service.GetJsonForGrid_LaboratoryMaintenance_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -270,8 +275,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult ExperimentData_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_ExperimentData_Management(form);
+            var a = _service.GetJsonForGrid_ExperimentData_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -283,8 +287,8 @@ namespace MinSheng_MIS.Controllers
         //[HttpPost]
         //public ActionResult WarningMessage_Management(FormCollection form)
         //{
-        //    var service = new DatagridService();
-        //    var a = service.GetJsonForGrid_WarningMessage_Management(form);
+        //    
+        //    var a = _service.GetJsonForGrid_WarningMessage_Management(form);
         //    string result = JsonConvert.SerializeObject(a);
         //    return Content(result, "application/json");
         //}
@@ -296,8 +300,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult MonthlyReport_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_MonthlyReport_Management(form);
+            var a = _service.GetJsonForGrid_MonthlyReport_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -307,8 +310,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult MeetingMinutes_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_MeetingMinutes_Management(form);
+            var a = _service.GetJsonForGrid_MeetingMinutes_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -320,8 +322,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Account_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_Account_Management(form);
+            var a = _service.GetJsonForGrid_Account_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -331,8 +332,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult ManufacturerInfo_Management(FormCollection form)
         {
-            var service = new DatagridService();
-            var a = service.GetJsonForGrid_ManufacturerInfo_Management(form);
+            var a = _service.GetJsonForGrid_ManufacturerInfo_Management(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }

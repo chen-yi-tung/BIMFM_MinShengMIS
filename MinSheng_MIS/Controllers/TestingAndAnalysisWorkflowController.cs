@@ -68,7 +68,9 @@ namespace MinSheng_MIS.Controllers
             {
                 var File = ta_workflow.WorkflowFile;
                 string extension = Path.GetExtension(File.FileName); // 檔案副檔名
-                if (ComFunc.IsConformedForDocument(File.ContentType, extension) || ComFunc.IsConformedForImage(File.ContentType, extension)) // 檔案白名單檢查
+                if (ComFunc.IsConformedForDocument(File.ContentType, extension)
+                    || ComFunc.IsConformedForPdf(File.ContentType, extension)
+                    || ComFunc.IsConformedForImage(File.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 檔案上傳
                     if (!ComFunc.UploadFile(File, Server.MapPath($"~/{folderPath}/"), workflow.TAWSN))
@@ -119,7 +121,9 @@ namespace MinSheng_MIS.Controllers
             {
                 var newFile = ta_workflow.WorkflowFile;
                 string extension = Path.GetExtension(newFile.FileName); // 檔案副檔名
-                if (ComFunc.IsConformedForDocument(newFile.ContentType, extension) || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
+                if (ComFunc.IsConformedForDocument(newFile.ContentType, extension)
+                    || ComFunc.IsConformedForPdf(newFile.ContentType, extension)
+                    || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
                     // 舊檔案刪除
                     ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), workflow.WorkflowFile, null);

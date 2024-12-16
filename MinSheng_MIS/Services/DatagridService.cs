@@ -1,6 +1,5 @@
 ﻿using MinSheng_MIS.Models;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,6 @@ using MinSheng_MIS.Surfaces;
 using System.Linq.Dynamic.Core;
 using System.Globalization;
 using System.Web.Mvc;
-using System.Security.Cryptography;
 
 namespace MinSheng_MIS.Services
 {
@@ -2238,6 +2236,85 @@ namespace MinSheng_MIS.Services
             JObject jo = new JObject();
             jo.Add("rows", ja);
             jo.Add("total", total);
+            return jo;
+        }
+        #endregion
+
+        #region 一機一卡模板管理
+        public JObject GetJsonForGrid_OneDeviceOneCard(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+
+            #region 塞來自formdata的資料
+            //模板名稱
+            string SampleName = form["SampleName"]?.ToString();
+            #endregion
+
+            #region 依據查詢字串檢索資料表
+            var query = db.Template_OneDeviceOneCard.Select(x => new
+            {
+                x.TSN,
+                x.SampleName,
+                AddItemsNum = x.Template_AddField.Count,
+                MaintainNum = x.Template_MaintainItemSetting.Count,
+                InspectNum = x.Template_CheckItem.Count + x.Template_ReportingItem.Count
+            });
+            //模板名稱 (模糊查詢)
+            if (!string.IsNullOrEmpty(SampleName))
+            {
+                query = query.Where(x => x.SampleName.Contains(SampleName));
+            }
+            #endregion
+
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) query = query.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else query = query.OrderByDescending(x => x.TSN);
+            #endregion
+
+            // 總筆數
+            int Total = query.Count();
+            // 切頁
+            query = query.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+
+            if (query != null || Total > 0)
+            {
+                foreach (var item in query)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "TSN", item.TSN },
+                        { "SampleName", item.SampleName },
+                        { "AddItemsNum", item.AddItemsNum.ToString() },
+                        { "MaintainNum", item.MaintainNum.ToString() },
+                        { "InspectNum", item.InspectNum.ToString() },
+                    };
+
+                    ja.Add(itemObject);
+                }
+            }
+
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
+
             return jo;
         }
         #endregion

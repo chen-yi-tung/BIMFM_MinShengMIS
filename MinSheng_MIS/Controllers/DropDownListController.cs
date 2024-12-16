@@ -17,7 +17,7 @@ namespace MinSheng_MIS.Controllers
 {
     public class DropDownListController : Controller
     {
-        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+        private readonly Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         // GET: DropDownList
         #region 棟別
         [System.Web.Http.HttpGet]
@@ -1040,6 +1040,28 @@ namespace MinSheng_MIS.Controllers
             }
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
+        }
+        #endregion
+
+        // --2024/10/25後更新
+        #region MaintainPeriod 保養週期
+        [HttpGet]
+        public ActionResult MaintainPeriod()
+        {
+            List<JObject> list = ConvertDicToJObjectList(Surface.MaintainPeriod());
+
+            return Content(JsonConvert.SerializeObject(list), "application/json");
+        }
+        #endregion
+
+        #region Helper
+        private List<JObject> ConvertDicToJObjectList(Dictionary<string, string> dic)
+        {
+            return dic.Select(x => new JObject
+            {
+                { "Text", x.Value },
+                { "Value", x.Key }
+            }).ToList();
         }
         #endregion
     }
