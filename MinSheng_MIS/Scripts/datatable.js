@@ -336,17 +336,119 @@ function createAccordion(options) {
     if (options.data.length === 0) {
         return "";
     }
-    return `
-    <div class="datatable border-0 ${options.className ?? ""} ${options.id === 'EquipmentItem' ? 'sub-accordion' : ''}">
-        <div class="datatable-body">
-            <div class="accordion accordion-flush datatable-accordion d-flex flex-column" style="gap: 12px" id="accordion-${options.id ?? ''}">
-               ${options.data.map((d, i) => {
-        return createAccordionItem(options, i)
-    }).join("")}
+    function createMaintainItem(addItems, containerId) {
+        const MaintainEditZone = document.getElementById(containerId);
+        if (!MaintainEditZone) {
+            return;
+        }
+
+        const optionsData = [
+            { value: "", text: "請選擇" },
+            { value: "1", text: "每日" },
+            { value: "2", text: "每月" },
+            { value: "3", text: "每季" },
+            { value: "4", text: "每年" },
+        ];
+
+        addItems.forEach((filed, i) => {
+            const div = document.createElement("div");
+            div.className = "edit-item-init"
+            div.style = "background: #E3EBF3;"
+
+            const maintainName = document.createElement("input");
+            maintainName.className = "form-control";
+            maintainName.name = `itemName-${i}`;
+            maintainName.type = "text";
+            maintainName.value = filed;
+            maintainName.disabled = true;
+
+
+            const frequency = document.createElement("select");
+            frequency.className = "form-select"
+            frequency.name = `select-${i}`;
+            optionsData.forEach(optionData => {
+                const option = document.createElement("option");
+                option.value = optionData.value;
+                option.textContent = optionData.text;
+                frequency.appendChild(option);
+            });
+
+            const nextMaintainDate = document.createElement("input");
+            nextMaintainDate.className = "form-control";
+            nextMaintainDate.name = `nextMaintainDate-${i}`;
+            nextMaintainDate.type = "date";
+            nextMaintainDate.value = filed;
+
+            div.appendChild(maintainName);
+            div.appendChild(frequency);
+            div.appendChild(nextMaintainDate);
+            MaintainEditZone.appendChild(div);
+        })
+    }
+    if (options.type === "addEquipmentSetting") {
+        const html = `
+        <div class="datatable border-0 ${options.className ?? ""} ${options.id === 'EquipmentItem' ? 'sub-accordion' : ''}">
+            <div class="datatable-body">
+                <div class="accordion accordion-flush datatable-accordion d-flex flex-column" style="gap: 12px" id="accordion-${options.id ?? ''}">
+                   ${options.data.map((d, i) => {
+                       return `
+                            <div class="accordion-item" id="${options.id}_${i + 1}" style="border: 1px solid #8A9BA5">
+                                <h2 class="accordion-header" id="header-${options.id}-${i}">
+                                    <button class="accordion-button border-0 collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#sub-body-${options.id}-${i}" aria-expanded="false"
+                                        aria-controls="body-${options.id}-${i}">
+                                        <div class="w-100">${options.data[i][options.itemTitleKey]} ${options.itemSubTitleKey ? `${options.data[i][options.itemSubTitleKey]}` : ""}</div>
+                                        <div class="mx-2" style="white-space: nowrap;" id="finishStatus"></div>
+                                    </button>
+                                </h2>
+                                <div id="sub-body-${options.id}-${i}" class="accordion-collapse collapse"
+                                    aria-labelledby="header-${options.id}-${i}">
+                                    <div class="accordion-body">
+                                        <div class="datatable w-100 border-start-0 border-end-0">
+                                            <div class="datatable-body">
+                                                <table class="datatable-table">
+                                                    ${createTableInner(options.data[i], options.sn)}
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column gap-2 px-3 py-2 " id="MaintainEditZone_${i}">
+                                            <div class="group-sb-title text-dark m-0" style="font-size: 16px;">
+                                                <i class="fa-solid fa-map-pin"></i>
+                                                <div>保養項目/週期/下次保養日期</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    }).join("")}
+                </div>
             </div>
         </div>
-    </div>
-    `;
+        `;
+
+        // 延遲執行 createMaintainItem
+        setTimeout(() => {
+            options.data.forEach((_, i) => {
+                createMaintainItem(options.addItems, `MaintainEditZone_${i}`);
+            });
+        }, 0);
+
+        return html;
+    } else {
+        return `
+        <div class="datatable border-0 ${options.className ?? ""} ${options.id === 'EquipmentItem' ? 'sub-accordion' : ''}">
+            <div class="datatable-body">
+                <div class="accordion accordion-flush datatable-accordion d-flex flex-column" style="gap: 12px" id="accordion-${options.id ?? ''}">
+                   ${options.data.map((d, i) => {
+                        return createAccordionItem(options, i)
+                    }).join("")}
+                </div>
+            </div>
+        </div>
+        `;
+    }
 }
 
 /**
@@ -369,7 +471,7 @@ function createAccordionItem(options, i) {
     return `
             <div class="accordion-item" id="${options.id}-${i}">
                 <h2 class="accordion-header" id="header-${options.id}-${i}">
-                    <button class="accordion-button collapsed type="button"
+                    <button class="accordion-button collapsed" type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#sub-body-${options.id}-${i}" aria-expanded="false"
                         aria-controls="body-${options.id}-${i}">
