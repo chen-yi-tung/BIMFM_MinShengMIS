@@ -119,9 +119,9 @@
 
             $.ajax({
                 url: "",
-                data: sendData,
+                data: JSON.stringify(sendData),
                 type: "POST",
-                contentType: false,
+                contentType: "application/json",
                 processData: false,
                 success: onSuccess,
                 error: onError
@@ -247,10 +247,10 @@
                     }))
 
                 return {
-                    AddItemdList: addItemList.length > 0 ? addItemList : "",
-                    MaintainItemList: maintainItemList.length > 0 ? maintainItemList : "",
-                    CheckItemList: checkItemList.length > 0 ? checkItemList : "",
-                    ReportItemList: reportItemList.length > 0 ? reportItemList : ""
+                    AddItemdList: addItemList.length > 0 ? addItemList : [],
+                    MaintainItemList: maintainItemList.length > 0 ? maintainItemList : [],
+                    CheckItemList: checkItemList.length > 0 ? checkItemList : [],
+                    ReportItemList: reportItemList.length > 0 ? reportItemList : []
                 }
             }
             this.checkValidity = () => {
