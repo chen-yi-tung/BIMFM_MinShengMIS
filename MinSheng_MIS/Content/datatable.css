@@ -331,6 +331,11 @@ th.datatable-header,
     width: 100%;
 }
 
+.datatable-accordion {
+    background: unset;
+    border: unset;
+}
+
 /* RWD */
 
 @media (min-width: 992px) {

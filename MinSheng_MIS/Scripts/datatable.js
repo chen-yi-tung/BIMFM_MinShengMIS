@@ -41,39 +41,57 @@ function createTableInner(data, sn) {
     const nullString = "-";
     return sn.map((e) => {
         let html = "";
+        let colspan = getColspan(e.colspan)
         if (e.formatter) {
             html = `
             <tr>
                 <td class="datatable-table-th">${e.text}</td>
-                <td class="datatable-table-td" id="d-${e.value}">${e.formatter(data[e.value])}</td>
+                <td class="datatable-table-td" ${colspan} id="d-${e.value}">${e.formatter(data[e.value])}</td>
             </tr>`;
+        }
+        else if (e.itemNum) {
+            //為避免後端傳來的不是陣列，若不是陣列則先轉為陣列
+            let arr = data[e.value];
+            if (!Array.isArray(arr)) { arr = [data[e.value]] }
+
+            const rows = data[e.value]?.length || 0;
+            if (rows === 0) {
+                html = '';
+            }
+            else {
+                const first = data[e.value][0];
+                html = `<tr>
+                            <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
+                            <td class="datatable-table-td datatable-table-sort">1</td>
+                            ${getItemNumCells({ sn: e, colspan, itemNum: e.itemNum, data: first })}
+                        </tr>
+                ${data[e.value]?.slice(1).map((item, i) => {
+                    return `<tr>
+                        <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
+                        ${getItemNumCells({ sn: e, colspan, itemNum: e.itemNum, data: item })}
+                        </tr>`;
+                }).join("")}`
+            }
         }
         else if (e.image == true) {
             html = `
             <tr>
                 <td class="datatable-table-th">${e.text}</td>
-                <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putImage(data[e.value]) : nullString}</td>
+                <td class="datatable-table-td" ${colspan} id="d-${e.value}">${data[e.value] != null ? putImage(data[e.value]) : nullString}</td>
             </tr>`;
         }
         else if (e.url == true) {
             html = `
             <tr>
                 <td class="datatable-table-th">${e.text}</td>
-                <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putFile(data[e.value]) : nullString}</td>
+                <td class="datatable-table-td" ${colspan} id="d-${e.value}">${data[e.value] != null ? putFile(data[e.value]) : nullString}</td>
             </tr>`;
         }
         else if (e.pre == true) {
             html = `
             <tr>
                 <td class="datatable-table-th">${e.text}</td>
-                <td class="datatable-table-td" id="d-${e.value}"><pre>${data[e.value] ?? nullString}</pre></td>
-            </tr>`;
-        }
-        else if (e.colspan == true) {
-            html = `
-            <tr>
-                <td class="datatable-table-th">${e.text}</td>
-                <td class="datatable-table-td" colspan=3 id="d-${e.value}">${data[e.value] ?? nullString}</td>
+                <td class="datatable-table-td" ${colspan} id="d-${e.value}"><pre>${data[e.value] ?? nullString}</pre></td>
             </tr>`;
         }
         else {
@@ -105,7 +123,7 @@ function createTableInner(data, sn) {
                             <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
                             <td class="datatable-table-td datatable-table-sort">1</td>
                             <td class="datatable-table-td text-start ps-2">
-                                <div>${first.Item}</div>
+                                <div>${first.Value}</div>
                             </td>
                             <td class="datatable-table-td" style="width: 160px;">
                                 <div class="${isDanger ? 'text-danger' : ''}">${first.Value} ${first.Init ? first.Init : ""}</div>
@@ -127,42 +145,17 @@ function createTableInner(data, sn) {
                 }
                     break;
                 default: {
-                    if (e.itemNum) {
-                        //為避免後端傳來的不是陣列，若不是陣列則先轉為陣列
-                        let arr = data[e.value];
-                        if (!Array.isArray(arr)) { arr = [data[e.value]] }
-
-                        const rows = data[e.value]?.length || 0;
-                        if (rows === 0) {
-                            html = '';
-                            break;
-                        }
-                        const first = data[e.value][0];
-                        html = `<tr>
-                                    <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
-                                    <td class="datatable-table-td datatable-table-sort">1</td>
-                                    <td class="datatable-table-td text-start" id="d-${e.value}" colspan="${e.colspan}" ${e.colspan ? `colspan="${e.colspan}"` : ""}>${first.value}</td>
-                                </tr>
-
-                            ${data[e.value]?.slice(1).map((item, i) => {
-                            return `<tr>
-                                             <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
-                                             <td class="datatable-table-td text-start" id="d-${e.value}" colspan="${e.colspan}" ${e.colspan ? `colspan="${e.colspan}"` : ""}>${item.value ?? nullString}</td>
-                                        </tr>`;
-                        }).join("")}
-                        `
-                    } else {
-                        html = `
-                            <tr>
-                                <td class="datatable-table-th">${e.text}</td>
-                                <td class="datatable-table-td" id="d-${e.value}" ${e.colspan ? `colspan="${e.colspan}"` : ""}>${data[e.value] ?? nullString}</td>
-                            </tr>`;
-                    }
+                    html = `
+                        <tr>
+                            <td class="datatable-table-th">${e.text}</td>
+                            <td class="datatable-table-td" id="d-${e.value}" ${colspan}>${data[e.value] ?? nullString}</td>
+                        </tr>`;
                 }
 
             }
         }
         return html;
+
     }).join("");
 
     function putImage(imgs) {
@@ -185,6 +178,33 @@ function createTableInner(data, sn) {
             return `<a href="${urls}" target="_blank">${urls.split('/').at(-1)}</a>`;
         }
         return nullString;
+    }
+
+    function getColspan(c) {
+        if (!c) {
+            return '';
+        }
+        if (c === true) {
+            return `colspan="3"`;
+        }
+        return `colspan="${c}"`;
+    }
+
+    function getItemNumCells({ sn, colspan, itemNum, data }) {
+        if (!Array.isArray(itemNum)) {
+            let value;
+            if (typeof itemNum === 'string') {
+                value = data[itemNum];
+            }
+            else {
+                value = data.value;
+            }
+            return `<td class="datatable-table-td text-start" ${colspan}>${value ?? nullString}</td>`
+        }
+        return itemNum.map((e, index) => {
+            const cellClass = index === 0 ? 'text-start' : 'text-center';
+            return `<td class="datatable-table-td ${cellClass}" ${colspan}>${data[e.value] ?? nullString}</td>`
+        }).join('')
     }
 }
 

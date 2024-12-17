@@ -19,7 +19,7 @@ function AddField(selector, data) {
             createInspectionTable({
                 id: `AddItemList`,
                 sn: [
-                    { text: "增設欄位名稱", value: "AddItemList", itemNum: true },
+                    { text: "增設欄位名稱", value: "AddItemList", itemNum: "Value" },
                 ],
                 data: data,
             })
@@ -32,7 +32,7 @@ function MaintainInfo(selector, data) {
             createInspectionTable({
                 id: `MaintainItemList`,
                 sn: [
-                    { text: "保養項目", value: "MaintainItemList", itemNum: true },
+                    { text: "保養項目", value: "MaintainItemList", itemNum: "Value" },
                 ],
                 data: data,
             })
@@ -46,7 +46,11 @@ function InspectionInfo(selector, data) {
             createTableInner(
                 data,
                 [
-                    { text: "巡檢頻率", value: "Frequency", colspan: true }
+                    {
+                        text: "巡檢頻率",
+                        value: "Frequency",
+                        colspan: true
+                    }
                 ]
             )
             : "",
@@ -55,7 +59,14 @@ function InspectionInfo(selector, data) {
         data.InspectItemList ?
             createTableInner(data,
                 [
-                    { text: "檢查項目", value: "InspectItemList", itemNum: true, colspan: "2" },
+                    {
+                        text: "檢查項目",
+                        value: "InspectItemList",
+                        itemNum: [
+                            { value: "Value" },
+                        ],
+                        colspan: true
+                    },
                 ]
             )
             : "",
@@ -64,7 +75,14 @@ function InspectionInfo(selector, data) {
         data.ReportItemList ?
             createTableInner(data,
                 [
-                    { text: "填報項目名稱/單位", value: "ReportItemList", type: "dualCol" },
+                    {
+                        text: "填報項目名稱/單位",
+                        value: "ReportItemList",
+                        itemNum: [
+                            { value: "Value" },
+                            { value: "Unit" },
+                        ],
+                    },
                 ]
             )
             : "",
