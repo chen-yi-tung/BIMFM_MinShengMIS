@@ -268,92 +268,91 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 產生下一個ID/SN
-        public string CreateNextID(string formatExpress, string latestID)
+        /// <summary>
+        /// 根據指定的格式表達式和最新 ID 生成下一個唯一 ID
+        /// </summary>
+        /// <param name="formatExpress">格式表達式</param>
+        /// <param name="latestID">最近一次使用的 ID</param>
+        /// <returns>新生成的 ID</returns>
+        public static string CreateNextID(string formatExpress, string latestID)
         {
             if (string.IsNullOrEmpty(formatExpress))
-                throw new ArgumentException("Format expression cannot be null or empty.", nameof(formatExpress));
+                throw new ArgumentException("格式表達式不能為空或 null。", nameof(formatExpress));
 
-            var stringBuilder = new StringBuilder();
-            try
+            var idBuilder = new StringBuilder();
+
+            for (int i = 0; i < formatExpress.Length; i++)
             {
-                for (int i = 0; i < formatExpress.Length; i++)
+                switch (formatExpress[i])
                 {
-                    char currentChar = formatExpress[i];
-
-                    if (currentChar == '!')
-                        i = ProcessDateFormat(formatExpress, stringBuilder, i);
-                    else if (currentChar == '%')
-                        i = ProcessSequence(formatExpress, stringBuilder, latestID, i);
-                    else
-                        stringBuilder.Append(currentChar);
+                    case '!':
+                        i = AppendDateFormat(formatExpress, idBuilder, ref i);
+                        break;
+                    case '%':
+                        i = AppendSequence(formatExpress, idBuilder, latestID, ref i);
+                        break;
+                    default:
+                        idBuilder.Append(formatExpress[i]);
+                        break;
                 }
+            }
 
-                return stringBuilder.ToString();
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("An error occurred while generating the next ID.", ex);
-            }
+            return idBuilder.ToString();
         }
 
-        private int ProcessDateFormat(string formatExpress, StringBuilder stringBuilder, int index)
+        /// <summary>
+        /// 處理日期格式佔位符
+        /// </summary>
+        private static int AppendDateFormat(string formatExpress, StringBuilder idBuilder, ref int index)
         {
             int endIndex = formatExpress.IndexOf('}', index);
             if (endIndex == -1)
-                throw new FormatException("Invalid date format in the expression.");
+                throw new FormatException("日期格式表達式無效");
 
             string dateFormat = formatExpress.Substring(index + 2, endIndex - index - 2);
-            string dateValue = DateTime.Now.ToString(dateFormat);
-            stringBuilder.Append(dateValue);
-
+            idBuilder.Append(DateTime.Now.ToString(dateFormat));
             return endIndex;
         }
 
-        private int ProcessSequence(string formatExpress, StringBuilder stringBuilder, string latestID, int index)
+        /// <summary>
+        /// 處理序列號佔位符
+        /// </summary>
+        private static int AppendSequence(string formatExpress, StringBuilder idBuilder, string latestID, ref int index)
         {
             int endIndex = formatExpress.IndexOf('}', index);
             if (endIndex == -1)
-                throw new FormatException("Invalid sequence format in the expression.");
+                throw new FormatException("序列號格式表達式無效");
 
             string sequenceLengthText = formatExpress.Substring(index + 2, endIndex - index - 2);
             if (!int.TryParse(sequenceLengthText, out int sequenceLength))
-                throw new FormatException("Invalid sequence length format in the expression.");
+                throw new FormatException("序列號長度格式無效");
 
-            string nextSequence = GenerateNextSequence(stringBuilder, latestID, sequenceLength);
-            stringBuilder.Append(nextSequence);
+            string currentDatePart = idBuilder.ToString();
+            string nextSequence = GenerateNextSequence(currentDatePart, latestID, sequenceLength);
 
+            idBuilder.Append(nextSequence);
             return endIndex;
         }
 
-        //private string GenerateNextSequence(StringBuilder stringBuilder, string latestID, int sequenceLength)
-        //{
-        //    if (string.IsNullOrEmpty(latestID))
-        //        return new string('0', sequenceLength);
-
-        //    int currentIndex = stringBuilder.Length;
-        //    if (currentIndex + sequenceLength > latestID.Length)
-        //        throw new InvalidOperationException("The format is inconsistent with the latest ID.");
-
-        //    string sequenceSubstring = latestID.Substring(currentIndex, sequenceLength);
-        //    if (!int.TryParse(sequenceSubstring, out int sequenceNumber))
-        //        throw new InvalidOperationException("Failed to parse the sequence from the latest ID.");
-
-        //    sequenceNumber++;
-        //    return sequenceNumber.ToString().PadLeft(sequenceLength, '0');
-        //}
-        private string GenerateNextSequence(StringBuilder stringBuilder, string latestID, int sequenceLength)
+        /// <summary>
+        /// 生成下一個序列號，支持按日期重置
+        /// </summary>
+        private static string GenerateNextSequence(string currentDatePart, string latestID, int sequenceLength)
         {
-            if (string.IsNullOrEmpty(latestID))
-                return new string('0', sequenceLength);
+            // 如果沒有最近的 ID 或日期部分不同，重置為 1
+            if (string.IsNullOrEmpty(latestID) || !latestID.StartsWith(currentDatePart))
+            {
+                return "1".PadLeft(sequenceLength, '0');
+            }
 
-            // 直接遞增最後 sequenceLength 位數字
-            string lastSequence = latestID.Substring(latestID.Length - sequenceLength);
+            // 提取並遞增序列號
+            string sequencePart = latestID.Substring(currentDatePart.Length, sequenceLength);
 
-            if (!long.TryParse(lastSequence, out long sequenceNumber))
-                throw new InvalidOperationException("Failed to parse the sequence from the latest ID.");
+            if (!int.TryParse(sequencePart, out int currentSequence))
+                throw new FormatException("最近的 ID 中序列號格式無效");
 
-            sequenceNumber++;
-            return sequenceNumber.ToString().PadLeft(sequenceLength, '0');
+            int nextSequence = currentSequence + 1;
+            return nextSequence.ToString().PadLeft(sequenceLength, '0');
         }
         #endregion
 

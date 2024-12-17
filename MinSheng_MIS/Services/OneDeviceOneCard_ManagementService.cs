@@ -20,7 +20,7 @@ namespace MinSheng_MIS.Services
         }
 
         #region 新增一機一卡模板
-        public async Task<string> CreateDeviceCardAsync(IUpdateDeviceCard data)
+        public async Task<string> CreateOneDeviceOneCardAsync(IUpdateDeviceCard data)
         {
             // 資料驗證
             DeviceCardDataAnnotation(data);
@@ -80,6 +80,100 @@ namespace MinSheng_MIS.Services
             // 建立 Template_CheckItem
             await AddRangeReportItemAsync(data);
         }
+        #endregion
+
+        #region 獲取一機一卡詳情
+        public void GetOneDeviceOneCard(string TSN, IDeviceCardDetail data)
+        {
+            var template = _db.Template_OneDeviceOneCard.Find(TSN)
+                ?? throw new MyCusResException("查無資料!");
+
+            data.TSN = template.TSN;
+            data.SampleName = template.SampleName;
+            data.Frequency = template.Frequency;
+        }
+        #endregion
+
+        #region 獲取增設基本資料欄位
+        public async Task<List<IAddFieldDetail>> GetAddFieldListAsync(string TSN)
+        {
+            var result = await _db.Template_AddField.Where(x => x.TSN == TSN)
+                .Select(x => new AddFieldDetailModel
+                {
+                    AFSN = x.AFSN,
+                    Value = x.FieldName,
+                }).ToListAsync();
+
+            return result.Cast<IAddFieldDetail>().ToList();
+        }
+        #endregion
+
+        #region 獲取保養項目
+        public async Task<List<IMaintainItemDetail>> GetMaintainItemListAsync(string TSN)
+        {
+            var result = await _db.Template_MaintainItemSetting.Where(x => x.TSN == TSN)
+                .Select(x => new MaintainItemDetailModel
+                {
+                    MISSN = x.MISSN,
+                    Value = x.MaintainName,
+                }).ToListAsync();
+
+            return result.Cast<IMaintainItemDetail>().ToList();
+        }
+        #endregion
+
+        #region 獲取檢查項目
+        public async Task<List<ICheckItemDetail>> GetCheckItemDetailListAsync(string TSN)
+        {
+            var result = await _db.Template_CheckItem.Where(x => x.TSN == TSN)
+                .Select(x => new CheckItemDetailModel
+                {
+                    CISN = x.CISN,
+                    Value = x.CheckItemName,
+                }).ToListAsync();
+
+            return result.Cast<ICheckItemDetail>().ToList();
+        }
+        #endregion
+
+        #region 獲取填報項目名稱/單位
+        public async Task<List<IReportItemDetail>> GetReportItemDetailListAsync(string TSN)
+        {
+            var result = await _db.Template_ReportingItem.Where(x => x.TSN == TSN)
+                .Select(x => new ReportItemDetailModel 
+                { 
+                    RISN = x.RISN, 
+                    Value = x.ReportingItemName, 
+                    Unit = x.Unit 
+                }).ToListAsync();
+
+            return result.Cast<IReportItemDetail>().ToList();
+        }
+        #endregion
+
+        #region 刪除一機一卡模板 TODO
+        #endregion
+
+        #region 批次刪除增設基本資料欄位 TODO
+        public async Task DeleteAddFieldListAsync(IDeleteAddFieldList data)
+        {
+            // 刪除 Template_AddField
+        }
+        #endregion
+
+        #region 批次刪除保養項目設定 TODO
+        #endregion
+
+        #region 批次刪除保養項目設定相關待派工及待執行的定期保養單 TODO
+        #endregion
+
+        #region 批次刪除檢查項目 TODO
+        #endregion
+
+        #region 批次刪除填報項目 TODO
+        #endregion
+
+        #region 批次刪除使用該模板之設備待執行工單 TODO
         #endregion
 
         //-----資料驗證
@@ -156,8 +250,8 @@ namespace MinSheng_MIS.Services
             var latest = await _db.Template_OneDeviceOneCard.OrderByDescending(x => x.TSN).FirstOrDefaultAsync();
             // SN碼
             return latest == null ?
-                _cFunc.CreateNextID(format, emptySN) :
-                _cFunc.CreateNextID(format, latest.TSN);
+                ComFunc.CreateNextID(format, emptySN) :
+                ComFunc.CreateNextID(format, latest.TSN);
         }
         #endregion
 
@@ -186,8 +280,8 @@ namespace MinSheng_MIS.Services
 
             // SN碼
             return latestId == null ?
-                _cFunc.CreateNextID(format, emptySN) :
-                _cFunc.CreateNextID(format, latestId);
+                ComFunc.CreateNextID(format, emptySN) :
+                ComFunc.CreateNextID(format, latestId);
         }
         #endregion
 
@@ -318,19 +412,6 @@ namespace MinSheng_MIS.Services
         private bool ListItemDuplicated(IEnumerable<string> list)
         {
             return list.Count() != list.Distinct().Count();
-        }
-
-        /// <summary>
-        /// 檢查List中各item長度
-        /// </summary>
-        /// <param name="list">來源List</param>
-        /// <param name="max">長度上限(僅接受正整數，可null)</param>
-        /// <param name="min">長度下限(僅接受正整數，預設0)</param>
-        /// <returns></returns>
-        private bool ListItemLength(IEnumerable<string> list, uint? max, uint min = 0)
-        {
-            // 如果 max 是 null，表示沒有上限，只檢查下限
-            return list.All(item => item.Length >= min && (!max.HasValue || item.Length <= max.Value));
         }
         #endregion
     }

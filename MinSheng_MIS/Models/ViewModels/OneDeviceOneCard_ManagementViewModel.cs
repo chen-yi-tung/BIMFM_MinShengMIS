@@ -5,7 +5,7 @@ using System.Linq;
 namespace MinSheng_MIS.Models.ViewModels
 {
     #region 一機一卡-新增
-    public class DeviceCardCreateModel : UpdateDeviceCard
+    public class DeviceCardCreateViewModel : UpdateDeviceCard
     {
         public List<CreateAddFieldModel> AddItemList { get; set; } // 增設基本資料欄位
         public List<CreateMaintainItemModel> MaintainItemList { get; set; } // 保養項目
@@ -84,49 +84,96 @@ namespace MinSheng_MIS.Models.ViewModels
         }
         #endregion
     }
+
+    public class CreateAddFieldModel : IAddFieldName
+    {
+        [Required]
+        [StringLength(20, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "增設基本資料欄位名稱")]
+        public string Value { get; set; } // 欄位名稱
+    }
+
+    public class CreateMaintainItemModel : IMaintainItemName
+    {
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "保養項目名稱")]
+        public string Value { get; set; } // 保養項目名稱
+    }
+
+    public class CreateCheckItemModel : ICheckItemName
+    {
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "檢查項目名稱")]
+        public string Value { get; set; } // 檢查項目名稱
+    }
+
+    public class CreateReportItemModel : IReportItem
+    {
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "填報項目名稱")]
+        public string Value { get; set; } // 填報項目名稱
+        [Required]
+        [StringLength(20, ErrorMessage = "{0} 的長度最多20個字元。")]
+        [Display(Name = "單位")]
+        public string Unit { get; set; } // 填報項目單位
+    }
     #endregion
 
     #region 一機一卡-詳情
+    public class DeviceCardDetailViewModel : IDeviceCardDetail
+    {
+        public string TSN { get; set; } // 一機一卡模板編號
+        public string SampleName { get; set; } // 模板名稱
+        public int? Frequency { get; set; } // 巡檢頻率
+        public List<IAddFieldDetail> AddItemList { get; set; } // 增設基本資料欄位
+        public List<IMaintainItemDetail> MaintainItemList { get; set; }  // 保養項目
+        public List<ICheckItemDetail> CheckItemList { get; set; } // 檢查項目
+        public List<IReportItemDetail> ReportItemList { get; set; } // 填報項目名稱/單位
+    }
+
+    public class DeviceCardDetailModel : IDeviceCardDetail
+    {
+        public string TSN { get; set; } // 一機一卡模板編號
+        public string SampleName { get; set; } // 模板名稱
+        public int? Frequency { get; set; } // 巡檢頻率
+    }
+
     /// <summary>
     /// 增設基本資料欄位
     /// </summary>
-    public class AddFieldViewModel
+    public class AddFieldDetailModel : IAddFieldDetail
     {
-        public string SN { get; set; }
-        public string Value { get; set; }
+        public string AFSN { get; set; } // 模板增設欄位編號
+        public string Value { get; set; } // 欄位名稱
     }
 
     /// <summary>
-    /// 保養資訊(與設備的一機一卡資訊共用)
+    /// 保養資訊
     /// </summary>
-    public class MaintainItemViewModel
+    public class MaintainItemDetailModel : IMaintainItemDetail
     {
-        public string SN { get; set; }
-        public string Item { get; set; }
-        public string Value { get; set; }
-    }
-    /// <summary>
-    /// 巡檢資訊(與設備的一機一卡資訊共用)
-    /// </summary>
-    public class InspectionViewModel
-    {
-        public string Frequency { get; set; }
-        public List<InspectionItemViewModel> InspectionItems { get; set; }
-        public List<ReportItemViewModel> ReportItems { get; set; }
+        public string MISSN { get; set; } // 模板保養編號
+        public string Value { get; set; } // 保養項目名稱
     }
 
-    public class InspectionItemViewModel
+    public class CheckItemDetailModel : ICheckItemDetail
     {
-        public string SN { get; set; }
-        public string Value { get; set; }
+        public string CISN { get; set; } // 模板檢查項目編號
+        public string Value { get; set; } // 檢查項目名稱
     }
 
-    public class ReportItemViewModel
+    public class ReportItemDetailModel : IReportItemDetail
     {
-        public string SN { get; set; }
-        public string Item { get; set; }
-        public string Value { get; set; }
+        public string RISN { get; set; } // 模板填報項目編號
+        public string Value { get; set; } // 填報項目名稱
+        public string Unit { get; set; } // 填報項目單位
     }
+    #endregion
+
+    #region 一機一卡-刪除
     #endregion
 
     #region OneDeviceOneCard 一機一卡
@@ -136,7 +183,10 @@ namespace MinSheng_MIS.Models.ViewModels
         int? Frequency { get; set; } // 巡檢頻率
     }
 
-    public interface ICreateDeviceCard : IDeviceCard { }
+    public interface IDeviceCardDetail : IDeviceCard
+    {
+        string TSN { get; set; } // 一機一卡模板編號
+    }
 
     public interface IUpdateDeviceCard : IDeviceCard { }
 
@@ -156,23 +206,20 @@ namespace MinSheng_MIS.Models.ViewModels
         string Value { get; set; } // 欄位名稱
     }
 
-    public class CreateAddFieldModel : IAddFieldName
+    public interface IAddFieldDetail : IAddFieldName
     {
-        [Required]
-        [StringLength(20, ErrorMessage = "{0} 的長度最多{1}個字元。")]
-        [Display(Name = "增設基本資料欄位名稱")]
-        public string Value { get; set; } // 欄位名稱
+        string AFSN { get; set; } // 模板增設欄位編號
     }
-
-    //public interface ICreateAddFieldList
-    //{
-    //    List<CreateAddFieldModel> AddItemList { get; set; } // 增設基本資料欄位
-    //}
 
     public interface IUpdateAddFieldList
     {
         string TSN { get; set; } // 一機一卡模板編號
         IEnumerable<string> AFNameList { get; set ; } // 增設基本資料欄位名稱列表
+    }
+
+    public interface IDeleteAddFieldList
+    {
+        IEnumerable<string> AFSN { get; set; } // 模板增設欄位編號
     }
     #endregion
 
@@ -182,23 +229,20 @@ namespace MinSheng_MIS.Models.ViewModels
         string Value { get; set; } // 保養項目名稱
     }
 
-    public class CreateMaintainItemModel : IMaintainItemName
+    public interface IMaintainItemDetail : IMaintainItemName
     {
-        [Required]
-        [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
-        [Display(Name = "保養項目名稱")]
-        public string Value { get; set; } // 保養項目名稱
+        string MISSN { get; set; } // 模板保養編號
     }
-
-    //public interface ICreateMaintainItemList
-    //{
-    //    List<CreateMaintainItemModel> MaintainItemList { get; set; } // 保養項目
-    //}
 
     public interface IUpdateMaintainItemList
     {
         string TSN { get; set; } // 一機一卡模板編號
         IEnumerable<string> MINameList { get; set; } // 保養項目名稱列表
+    }
+
+    public interface IDeleteMaintainItemList
+    {
+        IEnumerable<string> MISSN { get; set; } // 模板保養編號
     }
     #endregion
 
@@ -208,18 +252,10 @@ namespace MinSheng_MIS.Models.ViewModels
         string Value { get; set; } // 檢查項目名稱
     }
 
-    public class CreateCheckItemModel : ICheckItemName
+    public interface ICheckItemDetail : ICheckItemName
     {
-        [Required]
-        [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
-        [Display(Name = "檢查項目名稱")]
-        public string Value { get; set; } // 檢查項目名稱
+        string CISN { get; set; } // 模板檢查項目編號
     }
-
-    //public interface ICreateCheckItemList
-    //{
-    //    List<CreateCheckItemModel> CheckItemList { get; set; } // 檢查項目名稱
-    //}
 
     public interface IUpdateCheckItemList
     {
@@ -236,26 +272,13 @@ namespace MinSheng_MIS.Models.ViewModels
         string Unit { get; set; } // 填報項目單位
     }
 
-    public class CreateReportItemModel : IReportItem
+    public interface IReportItemDetail : IReportItem
     {
-        [Required]
-        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
-        [Display(Name = "填報項目名稱")]
-        public string Value { get; set; } // 填報項目名稱
-        [Required]
-        [StringLength(20, ErrorMessage = "{0} 的長度最多20個字元。")]
-        [Display(Name = "單位")]
-        public string Unit { get; set; } // 填報項目單位
+        string RISN { get; set; } // 模板填報項目編號
     }
-
-    //public interface ICreateReportItemList
-    //{
-    //    List<CreateReportItemModel> ReportItemList { get; set; } // 填報項目
-    //}
 
     public class UpdateReportItemModel
     {
-
         public string RIName { get; set; } // 填報項目名稱
 
         public string Unit { get; set; } // 單位

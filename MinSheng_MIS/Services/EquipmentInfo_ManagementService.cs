@@ -141,8 +141,8 @@ namespace MinSheng_MIS.Services
             var latestInfo = await _db.EquipmentInfo.OrderByDescending(x => x.ESN).FirstOrDefaultAsync();
             // SN碼
             return latestInfo == null ?
-                _cFunc.CreateNextID("E!{yyMMdd}%{5}", "000000000000") :
-                _cFunc.CreateNextID("E!{yyMMdd}%{5}", latestInfo.ESN);
+                ComFunc.CreateNextID("E!{yyMMdd}%{5}", "000000000000") :
+                ComFunc.CreateNextID("E!{yyMMdd}%{5}", latestInfo.ESN);
         }
         #endregion
 

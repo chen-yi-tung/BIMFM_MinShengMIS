@@ -59,9 +59,9 @@
 
 @section scripts {
     <script>
-        const IPRSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${IPRSN}`;
-        let apiUrl = null;
+        const TSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "OneDeviceOneCard_Management")' + `/${TSN}`; 
+        //let apiUrl = null;
 
         $(async function () {
             readData(apiUrl);
@@ -185,7 +185,7 @@
             }
         }
 
-        
+
 
     </script>
 }

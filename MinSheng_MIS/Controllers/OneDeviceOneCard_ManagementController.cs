@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace MinSheng_MIS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateDeviceCard(DeviceCardCreateModel data)
+        public async Task<ActionResult> CreateDeviceCard(DeviceCardCreateViewModel data)
         {
             try
             {
@@ -41,7 +42,7 @@ namespace MinSheng_MIS.Controllers
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
                 // 建立 Template_OneDeviceOneCard
-                string tsn = await _dCardService.CreateDeviceCardAsync(data);
+                string tsn = await _dCardService.CreateOneDeviceOneCardAsync(data);
                 if (data.Frequency.HasValue && data.CheckItemList?.Any() != true && data.ReportItemList?.Any() != true)
                     throw new MyCusResException("請至少填入一筆檢查項目或填報項目!");
 
@@ -71,12 +72,12 @@ namespace MinSheng_MIS.Controllers
             }
             catch (Exception)
             {
-                return Content("系統異常!", "application/json; charset=utf-8");
+                return Content("</br>系統異常!", "application/json; charset=utf-8");
             }
         }
         #endregion
 
-        #region 編輯 一機一卡模板
+        #region 編輯 一機一卡模板 TODO
         public ActionResult Edit()
         {
             return View();
@@ -84,9 +85,38 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 一機一卡模板 詳情
-        public ActionResult Detail()
-        {
+        public ActionResult Detail(string id)
+		{
+            ViewBag.id = id;
             return View();
+		}
+
+        public async Task<ActionResult> ReadBody(string id)
+        {
+            try
+            {
+                var deviceCard = new DeviceCardDetailViewModel();
+                // 獲取一機一卡詳情
+                _dCardService.GetOneDeviceOneCard(id, deviceCard);
+                // 獲取增設基本資料欄位
+                deviceCard.AddItemList = await _dCardService.GetAddFieldListAsync(id);
+                // 獲取保養項目
+                deviceCard.MaintainItemList = await _dCardService.GetMaintainItemListAsync(id);
+                // 獲取檢查項目
+                deviceCard.CheckItemList = await _dCardService.GetCheckItemDetailListAsync(id);
+                // 獲取填報項目名稱/單位
+                deviceCard.ReportItemList = await _dCardService.GetReportItemDetailListAsync(id);
+
+                return Content(JsonConvert.SerializeObject(deviceCard), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
+            }
+            catch (Exception)
+            {
+                return Content("</br>系統異常!", "application/json; charset=utf-8");
+            }
         }
         #endregion
 
@@ -94,6 +124,12 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Delete()
         {
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult DeleteDeviceCard(string id)
+        {
+            return Content("Succeed");
         }
         #endregion
 
