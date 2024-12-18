@@ -12,14 +12,14 @@ namespace MinSheng_MIS.Models.ViewModels
         public List<CreateCheckItemModel> CheckItemList { get; set; } // 檢查項目
         public List<CreateReportItemModel> ReportItemList { get; set; } // 填報項目名稱/單位
 
-        #region Implement IUpdateAddFieldList
-        private class UpdateAddFieldListInstance : IUpdateAddFieldList
+        #region Implement ICreateAddFieldList
+        private class UpdateAddFieldListInstance : ICreateAddFieldList
         {
             public string TSN { get; set; }
             public IEnumerable<string> AFNameList { get; set; } // 增設基本資料欄位
         }
 
-        internal IUpdateAddFieldList ConvertToUpdateAddFieldList(string tsn)
+        internal ICreateAddFieldList ConvertToUpdateAddFieldList(string tsn)
         {
             return new UpdateAddFieldListInstance
             {
@@ -29,14 +29,14 @@ namespace MinSheng_MIS.Models.ViewModels
         }
         #endregion
 
-        #region Implement IUpdateMaintainItemList
-        private class UpdateMaintainItemListInstance : IUpdateMaintainItemList
+        #region Implement ICreateMaintainItemList
+        private class UpdateMaintainItemListInstance : ICreateMaintainItemList
         {
             public string TSN { get; set; }
             public IEnumerable<string> MINameList { get; set; } // 保養項目名稱列表
         }
 
-        internal IUpdateMaintainItemList ConvertToUpdateMaintainItemList(string tsn)
+        internal ICreateMaintainItemList ConvertToUpdateMaintainItemList(string tsn)
         {
             return new UpdateMaintainItemListInstance
             {
@@ -46,15 +46,15 @@ namespace MinSheng_MIS.Models.ViewModels
         }
         #endregion
 
-        #region Implement IUpdateCheckItemList
-        private class UpdateCheckItemListInstance : IUpdateCheckItemList
+        #region Implement ICreateCheckItemList
+        private class UpdateCheckItemListInstance : ICreateCheckItemList
         {
             public string TSN { get; set; }
             public int? Frequency { get; set; }
             public IEnumerable<string> CINameList { get; set; } // 檢查項目名稱列表
         }
 
-        internal IUpdateCheckItemList ConvertToUpdateCheckItemList(string tsn)
+        internal ICreateCheckItemList ConvertToUpdateCheckItemList(string tsn)
         {
             return new UpdateCheckItemListInstance
             {
@@ -65,15 +65,15 @@ namespace MinSheng_MIS.Models.ViewModels
         }
         #endregion
 
-        #region Implement IUpdateReportItemList
-        private class UpdateReportItemListInstance : IUpdateReportItemList
+        #region Implement ICreateReportItemList
+        private class UpdateReportItemListInstance : ICreateReportItemList
         {
             public string TSN { get; set; }
             public int? Frequency { get; set; }
             public IEnumerable<UpdateReportItemModel> RIList { get; set; } // 填報項目列表
         }
 
-        internal IUpdateReportItemList ConvertToUpdateReportItemList(string tsn)
+        internal ICreateReportItemList ConvertToUpdateReportItemList(string tsn)
         {
             return new UpdateReportItemListInstance
             {
@@ -214,6 +214,7 @@ namespace MinSheng_MIS.Models.ViewModels
     }
     #endregion
 
+    //-----Interface & Abstract class
     #region OneDeviceOneCard 一機一卡
     public interface IDeviceCard
     {
@@ -249,10 +250,16 @@ namespace MinSheng_MIS.Models.ViewModels
         string AFSN { get; set; } // 模板增設欄位編號
     }
 
-    public interface IUpdateAddFieldList
+    public interface ICreateAddFieldList
     {
         string TSN { get; set; } // 一機一卡模板編號
         IEnumerable<string> AFNameList { get; set ; } // 增設基本資料欄位名稱列表
+    }
+
+    public interface IUpdateAddFieldList
+    {
+        string TSN { get; set; }
+        IEnumerable<AddFieldDetailModel> AddItemList { get; set; }
     }
 
     public interface IDeleteAddFieldList
@@ -272,7 +279,7 @@ namespace MinSheng_MIS.Models.ViewModels
         string MISSN { get; set; } // 模板保養編號
     }
 
-    public interface IUpdateMaintainItemList
+    public interface ICreateMaintainItemList
     {
         string TSN { get; set; } // 一機一卡模板編號
         IEnumerable<string> MINameList { get; set; } // 保養項目名稱列表
@@ -295,7 +302,7 @@ namespace MinSheng_MIS.Models.ViewModels
         string CISN { get; set; } // 模板檢查項目編號
     }
 
-    public interface IUpdateCheckItemList
+    public interface ICreateCheckItemList
     {
         string TSN { get; set; } // 一機一卡模板編號
         int? Frequency { get; set; } // 巡檢頻率
@@ -327,7 +334,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Unit { get; set; } // 單位
     }
 
-    public interface IUpdateReportItemList
+    public interface ICreateReportItemList
     {
         string TSN { get; set; } // 一機一卡模板編號
         int? Frequency { get; set; } // 巡檢頻率

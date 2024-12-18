@@ -41,7 +41,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 批次新增增設基本資料欄位
-        public async Task CreateAddFieldListAsync(IUpdateAddFieldList data)
+        public async Task CreateAddFieldListAsync(ICreateAddFieldList data)
         {
             // 資料驗證
             await AddFieldDataAnnotationAsync(data);
@@ -52,7 +52,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 批次新增保養項目設定
-        public async Task CreateMaintainItemListAsync(IUpdateMaintainItemList data)
+        public async Task CreateMaintainItemListAsync(ICreateMaintainItemList data)
         {
             // 資料驗證
             await MaintainItemDataAnnotationAsync(data);
@@ -63,7 +63,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 批次新增檢查項目
-        public async Task CreateCheckItemListAsync(IUpdateCheckItemList data)
+        public async Task CreateCheckItemListAsync(ICreateCheckItemList data)
         {
             // 資料驗證
             await CheckItemDataAnnotationAsync(data);
@@ -74,7 +74,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 批次新增填報項目
-        public async Task CreateReportItemListAsync(IUpdateReportItemList data)
+        public async Task CreateReportItemListAsync(ICreateReportItemList data)
         {
             // 資料驗證
             await ReportItemDataAnnotationAsync(data);
@@ -84,15 +84,16 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 獲取一機一卡詳情
-        public void GetOneDeviceOneCard(string TSN, IDeviceCardDetail data)
+        #region 更新增設基本資料欄位 TODO
+        #endregion
+
+        #region 獲取一機一卡模板
+        public async Task<T> GetOneDeviceOneCardAsync<T>(string TSN) where T : class, new()
         {
-            var template = _db.Template_OneDeviceOneCard.Find(TSN)
+            var template = await _db.Template_OneDeviceOneCard.FindAsync(TSN)
                 ?? throw new MyCusResException("查無資料!");
 
-            data.TSN = template.TSN;
-            data.SampleName = template.SampleName;
-            data.Frequency = template.Frequency;
+            return template.ToDto<Template_OneDeviceOneCard, T>();
         }
         #endregion
 
@@ -110,7 +111,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 獲取保養項目
+        #region 獲取保養項目列表
         public async Task<List<IMaintainItemDetail>> GetMaintainItemListAsync(string TSN)
         {
             var result = await _db.Template_MaintainItemSetting.Where(x => x.TSN == TSN)
@@ -124,7 +125,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 獲取檢查項目
+        #region 獲取檢查項目列表
         public async Task<List<ICheckItemDetail>> GetCheckItemDetailListAsync(string TSN)
         {
             var result = await _db.Template_CheckItem.Where(x => x.TSN == TSN)
@@ -138,7 +139,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 獲取填報項目名稱/單位
+        #region 獲取填報項目列表
         public async Task<List<IReportItemDetail>> GetReportItemDetailListAsync(string TSN)
         {
             var result = await _db.Template_ReportingItem.Where(x => x.TSN == TSN)
@@ -257,7 +258,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region AddField資料驗證
-        private async Task AddFieldDataAnnotationAsync(IUpdateAddFieldList data)
+        private async Task AddFieldDataAnnotationAsync(ICreateAddFieldList data)
         {
             // 驗證新增設基本欄位
             ValidateList(data.AFNameList, "增設基本欄位", 100);
@@ -268,7 +269,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region MaintainItem資料驗證
-        private async Task MaintainItemDataAnnotationAsync(IUpdateMaintainItemList data)
+        private async Task MaintainItemDataAnnotationAsync(ICreateMaintainItemList data)
         {
             // 驗證新增設基本欄位
             ValidateList(data.MINameList, "保養項目", 100);
@@ -279,7 +280,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region CheckItem資料驗證
-        private async Task CheckItemDataAnnotationAsync(IUpdateCheckItemList data)
+        private async Task CheckItemDataAnnotationAsync(ICreateCheckItemList data)
         {
             // 當檢查項目不為空，則檢查頻率為必填
             if (data.Frequency == null)
@@ -293,7 +294,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region ReportItem資料驗證
-        private async Task ReportItemDataAnnotationAsync(IUpdateReportItemList data)
+        private async Task ReportItemDataAnnotationAsync(ICreateReportItemList data)
         {
             // 當填報項目不為空，則檢查頻率為必填
             if (data.Frequency == null)
@@ -363,7 +364,7 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡基本資料欄位名稱列表及一機一卡模板編碼(TSN)</param>
         /// <returns>無回傳</returns>
-        private async Task AddRangeAddFieldAsync(IUpdateAddFieldList data)
+        private async Task AddRangeAddFieldAsync(ICreateAddFieldList data)
         {
             // Fetch最後一個Id
             string latestId = await GetLatestIdWithSameTsnAsync(data.TSN, _db.Template_AddField, "AFSN");
@@ -389,7 +390,7 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡保養項目名稱列表及一機一卡模板編碼(TSN)</param>
         /// <returns>無回傳</returns>
-        private async Task AddRangeMaintainItemAsync(IUpdateMaintainItemList data)
+        private async Task AddRangeMaintainItemAsync(ICreateMaintainItemList data)
         {
             // Fetch最後一個Id
             string latestId = await GetLatestIdWithSameTsnAsync(data.TSN, _db.Template_MaintainItemSetting, "MISSN");
@@ -415,7 +416,7 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡檢查項目名稱列表及一機一卡模板編碼(TSN)</param>
         /// <returns>無回傳</returns>
-        private async Task AddRangeCheckItemAsync(IUpdateCheckItemList data)
+        private async Task AddRangeCheckItemAsync(ICreateCheckItemList data)
         {
             // 只調用一次 GetLatestIdWithSameTsnAsync
             string latestId = await GetLatestIdWithSameTsnAsync(data.TSN, _db.Template_CheckItem, "CISN");
@@ -441,7 +442,7 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡填報項目列表(包含名稱及單位)及一機一卡模板編碼(TSN)</param>
         /// <returns>無回傳</returns>
-        private async Task AddRangeReportItemAsync(IUpdateReportItemList data)
+        private async Task AddRangeReportItemAsync(ICreateReportItemList data)
         {
             // Fetch最後一個Id
             string latestId = await GetLatestIdWithSameTsnAsync(data.TSN, _db.Template_ReportingItem, "RISN");

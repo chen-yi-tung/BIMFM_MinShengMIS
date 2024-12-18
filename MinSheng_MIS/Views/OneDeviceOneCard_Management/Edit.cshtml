@@ -114,9 +114,9 @@
     <script>
         var labelItems = new LabelItems()
         const TSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${TSN}`;
-        //let AskEquipmentApiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${TSN}`;
-        let apiUrl = null;
+        let apiUrl = '@Url.Action("ReadBody", "OneDeviceOneCard_Management")' + `/${TSN}`;
+        let AskEquipmentApiUrl = '@Url.Action("GetEquipmentsUsingTemplate", "OneDeviceOneCard_Management")?TSN=' + TSN;
+        //let apiUrl = null;
 
         $(async function () {
             observeChildChanges();
@@ -161,7 +161,7 @@
                 },
             ],
             Frequency: "2",
-            InspectItemList: [
+            CheckItemList: [
                 {
                     CISN: "CI001",
                     Value: "馬達是否正常運轉",
@@ -283,7 +283,7 @@
                 const areas = {
                     AddItemList: "AddItemsArea",
                     MaintainItemList: "MaintainItemsArea",
-                    InspectItemList: "InspectItemsArea",
+                    CheckItemList: "InspectItemsArea",
                     ReportItemList: "ReportItemsArea"
                 };
 
@@ -448,7 +448,7 @@
 
                 let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
                 if (!isValidity) return;
-            } 
+            }
             const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
             modal.hide();
 
@@ -672,12 +672,19 @@
                         error: onError
                     })
 
-                    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
-                    modal.show();
+                    function onSuccess(res) {
+                        console.log(res);
 
-                    //加入新項目
-                    ShowEquipment("#EquipmentZone", EquipmentData, newAddValues)
-                    return true;
+                        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
+                        modal.show();
+
+                        //加入新項目
+                        ShowEquipment("#EquipmentZone", res, newAddValues)
+                        return true;
+                    }
+                    function onError(res) {
+                        console.log(res);
+                    }
                 }
                 return false;
             }

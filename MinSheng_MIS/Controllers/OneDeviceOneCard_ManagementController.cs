@@ -3,6 +3,7 @@ using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -13,11 +14,13 @@ namespace MinSheng_MIS.Controllers
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly OneDeviceOneCard_ManagementService _dCardService;
+        private readonly EquipmentInfo_ManagementService _eMgmtService;
 
         public OneDeviceOneCard_ManagementController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
             _dCardService = new OneDeviceOneCard_ManagementService(_db);
+            _eMgmtService = new EquipmentInfo_ManagementService(_db);
         }
 
         #region 一機一卡模板 管理
@@ -78,9 +81,37 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 一機一卡模板 編輯 TODO
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+
+        public async Task<ActionResult> GetEquipmentsUsingTemplate(string TSN)
+        {
+            try
+            {
+                var template = await _db.Template_OneDeviceOneCard.FindAsync(TSN)
+                    ?? throw new MyCusResException("查無資料!");
+
+                //List<EquipmentInfoDetailModel> result = new List<EquipmentInfoDetailModel>();
+                //foreach (var e in template.EquipmentInfo)
+                //    result.Add(
+                //        await _eMgmtService.GetEquipmentInfoAsync<EquipmentInfoDetailModel>(e.ESN));
+
+                var result = await Task.WhenAll(template.EquipmentInfo.Select(async e =>
+                    await _eMgmtService.GetEquipmentInfoAsync<EquipmentInfoDetailModel>(e.ESN)));
+
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
+            }
+            catch (Exception)
+            {
+                return Content("</br>系統異常!", "application/json; charset=utf-8");
+            }
         }
         #endregion
 
@@ -95,9 +126,8 @@ namespace MinSheng_MIS.Controllers
         {
             try
             {
-                var deviceCard = new DeviceCardDetailViewModel();
                 // 獲取一機一卡詳情
-                _dCardService.GetOneDeviceOneCard(id, deviceCard);
+                DeviceCardDetailViewModel deviceCard = await _dCardService.GetOneDeviceOneCardAsync<DeviceCardDetailViewModel>(id);
                 // 獲取增設基本資料欄位
                 deviceCard.AddItemList = await _dCardService.GetAddFieldListAsync(id);
                 // 獲取保養項目

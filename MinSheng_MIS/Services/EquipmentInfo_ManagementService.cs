@@ -28,8 +28,8 @@ namespace MinSheng_MIS.Services
             await EquipmentInfoDataAnnotationAsync(data);
 
             // 建立 EquipmentInfo
-            EquipmentInfo equipment = (data as CreateEquipmentInfoInstance)
-                .ToDto<CreateEquipmentInfoInstance, EquipmentInfo>();
+            EquipmentInfo equipment = (data as EquipmentInfoCreateModel)
+                .ToDto<EquipmentInfoCreateModel, EquipmentInfo>();
             equipment.ESN = await GenerateEquipmentInfoSNAsync();
             equipment.EState = ((int)UniParams.EState.Normal).ToString();
             equipment.IsDelete = false;
@@ -85,6 +85,25 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 獲取設備資訊
+        public async Task<T> GetEquipmentInfoAsync<T>(string ESN) where T : class, new()
+        {
+            var equipment = await _db.EquipmentInfo.FindAsync(ESN)
+                ?? throw new MyCusResException("查無資料!");
+
+            T dest = equipment.ToDto<EquipmentInfo, T>();
+            if (dest is IEquipmentInfoDetail info)
+            {
+                info.ASN = equipment.Floor_Info.AreaInfo.Area;
+                info.FSN = equipment.Floor_Info.FloorName;
+
+                return (T)info;
+            }
+
+            return dest;
+        }
+        #endregion
+
         #region 批次刪除設備增設欄位值
         public void DeleteAddFieldValueList(IDeleteAddFieldValueList data)
         {
@@ -136,7 +155,7 @@ namespace MinSheng_MIS.Services
 
         //-----資料驗證
         #region EquipmentInfo資料驗證
-        private async Task EquipmentInfoDataAnnotationAsync(IEquipmentInfo data)
+        private async Task EquipmentInfoDataAnnotationAsync(ICreateEquipmentInfo data)
         {
             var floorSNList = await _db.Floor_Info.Select(x => x.FSN).ToListAsync(); // 取得所有樓層SN列表
 
