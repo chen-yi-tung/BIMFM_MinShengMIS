@@ -387,15 +387,15 @@ function createAccordion(options) {
             maintainName.disabled = true;
 
 
-            const frequency = document.createElement("select");
-            frequency.className = "form-select"
-            frequency.name = `frequency-${i}`;
-            frequency.required = true;
+            const period = document.createElement("select");
+            period.className = "form-select"
+            period.name = `period-${i}`;
+            period.required = true;
             optionsData.forEach(optionData => {
                 const option = document.createElement("option");
                 option.value = optionData.value;
                 option.textContent = optionData.text;
-                frequency.appendChild(option);
+                period.appendChild(option);
             });
 
             const nextMaintainDate = document.createElement("input");
@@ -407,7 +407,7 @@ function createAccordion(options) {
 
             div.appendChild(ESNDisplay);
             div.appendChild(maintainName);
-            div.appendChild(frequency);
+            div.appendChild(period);
             div.appendChild(nextMaintainDate);
             MaintainEditZone.appendChild(div);
         })
