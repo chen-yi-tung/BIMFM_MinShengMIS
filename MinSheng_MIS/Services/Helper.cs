@@ -1,10 +1,8 @@
-﻿using MinSheng_MIS.Models.ViewModels;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -102,5 +100,26 @@ namespace MinSheng_MIS.Services
 
             return results;
         }
+
+        #region DTO轉換
+        public static TDestination ToDto<TSource, TDestination>(this TSource source)
+            where TSource : class
+            where TDestination : class, new()  // TDestination 必須是具體類型
+        {
+            var destination = new TDestination();  // 創建具體類型的實例
+
+            // 遍歷源對象的屬性，並將它們映射到目標對象
+            foreach (var sourceProp in typeof(TSource).GetProperties())
+            {
+                var destProp = typeof(TDestination).GetProperty(sourceProp.Name);
+                if (destProp != null && destProp.CanWrite)
+                {
+                    destProp.SetValue(destination, sourceProp.GetValue(source));
+                }
+            }
+
+            return destination;
+        }
+        #endregion
     }
 }

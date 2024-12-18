@@ -1,12 +1,11 @@
-﻿using Microsoft.Ajax.Utilities;
-using MinSheng_MIS.Models;
+﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using static MinSheng_MIS.Services.Helper;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -45,7 +44,7 @@ namespace MinSheng_MIS.Controllers
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
                 // 建立 EquipmentInfo
-                string esn = await _eMgmtService.CreateEquipmentInfoAsync((IUpdateEquipmentInfo)data);
+                string esn = await _eMgmtService.CreateEquipmentInfoAsync(data);
 
                 // 建立 RFID
                 if (data.RFIDList != null && data.RFIDList.Any())
@@ -59,11 +58,12 @@ namespace MinSheng_MIS.Controllers
                 {
                     // 建立 Equipment_AddFieldValue (非必填)
                     if (data.AddFieldList != null && data.AddFieldList.Any())
-                        await _eMgmtService.CreateEquipmentAdditionalFieldsValue(data.ConvertToUpdateAddFieldValue(esn));
+                        await _eMgmtService.CreateEquipmentAdditionalFieldsValue(data.ToDto<EquipmentInfoCreateModel, UpdateAddFieldValueInstance>());
+                        //await _eMgmtService.CreateEquipmentAdditionalFieldsValue(data.ConvertToUpdateAddFieldValue(esn));
 
                     // 建立 Equipment_MaintainItemValue (非必填)
                     if (data.MaintainItemList != null && data.MaintainItemList.Any())
-                        await _eMgmtService.CreateEquipmentMaintainItemsValue(data.ConvertToUpdateMaintainItemValue(esn));
+                        await _eMgmtService.CreateEquipmentMaintainItemsValue(data.ToDto<EquipmentInfoCreateModel, UpdateMaintainItemValueInstance>());
                 }
 
                 await _db.SaveChangesAsync();

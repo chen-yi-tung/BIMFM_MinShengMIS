@@ -142,7 +142,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region EquipmentInfo_Management 資產管理
+        #region OneDeviceOneCard_Management 一機一卡模板管理
         [HttpPost]
         public ActionResult OneDeviceOneCard_Management(FormCollection form)
         {

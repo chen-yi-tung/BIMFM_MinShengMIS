@@ -1,12 +1,13 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Surfaces;
-using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using static MinSheng_MIS.Services.UniParams.MaintenanceFormStatus;
 
 
 namespace MinSheng_MIS.Services
@@ -14,43 +15,29 @@ namespace MinSheng_MIS.Services
     public class EquipmentInfo_ManagementService
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
-        private readonly ComFunc _cFunc;
 
         public EquipmentInfo_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
-            _cFunc = new ComFunc();
         }
 
-        #region 新增設備
-        public async Task<string> CreateEquipmentInfoAsync(IUpdateEquipmentInfo data)
+        #region 新增設備資訊
+        public async Task<string> CreateEquipmentInfoAsync(ICreateEquipmentInfo data)
         {
             // 資料驗證
             await EquipmentInfoDataAnnotationAsync(data);
 
             // 建立 EquipmentInfo
-            var equipmentInfo = new EquipmentInfo
-            {
-                ESN = await GenerateEquipmentInfoSNAsync(),
-                EName = data.EName,
-                NO = data.No,
-                FSN = data.FSN,
-                Brand = data.Brand,
-                Vendor = data.Vendor,
-                Model = data.Model,
-                ContactPhone = data.ContactPhone,
-                OperatingVoltage = data.OperatingVoltage,
-                OtherInfo = data.OtherInfo,
-                InstallDate = data.InstallDate,
-                Memo = data.Memo,
-                EState = ((int)UniParams.EState.Normal).ToString(),
-                TSN = data.TSN,
-                IsDelete = false,
-                EPhoto = null // TODO
-            };
-            _db.EquipmentInfo.Add(equipmentInfo);
+            EquipmentInfo equipment = (data as CreateEquipmentInfoInstance)
+                .ToDto<CreateEquipmentInfoInstance, EquipmentInfo>();
+            equipment.ESN = await GenerateEquipmentInfoSNAsync();
+            equipment.EState = ((int)UniParams.EState.Normal).ToString();
+            equipment.IsDelete = false;
+            equipment.EPhoto = null; // TODO
 
-            return equipmentInfo.ESN;
+            _db.EquipmentInfo.Add(equipment);
+
+            return equipment.ESN;
         }
         #endregion
 
@@ -65,7 +52,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 建立設備所有增設欄位值
+        #region 建立設備所有保養資訊
         public async Task CreateEquipmentMaintainItemsValue(IUpdateMaintainItemValue data)
         {
             // 資料驗證
@@ -76,14 +63,85 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 更新設備資訊
+        public async Task UpdateEquipmentInfoAsync(IUpdateEquipmentInfo data)
+        {
+            // 資料驗證
+            await EquipmentInfoDataAnnotationAsync(data);
+
+            // Origin data
+            var origin = await _db.EquipmentInfo.FindAsync(data.ESN);
+
+            EquipmentInfo update = (data as UpdateEquipmentInfoInstance)
+                .ToDto<UpdateEquipmentInfoInstance, EquipmentInfo>();
+
+            // 維持不變
+            update.DBID = origin.DBID;
+            //update.GUID = origin.GUID;
+            //update.ElementID = origin.ElementID;
+            update.IsDelete = origin.IsDelete;
+
+            _db.EquipmentInfo.AddOrUpdate(update);
+        }
+        #endregion
+
+        #region 批次刪除設備增設欄位值
+        public void DeleteAddFieldValueList(IDeleteAddFieldValueList data)
+        {
+            if (data == null) return;
+
+            var values = _db.Equipment_AddFieldValue
+                .Where(x => data.EAFVSN.Contains(x.EAFVSN))
+                .AsEnumerable();
+
+            // 刪除關聯的 Equipment_AddFieldValue
+            _db.Equipment_AddFieldValue.RemoveRange(values);
+        }
+        #endregion
+
+        #region 批次刪除設備保養資訊
+        public void DeleteMaintainItemValueList(IDeleteMaintainItemValueList data)
+        {
+            if (data == null) return;
+
+            var values = _db.Equipment_MaintainItemValue
+                .Where(x => data.EMIVSN.Contains(x.EMIVSN))
+                .AsEnumerable();
+
+            // 刪除相關待派工及待執行的定期保養單
+            DeletePendingMaintenanceFormList(
+                values.SelectMany(x => x.Template_MaintainItemSetting.Equipment_MaintenanceForm
+                    .Where(f => IsStatusEqualToStr(f.Status, Status.ToAssign) || IsStatusEqualToStr(f.Status, Status.ToDo)))
+                .AsEnumerable()
+            );
+
+            // 刪除關聯的 Equipment_AddFieldValue
+            _db.Equipment_MaintainItemValue.RemoveRange(values);
+        }
+
+        /// <summary>
+        /// 刪除相關待派工及待執行的定期保養單
+        /// </summary>
+        /// <param name="forms">欲刪除定期保養單</param>
+        private void DeletePendingMaintenanceFormList(IEnumerable<Equipment_MaintenanceForm> forms)
+        {
+            var members = forms.SelectMany(x => x.Equipment_MaintenanceFormMember).AsEnumerable();
+
+            // 刪除關聯且待派工及待執行的 Equipment_MaintenanceFormMember
+            _db.Equipment_MaintenanceFormMember.RemoveRange(members);
+            // 刪除關聯且待派工及待執行的 Equipment_MaintenanceForm
+            _db.Equipment_MaintenanceForm.RemoveRange(forms);
+        }
+        #endregion
+
         //-----資料驗證
         #region EquipmentInfo資料驗證
-        private async Task EquipmentInfoDataAnnotationAsync(IUpdateEquipmentInfo data)
+        private async Task EquipmentInfoDataAnnotationAsync(IEquipmentInfo data)
         {
             var floorSNList = await _db.Floor_Info.Select(x => x.FSN).ToListAsync(); // 取得所有樓層SN列表
 
             // 不可重複: 設備編號
-            if (await _db.EquipmentInfo.Where(x => x.NO == data.No).AnyAsync())
+            if (await _db.EquipmentInfo.Where(x => x.NO == data.NO).AnyAsync())
                 throw new MyCusResException("設備編號已被使用!");
             // 關聯性PK是否存在: 樓層
             if (!floorSNList.Contains(data.FSN))

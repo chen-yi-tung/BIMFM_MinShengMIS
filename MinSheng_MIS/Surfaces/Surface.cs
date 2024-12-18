@@ -85,14 +85,6 @@ namespace MinSheng_MIS.Surfaces
                          period => period.ToString(),
                          period => period.GetLabel()
                      );
-
-            //return new Dictionary<string, string>
-            //{
-            //    { Period.Daily.ToString(), Period.Daily.GetLabel() },
-            //    { Period.Monthly.ToString(), Period.Monthly.GetLabel() },
-            //    { Period.Quarterly.ToString(), Period.Quarterly.GetLabel() },
-            //    { Period.Yearly.ToString(), Period.Yearly.GetLabel() }
-            //};
         }
         #endregion
 

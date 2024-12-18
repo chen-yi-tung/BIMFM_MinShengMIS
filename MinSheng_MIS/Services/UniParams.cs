@@ -1,9 +1,5 @@
 ﻿using MinSheng_MIS.Attributes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Web;
 
 namespace MinSheng_MIS.Services
 {
@@ -35,14 +31,6 @@ namespace MinSheng_MIS.Services
                 [EnumLabel("每年")]
                 Yearly = 4
             }
-
-            public static readonly Dictionary<string, string> Surface = new Dictionary<string, string>
-            {
-                { Period.Daily.ToString(), "每日" },
-                { Period.Monthly.ToString(), "每月" },
-                { Period.Quarterly.ToString(), "每季" },
-                { Period.Yearly.ToString(), "每年" }
-            };
 
             public static DateTime GetNextMaintainDate(string period)
             {
@@ -79,6 +67,55 @@ namespace MinSheng_MIS.Services
             /// </summary>
             [EnumLabel("報修中")]
             Repair = 2
+        }
+        #endregion
+
+        #region 保養單狀態
+        public class MaintenanceFormStatus
+        {
+            public enum Status
+            {
+                /// <summary>
+                /// 待派工
+                /// </summary>
+                [EnumLabel("待派工")]
+                ToAssign = 1,
+                /// <summary>
+                /// 待執行
+                /// </summary>
+                [EnumLabel("待執行")]
+                ToDo = 2,
+                /// <summary>
+                /// 待審核
+                /// </summary>
+                [EnumLabel("待審核")]
+                ToAduit = 3,
+                /// <summary>
+                /// 審核通過
+                /// </summary>
+                [EnumLabel("審核通過")]
+                Approved = 4,
+                /// <summary>
+                /// 審核未過
+                /// </summary>
+                [EnumLabel("審核未過")]
+                NotApproved = 5
+            }
+
+            public static Status ConvertStringToEnum(string str)
+            {
+                if (!Enum.TryParse<Status>(str, out var result))
+                    throw new ArgumentException($"Invalid status value: {str}");
+
+                return result;
+            }
+
+            public static bool IsStatusEqualToStr(string str, Status status)
+            {
+                var strState = ConvertStringToEnum(str);
+
+                return strState == status;
+            }
         }
         #endregion
     }

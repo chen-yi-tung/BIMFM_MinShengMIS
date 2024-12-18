@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web;
 
 namespace MinSheng_MIS.Models.ViewModels
@@ -10,47 +11,32 @@ namespace MinSheng_MIS.Models.ViewModels
     /// <summary>
     /// 新增設備DTO
     /// </summary>
-    public class EquipmentInfoCreateModel : EquipInfo, ICreateEquipmentInfo, ICreateAddFieldValue, ICreateMaintainItemValue
+    public class EquipmentInfoCreateModel : EquipInfo, ICreateEquipmentInfo, ICreateAddFieldValueList, ICreateMaintainItemValueList
     {
         public string TSN { get; set; } // 一機一卡模板編號
         public List<EquipRFID> RFIDList { get; set; } // RFID
         public List<AddFieldValueModel> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位
         public List<MaintainItemValueModel> MaintainItemList { get; set; } // 一機一卡模板資料：保養項目設定
 
-        internal IUpdateAddFieldValue ConvertToUpdateAddFieldValue(string esn)
-        {
-            return new UpdateAddFieldValueInstance
-            {
-                ESN = esn,
-                TSN = this.TSN,
-                AddFieldList = this.AddFieldList
-            };
-        }
+        //internal IUpdateAddFieldValue ConvertToUpdateAddFieldValue(string esn)
+        //{
+        //    return new UpdateAddFieldValueInstance
+        //    {
+        //        ESN = esn,
+        //        TSN = this.TSN,
+        //        AddFieldList = this.AddFieldList
+        //    };
+        //}
 
-        internal IUpdateMaintainItemValue ConvertToUpdateMaintainItemValue(string esn)
-        {
-            return new UpdateMaintainItemValueInstance
-            {
-                ESN = esn,
-                TSN = this.TSN,
-                MaintainItemList = this.MaintainItemList
-            };
-        }
-
-        // 嵌套的內部類別用於封裝返回的實例
-        private class UpdateAddFieldValueInstance : IUpdateAddFieldValue
-        {
-            public string ESN { get; set; }
-            public string TSN { get; set; }
-            public List<AddFieldValueModel> AddFieldList { get; set; }
-        }
-
-        private class UpdateMaintainItemValueInstance : IUpdateMaintainItemValue
-        {
-            public string ESN { get; set; }
-            public string TSN { get; set; }
-            public List<MaintainItemValueModel> MaintainItemList { get; set; }
-        }
+        //internal IUpdateMaintainItemValue ConvertToUpdateMaintainItemValue(string esn)
+        //{
+        //    return new UpdateMaintainItemValueInstance
+        //    {
+        //        ESN = esn,
+        //        TSN = this.TSN,
+        //        MaintainItemList = this.MaintainItemList
+        //    };
+        //}
     }
     #endregion
 
@@ -66,7 +52,7 @@ namespace MinSheng_MIS.Models.ViewModels
         [Required]
         [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
         [Display(Name = "設備編號")]
-        public string No { get; set; } // 設備編號
+        public string NO { get; set; } // 設備編號
         public DateTime InstallDate { get; set; } // 安裝日期
         [Required]
         [StringLength(5, ErrorMessage = "{0} 的長度最多5個字元。")]
@@ -101,6 +87,42 @@ namespace MinSheng_MIS.Models.ViewModels
     //    public string Text { get; set; } // 模板增設欄位名稱
     //    public string Value { get; set; } // 模板增設欄位值
     //}
+
+    #region 設備-編輯
+    
+    #endregion
+
+    #region 設備-刪除
+    public class DeleteAddFieldValueList : IDeleteAddFieldValueList
+    {
+        public IEnumerable<string> EAFVSN { get; set; }
+
+        public DeleteAddFieldValueList(EquipmentInfo e)
+        {
+            EAFVSN = e.Equipment_AddFieldValue.Select(x => x.EAFVSN);
+        }
+
+        public DeleteAddFieldValueList(IEnumerable<string> eafvsn)
+        {
+            EAFVSN = eafvsn;
+        }
+    }
+
+    public class DeleteMaintainItemValueList : IDeleteMaintainItemValueList
+    {
+        public IEnumerable<string> EMIVSN { get; set; }
+
+        public DeleteMaintainItemValueList(EquipmentInfo e)
+        {
+            EMIVSN = e.Equipment_MaintainItemValue.Select(x => x.EMIVSN);
+        }
+
+        public DeleteMaintainItemValueList(IEnumerable<string> emivsn)
+        {
+            EMIVSN = emivsn;
+        }
+    }
+    #endregion
 
     public class AddFieldValueModel : IAddFieldValue
     {
@@ -153,7 +175,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         HttpPostedFileBase EPhoto { get; set; } //新增的設備照片
         string EName { get; set; } // 設備名稱
-        string No { get; set; } // 設備編號
+        string NO { get; set; } // 設備編號
         DateTime InstallDate { get; set; } // 安裝日期
         string FSN { get; set; } // 樓層編號
         string Brand { get; set; } // 設備廠牌
@@ -176,7 +198,11 @@ namespace MinSheng_MIS.Models.ViewModels
     /// <summary>
     /// 系統變更設備資料所需資訊
     /// </summary>
-    public interface IUpdateEquipmentInfo : ICreateEquipmentInfo { }
+    public interface IUpdateEquipmentInfo : ICreateEquipmentInfo
+    {
+        string ESN { get; set; } // 設備資料(EquipmentInfo)編號
+        string EState { get; set; } // 設備狀態
+    }
 
     /// <summary>
     /// 一機一卡增設欄位值資訊
@@ -190,16 +216,21 @@ namespace MinSheng_MIS.Models.ViewModels
     /// <summary>
     /// 使用者變更設備中一機一卡增設欄位值所需資訊
     /// </summary>
-    public interface ICreateAddFieldValue
+    public interface ICreateAddFieldValueList
     {
         string TSN { get; set; } // 一機一卡模板編號(用於資料驗證)
         List<AddFieldValueModel> AddFieldList { get; set; } // 增設基本資料欄位
     }
 
+    public interface IDeleteAddFieldValueList
+    {
+        IEnumerable<string> EAFVSN { get; set; }
+    }
+
     /// <summary>
     /// 系統變更設備中一機一卡增設欄位值所需資訊
     /// </summary>
-    public interface IUpdateAddFieldValue : ICreateAddFieldValue
+    public interface IUpdateAddFieldValue : ICreateAddFieldValueList
     {
         string ESN { get; set; } // 設備資料(EquipmentInfo)編號
     }
@@ -217,18 +248,48 @@ namespace MinSheng_MIS.Models.ViewModels
     /// <summary>
     /// 使用者新增設備中一機一卡保養資訊的週期及下次保養日期所需資訊
     /// </summary>
-    public interface ICreateMaintainItemValue
+    public interface ICreateMaintainItemValueList
     {
         string TSN { get; set; } // 一機一卡模板編號(用於資料驗證)
         List<MaintainItemValueModel> MaintainItemList { get; set; } // 保養資訊設定
     }
 
+    public interface IDeleteMaintainItemValueList
+    {
+        IEnumerable<string> EMIVSN { get; set; }
+    }
+
     /// <summary>
     /// 系統變更設備中一機一卡保養資訊的週期及下次保養日期所需資訊
     /// </summary>
-    public interface IUpdateMaintainItemValue : ICreateMaintainItemValue
+    public interface IUpdateMaintainItemValue : ICreateMaintainItemValueList
     {
         string ESN { get; set; } // 設備資料(EquipmentInfo)編號
+    }
+    #endregion
+
+    #region Service需要的實例
+    public class CreateEquipmentInfoInstance : EquipInfo, ICreateEquipmentInfo
+    {
+        public string TSN { get; set; }
+    }
+    public class UpdateEquipmentInfoInstance : EquipInfo, IUpdateEquipmentInfo
+    {
+        public string ESN { get; set; }
+        public string TSN { get; set; }
+        public string EState { get; set; }
+    }
+    public class UpdateAddFieldValueInstance : IUpdateAddFieldValue
+    {
+        public string ESN { get; set; }
+        public string TSN { get; set; }
+        public List<AddFieldValueModel> AddFieldList { get; set; }
+    }
+    public class UpdateMaintainItemValueInstance : IUpdateMaintainItemValue
+    {
+        public string ESN { get; set; }
+        public string TSN { get; set; }
+        public List<MaintainItemValueModel> MaintainItemList { get; set; }
     }
     #endregion
 }

@@ -134,13 +134,6 @@ namespace MinSheng_MIS.Models.ViewModels
         public List<IReportItemDetail> ReportItemList { get; set; } // 填報項目名稱/單位
     }
 
-    public class DeviceCardDetailModel : IDeviceCardDetail
-    {
-        public string TSN { get; set; } // 一機一卡模板編號
-        public string SampleName { get; set; } // 模板名稱
-        public int? Frequency { get; set; } // 巡檢頻率
-    }
-
     /// <summary>
     /// 增設基本資料欄位
     /// </summary>
@@ -159,12 +152,18 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Value { get; set; } // 保養項目名稱
     }
 
+    /// <summary>
+    /// 巡檢資訊-檢查項目
+    /// </summary>
     public class CheckItemDetailModel : ICheckItemDetail
     {
         public string CISN { get; set; } // 模板檢查項目編號
         public string Value { get; set; } // 檢查項目名稱
     }
 
+    /// <summary>
+    /// 巡檢資訊-填報項目
+    /// </summary>
     public class ReportItemDetailModel : IReportItemDetail
     {
         public string RISN { get; set; } // 模板填報項目編號
@@ -174,6 +173,45 @@ namespace MinSheng_MIS.Models.ViewModels
     #endregion
 
     #region 一機一卡-刪除
+    public class DeleteAddFieldList : IDeleteAddFieldList
+    {
+        public IEnumerable<string> AFSN { get; set; }
+
+        public DeleteAddFieldList(Template_OneDeviceOneCard temp)
+        {
+            AFSN = temp.Template_AddField.Select(x => x.AFSN);
+        }
+    }
+
+    public class DeleteMaintainItemList : IDeleteMaintainItemList
+    {
+        public IEnumerable<string> MISSN { get; set; }
+
+        public DeleteMaintainItemList(Template_OneDeviceOneCard temp)
+        {
+            MISSN = temp.Template_MaintainItemSetting.Select(x => x.MISSN);
+        }
+    }
+
+    public class DeleteCheckItemList : IDeleteCheckItemList
+    {
+        public IEnumerable<string> CISN { get; set; }
+
+        public DeleteCheckItemList(Template_OneDeviceOneCard temp)
+        {
+            CISN = temp.Template_CheckItem.Select(x => x.CISN);
+        }
+    }
+
+    public class DeleteReportItemList : IDeleteReportItemList
+    {
+        public IEnumerable<string> RISN { get; set; }
+
+        public DeleteReportItemList(Template_OneDeviceOneCard temp)
+        {
+            RISN = temp.Template_ReportingItem.Select(x => x.RISN);
+        }
+    }
     #endregion
 
     #region OneDeviceOneCard 一機一卡
@@ -263,6 +301,11 @@ namespace MinSheng_MIS.Models.ViewModels
         int? Frequency { get; set; } // 巡檢頻率
         IEnumerable<string> CINameList { get; set; } // 檢查項目名稱列表
     }
+
+    public interface IDeleteCheckItemList
+    {
+        IEnumerable<string> CISN { get; set; } // 模板檢查項目編號
+    }
     #endregion
 
     #region ReportItem 填報項目
@@ -289,6 +332,11 @@ namespace MinSheng_MIS.Models.ViewModels
         string TSN { get; set; } // 一機一卡模板編號
         int? Frequency { get; set; } // 巡檢頻率
         IEnumerable<UpdateReportItemModel> RIList { get; set; } // 填報項目
+    }
+
+    public interface IDeleteReportItemList
+    {
+        IEnumerable<string> RISN { get; set; } // 模板填報項目編號
     }
     #endregion
 }

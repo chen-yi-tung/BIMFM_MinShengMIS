@@ -20,14 +20,14 @@ namespace MinSheng_MIS.Controllers
             _dCardService = new OneDeviceOneCard_ManagementService(_db);
         }
 
-        #region 一機一卡模板管理
+        #region 一機一卡模板 管理
         public ActionResult Index()
         {
             return View();
         }
         #endregion
 
-        #region 新增 一機一卡模板
+        #region 一機一卡模板 新增
         public ActionResult Create()
         {
             return View();
@@ -77,7 +77,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 編輯 一機一卡模板 TODO
+        #region 一機一卡模板 編輯 TODO
         public ActionResult Edit()
         {
             return View();
@@ -121,15 +121,52 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 一機一卡模板 刪除
-        public ActionResult Delete()
+        public ActionResult Delete(string id)
         {
+            ViewBag.id = id;
             return View();
         }
 
         [HttpPost]
-        public ActionResult DeleteDeviceCard(string id)
+        public async Task<ActionResult> DeleteDeviceCard(string id)
         {
-            return Content("Succeed");
+            try
+            {
+                var template = await _db.Template_OneDeviceOneCard.FindAsync(id);
+
+                // 刪除增設基本資料欄位 : Equipment_AddField
+                // 刪除關聯的 Equipment_AddFieldValue
+                _dCardService.DeleteAddFieldList(new DeleteAddFieldList(template));
+
+                // 刪除保養項目設定 : Equipment_MaintainItem
+                // 刪除相關待派工及待執行的定期保養單 : Equipment_MaintenanceForm /Equipment_MaintenanceFormMember
+                // 刪除關聯的 Equipment_MaintainItemValue
+                _dCardService.DeleteMaintainItemList(new DeleteMaintainItemList(template));
+
+                // 刪除檢查項目 : Template_CheckItem
+                _dCardService.DeleteCheckItemList(new DeleteCheckItemList(template));
+
+                // 刪除填報項目 : Template_ReportingItem
+                _dCardService.DeleteReportItemList(new DeleteReportItemList(template));
+
+                // 刪除一機一卡模板
+                // 刪除模板與設備的關聯
+                // 刪除使用該模板之設備待執行工單 TODO
+                // 刪除使用該模板之巡檢預設順序 TODO
+                await _dCardService.DeleteOneDeviceOneCardAsync(template);
+
+                await _db.SaveChangesAsync();
+
+                return Content("Succeed");
+            }
+            catch (MyCusResException ex)
+            {
+                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
+            }
+            catch (Exception)
+            {
+                return Content("</br>系統異常!", "application/json; charset=utf-8");
+            }
         }
         #endregion
 

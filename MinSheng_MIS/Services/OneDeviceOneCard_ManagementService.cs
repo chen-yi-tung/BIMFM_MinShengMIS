@@ -11,12 +11,14 @@ namespace MinSheng_MIS.Services
     public class OneDeviceOneCard_ManagementService
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
-        private readonly ComFunc _cFunc;
+        private readonly EquipmentInfo_ManagementService _eMgmtService;
+        private readonly SamplePath_ManagementService _pSamplePathService;
 
         public OneDeviceOneCard_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
-            _cFunc = new ComFunc();
+            _eMgmtService = new EquipmentInfo_ManagementService(_db);
+            _pSamplePathService = new SamplePath_ManagementService(_db);
         }
 
         #region 新增一機一卡模板
@@ -151,29 +153,97 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 刪除一機一卡模板 TODO
-        #endregion
-
-        #region 批次刪除增設基本資料欄位 TODO
-        public async Task DeleteAddFieldListAsync(IDeleteAddFieldList data)
+        #region 刪除一機一卡模板 Not Done
+        public async Task DeleteOneDeviceOneCardAsync(Template_OneDeviceOneCard card)
         {
-            // 刪除 Template_AddField
+            var equipments = card.EquipmentInfo;
+            // 刪除模板與設備的關聯
+            foreach (var e in equipments)
+                await _eMgmtService.UpdateEquipmentInfoAsync(e.ToDto<EquipmentInfo, UpdateEquipmentInfoInstance>());
+            // 刪除使用該模板之設備待執行工單 TODO
+            // (使用ESN關聯)
+
+            // 刪除使用該模板之巡檢預設順序 TODO
+            // (使用ESN->RFID進行關聯)
+
+            // 刪除模板
+            _db.Template_OneDeviceOneCard.Remove(card);
         }
         #endregion
 
-        #region 批次刪除保養項目設定 TODO
+        #region 批次刪除增設基本資料欄位
+        public void DeleteAddFieldList(IDeleteAddFieldList data)
+        {
+            if (data?.AFSN.Any() != true) return;
+
+            var fields = _db.Template_AddField
+                .Where(x => data.AFSN.Contains(x.AFSN))
+                .AsEnumerable();
+
+            // 刪除關聯的 Equipment_AddFieldValue
+            _eMgmtService.DeleteAddFieldValueList(
+                new DeleteAddFieldValueList(
+                    fields.SelectMany(x => x.Equipment_AddFieldValue
+                        .Select(e => e.EAFVSN))
+                    .AsEnumerable()
+                )
+            );
+
+            // 刪除 Template_AddField
+            _db.Template_AddField.RemoveRange(fields);
+        }
         #endregion
 
-        #region 批次刪除保養項目設定相關待派工及待執行的定期保養單 TODO
+        #region 批次刪除保養項目設定
+        public void DeleteMaintainItemList(IDeleteMaintainItemList data)
+        {
+            if (data?.MISSN.Any() != true) return;
+
+            var items = _db.Template_MaintainItemSetting
+                .Where(x => data.MISSN.Contains(x.MISSN))
+                .AsEnumerable();
+
+            // 刪除相關待派工及待執行的定期保養單
+            // 刪除關聯的 Equipment_MaintainItemValue
+            _eMgmtService.DeleteMaintainItemValueList(
+                new DeleteMaintainItemValueList(
+                    items.SelectMany(x => x.Equipment_MaintainItemValue
+                        .Select(e => e.EMIVSN))
+                    .AsEnumerable()
+                )
+            );
+
+            // 刪除 Template_MaintainItemSetting
+            _db.Template_MaintainItemSetting.RemoveRange(items);
+        }
         #endregion
 
-        #region 批次刪除檢查項目 TODO
+        #region 批次刪除檢查項目
+        public void DeleteCheckItemList(IDeleteCheckItemList data)
+        {
+            if (data?.CISN.Any() != true) return;
+
+            var items = _db.Template_CheckItem
+                .Where(x => data.CISN.Contains(x.CISN))
+                .AsEnumerable();
+
+            // 刪除 Template_CheckItem
+            _db.Template_CheckItem.RemoveRange(items);
+        }
         #endregion
 
-        #region 批次刪除填報項目 TODO
-        #endregion
+        #region 批次刪除填報項目
+        public void DeleteReportItemList(IDeleteReportItemList data)
+        {
+            if (data?.RISN.Any() != true) return;
 
-        #region 批次刪除使用該模板之設備待執行工單 TODO
+            var items = _db.Template_ReportingItem
+                .Where(x => data.RISN.Contains(x.RISN))
+                .AsEnumerable();
+
+            // 刪除 Template_ReportingItem
+            _db.Template_ReportingItem.RemoveRange(items);
+        }
         #endregion
 
         //-----資料驗證
@@ -230,7 +300,9 @@ namespace MinSheng_MIS.Services
                 throw new MyCusResException("請填寫檢查頻率!");
             ValidateList(data.RIList.Select(x => x.RIName), "填報項目", 100);
             // 與既有欄位進行比對
-            if (await _db.Template_ReportingItem.Where(x => x.TSN == data.TSN).AnyAsync(x => data.RIList.Select(r => r.RIName).Contains(x.ReportingItemName)))
+            var riNameList = data.RIList.Select(r => r.RIName).ToList();
+            if (await _db.Template_ReportingItem
+                .AnyAsync(x => x.TSN == data.TSN && riNameList.Contains(x.ReportingItemName)))
                 throw new MyCusResException("檢查項目名稱不可重複!");
         }
         #endregion
@@ -266,7 +338,7 @@ namespace MinSheng_MIS.Services
 
         #region 產生唯一編碼
         /// <summary>
-        /// 產生唯一編碼
+        /// 產生 Template_AddField/ Template_MaintainItemSetting/ Template_CheckItem/ Template_ReportingItem 唯一編碼
         /// </summary>
         /// <param name="tsn">TSN碼</param>
         /// <param name="latestId">前一筆資料唯一編碼</param>
@@ -399,19 +471,9 @@ namespace MinSheng_MIS.Services
                 if (list.Count() > listMaxLength)
                     throw new MyCusResException($"{fieldName}不可超過{listMaxLength}項!");
                 // 不可重複：名稱
-                if (ListItemDuplicated(list))
+                if (list.Count() != list.Distinct().Count())
                     throw new MyCusResException($"{fieldName}名稱不可重複!");
             }
-        }
-
-        /// <summary>
-        /// 不可重複
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        private bool ListItemDuplicated(IEnumerable<string> list)
-        {
-            return list.Count() != list.Distinct().Count();
         }
         #endregion
     }

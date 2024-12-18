@@ -46,6 +46,13 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 查詢設備RFID
+        public IEnumerable<RFID> GetRFIDsByEsn(string esn)
+        {
+            return _db.RFID.Where(x => x.ESN == esn).AsEnumerable();
+        }
+        #endregion
+
         //-----資料驗證
         #region RFID資料驗證
         public async Task RFIDDataAnnotationAsync(IRFIDInfo data)
