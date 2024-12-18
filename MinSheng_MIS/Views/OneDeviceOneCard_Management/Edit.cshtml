@@ -24,6 +24,7 @@
 <section>
     <div class="edit-area edit-area-sm flex-lg-row">
         <form class="form" id="form1">
+            <input type="text" id="TSN" name="TSN" hidden>
             <div class="form-group-zone">
                 <div class="form-group required">
                     <label for="SampleName">模板名稱</label>
@@ -112,10 +113,10 @@
 @section scripts {
     <script>
         var labelItems = new LabelItems()
-        const IPSN = '@ViewBag.id';
-        ////let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
+        const TSN = '@ViewBag.id';
+        ////let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${TSN}`;
         let apiUrl = null;
-        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
+        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${TSN}`;
         let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
 
         $(async function () {
@@ -126,6 +127,7 @@
         })
 
         let fakeData = {
+            TSN: "0001423",
             SampleName: "模板模板名稱",
             AddItemList: [
                 {
@@ -416,7 +418,6 @@
                                 // 手風琴尚未展開，進行展開操作
                                 new bootstrap.Collapse(collapseElement, { toggle: true });
                             }
-                            console.log("1218有進來");
                             return;
                             firstInvalidInput.focus();
                         }
@@ -434,10 +435,12 @@
             const formData = labelItems.calc();
 
             const sendData = {
+                TSN: document.getElementById("TSN").value,
                 SampleName: document.getElementById("SampleName").value,
                 Frequency: document.getElementById("Frequency").value,
                 ...formData
             };
+
 
             console.log("最終sendData為", sendData);
 
@@ -469,7 +472,8 @@
             }
             function onError(res) {
                 console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}`,
+                })
             }
         }
 
