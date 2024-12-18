@@ -72,9 +72,9 @@
                         </select>
                     </div>
                     <div class="form-group d-flex flex-column align-items-center">
-                        <label for="InspectItemName" class="w-100">檢查項目名稱</label>
-                        <div class="d-flex flex-column gap-2 w-100" id="InspectItemsArea"></div>
-                        <button type="button" class="addItemBtn" onclick="addTemplateItem('InspectItemsArea')"><i class="fa-solid fa-plus"></i></button>
+                        <label for="CheckItemsArea" class="w-100">檢查項目名稱</label>
+                        <div class="d-flex flex-column gap-2 w-100" id="CheckItemsArea"></div>
+                        <button type="button" class="addItemBtn" onclick="addTemplateItem('CheckItemsArea')"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
 
@@ -250,7 +250,7 @@
                 const areas = {
                     AddItemList: "AddItemsArea",
                     MaintainItemList: "MaintainItemsArea",
-                    CheckItemList: "InspectItemsArea",
+                    CheckItemList: "CheckItemsArea",
                     ReportItemList: "ReportItemsArea"
                 };
 
@@ -331,7 +331,7 @@
                                 inputSN.name = `MISSN_${index + 1}`;
                                 inputSN.id = `MISSN_${index + 1}`;
                                 inputSN.value = item.MISSN || "";
-                            } else if (areaID === "InspectItemsArea") {
+                            } else if (areaID === "CheckItemsArea") {
                                 inputSN.name = `CISN_${index + 1}`;
                                 inputSN.id = `CISN_${index + 1}`;
                                 inputSN.value = item.CISN || "";
@@ -513,7 +513,7 @@
                     inputPrefix = "AFSN";
                 } else if (zoneID === "MaintainItemsArea") {
                     inputPrefix = "MISSN";
-                } else if (zoneID === "InspectItemsArea") {
+                } else if (zoneID === "CheckItemsArea") {
                     inputPrefix = "CISN";
                 } else if (zoneID === "ReportItemsArea") {
                     inputPrefix = "RISN";
@@ -576,14 +576,14 @@
         //監聽 檢查項目名稱、填報項目名稱/單位 若有填寫，巡檢頻率為必填
         function observeChildChanges() {
             const frequency = document.getElementById("Frequency");
-            const inspectItemsArea = document.getElementById("InspectItemsArea");
+            const checkItemsArea = document.getElementById("CheckItemsArea");
             const reportItemsArea = document.getElementById("ReportItemsArea");
 
             const updateFrequencyRequired = () => {
-                const hasInspectItems = inspectItemsArea.children.length > 0;
+                const hasCheckItems = checkItemsArea.children.length > 0;
                 const hasReportItems = reportItemsArea.children.length > 0;
 
-                if (hasInspectItems || hasReportItems) {
+                if (hasCheckItems || hasReportItems) {
                     frequency.setAttribute("required", "required");
                 } else {
                     frequency.removeAttribute("required");
@@ -599,7 +599,7 @@
             const inspectObserver = new MutationObserver(observerCallback);
             const reportObserver = new MutationObserver(observerCallback);
 
-            inspectObserver.observe(inspectItemsArea, observerConfig);
+            inspectObserver.observe(checkItemsArea, observerConfig);
             reportObserver.observe(reportItemsArea, observerConfig);
 
             updateFrequencyRequired();
@@ -609,7 +609,7 @@
             this.AddItems = $("#AddItemsArea");
             this.MaintainItems = $("#MaintainItemsArea");
             this.Frequency = document.getElementById('Frequency');
-            this.InspectItems = $("#InspectItemsArea");
+            this.CheckItems = $("#CheckItemsArea");
             this.ReportItems = $("#ReportItemsArea");
             this.EquipmentZone = $("#EquipmentZone");
 
@@ -645,7 +645,7 @@
                     this.addMaintainItemList = addMaintainItemList;
                 }
 
-                const checkItemList = this.InspectItems.children().toArray().map(e => ({
+                const checkItemList = this.CheckItems.children().toArray().map(e => ({
                     CISN: $(e).find("input[name^='CISN']").val(),
                     Value: $(e).find("input[name^='CheckItem']").val()
                 }));
@@ -665,7 +665,7 @@
             }
             this.checkValidity = () => {
                 if (this.Frequency.value) {
-                    return this.InspectItems.children().length > 0 || this.ReportItems.children().length > 0
+                    return this.CheckItems.children().length > 0 || this.ReportItems.children().length > 0
                 }
                 return true;
             }
