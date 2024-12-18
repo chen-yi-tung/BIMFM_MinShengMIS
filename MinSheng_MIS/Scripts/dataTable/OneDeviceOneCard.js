@@ -87,20 +87,6 @@ function InspectionInfo(selector, data) {
             )
             : "",
     )
-
-    //$(selector).append(
-    //    data.InspectItemList ?
-    //        createInspectionTable({
-    //            id: `InspectionInfo`,
-    //            sn: [
-    //                { text: "巡檢頻率", value: "Ifrequency", colspan: "3" },
-    //                { text: "檢查項目", value: "InspectItems", colspan: "2", itemNum: "true" },
-    //                { text: "填報項目名稱/單位", value: "ReportItems", type: "dualCol" },
-    //            ],
-    //            data: data.InspectItemList,
-    //        })
-    //        : "",
-    //)
 }
 
 function ShowEquipment(selector, data, addItems) {

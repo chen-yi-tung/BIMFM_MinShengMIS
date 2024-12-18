@@ -4,12 +4,8 @@
 @section styles {
     @Html.Partial("DataGridScripts")
     <link rel="stylesheet" href="/Content/OneDeviceOneCardManagement.css">
-    <link rel="stylesheet" href="/Content/datagrid-modal.css">
     <link rel="stylesheet" href="/Content/EquipmentInfoManagement.css">
     <link rel="stylesheet" href="/Content/OneDeviceOneCardManagement.css">
-    <script src="/Content/easyui/jquery.min.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/datatable.js" defer></script>
     <script src="/Scripts/dataTable/OneDeviceOneCard.js" defer></script>
 }
 
@@ -27,7 +23,7 @@
 
 <section>
     <div class="edit-area edit-area-sm flex-lg-row">
-        <form class="form">
+        <form class="form" id="form1">
             <div class="form-group-zone">
                 <div class="form-group required">
                     <label for="SampleName">模板名稱</label>
@@ -62,7 +58,7 @@
                     <div class="form-group d-grid" style="grid-template-columns: 1fr 24px; column-gap: 1rem; ">
                         <label for="Frequency">巡檢頻率</label>
                         <div></div>
-                        <select class="form-select" style="grid-column-start: unset;" name="Frequency" id="Frequency">
+                        <select class="form-select" style="grid-column-start: unset;" name="Frequency" id="Frequency" placeholder="請選擇">
                             <option value="">請選擇</option>
                             <option value="1">1小時</option>
                             <option value="2">2小時</option>
@@ -92,9 +88,8 @@
 </section>
 
 <div class="edit-button-area">
-    <button class="btn btn-back" id="back">返回</button>
-    @*<button class="btn btn-export" id="submit" data-bs-toggle="modal" data-bs-target="#addMultiAssign">儲存</button>*@
-    <button class="btn btn-export" id="submit">儲存</button>
+    <button class="btn btn-back" onclick="back()">返回</button>
+    <button class="btn btn-export" onclick="save(event, 'saveBtn', 'form1')">儲存</button>
 </div>
 
 @*補充設備保養項目設定 POP UP*@
@@ -107,8 +102,7 @@
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                @*<button type="button" class="btn btn-export" id="add-row">確定</button>*@
-                <button type="button" class="btn btn-export" onclick="save(true)">確定</button>
+                <button type="button" class="btn btn-export" onclick="save(event, 'popupBtn', 'EquipmentZone')">確定</button>
             </div>
         </div>
     </div>
@@ -125,7 +119,6 @@
         let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
 
         $(async function () {
-            addButtonEvent();
             observeChildChanges();
             //await addDropDownList();
             //await addAreaFloorEvent();
@@ -227,24 +220,46 @@
                 OtherInfo: "無",
                 Memo: ""
             },
-            {
-                ESN: "E000123",
-                EName: "螺旋發送機",
-                NO: "E3569248",
-                FilePath: "/Files/LaboratoryMaintenance/240104002.png",
-                FileName: "240104002.png",
-                ASN: "進流抽水站",
-                FSN: "3F",
-                Brand: "螺旋廠牌",
-                Model: "SP309",
-                Vendor: "螺旋廠商",
-                ContactPhone: "(02)2669-6541",
-                InstallDate: "2024-12-13",
-                OperatingVoltage: "220V",
-                OtherInfo: "無",
-                Memo: ""
-            }
+            //{
+            //    ESN: "E000166",
+            //    EName: "螺旋發送機",
+            //    NO: "E3569249",
+            //    FilePath: "/Files/LaboratoryMaintenance/240104002.png",
+            //    FileName: "240104002.png",
+            //    ASN: "進流抽水站",
+            //    FSN: "3F",
+            //    Brand: "螺旋廠牌",
+            //    Model: "SP309",
+            //    Vendor: "螺旋廠商",
+            //    ContactPhone: "(02)2669-6541",
+            //    InstallDate: "2024-12-13",
+            //    OperatingVoltage: "220V",
+            //    OtherInfo: "無",
+            //    Memo: ""
+            //},
+            //{
+            //    ESN: "E005236",
+            //    EName: "螺旋發送機",
+            //    NO: "E3569250",
+            //    FilePath: "/Files/LaboratoryMaintenance/240104002.png",
+            //    FileName: "240104002.png",
+            //    ASN: "進流抽水站",
+            //    FSN: "3F",
+            //    Brand: "螺旋廠牌",
+            //    Model: "SP309",
+            //    Vendor: "螺旋廠商",
+            //    ContactPhone: "(02)2669-6541",
+            //    InstallDate: "2024-12-13",
+            //    OperatingVoltage: "220V",
+            //    OtherInfo: "無",
+            //    Memo: ""
+            //}
         ]
+
+        function back() {
+            history.back();
+        }
+
         function readData(url = null) {
 
             url == null ? onSuccess(fakeData) :
@@ -384,16 +399,39 @@
             }
         }
 
-        function save(addMaintainItem) {
-            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-            console.log("isValidity():", isValidity)
-            if (!isValidity) return;
+        function save(event, btn, formId) {
+            const form = document.getElementById(formId);
+
+            if (form) {
+                let isValidity = form.reportValidity();
+                if (!isValidity) {
+                    const firstInvalidInput = form.querySelector(":invalid");
+                    if (firstInvalidInput) {
+                        const accordionItem = firstInvalidInput.closest(".accordion-item");
+                        if (accordionItem) {
+                            const collapseId = accordionItem.querySelector(".accordion-collapse").id;
+                            const collapseElement = document.getElementById(collapseId);
+
+                            if (!collapseElement.classList.contains('show')) {
+                                // 手風琴尚未展開，進行展開操作
+                                new bootstrap.Collapse(collapseElement, { toggle: true });
+                            }
+                            console.log("1218有進來");
+                            return;
+                            firstInvalidInput.focus();
+                        }
+                    }
+                }
+            }
+
+            const labelItems = new LabelItems(btn);
+
             if (!labelItems.checkValidity()) {
                 onError({ responseText: "請至少新增一個 檢查項目名稱 或 填報項目名稱/單位！" })
                 return;
             }
 
-            const formData = labelItems.calc(addMaintainItem);
+            const formData = labelItems.calc();
 
             const sendData = {
                 SampleName: document.getElementById("SampleName").value,
@@ -403,14 +441,20 @@
 
             console.log("最終sendData為", sendData);
 
-            if (checkIfAddMaintainItem()) return;
+            if (btn !== "popupBtn") {
+                if (checkIfAddMaintainItem()) return;
 
+                let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+                if (!isValidity) return;
+            } 
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
+            modal.hide();
 
             $.ajax({
                 url: "",
-                data: sendData,
+                data: JSON.stringify(sendData),
                 type: "POST",
-                contentType: false,
+                contentType: "application/json",
                 processData: false,
                 success: onSuccess,
                 error: onError
@@ -429,9 +473,6 @@
             }
         }
 
-        function popupSave() {
-            console.log();
-        }
 
         function addTemplateItem(zoneID) {
             let itemArea = document.getElementById(zoneID);
@@ -537,12 +578,14 @@
             updateFrequencyRequired();
         }
 
-        function LabelItems(addMaintainItem) {
+        function LabelItems(btn) {
             this.AddItems = $("#AddItemsArea");
             this.MaintainItems = $("#MaintainItemsArea");
             this.Frequency = document.getElementById('Frequency');
             this.InspectItems = $("#InspectItemsArea");
             this.ReportItems = $("#ReportItemsArea");
+            this.addMaintainItemList = $("#AddMaintainItemsArea");
+            this.EquipmentZone = $("#EquipmentZone");
 
             this.calc = () => {
                 const addItemList = this.AddItems.children().toArray().map(e => ({
@@ -550,19 +593,28 @@
                     Value: $(e).find("input[name^='AddItem']").val()
                 }));
 
-                const maintainItemList = this.MaintainItems.children().toArray().map(e => ({
+                let maintainItemList = this.MaintainItems.children().toArray().map(e => ({
                     MISSN: $(e).find("input[name^='MISSN']").val(),
                     Value: $(e).find("input[name^='MaintainItem']").val()
                 }))
 
-                if (addMaintainItem === true) {
+                let addMaintainItemList = []
+
+                if (btn === "popupBtn") {
+                    //console.log("設備明細", EquipmentData);
                     maintainItemList = maintainItemList.filter(item => item.MISSN && item.MISSN.trim() !== "");
 
-                    const addMaintainItemList = this.addMaintainItemList.children().toArray().map(e => ({
-                        MaintainName: $(e).find("input[name^='maintainName']").val(),
-                        Frequency: $(e).find("input[name^='frequency']").val(),
-                        NextMaintainDate: $(e).find("input[name^='nextMaintainDate']").val()
-                    }))
+                    if (this.EquipmentZone.length) {
+                        addMaintainItemList = EquipmentData.map((equipment, index) => {
+                            return this.EquipmentZone.find(`#MaintainEditZone_${index} .edit-item-init`).toArray().map(e => ({
+                                ESN: equipment.ESN,
+                                MaintainName: $(e).find("input[name^='maintainName']").val() || "",
+                                Frequency: $(e).find("select[name^='frequency']").val() || "",
+                                NextMaintainDate: $(e).find("input[name^='nextMaintainDate']").val() || ""
+                            }));
+                        }).flat();
+                    }
+                    this.addMaintainItemList = addMaintainItemList;
                 }
 
                 const checkItemList = this.InspectItems.children().toArray().map(e => ({
@@ -576,11 +628,11 @@
                 }))
 
                 return {
-                    AddItemList: addItemList.length > 0 ? addItemList : "",
-                    MaintainItemList: maintainItemList.length > 0 ? maintainItemList : "",
-                    AddMaintainItemList: addMaintainItemList.length > 0 ? addMaintainItemList : "",
-                    CheckItemList: checkItemList.length > 0 ? checkItemList : "",
-                    ReportItemList: reportItemList.length > 0 ? reportItemList : ""
+                    AddItemList: addItemList.length > 0 ? addItemList : [],
+                    MaintainItemList: maintainItemList.length > 0 ? maintainItemList : [],
+                    AddMaintainItemList: addMaintainItemList.length > 0 ? addMaintainItemList : [],
+                    CheckItemList: checkItemList.length > 0 ? checkItemList : [],
+                    ReportItemList: reportItemList.length > 0 ? reportItemList : []
                 }
             }
             this.checkValidity = () => {
@@ -608,7 +660,7 @@
                     const equipmentZone = document.getElementById('EquipmentZone');
                     equipmentZone.innerHTML = "";
 
-                    const modal = new bootstrap.Modal(document.getElementById('addMultiAssign'));
+                    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
                     modal.show();
 
                     //加入新項目
@@ -619,6 +671,5 @@
             }
         }
 
-        
     </script>
 }

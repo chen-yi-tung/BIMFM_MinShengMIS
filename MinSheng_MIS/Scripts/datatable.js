@@ -356,7 +356,7 @@ function createAccordion(options) {
     if (options.data.length === 0) {
         return "";
     }
-    function createMaintainItem(addItems, containerId) {
+    function createMaintainItem(addItems, containerId, equipmentData) {
         const MaintainEditZone = document.getElementById(containerId);
         if (!MaintainEditZone) {
             return;
@@ -375,9 +375,13 @@ function createAccordion(options) {
             div.className = "edit-item-init"
             div.style = "background: #E3EBF3;"
 
+            const ESNDisplay = document.createElement("div");
+            ESNDisplay.textContent = `ESN: ${equipmentData.ESN}`;
+            ESNDisplay.hidden = true;
+
             const maintainName = document.createElement("input");
             maintainName.className = "form-control";
-            maintainName.name = `itemName-${i}`;
+            maintainName.name = `maintainName-${i}`;
             maintainName.type = "text";
             maintainName.value = filed;
             maintainName.disabled = true;
@@ -385,7 +389,8 @@ function createAccordion(options) {
 
             const frequency = document.createElement("select");
             frequency.className = "form-select"
-            frequency.name = `select-${i}`;
+            frequency.name = `frequency-${i}`;
+            frequency.required = true;
             optionsData.forEach(optionData => {
                 const option = document.createElement("option");
                 option.value = optionData.value;
@@ -398,7 +403,9 @@ function createAccordion(options) {
             nextMaintainDate.name = `nextMaintainDate-${i}`;
             nextMaintainDate.type = "date";
             nextMaintainDate.value = filed;
+            nextMaintainDate.required = true;
 
+            div.appendChild(ESNDisplay);
             div.appendChild(maintainName);
             div.appendChild(frequency);
             div.appendChild(nextMaintainDate);
@@ -450,8 +457,8 @@ function createAccordion(options) {
 
         // 延遲執行 createMaintainItem
         setTimeout(() => {
-            options.data.forEach((_, i) => {
-                createMaintainItem(options.addItems, `MaintainEditZone_${i}`);
+            options.data.forEach((item, i) => {
+                createMaintainItem(options.addItems, `MaintainEditZone_${i}`, EquipmentData[i]);
             });
         }, 0);
 
