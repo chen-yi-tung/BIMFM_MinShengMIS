@@ -90,7 +90,7 @@
 
 <div class="edit-button-area">
     <button class="btn btn-back" onclick="back()">返回</button>
-    <button class="btn btn-export" onclick="save(event, 'saveBtn', 'form1')">儲存</button>
+    <button class="btn btn-export" onclick="checkSave()">儲存</button>
 </div>
 
 @*補充設備保養項目設定 POP UP*@
@@ -103,7 +103,7 @@
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                <button type="button" class="btn btn-export" onclick="save(event, 'popupBtn', 'EquipmentZone')">確定</button>
+                <button type="button" class="btn btn-export" onclick="popupSave()">確定</button>
             </div>
         </div>
     </div>
@@ -114,9 +114,10 @@
     <script>
         var labelItems = new LabelItems()
         const TSN = '@ViewBag.id';
-        let apiUrl = '@Url.Action("ReadBody", "OneDeviceOneCard_Management")' + `/${TSN}`;
-        let AskEquipmentApiUrl = '@Url.Action("GetEquipmentsUsingTemplate", "OneDeviceOneCard_Management")?TSN=' + TSN;
-        //let apiUrl = null;
+        const apiUrl = '@Url.Action("ReadBody", "OneDeviceOneCard_Management")' + `/${TSN}`;
+        const AskEquipmentApiUrl = '@Url.Action("GetEquipmentsUsingTemplate", "OneDeviceOneCard_Management")?TSN=' + TSN;
+        //const SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
+        const SubmitUrl =  null;
 
         $(async function () {
             observeChildChanges();
@@ -202,8 +203,7 @@
                 },
             ]
         }
-
-        let EquipmentData = [
+        let fakeEquipmentData=[
             {
                 ESN: "E000123",
                 EName: "螺旋發送機",
@@ -221,41 +221,9 @@
                 OtherInfo: "無",
                 Memo: ""
             },
-            //{
-            //    ESN: "E000166",
-            //    EName: "螺旋發送機",
-            //    NO: "E3569249",
-            //    FilePath: "/Files/LaboratoryMaintenance/240104002.png",
-            //    FileName: "240104002.png",
-            //    ASN: "進流抽水站",
-            //    FSN: "3F",
-            //    Brand: "螺旋廠牌",
-            //    Model: "SP309",
-            //    Vendor: "螺旋廠商",
-            //    ContactPhone: "(02)2669-6541",
-            //    InstallDate: "2024-12-13",
-            //    OperatingVoltage: "220V",
-            //    OtherInfo: "無",
-            //    Memo: ""
-            //},
-            //{
-            //    ESN: "E005236",
-            //    EName: "螺旋發送機",
-            //    NO: "E3569250",
-            //    FilePath: "/Files/LaboratoryMaintenance/240104002.png",
-            //    FileName: "240104002.png",
-            //    ASN: "進流抽水站",
-            //    FSN: "3F",
-            //    Brand: "螺旋廠牌",
-            //    Model: "SP309",
-            //    Vendor: "螺旋廠商",
-            //    ContactPhone: "(02)2669-6541",
-            //    InstallDate: "2024-12-13",
-            //    OperatingVoltage: "220V",
-            //    OtherInfo: "無",
-            //    Memo: ""
-            //}
         ]
+
+        let EquipmentData = [];
 
         function back() {
             history.back();
@@ -264,7 +232,6 @@
         function readData(url = null) {
 
             url == null ? onSuccess(fakeData) :
-                console.log("fakeData", fakeData);
                 $.ajax({
                     url: url,
                     type: "GET",
@@ -400,37 +367,101 @@
             }
         }
 
-        function save(event, btn, formId) {
-            const form = document.getElementById(formId);
+        async function checkSave() {
+            // 檢查必填
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            if (!isValidity) return;
 
-            if (form) {
-                let isValidity = form.reportValidity();
-                if (!isValidity) {
-                    const firstInvalidInput = form.querySelector(":invalid");
-                    if (firstInvalidInput) {
-                        const accordionItem = firstInvalidInput.closest(".accordion-item");
-                        if (accordionItem) {
-                            const collapseId = accordionItem.querySelector(".accordion-collapse").id;
-                            const collapseElement = document.getElementById(collapseId);
-
-                            if (!collapseElement.classList.contains('show')) {
-                                // 手風琴尚未展開，進行展開操作
-                                new bootstrap.Collapse(collapseElement, { toggle: true });
-                            }
-                            return;
-                            firstInvalidInput.focus();
-                        }
-                    }
-                }
-            }
-
-            const labelItems = new LabelItems(btn);
-
+            // 檢查巡檢項目設定
+            // 有巡檢頻率時，需有檢查項目名稱或填報項目名稱/單位
+            // 有檢查項目名稱或填報項目名稱/單位時，需有巡檢頻率
             if (!labelItems.checkValidity()) {
-                onError({ responseText: "請至少新增一個 檢查項目名稱 或 填報項目名稱/單位！" })
+                createDialogModal({
+                    id: "DialogModal-Error", inner: `儲存失敗！請至少新增一個 檢查項目名稱 或 填報項目名稱/單位！`,
+                })
                 return;
             }
 
+            // 檢查有無新增保養項目名稱，有的話就顯示 補充設備保養項目設定 Modal
+            const equips = await getEquipments()
+            console.log('equips', equips)
+            if (EquipmentData.length > 0) {
+                const newAddValues = equips
+                    .filter(item => !item.MISSN || item.MISSN.trim() === "")
+                    .map(item => item.Value);
+
+                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
+                modal.show();
+                modal._element.addEventListener('hidden.bs.modal', () => {
+                    // 清空 #EquipmentZone
+                    document.getElementById("EquipmentZone").innerHTML = "";
+                    EquipmentData = [];
+                }, { once: true })
+                console.log('modal', modal)
+
+                //加入新項目
+                ShowEquipment("#EquipmentZone", EquipmentData, newAddValues)
+                return;
+            }
+
+            // 所有檢查通過，直接執行儲存
+            save();
+
+            async function getEquipments() {
+                const maintainItemList = labelItems.calc().MaintainItemList;
+                const hasEmptyMISSN = maintainItemList.some(item => !item.MISSN || item.MISSN.trim() === "");
+                const hasEmptyValue = maintainItemList.some(item => !item.Value || item.Value.trim() === "");
+                console.log(maintainItemList, hasEmptyMISSN, hasEmptyValue);
+                if (!hasEmptyValue && hasEmptyMISSN) {
+                    if (AskEquipmentApiUrl == null) {
+                        EquipmentData = fakeEquipmentData;
+                        return maintainItemList;
+                    }
+                    const data = await $.ajax({
+                        url: AskEquipmentApiUrl,
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                    }).catch((res) => {
+                        console.log(res);
+                        return false;
+                    })
+                    EquipmentData = data;
+                    return maintainItemList;
+                }
+                return false;
+            }
+        }
+
+        function popupSave() {
+            const form = document.getElementById('EquipmentZone');
+            if (validityCollapse(form) === false) return;
+            save();
+
+            function validityCollapse(form) {
+                if (!form) return null;
+                if (form.reportValidity()) return true;
+
+                const firstInvalidInput = form.querySelector(":invalid");
+                if (!firstInvalidInput) return false;
+                const accordionItem = firstInvalidInput.closest(".accordion-item");
+                if (accordionItem) {
+                    const collapseElement = accordionItem.querySelector(".accordion-collapse");
+                    if (collapseElement && !collapseElement.classList.contains('show')) {
+                        const collapse = bootstrap.Collapse.getOrCreateInstance(collapseElement);
+                        collapse.show();
+                        collapse._element.addEventListener('shown.bs.collapse', () => {
+                            firstInvalidInput.focus();
+                        }, {once:true})
+                    }
+                }
+                
+                return false;
+            }
+        }
+
+        function save() {
+            console.log('save')
             const formData = labelItems.calc();
 
             const sendData = {
@@ -440,20 +471,10 @@
                 ...formData
             };
 
-
             console.log("最終sendData為", sendData);
 
-            if (btn !== "popupBtn") {
-                if (checkIfAddMaintainItem()) return;
-
-                let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-                if (!isValidity) return;
-            }
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
-            modal.hide();
-
             $.ajax({
-                url: "",
+                url: SubmitUrl,
                 data: JSON.stringify(sendData),
                 type: "POST",
                 contentType: "application/json",
@@ -463,6 +484,9 @@
             })
 
             function onSuccess(res) {
+                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
+                modal.hide();
+
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Success", inner: "儲存成功！",
@@ -471,11 +495,11 @@
             }
             function onError(res) {
                 console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}`,
+                createDialogModal({
+                    id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}`,
                 })
             }
         }
-
 
         function addTemplateItem(zoneID) {
             let itemArea = document.getElementById(zoneID);
@@ -581,13 +605,12 @@
             updateFrequencyRequired();
         }
 
-        function LabelItems(btn) {
+        function LabelItems() {
             this.AddItems = $("#AddItemsArea");
             this.MaintainItems = $("#MaintainItemsArea");
             this.Frequency = document.getElementById('Frequency');
             this.InspectItems = $("#InspectItemsArea");
             this.ReportItems = $("#ReportItemsArea");
-            this.addMaintainItemList = $("#AddMaintainItemsArea");
             this.EquipmentZone = $("#EquipmentZone");
 
             this.calc = () => {
@@ -603,7 +626,8 @@
 
                 let addMaintainItemList = []
 
-                if (btn === "popupBtn") {
+                // 有顯示 補充設備保養項目設定 Modal 的情況下會有資料
+                if (EquipmentData.length > 0) {
                     //console.log("設備明細", EquipmentData);
                     maintainItemList = maintainItemList.filter(item => item.MISSN && item.MISSN.trim() !== "");
 
@@ -612,7 +636,7 @@
                             return this.EquipmentZone.find(`#MaintainEditZone_${index} .edit-item-init`).toArray().map(e => ({
                                 ESN: equipment.ESN,
                                 MaintainName: $(e).find("input[name^='maintainName']").val() || "",
-                                Frequency: $(e).find("select[name^='frequency']").val() || "",
+                                Period: $(e).find("select[name^='period']").val() || "",
                                 NextMaintainDate: $(e).find("input[name^='nextMaintainDate']").val() || ""
                             }));
                         }).flat();
@@ -645,49 +669,6 @@
                 return true;
             }
             return this
-        }
-
-        function checkIfAddMaintainItem() {
-            const maintainItemList = labelItems.calc().MaintainItemList;
-            const hasEmptyMISSN = maintainItemList.some(item => !item.MISSN || item.MISSN.trim() === "");
-            const hasEmptyValue = maintainItemList.some(item => !item.Value || item.Value.trim() === "");
-
-            if (!hasEmptyValue) {
-                if (hasEmptyMISSN) {
-
-                    const newAddValues = maintainItemList
-                        .filter(item => !item.MISSN || item.MISSN.trim() === "")
-                        .map(item => item.Value);
-
-                    // 清空 #EquipmentZone
-                    const equipmentZone = document.getElementById('EquipmentZone');
-                    equipmentZone.innerHTML = "";
-
-                    $.ajax({
-                        url: AskEquipmentApiUrl,
-                        type: "GET",
-                        dataType: "json",
-                        contentType: "application/json;charset=utf-8",
-                        success: onSuccess,
-                        error: onError
-                    })
-
-                    function onSuccess(res) {
-                        console.log(res);
-
-                        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
-                        modal.show();
-
-                        //加入新項目
-                        ShowEquipment("#EquipmentZone", res, newAddValues)
-                        return true;
-                    }
-                    function onError(res) {
-                        console.log(res);
-                    }
-                }
-                return false;
-            }
         }
 
     </script>
