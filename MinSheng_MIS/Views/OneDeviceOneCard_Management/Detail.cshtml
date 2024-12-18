@@ -17,7 +17,7 @@
                 </div>
             </div>
             <hr class="hr-default">
-            <div class="d-flex flex-column w-100">
+            <div class=flex-column w-100" id="addFieldSection">
                 <div class="group-sb-title">
                     <i class="fa-solid fa-map-pin"></i>
                     <div>增設基本資料欄位</div>
@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex flex-column w-100">
+            <div class="flex-column w-100" id="maintainSection">
                 <div class="group-sb-title">
                     <i class="fa-solid fa-map-pin"></i>
                     <div>保養資訊</div>
@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex flex-column w-100">
+            <div class="flex-column w-100" id="inspectionInfoSection">
                 <div class="group-sb-title">
                     <i class="fa-solid fa-map-pin"></i>
                     <div>巡檢資訊</div>
@@ -179,12 +179,42 @@
                 AddField('#AddField', res);
                 MaintainInfo("#MaintainInfo", res);
                 InspectionInfo("#InspectionInfo", res);
+                displaySections(res);
             }
             function onError(res) {
                 console.log(res);
             }
         }
 
+        function displaySections(data) {
+            if (data.AddItemList && data.AddItemList.length > 0) {
+                document.getElementById("addFieldSection").style.display = "flex";
+            } else {
+                document.getElementById("addFieldSection").style.display = "none";
+            }
+
+            if (data.MaintainItemList && data.MaintainItemList.length > 0) {
+                document.getElementById("maintainSection").style.display = "flex";
+            } else {
+                document.getElementById("maintainSection").style.display = "none";
+            }
+
+            if (data.Frequency) {
+                document.getElementById("inspectionInfoSection").style.display = "flex";
+            } else {
+                document.getElementById("inspectionInfoSection").style.display = "none";
+            }
+
+            if (
+                (!data.AddItemList || data.AddItemList.length === 0) &&
+                (!data.MaintainItemList || data.MaintainItemList.length === 0) &&
+                (!data.Frequency) &&
+                (!data.InspectItemList || data.InspectItemList.length === 0) &&
+                (!data.ReportItemList || data.ReportItemList.length === 0)
+            ) {
+                document.querySelector(".hr-default").style.display = "none";
+            }
+        }
 
 
     </script>
