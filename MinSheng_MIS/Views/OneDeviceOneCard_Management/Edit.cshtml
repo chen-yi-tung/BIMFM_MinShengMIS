@@ -114,10 +114,9 @@
     <script>
         var labelItems = new LabelItems()
         const TSN = '@ViewBag.id';
-        ////let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${TSN}`;
+        //let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${TSN}`;
+        //let AskEquipmentApiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${TSN}`;
         let apiUrl = null;
-        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${TSN}`;
-        let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
 
         $(async function () {
             observeChildChanges();
@@ -663,6 +662,15 @@
                     // 清空 #EquipmentZone
                     const equipmentZone = document.getElementById('EquipmentZone');
                     equipmentZone.innerHTML = "";
+
+                    $.ajax({
+                        url: AskEquipmentApiUrl,
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                        success: onSuccess,
+                        error: onError
+                    })
 
                     const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
                     modal.show();
