@@ -632,6 +632,7 @@
                     maintainItemList = maintainItemList.filter(item => item.MISSN && item.MISSN.trim() !== "");
 
                     if (this.EquipmentZone.length) {
+                        console.log("看這邊", EquipmentData);
                         addMaintainItemList = EquipmentData.map((equipment, index) => {
                             return this.EquipmentZone.find(`#MaintainEditZone_${index} .edit-item-init`).toArray().map(e => ({
                                 ESN: equipment.ESN,
@@ -646,7 +647,7 @@
 
                 const checkItemList = this.InspectItems.children().toArray().map(e => ({
                     CISN: $(e).find("input[name^='CISN']").val(),
-                    Value: $(e).find("input[name^='InspectItem']").val()
+                    Value: $(e).find("input[name^='CheckItem']").val()
                 }));
                 const reportItemList = this.ReportItems.children().toArray().map(e => ({
                     RISN: $(e).find("input[name^='RISN']").val(),
