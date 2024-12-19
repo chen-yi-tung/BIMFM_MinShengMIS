@@ -3,10 +3,6 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
-
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -57,7 +53,7 @@
 
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
-                <button type="button" class="btn btn-clear" id="clear">清除</button>
+                <button type="reset" class="btn btn-clear" id="clear">清除</button>
             </div>
         </form>
     </div>
@@ -104,8 +100,8 @@
         ]
 
         $(async function () {
-             await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
-             await AreaFloorEvent();
+            await formDropdown.ASN();
+            await formDropdown.pushSelect({ id: "EState", url: '@Url.Action("EState", "DropDownList")' });
 
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
@@ -157,9 +153,7 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            $("#clear").click(function () {
-                $(".search-area form")[0].reset();
-            });
+            
 
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());

@@ -3,7 +3,7 @@ Autodesk.Viewer.Extension.Loading = function (viewer, options) {
     Autodesk.Viewing.Extension.call(this, viewer, options);
     this.name = "Viewer.Toolkit";
 
-    this.removeAllToolbarControl = function(){
+    this.removeAllToolbarControl = function () {
         viewer.toolbar.removeControl('navTools')
         viewer.toolbar.removeControl('modelTools')
         viewer.toolbar.removeControl('settingsTools')
@@ -194,6 +194,7 @@ Autodesk.Viewer.Extension.Loading = function (viewer, options) {
             })
 
             let w = box.getCenter()
+            
             viewer.navigation.setView(
                 new THREE.Vector3(w.x, w.y, w.z + (box.getSize().z ** 2)),
                 new THREE.Vector3(w.x, w.y, 0)

@@ -2,9 +2,7 @@
     ViewBag.Title = "新增 庫存品項";
 }
 @section styles {
-    <script src="/Scripts/datatable.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
+    @Html.Partial("DataGridScripts")
 }
 
 <h2>@ViewBag.Title</h2>
@@ -51,7 +49,7 @@
     <script>
 
         $(async function () {
-            //await AreaFloorEvent();
+            //await formDropdown.ASN();
             addButtonEvent();
         });
 

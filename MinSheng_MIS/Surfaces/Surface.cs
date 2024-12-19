@@ -1,7 +1,9 @@
-﻿using System;
+﻿using MinSheng_MIS.Attributes;
+using MinSheng_MIS.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using static MinSheng_MIS.Services.UniParams;
 
 namespace MinSheng_MIS.Surfaces
 {
@@ -72,6 +74,18 @@ namespace MinSheng_MIS.Surfaces
             ValueOption.Add("0", "停用");
             ValueOption.Add("1", "啟用");
             return ValueOption;
+        }
+        #endregion
+
+        #region MaintainPeriod 保養週期
+        public static Dictionary<string, string> MaintainPeriod()
+        {
+            return Enum.GetValues(typeof(MaintainPeriod.Period))
+                     .Cast<MaintainPeriod.Period>()
+                     .ToDictionary(
+                         period => Convert.ToInt32(period).ToString(),
+                         period => period.GetLabel()
+                     );
         }
         #endregion
 

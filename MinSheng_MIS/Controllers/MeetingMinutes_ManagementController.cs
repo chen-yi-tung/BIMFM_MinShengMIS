@@ -53,7 +53,9 @@ namespace MinSheng_MIS.Controllers
 			{
 				//檢查會議記錄文件格式
 				string extension = Path.GetExtension(Info.MeetingFile.FileName); //檔案副檔名
-				if (ComFunc.IsConformedForDocument(Info.MeetingFile.ContentType, extension) || ComFunc.IsConformedForImage(Info.MeetingFile.ContentType, extension)) //檔案白名單檢查
+				if (ComFunc.IsConformedForDocument(Info.MeetingFile.ContentType, extension)
+                    || ComFunc.IsConformedForPdf(Info.MeetingFile.ContentType, extension)
+                    || ComFunc.IsConformedForImage(Info.MeetingFile.ContentType, extension)) //檔案白名單檢查
 				{
 					#region 新增會議記錄文件
 					// 檔案上傳
@@ -125,7 +127,9 @@ namespace MinSheng_MIS.Controllers
 				}
 				//檢查新上傳會議記錄文件格式
 				string extension = Path.GetExtension(Info.MeetingFile.FileName); //檔案副檔名
-				if (ComFunc.IsConformedForDocument(Info.MeetingFile.ContentType, extension) || ComFunc.IsConformedForImage(Info.MeetingFile.ContentType, extension)) //檔案白名單檢查
+				if (ComFunc.IsConformedForDocument(Info.MeetingFile.ContentType, extension)
+                    || ComFunc.IsConformedForPdf(Info.MeetingFile.ContentType, extension)
+                    || ComFunc.IsConformedForImage(Info.MeetingFile.ContentType, extension)) //檔案白名單檢查
 				{
 					#region 新增會議紀錄文件
 					// 檔案上傳

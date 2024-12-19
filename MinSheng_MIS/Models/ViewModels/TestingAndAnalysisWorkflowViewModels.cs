@@ -9,11 +9,11 @@ namespace MinSheng_MIS.Models.ViewModels
     public class TA_Workflow
     {
         [Required]
-        [StringLength(200, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多200個字元。", MinimumLength = 1)]
+        [StringLength(200, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多{1}個字元。", MinimumLength = 1)]
         [Display(Name = "實驗類型")]
         public string ExperimentType { get; set; } //實驗類型
         [Required]
-        [StringLength(200, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多200個字元。", MinimumLength = 1)]
+        [StringLength(200, ErrorMessage = "{0} 的長度至少必須為{2}個字元，且最多{1}個字元。", MinimumLength = 1)]
         [Display(Name = "實驗名稱")]
         public string ExperimentName { get; set; } //實驗名稱
         public List<string> LabelName { get; set; } //使用的實驗標籤名稱

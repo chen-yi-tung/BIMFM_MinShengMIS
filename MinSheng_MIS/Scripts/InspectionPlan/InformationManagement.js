@@ -1,4 +1,59 @@
-﻿window.addEventListener('load', async () => {
+﻿const fakeData = {
+    ChartInspectionCompleteState: [
+        { label: "已完成", value: 10 },
+        { label: "執行中", value: 16 },
+        { label: "待執行", value: 15 },
+    ],
+    ChartInspectionEquipmentState: [
+        { label: "維修+保養", value: 128 },
+        { label: "維修", value: 19 },
+        { label: "保養", value: 15 }
+    ],
+    InspectionMembers: [
+        {
+            MyName: "John Doe",
+            PlanNum: 12,
+            PlanCompleteNum: 11,
+            PlanCompletionRate: 0.916,
+            MaintainNum: 8,
+            MaintainCompleteNum: 7,
+            MaintainCompletionRate: 0.875,
+            RepairNum: 4,
+            RepairCompleteNum: 1,
+            RepairCompletionRate: 0.25,
+        }
+    ],
+    ChartInspectionAberrantLevel: [
+        { label: "一般", value: 20 },
+        { label: "緊急", value: 15 }
+    ],
+    ChartInspectionAberrantResolve: [
+        { label: "待處理", value: 15 },
+        { label: "處理中", value: 15 },
+        { label: "處理完成", value: 53 },
+    ],
+    ChartEquipmentProgressStatistics: [
+        { label: "待派工", value: { Maintain: 7, Repair: 8 } },
+        { label: "待執行", value: { Maintain: 8, Repair: 5 } },
+        { label: "待審核", value: { Maintain: 12, Repair: 8 } },
+        { label: "審核通過", value: { Maintain: 15, Repair: 10 } },
+        { label: "審核未過", value: { Maintain: 3, Repair: 1 } },
+    ],
+    ChartEquipmentLevelRate: [
+        { label: "一般", value: 15 },
+        { label: "緊急", value: 7 },
+        { label: "最速件", value: 3 },
+    ],
+    ChartEquipmentTypeRate: [
+        { label: "類型一", value: 2 },
+        { label: "類型二", value: 3 },
+        { label: "類型三", value: 3 },
+        { label: "類型四", value: 1 },
+        { label: "類型五", value: 3 },
+    ]
+}
+
+window.addEventListener('load', async () => {
     // #region chart options
     const family = 'Noto Sans TC, sans-serif'
     const legend = { display: false }
@@ -23,20 +78,40 @@
         offset: { x: 0, y: 4 },
         drawWhenEmpty: false
     }
+    const calcPercentage = (data, labels, options = { maximumFractionDigits: 1 }) => {
+        const d = data?.datasets?.[0]?.data;
+        if (d?.length === 0) return "-";
+        const total = d.reduce((t, e) => t + e, 0);
+        if (!Array.isArray(labels)) {
+            labels = [labels]
+        }
+        const value = labels.reduce((t, e) => t + getValue(data, e), 0)
+        const percentage = value / total * 100;
+        const f = new Intl.NumberFormat('en', options)
+        return f.format(percentage) + "%";
 
+        function getValue(data, label) {
+            const index = data.labels.findIndex(x => x === label);
+            if (index === -1) {
+                console.warn("[calcPercentage] please select a exist label")
+                return 0
+            };
+            return data.datasets[0].data[index]
+        }
+    }
     // #endregion
 
     // #region init
 
     //預設最小民國年分
-    const MIN_YEAR = 112;
+    const MIN_YEAR = 2023;
     //最大民國年分 => 今年
-    const MAX_YEAR = new Date().getFullYear() - 1911;
+    const MAX_YEAR = new Date().getFullYear();
     //目前月份
     const MAX_MONTH = new Date().getMonth() + 1;
     //預設民國年分
     //const DEFAULT_YEAR = MAX_YEAR;
-    const DEFAULT_YEAR = 112;
+    const DEFAULT_YEAR = 2023;
 
     const StartYear = $("#StartYear"),
         StartMonth = $("#StartMonth"),
@@ -46,10 +121,9 @@
     init()
 
     async function init() {
-
         for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
-            StartYear.append(`<option value="${y}">${y}年度</option>`)
-            EndYear.append(`<option value="${y}">${y}年度</option>`)
+            StartYear.append(`<option value="${y}">${y - 1911}年度</option>`)
+            EndYear.append(`<option value="${y}">${y - 1911}年度</option>`)
         }
         StartYear.change(maxMonth)
         EndYear.change(maxMonth)
@@ -72,7 +146,7 @@
 
 
         search();
-        $("#search").click(search)
+        $("#Search").click(search)
         function search() {
             $(".info-area").addClass("loading")
 
@@ -101,15 +175,22 @@
             })
         }
         function generate(res) {
-            console.log(res)
-            Inspection_Complete_State(res?.Inspection_Complete_State)
-            Inspection_Equipment_State(res?.Inspection_Equipment_State)
-            Inspection_All_Members(res?.Inspection_All_Members)
-            Inspection_Aberrant_Level(res?.Inspection_Aberrant_Level)
-            Inspection_Aberrant_Resolve(res?.Inspection_Aberrant_Resolve)
-            Equipment_Maintain_And_Repair_Statistics(res?.Equipment_Maintain_And_Repair_Statistics)
-            Equipment_Level_Rate(res?.Equipment_Level_Rate)
-            Equipment_Type_Rate(res?.Equipment_Type_Rate)
+            // use fakeData
+            Object.entries(res).forEach(([k, v]) => {
+                if (v.length === 0) {
+                    res[k] = fakeData?.[k];
+                }
+            })
+            console.log(res);
+
+            ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
+            ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
+            InspectionMembers(res?.InspectionMembers)
+            ChartInspectionAberrantLevel(res?.ChartInspectionAberrantLevel)
+            ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
+            ChartEquipmentProgressStatistics(res?.ChartEquipmentProgressStatistics)
+            ChartEquipmentLevelRate(res?.ChartEquipmentLevelRate)
+            ChartEquipmentTypeRate(res?.ChartEquipmentTypeRate)
 
             $(".info-area").removeClass("loading")
         }
@@ -138,15 +219,12 @@
 
     // #region chart function
     //巡檢總計畫完成狀態
-    function Inspection_Complete_State(res) {
-        const container = document.getElementById('Inspection_Complete_State');
+    function ChartInspectionCompleteState(data) {
+        console.log(data);
+
+        const container = document.getElementById('ChartInspectionCompleteState');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
-        const data = res || [
-            { label: "已完成", value: 10 },
-            { label: "執行中", value: 16 },
-            { label: "待執行", value: 15 },
-        ]
 
         let chart = Chart.getChart(ctx)
         if (chart) { chart.destroy() }
@@ -154,7 +232,7 @@
         ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
-            type: 'doughnut',
+            type: 'pie',
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
@@ -162,7 +240,6 @@
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
-                    cutout: "60%"
                 }]
             },
             options: {
@@ -170,46 +247,28 @@
                 layout: { padding: 4 },
                 plugins: {
                     legend, tooltip, shadowPlugin,
-                    centerText: {
-                        text: [
-                            {
-                                string: (() => {
-                                    let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label == "已完成").value
-                                    return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
-                                })(),
-                                color: "#fff",
-                                font: { family, weight: 500, size: 20 }
-                            }
-                        ]
-                    },
                     htmlLegend: {
                         statistics: {
-                            value: data.reduce((t, e) => t + e.value, 0),
-                            unit: "總計畫數"
+                            value: (data) => data.reduce((t, e) => t + e, 0),
+                            unit: "總計畫數",
                         },
-                        percentage: false
+                        percentage: false,
+                        value: true,
                     }
                 }
             },
             plugins: [
                 chartPlugins.shadowPlugin,
-                chartPlugins.centerText,
                 chartPlugins.htmlLegend,
                 chartPlugins.emptyDoughnut
             ]
         })
     }
     //設備維修及保養統計
-    function Inspection_Equipment_State(res) {
-        const container = document.getElementById('Inspection_Equipment_State');
+    function ChartInspectionEquipmentState(data) {
+        const container = document.getElementById('ChartInspectionEquipmentState');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
-        const data = res || [
-            { label: "維修+保養", value: 128 },
-            { label: "維修", value: 19 },
-            { label: "保養", value: 15 }
-        ]
 
         let chart = Chart.getChart(ctx)
         if (chart) { chart.destroy() }
@@ -217,7 +276,7 @@
         ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
-            type: 'doughnut',
+            type: 'pie',
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
@@ -225,7 +284,6 @@
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
-                    cutout: "60%"
                 }]
             },
             options: {
@@ -233,56 +291,29 @@
                 layout: { padding: 4 },
                 plugins: {
                     legend, tooltip, shadowPlugin,
-                    centerText: {
-                        text: [
-                            {
-                                string: (() => {
-                                    let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label.includes("維修+保養")).value
-                                    return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
-                                })(),
-                                color: "#fff",
-                                font: { family, weight: 500, size: 20 }
-                            }
-                        ]
-                    },
                     htmlLegend: {
                         statistics: {
-                            value: data.reduce((t, e) => t + e.value, 0),
+                            value: (data) => data.reduce((t, e) => t + e, 0),
                             unit: "總設備數"
                         },
-                        percentage: false
+                        percentage: false,
+                        value: true,
                     }
                 }
             },
             plugins: [
                 chartPlugins.shadowPlugin,
-                chartPlugins.centerText,
                 chartPlugins.htmlLegend,
                 chartPlugins.emptyDoughnut
             ]
         })
     }
     //巡檢人員表格
-    function Inspection_All_Members(res) {
+    function InspectionMembers(data) {
         const minRowCount = 13;
-        const row = $("#Inspection_All_Members .row").first()
-        const list = $("#Inspection_All_Members .simplebar-content")
+        const row = $("#InspectionMembers .row").first()
+        const list = $("#InspectionMembers .simplebar-content")
         list.empty()
-        const data = res || [
-            {
-                MyName: "John Doe",
-                PlanNum: 12,
-                PlanCompleteNum: 11,
-                PlanCompletionRate: 0.916,
-                MaintainNum: 8,
-                MaintainCompleteNum: 7,
-                MaintainCompletionRate: 0.875,
-                RepairNum: 4,
-                RepairCompleteNum: 1,
-                RepairCompletionRate: 0.25,
-            }
-        ]
 
         if (data?.length === 0) {
             for (let i = 0; i <= minRowCount; i++) { list.append(row.clone()) }
@@ -319,14 +350,10 @@
         }
     }
     //緊急事件 等級占比
-    function Inspection_Aberrant_Level(res) {
-        const container = document.getElementById('Inspection_Aberrant_Level');
+    function ChartInspectionAberrantLevel(data) {
+        const container = document.getElementById('ChartInspectionAberrantLevel');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#2CB6F0", "#E77272"]
-        const data = res || [
-            { label: "一般", value: 20 },
-            { label: "緊急", value: 15 }
-        ]
 
         let chart = Chart.getChart(ctx)
         if (chart) { chart.destroy() }
@@ -373,15 +400,10 @@
         })
     }
     //緊急事件 處理狀況
-    function Inspection_Aberrant_Resolve(res) {
-        const container = document.getElementById('Inspection_Aberrant_Resolve');
+    function ChartInspectionAberrantResolve(data) {
+        const container = document.getElementById('ChartInspectionAberrantResolve');
         const ctx = getOrCreateElement(container, 'canvas')
-        const backgroundColor = ["#72E998", "#E77272", "#4269AC"]
-        const data = res || [
-            { label: "待處理", value: 53 },
-            { label: "處理中", value: 53 },
-            { label: "處理完成", value: 15 }
-        ]
+        const backgroundColor = ["#E77272", "#FFA54B", "#72E998"]
 
         let chart = Chart.getChart(ctx)
         if (chart) { chart.destroy() }
@@ -408,26 +430,24 @@
                     centerText: {
                         text: [
                             {
-                                string: (() => {
-                                    let total = data.reduce((t, e) => t + e.value, 0)
-                                    let value = data.find(x => x.label == "處理完成").value
-                                    return ((Math.floor(value / total * 1000) / 10) || 0) + "%"
-                                })(),
-                                color: "#E77272",
-                                font: { family, weight: 500, size: 20 }
-                            },
-                            {
                                 string: "處理狀況",
                                 color: "#000",
                                 font: { family, weight: 500, size: 12, lineHeight: 1.25 }
-                            }
+                            },
+                            {
+                                string: (data) => calcPercentage(data, '處理完成'),
+                                color: "#E77272",
+                                font: { family, weight: 500, size: 20 }
+                            },
                         ]
                     },
                     htmlLegend: {
                         statistics: {
-                            value: data.reduce((t, e) => t + e.value, 0),
+                            value: (data) => data.reduce((t, e) => t + e, 0),
                             unit: "緊急事件"
                         },
+                        percentage: false,
+                        value: true,
                     }
                 }
             },
@@ -441,17 +461,10 @@
     }
     //設備保養及維修進度統計
     const mediaQueryList = window.matchMedia("(max-width:700px)")
-    function Equipment_Maintain_And_Repair_Statistics(res) {
-        const container = document.getElementById('Equipment_Maintain_And_Repair_Statistics');
+    function ChartEquipmentProgressStatistics(data) {
+        const container = document.getElementById('ChartEquipmentProgressStatistics');
         const ctx = getOrCreateElement(container, 'canvas')
         const backgroundColor = ["#4269AC", "#72BEE9", "#BC72E9", "#FFAB2E", "#E77272"]
-        const data = res || [
-            { label: "待派工", value: { Maintain: 7, Repair: 8 } },
-            { label: "待執行", value: { Maintain: 8, Repair: 5 } },
-            { label: "待審核", value: { Maintain: 12, Repair: 8 } },
-            { label: "審核通過", value: { Maintain: 15, Repair: 10 } },
-            { label: "審核未過", value: { Maintain: 3, Repair: 1 } },
-        ]
         const options = (indexAxis = 'y') => ({
             type: 'bar',
             data: {
@@ -536,16 +549,10 @@
         }
     }
     //設備故障等級分布
-    function Equipment_Level_Rate(res) {
-        const container = document.getElementById('Equipment_Level_Rate');
+    function ChartEquipmentLevelRate(data) {
+        const container = document.getElementById('ChartEquipmentLevelRate');
         const ctx = getOrCreateElement(container, 'canvas')
-
         const backgroundColor = ["#72E998", "#E9CD68", "#E77272"]
-        const data = res || [
-            { label: "一般", value: 15 },
-            { label: "緊急", value: 7 },
-            { label: "最速件", value: 3 },
-        ]
 
         let chart = Chart.getChart(ctx)
         if (chart) { chart.destroy() }
@@ -553,7 +560,7 @@
         ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
-            type: 'doughnut',
+            type: 'pie',
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
@@ -561,12 +568,10 @@
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
-                    cutout: "60%"
                 }]
             },
             options: {
                 responsive: false,
-                //layout: { padding: 4 },
                 plugins: {
                     legend, tooltip,
                     htmlLegend: {
@@ -582,26 +587,19 @@
         })
     }
     //設備故障類型占比
-    function Equipment_Type_Rate(res) {
-        const container = document.getElementById('Equipment_Type_Rate');
+    function ChartEquipmentTypeRate(data) {
+        const container = document.getElementById('ChartEquipmentTypeRate');
         const ctx = getOrCreateElement(container, 'canvas')
 
         const backgroundColor = ["#9E66C1", "#2CB6F0", "#72E998", "#E9CD68", "#E77272"]
-        const data = res || [
-            { label: "類型一", value: 2 },
-            { label: "類型二", value: 3 },
-            { label: "類型三", value: 3 },
-            { label: "類型四", value: 1 },
-            { label: "類型五", value: 3 },
-        ]
 
         let chart = Chart.getChart(ctx)
         if (chart) { chart.destroy() }
 
-        //ctx.width = 160
+        ctx.width = 160
         ctx.height = 160
         new Chart(ctx, {
-            type: 'doughnut',
+            type: 'pie',
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
@@ -609,17 +607,22 @@
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
-                    cutout: "60%"
                 }]
             },
             options: {
                 responsive: false,
-                //layout: { padding: 4 },
                 plugins: {
                     legend, tooltip,
+                    htmlLegend: {
+                        percentage: false,
+                        value: false
+                    }
                 }
             },
-            plugins: [chartPlugins.emptyDoughnut]
+            plugins: [
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
+            ]
         })
     }
     // #endregion

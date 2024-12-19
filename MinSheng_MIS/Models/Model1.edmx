@@ -208,6 +208,7 @@
           </Key>
           <Property Name="EMFSN" Type="char" MaxLength="13" Nullable="false" />
           <Property Name="ESN" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="MISSN" Type="char" MaxLength="11" />
           <Property Name="MaintainName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Period" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="lastMaintainDate" Type="date" />
@@ -882,6 +883,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Equipment_MaintenanceForm_Template_MaintainItemSetting">
+          <End Role="Template_MaintainItemSetting" Type="Self.Template_MaintainItemSetting" Multiplicity="0..1" />
+          <End Role="Equipment_MaintenanceForm" Type="Self.Equipment_MaintenanceForm" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Template_MaintainItemSetting">
+              <PropertyRef Name="MISSN" />
+            </Principal>
+            <Dependent Role="Equipment_MaintenanceForm">
+              <PropertyRef Name="MISSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Equipment_MaintenanceFormMember_Equipment_MaintenanceForm">
           <End Role="Equipment_MaintenanceForm" Type="Self.Equipment_MaintenanceForm" Multiplicity="1" />
           <End Role="Equipment_MaintenanceFormMember" Type="Self.Equipment_MaintenanceFormMember" Multiplicity="*" />
@@ -1427,6 +1440,10 @@
             <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
             <End Role="Equipment_MaintenanceForm" EntitySet="Equipment_MaintenanceForm" />
           </AssociationSet>
+          <AssociationSet Name="FK_Equipment_MaintenanceForm_Template_MaintainItemSetting" Association="Self.FK_Equipment_MaintenanceForm_Template_MaintainItemSetting">
+            <End Role="Template_MaintainItemSetting" EntitySet="Template_MaintainItemSetting" />
+            <End Role="Equipment_MaintenanceForm" EntitySet="Equipment_MaintenanceForm" />
+          </AssociationSet>
           <AssociationSet Name="FK_Equipment_MaintenanceFormMember_Equipment_MaintenanceForm" Association="Self.FK_Equipment_MaintenanceFormMember_Equipment_MaintenanceForm">
             <End Role="Equipment_MaintenanceForm" EntitySet="Equipment_MaintenanceForm" />
             <End Role="Equipment_MaintenanceFormMember" EntitySet="Equipment_MaintenanceFormMember" />
@@ -1689,6 +1706,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_Equipment_MaintenanceForm_EquipmentInfo" Association="Bimfm_MinSheng_MISModel.FK_Equipment_MaintenanceForm_EquipmentInfo">
             <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
+            <End Role="Equipment_MaintenanceForm" EntitySet="Equipment_MaintenanceForm" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Equipment_MaintenanceForm_Template_MaintainItemSetting" Association="Bimfm_MinSheng_MISModel.FK_Equipment_MaintenanceForm_Template_MaintainItemSetting">
+            <End Role="Template_MaintainItemSetting" EntitySet="Template_MaintainItemSetting" />
             <End Role="Equipment_MaintenanceForm" EntitySet="Equipment_MaintenanceForm" />
           </AssociationSet>
           <AssociationSet Name="FK_Equipment_MaintenanceFormMember_Equipment_MaintenanceForm" Association="Bimfm_MinSheng_MISModel.FK_Equipment_MaintenanceFormMember_Equipment_MaintenanceForm">
@@ -2038,6 +2059,7 @@
           </Key>
           <Property Name="EMFSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="false" />
           <Property Name="ESN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="false" />
+          <Property Name="MISSN" Type="String" MaxLength="11" FixedLength="true" Unicode="false" />
           <Property Name="MaintainName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Period" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="lastMaintainDate" Type="DateTime" Precision="0" />
@@ -2053,6 +2075,7 @@
           <Property Name="AuditResult" Type="Boolean" />
           <Property Name="AuditReason" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Equipment_MaintenanceForm_EquipmentInfo" FromRole="Equipment_MaintenanceForm" ToRole="EquipmentInfo" />
+          <NavigationProperty Name="Template_MaintainItemSetting" Relationship="Bimfm_MinSheng_MISModel.FK_Equipment_MaintenanceForm_Template_MaintainItemSetting" FromRole="Equipment_MaintenanceForm" ToRole="Template_MaintainItemSetting" />
           <NavigationProperty Name="Equipment_MaintenanceFormMember" Relationship="Bimfm_MinSheng_MISModel.FK_Equipment_MaintenanceFormMember_Equipment_MaintenanceForm" FromRole="Equipment_MaintenanceForm" ToRole="Equipment_MaintenanceFormMember" />
         </EntityType>
         <EntityType Name="Equipment_MaintenanceFormMember">
@@ -2502,6 +2525,7 @@
           <Property Name="TSN" Type="String" Nullable="false" MaxLength="8" FixedLength="true" Unicode="false" />
           <Property Name="MaintainName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Equipment_MaintainItemValue" Relationship="Bimfm_MinSheng_MISModel.FK_Equipment_MaintainItemValue_Template_MaintainItemSetting" FromRole="Template_MaintainItemSetting" ToRole="Equipment_MaintainItemValue" />
+          <NavigationProperty Name="Equipment_MaintenanceForm" Relationship="Bimfm_MinSheng_MISModel.FK_Equipment_MaintenanceForm_Template_MaintainItemSetting" FromRole="Template_MaintainItemSetting" ToRole="Equipment_MaintenanceForm" />
           <NavigationProperty Name="Template_OneDeviceOneCard" Relationship="Bimfm_MinSheng_MISModel.FK_Template_MaintainItemSetting_Template_OneDeviceOneCard" FromRole="Template_MaintainItemSetting" ToRole="Template_OneDeviceOneCard" />
         </EntityType>
         <EntityType Name="Template_OneDeviceOneCard">
@@ -2790,6 +2814,18 @@
             </Principal>
             <Dependent Role="Equipment_MaintenanceForm">
               <PropertyRef Name="ESN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Equipment_MaintenanceForm_Template_MaintainItemSetting">
+          <End Type="Bimfm_MinSheng_MISModel.Template_MaintainItemSetting" Role="Template_MaintainItemSetting" Multiplicity="0..1" />
+          <End Type="Bimfm_MinSheng_MISModel.Equipment_MaintenanceForm" Role="Equipment_MaintenanceForm" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Template_MaintainItemSetting">
+              <PropertyRef Name="MISSN" />
+            </Principal>
+            <Dependent Role="Equipment_MaintenanceForm">
+              <PropertyRef Name="MISSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3406,6 +3442,7 @@
                 <ScalarProperty Name="lastMaintainDate" ColumnName="lastMaintainDate" />
                 <ScalarProperty Name="Period" ColumnName="Period" />
                 <ScalarProperty Name="MaintainName" ColumnName="MaintainName" />
+                <ScalarProperty Name="MISSN" ColumnName="MISSN" />
                 <ScalarProperty Name="ESN" ColumnName="ESN" />
                 <ScalarProperty Name="EMFSN" ColumnName="EMFSN" />
               </MappingFragment>

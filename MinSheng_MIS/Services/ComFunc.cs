@@ -9,6 +9,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -96,6 +97,16 @@ namespace MinSheng_MIS.Services
             ".doc", ".docx", ".pdf", ".DOC", ".DOCX", ".PDF"
         };
 
+        private static readonly HashSet<string> AllowedPdfContentTypes = new HashSet<string>
+        {
+            "application/pdf"
+        };
+
+        private static readonly HashSet<string> AllowedPdfExtensions = new HashSet<string>
+        {
+            ".PDF"
+        };
+
         private static readonly HashSet<string> AllowedImageContentTypes = new HashSet<string>
         {
             "image/jpeg", "image/jpg", "image/png"
@@ -105,6 +116,11 @@ namespace MinSheng_MIS.Services
         {
             ".jpeg", ".jpg", ".png", ".JPEG", ".JPG", ".PNG"
         };
+
+        public static bool IsConformedForPdf(string contentType, string extension)
+        {
+            return AllowedPdfContentTypes.Contains(contentType) && AllowedPdfExtensions.Contains(extension);
+        }
 
         public static bool IsConformedForDocument(string contentType, string extension)
         {
@@ -251,6 +267,95 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 產生下一個ID/SN
+        /// <summary>
+        /// 根據指定的格式表達式和最新 ID 生成下一個唯一 ID
+        /// </summary>
+        /// <param name="formatExpress">格式表達式</param>
+        /// <param name="latestID">最近一次使用的 ID</param>
+        /// <returns>新生成的 ID</returns>
+        public static string CreateNextID(string formatExpress, string latestID)
+        {
+            if (string.IsNullOrEmpty(formatExpress))
+                throw new ArgumentException("格式表達式不能為空或 null。", nameof(formatExpress));
+
+            var idBuilder = new StringBuilder();
+
+            for (int i = 0; i < formatExpress.Length; i++)
+            {
+                switch (formatExpress[i])
+                {
+                    case '!':
+                        i = AppendDateFormat(formatExpress, idBuilder, ref i);
+                        break;
+                    case '%':
+                        i = AppendSequence(formatExpress, idBuilder, latestID, ref i);
+                        break;
+                    default:
+                        idBuilder.Append(formatExpress[i]);
+                        break;
+                }
+            }
+
+            return idBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 處理日期格式佔位符
+        /// </summary>
+        private static int AppendDateFormat(string formatExpress, StringBuilder idBuilder, ref int index)
+        {
+            int endIndex = formatExpress.IndexOf('}', index);
+            if (endIndex == -1)
+                throw new FormatException("日期格式表達式無效");
+
+            string dateFormat = formatExpress.Substring(index + 2, endIndex - index - 2);
+            idBuilder.Append(DateTime.Now.ToString(dateFormat));
+            return endIndex;
+        }
+
+        /// <summary>
+        /// 處理序列號佔位符
+        /// </summary>
+        private static int AppendSequence(string formatExpress, StringBuilder idBuilder, string latestID, ref int index)
+        {
+            int endIndex = formatExpress.IndexOf('}', index);
+            if (endIndex == -1)
+                throw new FormatException("序列號格式表達式無效");
+
+            string sequenceLengthText = formatExpress.Substring(index + 2, endIndex - index - 2);
+            if (!int.TryParse(sequenceLengthText, out int sequenceLength))
+                throw new FormatException("序列號長度格式無效");
+
+            string currentDatePart = idBuilder.ToString();
+            string nextSequence = GenerateNextSequence(currentDatePart, latestID, sequenceLength);
+
+            idBuilder.Append(nextSequence);
+            return endIndex;
+        }
+
+        /// <summary>
+        /// 生成下一個序列號，支持按日期重置
+        /// </summary>
+        private static string GenerateNextSequence(string currentDatePart, string latestID, int sequenceLength)
+        {
+            // 如果沒有最近的 ID 或日期部分不同，重置為 1
+            if (string.IsNullOrEmpty(latestID) || !latestID.StartsWith(currentDatePart))
+            {
+                return "1".PadLeft(sequenceLength, '0');
+            }
+
+            // 提取並遞增序列號
+            string sequencePart = latestID.Substring(currentDatePart.Length, sequenceLength);
+
+            if (!int.TryParse(sequencePart, out int currentSequence))
+                throw new FormatException("最近的 ID 中序列號格式無效");
+
+            int nextSequence = currentSequence + 1;
+            return nextSequence.ToString().PadLeft(sequenceLength, '0');
+        }
+        #endregion
+
         #region Helper
         public static string UrlMaker(params string[] parts)
         {
@@ -264,7 +369,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 參數
-        private static string ExcelConfigJsonPath = "~/App_Data/ExcelConfig.json";
+        private static readonly string ExcelConfigJsonPath = "~/App_Data/ExcelConfig.json";
         #endregion
     }
 }

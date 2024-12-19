@@ -1,5 +1,4 @@
-﻿using MinSheng_MIS.Models.ViewModels;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace MinSheng_MIS.Services
 {
     public static class Helper
     {
-        private static string html_newLine = "<br>";
+        private static readonly string html_newLine = "<br>";
         /// <summary>
         /// 未通過Data Annotaion的錯誤
         /// </summary>
@@ -24,13 +23,13 @@ namespace MinSheng_MIS.Services
 
             if (string.IsNullOrEmpty(field))
                 return new ContentResult { 
-                    Content = string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).Distinct()), 
+                    Content = "</br>" + string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).Distinct()), 
                     ContentType = "text/plain" 
                 };
             else
                 return new ContentResult
                 {
-                    Content = string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage).Distinct()),
+                    Content = "</br>" + string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage).Distinct()),
                     ContentType = "text/plain"
                 };
         }
@@ -67,5 +66,60 @@ namespace MinSheng_MIS.Services
             JObject jo = JObject.Parse(content);
             return jo;
         }
+
+        public static ICollection<T> AddOrUpdateList<T, TSource>(
+            List<TSource> list,
+            string esn,
+            Func<TSource, string, T> createInstance) where T : new()
+        {
+            return list.Select(x => createInstance(x, esn)).ToList();
+        }
+
+        public static ICollection<T> AddOrUpdateList<T, TSource>(
+            IEnumerable<TSource> list,
+            string esn,
+            string initialLatestId,
+            Func<string, string, string> generateIdFunc,
+            Func<TSource, string, string, string, T> createInstance)
+        {
+            string latestId = initialLatestId;
+            var results = new List<T>();
+
+            foreach (var item in list)
+            {
+                // 生成Id
+                string newId = generateIdFunc(esn, latestId);
+
+                // 創建實例，傳遞當前 Id 和 Id 生成函數
+                var result = createInstance(item, esn, latestId, newId);
+                results.Add(result);
+
+                // 更新 latestId
+                latestId = newId;
+            }
+
+            return results;
+        }
+
+        #region DTO轉換
+        public static TDestination ToDto<TSource, TDestination>(this TSource source)
+            where TSource : class
+            where TDestination : class, new()  // TDestination 必須是具體類型
+        {
+            var destination = new TDestination();  // 創建具體類型的實例
+
+            // 遍歷源對象的屬性，並將它們映射到目標對象
+            foreach (var sourceProp in typeof(TSource).GetProperties())
+            {
+                var destProp = typeof(TDestination).GetProperty(sourceProp.Name);
+                if (destProp != null && destProp.CanWrite)
+                {
+                    destProp.SetValue(destination, sourceProp.GetValue(source));
+                }
+            }
+
+            return destination;
+        }
+        #endregion
     }
 }

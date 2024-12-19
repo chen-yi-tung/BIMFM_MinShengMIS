@@ -4,10 +4,6 @@
 
 @section styles {
     @Html.Partial("DataGridScripts")
-
-    <script src="/Scripts/datagrid-management.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/AreaFloorEvent.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -72,7 +68,7 @@
 
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
-                <button type="button" class="btn btn-clear" id="clear">清除</button>
+                <button type="reset" class="btn btn-clear" id="clear">清除</button>
             </div>
 
         </form>
@@ -83,8 +79,8 @@
     </div>
 </div>
 
-    @section scripts {
-        <script>
+@section scripts {
+    <script>
 
         var getGridJSON = '@Url.Action("WarningMessage_Management", "Datagrid")';
         var DataGrid;
@@ -104,9 +100,9 @@
         ]
 
         $(async function () {
-            await AreaFloorEvent();
-            await pushSelect("WMType", '@Url.Action("WMType", "DropDownList")');
-            await pushSelect("WMState", '@Url.Action("WMState", "DropDownList")');
+            await formDropdown.ASN();
+            await formDropdown.pushSelect({ id: "WMType", url: '@Url.Action("WMType", "DropDownList")' });
+            await formDropdown.pushSelect({ id: "WMState", url: '@Url.Action("WMState", "DropDownList")' });
             if (window.location.search) {
                 let params = new URL(document.location).searchParams;
                 params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
@@ -127,7 +123,7 @@
                 //sortName: 'IAWSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "填報", "edit", { disabled: row.WMState == "處理完成"})),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "填報", "edit", { disabled: row.WMState == "處理完成" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('WMSN'),
@@ -152,15 +148,10 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            $("#clear").click(function () {
-                $(".search-area form")[0].reset();
-                pushSelect("WMType", '@Url.Action("WMType", "DropDownList")');
-                pushSelect("WMState", '@Url.Action("WMState", "DropDownList")');
-            });
 
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());
             });
         }
-        </script>
-    }
+    </script>
+}

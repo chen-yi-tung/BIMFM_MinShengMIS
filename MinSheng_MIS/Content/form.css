@@ -209,7 +209,7 @@
 }
 
 .form-required::before,
-.form-group.required label:not([for="File"])::before,
+.form-group.required label::before,
 .search-area .form-group.required label::before {
     content: "*";
     position: absolute;

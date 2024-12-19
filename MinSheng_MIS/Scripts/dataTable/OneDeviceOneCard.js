@@ -1,6 +1,4 @@
 ﻿function SampleInfo(selector, data) {
-    console.log("SampleInfo data", data)
-    console.log('SampleInfo selector', $(selector));
 
     $(selector).append(
         data ?
@@ -15,55 +13,119 @@
             : "",
     )
 }
-
 function AddField(selector, data) {
-    console.log("AddField data", data)
-    console.log('AddField selector', $(selector));
-
     $(selector).append(
-        data.AddField ?
+        data.AddItemList ?
             createInspectionTable({
-                id: `AddField`,
+                id: `AddItemList`,
                 sn: [
-                    { text: "增設欄位名稱", value: "AddField", itemNum: true },
+                    { text: "增設欄位名稱", value: "AddItemList", itemNum: "Value" },
                 ],
                 data: data,
             })
             : "",
     )
 }
-
 function MaintainInfo(selector, data) {
-    console.log("MaintainInfo data", data)
-    console.log('MaintainInfo selector', $(selector));
-
     $(selector).append(
-        data.MaintainItems ?
+        data.MaintainItemList ?
             createInspectionTable({
-                id: `MaintainItems`,
+                id: `MaintainItemList`,
                 sn: [
-                    { text: "保養項目", value: "MaintainItems", itemNum: true },
+                    { text: "保養項目", value: "MaintainItemList", itemNum: "Value" },
                 ],
                 data: data,
             })
             : "",
     )
 }
-
 function InspectionInfo(selector, data) {
-    console.log("InspectionInfo data", data)
-    console.log('InspectionInfo selector', $(selector));
 
     $(selector).append(
-        data.InspectionItems ?
-            createInspectionTable({
-                id: `InspectionInfo`,
+        data ?
+            createTableInner(
+                data,
+                [
+                    {
+                        text: "巡檢頻率",
+                        value: "Frequency",
+                        colspan: true
+                    }
+                ]
+            )
+            : "",
+    )
+    $(selector).append(
+        data.InspectItemList ?
+            createTableInner(data,
+                [
+                    {
+                        text: "檢查項目",
+                        value: "InspectItemList",
+                        itemNum: [
+                            { value: "Value" },
+                        ],
+                        colspan: true
+                    },
+                ]
+            )
+            : "",
+    )
+    $(selector).append(
+        data.ReportItemList ?
+            createTableInner(data,
+                [
+                    {
+                        text: "填報項目名稱/單位",
+                        value: "ReportItemList",
+                        itemNum: [
+                            { value: "Value" },
+                            { value: "Unit" },
+                        ],
+                    },
+                ]
+            )
+            : "",
+    )
+}
+
+function ShowEquipment(selector, data, addItems) {
+    //轉換日期格式
+    if (Array.isArray(data)) {
+        data.forEach(item => {
+            if (item.InstallDate) {
+                item.InstallDate = item.InstallDate.replace(/-/g, "/");
+            }
+        });
+    }
+    //console.log("data", data)
+    //console.log("addItems", addItems)
+    //console.log('selector', $(selector));
+    //console.log('data.IName', data.IName);
+
+    $(selector).append(
+        data ?
+            createAccordion({
+                id: "Equipment",
+                type: "addEquipmentSetting",
                 sn: [
-                    { text: "巡檢頻率", value: "Ifrequency", colspan: "3" },
-                    { text: "檢查項目", value: "InspectItems", colspan: "2", itemNum: "true" },
-                    { text: "填報項目名稱/單位", value: "ReportItems", type: "dualCol" },
+                    { text: "設備圖片", value: "FilePath", url: true },
+                    { text: "棟別", value: "ASN" },
+                    { text: "樓層", value: "FSN" },
+                    { text: "設備廠牌", value: "Brand" },
+                    { text: "設備型號", value: "Model" },
+                    { text: "設備廠商", value: "Vendor" },
+                    { text: "連絡電話", value: "ContactPhone" },
+                    { text: "安裝日期", value: "InstallDate" },
+                    { text: "使用電壓", value: "OperatingVoltage" },
+                    { text: "其他耗材資料", value: "OtherInfo" },
+                    { text: "備註", value: "Memo" },
                 ],
-                data: data.InspectionItems,
+                ESN: `ESN`,
+                data: data,
+                addItems: addItems,
+                itemTitleKey: `EName`,
+                itemSubTitleKey: `NO`,
             })
             : "",
     )

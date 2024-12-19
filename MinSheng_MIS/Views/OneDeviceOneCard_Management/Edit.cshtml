@@ -2,17 +2,29 @@
     ViewBag.Title = "編輯 一機一卡模板";
 }
 @section styles {
+    @Html.Partial("DataGridScripts")
     <link rel="stylesheet" href="/Content/OneDeviceOneCardManagement.css">
-    <script src="/Content/easyui/jquery.min.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
+    <link rel="stylesheet" href="/Content/EquipmentInfoManagement.css">
+    <link rel="stylesheet" href="/Content/OneDeviceOneCardManagement.css">
+    <script src="/Scripts/dataTable/OneDeviceOneCard.js" defer></script>
 }
+
+<style>
+    .accordion-body {
+        background: var(--datatable-body-bg);
+    }
+    .edit-item-init {
+        grid-template-columns: 2fr 1fr 1fr;
+    }
+</style>
 
 
 <h2>@ViewBag.Title</h2>
 
 <section>
     <div class="edit-area edit-area-sm flex-lg-row">
-        <form class="form">
+        <form class="form" id="form1">
+            <input type="text" id="TSN" name="TSN" hidden>
             <div class="form-group-zone">
                 <div class="form-group required">
                     <label for="SampleName">模板名稱</label>
@@ -25,12 +37,7 @@
                     <i class="fa-solid fa-map-pin"></i>
                     <div>增設基本資料欄位</div>
                 </div>
-                <div class="d-flex flex-column gap-2 w-100" id="AddItemsArea">
-                    <div class="d-flex gap-3 align-items-center">
-                        <input type="text" class="form-control" name="AddItem" id="AddItem" />
-                        <button type="button" class="btn-delete-item"></button>
-                    </div>
-                </div>
+                <div class="d-flex flex-column gap-2 w-100" id="AddItemsArea"></div>
                 <button type="button" class="addItemBtn" onclick="addTemplateItem('AddItemsArea')"><i class="fa-solid fa-plus"></i></button>
             </div>
 
@@ -39,12 +46,7 @@
                     <i class="fa-solid fa-map-pin"></i>
                     <div>保養項目名稱</div>
                 </div>
-                <div class="d-flex flex-column gap-2 w-100" id="MaintainItemsArea">
-                    <div class="d-flex gap-3 align-items-center">
-                        <input type="text" class="form-control" name="MaintainItem" id="MaintainItem" />
-                        <button type="button" class="btn-delete-item"></button>
-                    </div>
-                </div>
+                <div class="d-flex flex-column gap-2 w-100" id="MaintainItemsArea"></div>
                 <button type="button" class="addItemBtn" onclick="addTemplateItem('MaintainItemsArea')"><i class="fa-solid fa-plus"></i></button>
             </div>
 
@@ -55,10 +57,10 @@
                 </div>
                 <div class="d-flex flex-column gap-2 w-100" id="item-area">
                     <div class="form-group d-grid" style="grid-template-columns: 1fr 24px; column-gap: 1rem; ">
-                        <label for="Ifrequency">巡檢頻率</label>
+                        <label for="Frequency">巡檢頻率</label>
                         <div></div>
-                        <select class="form-select" style="grid-column-start: unset;" name="Ifrequency" id="Ifrequency">
-                            <option value="0">請選擇</option>
+                        <select class="form-select" style="grid-column-start: unset;" name="Frequency" id="Frequency" placeholder="請選擇">
+                            <option value="">請選擇</option>
                             <option value="1">1小時</option>
                             <option value="2">2小時</option>
                             <option value="3">3小時</option>
@@ -70,29 +72,15 @@
                         </select>
                     </div>
                     <div class="form-group d-flex flex-column align-items-center">
-                        <label for="InspectItemName" class="w-100">檢查項目名稱</label>
-                        <div class="d-flex flex-column gap-2 w-100" id="InspectItemsArea">
-                            <div class="d-flex gap-3 align-items-center">
-                                <input type="text" class="form-control" name="InspectItemName-1" id="InspectItemName-1" maxlength="20">
-                                <button type="button" class="btn-delete-item"></button>
-                            </div>
-
-                        </div>
-                        <button type="button" class="addItemBtn" onclick="addTemplateItem('InspectItemsArea')"><i class="fa-solid fa-plus"></i></button>
+                        <label for="CheckItemsArea" class="w-100">檢查項目名稱</label>
+                        <div class="d-flex flex-column gap-2 w-100" id="CheckItemsArea"></div>
+                        <button type="button" class="addItemBtn" onclick="addTemplateItem('CheckItemsArea')"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
 
                 <div class="form-group d-flex flex-column align-items-center w-100">
                     <label for="" class="w-100">填報項目名稱/單位</label>
-                    <div class="d-flex flex-column gap-2" id="ReportItemsArea">
-                        <div class="d-flex gap-3 align-items-center">
-                            <div class="key-value-pair gap-2">
-                                <input type="text" class="form-control" name="ReportItemName-1" id="ReportItemName-1" maxlength="20" placeholder="檢查項目名稱">
-                                <input type="text" class="form-control" name="ReportItemInit-1" id="ReportItemInit-1" maxlength="20" placeholder="單位">
-                            </div>
-                            <button type="button" class="btn-delete-item"></button>
-                        </div>
-                    </div>
+                    <div class="d-flex flex-column gap-2" id="ReportItemsArea"></div>
                     <button type="button" class="addItemBtn" onclick="addTemplateItem('ReportItemsArea')"><i class="fa-solid fa-plus"></i></button>
                 </div>
             </div>
@@ -101,109 +89,149 @@
 </section>
 
 <div class="edit-button-area">
-    <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-export" id="submit">儲存</button>
+    <button class="btn btn-back" onclick="back()">返回</button>
+    <button class="btn btn-export" onclick="checkSave()">儲存</button>
+</div>
+
+@*補充設備保養項目設定 POP UP*@
+<div class="modal fade datagrid-modal" tabindex="-1" id="addMultiAssign">
+    <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>請補充設備保養項目設定</h2>
+                <form class="form w-100 p-0" id="EquipmentZone"></form>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" onclick="popupSave()">確定</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
 @section scripts {
     <script>
-        const IPSN = '@ViewBag.id';
-        ////let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
-        let apiUrl = null;
-        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
-        let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
-        let sampleTr;
+        var labelItems = new LabelItems()
+        const TSN = '@ViewBag.id';
+        const apiUrl = '@Url.Action("ReadBody", "OneDeviceOneCard_Management")' + `/${TSN}`;
+        const AskEquipmentApiUrl = '@Url.Action("GetEquipmentsUsingTemplate", "OneDeviceOneCard_Management")?TSN=' + TSN;
+        //const SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
+        const SubmitUrl =  null;
 
         $(async function () {
-            addButtonEvent();
-            delTemplateItem();
+            observeChildChanges();
             //await addDropDownList();
             //await addAreaFloorEvent();
             readData(apiUrl);
         })
 
         let fakeData = {
+            TSN: "0001423",
             SampleName: "模板模板名稱",
-            AddItems: [
+            AddItemList: [
                 {
-                    SN: "AI001",
-                    value: "起動方式",
+                    AFSN: "E001",
+                    Value: "起動方式",
                 },
                 {
-                    SN: "AI002",
-                    value: "額定電流",
+                    AFSN: "E002",
+                    Value: "額定電流",
                 },
                 {
-                    SN: "AI003",
-                    value: "油料編號",
-                },
-            ],
-            MaintainItems: [
-                {
-                    SN: "M001",
-                    value: "外部清潔與保養"
-                },
-                {
-                    SN: "M002",
-                    value: "各部螺絲鎖定"
-                },
-                {
-                    SN: "M003",
-                    value: "檢查管路是否通暢"
-                },
-                {
-                    SN: "M004",
-                    value: "軸承潤滑油添加"
+                    AFSN: "E003",
+                    Value: "油料編號",
                 },
             ],
-            Ifrequency: "2",
-            InspectItems: [
+            MaintainItemList: [
                 {
-                    SM: "I001",
-                    value: "馬達是否正常運轉",
+                    MISSN: "MIS001",
+                    Value: "外部清潔與保養"
                 },
                 {
-                    sm: "i002",
-                    value: "管線是否正常無漏液",
+                    MISSN: "MIS002",
+                    Value: "各部螺絲鎖定"
                 },
                 {
-                    sm: "i003",
-                    value: "出口端是否正常出藥",
+                    MISSN: "MIS003",
+                    Value: "檢查管路是否通暢"
                 },
                 {
-                    sm: "i004",
-                    value: "設備是否正常無漏水",
+                    MISSN: "MIS004",
+                    Value: "軸承潤滑油添加"
                 },
             ],
-            ReportItems: [
+            Frequency: "2",
+            CheckItemList: [
                 {
-                    SN: "R001",
-                    value: "馬達電壓",
-                    init: "V"
+                    CISN: "CI001",
+                    Value: "馬達是否正常運轉",
                 },
                 {
-                    SN: "R001",
-                    value: "電流",
-                    init: "A"
+                    CISN: "CI002",
+                    Value: "管線是否正常無漏液",
                 },
                 {
-                    SN: "R001",
-                    value: "水壓",
-                    init: "Pa"
+                    CISN: "CI003",
+                    Value: "出口端是否正常出藥",
                 },
                 {
-                    SN: "R001",
-                    value: "流量",
-                    init: "CMH"
+                    CISN: "CI004",
+                    Value: "設備是否正常無漏水",
+                },
+            ],
+            ReportItemList: [
+                {
+                    RISN: "RI001",
+                    Value: "馬達電壓",
+                    Unit: "V"
+                },
+                {
+                    RISN: "RI002",
+                    Value: "電流",
+                    Unit: "A"
+                },
+                {
+                    RISN: "RI003",
+                    Value: "水壓",
+                    Unit: "Pa"
+                },
+                {
+                    RISN: "RI004",
+                    Value: "流量",
+                    Unit: "CMH"
                 },
             ]
+        }
+        let fakeEquipmentData=[
+            {
+                ESN: "E000123",
+                EName: "螺旋發送機",
+                NO: "E3569248",
+                FilePath: "/Files/LaboratoryMaintenance/240104002.png",
+                FileName: "240104002.png",
+                ASN: "進流抽水站",
+                FSN: "2F",
+                Brand: "螺旋廠牌",
+                Model: "SP309",
+                Vendor: "螺旋廠商",
+                ContactPhone: "(02)2669-6541",
+                InstallDate: "2024-12-13",
+                OperatingVoltage: "220V",
+                OtherInfo: "無",
+                Memo: ""
+            },
+        ]
+
+        let EquipmentData = [];
+
+        function back() {
+            history.back();
         }
 
         function readData(url = null) {
 
             url == null ? onSuccess(fakeData) :
-                console.log("fakeData", fakeData);
                 $.ajax({
                     url: url,
                     type: "GET",
@@ -220,21 +248,21 @@
 
                 //塞資料
                 const areas = {
-                    AddItems: "AddItemsArea",
-                    MaintainItems: "MaintainItemsArea",
-                    InspectItems: "InspectItemsArea",
-                    ReportItems: "ReportItemsArea"
+                    AddItemList: "AddItemsArea",
+                    MaintainItemList: "MaintainItemsArea",
+                    CheckItemList: "CheckItemsArea",
+                    ReportItemList: "ReportItemsArea"
                 };
 
                 for (const [key, value] of Object.entries(res)) {
                     const areaID = areas[key];
                     const itemArea = document.getElementById(areaID);
-                    console.log("areaID", areaID);
-                    console.log("value", value);
-                    console.log("key", key);
+                    //console.log("areaID", areaID);
+                    //console.log("value", value);
+                    //console.log("key", key);
 
                     if (!itemArea) {
-                        console.warn(`Element with ID "${areaID}" not found.`);
+                        //console.warn(`Element with ID "${areaID}" not found.`);
                         continue;
                     }
 
@@ -251,31 +279,39 @@
                             const divInner = document.createElement("div");
                             divInner.className = "key-value-pair gap-2";
 
+                            const inputSN = document.createElement("input");
+                            inputSN.type = "text";
+                            inputSN.name = `RISN_${index + 1}`;
+                            inputSN.id = `RISN_${index + 1}`;
+                            inputSN.value = item.RISN || "";
+                            inputSN.hidden = "true"
+
                             const inputName = document.createElement("input");
                             inputName.type = "text";
                             inputName.className = "form-control";
-                            inputName.name = `${key.slice(0, -1)}_Name${index + 1}`;
-                            inputName.id = `${key.slice(0, -1)}_Name${index + 1}`;
-                            inputName.value = item.value || "";
+                            inputName.name = `ReportItemName_${index + 1}`;
+                            inputName.id = `ReportItemName_${index + 1}`;
+                            inputName.value = item.Value || "";
                             inputName.placeholder = "請輸入檢查項目名稱";
 
-                            const inputInit = document.createElement("input");
-                            inputInit.type = "text";
-                            inputInit.className = "form-control";
-                            inputInit.name = `${key.slice(0, -1)}Init${index + 1}`;
-                            inputInit.id = `${key.slice(0, -1)}Init${index + 1}`;
-                            inputInit.value = item.init || "";
-                            inputInit.placeholder = "請輸入單位";
+                            const inputUnit = document.createElement("input");
+                            inputUnit.type = "text";
+                            inputUnit.className = "form-control";
+                            inputUnit.name = `ReportItemUnit_${index + 1}`;
+                            inputUnit.id = `ReportItemUnit_${index + 1}`;
+                            inputUnit.value = item.Unit || "";
+                            inputUnit.placeholder = "請輸入單位";
 
                             const button = document.createElement("button");
                             button.type = "button";
                             button.className = "btn-delete-item";
                             button.onclick = function () {
-                                div.remove();
+                                delInputItem(this, areaID);
                             };
 
+                            divInner.appendChild(inputSN);
                             divInner.appendChild(inputName);
-                            divInner.appendChild(inputInit);
+                            divInner.appendChild(inputUnit);
                             divOuter.appendChild(divInner);
                             divOuter.appendChild(button);
                             itemArea.appendChild(divOuter);
@@ -285,26 +321,44 @@
                             const div = document.createElement("div");
                             div.className = "d-flex gap-3 align-items-center";
 
+                            const inputSN = document.createElement("input");
+                            inputSN.type = "text";
+                            if (areaID === "AddItemsArea") {
+                                inputSN.name = `AFSN_${index + 1}`;
+                                inputSN.id = `AFSN_${index + 1}`;
+                                inputSN.value = item.AFSN || "";
+                            } else if (areaID === "MaintainItemsArea") {
+                                inputSN.name = `MISSN_${index + 1}`;
+                                inputSN.id = `MISSN_${index + 1}`;
+                                inputSN.value = item.MISSN || "";
+                            } else if (areaID === "CheckItemsArea") {
+                                inputSN.name = `CISN_${index + 1}`;
+                                inputSN.id = `CISN_${index + 1}`;
+                                inputSN.value = item.CISN || "";
+                            }
+                            inputSN.hidden = "true"
+
                             const input = document.createElement("input");
                             input.type = "text";
                             input.className = "form-control";
-                            input.name = `${key.slice(0, -1)}_${index + 1}`;
-                            input.id = `${key.slice(0, -1)}_${index + 1}`;
-                            input.value = item.value || "";
+                            input.name = `${key.slice(0, -4)}_${index + 1}`;
+                            input.id = `${key.slice(0, -4)}_${index + 1}`;
+                            input.value = item.Value || "";
 
                             const button = document.createElement("button");
                             button.type = "button";
                             button.className = "btn-delete-item";
                             button.onclick = function () {
-                                div.remove();
+                                delInputItem(this, areaID);
                             };
 
+                            div.appendChild(inputSN);
                             div.appendChild(input);
                             div.appendChild(button);
                             itemArea.appendChild(div);
                         });
                     }
-                    
+
                 }
 
             }
@@ -313,56 +367,137 @@
             }
         }
 
-        function save() {
-            let data = getCreateSaveData(IPSN);
+        async function checkSave() {
+            // 檢查必填
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            if (!isValidity) return;
 
-            console.log(data);
-
-            if (!data) return;
-
-            $.ajax({
-                url: SubmitUrl,
-                data: JSON.stringify(data),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-            function onSuccess(res) {
-                console.log(res);
+            // 檢查巡檢項目設定
+            // 有巡檢頻率時，需有檢查項目名稱或填報項目名稱/單位
+            // 有檢查項目名稱或填報項目名稱/單位時，需有巡檢頻率
+            if (!labelItems.checkValidity()) {
                 createDialogModal({
-                    id: "DialogModal-Success", inner: "儲存成功！",
-                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
-                });
+                    id: "DialogModal-Error", inner: `儲存失敗！請至少新增一個 檢查項目名稱 或 填報項目名稱/單位！`,
+                })
+                return;
             }
-            function onError(res) {
-                console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` })
+
+            // 檢查有無新增保養項目名稱，有的話就顯示 補充設備保養項目設定 Modal
+            const equips = await getEquipments()
+            console.log('equips', equips)
+            if (EquipmentData.length > 0) {
+                const newAddValues = equips
+                    .filter(item => !item.MISSN || item.MISSN.trim() === "")
+                    .map(item => item.Value);
+
+                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
+                modal.show();
+                modal._element.addEventListener('hidden.bs.modal', () => {
+                    // 清空 #EquipmentZone
+                    document.getElementById("EquipmentZone").innerHTML = "";
+                    EquipmentData = [];
+                }, { once: true })
+                console.log('modal', modal)
+
+                //加入新項目
+                ShowEquipment("#EquipmentZone", EquipmentData, newAddValues)
+                return;
+            }
+
+            // 所有檢查通過，直接執行儲存
+            save();
+
+            async function getEquipments() {
+                const maintainItemList = labelItems.calc().MaintainItemList;
+                const hasEmptyMISSN = maintainItemList.some(item => !item.MISSN || item.MISSN.trim() === "");
+                const hasEmptyValue = maintainItemList.some(item => !item.Value || item.Value.trim() === "");
+                console.log(maintainItemList, hasEmptyMISSN, hasEmptyValue);
+                if (!hasEmptyValue && hasEmptyMISSN) {
+                    if (AskEquipmentApiUrl == null) {
+                        EquipmentData = fakeEquipmentData;
+                        return maintainItemList;
+                    }
+                    const data = await $.ajax({
+                        url: AskEquipmentApiUrl,
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                    }).catch((res) => {
+                        console.log(res);
+                        return false;
+                    })
+                    EquipmentData = data;
+                    return maintainItemList;
+                }
+                return false;
             }
         }
 
-        function deleteIP() {
+        function popupSave() {
+            const form = document.getElementById('EquipmentZone');
+            if (validityCollapse(form) === false) return;
+            save();
+
+            function validityCollapse(form) {
+                if (!form) return null;
+                if (form.reportValidity()) return true;
+
+                const firstInvalidInput = form.querySelector(":invalid");
+                if (!firstInvalidInput) return false;
+                const accordionItem = firstInvalidInput.closest(".accordion-item");
+                if (accordionItem) {
+                    const collapseElement = accordionItem.querySelector(".accordion-collapse");
+                    if (collapseElement && !collapseElement.classList.contains('show')) {
+                        const collapse = bootstrap.Collapse.getOrCreateInstance(collapseElement);
+                        collapse.show();
+                        collapse._element.addEventListener('shown.bs.collapse', () => {
+                            firstInvalidInput.focus();
+                        }, {once:true})
+                    }
+                }
+                
+                return false;
+            }
+        }
+
+        function save() {
+            console.log('save')
+            const formData = labelItems.calc();
+
+            const sendData = {
+                TSN: document.getElementById("TSN").value,
+                SampleName: document.getElementById("SampleName").value,
+                Frequency: document.getElementById("Frequency").value,
+                ...formData
+            };
+
+            console.log("最終sendData為", sendData);
+
             $.ajax({
-                url: delUrl,
-                type: "DELETE",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
+                url: SubmitUrl,
+                data: JSON.stringify(sendData),
+                type: "POST",
+                contentType: "application/json",
+                processData: false,
                 success: onSuccess,
                 error: onError
             })
 
             function onSuccess(res) {
+                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
+                modal.hide();
+
                 console.log(res);
                 createDialogModal({
-                    id: "DialogModal-Success", inner: "刪除成功！",
-                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                    id: "DialogModal-Success", inner: "儲存成功！",
+                    onHide: () => { window.location.href = "/OneDeviceOneCard_Management/Index"; }
                 });
             }
             function onError(res) {
                 console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
+                createDialogModal({
+                    id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}`,
+                })
             }
         }
 
@@ -371,25 +506,39 @@
             let addButton = itemArea.parentElement.querySelector('.addItemBtn');
 
             if (itemArea.children.length < 100) {
+                const count = itemArea.children.length + 1;
+                let inputPrefix = "";
+
+                if (zoneID === "AddItemsArea") {
+                    inputPrefix = "AFSN";
+                } else if (zoneID === "MaintainItemsArea") {
+                    inputPrefix = "MISSN";
+                } else if (zoneID === "CheckItemsArea") {
+                    inputPrefix = "CISN";
+                } else if (zoneID === "ReportItemsArea") {
+                    inputPrefix = "RISN";
+                }
+
                 if (zoneID === "ReportItemsArea") {
                     itemArea.insertAdjacentHTML('beforeend', `
                         <div class="d-flex gap-3 align-items-center">
                             <div class="key-value-pair gap-2">
-                                <input type="text" class="form-control" name="ReportItemName-1" id="ReportItemName-1" maxlength="20" placeholder="請輸入檢查項目名稱">
-                                <input type="text" class="form-control" name="ReportItemInit-1" id="ReportItemInit-1" maxlength="20" placeholder="請輸入單位">
+                                <input id="${inputPrefix}_${count}" name="${inputPrefix}_${count}" value="" hidden>
+                                <input type="text" class="form-control" name="ReportItemName_${count}" id="ReportItemName_${count}" maxlength="20" placeholder="請輸入檢查項目名稱" required>
+                                <input type="text" class="form-control" name="ReportItemUnit_${count}" id="ReportItemUnit_${count}" maxlength="20" placeholder="請輸入單位" required>
                             </div>
-                            <button type="button" class="btn-delete-item"></button>
+                            <button type="button" class="btn-delete-item" onclick="delInputItem(this, '${zoneID}')"></button>
                         </div>
                     `);
                 } else {
                     itemArea.insertAdjacentHTML('beforeend', `
                         <div class="d-flex gap-3 align-items-center">
-                            <input type="text" class="form-control" />
-                            <button type="button" class="btn-delete-item"></button>
+                            <input id="${inputPrefix}_${count}" name="${inputPrefix}_${count}" value="" hidden>
+                            <input type="text" class="form-control" name="${zoneID.slice(0, -4)}_${count}" id="${zoneID.slice(0, -4)}_${count}" required />
+                            <button type="button" class="btn-delete-item" onclick="delInputItem(this, '${zoneID}')"></button>
                         </div>
                     `);
                 }
-                delTemplateItem(zoneID);
             }
 
             //新增上限為100筆
@@ -398,25 +547,130 @@
             }
         }
 
-        function delTemplateItem(zoneID) {
+        function delInputItem(button, zoneID) {
             const itemArea = document.getElementById(zoneID);
-            const delBtns = document.querySelectorAll('.btn-delete-item');
-            
-            delBtns.forEach(button => {
-                button.onclick = function () {
-                    button.parentElement.remove();
-                    if (itemArea) {
-                        if (itemArea.children.length < 100 && !itemArea.parentElement.querySelector('.addItemBtn')) {
-                            let newButton = document.createElement('button');
-                            newButton.type = 'button';
-                            newButton.className = 'addItemBtn';
-                            newButton.innerHTML = '<i class="fa-solid fa-plus"></i>';
-                            newButton.setAttribute('onclick', `addTemplateItem('${zoneID}')`);
-                            itemArea.parentElement.appendChild(newButton);
-                        }
+            const parentDiv = button.parentElement;
+
+            parentDiv.remove();
+
+            if (itemArea) {
+                Array.from(itemArea.children).forEach((child, index) => {
+                    const SNInput = child.querySelector("input[name^='SN'], input[name^='RISN']");
+                    if (SNInput) {
+                        SNInput.name = `RISN_${index + 1}`
+                        SNInput.id = `RISN_${index + 1}`;
                     }
-                };
-            });
+
+                    const textInputs = child.querySelectorAll("input[type='text']");
+                    if (textInputs.length > 0) {
+                        textInputs.forEach((input, i) => {
+                            const baseName = input.name.split('-')[0];
+                            input.name = `${baseName}_${index + 1}`;
+                            input.id = `${baseName}_${index + 1}`;
+                        });
+                    }
+                });
+            }
         }
+
+        //監聽 檢查項目名稱、填報項目名稱/單位 若有填寫，巡檢頻率為必填
+        function observeChildChanges() {
+            const frequency = document.getElementById("Frequency");
+            const checkItemsArea = document.getElementById("CheckItemsArea");
+            const reportItemsArea = document.getElementById("ReportItemsArea");
+
+            const updateFrequencyRequired = () => {
+                const hasCheckItems = checkItemsArea.children.length > 0;
+                const hasReportItems = reportItemsArea.children.length > 0;
+
+                if (hasCheckItems || hasReportItems) {
+                    frequency.setAttribute("required", "required");
+                } else {
+                    frequency.removeAttribute("required");
+                }
+            };
+
+            // 設定 MutationObserver 監聽子層變化
+            const observerConfig = { childList: true };
+            const observerCallback = () => {
+                updateFrequencyRequired();
+            };
+
+            const inspectObserver = new MutationObserver(observerCallback);
+            const reportObserver = new MutationObserver(observerCallback);
+
+            inspectObserver.observe(checkItemsArea, observerConfig);
+            reportObserver.observe(reportItemsArea, observerConfig);
+
+            updateFrequencyRequired();
+        }
+
+        function LabelItems() {
+            this.AddItems = $("#AddItemsArea");
+            this.MaintainItems = $("#MaintainItemsArea");
+            this.Frequency = document.getElementById('Frequency');
+            this.CheckItems = $("#CheckItemsArea");
+            this.ReportItems = $("#ReportItemsArea");
+            this.EquipmentZone = $("#EquipmentZone");
+
+            this.calc = () => {
+                const addItemList = this.AddItems.children().toArray().map(e => ({
+                    AFSN: $(e).find("input[name^='AFSN']").val(),
+                    Value: $(e).find("input[name^='AddItem']").val()
+                }));
+
+                let maintainItemList = this.MaintainItems.children().toArray().map(e => ({
+                    MISSN: $(e).find("input[name^='MISSN']").val(),
+                    Value: $(e).find("input[name^='MaintainItem']").val()
+                }))
+
+                let addMaintainItemList = []
+
+                // 有顯示 補充設備保養項目設定 Modal 的情況下會有資料
+                if (EquipmentData.length > 0) {
+                    //console.log("設備明細", EquipmentData);
+                    maintainItemList = maintainItemList.filter(item => item.MISSN && item.MISSN.trim() !== "");
+
+                    if (this.EquipmentZone.length) {
+                        console.log("看這邊", EquipmentData);
+                        addMaintainItemList = EquipmentData.map((equipment, index) => {
+                            return this.EquipmentZone.find(`#MaintainEditZone_${index} .edit-item-init`).toArray().map(e => ({
+                                ESN: equipment.ESN,
+                                MaintainName: $(e).find("input[name^='maintainName']").val() || "",
+                                Period: $(e).find("select[name^='period']").val() || "",
+                                NextMaintainDate: $(e).find("input[name^='nextMaintainDate']").val() || ""
+                            }));
+                        }).flat();
+                    }
+                    this.addMaintainItemList = addMaintainItemList;
+                }
+
+                const checkItemList = this.CheckItems.children().toArray().map(e => ({
+                    CISN: $(e).find("input[name^='CISN']").val(),
+                    Value: $(e).find("input[name^='CheckItem']").val()
+                }));
+                const reportItemList = this.ReportItems.children().toArray().map(e => ({
+                    RISN: $(e).find("input[name^='RISN']").val(),
+                    Value: $(e).find("input[name^='ReportItemName']").val(),
+                    Unit: $(e).find("input[name^='ReportItemUnit']").val()
+                }))
+
+                return {
+                    AddItemList: addItemList.length > 0 ? addItemList : [],
+                    MaintainItemList: maintainItemList.length > 0 ? maintainItemList : [],
+                    AddMaintainItemList: addMaintainItemList.length > 0 ? addMaintainItemList : [],
+                    CheckItemList: checkItemList.length > 0 ? checkItemList : [],
+                    ReportItemList: reportItemList.length > 0 ? reportItemList : []
+                }
+            }
+            this.checkValidity = () => {
+                if (this.Frequency.value) {
+                    return this.CheckItems.children().length > 0 || this.ReportItems.children().length > 0
+                }
+                return true;
+            }
+            return this
+        }
+
     </script>
 }

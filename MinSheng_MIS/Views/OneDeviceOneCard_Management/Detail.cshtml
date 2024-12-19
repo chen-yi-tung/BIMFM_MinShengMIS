@@ -2,7 +2,7 @@
     ViewBag.Title = "一機一卡模板 詳情";
 }
 @section styles {
-    <script src="/Scripts/datatable.js" defer></script>
+    @Html.Partial("DataGridScripts")
     <script src="/Scripts/dataTable/OneDeviceOneCard.js" defer></script>
 }
 
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <hr class="hr-default">
-            <div class="d-flex flex-column w-100">
+            <div class=flex-column w-100" id="addFieldSection">
                 <div class="group-sb-title">
                     <i class="fa-solid fa-map-pin"></i>
                     <div>增設基本資料欄位</div>
@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex flex-column w-100">
+            <div class="flex-column w-100" id="maintainSection">
                 <div class="group-sb-title">
                     <i class="fa-solid fa-map-pin"></i>
                     <div>保養資訊</div>
@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex flex-column w-100">
+            <div class="flex-column w-100" id="inspectionInfoSection">
                 <div class="group-sb-title">
                     <i class="fa-solid fa-map-pin"></i>
                     <div>巡檢資訊</div>
@@ -59,9 +59,9 @@
 
 @section scripts {
     <script>
-        const IPRSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${IPRSN}`;
-        let apiUrl = null;
+        const TSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "OneDeviceOneCard_Management")' + `/${TSN}`; 
+        //let apiUrl = null;
 
         $(async function () {
             readData(apiUrl);
@@ -69,87 +69,85 @@
 
 
         const fakeData = {
-            SN: "000123",
+            TSN: "000123",
             SampleName: "電燈",
-            AddField: [
+            AddItemList: [
                 {
-                    SN: "F0001",
-                    value: "馬力數",
+                    AFSN: "F0001",
+                    Value: "馬力數",
                 },
                 {
-                    SN: "F0002",
-                    value: "起動方式",
+                    AFSN: "F0002",
+                    Value: "起動方式",
                 },
                 {
-                    SN: "F0003",
-                    value: "額定電流",
+                    AFSN: "F0003",
+                    Value: "額定電流",
                 },
                 {
-                    SN: "F0004",
-                    value: "油料編號",
-                },
-            ],
-            MaintainItems: [
-                {
-                    SN: "I0001",
-                    value: "外部清潔與保養",
-                },
-                {
-                    SN: "I0002",
-                    value: "各部螺絲鎖定",
-                },
-                {
-                    SN: "I0003",
-                    value: "檢查管路是否通暢",
-                },
-                {
-                    SN: "I0004",
-                    value: "軸承潤滑油添加",
+                    AFSN: "F0004",
+                    Value: "油料編號",
                 },
             ],
-            InspectionItems: {
-                Ifrequency: "1小時",
-                InspectItems: [
-                    {
-                        SN: "000123",
-                        value: "馬達是否正常運轉"
-                    },
-                    {
-                        SN: "000124",
-                        value: "管線是否正常無漏液"
-                    },
-                    {
-                        SN: "000125",
-                        value: "出口端是否正常出藥"
-                    },
-                    {
-                        SN: "000126",
-                        value: "設備是否正常無漏水"
-                    },
-                ],
-                ReportItems: [
-                    {
-                        SN: "I0001",
-                        Item: "馬達電壓",
-                        Value: "v"
-                    },
-                    {
-                        SN: "I0002",
-                        Item: "電流",
-                        Value: "A"
-                    },
-                    {
-                        SN: "I0003",
-                        Item: "水壓",
-                        Value: "Pa"
-                    },
-                    {
-                        SN: "I0004",
-                        Item: "流量",
-                        Value: "CMH"
-                    },
-                ]
-            }
+            MaintainItemList: [
+                {
+                    MISSN: "I0001",
+                    Value: "外部清潔與保養",
+                },
+                {
+                    MISSN: "I0002",
+                    Value: "各部螺絲鎖定",
+                },
+                {
+                    MISSN: "I0003",
+                    Value: "檢查管路是否通暢",
+                },
+                {
+                    MISSN: "I0004",
+                    Value: "軸承潤滑油添加",
+                },
+            ],
+            Frequency: "1小時",
+            InspectItemList: [
+                {
+                    CISN: "000123",
+                    Value: "馬達是否正常運轉"
+                },
+                {
+                    CISN: "000124",
+                    Value: "管線是否正常無漏液"
+                },
+                {
+                    CISN: "000125",
+                    Value: "出口端是否正常出藥"
+                },
+                {
+                    CISN: "000126",
+                    Value: "設備是否正常無漏水"
+                },
+            ],
+            ReportItemList: [
+                {
+                    RISN: "I0001",
+                    Value: "馬達電壓",
+                    Unit: "v"
+                },
+                {
+                    RISN: "I0002",
+                    Value: "電流",
+                    Unit: "A"
+                },
+                {
+                    RISN: "I0003",
+                    Value: "水壓",
+                    Unit: "Pa"
+                },
+                {
+                    RISN: "I0004",
+                    Value: "流量",
+                    Unit: "CMH"
+                },
+            ]
         }
 
         // 預處理函式：將陣列轉為物件結構
@@ -181,13 +179,43 @@
                 AddField('#AddField', res);
                 MaintainInfo("#MaintainInfo", res);
                 InspectionInfo("#InspectionInfo", res);
+                displaySections(res);
             }
             function onError(res) {
                 console.log(res);
             }
         }
 
-        
+        function displaySections(data) {
+            if (data.AddItemList && data.AddItemList.length > 0) {
+                document.getElementById("addFieldSection").style.display = "flex";
+            } else {
+                document.getElementById("addFieldSection").style.display = "none";
+            }
+
+            if (data.MaintainItemList && data.MaintainItemList.length > 0) {
+                document.getElementById("maintainSection").style.display = "flex";
+            } else {
+                document.getElementById("maintainSection").style.display = "none";
+            }
+
+            if (data.Frequency) {
+                document.getElementById("inspectionInfoSection").style.display = "flex";
+            } else {
+                document.getElementById("inspectionInfoSection").style.display = "none";
+            }
+
+            if (
+                (!data.AddItemList || data.AddItemList.length === 0) &&
+                (!data.MaintainItemList || data.MaintainItemList.length === 0) &&
+                (!data.Frequency) &&
+                (!data.InspectItemList || data.InspectItemList.length === 0) &&
+                (!data.ReportItemList || data.ReportItemList.length === 0)
+            ) {
+                document.querySelector(".hr-default").style.display = "none";
+            }
+        }
+
 
     </script>
 }

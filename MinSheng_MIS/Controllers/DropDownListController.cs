@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin.Security.DataHandler.Encoder;
+﻿using Microsoft.Ajax.Utilities;
+using Microsoft.Owin.Security.DataHandler.Encoder;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ namespace MinSheng_MIS.Controllers
 {
     public class DropDownListController : Controller
     {
-        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+        private readonly Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         // GET: DropDownList
         #region 棟別
         [System.Web.Http.HttpGet]
@@ -113,12 +114,28 @@ namespace MinSheng_MIS.Controllers
                     list.Add(jo);
                 }
             }
-            else
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 樓層模型名稱 (BIM用)
+        [System.Web.Http.HttpGet]
+        public ActionResult ViewName(int? ASN)
+        {
+            List<JObject> list = new List<JObject>();
+            var abc = db.Floor_Info.AsQueryable();
+            if (ASN != null)
             {
-                    JObject jo = new JObject();
-                    jo.Add("Text", "--請先選擇棟別--");//Floor Name
-                    jo.Add("Value", ""); // FSN 
-                    list.Add(jo);
+                abc = db.Floor_Info.Where(x => x.ASN == ASN);
+            }
+            var dl = abc.ToList();
+            foreach (var item in dl)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", $"{item.AreaInfo.Area} {item.FloorName}"); // Area Name Floor Name
+                jo.Add("Value", item.ViewName.Trim()); // ViewName
+                list.Add(jo);
             }
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
@@ -1023,6 +1040,28 @@ namespace MinSheng_MIS.Controllers
             }
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
+        }
+        #endregion
+
+        // --2024/10/25後更新
+        #region MaintainPeriod 保養週期
+        [HttpGet]
+        public ActionResult MaintainPeriod()
+        {
+            List<JObject> list = ConvertDicToJObjectList(Surface.MaintainPeriod());
+
+            return Content(JsonConvert.SerializeObject(list), "application/json");
+        }
+        #endregion
+
+        #region Helper
+        private List<JObject> ConvertDicToJObjectList(Dictionary<string, string> dic)
+        {
+            return dic.Select(x => new JObject
+            {
+                { "Text", x.Value },
+                { "Value", x.Key }
+            }).ToList();
         }
         #endregion
     }
