@@ -1,4 +1,5 @@
-﻿using MinSheng_MIS.Models.ViewModels;
+﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,6 +31,11 @@ namespace MinSheng_MIS.Controllers
         #region 報修單 審核
         public ActionResult Review()
         {
+            string userName = HttpContext.User.Identity.Name;
+            using (Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities())
+            {
+                ViewBag.MyName = db.AspNetUsers.Where(a => a.UserName == userName).Select(a => a.MyName).FirstOrDefault();
+            }
             return View();
         }
         #endregion
