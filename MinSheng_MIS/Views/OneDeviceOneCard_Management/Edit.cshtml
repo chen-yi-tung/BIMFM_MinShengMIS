@@ -116,8 +116,8 @@
         const TSN = '@ViewBag.id';
         const apiUrl = '@Url.Action("ReadBody", "OneDeviceOneCard_Management")' + `/${TSN}`;
         const AskEquipmentApiUrl = '@Url.Action("GetEquipmentsUsingTemplate", "OneDeviceOneCard_Management")?TSN=' + TSN;
-        //const SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
-        const SubmitUrl =  null;
+        const SubmitUrl = '@Url.Action("EditDeviceCard", "OneDeviceOneCard_Management")';
+        //const SubmitUrl =  null;
 
         $(async function () {
             observeChildChanges();
