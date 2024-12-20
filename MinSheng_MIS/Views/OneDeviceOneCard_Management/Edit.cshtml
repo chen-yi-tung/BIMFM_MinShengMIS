@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="/Content/EquipmentInfoManagement.css">
     <link rel="stylesheet" href="/Content/OneDeviceOneCardManagement.css">
     <script src="/Scripts/dataTable/OneDeviceOneCard.js" defer></script>
+    <script src="/Scripts/ImageDisplay.js" defer></script>
 }
 
 <style>
     .accordion-body {
         background: var(--datatable-body-bg);
     }
+
     .edit-item-init {
         grid-template-columns: 2fr 1fr 1fr;
     }
@@ -385,6 +387,8 @@
             // 檢查有無新增保養項目名稱，有的話就顯示 補充設備保養項目設定 Modal
             const equips = await getEquipments()
             console.log('equips', equips)
+
+            //檢查此模板是否有設備使用
             if (EquipmentData.length > 0) {
                 const newAddValues = equips
                     .filter(item => !item.MISSN || item.MISSN.trim() === "")
@@ -399,6 +403,7 @@
                 }, { once: true })
                 console.log('modal', modal)
 
+                ImageDisplay(".datatable-img-item>img");
                 //加入新項目
                 ShowEquipment("#EquipmentZone", EquipmentData, newAddValues)
                 return;
@@ -455,7 +460,7 @@
                         }, {once:true})
                     }
                 }
-                
+
                 return false;
             }
         }
@@ -483,10 +488,10 @@
                 error: onError
             })
 
-            function onSuccess(res) {
-                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
-                modal.hide();
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
 
+            function onSuccess(res) {
+                modal.hide();
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Success", inner: "儲存成功！",
@@ -494,6 +499,7 @@
                 });
             }
             function onError(res) {
+                modal.hide();
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}`,
