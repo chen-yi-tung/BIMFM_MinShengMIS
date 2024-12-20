@@ -56,12 +56,12 @@ function InspectionInfo(selector, data) {
             : "",
     )
     $(selector).append(
-        data.InspectItemList ?
+        data.CheckItemList ?
             createTableInner(data,
                 [
                     {
                         text: "檢查項目",
-                        value: "InspectItemList",
+                        value: "CheckItemList",
                         itemNum: [
                             { value: "Value" },
                         ],
@@ -109,7 +109,7 @@ function ShowEquipment(selector, data, addItems) {
                 id: "Equipment",
                 type: "addEquipmentSetting",
                 sn: [
-                    { text: "設備圖片", value: "FilePath", url: true },
+                    { text: "設備圖片", value: "FilePath", type: "ImgPath" },
                     { text: "棟別", value: "ASN" },
                     { text: "樓層", value: "FSN" },
                     { text: "設備廠牌", value: "Brand" },
