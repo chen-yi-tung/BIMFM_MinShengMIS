@@ -182,7 +182,7 @@
 
             function onSuccess(res) {
                 console.log(res);
-                const msg = res.State === 'Success' ? '新增成功!' : res.ErrorMessage;
+                const msg = res.State === 'Success' ? '送出成功!' : res.ErrorMessage;
                 createDialogModal({
                     id: "DialogModal-Success", inner: msg,
                     onHide: () => { window.location.href = "/Repair_Management/Index"; }
@@ -190,7 +190,7 @@
             }
             function onError(res) {
                 console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+                createDialogModal({ id: "DialogModal-Error", inner: `送出失敗！` + `${res?.responseText || ""}` })
             }
         }
     </script>
