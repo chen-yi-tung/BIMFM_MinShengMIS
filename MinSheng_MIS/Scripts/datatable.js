@@ -351,67 +351,76 @@ function createInspectionTable(options) {
     `;
 }
 
-function createAccordion(options) {
-    console.log("o", options)
-    if (options.data.length === 0) {
-        return "";
+//新增 保養項目/週期/下次保養日期 欄位
+function createMaintainItem(itemName, containerId, equipmentData) {
+    console.log("equipmentData看這邊12/23", equipmentData);
+    console.log("itemName", itemName);
+    const MaintainEditZone = document.getElementById(containerId);
+    if (!MaintainEditZone) {
+        return;
     }
-    function createMaintainItem(addItems, containerId, equipmentData) {
-        const MaintainEditZone = document.getElementById(containerId);
-        if (!MaintainEditZone) {
-            return;
-        }
 
-        const optionsData = [
-            { value: "", text: "請選擇" },
-            { value: "1", text: "每日" },
-            { value: "2", text: "每月" },
-            { value: "3", text: "每季" },
-            { value: "4", text: "每年" },
-        ];
+    const optionsData = [
+        { value: "", text: "請選擇週期" },
+        { value: "1", text: "每日" },
+        { value: "2", text: "每月" },
+        { value: "3", text: "每季" },
+        { value: "4", text: "每年" },
+    ];
 
-        addItems.forEach((filed, i) => {
-            const div = document.createElement("div");
-            div.className = "edit-item-init"
-            div.style = "background: #E3EBF3;"
+    itemName.forEach((filed, i) => {
+        const div = document.createElement("div");
+        div.className = "edit-item-init"
+        div.style = "background: #E3EBF3;"
 
+        if (equipmentData) {
             const ESNDisplay = document.createElement("div");
             ESNDisplay.textContent = `ESN: ${equipmentData.ESN}`;
             ESNDisplay.hidden = true;
 
-            const maintainName = document.createElement("input");
-            maintainName.className = "form-control";
-            maintainName.name = `maintainName-${i}`;
-            maintainName.type = "text";
-            maintainName.value = filed;
-            maintainName.disabled = true;
-
-
-            const period = document.createElement("select");
-            period.className = "form-select"
-            period.name = `period-${i}`;
-            period.required = true;
-            optionsData.forEach(optionData => {
-                const option = document.createElement("option");
-                option.value = optionData.value;
-                option.textContent = optionData.text;
-                period.appendChild(option);
-            });
-
-            const nextMaintainDate = document.createElement("input");
-            nextMaintainDate.className = "form-control";
-            nextMaintainDate.name = `nextMaintainDate-${i}`;
-            nextMaintainDate.type = "date";
-            nextMaintainDate.value = filed;
-            nextMaintainDate.required = true;
-
             div.appendChild(ESNDisplay);
-            div.appendChild(maintainName);
-            div.appendChild(period);
-            div.appendChild(nextMaintainDate);
-            MaintainEditZone.appendChild(div);
-        })
+        }
+
+        const maintainName = document.createElement("input");
+        maintainName.className = "form-control";
+        maintainName.name = `maintainName-${i}`;
+        maintainName.type = "text";
+        maintainName.value = filed;
+        maintainName.disabled = true;
+
+
+        const period = document.createElement("select");
+        period.className = "form-select"
+        period.name = `period-${i}`;
+        period.required = true;
+        optionsData.forEach(optionData => {
+            const option = document.createElement("option");
+            option.value = optionData.value;
+            option.textContent = optionData.text;
+            period.appendChild(option);
+        });
+
+        const nextMaintainDate = document.createElement("input");
+        nextMaintainDate.className = "form-control";
+        nextMaintainDate.name = `nextMaintainDate-${i}`;
+        nextMaintainDate.type = "date";
+        nextMaintainDate.value = filed;
+        nextMaintainDate.required = true;
+
+        div.appendChild(maintainName);
+        div.appendChild(period);
+        div.appendChild(nextMaintainDate);
+        MaintainEditZone.appendChild(div);
+    })
+}
+
+function createAccordion(options) {
+    console.log("o", options)
+    const finishStatusDefault = "未完成";
+    if (options.data.length === 0) {
+        return "";
     }
+    //一機一卡模板 編輯 > 補充設備保養項目設定
     if (options.type === "addEquipmentSetting") {
         const html = `
         <div class="datatable border-0 ${options.className ?? ""} ${options.id === 'EquipmentItem' ? 'sub-accordion' : ''}">
@@ -426,7 +435,7 @@ function createAccordion(options) {
                                         data-bs-target="#sub-body-${options.id}-${i}" aria-expanded="false"
                                         aria-controls="body-${options.id}-${i}">
                                         <div class="w-100">${options.data[i][options.itemTitleKey]} ${options.itemSubTitleKey ? `${options.data[i][options.itemSubTitleKey]}` : ""}</div>
-                                        <div class="mx-2" style="white-space: nowrap;" id="finishStatus"></div>
+                                        <div class="mx-2" style="white-space: nowrap;" id="finishStatus-${options.id}-${i}">${finishStatusDefault}</div>
                                     </button>
                                 </h2>
                                 <div id="sub-body-${options.id}-${i}" class="accordion-collapse collapse"
@@ -459,6 +468,18 @@ function createAccordion(options) {
         setTimeout(() => {
             options.data.forEach((item, i) => {
                 createMaintainItem(options.addItems, `MaintainEditZone_${i}`, EquipmentData[i]);
+
+                // 綁定 input 和 select 的監聽事件
+                const inputs = document.querySelectorAll(`#MaintainEditZone_${i} [name^="nextMaintainDate"]`);
+                const selects = document.querySelectorAll(`#MaintainEditZone_${i} [name^="period"]`);
+
+                [...inputs, ...selects].forEach(element => {
+                    element.addEventListener('input', () => updateFinishStatus(i, options.id));
+                    element.addEventListener('change', () => updateFinishStatus(i, options.id));
+                });
+
+                // 初始化檢查狀態
+                updateFinishStatus(i, options.id);
             });
         }, 0);
 
@@ -476,7 +497,37 @@ function createAccordion(options) {
         </div>
         `;
     }
+
+    //更新完成狀態顯示
+    function updateFinishStatus(index, id) {
+        const inputs = document.querySelectorAll(`#MaintainEditZone_${index} [name^="nextMaintainDate"]`);
+        const selects = document.querySelectorAll(`#MaintainEditZone_${index} [name^="period"]`);
+        const finishStatusElement = document.getElementById(`finishStatus-${id}-${index}`);
+
+        // 檢查所有輸入框與下拉選單是否都有值
+        const isComplete = [
+            ...inputs,
+            ...selects
+        ].every(element => {
+            if (element.tagName === "INPUT") {
+                return element.value.trim() !== "";
+            } else if (element.tagName === "SELECT") {
+                return element.value !== "";
+            }
+            return false;
+        });
+
+        // 更新 finishStatus
+        if (isComplete) {
+            finishStatusElement.textContent = "完成";
+            finishStatusElement.style.color = "#119A58";
+        } else {
+            finishStatusElement.textContent = "未完成";
+            finishStatusElement.style.color = "#FF4444";
+        }
+    }
 }
+
 
 /**
  * @param {AccordionOptions} options 
@@ -681,6 +732,7 @@ function createDialogModal(options) {
  * @param {DeleteDialogOptions} options 
  */
 function createDeleteDialog(options) {
+    console.log("options.data", options.data)
     let modal = createDialogModal({
         id: "DialogModal-Delete",
         inner: `
@@ -705,7 +757,7 @@ function createDeleteDialog(options) {
 
         $.ajax({
             url: options.url,
-            data: JSON.stringify(options.data),
+            data: options.data ?? JSON.stringify(options.data),
             type: options.type ?? "POST",
             dataType: "json",
             contentType: "application/json;charset=utf-8",
@@ -725,7 +777,7 @@ function createDeleteDialog(options) {
         }
 
         function onError(res) {
-            console.log(res);
+            console.log(res.responseText);
             modal.hide();
 
             createDialogModal({ id: "DialogModal-Error", inner: "刪除失敗！" })
