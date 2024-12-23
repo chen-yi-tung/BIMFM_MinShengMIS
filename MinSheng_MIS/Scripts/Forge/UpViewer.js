@@ -31,13 +31,13 @@
             reject = rej;
         });
 
-        this.viewer = new Autodesk.Viewing.GuiViewer3D(this.container, { profileSettings: this.profileSettings });
+        this.viewer = new Autodesk.Viewing.Viewer3D(this.container, { profileSettings: this.profileSettings });
         this.viewer.loadExtension("Viewer.Loading", { loader: `<div class="lds-default">${Array(12).fill("<div></div>").join("")}</div>` });
 
         Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
             this.viewer.start();
-            //this.viewer.impl.controls.handleKeyDown = function (e) { };
-            //this.viewer.impl.controls.handleKeyUp = function (e) { };
+            this.viewer.impl.controls.handleKeyDown = function (e) { };
+            this.viewer.impl.controls.handleKeyUp = function (e) { };
             await this.viewer.loadExtension("Viewer.Toolkit");
 
             //setting 3d view env
