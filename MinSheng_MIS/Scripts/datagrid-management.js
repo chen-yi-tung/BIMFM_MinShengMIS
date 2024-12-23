@@ -16,7 +16,13 @@ DG.prototype.Options = {
     checkOnSelect: false,
     pagination: true,
     pagePosition: 'bottom',
-    pageSize: 10
+    pageSize: 10,
+    loadFilter(data) {
+        if (data.Datas) {
+            return data.Datas;
+        }
+        return data;
+    },
 };
 DG.prototype.PageOptions = {
     pageSize: 10,

@@ -3,9 +3,9 @@ using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
@@ -51,19 +51,19 @@ namespace MinSheng_MIS.Controllers
 
                 // 建立 Template_AddField (非必填)
                 if (data.AddItemList?.Any() == true)
-                    await _dCardService.CreateAddFieldListAsync(data.ConvertToUpdateAddFieldList(tsn));
+                    _dCardService.CreateAddFieldList(new AddFieldModifiableListInstance(tsn, data));
 
                 // 建立 Template_MaintainItemSetting (非必填)
                 if (data.MaintainItemList?.Any() == true)
-                    await _dCardService.CreateMaintainItemListAsync(data.ConvertToUpdateMaintainItemList(tsn));
+                    _dCardService.CreateMaintainItemList(new MaintainItemModifiableListInstance(tsn, data));
 
                 // 建立 Template_CheckItem (非必填)
                 if (data.CheckItemList?.Any() == true)
-                    await _dCardService.CreateCheckItemListAsync(data.ConvertToUpdateCheckItemList(tsn));
+                    _dCardService.CreateCheckItemList(new CheckItemModifiableListInstance(tsn, data));
 
                 // 建立 Template_ReportingItem (非必填)
                 if (data.ReportItemList?.Any() == true)
-                    await _dCardService.CreateReportItemListAsync(data.ConvertToUpdateReportItemList(tsn));
+                    _dCardService.CreateReportItemList(new ReportItemModifiableListInstance(tsn, data));
 
                 await _db.SaveChangesAsync();
 
@@ -80,7 +80,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 一機一卡模板 編輯 TODO
+        #region 一機一卡模板 編輯
         public ActionResult Edit(string id)
         {
             ViewBag.id = id;
@@ -94,15 +94,50 @@ namespace MinSheng_MIS.Controllers
                 var template = await _db.Template_OneDeviceOneCard.FindAsync(TSN)
                     ?? throw new MyCusResException("查無資料!");
 
-                //List<EquipmentInfoDetailModel> result = new List<EquipmentInfoDetailModel>();
-                //foreach (var e in template.EquipmentInfo)
-                //    result.Add(
-                //        await _eMgmtService.GetEquipmentInfoAsync<EquipmentInfoDetailModel>(e.ESN));
-
                 var result = await Task.WhenAll(template.EquipmentInfo.Select(async e =>
                     await _eMgmtService.GetEquipmentInfoAsync<EquipmentInfoDetailModel>(e.ESN)));
 
                 return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
+            }
+            catch (Exception)
+            {
+                return Content("</br>系統異常!", "application/json; charset=utf-8");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditDeviceCard(DeviceCardEditViewModel data)
+        {
+            try
+            {
+                using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    // 更新一機一卡模板
+                    await _dCardService.UpdateOneDeviceOneCardAsync(data);
+
+                    // 更新增設基本資料欄位
+                    await _dCardService.UpdateAddFieldListAsync(data);
+
+                    // 更新保養項目
+                    await _dCardService.UpdateMaintainItemListAsync(data);
+
+                    // 更新檢查項目
+                    await _dCardService.UpdateCheckItemListAsync(data);
+
+                    // 更新填報項目
+                    await _dCardService.UpdateReportItemListAsync(data);
+
+                    await _db.SaveChangesAsync();
+
+                    // 提交交易
+                    trans.Complete();
+                }
+
+                return Content("Succeed");
             }
             catch (MyCusResException ex)
             {

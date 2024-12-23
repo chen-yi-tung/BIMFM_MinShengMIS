@@ -3,6 +3,8 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
+    <script src="/Scripts/Repair_Management/Index.js" defer></script>
+    <link rel="stylesheet" href="/Content/tagbox.css">
 }
 
 <h2>@ViewBag.Title</h2>
@@ -12,8 +14,15 @@
     <div class="search-area">
         <form class="form" method="post" action="">
             <div class="form-group">
-                <label for="State">報修單狀態</label>
-                <select class="form-select" name="ReportState" id="State"></select>
+                <label for="ReportState">報修單狀態</label>
+                <select class="form-select" name="ReportState" id="ReportState">
+                    <option value="">請選擇</option>
+                    <option value="1">待派工</option>
+                    <option value="2">待執行</option>
+                    <option value="3">待審核</option>
+                    <option value="4">審核通過</option>
+                    <option value="5">審核未過</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -22,8 +31,13 @@
             </div>
 
             <div class="form-group">
-                <label for="RepairLevel">報修等級</label>
-                <select class="form-select" name="ReportLevel" id="RepairLevel"></select>
+                <label for="ReportLevel">報修等級</label>
+                <select class="form-select" name="ReportLevel" id="ReportLevel">
+                    <option value="">請選擇</option>
+                    <option value="1">一般</option>
+                    <option value="2">緊急</option>
+                    <option value="3">最速件</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -37,8 +51,8 @@
             </div>
 
             <div class="form-group">
-                <label for="RepairContant">報修內容</label>
-                <input class="form-control" id="RepairContant" name="ReportContent" type="text" />
+                <label for="ReportContent">報修內容</label>
+                <input class="form-control" id="ReportContent" name="ReportContent" type="text" />
             </div>
 
             <div class="form-group">
@@ -57,13 +71,13 @@
             </div>
 
             <div class="form-group">
-                <label for="ESN">設備編號</label>
-                <input class="form-control" id="ESN" name="No" type="text" />
+                <label for="NO">設備編號</label>
+                <input class="form-control" id="NO" name="NO" type="text" />
             </div>
 
             <div class="form-group col-2fr">
-                <label for="UserID">執行人員</label>
-                <select type="text" class="form-select" name="RepairUserName" id="UserID"></select>
+                <label for="RepairUserName">執行人員</label>
+                <select type="text" class="form-select repair-user-name" name="RepairUserName" id="RepairUserName"></select>
             </div>
 
             <div class="button-group">
@@ -74,130 +88,133 @@
 
         </form>
     </div>
-    <button type="button" class="btn btn-other" id="multiAssign" data-bs-toggle="modal" data-bs-target="#addMultiAssign" data-title="報修單 批量派工">批量派工</button>
+    <button type="button" class="btn btn-other" id="multiAssign">批量派工</button>
     <div class="datagrid-area">
         <table id="DataGrid"></table>
     </div>
 </div>
 
 
-    @*派工POP UP*@
-    <div class="modal fade datagrid-modal" tabindex="-1" id="addMultiAssign">
-        <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <h2>報修單 派工</h2>
-                    <form class="form w-100 p-0">
-                        <div class="form-group-zone">
-                            <div class="form-group col-3fr required">
-                                <label for="PlanName">預計維修日期</label>
-                                <input type="date" class="form-control" name="DueDate" id="PlanName" maxlength="20" required>
-                            </div>
-                            <div class="form-group col-3fr required">
-                                <label for="PlanDate">執行人員</label>
-                                <select type="text" class="form-select" name="RepairUserName" id="UserID" required></select>
-                            </div>
+@*派工POP UP*@
+<div class="modal fade datagrid-modal" tabindex="-1" id="addMultiAssign">
+    <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2>報修單 派工</h2>
+                <form class="form w-100 p-0">
+                    <div class="form-group-zone">
+                        <div class="form-group col-3fr required">
+                            <label for="DueDate">預計維修日期</label>
+                            <input type="date" class="form-control" name="DueDate" id="DueDate" maxlength="20" required>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                    <button type="button" class="btn btn-export" id="add-row">確定</button>
-                </div>
+                        <div class="form-group col-3fr required">
+                            <label for="RepairUserName">執行人員</label>
+                            <select type="text" class="form-select repair-user-name" name="RepairUserName" id="RepairUserName"></select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-export" id="submit">確定</button>
             </div>
         </div>
     </div>
+</div>
 
-    @section scripts {
-        <script>
-        //const baseUrl = '/PlanManagement/';
-        var getGridJSON = '@Url.Action("PlanManagement_Management", "Datagrid")';
+@section scripts {
+    <script>
+        var getGridJSON = '@Url.Action("ManagementDataGrid", "Repair_Management")';
         var DataGrid;
+        let currentRSN = "";
 
         const fakedata = [
             {
-                State: "待派工",
+                ReportState: "待派工",
                 RSN: "P23010401",
-                RepairLevel: '最速件',
-                RepairTime: "2023/01/04 16:55",
-                RepairContent: "已完成螺旋機電池更換，經測試後可正常操作",
-                Area: "進流抽水站",
-                Floor: "B2F",
+                ReportLevel: '最速件',
+                ReportTime: "2023/01/04 16:55",
+                ReportContent: "已完成螺旋機電池更換，經測試後可正常操作",
+                ASN: "進流抽水站",
+                FSN: "B2F",
                 EName: "生物反應池菌種選擇區攪拌機",
-                ESN: "32369304",
-                UserID: "王大明、李泰順",
+                NO: "32369304",
+                RepairUserName: "王大明、李泰順",
             },
             {
-                State: "待執行",
+                ReportState: "待執行",
                 RSN: "P23010401",
-                RepairLevel: '最速件',
-                RepairTime: "2023/01/04 16:55",
-                RepairContent: "已完成螺旋機電池更換，經測試後可正常操作",
-                Area: "進流抽水站",
-                Floor: "B2F",
+                ReportLevel: '最速件',
+                ReportTime: "2023/01/04 16:55",
+                ReportContent: "已完成螺旋機電池更換，經測試後可正常操作",
+                ASN: "進流抽水站",
+                FSN: "B2F",
                 EName: "生物反應池菌種選擇區攪拌機",
-                ESN: "32369304",
-                UserID: "王大明、李泰順",
+                NO: "32369304",
+                RepairUserName: "王大明、李泰順",
             },
             {
-                State: "待審核",
+                ReportState: "待審核",
                 RSN: "P23010401",
-                RepairLevel: '最速件',
-                RepairTime: "2023/01/04 16:55",
-                RepairContent: "已完成螺旋機電池更換，經測試後可正常操作",
-                Area: "進流抽水站",
-                Floor: "B2F",
+                ReportLevel: '最速件',
+                ReportTime: "2023/01/04 16:55",
+                ReportContent: "已完成螺旋機電池更換，經測試後可正常操作",
+                ASN: "進流抽水站",
+                FSN: "B2F",
                 EName: "生物反應池菌種選擇區攪拌機",
-                ESN: "32369304",
-                UserID: "王大明、李泰順",
+                NO: "32369304",
+                RepairUserName: "王大明、李泰順",
             },
             {
-                State: "審核通過",
+                ReportState: "審核通過",
                 RSN: "P23010401",
-                RepairLevel: '最速件',
-                RepairTime: "2023/01/04 16:55",
-                RepairContent: "已完成螺旋機電池更換，經測試後可正常操作",
-                Area: "進流抽水站",
-                Floor: "B2F",
+                ReportLevel: '最速件',
+                ReportTime: "2023/01/04 16:55",
+                ReportContent: "已完成螺旋機電池更換，經測試後可正常操作",
+                ASN: "進流抽水站",
+                FSN: "B2F",
                 EName: "生物反應池菌種選擇區攪拌機",
-                ESN: "32369304",
-                UserID: "王大明、李泰順",
+                NO: "32369304",
+                RepairUserName: "王大明、李泰順",
             },
             {
-                State: "審核未過",
+                ReportState: "審核未過",
                 RSN: "P23010401",
-                RepairLevel: '最速件',
-                RepairTime: "2023/01/04 16:55",
-                RepairContent: "已完成螺旋機電池更換，經測試後可正常操作",
-                Area: "進流抽水站",
-                Floor: "B2F",
+                ReportLevel: '最速件',
+                ReportTime: "2023/01/04 16:55",
+                ReportContent: "已完成螺旋機電池更換，經測試後可正常操作",
+                ASN: "進流抽水站",
+                FSN: "B2F",
                 EName: "生物反應池菌種選擇區攪拌機",
-                ESN: "32369304",
-                UserID: "王大明、李泰順",
+                NO: "32369304",
+                RepairUserName: "王大明、李泰順",
             },
         ]
 
         $(async function () {
             await formDropdown.ASN();
-            Initialize_DataGrid(fakedata);
+            await addDropDownList();
+            await addButtonEvent();
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
 
         function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
-                //url: getGridJSON,
-                data: getGridJSON,
-                //method: 'POST',
+                url: getGridJSON,
+                //data: fakedata,
+                method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'RSN',
                 singleSelect: false,
                 frozenColumns: [[
                     { field: 'ck', checkbox: true }, // 新增 checkbox
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_review', (v, row, i) => dg.eventButton(i, "審核", "review", { disabled: row.State != "待審核" })),
-                    dg.frozenColumn('_assign', (v, row, i) =>
-                        `<button onclick="dg.eventButton(${i}, '派工', '_assign')" ${row.State !== "待派工" ? "disabled" : ""} class="btn btn-datagrid btn-other" data-bs-toggle="modal" data-bs-target="#addMultiAssign" data-title="報修單 派工">派工</button>`)
+                    dg.frozenColumn('_review', (v, row, i) => dg.eventButton(i, "審核", "review", { disabled: row.ReportState != "待審核" })),
+                    dg.frozenColumn('_assign', (v, row, i) => dg.eventButton(i, "派工", "assign", { disabled: row.ReportState != "待派工", className: "btn btn-datagrid btn-other", dataTitle: "報修單 派工" })),
+                    //dg.frozenColumn('_assign', (v, row, i) =>
+                    //    `<button onclick="dg.eventButton(${i}, '派工', '_assign')" ${row.ReportState !== "待派工" ? "disabled" : ""} class="btn btn-datagrid btn-other" data-bs-toggle="modal" data-bs-target="#addMultiAssign" data-title="報修單 派工">派工</button>`)
                 ]],
                 columns: [[
                     dg.column('ReportState', '報修單狀態', 150),
@@ -205,33 +222,89 @@
                     dg.column('ReportLevel', '報修等級', 150),
                     dg.column('ReportTime', '報修時間', 200),
                     dg.column('ReportContent', '報修內容', 300),
-                    dg.column('Area', '棟別', 200),
-                    dg.column('FloorName', '樓層', 200),
+                    dg.column('ASN', '棟別', 200),
+                    dg.column('FSN', '樓層', 200),
                     dg.column('EName', '設備名稱', 300),
-                    dg.column('No', '設備編號', 150),
+                    dg.column('NO', '設備編號', 150),
                     dg.column('RepairUserName', '執行人員', 300),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Detail/${row.RSN}`, "_blank")
+                console.log("row",row)
+                window.open(`${baseUrl}/Detail?RSN=${row.RSN}`, "_blank")
             })
             dg.addEvent("review", function (row, i) {
-                window.open(`${baseUrl}/Review/${row.RSN}`, "_self")
+                window.open(`${baseUrl}/Review?RSN=${row.RSN}`, "_self")
             })
+            dg.addEvent("assign", function (row, i) {
+                currentRSN = row.RSN;
+                const modal = document.getElementById("addMultiAssign");
+
+                const modalTitle = modal.querySelector('#addMultiAssign h2');
+                if (modalTitle) {
+                    modalTitle.textContent = `報修單 派工`;
+                }
+                $(modal).modal("show");
+
+                // 關閉modal時清空modal
+                modal.addEventListener('hidden.bs.modal', () => {
+                    document.getElementById("DueDate").value = "";
+                    $('#addMultiAssign #RepairUserName').tagbox('clear');
+                }, { once: true })
+            });
         }
 
-        // 判斷被點擊的按鈕(批量派工/派工)，更換modal標題
-        document.getElementById('addMultiAssign').addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
-            var title = button.getAttribute('data-title');
-            var modalTitle = document.querySelector('#addMultiAssign h2');
-            modalTitle.textContent = title;
+        //點擊 批量派工btn
+        document.getElementById("multiAssign").addEventListener("click", function () {
+            currentRSN = getCheckedRSN();
+            if (currentRSN.length > 0) {
+                const modal = document.getElementById("addMultiAssign");
+                const modalTitle = modal.querySelector('#addMultiAssign h2');
+                if (modalTitle) {
+                    modalTitle.textContent = "報修單 批量派工";
+                }
+                $(modal).modal("show");
+
+                // 關閉modal時清空modal
+                modal.addEventListener('hidden.bs.modal', () => {
+                    document.getElementById("DueDate").value = "";
+                    $('#addMultiAssign #RepairUserName').tagbox('clear');
+                }, { once: true })
+            } else {
+                createDialogModal({
+                    id: "DialogModal-Error", inner: `請先勾選欲派工的報修單！`,
+                })
+                return;
+            }
+        });
+
+        //點擊 匯出btn
+        $("#export").click(function () {
+            const RSN = getCheckedRSN();
+
+            if (RSN.length > 0) {
+                console.log("匯出的項目為", RSN);
+
+                //待API完成
+                @*$.ajax({
+                    url: "@Url.Action("Assignment", "Repair_Management")",
+                    data: JSON.stringify(sendData),
+                    type: "POST",
+                    contentType: "application/json",
+                    processData: false,
+                    success: onSuccess,
+                    error: onError
+                })*@
+            } else {
+                createDialogModal({
+                    id: "DialogModal-Error", inner: `請先勾選欲匯出的報修單！`,
+                })
+                return;
+            }
         })
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            
-
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());
             });
@@ -240,5 +313,57 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-        </script>
-    }
+
+        //取得被勾選的報修單號
+        function getCheckedRSN() {
+            const checkedRows = $('#DataGrid').datagrid('getChecked');
+            const rsnList = checkedRows.map(row => row.RSN);
+            return rsnList;
+        }
+
+        function save() {
+            const repairUserNameValue = $('#addMultiAssign #RepairUserName').tagbox('getValues');
+            if (!repairUserNameValue?.length) {
+                alert('請選擇執行人員');
+                return false;
+            }
+            let isValidity = $('#addMultiAssign form')[0].reportValidity()
+            console.log("isValidity():", isValidity);
+
+            if (!isValidity) return;
+
+            const sendData = {
+                RSN: currentRSN,
+                DueDate: document.getElementById("DueDate").value,
+                RepairUserName: $('#addMultiAssign #RepairUserName').tagbox('getValues'),
+            }
+            console.log("傳送的資料", sendData);
+
+
+            $.ajax({
+                url: "@Url.Action("Assignment", "Repair_Management")",
+                data: JSON.stringify(sendData),
+                type: "POST",
+                contentType: "application/json",
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
+
+            function onSuccess(res) {
+                modal.hide();
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "派工成功！",
+                    onHide: () => { window.location.href = "/Repair_Management/Index"; }
+                });
+            }
+            function onError(res) {
+                modal.hide();
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `派工失敗！` + `${res?.responseText || ""}` })
+            }
+        }
+    </script>
+}

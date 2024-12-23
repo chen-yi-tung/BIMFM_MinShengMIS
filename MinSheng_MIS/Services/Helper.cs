@@ -68,11 +68,18 @@ namespace MinSheng_MIS.Services
         }
 
         public static ICollection<T> AddOrUpdateList<T, TSource>(
-            List<TSource> list,
-            string esn,
+            IEnumerable<TSource> list,
+            string mainSn,
             Func<TSource, string, T> createInstance) where T : new()
         {
-            return list.Select(x => createInstance(x, esn)).ToList();
+            return list.Select(x => createInstance(x, mainSn)).ToList();
+        }
+
+        public static ICollection<T> AddOrUpdateList<T, TSource>(
+            IEnumerable<TSource> list,
+            Func<TSource, T> createInstance) where T : new()
+        {
+            return list.Select(x => createInstance(x)).ToList();
         }
 
         public static ICollection<T> AddOrUpdateList<T, TSource>(

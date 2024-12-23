@@ -159,7 +159,7 @@
 /*.panel-noscroll {
     overflow: visible !important;
 }*/
-.panel, .panel-body, .datagrid-view {
+ .panel-body, .datagrid-view {
     width: 100% !important;
 }
 .datagrid-table .datagrid-header-inner {

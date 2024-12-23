@@ -72,6 +72,7 @@ namespace MinSheng_MIS.Services
             // Origin data
             var origin = await _db.EquipmentInfo.FindAsync(data.ESN);
 
+            // 更新 EquipmentInfo
             EquipmentInfo update = (data as UpdateEquipmentInfoInstance)
                 .ToDto<UpdateEquipmentInfoInstance, EquipmentInfo>();
 
@@ -184,8 +185,8 @@ namespace MinSheng_MIS.Services
                 ?? throw new MyCusResException("模板不存在!");
 
             // 確認是否符合一機一卡模板當前欄位
-            if (!AreListsEqualIgnoreOrder(template.Template_AddField.Select(x => x.AFSN).ToList(), data.AddFieldList.Select(x => x.AFSN).ToList()))
-                throw new MyCusResException("模板已更新，請重新填寫!");
+            //if (!AreListsEqualIgnoreOrder(template.Template_AddField.Select(x => x.AFSN).ToList(), data.AddFieldList.Select(x => x.AFSN).ToList()))
+            //    throw new MyCusResException("模板已更新，請重新填寫!");
         }
         #endregion
 
@@ -197,8 +198,8 @@ namespace MinSheng_MIS.Services
                 ?? throw new MyCusResException("模板不存在!");
 
             // 確認是否符合一機一卡模板當前保養項目
-            if (!AreListsEqualIgnoreOrder(template.Template_MaintainItemSetting.Select(x => x.MISSN).ToList(), data.MaintainItemList.Select(x => x.MISSN).ToList()))
-                throw new MyCusResException("模板已更新，請重新填寫!");
+            //if (!AreListsEqualIgnoreOrder(template.Template_MaintainItemSetting.Select(x => x.MISSN).ToList(), data.MaintainItemList.Select(x => x.MISSN).ToList()))
+            //    throw new MyCusResException("模板已更新，請重新填寫!");
 
             // 保養週期代碼是否於系統可辨識範圍內
             if (!data.MaintainItemList.Select(x => x.Period).AsEnumerable().All(p => Surface.MaintainPeriod().ContainsKey(p)))

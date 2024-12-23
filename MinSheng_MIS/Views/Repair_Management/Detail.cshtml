@@ -18,14 +18,14 @@
             </div>
         </div>
 
-        <div class="datatable">
+        <div class="datatable" id="RepairZone" style="display: none;">
             <div class="datatable-header">維修資料</div>
             <div class="datatable-body">
                 <table class="datatable-table" id="RepairDetail"></table>
             </div>
         </div>
 
-        <div class="datatable">
+        <div class="datatable" id="ReviewZone" style="display: none;">
             <div class="datatable-header">審核填報</div>
             <div class="datatable-body">
                 <table class="datatable-table" id="ReviewDetail"></table>
@@ -36,13 +36,46 @@
 
 @section scripts {
     <script>
-        const EMFISN = '@ViewBag.EMFISN';
-        //let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;
-        let apiUrl = null;
+        @*const RSN = '@ViewBag.RSN';*@
+        const url = window.location.search;
+        const RSN = new URLSearchParams(url).get('RSN');
+        let apiUrl = '@Url.Action("Detail", "Repair_Management")?rsn=' + RSN;
+        //let apiUrl = null;
 
-        window.onload = function () {
-            readData(apiUrl);
+        const fakeData = {
+            ESN: "E00003",
+            RSN: "E00003_000001_230107",
+            ReportState: "待派工",
+            ReportLevel: "最速件",
+            ReportTime: "2022/01/01 11:09",
+            ReportContent: "已完成螺旋機電池更換，經測試後可正常操作。",
+            ReportImg: [
+                "/Pictures/報修照片.jpg"
+            ],
+            RepairUserName: "王曉明、任趙仁",
+            Location: "生物處理機房 軸電器儀控室層",
+            NO: "E00003",
+            EName: "軸承潤滑",
+            RepairResult: "完成",
+            RepairtId: "任趙仁",
+            RepairTime: "2024/12/18 12:10",
+            RepairContent: "內容內容",
+            RepairImg: [
+                "/Pictures/維修照片.jpg"
+            ],
+            AuditResult: "false",
+            AuditId: "000123",
+            AuditTime: "2024/12/20 13:57",
+            AuditReason: "理由理由"
         }
+
+        //window.onload = function () {
+        //    readData(apiUrl);
+        //}
+
+        $(function () {
+            readData(apiUrl);
+        })
 
         const ReportDetailItem = [
             { text: "報修單號", value: "RSN" },
@@ -53,11 +86,12 @@
             { text: "報修照片", value: "ReportImg", type: "ImgPath" },
             { text: "執行人員", value: "RepairUserName" },
             { text: "所在地點", value: "Location" },
-            { text: "設備編號", value: "No" },
+            { text: "設備編號", value: "NO" },
             { text: "設備名稱", value: "EName" },
             {
                 text: "設備屬性", value: "ESN", formatter: (val) => {
-                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail', '_blank')">設備資料</button>` : "-"
+                    console.log("val", val);
+                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail?ESN=${val}', '_blank')">設備資料</button>` : "-"
                 }
             },
         ]
@@ -67,6 +101,7 @@
             { text: "填報者", value: "RepairtId" },
             { text: "填報時間", value: "RepairTime" },
             { text: "維修填報", value: "RepairContent" },
+            { text: "維修照片", value: "RepairImg", type: "ImgPath" },
         ]
 
         const ReviewDetailItem = [
@@ -76,29 +111,14 @@
             { text: "審核意見", value: "AuditReason" },
         ]
 
-        const fakeData = {
-            RSN: "E00003_000001_230107",
-            State: "待派工",
-            RepairLevel: "最速件",
-            RepairTime: "2022/01/01 11:09",
-            ReportContent: "已完成螺旋機電池更換，經測試後可正常操作。",
-            ImgPath: [
-                "/Pictures/安妮雅.jfif"
-            ],
-            UserID: "王曉明、任趙仁",
-            Location: "生物處理機房 軸電器儀控室層",
-            ESN: "E00003",
-            EName: "軸承潤滑",
-            RepairResult: "完成",
-        }
 
 
         function readData(url = null) {
-
-            url == null ? onSuccess(fakeData) :
+            url == null ? onSuccess(apiUrl) :
                 $.ajax({
                     url: url,
-                    type: "GET",
+                    type: "POST",
+                    //data: RSN,
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
@@ -106,15 +126,36 @@
                 })
 
             function onSuccess(res) {
-                console.log(res);
-                $("#ReportDetail").append(createTableInner(res, ReportDetailItem));
-                $("#RepairDetail").append(createTableInner(res, RepairDetailItem));
-                $("#ReviewDetail").append(createTableInner(res, ReviewDetailItem));
+                console.log("成功", res);
+                const data = res.Datas
+                //data.ReportState = "審核未過";
+                if (data.AuditResult === "") {
+                    data.AuditResult = ""
+                } else {
+                    data.AuditResult = data.AuditResult === "true" ? "通過" : "不通過";
+                }
+
+                $("#ReportDetail").append(createTableInner(data, ReportDetailItem));
+                $("#RepairDetail").append(createTableInner(data, RepairDetailItem));
+                $("#ReviewDetail").append(createTableInner(data, ReviewDetailItem));
+
 
                 ImageDisplay(".datatable-img-item>img");
+                displaySections(data.ReportState);
             }
             function onError(res) {
-                console.log(res);
+                console.log("失敗", res);
+            }
+        }
+
+        //依照 報修單狀態，顯示表格
+        function displaySections(ReportState) {
+            console.log("ReportState", ReportState);
+            if (ReportState === "待審核" || ReportState === "審核通過" || ReportState === "審核未過") {
+                document.getElementById("RepairZone").style.display = "block";
+            }
+            if (ReportState === "審核通過" || ReportState === "審核未過") {
+                document.getElementById("ReviewZone").style.display = "block";
             }
         }
     </script>

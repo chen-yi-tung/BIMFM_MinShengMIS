@@ -42,9 +42,10 @@ namespace MinSheng_MIS.Models.ViewModels
     }
     #endregion
 
-    #region 設備-詳情
+    #region 設備-詳情 TODO
     public class EquipmentInfoDetailModel : EquipInfo, IEquipmentInfoDetail
     {
+        public string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         public string FilePath { get; set; } // 設備照片路徑
         public string FileName { get; set; } // 設備照片名稱
         public string ASN { get; set; } // 棟別
@@ -55,7 +56,7 @@ namespace MinSheng_MIS.Models.ViewModels
 
     #endregion
 
-    #region 設備-刪除
+    #region 設備-刪除 TODO
     public class DeleteAddFieldValueList : IDeleteAddFieldValueList
     {
         public IEnumerable<string> EAFVSN { get; set; }
@@ -178,6 +179,7 @@ namespace MinSheng_MIS.Models.ViewModels
     /// </summary>
     public interface IEquipmentInfoDetail : IEquipmentInfo
     {
+        string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         string FilePath { get; set; } // 設備照片路徑
         string FileName { get; set; } // 設備照片名稱
         string ASN { get; set; } // 棟別

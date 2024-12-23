@@ -2,6 +2,7 @@
 using MinSheng_MIS.Models.ViewModels;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace MinSheng_MIS.Services
         }
 
         #region 新增一機一卡模板
-        public async Task<string> CreateOneDeviceOneCardAsync(IUpdateDeviceCard data)
+        public async Task<string> CreateOneDeviceOneCardAsync(ICreateDeviceCard data)
         {
             // 資料驗證
             DeviceCardDataAnnotation(data);
@@ -41,50 +42,209 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 批次新增增設基本資料欄位
-        public async Task CreateAddFieldListAsync(ICreateAddFieldList data)
+        public void CreateAddFieldList(ICreateAddFieldList data)
         {
             // 資料驗證
-            await AddFieldDataAnnotationAsync(data);
+            AddFieldDataAnnotation(data);
 
             // 建立 Template_AddField
-            await AddRangeAddFieldAsync(data);
+            AddRangeAddField(data);
         }
         #endregion
 
         #region 批次新增保養項目設定
-        public async Task CreateMaintainItemListAsync(ICreateMaintainItemList data)
+        public void CreateMaintainItemList(ICreateMaintainItemList data)
         {
             // 資料驗證
-            await MaintainItemDataAnnotationAsync(data);
+            MaintainItemDataAnnotation(data);
 
             // 建立 Template_MaintainItemSetting
-            await AddRangeMaintainItemAsync(data);
+            AddRangeMaintainItem(data, out _);
         }
         #endregion
 
         #region 批次新增檢查項目
-        public async Task CreateCheckItemListAsync(ICreateCheckItemList data)
+        public void CreateCheckItemList(ICreateCheckItemList data)
         {
             // 資料驗證
-            await CheckItemDataAnnotationAsync(data);
+            CheckItemDataAnnotation(data);
 
             // 建立 Template_CheckItem
-            await AddRangeCheckItemAsync(data);
+            AddRangeCheckItem(data);
         }
         #endregion
 
         #region 批次新增填報項目
-        public async Task CreateReportItemListAsync(ICreateReportItemList data)
+        public void CreateReportItemList(ICreateReportItemList data)
         {
             // 資料驗證
-            await ReportItemDataAnnotationAsync(data);
+            ReportItemDataAnnotation(data);
 
             // 建立 Template_CheckItem
-            await AddRangeReportItemAsync(data);
+            AddRangeReportItem(data);
         }
         #endregion
 
-        #region 更新增設基本資料欄位 TODO
+        #region 更新一機一卡模板
+        public async Task UpdateOneDeviceOneCardAsync(IUpdateDeviceCard data)
+        {
+            // 是否模板存在
+            if (!await _db.Template_OneDeviceOneCard.AnyAsync(x => x.TSN == data.TSN))
+                throw new MyCusResException("模板不存在!");
+
+            // 資料驗證
+            DeviceCardDataAnnotation(data, data.TSN);
+
+            // 更新 Template_OneDeviceOneCard
+            Template_OneDeviceOneCard update = (data as DeviceCardEditViewModel)
+                .ToDto<DeviceCardEditViewModel, Template_OneDeviceOneCard>();
+
+            _db.Template_OneDeviceOneCard.AddOrUpdate(update);
+        }
+        #endregion
+
+        #region 更新增設基本資料欄位
+        public async Task UpdateAddFieldListAsync(IUpdateAddFieldList data)
+        {
+            // 資料驗證
+            AddFieldDataAnnotation(new AddFieldModifiableListInstance(data as DeviceCardEditViewModel));
+
+            // 刪除 Template_AddField
+            var afsnList = data.AddItemList.Select(x => x.AFSN).ToList();
+            DeleteAddFieldList delTarget = new DeleteAddFieldList
+            {
+                AFSN = _db.Template_AddField
+                    .Where(x => x.TSN == data.TSN && !afsnList.Contains(x.AFSN))
+                    .Select(x => x.AFSN)
+                    .ToList()
+            };
+            DeleteAddFieldList(delTarget);
+
+            // 更新 Template_AddField
+            UpdateRangeAddField(data);
+
+            await _db.SaveChangesAsync();
+
+            // 建立 Template_AddField
+            AddRangeAddField(new AddFieldModifiableListInstance(data as DeviceCardEditViewModel, true));
+        }
+        #endregion
+
+        #region 更新保養項目設定
+        /// <summary>
+        /// 更新保養項目設定及相關資料表
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// 方法中有變更資料庫，需使用transaction進行roll back
+        /// </remarks>
+        public async Task UpdateMaintainItemListAsync(IUpdateMaintainItemList data)
+        {
+            // 資料驗證
+            MaintainItemDataAnnotation(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, noEquipmentUsed:true, equipmentUsed: true));
+            
+            #region MaintainItemDetailModel 既有保養項目/未有設備使用之保養項目
+            // 刪除 Template_MaintainItemSetting
+            var missnList = data.MaintainItemList.Select(x => x.MISSN).ToList();
+            DeleteMaintainItemList(new DeleteMaintainItemList
+            {
+                MISSN = _db.Template_MaintainItemSetting
+                    .Where(x => x.TSN == data.TSN && !missnList.Contains(x.MISSN))
+                    .Select(x => x.MISSN)
+                    .ToList()
+            });
+
+            // 更新 Template_MaintainItemSetting
+            UpdateRangeMaintainItemList(data);
+
+            await _db.SaveChangesAsync();
+
+            // 建立 Template_MaintainItemSetting
+            AddRangeMaintainItem(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, onlyEmptyMISSN:true, noEquipmentUsed:true), out _);
+            #endregion
+
+            #region AddEquipmentUsedMaintainItem 新增之保養項目及其於各設備值
+            // 建立 Template_MaintainItemSetting
+            AddRangeMaintainItem(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, equipmentUsed: true), out var newItems);
+
+            await _db.SaveChangesAsync();
+
+            // 建立 Equipment_MaintainItemValue
+            if (newItems != null && newItems.Any())
+            {
+                var valueTargetList = data.AddMaintainItemList?.GroupBy(x => x.ESN).Select(x =>
+                new UpdateMaintainItemValueInstance
+                {
+                    ESN = x.Key,
+                    TSN = data.TSN,
+                    MaintainItemList = x.Select(i => new MaintainItemValueModel
+                    {
+                        MISSN = newItems.SingleOrDefault(n => n.MaintainName == i.MaintainName).MISSN,
+                        Period = i.Period,
+                        NextMaintainDate = i.NextMaintainDate,
+                    }).ToList()
+                })
+                ?? Enumerable.Empty<UpdateMaintainItemValueInstance>();
+                foreach (var value in valueTargetList)
+                    await _eMgmtService.CreateEquipmentMaintainItemsValue(value);
+            }
+            #endregion
+        }
+        #endregion
+
+        #region 更新檢查項目
+        public async Task UpdateCheckItemListAsync(IUpdateCheckItemList data)
+        {
+            // 資料驗證
+            CheckItemDataAnnotation(new CheckItemModifiableListInstance(data as DeviceCardEditViewModel));
+
+            // 刪除 Template_CheckItem
+            var cisnList = data.CheckItemList.Select(x => x.CISN).ToList();
+            DeleteCheckItemList delTarget = new DeleteCheckItemList
+            {
+                CISN = _db.Template_CheckItem
+                    .Where(x => x.TSN == data.TSN && !cisnList.Contains(x.CISN))
+                    .Select(x => x.CISN)
+                    .ToList()
+            };
+            DeleteCheckItemList(delTarget);
+
+            // 更新 Template_CheckItem
+            UpdateRangeCheckItemList(data);
+
+            await _db.SaveChangesAsync();
+
+            // 建立 Template_CheckItem
+            AddRangeCheckItem(new CheckItemModifiableListInstance(data as DeviceCardEditViewModel, true));
+        }
+        #endregion
+
+        #region 更新填報項目
+        public async Task UpdateReportItemListAsync(IUpdateReportItemList data)
+        {
+            // 資料驗證
+            ReportItemDataAnnotation(new ReportItemModifiableListInstance(data as DeviceCardEditViewModel));
+
+            // 刪除 Template_ReportingItem
+            var risnList = data.ReportItemList.Select(x => x.RISN).ToList();
+            DeleteReportItemList delTarget = new DeleteReportItemList
+            {
+                RISN = _db.Template_ReportingItem
+                    .Where(x => x.TSN == data.TSN && !risnList.Contains(x.RISN))
+                    .Select(x => x.RISN)
+                    .ToList()
+            };
+            DeleteReportItemList(delTarget);
+
+            // 更新 Template_ReportingItem
+            UpdateRangeReportItemList(data);
+
+            await _db.SaveChangesAsync();
+
+            // 建立 Template_ReportingItem
+            AddRangeReportItem(new ReportItemModifiableListInstance(data as DeviceCardEditViewModel, true));
+        }
         #endregion
 
         #region 獲取一機一卡模板
@@ -249,62 +409,66 @@ namespace MinSheng_MIS.Services
 
         //-----資料驗證
         #region Template_OneDeviceOneCard資料驗證
-        private void DeviceCardDataAnnotation(IUpdateDeviceCard data)
+        private void DeviceCardDataAnnotation(ICreateDeviceCard data, string tsn = null)
         {
-            // 不可重複：模板
-            if (_db.Template_OneDeviceOneCard.Select(x => x.SampleName).ToList().Contains(data.SampleName))
+            // 不可重複：模板名稱
+            var templates = string.IsNullOrEmpty(tsn) ? 
+                _db.Template_OneDeviceOneCard : 
+                _db.Template_OneDeviceOneCard.Where(x => x.TSN != tsn);
+
+            if (templates.Select(x => x.SampleName).ToList().Contains(data.SampleName))
                 throw new MyCusResException("模板名稱已被使用!");
         }
         #endregion
 
         #region AddField資料驗證
-        private async Task AddFieldDataAnnotationAsync(ICreateAddFieldList data)
+        private void AddFieldDataAnnotation(IAddFieldModifiableList data/*, bool compareOrigin = false*/)
         {
-            // 驗證新增設基本欄位
+            // 驗證新增設基本欄位(data包含既有的欄位)
             ValidateList(data.AFNameList, "增設基本欄位", 100);
             // 與既有欄位進行比對
-            if (await _db.Template_AddField.Where(x => x.TSN == data.TSN).AnyAsync(x => data.AFNameList.Contains(x.FieldName)))
-                throw new MyCusResException("增設基本欄位不可重複!");
+            //if (compareOrigin && await _db.Template_AddField.Where(x => x.TSN == data.TSN).AnyAsync(x => data.AFNameList.Contains(x.FieldName)))
+            //    throw new MyCusResException("增設基本欄位不可重複!");
         }
         #endregion
 
         #region MaintainItem資料驗證
-        private async Task MaintainItemDataAnnotationAsync(ICreateMaintainItemList data)
+        private void MaintainItemDataAnnotation(IMaintainItemModifiableList data)
         {
-            // 驗證新增設基本欄位
+            // 驗證新增設基本欄位(data包含既有的欄位)
             ValidateList(data.MINameList, "保養項目", 100);
             // 與既有欄位進行比對
-            if (await _db.Template_MaintainItemSetting.Where(x => x.TSN == data.TSN).AnyAsync(x => data.MINameList.Contains(x.MaintainName)))
-                throw new MyCusResException("保養項目名稱不可重複!");
+            //if (await _db.Template_MaintainItemSetting.Where(x => x.TSN == data.TSN).AnyAsync(x => data.MINameList.Contains(x.MaintainName)))
+            //    throw new MyCusResException("保養項目名稱不可重複!");
         }
         #endregion
 
         #region CheckItem資料驗證
-        private async Task CheckItemDataAnnotationAsync(ICreateCheckItemList data)
+        private void CheckItemDataAnnotation(ICreateCheckItemList data)
         {
             // 當檢查項目不為空，則檢查頻率為必填
             if (data.Frequency == null)
                 throw new MyCusResException("請填寫檢查頻率!");
-            // 驗證新增設基本欄位
+            // 驗證新增設基本欄位(data包含既有的欄位)
             ValidateList(data.CINameList, "檢查項目", 100);
             // 與既有欄位進行比對
-            if (await _db.Template_CheckItem.Where(x => x.TSN == data.TSN).AnyAsync(x => data.CINameList.Contains(x.CheckItemName)))
-                throw new MyCusResException("檢查項目名稱不可重複!");
+            //if (await _db.Template_CheckItem.Where(x => x.TSN == data.TSN).AnyAsync(x => data.CINameList.Contains(x.CheckItemName)))
+            //    throw new MyCusResException("檢查項目名稱不可重複!");
         }
         #endregion
 
         #region ReportItem資料驗證
-        private async Task ReportItemDataAnnotationAsync(ICreateReportItemList data)
+        private void ReportItemDataAnnotation(ICreateReportItemList data)
         {
             // 當填報項目不為空，則檢查頻率為必填
             if (data.Frequency == null)
                 throw new MyCusResException("請填寫檢查頻率!");
             ValidateList(data.RIList.Select(x => x.RIName), "填報項目", 100);
             // 與既有欄位進行比對
-            var riNameList = data.RIList.Select(r => r.RIName).ToList();
-            if (await _db.Template_ReportingItem
-                .AnyAsync(x => x.TSN == data.TSN && riNameList.Contains(x.ReportingItemName)))
-                throw new MyCusResException("檢查項目名稱不可重複!");
+            //var riNameList = data.RIList.Select(r => r.RIName).ToList();
+            //if (await _db.Template_ReportingItem
+            //    .AnyAsync(x => x.TSN == data.TSN && riNameList.Contains(x.ReportingItemName)))
+            //    throw new MyCusResException("檢查項目名稱不可重複!");
         }
         #endregion
 
@@ -329,11 +493,12 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 獲取最後一個編碼
-        public async Task<string> GetLatestIdWithSameTsnAsync(string tsn, IQueryable<dynamic> query, string fieldName)
+        public string GetLatestIdWithSameTsn(string tsn, IQueryable<dynamic> query, string fieldName)
         {
-            return await query.Where($"TSN == @0", tsn)
-                .OrderBy($"{fieldName} descending")
-                .FirstOrDefaultAsync();
+            return query.Where($"TSN == @0", tsn)
+                .OrderBy($"{fieldName} descending")  // 動態排序
+                .Select($"{fieldName}")  // 動態選擇欄位
+                .FirstOrDefault()?.ToString();
         }
         #endregion
 
@@ -346,7 +511,7 @@ namespace MinSheng_MIS.Services
         /// <param name="fieldName">唯一編碼欄位名稱</param>
         /// <returns>唯一編碼</returns>
         /// <remarks>唯一編碼規則為"${TSN}%{3}"</remarks>
-        public string GenerateUniqueIdByTSN(string tsn, string latestId, string fieldName)
+        public string GenerateUniqueIdByTSN(string tsn, string latestId)
         {
             string format = tsn + "%{3}";
             string emptySN = new string('0', 11); // 產生11位數的'0'
@@ -364,16 +529,16 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡基本資料欄位名稱列表及一機一卡模板編碼(TSN)</param>
         /// <returns>無回傳</returns>
-        private async Task AddRangeAddFieldAsync(ICreateAddFieldList data)
+        private void AddRangeAddField(ICreateAddFieldList data)
         {
             // Fetch最後一個Id
-            string latestId = await GetLatestIdWithSameTsnAsync(data.TSN, _db.Template_AddField, "AFSN");
+            string latestId = GetLatestIdWithSameTsn(data.TSN, _db.Template_AddField, "AFSN");
 
             _db.Template_AddField.AddRange(Helper.AddOrUpdateList(
                 data.AFNameList,
                 data.TSN,
                 latestId,
-                (esn, lastId) => GenerateUniqueIdByTSN(data.TSN, lastId, "AFSN"),
+                (esn, lastId) => GenerateUniqueIdByTSN(data.TSN, lastId),
                 (x, e, lastId, newId) => new Template_AddField
                 {
                     AFSN = newId,  // 使用新生成的Id
@@ -390,23 +555,25 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡保養項目名稱列表及一機一卡模板編碼(TSN)</param>
         /// <returns>無回傳</returns>
-        private async Task AddRangeMaintainItemAsync(ICreateMaintainItemList data)
+        private void AddRangeMaintainItem(ICreateMaintainItemList data, out List<Template_MaintainItemSetting> list)
         {
             // Fetch最後一個Id
-            string latestId = await GetLatestIdWithSameTsnAsync(data.TSN, _db.Template_MaintainItemSetting, "MISSN");
+            string latestId = GetLatestIdWithSameTsn(data.TSN, _db.Template_MaintainItemSetting, "MISSN");
 
-            _db.Template_MaintainItemSetting.AddRange(Helper.AddOrUpdateList(
+            list = Helper.AddOrUpdateList(
                 data.MINameList,
                 data.TSN,
                 latestId,
-                (esn, lastId) => GenerateUniqueIdByTSN(data.TSN, lastId, "MISSN"),
+                (esn, lastId) => GenerateUniqueIdByTSN(data.TSN, lastId),
                 (x, e, lastId, newId) => new Template_MaintainItemSetting
                 {
                     MISSN = newId,  // 使用新生成的Id
                     TSN = e,
                     MaintainName = x
                 }
-            ));
+            ).ToList();
+
+            _db.Template_MaintainItemSetting.AddRange(list);
         }
         #endregion
 
@@ -416,16 +583,16 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡檢查項目名稱列表及一機一卡模板編碼(TSN)</param>
         /// <returns>無回傳</returns>
-        private async Task AddRangeCheckItemAsync(ICreateCheckItemList data)
+        private void AddRangeCheckItem(ICreateCheckItemList data)
         {
             // 只調用一次 GetLatestIdWithSameTsnAsync
-            string latestId = await GetLatestIdWithSameTsnAsync(data.TSN, _db.Template_CheckItem, "CISN");
+            string latestId = GetLatestIdWithSameTsn(data.TSN, _db.Template_CheckItem, "CISN");
 
             _db.Template_CheckItem.AddRange(Helper.AddOrUpdateList(
                 data.CINameList,
                 data.TSN,
                 latestId,
-                (esn, lastId) => GenerateUniqueIdByTSN(data.TSN, lastId, "CISN"),
+                (esn, lastId) => GenerateUniqueIdByTSN(data.TSN, lastId),
                 (x, e, lastId, newId) => new Template_CheckItem
                 {
                     CISN = newId,  // 使用新生成的Id
@@ -442,16 +609,16 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡填報項目列表(包含名稱及單位)及一機一卡模板編碼(TSN)</param>
         /// <returns>無回傳</returns>
-        private async Task AddRangeReportItemAsync(ICreateReportItemList data)
+        private void AddRangeReportItem(ICreateReportItemList data)
         {
             // Fetch最後一個Id
-            string latestId = await GetLatestIdWithSameTsnAsync(data.TSN, _db.Template_ReportingItem, "RISN");
+            string latestId = GetLatestIdWithSameTsn(data.TSN, _db.Template_ReportingItem, "RISN");
 
             _db.Template_ReportingItem.AddRange(Helper.AddOrUpdateList(
                 data.RIList,
                 data.TSN,
                 latestId,
-                (esn, lastId) => GenerateUniqueIdByTSN(data.TSN, lastId, "RISN"),
+                (esn, lastId) => GenerateUniqueIdByTSN(data.TSN, lastId),
                 (x, e, lastId, newId) => new Template_ReportingItem
                 {
                     RISN = newId,  // 使用新生成的Id
@@ -460,6 +627,90 @@ namespace MinSheng_MIS.Services
                     Unit = x.Unit
                 }
             ));
+        }
+        #endregion
+
+        #region 批次更新 Template_AddField
+        /// <summary>
+        /// 批次更新設備一機一卡檢查項目
+        /// </summary>
+        /// <param name="data">包含一機一卡檢查項目名稱列表及一機一卡模板編碼(TSN)</param>
+        /// <returns>無回傳</returns>
+        private void UpdateRangeAddField(in IUpdateAddFieldList data, bool ignoreEmpty = true)
+        {
+            var targetList = ignoreEmpty ?
+                data.AddItemList.Where(x => !string.IsNullOrEmpty(x.AFSN)) :
+                data.AddItemList;
+
+            foreach (var item in targetList)
+            {
+                var field = _db.Template_AddField.Find(item.AFSN) ?? throw new MyCusResException("AFSN不存在!");
+                field.FieldName = item.Value;
+                _db.Template_AddField.AddOrUpdate(field);
+            }
+        }
+        #endregion
+
+        #region 批次更新 Template_MaintainItemSetting
+        /// <summary>
+        /// 批次更新設備一機一卡保養項目設定
+        /// </summary>
+        /// <param name="data">包含一機一卡保養項目名稱列表及一機一卡模板編碼(TSN)</param>
+        /// <returns>無回傳</returns>
+        private void UpdateRangeMaintainItemList(in IUpdateMaintainItemList data, bool ignoreEmpty = true)
+        {
+            var targetList = ignoreEmpty ?
+                data.MaintainItemList.Where(x => !string.IsNullOrEmpty(x.MISSN)) :
+                data.MaintainItemList;
+
+            foreach (var item in targetList)
+            {
+                var field = _db.Template_MaintainItemSetting.Find(item.MISSN) ?? throw new MyCusResException("MISSN不存在!");
+                field.MaintainName = item.Value;
+                _db.Template_MaintainItemSetting.AddOrUpdate(field);
+            }
+        }
+        #endregion
+
+        #region 批次更新 Template_CheckItem
+        /// <summary>
+        /// 批次更新設備一機一卡基本資料欄位
+        /// </summary>
+        /// <param name="data">包含一機一卡基本資料欄位名稱列表及一機一卡模板編碼(TSN)</param>
+        /// <returns>無回傳</returns>
+        private void UpdateRangeCheckItemList(in IUpdateCheckItemList data, bool ignoreEmpty = true)
+        {
+            var targetList = ignoreEmpty ?
+                data.CheckItemList.Where(x => !string.IsNullOrEmpty(x.CISN)) :
+                data.CheckItemList;
+
+            foreach (var item in targetList)
+            {
+                var field = _db.Template_CheckItem.Find(item.CISN) ?? throw new MyCusResException("CISN不存在!");
+                field.CheckItemName = item.Value;
+                _db.Template_CheckItem.AddOrUpdate(field);
+            }
+        }
+        #endregion
+
+        #region 批次更新 Template_ReportingItem
+        /// <summary>
+        /// 批次更新設備一機一卡基本資料欄位
+        /// </summary>
+        /// <param name="data">包含一機一卡基本資料欄位名稱列表及一機一卡模板編碼(TSN)</param>
+        /// <returns>無回傳</returns>
+        private void UpdateRangeReportItemList(in IUpdateReportItemList data, bool ignoreEmpty = true)
+        {
+            var targetList = ignoreEmpty ?
+                data.ReportItemList.Where(x => !string.IsNullOrEmpty(x.RISN)) :
+                data.ReportItemList;
+
+            foreach (var item in targetList)
+            {
+                var field = _db.Template_ReportingItem.Find(item.RISN) ?? throw new MyCusResException("RISN不存在!");
+                field.ReportingItemName = item.Value;
+                _db.Template_ReportingItem.AddOrUpdate(field);
+            }
         }
         #endregion
 
