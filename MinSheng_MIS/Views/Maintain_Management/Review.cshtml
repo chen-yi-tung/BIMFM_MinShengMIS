@@ -30,24 +30,24 @@
             <form class="form">
                 <div class="form-group-zone">
                     <div class="form-group">
-                        <label for="Reviewer">審核者</label>
-                        <input class="form-control" id="Reviewer" name="Reviewer" type="text" disabled />
+                        <label for="AuditId">審核者</label>
+                        <input class="form-control" id="AuditId" name="AuditId" type="text" disabled />
                     </div>
 
                     <div class="form-group col-3fr required">
-                        <label for="ReviewContent">審核意見</label>
-                        <textarea class="form-control" id="ReviewContent" name="ReviewContent" rows="3" cols="50" required></textarea>
+                        <label for="AuditReason">審核意見</label>
+                        <textarea class="form-control" id="AuditReason" name="AuditReason" rows="3" cols="50" required></textarea>
                     </div>
 
                     <div class="form-group radio-group required">
-                        <label for="ReviewResult">審核結果</label>
+                        <label for="AuditResult">審核結果</label>
                         <div class="d-flex gap-4">
-                            <label class="" for="ReviewResult_1">
-                                <input type="radio" class="form-check-input" id="ReviewResult_1" name="ReviewResult" value="1">
+                            <label class="" for="AuditResult_1">
+                                <input type="radio" class="form-check-input" id="AuditResult_1" name="AuditResult" value="true">
                                 通過
                             </label>
-                            <label class="" for="ReviewResult_2">
-                                <input type="radio" class="form-check-input" id="ReviewResult_2" name="ReviewResult" value="2">
+                            <label class="" for="AuditResult_2">
+                                <input type="radio" class="form-check-input" id="AuditResult_2" name="AuditResult" value="false">
                                 不通過
                             </label>
                         </div>
@@ -66,62 +66,72 @@
 
 @section scripts {
     <script>
+        @*const EMFSN = '@ViewBag.EMFSN';*@
+        @*const UserName = '@ViewBag.MyName';*@
+        const UserName = "任趙仁";
 
-        const EMFISN = '@ViewBag.EMFISN';
-        //let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")' + `/${EMFISN}`;
+        const url = window.location.search;
+        const EMFSN = new URLSearchParams(url).get('EMFSN');
+        //let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")?emfsn=' + `/${EMFSN}`;
         let apiUrl = null;
 
-        window.onload = function () {
-            addButtonEvent();
-            readData(apiUrl);
+        const fakeData = {
+            Datas: {
+                EMFSN: "E00003_000001_230107",
+                Status: "審核未過",
+                MaintainName: "皮帶之保養",
+                Maintainer: "王曉明、任趙仁",
+                EName: "軸承潤滑",
+                EState: "正常",
+                NO: "E00003",
+                Location: "生物處理機房 軸電器儀控室層",
+                Period: "3次/週",
+                LastMaintainDate: "2022/01/01",
+                NextMaintainDate: "2024/01/01",
+                ReportId: "任趙仁",
+                ReportTime: "2024/12/23 17:22",
+                ReportContent: "保養完成",
+            }
         }
 
+        $(function () {
+            addButtonEvent();
+            readData(apiUrl);
+        })
+
         const MaintainDetailItem = [
-            { text: "保養單號", value: "MSN" },
-            { text: "保養單狀態", value: "State" },
-            { text: "保養項目", value: "MaintainItem" },
-            { text: "執行人員", value: "UserID" },
+            { text: "保養單號", value: "EMFSN" },
+            { text: "保養單狀態", value: "Status" },
+            { text: "保養項目", value: "MaintainName" },
+            { text: "執行人員", value: "Maintainer" },
             { text: "設備名稱", value: "EName" },
             { text: "設備狀態", value: "EState" },
-            { text: "設備編號", value: "ESN" },
+            { text: "設備編號", value: "NO" },
             { text: "所在地點", value: "Location" },
-            { text: "設備屬性", value: "ESN", formatter: (val) => {
-                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail', '_blank')">設備資料</button>` : "-"
+            {
+                text: "設備屬性", value: "EMFSN", formatter: (val) => {
+                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail?EMFSN=${val}', '_blank')">設備資料</button>` : "-"
                 }
             },
-            { text: "保養週期", value: "Cycle" },
-            { text: "上次保養日", value: "LastDate" },
-            { text: "最近應保養日", value: "RecentDate" },
+            { text: "保養週期", value: "Period" },
+            { text: "上次保養日", value: "LastMaintainDate" },
+            { text: "最近應保養日", value: "NextMaintainDate" },
         ]
 
         const ReportDetailItem = [
-            { text: "保養結果", value: "MaintainResult" },
-            { text: "填報者", value: "Maintainer" },
-            { text: "填報時間", value: "MaintainTime" },
-            { text: "保養填報", value: "MaintainContent" },
+            { text: "填報者", value: "ReportId" },
+            { text: "填報時間", value: "ReportTime" },
+            { text: "保養填報", value: "ReportContent" },
         ]
 
-        const fakeData = {
-            MSN: "E00003_000001_230107",
-            State: "待派工",
-            MaintainItem: "皮帶之保養",
-            UserID: "王曉明、任趙仁",
-            EName: "軸承潤滑",
-            EState: "正常",
-            ESN: "E00003",
-            Location: "生物處理機房 軸電器儀控室層",
-            Cycle: "3次/週",
-            LastDate: "2022/01/01",
-            RecentDate: "2024/01/01",
-            MaintainResult: "完成",
-        }
+
 
         function readData(url = null) {
 
             url == null ? onSuccess(fakeData) :
                 $.ajax({
                     url: url,
-                    type: "GET",
+                    type: "POST",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
@@ -130,13 +140,59 @@
 
             function onSuccess(res) {
                 console.log(res);
-                $("#MaintainDetail").append(createTableInner(res, MaintainDetailItem));
-                $("#ReportDetail").append(createTableInner(res, ReportDetailItem));
+                document.getElementById('AuditId').value = UserName;
+                $("#MaintainDetail").append(createTableInner(res.Datas, MaintainDetailItem));
+                $("#ReportDetail").append(createTableInner(res.Datas, ReportDetailItem));
 
                 ImageDisplay(".datatable-img-item>img");
             }
             function onError(res) {
                 console.log(res);
+            }
+        }
+        function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
+
+            var form = new FormData();
+            const auditReason = document.querySelector('input[name="AuditResult"]:checked');
+            console.log("看這", auditReason.value);
+            const auditReasonValue = auditReason.value === "true";
+            console.log("再看這", auditReasonValue);
+
+            form.append("EMFSN", EMFSN);
+            form.append("AuditReason", document.getElementById("AuditReason").value);
+            form.append("AuditResult", auditReasonValue);
+
+            console.log("最後傳送", Object.fromEntries(form.entries()));
+
+            @*$.ajax({
+                url: '@Url.Action("Audit", "Repair_Management")',
+                data: form,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })*@
+
+            function onSuccess(res) {
+                console.log(res);
+                const msg = res.State === 'Success' ? '送出成功!' : res.ErrorMessage;
+                createDialogModal({
+                    id: "DialogModal-Success", inner: msg,
+                    onHide: () => { window.location.href = "/Maintain_Management/Index"; }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `送出失敗！` + `${res?.responseText || ""}` })
             }
         }
     </script>
