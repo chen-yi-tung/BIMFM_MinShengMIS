@@ -24,7 +24,7 @@
                     <label for="EOMSN">設備操作手冊編號</label>
                     <input class="form-control" id="EOMSN" name="EOMSN" type="text" maxlength="50" required />
                 </div>
-                <div class="form-group required">
+                @*<div class="form-group required">
                     <label for="System">系統別</label>
                     <select class="form-select" name="System" id="System" required disabled>
                         <option value="">請選擇</option>
@@ -38,7 +38,7 @@
                         <option value="">請選擇</option>
                     </select>
                     <input class="form-control" id="SubSystem" name="SubSystem" type="text" hidden />
-                </div>
+                </div>*@
 
                 <div class="form-group required">
                     <label for="EName">設備名稱</label>
@@ -76,8 +76,6 @@
         //let apiUrl = null;
 
         const fakeData = {
-            System: "BT",
-            SubSystem: "BT-11",
             EName: "除霧皮帶輸送機",
             Brand: "A廠牌",
             Model: "HT-6356",
@@ -87,18 +85,19 @@
         var fileUploader
         $(async function () {
             $("#_checkFilePath").prop("checked", true);
-            await pushSelect("System", '@Url.Action("System", "DropDownList")');
+            @*await pushSelect("System", '@Url.Action("System", "DropDownList")');*@
             addButtonEvent();
 
-            const Systems = document.getElementById('System')
+            @*const Systems = document.getElementById('System')
             Systems.addEventListener("change", function () {
                 pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-            });
+            });*@
 
-            const SubSystems = document.getElementById('SubSystem')
+            @*const SubSystems = document.getElementById('SubSystem')
             SubSystems.addEventListener("change", function () {
                 pushSelect("EName", `@Url.Action("EName", "DropDownList")?System=${$('#System').val()}&SubSystem=${$('#SubSystem').val()}`);
-            });
+            });*@
+            pushSelect("EName", `@Url.Action("EName", "DropDownList")`);
 
             fileUploader = new FileUploader({
                 container: "#FileUploader",
@@ -128,12 +127,12 @@
 
                 for (const [k, v] of Object.entries(res)) {
                     switch (k) {
-                        case "SubSystem":
+                        @*case "SubSystem":
                             await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")?System=' + res.System);
                             $(`#${k}`).val(v);
-                            break;
+                            break;*@
                         case "EName":
-                            await pushSelect("EName", '@Url.Action("EName", "DropDownList")?System=' + res.System + '&SubSystem=' + res.SubSystem);
+                            await pushSelect("EName", '@Url.Action("EName", "DropDownList")');
                             $(`#${k}`).val(v);
                             break;
                         case "ManualFile":

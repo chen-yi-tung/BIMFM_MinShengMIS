@@ -37,27 +37,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 根據樓層查詢模版路徑名稱
-        [System.Web.Http.HttpGet]
-        public ActionResult PathTitle(string FSN)
-        {
-            List<JObject> list = new List<JObject>();
-            if (FSN != null)
-            {
-                var abc = db.PathSample.Where(x => x.FSN == FSN).ToList();
-                foreach (var item in abc)
-                {
-                    JObject jo = new JObject();
-                    jo.Add("Text", item.PathTitle);// PathTitle
-                    jo.Add("Value", item.PSSN); // PSSN
-                    list.Add(jo);
-                }
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
         #region 全部人
         [System.Web.Http.HttpGet]
         public ActionResult AllMyName()
@@ -160,6 +139,28 @@ namespace MinSheng_MIS.Controllers
                     };
                     list.Add(jo);
                 }
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region Frequency 巡檢頻率
+        [HttpGet]
+        public ActionResult Frequency()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.InspectionPlanFrequency();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
             }
 
             string text = JsonConvert.SerializeObject(list);
@@ -543,10 +544,10 @@ namespace MinSheng_MIS.Controllers
 
         #region 庫存狀態 下拉式選單
         [HttpGet]
-        public ActionResult StockState()
+        public ActionResult StockStatus()
         {
             List<JObject> list = new List<JObject>();
-            var Dics = Surface.StockState();
+            var Dics = Surface.StockStatus();
 
             foreach (var a in Dics)
             {
@@ -609,14 +610,41 @@ namespace MinSheng_MIS.Controllers
         public ActionResult StockType()
         {
             List<JObject> list = new List<JObject>();
-            var Dics = Surface.StockType();
+            var Dics = db.StockType.ToList();
 
             foreach (var a in Dics)
             {
                 JObject jo = new JObject
                 {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
+                    { "Text", a.StockTypeName },
+                    { "Value", a.StockTypeSN }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 庫存品項名稱下拉式選單
+        [HttpGet]
+        public ActionResult StockName(string stockTypeSN)
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = db.ComputationalStock.AsQueryable();
+
+            if (!string.IsNullOrEmpty(stockTypeSN))
+            {
+                Dics = Dics.Where(x => x.StockTypeSN.ToString() == stockTypeSN);
+            }
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.StockName },
+                    { "Value", a.SISN }
                 };
                 list.Add(jo);
             }
@@ -649,32 +677,26 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 設備名稱下拉式選單
-        //[HttpGet]
-        //public ActionResult EName(string System = "", string SubSystem = "")
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var ENamelist = new List<string>();
-        //    if (!string.IsNullOrEmpty(System) && !string.IsNullOrEmpty(SubSystem))
-        //    {
-        //        ENamelist = db.EquipmentInfo.Where(x => x.System == System && x.SubSystem == SubSystem).Select(x => x.EName).Distinct().ToList();
-        //    }
-        //    else
-        //    {
-        //        ENamelist = db.EquipmentInfo.Select(x => x.EName).Distinct().ToList();
-        //    }
-        //    foreach (var item in ENamelist)
-        //    {
-        //        JObject jo = new JObject
-        //        {
-        //            { "Text", item },
-        //            { "Value", item }
-        //        };
-        //        list.Add(jo);
-        //    }
+        [HttpGet]
+        public ActionResult EName()
+        {
+            List<JObject> list = new List<JObject>();
+            var ENamelist = new List<string>();
+            ENamelist = db.EquipmentInfo.Select(x => x.EName).Distinct().ToList();
 
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
+            foreach (var item in ENamelist)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", item },
+                    { "Value", item }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
         #endregion
 
         #region 圖系統下拉式選單
@@ -945,23 +967,6 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         //--報修管理
-        //#region Floor 樓層
-        //[System.Web.Http.HttpGet]
-        //public ActionResult Floor(int ASN)
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var table = db.Floor_Info.Where(f => f.ASN == ASN).ToList();
-        //    foreach (var item in table)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item.FloorName);
-        //        jo.Add("Value", item.FSN);
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        //#endregion
 
         #region RepairState 報修單狀態
         [HttpGet]

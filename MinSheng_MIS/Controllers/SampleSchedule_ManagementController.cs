@@ -8,6 +8,7 @@ namespace MinSheng_MIS.Controllers
 {
     public class SampleSchedule_ManagementController : Controller
     {
+
         #region 每日巡檢時程模板管理
         public ActionResult Index()
         {

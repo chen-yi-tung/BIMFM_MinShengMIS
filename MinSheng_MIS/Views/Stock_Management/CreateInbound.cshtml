@@ -19,20 +19,20 @@
         <form class="form d-lg-contents tab-content" id="Normal">
             <div class="form-group-zone">
                 <div class="form-group required" id="TypeContainer">
-                    <label for="Type">類別</label>
-                    <select class="form-select" name="Type" id="Type" required>
+                    <label for="StockTypeSN">類別</label>
+                    <select class="form-select" name="StockTypeSN" id="StockTypeSN" required>
                         <option value="null">請選擇</option>
                     </select>
                 </div>
                 <div class="form-group required" id="SNameContainer">
-                    <label for="SName">品項名稱</label>
-                    <select class="form-select" name="SName" id="SName" required>
+                    <label for="StockName">品項名稱</label>
+                    <select class="form-select" name="StockName" id="StockName" required>
                         <option value="null">請選擇</option>
                     </select>
                 </div>
                 <div class="form-group input-wrapper required" id="NumContainer">
-                    <label for="Num">入庫數量</label>
-                    <input class="form-control" id="Num" name="Num" type="text" required />
+                    <label for="NumberOfChanges">入庫數量</label>
+                    <input class="form-control" id="NumberOfChanges" name="NumberOfChanges" type="text" required />
                     <span class="unit">個</span>
                 </div>
                 <div class="form-group" style="display: none;" id="RFIDContainer">
@@ -109,16 +109,16 @@
                                 required>
                         </div>
                         <div class="form-group required">
-                            <label for="Type">類別</label>
-                            <select class="form-select" name="Type" id="Type" required></select>
+                            <label for="StockTypeSN">類別</label>
+                            <select class="form-select" name="StockTypeSN" id="StockTypeSN" required></select>
                         </div>
                         <div class="form-group required">
-                            <label for="SName">品項名稱</label>
-                            <select class="form-select" name="SName" id="SName" required></select>
+                            <label for="StockName">品項名稱</label>
+                            <select class="form-select" name="StockName" id="StockName" required></select>
                         </div>
                         <div class="form-group input-wrapper2" id="NumContainer">
-                            <label for="Num">入庫數量</label>
-                            <input class="form-control" id="Num" name="Num" type="text" disabled />
+                            <label for="NumberOfChanges">入庫數量</label>
+                            <input class="form-control" id="NumberOfChanges" name="NumberOfChanges" type="text" disabled />
                             <span class="unit">個</span>
                         </div>
                     </div>
@@ -143,6 +143,8 @@
         let apiUrl = null;
 
         $(async function () {
+            await pushSelect("StockTypeSN", '@Url.Action("StockType", "DropDownList")');
+            await pushSelect("StockName", '@Url.Action("StockName", "DropDownList")'); //to do要連動StockTypeSN
             readData(apiUrl);
             //await formDropdown.ASN();
             addButtonEvent();

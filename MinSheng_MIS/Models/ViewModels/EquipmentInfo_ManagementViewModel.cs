@@ -14,7 +14,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class EquipmentInfoCreateModel : EquipInfo, ICreateEquipmentInfo, ICreateAddFieldValueList, ICreateMaintainItemValueList
     {
         public string TSN { get; set; } // 一機一卡模板編號
-        [FileSizeLimit(5)] // 限制大小為 5 MB
+        [FileSizeLimit(10)] // 限制大小為 10 MB
         public HttpPostedFileBase EPhoto { get; set; } //新增的照片
         public List<EquipRFID> RFIDList { get; set; } // RFID
         public List<AddFieldValueModel> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位
@@ -102,11 +102,11 @@ namespace MinSheng_MIS.Models.ViewModels
     public class MaintainItemValueModel : IMaintainItemValue
     {
         [Required]
-        [StringLength(11, ErrorMessage = "{0} 的長度最多11個字元。")]
+        [StringLength(11, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         [Display(Name = "模板保養項目編號")]
         public string MISSN { get; set; } // 模板保養項目編號
         [Required]
-        [StringLength(1, ErrorMessage = "{0} 的長度最多1個字元。")]
+        [StringLength(1, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         [Display(Name = "週期")]
         public string Period { get; set; } // 週期
         [Required]

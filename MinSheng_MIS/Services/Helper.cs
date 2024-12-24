@@ -5,33 +5,91 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Newtonsoft.Json;
+using System.Data;
+using MinSheng_MIS.Models;
 
 namespace MinSheng_MIS.Services
 {
     public static class Helper
     {
-        private static readonly string html_newLine = "<br>";
         /// <summary>
         /// 未通過Data Annotaion的錯誤
         /// </summary>
         /// <param name="controller">呼叫的controller</param>
         /// <param name="field">指定的資料驗證欄位，若不指定則不填寫</param>
+        /// <param name="applyFormat">是否套用<see cref="JsonResService{String}"/>的回傳格式，預設為否</param>
         /// <returns></returns>
-        public static ActionResult HandleInvalidModelState(Controller controller, string field = null)
+        public static ActionResult HandleInvalidModelState(Controller controller, string field = null, bool applyFormat = false)
         {
-            controller.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            var errorMsg = string.IsNullOrEmpty(field) ?
+                string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).Distinct()) :
+                string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage).Distinct());
 
-            if (string.IsNullOrEmpty(field))
-                return new ContentResult { 
-                    Content = "</br>" + string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).Distinct()), 
-                    ContentType = "text/plain" 
-                };
-            else
+            if (applyFormat)
+            {
+                controller.Response.StatusCode = (int)HttpStatusCode.OK;
                 return new ContentResult
                 {
-                    Content = "</br>" + string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage).Distinct()),
+                    Content = JsonConvert.SerializeObject(new JsonResService<string>
+                        {
+                            AccessState = ResState.Failed,
+                            ErrorMessage = errorMsg,
+                            Datas = null,
+                        }),
+                    ContentType = "application/json"
+                };
+            }
+            else
+            {
+                controller.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return new ContentResult
+                {
+                    Content = "</br>" + errorMsg,
                     ContentType = "text/plain"
                 };
+            }
+        }
+
+        /// <summary>
+        /// <see cref="MyCusResException"/>的錯誤訊息回傳
+        /// </summary>
+        /// <param name="controller">呼叫的controller</param>
+        /// <param name="error">例外錯誤</param>
+        /// <returns>套用<see cref="JsonResService{String}"/>的回傳格式</returns>
+        public static ActionResult HandleMyCusResException(Controller controller, MyCusResException error)
+        {
+            controller.Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject(new JsonResService<string>
+                    {
+                        AccessState = ResState.Failed,
+                        ErrorMessage = $"</br>{error.Message}",
+                        Datas = null
+                    }),
+                ContentType = "application/json"
+            };
+        }
+
+        /// <summary>
+        /// <see cref="Exception"/>的錯誤訊息回傳
+        /// </summary>
+        /// <param name="controller">呼叫的controller</param>
+        /// <returns>套用<see cref="JsonResService{String}"/>的回傳格式</returns>
+        public static ActionResult HandleException(Controller controller)
+        {
+            controller.Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Failed,
+                    ErrorMessage = $"</br>系統異常!",
+                    Datas = null
+                }),
+                ContentType = "application/json"
+            };
         }
 
         /// <summary>
@@ -43,7 +101,7 @@ namespace MinSheng_MIS.Services
         public static string HandleErrorMessageList(List<string> list, string errorTitle = null)
         {
             string result = string.Empty;
-            if (!string.IsNullOrEmpty(errorTitle)) result += html_newLine + errorTitle;
+            if (!string.IsNullOrEmpty(errorTitle)) result += "</br>" + errorTitle;
             // html列表
             if (!list.Any()) return null;
             result += "<ul>";
@@ -119,7 +177,9 @@ namespace MinSheng_MIS.Services
             foreach (var sourceProp in typeof(TSource).GetProperties())
             {
                 var destProp = typeof(TDestination).GetProperty(sourceProp.Name);
-                if (destProp != null && destProp.CanWrite)
+                if (destProp != null 
+                    && destProp.CanWrite
+                    && destProp.PropertyType == sourceProp.PropertyType) // 類型必須相同
                 {
                     destProp.SetValue(destination, sourceProp.GetValue(source));
                 }

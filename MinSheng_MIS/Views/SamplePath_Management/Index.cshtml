@@ -12,8 +12,8 @@
     <div class="search-area">
         <form class="form" method="post" action="">
             <div class="form-group">
-                <label for="PathTitle">巡檢路線名稱</label>
-                <input class="form-control" id="PathTitle" name="PathTitle" type="text" />
+                <label for="PathName">巡檢路線名稱</label>
+                <input class="form-control" id="PathName" name="PathName" type="text" />
             </div>
 
             <div class="button-group">
@@ -51,9 +51,9 @@
         function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
-                //url: getGridJSON,
-                data: fakeData,
-                //method: 'POST',
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'PSSN',
                 //sortName: 'PSSN',
@@ -64,9 +64,10 @@
                     dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
-                    dg.hiddenColumn('PSSN'),
-                    dg.column('PathTitle', '巡檢路線名稱', 500),
-                    dg.column('Num', '巡檢數量', 200),
+                    dg.hiddenColumn('PlanPathSN'),
+                    dg.column('PathName', '巡檢路線名稱', 500),
+                    dg.column('Frequency', '巡檢頻率', 200),
+                    dg.column('InspectionNum', '巡檢數量', 200),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {

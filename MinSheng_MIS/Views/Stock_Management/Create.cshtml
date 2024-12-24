@@ -12,22 +12,22 @@
         <form class="form">
             <div class="form-group-zone">
                 <div class="form-group required">
-                    <label for="Type">類別</label>
-                    <select class="form-select" name="Type" id="Type" required>
+                    <label for="StockType">類別</label>
+                    <select class="form-select" name="StockType" id="StockType" required>
                         <option value="">請選擇</option>
                     </select>
                 </div>
                 <div class="form-group required">
-                    <label for="SName">品項名稱</label>
-                    <input type="text" class="form-control" name="SName" id="SName" maxlength="20" required>
+                    <label for="StockName">品項名稱</label>
+                    <input type="text" class="form-control" name="StockName" id="StockName" maxlength="50" required>
                 </div>
                 <div class="form-group required">
                     <label for="Init">單位</label>
-                    <input type="text" class="form-control" name="Init" id="Init" maxlength="20" required>
+                    <input type="text" class="form-control" name="Unit" id="Unit" maxlength="10" required>
                 </div>
                 <div class="form-group required">
-                    <label for="WarningVal">警戒值</label>
-                    <input type="text" class="form-control" name="WarningVal" id="WarningVal" maxlength="20" required>
+                    <label for="MinStockAmount">警戒值</label>
+                    <input type="text" class="form-control" name="MinStockAmount" id="MinStockAmount" required>
                 </div>
 
             </div>
@@ -49,6 +49,7 @@
     <script>
 
         $(async function () {
+            pushSelect("StockType", `@Url.Action("StockType", "DropDownList")`);
             //await formDropdown.ASN();
             addButtonEvent();
         });

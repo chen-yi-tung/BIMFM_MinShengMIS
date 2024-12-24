@@ -42,7 +42,7 @@ namespace MinSheng_MIS.Controllers
             try
             {
                 // Data Annotation
-                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat:true);  // Data Annotation未通過
 
                 // 建立 Template_OneDeviceOneCard
                 string tsn = await _dCardService.CreateOneDeviceOneCardAsync(data);
@@ -67,15 +67,20 @@ namespace MinSheng_MIS.Controllers
 
                 await _db.SaveChangesAsync();
 
-                return Content("Succeed");
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
             }
             catch (MyCusResException ex)
             {
-                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
+                return Helper.HandleMyCusResException(this, ex);
             }
             catch (Exception)
             {
-                return Content("</br>系統異常!", "application/json; charset=utf-8");
+                return Helper.HandleException(this);
             }
         }
         #endregion
@@ -97,15 +102,20 @@ namespace MinSheng_MIS.Controllers
                 var result = await Task.WhenAll(template.EquipmentInfo.Select(async e =>
                     await _eMgmtService.GetEquipmentInfoAsync<EquipmentInfoDetailModel>(e.ESN)));
 
-                return Content(JsonConvert.SerializeObject(result), "application/json");
+                return Content(JsonConvert.SerializeObject(new JsonResService<EquipmentInfoDetailModel[]>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = result,
+                }), "application/json");
             }
             catch (MyCusResException ex)
             {
-                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
+                return Helper.HandleMyCusResException(this, ex);
             }
             catch (Exception)
             {
-                return Content("</br>系統異常!", "application/json; charset=utf-8");
+                return Helper.HandleException(this);
             }
         }
 
@@ -114,6 +124,9 @@ namespace MinSheng_MIS.Controllers
         {
             try
             {
+                // Data Annotation
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
+
                 using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     // 更新一機一卡模板
@@ -137,15 +150,20 @@ namespace MinSheng_MIS.Controllers
                     trans.Complete();
                 }
 
-                return Content("Succeed");
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
             }
             catch (MyCusResException ex)
             {
-                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
+                return Helper.HandleMyCusResException(this, ex);
             }
             catch (Exception)
             {
-                return Content("</br>系統異常!", "application/json; charset=utf-8");
+                return Helper.HandleException(this);
             }
         }
         #endregion
@@ -172,15 +190,20 @@ namespace MinSheng_MIS.Controllers
                 // 獲取填報項目名稱/單位
                 deviceCard.ReportItemList = await _dCardService.GetReportItemDetailListAsync(id);
 
-                return Content(JsonConvert.SerializeObject(deviceCard), "application/json");
+                return Content(JsonConvert.SerializeObject(new JsonResService<DeviceCardDetailViewModel>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = deviceCard,
+                }), "application/json");
             }
             catch (MyCusResException ex)
             {
-                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
+                return Helper.HandleMyCusResException(this, ex);
             }
             catch (Exception)
             {
-                return Content("</br>系統異常!", "application/json; charset=utf-8");
+                return Helper.HandleException(this);
             }
         }
         #endregion
@@ -222,15 +245,20 @@ namespace MinSheng_MIS.Controllers
 
                 await _db.SaveChangesAsync();
 
-                return Content("Succeed");
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
             }
             catch (MyCusResException ex)
             {
-                return Content($"</br>{ex.Message}", "application/json; charset=utf-8");
+                return Helper.HandleMyCusResException(this, ex);
             }
             catch (Exception)
             {
-                return Content("</br>系統異常!", "application/json; charset=utf-8");
+                return Helper.HandleException(this);
             }
         }
         #endregion

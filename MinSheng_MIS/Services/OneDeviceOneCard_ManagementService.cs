@@ -13,13 +13,13 @@ namespace MinSheng_MIS.Services
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly EquipmentInfo_ManagementService _eMgmtService;
-        private readonly SamplePath_ManagementService _pSamplePathService;
+        //private readonly SamplePath_ManagementService _pSamplePathService;
 
         public OneDeviceOneCard_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
             _eMgmtService = new EquipmentInfo_ManagementService(_db);
-            _pSamplePathService = new SamplePath_ManagementService(_db);
+            //_pSamplePathService = new SamplePath_ManagementService(_db);
         }
 
         #region 新增一機一卡模板
@@ -110,7 +110,7 @@ namespace MinSheng_MIS.Services
             AddFieldDataAnnotation(new AddFieldModifiableListInstance(data as DeviceCardEditViewModel));
 
             // 刪除 Template_AddField
-            var afsnList = data.AddItemList.Select(x => x.AFSN).ToList();
+            var afsnList = data.AddItemList?.Select(x => x.AFSN).ToList() ?? new List<string>();
             DeleteAddFieldList delTarget = new DeleteAddFieldList
             {
                 AFSN = _db.Template_AddField
@@ -143,10 +143,10 @@ namespace MinSheng_MIS.Services
         {
             // 資料驗證
             MaintainItemDataAnnotation(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, noEquipmentUsed:true, equipmentUsed: true));
-            
+
             #region MaintainItemDetailModel 既有保養項目/未有設備使用之保養項目
             // 刪除 Template_MaintainItemSetting
-            var missnList = data.MaintainItemList.Select(x => x.MISSN).ToList();
+            var missnList = data.MaintainItemList?.Select(x => x.MISSN).ToList() ?? new List<string>();
             DeleteMaintainItemList(new DeleteMaintainItemList
             {
                 MISSN = _db.Template_MaintainItemSetting
@@ -161,35 +161,40 @@ namespace MinSheng_MIS.Services
             await _db.SaveChangesAsync();
 
             // 建立 Template_MaintainItemSetting
-            AddRangeMaintainItem(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, onlyEmptyMISSN:true, noEquipmentUsed:true), out _);
+            AddRangeMaintainItem(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, onlyEmptyMISSN: true, noEquipmentUsed: true), out _);
             #endregion
 
             #region AddEquipmentUsedMaintainItem 新增之保養項目及其於各設備值
-            // 建立 Template_MaintainItemSetting
-            AddRangeMaintainItem(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, equipmentUsed: true), out var newItems);
-
-            await _db.SaveChangesAsync();
-
-            // 建立 Equipment_MaintainItemValue
-            if (newItems != null && newItems.Any())
+            // 具新增之保養項目
+            if (data.AddMaintainItemList?.Any() == true)
             {
-                var valueTargetList = data.AddMaintainItemList?.GroupBy(x => x.ESN).Select(x =>
-                new UpdateMaintainItemValueInstance
+                // 建立 Template_MaintainItemSetting
+                AddRangeMaintainItem(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, equipmentUsed: true), out var newItems);
+
+                await _db.SaveChangesAsync();
+
+                // 建立 Equipment_MaintainItemValue
+                if (newItems != null && newItems.Any())
                 {
-                    ESN = x.Key,
-                    TSN = data.TSN,
-                    MaintainItemList = x.Select(i => new MaintainItemValueModel
+                    var valueTargetList = data.AddMaintainItemList?.GroupBy(x => x.ESN).Select(x =>
+                    new UpdateMaintainItemValueInstance
                     {
-                        MISSN = newItems.SingleOrDefault(n => n.MaintainName == i.MaintainName).MISSN,
-                        Period = i.Period,
-                        NextMaintainDate = i.NextMaintainDate,
-                    }).ToList()
-                })
-                ?? Enumerable.Empty<UpdateMaintainItemValueInstance>();
-                foreach (var value in valueTargetList)
-                    await _eMgmtService.CreateEquipmentMaintainItemsValue(value);
+                        ESN = x.Key,
+                        TSN = data.TSN,
+                        MaintainItemList = x.Select(i => new MaintainItemValueModel
+                        {
+                            MISSN = newItems.SingleOrDefault(n => n.MaintainName == i.MaintainName).MISSN,
+                            Period = i.Period,
+                            NextMaintainDate = i.NextMaintainDate,
+                        }).ToList()
+                    })
+                    ?? Enumerable.Empty<UpdateMaintainItemValueInstance>();
+                    foreach (var value in valueTargetList)
+                        await _eMgmtService.CreateEquipmentMaintainItemsValue(value, true);
+                }
             }
             #endregion
+
         }
         #endregion
 
@@ -200,7 +205,7 @@ namespace MinSheng_MIS.Services
             CheckItemDataAnnotation(new CheckItemModifiableListInstance(data as DeviceCardEditViewModel));
 
             // 刪除 Template_CheckItem
-            var cisnList = data.CheckItemList.Select(x => x.CISN).ToList();
+            var cisnList = data.CheckItemList?.Select(x => x.CISN).ToList() ?? new List<string>();
             DeleteCheckItemList delTarget = new DeleteCheckItemList
             {
                 CISN = _db.Template_CheckItem
@@ -227,7 +232,7 @@ namespace MinSheng_MIS.Services
             ReportItemDataAnnotation(new ReportItemModifiableListInstance(data as DeviceCardEditViewModel));
 
             // 刪除 Template_ReportingItem
-            var risnList = data.ReportItemList.Select(x => x.RISN).ToList();
+            var risnList = data.ReportItemList?.Select(x => x.RISN).ToList() ?? new List<string>();
             DeleteReportItemList delTarget = new DeleteReportItemList
             {
                 RISN = _db.Template_ReportingItem
@@ -447,7 +452,7 @@ namespace MinSheng_MIS.Services
         private void CheckItemDataAnnotation(ICreateCheckItemList data)
         {
             // 當檢查項目不為空，則檢查頻率為必填
-            if (data.Frequency == null)
+            if (data.Frequency == null && data.CINameList?.Any() == true)
                 throw new MyCusResException("請填寫檢查頻率!");
             // 驗證新增設基本欄位(data包含既有的欄位)
             ValidateList(data.CINameList, "檢查項目", 100);
@@ -461,9 +466,9 @@ namespace MinSheng_MIS.Services
         private void ReportItemDataAnnotation(ICreateReportItemList data)
         {
             // 當填報項目不為空，則檢查頻率為必填
-            if (data.Frequency == null)
+            if (data.Frequency == null && data.RIList?.Any() == true)
                 throw new MyCusResException("請填寫檢查頻率!");
-            ValidateList(data.RIList.Select(x => x.RIName), "填報項目", 100);
+            ValidateList(data.RIList?.Select(x => x.RIName), "填報項目", 100);
             // 與既有欄位進行比對
             //var riNameList = data.RIList.Select(r => r.RIName).ToList();
             //if (await _db.Template_ReportingItem
@@ -531,6 +536,9 @@ namespace MinSheng_MIS.Services
         /// <returns>無回傳</returns>
         private void AddRangeAddField(ICreateAddFieldList data)
         {
+            if (data.AFNameList == null || !data.AFNameList.Any())
+                return;
+
             // Fetch最後一個Id
             string latestId = GetLatestIdWithSameTsn(data.TSN, _db.Template_AddField, "AFSN");
 
@@ -557,6 +565,12 @@ namespace MinSheng_MIS.Services
         /// <returns>無回傳</returns>
         private void AddRangeMaintainItem(ICreateMaintainItemList data, out List<Template_MaintainItemSetting> list)
         {
+            if (data.MINameList == null || !data.MINameList.Any())
+            {
+                list = null;
+                return;
+            }
+
             // Fetch最後一個Id
             string latestId = GetLatestIdWithSameTsn(data.TSN, _db.Template_MaintainItemSetting, "MISSN");
 
@@ -585,6 +599,9 @@ namespace MinSheng_MIS.Services
         /// <returns>無回傳</returns>
         private void AddRangeCheckItem(ICreateCheckItemList data)
         {
+            if (data.CINameList == null || !data.CINameList.Any())
+                return;
+
             // 只調用一次 GetLatestIdWithSameTsnAsync
             string latestId = GetLatestIdWithSameTsn(data.TSN, _db.Template_CheckItem, "CISN");
 
@@ -611,6 +628,9 @@ namespace MinSheng_MIS.Services
         /// <returns>無回傳</returns>
         private void AddRangeReportItem(ICreateReportItemList data)
         {
+            if (data.RIList == null || !data.RIList.Any())
+                return;
+
             // Fetch最後一個Id
             string latestId = GetLatestIdWithSameTsn(data.TSN, _db.Template_ReportingItem, "RISN");
 
@@ -638,9 +658,9 @@ namespace MinSheng_MIS.Services
         /// <returns>無回傳</returns>
         private void UpdateRangeAddField(in IUpdateAddFieldList data, bool ignoreEmpty = true)
         {
-            var targetList = ignoreEmpty ?
-                data.AddItemList.Where(x => !string.IsNullOrEmpty(x.AFSN)) :
-                data.AddItemList;
+            var targetList = data.AddItemList ?? new List<AddFieldDetailModel>();
+            if (ignoreEmpty)
+                targetList = targetList.Where(x => !string.IsNullOrEmpty(x.AFSN)).ToList();
 
             foreach (var item in targetList)
             {
@@ -659,9 +679,9 @@ namespace MinSheng_MIS.Services
         /// <returns>無回傳</returns>
         private void UpdateRangeMaintainItemList(in IUpdateMaintainItemList data, bool ignoreEmpty = true)
         {
-            var targetList = ignoreEmpty ?
-                data.MaintainItemList.Where(x => !string.IsNullOrEmpty(x.MISSN)) :
-                data.MaintainItemList;
+            var targetList = data.MaintainItemList ?? new List<MaintainItemDetailModel>();
+            if (ignoreEmpty)
+                targetList = targetList.Where(x => !string.IsNullOrEmpty(x.MISSN)).ToList();
 
             foreach (var item in targetList)
             {
@@ -680,9 +700,9 @@ namespace MinSheng_MIS.Services
         /// <returns>無回傳</returns>
         private void UpdateRangeCheckItemList(in IUpdateCheckItemList data, bool ignoreEmpty = true)
         {
-            var targetList = ignoreEmpty ?
-                data.CheckItemList.Where(x => !string.IsNullOrEmpty(x.CISN)) :
-                data.CheckItemList;
+            var targetList = data.CheckItemList ?? new List<CheckItemDetailModel>();
+            if (ignoreEmpty)
+                targetList = targetList.Where(x => !string.IsNullOrEmpty(x.CISN)).ToList();
 
             foreach (var item in targetList)
             {
@@ -701,9 +721,9 @@ namespace MinSheng_MIS.Services
         /// <returns>無回傳</returns>
         private void UpdateRangeReportItemList(in IUpdateReportItemList data, bool ignoreEmpty = true)
         {
-            var targetList = ignoreEmpty ?
-                data.ReportItemList.Where(x => !string.IsNullOrEmpty(x.RISN)) :
-                data.ReportItemList;
+            var targetList = data.ReportItemList ?? new List<ReportItemDetailModel>();
+            if (ignoreEmpty)
+                targetList = targetList.Where(x => !string.IsNullOrEmpty(x.RISN)).ToList();
 
             foreach (var item in targetList)
             {

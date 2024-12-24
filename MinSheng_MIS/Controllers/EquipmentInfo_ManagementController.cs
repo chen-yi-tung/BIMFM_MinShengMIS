@@ -1,16 +1,17 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using static MinSheng_MIS.Services.Helper;
 
 namespace MinSheng_MIS.Controllers
 {
     public class EquipmentInfo_ManagementController : Controller
     {
+        private readonly string _photoPath = "Files/EquipmentInfo";
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly EquipmentInfo_ManagementService _eMgmtService;
         private readonly RFIDService _rfidService;
@@ -41,7 +42,7 @@ namespace MinSheng_MIS.Controllers
             try
             {
                 // Data Annotation
-                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat:true);  // Data Annotation未通過
 
                 // 建立 EquipmentInfo
                 string esn = await _eMgmtService.CreateEquipmentInfoAsync(data);
@@ -59,24 +60,32 @@ namespace MinSheng_MIS.Controllers
                     // 建立 Equipment_AddFieldValue (非必填)
                     if (data.AddFieldList != null && data.AddFieldList.Any())
                         await _eMgmtService.CreateEquipmentAdditionalFieldsValue(data.ConvertToUpdateAddFieldValue(esn));
-                        //await _eMgmtService.CreateEquipmentAdditionalFieldsValue(data.ConvertToUpdateAddFieldValue(esn));
 
                     // 建立 Equipment_MaintainItemValue (非必填)
                     if (data.MaintainItemList != null && data.MaintainItemList.Any())
                         await _eMgmtService.CreateEquipmentMaintainItemsValue(data.ConvertToUpdateMaintainItemValue(esn));
                 }
 
+                // 檔案上傳
+                if (!ComFunc.UploadFile(data.EPhoto, Server.MapPath($"~/{_photoPath}/"), esn))
+                    throw new MyCusResException("檔案上傳過程出錯!");
+
                 await _db.SaveChangesAsync();
 
-                return Content("Succeed");
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
             }
             catch (MyCusResException ex)
             {
-                return Content(ex.Message, "application/json; charset=utf-8");
+                return Helper.HandleMyCusResException(this, ex);
             }
             catch (Exception)
             {
-                return Content("系統異常!", "application/json; charset=utf-8");
+                return Helper.HandleException(this);
             }
         }
         #endregion

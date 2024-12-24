@@ -9,6 +9,7 @@ using MinSheng_MIS.Surfaces;
 using System.Linq.Dynamic.Core;
 using System.Globalization;
 using System.Web.Mvc;
+using WebGrease;
 
 namespace MinSheng_MIS.Services
 {
@@ -241,36 +242,16 @@ namespace MinSheng_MIS.Services
             #endregion
 
             #region 塞來自formdata的資料
-            //棟別編號
-            string ASN = form["ASN"]?.ToString();
-            //樓層編號
-            string FSN = form["FSN"]?.ToString();
-            //巡檢路線標題
-            string PathTitle = form["PathTitle"]?.ToString();
+            //巡檢路線名稱
+            string PathName = form["PathName"]?.ToString();
             #endregion
 
             #region 依據查詢字串檢索資料表
-            var SourceTable = from x1 in db.PathSample
-                              join x2 in db.Floor_Info on x1.FSN equals x2.FSN
-                              join x3 in db.AreaInfo on x2.ASN equals x3.ASN
-                              select new { x1.PSSN, x1.PathTitle, x1.FSN, x2.ASN, Floor = x2.FloorName, x3.Area };
+            var SourceTable = db.InspectionPathSample.AsQueryable();
 
-            if (!string.IsNullOrEmpty(ASN)) //查詢棟別編號
+            if (!string.IsNullOrEmpty(PathName)) //查詢巡檢路線名稱模糊查詢
             {
-                int IntASN = 0;
-                bool conversionSuccessful = int.TryParse(ASN, out IntASN);
-                if (conversionSuccessful)
-                {
-                    SourceTable = SourceTable.Where(x => x.ASN == IntASN);
-                }
-            }
-            if (!string.IsNullOrEmpty(FSN)) //查詢樓層編號
-            {
-                SourceTable = SourceTable.Where(x => x.FSN == FSN);
-            }
-            if (!string.IsNullOrEmpty(PathTitle)) //查詢路徑標題模糊查詢
-            {
-                SourceTable = SourceTable.Where(x => x.PathTitle.Contains(PathTitle));
+                SourceTable = SourceTable.Where(x => x.PathName.Contains(PathName));
             }
             #endregion
 
@@ -284,7 +265,75 @@ namespace MinSheng_MIS.Services
             }
             else
             {
-                SourceTable = SourceTable.OrderBy(x => x.PSSN);
+                SourceTable = SourceTable.OrderBy(x => x.PathName);
+            }
+            #endregion
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = SourceTable.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            SourceTable = SourceTable.Skip((page - 1) * rows).Take(rows);
+            var dic_frequency = Surface.InspectionPlanFrequency();
+            foreach (var a in SourceTable)
+            {
+                var itemObjects = new JObject();
+                itemObjects.Add("PlanPathSN", a.PlanPathSN);//巡檢路線編號
+                itemObjects.Add("PathName", a.PathName);//巡檢路線名稱
+                itemObjects.Add("Frequency", dic_frequency[a.Frequency.ToString()]);//巡檢頻率
+                itemObjects.Add("InspectionNum", db.InspectionDefaultOrder.Where(x => x.PlanPathSN == a.PlanPathSN).Count());//巡檢數量
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            return jo;
+        }
+        #endregion
+
+        #region 每日巡檢時程模板管理
+        public JObject GetJsonForGrid_DailyInspectionSample(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+
+            #region 塞來自formdata的資料
+            //巡檢路線名稱
+            string TemplateName = form["TemplateName"]?.ToString();
+            #endregion
+
+            #region 依據查詢字串檢索資料表
+            var SourceTable = db.DailyInspectionSample.AsQueryable();
+
+            if (!string.IsNullOrEmpty(TemplateName)) //查詢巡檢路線名稱模糊查詢
+            {
+                SourceTable = SourceTable.Where(x => x.TemplateName.Contains(TemplateName));
+            }
+            #endregion
+
+            #region datagrid remoteSort 判斷有無 sort 跟 order  
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                SourceTable = OrderByField(SourceTable, sort, order == "asc");
+            }
+            else
+            {
+                SourceTable = SourceTable.OrderBy(x => x.TemplateName);
             }
             #endregion
 
@@ -298,20 +347,9 @@ namespace MinSheng_MIS.Services
             foreach (var a in SourceTable)
             {
                 var itemObjects = new JObject();
-                if (itemObjects["PSSN"] == null)
-                {
-                    itemObjects.Add("PSSN", a.PSSN);//路線模板編號
-                }
-                if (itemObjects["PathTitle"] == null)
-                {
-                    itemObjects.Add("PathTitle", a.PathTitle);//路線標題
-                }
-                if (itemObjects["Area"] == null)
-                    itemObjects.Add("Area", a.Area);//棟別                  
-
-                if (itemObjects["Floor"] == null)
-                    itemObjects.Add("Floor", a.Floor);//樓層
-
+                itemObjects.Add("DailyTemplateSN", a.DailyTemplateSN);//巡檢路線編號
+                itemObjects.Add("TemplateName", a.TemplateName);//巡檢模板名稱
+                itemObjects.Add("InspectionNum", db.DailyInspectionSampleContent.Where(x => x.DailyTemplateSN == a.DailyTemplateSN).Count());//巡檢路線數量
                 ja.Add(itemObjects);
             }
 
@@ -2565,131 +2603,131 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 設備操作手冊管理
-        //public JObject GetJsonForGrid_EquipmentOperatingManual(System.Web.Mvc.FormCollection form)
-        //{
-        //    #region datagrid呼叫時的預設參數有 rows 跟 page
-        //    int page = 1;
-        //    if (!string.IsNullOrEmpty(form["page"]?.ToString()))
-        //    {
-        //        page = short.Parse(form["page"].ToString());
-        //    }
-        //    int rows = 10;
-        //    if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
-        //    {
-        //        rows = short.Parse(form["rows"]?.ToString());
-        //    }
-        //    #endregion
+        public JObject GetJsonForGrid_EquipmentOperatingManual(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
 
-        //    #region 塞來自formdata的資料
-        //    //系統別
-        //    string System = form["System"]?.ToString();
-        //    //子系統別
-        //    string SubSystem = form["SubSystem"]?.ToString();
-        //    //設備名稱
-        //    string EName = form["EName"]?.ToString();
-        //    //廠牌
-        //    string Brand = form["Brand"]?.ToString();
-        //    //型號
-        //    string Model = form["Model"]?.ToString();
-        //    //日期起
-        //    string DateStart = form["DateStart"]?.ToString();
-        //    //日期迄
-        //    string DateEnd = form["DateEnd"]?.ToString();
-        //    #endregion
+            #region 塞來自formdata的資料
+            ////系統別
+            //string System = form["System"]?.ToString();
+            ////子系統別
+            //string SubSystem = form["SubSystem"]?.ToString();
+            //設備名稱
+            string EName = form["EName"]?.ToString();
+            //廠牌
+            string Brand = form["Brand"]?.ToString();
+            //型號
+            string Model = form["Model"]?.ToString();
+            ////日期起
+            //string DateStart = form["DateStart"]?.ToString();
+            ////日期迄
+            //string DateEnd = form["DateEnd"]?.ToString();
+            #endregion
 
-        //    #region 依據查詢字串檢索資料表
-        //    var Data = db.EquipmentOperatingManual.AsQueryable();
+            #region 依據查詢字串檢索資料表
+            var Data = db.EquipmentOperatingManual.AsQueryable();
 
-        //    if (!string.IsNullOrEmpty(System))
-        //    {
-        //        Data = Data.Where(x => x.System == System);
-        //    }
-        //    if (!string.IsNullOrEmpty(SubSystem))
-        //    {
-        //        Data = Data.Where(x => x.SubSystem == SubSystem);
-        //    }
-        //    if (!string.IsNullOrEmpty(System))
-        //    {
-        //        Data = Data.Where(x => x.System == System);
-        //    }
-        //    if (!string.IsNullOrEmpty(EName))
-        //    {
-        //        Data = Data.Where(x => x.EName.Contains(EName));
-        //    }
-        //    if (!string.IsNullOrEmpty(Brand))
-        //    {
-        //        Data = Data.Where(x => x.Brand.Contains(Brand));
-        //    }
-        //    if (!string.IsNullOrEmpty(Model))
-        //    {
-        //        Data = Data.Where(x => x.Model.Contains(Model));
-        //    }
-        //    /*
-        //    //日期(起)
-        //    if (!string.IsNullOrEmpty(DateStart))
-        //    {
-        //        var datefrom = DateTime.Parse(DateStart);
-        //        Data = Data.Where(x => x.PlanDate >= datefrom);
-        //    }
-        //    //日期(迄)
-        //    if (!string.IsNullOrEmpty(DateEnd))
-        //    {
-        //        var dateto = DateTime.Parse(DateEnd).AddDays(1);
-        //        Data = Data.Where(x => x.PlanDate < dateto);
-        //    }
-        //    */
-        //    #endregion
+            //if (!string.IsNullOrEmpty(System))
+            //{
+            //    Data = Data.Where(x => x.System == System);
+            //}
+            //if (!string.IsNullOrEmpty(SubSystem))
+            //{
+            //    Data = Data.Where(x => x.SubSystem == SubSystem);
+            //}
+            //if (!string.IsNullOrEmpty(System))
+            //{
+            //    Data = Data.Where(x => x.System == System);
+            //}
+            if (!string.IsNullOrEmpty(EName))
+            {
+                Data = Data.Where(x => x.EName.Contains(EName));
+            }
+            if (!string.IsNullOrEmpty(Brand))
+            {
+                Data = Data.Where(x => x.Brand.Contains(Brand));
+            }
+            if (!string.IsNullOrEmpty(Model))
+            {
+                Data = Data.Where(x => x.Model.Contains(Model));
+            }
+            /*
+            //日期(起)
+            if (!string.IsNullOrEmpty(DateStart))
+            {
+                var datefrom = DateTime.Parse(DateStart);
+                Data = Data.Where(x => x.PlanDate >= datefrom);
+            }
+            //日期(迄)
+            if (!string.IsNullOrEmpty(DateEnd))
+            {
+                var dateto = DateTime.Parse(DateEnd).AddDays(1);
+                Data = Data.Where(x => x.PlanDate < dateto);
+            }
+            */
+            #endregion
 
-        //    #region datagrid remoteSort 判斷有無 sort 跟 order
-        //    IValueProvider vp = form.ToValueProvider();
-        //    if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
-        //    {
-        //        string sort = form["sort"];
-        //        string order = form["order"];
-        //        Data = OrderByField(Data, sort, order == "asc");
-        //    }
-        //    else
-        //    {
-        //        Data = Data.OrderByDescending(x => x.EOMSN);
-        //    }
-        //    #endregion
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                Data = OrderByField(Data, sort, order == "asc");
+            }
+            else
+            {
+                Data = Data.OrderByDescending(x => x.EOMSN);
+            }
+            #endregion
 
-        //    var result = Data;
-        //    //回傳JSON陣列
-        //    JArray ja = new JArray();
-        //    //記住總筆數
-        //    int total = result.Count();
-        //    //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-        //    result = result.Skip((page - 1) * rows).Take(rows);
+            var result = Data;
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = result.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            result = result.Skip((page - 1) * rows).Take(rows);
 
-        //    var Dic = Surfaces.Surface.Authority();
+            var Dic = Surfaces.Surface.Authority();
 
-        //    foreach (var item in result)
-        //    {
-        //        var itemObjects = new JObject();
+            foreach (var item in result)
+            {
+                var itemObjects = new JObject();
 
-        //        itemObjects.Add("EOMSN", item.EOMSN);
-        //        itemObjects.Add("FilePath", "/Files/EquipmentOperatingManual" + item.FilePath);
-        //        itemObjects.Add("System", item.System);
-        //        itemObjects.Add("SubSystem", item.SubSystem);
-        //        itemObjects.Add("EName", item.EName);
-        //        if (!string.IsNullOrEmpty(item.Brand))
-        //        {
-        //            itemObjects.Add("Brand", item.Brand);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.Model))
-        //        {
-        //            itemObjects.Add("Model", item.Model);
-        //        }
+                itemObjects.Add("EOMSN", item.EOMSN);
+                itemObjects.Add("FilePath", "/Files/EquipmentOperatingManual" + item.FilePath);
+                //itemObjects.Add("System", item.System);
+                //itemObjects.Add("SubSystem", item.SubSystem);
+                itemObjects.Add("EName", item.EName);
+                if (!string.IsNullOrEmpty(item.Brand))
+                {
+                    itemObjects.Add("Brand", item.Brand);
+                }
+                if (!string.IsNullOrEmpty(item.Model))
+                {
+                    itemObjects.Add("Model", item.Model);
+                }
 
-        //        ja.Add(itemObjects);
-        //    }
+                ja.Add(itemObjects);
+            }
 
-        //    JObject jo = new JObject();
-        //    jo.Add("rows", ja);
-        //    jo.Add("total", total);
-        //    return jo;
-        //}
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            return jo;
+        }
         #endregion
 
 
@@ -3110,76 +3148,135 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 庫存管理
-        //public JObject GetJsonForGrid_Stock_Management(System.Web.Mvc.FormCollection form)
-        //{
-        //    //解析查詢字串
-        //    var SISN = form["SISN"]?.ToString();
-        //    var StockType = form["StockType"]?.ToString();
-        //    var StockName = form["StockName"]?.ToString();
-        //    // DataGrid參數
-        //    var sort = form["sort"]?.ToString();
-        //    var order = form["order"]?.ToString();
-        //    //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-        //    int page = 1;
-        //    if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
-        //    int rows = 10;
-        //    if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+        public JObject GetJsonForGrid_Stock_Management(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var StockTypeSN = form["StockTypeSN"]?.ToString();//類別
+            var StockName = form["StockName"]?.ToString();//品項名稱
+            var StockStatus = form["StockStatus"]?.ToString();//狀態
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
-        //    var rpT = db.ComputationalStock.AsQueryable();
+            var rpT = db.ComputationalStock.AsQueryable();
 
-        //    //查詢出庫單號 (模糊查詢)
-        //    if (!string.IsNullOrEmpty(SISN)) rpT = rpT.Where(x => x.SISN.Contains(SISN));
-        //    //查詢領用單號 (模糊查詢)
-        //    if (!string.IsNullOrEmpty(StockType)) rpT = rpT.Where(x => x.StockType == StockType);
-        //    //查詢出庫人員 (模糊查詢)
-        //    if (!string.IsNullOrEmpty(StockName)) rpT = rpT.Where(x => x.StockName.Contains(StockName));
+            //類別
+            if (!string.IsNullOrEmpty(StockTypeSN)) rpT = rpT.Where(x => x.StockTypeSN.ToString() == StockTypeSN);
+            //品項名稱 (模糊查詢)
+            if (!string.IsNullOrEmpty(StockName)) rpT = rpT.Where(x => x.StockName.Contains(StockName));
+            //狀態
+            if (!string.IsNullOrEmpty(StockStatus)) rpT = rpT.Where(x => x.StockStatus == StockStatus);
 
-        //    // 確認 sort 和 order 不為空才進行排序
-        //    if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
-        //    else rpT = rpT.OrderBy(x => x.SISN);
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderBy(x => x.SISN);
 
-        //    //記住總筆數
-        //    int Total = rpT.Count();
-        //    //切頁
-        //    rpT = rpT.Skip((page - 1) * rows).Take(rows);
+            //記住總筆數
+            int Total = rpT.Count();
+            //切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
 
-        //    //回傳JSON陣列
-        //    JArray ja = new JArray();
+            //回傳JSON陣列
+            JArray ja = new JArray();
 
-        //    if (rpT != null || Total > 0)
-        //    {
-        //        var TypeDics = Surface.StockType();
-        //        var UnitDics = Surface.Unit();
-        //        foreach (var item in rpT)
-        //        {
-        //            var itemObject = new JObject
-        //            {
-        //                { "MinStockAmount", item.MinStockAmount },
-        //                // AvailableStockAmount計算:
-        //                // 1. 仍在物品有效期 x.ExpiryDate >= DateTime.Now.Date
-        //                // 2. 警戒值期限內的有效數量 x.ExpiryDate >= item.ExpiryDate(警戒值期限)
-        //                { "AvailableStockAmount", item.Stock.Where(x => x.ExpiryDate >= item.ExpiryDate && x.ExpiryDate >= DateTime.Now.Date).Sum(x => x.RemainingAmount) },
-        //                { "SISN", item.SISN },
-        //                { "StockType", item.StockType != null ? TypeDics[item.StockType] : null },
-        //                { "StockName", item.StockName },
-        //                { "StockAmount", item.StockAmount },
-        //                { "Unit", item.Unit != null ? UnitDics[item.Unit] : null },
-        //            };
+            if (rpT != null || Total > 0)
+            {
+                var dic_stockStatus = Surface.StockStatus();
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "SISN", item.SISN },
+                        { "StockType", db.StockType.Find(item.StockTypeSN).StockTypeName.ToString() },
+                        { "StockName", item.StockName },
+                        { "StockStatus", dic_stockStatus[item.StockStatus] },
+                        { "StockAmount", item.StockAmount },
+                        { "Unit", item.Unit},
+                        { "MinStockAmount", item.MinStockAmount },
+                    };
 
-        //            ja.Add(itemObject);
-        //        }
-        //    }
+                    ja.Add(itemObject);
+                }
+            }
 
-        //    JObject jo = new JObject
-        //    {
-        //        { "rows", ja },
-        //        { "total", Total }
-        //    };
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
 
-        //    return jo;
-        //}
+            return jo;
+        }
         #endregion
 
+        #region 庫存品項詳情_庫存變更紀錄
+        public JObject GetJsonForGrid_StockChangeRecord(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var SISN = form["SISN"]?.ToString();
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+
+            var rpT = db.StockChangesRecord.Where(x => x.SISN == SISN).AsQueryable();
+
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderByDescending(x => x.ChangeTime);
+
+            //記住總筆數
+            int Total = rpT.Count();
+            //切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+
+            if (rpT != null || Total > 0)
+            {
+                var dic_stocktype = Surface.StockType();
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject();
+                    itemObject.Add("DateTime", item.ChangeTime.ToString("yyyy/MM/dd HH:mm:ss")); //日期時間
+                    itemObject.Add("Registrant", db.AspNetUsers.Where(x => x.UserName == item.Registrar).FirstOrDefault()?.MyName.ToString()??null); //登記人
+                    if(item.ChangeType == "1")//出庫
+                    {
+                        itemObject.Add("InboundNum", item.NumberOfChanges); //入庫數量
+                        itemObject.Add("OutboundNum", null); //出庫數量
+                    }
+                    else{ //入庫
+                        itemObject.Add("InboundNum", null); //入庫數量
+                        itemObject.Add("OutboundNum", item.NumberOfChanges); //出庫數量
+                    }
+                    itemObject.Add("Taker", item.Recipient); //取用人
+                    itemObject.Add("Document", item.PurchaseOrder != null ? "/Files/PurchaseOrder/"+item.PurchaseOrder : null); //採購單據
+                    itemObject.Add("StockNum", item.CurrentInventory); //庫存數量
+                    itemObject.Add("Memo", item.Memo); //備註
+
+                    ja.Add(itemObject);
+                }
+            }
+
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
+
+            return jo;
+        }
+        #endregion
 
         //--實驗室管理--
         #region 採驗分析流程建立
