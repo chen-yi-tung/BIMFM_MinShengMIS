@@ -75,7 +75,7 @@ namespace MinSheng_MIS.Controllers
 
         #region 新增 報修單
         [HttpPost]
-        public ActionResult Create(Repair_ManagementCreateViewModel item)
+        public ActionResult Create(Repair_ManagementWebCreateViewModel item)
         {
             JObject jo = new JObject()
             {
