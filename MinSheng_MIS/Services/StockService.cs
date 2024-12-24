@@ -9,6 +9,7 @@ using MinSheng_MIS.Models.ViewModels;
 using System.Linq.Dynamic.Core;
 using Microsoft.SqlServer.Server;
 using System.Data.Entity.Migrations;
+using MinSheng_MIS.Surfaces;
 
 namespace MinSheng_MIS.Services
 {
@@ -26,7 +27,6 @@ namespace MinSheng_MIS.Services
         {
             #region 變數
             JsonResService res = new JsonResService();
-            JObject jo_res = new JObject();
             #endregion
 
             try
@@ -113,6 +113,50 @@ namespace MinSheng_MIS.Services
                 return ErrorMessage;
             }
             return ErrorMessage;
+        }
+        #endregion
+
+        #region 庫存詳情
+        public JsonResService Stock_Details(string sisn)
+        {
+            #region 變數
+            JsonResService res = new JsonResService();
+            JObject jo_res = new JObject();
+            var dic_stocktype = Surface.StockStatus();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                var data = _db.ComputationalStock.Find(sisn);
+                if(data == null)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "查無此庫存品項";
+                    return res;
+                }
+                #endregion
+
+                #region 資料
+                ComputationalStockDetailModel datas = new ComputationalStockDetailModel();
+                datas.StockType = _db.StockType.Find(data.StockTypeSN).StockTypeName.ToString();
+                datas.StockName = data.StockName;
+                datas.StockStauts = dic_stocktype[data.StockStatus];
+                datas.StockAmount = (float)data.StockAmount;
+                datas.Unit = data.Unit;
+                datas.MinStockAmount = (float)data.MinStockAmount;
+                res.Datas = datas;
+                #endregion
+
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
         }
         #endregion
     }

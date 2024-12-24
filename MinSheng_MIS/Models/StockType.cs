@@ -21,7 +21,7 @@ namespace MinSheng_MIS.Models
         }
     
         public int StockTypeSN { get; set; }
-        public string StockType1 { get; set; }
+        public string StockTypeName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ComputationalStock> ComputationalStock { get; set; }
