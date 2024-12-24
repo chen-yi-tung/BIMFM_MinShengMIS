@@ -92,15 +92,15 @@
                 queryParams: getQueryParams(),
                 idField: 'IPSN',
                 columns: [[
-                    dg.column('DateTime', '日期時間', 220),
-                    dg.column('Registrant', '登記人', 160),
+                    dg.column('ChangeTime', '日期時間', 220),
+                    dg.column('Registrar', '登記人', 160),
                     dg.column('InboundNum', '入庫數量', 140),
                     dg.formatColumn('Document', '採購單據', 300, function (val, row, index) {
                         return `<a href="#" class="" >${row.Document}</a>`;
                     }),
-                    dg.column('Taker', '取用人', 160),
+                    dg.column('Recipient', '取用人', 160),
                     dg.column('OutboundNum', '出庫數量', 140),
-                    dg.column('StockNum', '庫存數量', 140),
+                    dg.column('CurrentInventory', '庫存數量', 140),
                     dg.column('Memo', '備註', 300),
                 ]]
             })
