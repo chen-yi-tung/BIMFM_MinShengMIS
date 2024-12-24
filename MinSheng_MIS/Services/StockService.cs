@@ -43,7 +43,7 @@ namespace MinSheng_MIS.Services
 
                 #region 資料新增
                 var data = new ComputationalStock();
-                var lastSISN = _db.ComputationalStock.OrderByDescending(x => x.SISN)?.FirstOrDefault().SISN;
+                var lastSISN = _db.ComputationalStock.OrderByDescending(x => x.SISN).FirstOrDefault()?.SISN ?? "0000000";
                 data.SISN = ComFunc.CreateNextID("%{7}", lastSISN);
                 data.StockTypeSN = datas.StockTypeSN;
                 data.StockName = datas.StockName;

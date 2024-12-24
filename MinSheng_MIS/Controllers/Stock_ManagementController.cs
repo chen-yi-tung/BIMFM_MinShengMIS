@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
@@ -35,28 +36,29 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         [HttpPost]
-        public JsonResService CreateComputationalStock(ComputationalStockCreateModel data)
+        public ActionResult CreateComputationalStock(ComputationalStockCreateModel data)
         {
-            JsonResService res = new JsonResService();
+            JsonResService result = new JsonResService();
             try
             {
                 // Data Annotation
                 //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
                 // 建立庫存
-                return _stockService.Stock_Create(data);
+                result =  _stockService.Stock_Create(data);
+                return Content(JsonConvert.SerializeObject(result), "application/json");
             }
             catch (MyCusResException ex)
             {
-                res.AccessState = ResState.Failed;
-                res.ErrorMessage = "</br>{ex.Message}";
-                return res;
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>{ex.Message}";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
             }
             catch (Exception)
             {
-                res.AccessState = ResState.Failed;
-                res.ErrorMessage = "</br>系統異常!";
-                return res;
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>系統異常!";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
         #endregion
