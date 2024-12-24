@@ -130,15 +130,12 @@ namespace MinSheng_MIS.Controllers
 
             foreach (var a in Dics)
             {
-                if (a.Key != "5")
+                JObject jo = new JObject
                 {
-                    JObject jo = new JObject
-                    {
-                        { "Text", a.Value },
-                        { "Value", a.Key }
-                    };
-                    list.Add(jo);
-                }
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
             }
 
             string text = JsonConvert.SerializeObject(list);
@@ -565,22 +562,21 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region InspectionUser巡檢人員
-        //[HttpGet]
-        //public ActionResult InspectionUser()
-        //{
-        //    List<JObject> list = new List<JObject> { };
-        //    var data = db.InspectionPlanMember.Select(x => x.UserID).Distinct().ToList();
-        //    var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
-        //    foreach (var item in mynamedatalist)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item.MyName);
-        //        jo.Add("Value", item.UserName);
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
+        [HttpGet]
+        public ActionResult InspectionUser()
+        {
+            List<JObject> list = new List<JObject> { };
+            var mynamedatalist = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
+            foreach (var item in mynamedatalist)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
         #endregion
 
         #region 單位下拉式選單
