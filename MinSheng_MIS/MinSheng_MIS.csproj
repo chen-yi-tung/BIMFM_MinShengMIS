@@ -460,12 +460,14 @@
     <Compile Include="Services\DesignDiagramsService.cs" />
     <Compile Include="Services\EquipmentInfo_ManagementService.cs" />
     <Compile Include="Services\Helper.cs" />
+    <Compile Include="Services\JsonResService.cs" />
     <Compile Include="Services\MeetingMinutesService.cs" />
     <Compile Include="Services\PlanInformationService.cs" />
     <Compile Include="Services\Repair_ManagementService.cs" />
     <Compile Include="Services\OneDeviceOneCard_ManagementService.cs" />
     <Compile Include="Services\RFIDService.cs" />
     <Compile Include="Services\SamplePath_ManagementService.cs" />
+    <Compile Include="Services\StockService.cs" />
     <Compile Include="Services\UniParams.cs" />
     <Compile Include="Services\WarningMessageService.cs" />
     <Compile Include="Startup.cs" />

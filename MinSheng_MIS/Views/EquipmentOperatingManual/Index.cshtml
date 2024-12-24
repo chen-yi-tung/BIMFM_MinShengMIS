@@ -12,7 +12,7 @@
 <div class="search-area">
     <form class="form" method="post" action="">
 
-        <div class="form-group">
+        @*<div class="form-group">
             <label for="System">系統別</label>
             <select class="form-select" name="System" id="System">
                 <option value="">請選擇</option>
@@ -23,7 +23,7 @@
             <select class="form-select" name="SubSystem" id="SubSystem">
                 <option value="">請選擇</option>
             </select>
-        </div>
+        </div>*@
 
         <div class="form-group">
             <label for="EName">設備名稱</label>
@@ -61,32 +61,26 @@
             {
                 EOMSN: "230502002",
                 Filepath: "/EquipmentOperatingManual/230502002.pdf",
-                System: "處理系統",
-                SubSystem: "前處理系統",
                 EName: "除霧皮帶輸送機",
                 Brand: "A廠牌",
                 Model: "HT-6356",
-                UploadDate: "2023/05/02"
             },
             {
                 EOMSN: "230502002",
                 Filepath: "/EquipmentOperatingManual/230502002.pdf",
-                System: "處理系統",
-                SubSystem: "前處理系統",
                 EName: "除霧皮帶輸送機",
                 Brand: "A廠牌",
                 Model: "HT-6356",
-                UploadDate: "2023/05/02"
             }
         ]
 
         $(async function () {
             ////await pushSelect("System", '@Url.Action("System", "DropDownList")');
 
-            const Systems = document.getElementById('System')
+            @*const Systems = document.getElementById('System')
             Systems.addEventListener("change", function () {
                 pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-            });
+            });*@
 
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
@@ -110,8 +104,8 @@
                 columns: [[
                     dg.hiddenColumn('EOMSN'),
                     dg.hiddenColumn('FilePath'),
-                    dg.column('System', '系統別', 180),
-                    dg.column('SubSystem', '子系統別', 180),
+                    //dg.column('System', '系統別', 180),
+                    //dg.column('SubSystem', '子系統別', 180),
                     dg.column('EName', '設備名稱', 240),
                     dg.column('Brand', '廠牌', 200),
                     dg.column('Model', '型號', 180)

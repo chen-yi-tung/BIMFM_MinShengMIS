@@ -12,7 +12,7 @@
     <div class="edit-area edit-area-xs flex-lg-row">
         <form class="form">
             <div class="form-group-zone">
-                <div class="form-group required">
+                @*<div class="form-group required">
                     <label for="System">系統別</label>
                     <select class="form-select" name="System" id="System" required>
                         <option value="">請選擇</option>
@@ -26,7 +26,7 @@
                         <option value="">請選擇</option>
                     </select>
                     <input class="form-control" id="SubSystem" name="SubSystem" type="text" hidden />
-                </div>
+                </div>*@
 
                 <div class="form-group required">
                     <label for="EName">設備名稱</label>
@@ -63,7 +63,7 @@
             ////await pushSelect("System", '@Url.Action("System", "DropDownList")');
             addButtonEvent();
 
-            const Systems = document.getElementById('System')
+            @*const Systems = document.getElementById('System')
             Systems.addEventListener("change", function () {
                 pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
             });
@@ -71,7 +71,8 @@
             const SubSystems = document.getElementById('SubSystem')
             SubSystems.addEventListener("change", function () {
                 pushSelect("EName", `@Url.Action("EName", "DropDownList")?System=${$('#System').val()}&SubSystem=${$('#SubSystem').val()}`);
-            });
+            });*@
+            pushSelect("EName", `@Url.Action("EName", "DropDownList")`);
 
             fileUploader = new FileUploader({
                 container: "#FileUploader",
@@ -95,8 +96,8 @@
             if (!isValidity) return;
 
             var form = new FormData();
-            form.append("System", document.getElementById("System").value);
-            form.append("SubSystem", document.getElementById("SubSystem").value);
+            //form.append("System", document.getElementById("System").value);
+            //form.append("SubSystem", document.getElementById("SubSystem").value);
             form.append("EName", document.getElementById("EName").value);
             form.append("Brand", document.getElementById("Brand").value);
             form.append("Model", document.getElementById("Model").value);

@@ -2565,131 +2565,131 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 設備操作手冊管理
-        //public JObject GetJsonForGrid_EquipmentOperatingManual(System.Web.Mvc.FormCollection form)
-        //{
-        //    #region datagrid呼叫時的預設參數有 rows 跟 page
-        //    int page = 1;
-        //    if (!string.IsNullOrEmpty(form["page"]?.ToString()))
-        //    {
-        //        page = short.Parse(form["page"].ToString());
-        //    }
-        //    int rows = 10;
-        //    if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
-        //    {
-        //        rows = short.Parse(form["rows"]?.ToString());
-        //    }
-        //    #endregion
+        public JObject GetJsonForGrid_EquipmentOperatingManual(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
 
-        //    #region 塞來自formdata的資料
-        //    //系統別
-        //    string System = form["System"]?.ToString();
-        //    //子系統別
-        //    string SubSystem = form["SubSystem"]?.ToString();
-        //    //設備名稱
-        //    string EName = form["EName"]?.ToString();
-        //    //廠牌
-        //    string Brand = form["Brand"]?.ToString();
-        //    //型號
-        //    string Model = form["Model"]?.ToString();
-        //    //日期起
-        //    string DateStart = form["DateStart"]?.ToString();
-        //    //日期迄
-        //    string DateEnd = form["DateEnd"]?.ToString();
-        //    #endregion
+            #region 塞來自formdata的資料
+            ////系統別
+            //string System = form["System"]?.ToString();
+            ////子系統別
+            //string SubSystem = form["SubSystem"]?.ToString();
+            //設備名稱
+            string EName = form["EName"]?.ToString();
+            //廠牌
+            string Brand = form["Brand"]?.ToString();
+            //型號
+            string Model = form["Model"]?.ToString();
+            ////日期起
+            //string DateStart = form["DateStart"]?.ToString();
+            ////日期迄
+            //string DateEnd = form["DateEnd"]?.ToString();
+            #endregion
 
-        //    #region 依據查詢字串檢索資料表
-        //    var Data = db.EquipmentOperatingManual.AsQueryable();
+            #region 依據查詢字串檢索資料表
+            var Data = db.EquipmentOperatingManual.AsQueryable();
 
-        //    if (!string.IsNullOrEmpty(System))
-        //    {
-        //        Data = Data.Where(x => x.System == System);
-        //    }
-        //    if (!string.IsNullOrEmpty(SubSystem))
-        //    {
-        //        Data = Data.Where(x => x.SubSystem == SubSystem);
-        //    }
-        //    if (!string.IsNullOrEmpty(System))
-        //    {
-        //        Data = Data.Where(x => x.System == System);
-        //    }
-        //    if (!string.IsNullOrEmpty(EName))
-        //    {
-        //        Data = Data.Where(x => x.EName.Contains(EName));
-        //    }
-        //    if (!string.IsNullOrEmpty(Brand))
-        //    {
-        //        Data = Data.Where(x => x.Brand.Contains(Brand));
-        //    }
-        //    if (!string.IsNullOrEmpty(Model))
-        //    {
-        //        Data = Data.Where(x => x.Model.Contains(Model));
-        //    }
-        //    /*
-        //    //日期(起)
-        //    if (!string.IsNullOrEmpty(DateStart))
-        //    {
-        //        var datefrom = DateTime.Parse(DateStart);
-        //        Data = Data.Where(x => x.PlanDate >= datefrom);
-        //    }
-        //    //日期(迄)
-        //    if (!string.IsNullOrEmpty(DateEnd))
-        //    {
-        //        var dateto = DateTime.Parse(DateEnd).AddDays(1);
-        //        Data = Data.Where(x => x.PlanDate < dateto);
-        //    }
-        //    */
-        //    #endregion
+            //if (!string.IsNullOrEmpty(System))
+            //{
+            //    Data = Data.Where(x => x.System == System);
+            //}
+            //if (!string.IsNullOrEmpty(SubSystem))
+            //{
+            //    Data = Data.Where(x => x.SubSystem == SubSystem);
+            //}
+            //if (!string.IsNullOrEmpty(System))
+            //{
+            //    Data = Data.Where(x => x.System == System);
+            //}
+            if (!string.IsNullOrEmpty(EName))
+            {
+                Data = Data.Where(x => x.EName.Contains(EName));
+            }
+            if (!string.IsNullOrEmpty(Brand))
+            {
+                Data = Data.Where(x => x.Brand.Contains(Brand));
+            }
+            if (!string.IsNullOrEmpty(Model))
+            {
+                Data = Data.Where(x => x.Model.Contains(Model));
+            }
+            /*
+            //日期(起)
+            if (!string.IsNullOrEmpty(DateStart))
+            {
+                var datefrom = DateTime.Parse(DateStart);
+                Data = Data.Where(x => x.PlanDate >= datefrom);
+            }
+            //日期(迄)
+            if (!string.IsNullOrEmpty(DateEnd))
+            {
+                var dateto = DateTime.Parse(DateEnd).AddDays(1);
+                Data = Data.Where(x => x.PlanDate < dateto);
+            }
+            */
+            #endregion
 
-        //    #region datagrid remoteSort 判斷有無 sort 跟 order
-        //    IValueProvider vp = form.ToValueProvider();
-        //    if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
-        //    {
-        //        string sort = form["sort"];
-        //        string order = form["order"];
-        //        Data = OrderByField(Data, sort, order == "asc");
-        //    }
-        //    else
-        //    {
-        //        Data = Data.OrderByDescending(x => x.EOMSN);
-        //    }
-        //    #endregion
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                Data = OrderByField(Data, sort, order == "asc");
+            }
+            else
+            {
+                Data = Data.OrderByDescending(x => x.EOMSN);
+            }
+            #endregion
 
-        //    var result = Data;
-        //    //回傳JSON陣列
-        //    JArray ja = new JArray();
-        //    //記住總筆數
-        //    int total = result.Count();
-        //    //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-        //    result = result.Skip((page - 1) * rows).Take(rows);
+            var result = Data;
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = result.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            result = result.Skip((page - 1) * rows).Take(rows);
 
-        //    var Dic = Surfaces.Surface.Authority();
+            var Dic = Surfaces.Surface.Authority();
 
-        //    foreach (var item in result)
-        //    {
-        //        var itemObjects = new JObject();
+            foreach (var item in result)
+            {
+                var itemObjects = new JObject();
 
-        //        itemObjects.Add("EOMSN", item.EOMSN);
-        //        itemObjects.Add("FilePath", "/Files/EquipmentOperatingManual" + item.FilePath);
-        //        itemObjects.Add("System", item.System);
-        //        itemObjects.Add("SubSystem", item.SubSystem);
-        //        itemObjects.Add("EName", item.EName);
-        //        if (!string.IsNullOrEmpty(item.Brand))
-        //        {
-        //            itemObjects.Add("Brand", item.Brand);
-        //        }
-        //        if (!string.IsNullOrEmpty(item.Model))
-        //        {
-        //            itemObjects.Add("Model", item.Model);
-        //        }
+                itemObjects.Add("EOMSN", item.EOMSN);
+                itemObjects.Add("FilePath", "/Files/EquipmentOperatingManual" + item.FilePath);
+                //itemObjects.Add("System", item.System);
+                //itemObjects.Add("SubSystem", item.SubSystem);
+                itemObjects.Add("EName", item.EName);
+                if (!string.IsNullOrEmpty(item.Brand))
+                {
+                    itemObjects.Add("Brand", item.Brand);
+                }
+                if (!string.IsNullOrEmpty(item.Model))
+                {
+                    itemObjects.Add("Model", item.Model);
+                }
 
-        //        ja.Add(itemObjects);
-        //    }
+                ja.Add(itemObjects);
+            }
 
-        //    JObject jo = new JObject();
-        //    jo.Add("rows", ja);
-        //    jo.Add("total", total);
-        //    return jo;
-        //}
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            return jo;
+        }
         #endregion
 
 

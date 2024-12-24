@@ -173,14 +173,14 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region EquipmentOperatingManual 設備操作手冊
-        //[HttpPost]
-        //public ActionResult EquipmentOperatingManual(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_EquipmentOperatingManual(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
+        [HttpPost]
+        public ActionResult EquipmentOperatingManual(FormCollection form)
+        {
+
+            var a = _service.GetJsonForGrid_EquipmentOperatingManual(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
 

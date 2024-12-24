@@ -6,39 +6,61 @@ using System.Web;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
-    public class Stock_ViewModel
+    public class ComputationalStockCreateModel: IComputationalStock
     {
-        public string SISN { get; set; }
-        public string StockType { get; set; }
+        [Required]
+        public int StockTypeSN { get; set; }
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         public string StockName { get; set; }
-        public double StockAmount { get; set; }
-        public double AvailableStockAmount { get; set; }
+        [Required]
+        [StringLength(10, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         public string Unit { get; set; }
-        public double MinStockAmount { get; set; }
-        public string ExpiryDate { get; set; }
-        public List<StockItem> StockItem { get; set; } = new List<StockItem>();
+        public float MinStockAmount { get; set; }
     }
-
-    public class StockItem
+    //-----Interface & Abstract class
+    #region ComputationalStock 計算型庫存
+    public interface IComputationalStock
     {
-        public string SSN { get; set; }
-        public string Brand { get; set; }
-        public string Model { get; set; }
-        public string StockInDateTime { get; set; }
-        public string ExpiryDate { get; set; }
-        public string Location { get; set; }
-        public string SIRSN { get; set; }
-        public double RemainingAmount { get; set; }
-        public string StockInMyName { get; set; }
+        int StockTypeSN { get; set; }
+        string StockName { get; set; }
+        string Unit { get; set; }
+        float MinStockAmount { get; set; }
     }
+    #endregion
+    //public class Stock_ViewModel
+    //{
+    //    public string SISN { get; set; }
+    //    public string StockType { get; set; }
+    //    public string StockName { get; set; }
+    //    public double StockAmount { get; set; }
+    //    public double AvailableStockAmount { get; set; }
+    //    public string Unit { get; set; }
+    //    public double MinStockAmount { get; set; }
+    //    public string ExpiryDate { get; set; }
+    //    public List<StockItem> StockItem { get; set; } = new List<StockItem>();
+    //}
 
-    public class SetWarning
-    {
-        [Required]
-        public string SISN { get; set; }
-        [Required]
-        public DateTime? ExpiryDate { get; set; }
-        [Required]
-        public double MinStockAmount { get; set; }
-    }
+    //public class StockItem
+    //{
+    //    public string SSN { get; set; }
+    //    public string Brand { get; set; }
+    //    public string Model { get; set; }
+    //    public string StockInDateTime { get; set; }
+    //    public string ExpiryDate { get; set; }
+    //    public string Location { get; set; }
+    //    public string SIRSN { get; set; }
+    //    public double RemainingAmount { get; set; }
+    //    public string StockInMyName { get; set; }
+    //}
+
+    //public class SetWarning
+    //{
+    //    [Required]
+    //    public string SISN { get; set; }
+    //    [Required]
+    //    public DateTime? ExpiryDate { get; set; }
+    //    [Required]
+    //    public double MinStockAmount { get; set; }
+    //}
 }

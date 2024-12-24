@@ -1,6 +1,12 @@
-﻿using System;
+﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Service;
+using MinSheng_MIS.Services;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -8,6 +14,14 @@ namespace MinSheng_MIS.Controllers
 {
     public class Stock_ManagementController : Controller
     {
+        private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly StockService _stockService;
+
+        public Stock_ManagementController()
+        {
+            _db = new Bimfm_MinSheng_MISEntities();
+            _stockService = new StockService(_db);
+        }
         #region 庫存管理
         public ActionResult Index()
         {
@@ -19,6 +33,31 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Create()
         {
             return View();
+        }
+        [HttpPost]
+        public JsonResService CreateComputationalStock(ComputationalStockCreateModel data)
+        {
+            JsonResService res = new JsonResService();
+            try
+            {
+                // Data Annotation
+                //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+                // 建立庫存
+                return _stockService.Stock_Create(data);
+            }
+            catch (MyCusResException ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = "</br>{ex.Message}";
+                return res;
+            }
+            catch (Exception)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = "</br>系統異常!";
+                return res;
+            }
         }
         #endregion
 
