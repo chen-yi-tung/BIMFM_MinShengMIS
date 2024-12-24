@@ -144,7 +144,7 @@
 
         $(async function () {
             await pushSelect("StockTypeSN", '@Url.Action("StockType", "DropDownList")');
-            await pushSelect("StockName", '@Url.Action("StockName", "DropDownList")');
+            await pushSelect("StockName", '@Url.Action("StockName", "DropDownList")'); //to do要連動StockTypeSN
             readData(apiUrl);
             //await formDropdown.ASN();
             addButtonEvent();

@@ -129,6 +129,34 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
+        #region 新增一般出庫
+        [HttpPost]
+        public ActionResult CreateNormalComputationalStockOut(NomalComputationalStockOutModel data)
+        {
+            JsonResService<string> result = new JsonResService<string>();
+            try
+            {
+                // Data Annotation
+                //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+                // 新增一般入庫
+                result = _stockService.NormalStockOut_Create(data, User.Identity.Name);
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = $"</br>{ex.Message}";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (Exception)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>系統異常!";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+        }
+        #endregion
         #endregion
 
 
