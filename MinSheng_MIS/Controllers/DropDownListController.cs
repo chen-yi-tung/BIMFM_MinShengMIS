@@ -1,6 +1,4 @@
-﻿using Microsoft.Ajax.Utilities;
-using Microsoft.Owin.Security.DataHandler.Encoder;
-using MinSheng_MIS.Models;
+﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Security.Policy;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 
@@ -1048,13 +1044,30 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        // --2024/10/25後更新
         #region MaintainPeriod 保養週期
         [HttpGet]
         public ActionResult MaintainPeriod()
         {
             List<JObject> list = ConvertDicToJObjectList(Surface.MaintainPeriod());
 
+            return Content(JsonConvert.SerializeObject(list), "application/json");
+        }
+        #endregion
+
+        #region OneDeviceOneCardTemplates 一機一卡模板
+        [HttpGet]
+        public ActionResult OneDeviceOneCardTemplates()
+        {
+            List<JObject> list = db.Template_OneDeviceOneCard.Select(x => new
+                {
+                    x.SampleName,
+                    x.TSN
+                }).AsEnumerable()
+                .Select(x => new JObject
+                {
+                    { "Text", x.SampleName },
+                    { "Value", x.TSN }
+                }).ToList();
             return Content(JsonConvert.SerializeObject(list), "application/json");
         }
         #endregion
