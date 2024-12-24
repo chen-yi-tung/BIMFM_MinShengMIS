@@ -95,11 +95,11 @@ function addButtonEvent() {
  */
 function getCreateSaveData(sampleTr) {
 
-    let SampleName = $("#InspectionForm #SampleName").val(),
+    let PathName = $("#InspectionForm #PathName").val(),
         Frequency = $("#InspectionForm #Frequency").val(),
         InternalCodes = sampleTr.calc()
 
-    if (!SampleName) {
+    if (!PathName) {
         dialogError("請輸入巡檢模板名稱！")
         return;
     }
@@ -114,7 +114,7 @@ function getCreateSaveData(sampleTr) {
     }
 
     let data = {
-        SampleName,
+        PathName,
         Frequency,
         InternalCodes
     }
