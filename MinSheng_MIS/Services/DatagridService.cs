@@ -293,6 +293,73 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 每日巡檢時程模板管理
+        public JObject GetJsonForGrid_DailyInspectionSample(System.Web.Mvc.FormCollection form)
+        {
+            #region datagrid呼叫時的預設參數有 rows 跟 page
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+            {
+                page = short.Parse(form["page"].ToString());
+            }
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+            {
+                rows = short.Parse(form["rows"]?.ToString());
+            }
+            #endregion
+
+            #region 塞來自formdata的資料
+            //巡檢路線名稱
+            string TemplateName = form["TemplateName"]?.ToString();
+            #endregion
+
+            #region 依據查詢字串檢索資料表
+            var SourceTable = db.DailyInspectionSample.AsQueryable();
+
+            if (!string.IsNullOrEmpty(TemplateName)) //查詢巡檢路線名稱模糊查詢
+            {
+                SourceTable = SourceTable.Where(x => x.TemplateName.Contains(TemplateName));
+            }
+            #endregion
+
+            #region datagrid remoteSort 判斷有無 sort 跟 order  
+            IValueProvider vp = form.ToValueProvider();
+            if (vp.ContainsPrefix("sort") && vp.ContainsPrefix("order"))
+            {
+                string sort = form["sort"];
+                string order = form["order"];
+                SourceTable = OrderByField(SourceTable, sort, order == "asc");
+            }
+            else
+            {
+                SourceTable = SourceTable.OrderBy(x => x.TemplateName);
+            }
+            #endregion
+
+            //回傳JSON陣列
+            JArray ja = new JArray();
+            //記住總筆數
+            int total = SourceTable.Count();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            SourceTable = SourceTable.Skip((page - 1) * rows).Take(rows);
+
+            foreach (var a in SourceTable)
+            {
+                var itemObjects = new JObject();
+                itemObjects.Add("DailyTemplateSN", a.DailyTemplateSN);//巡檢路線編號
+                itemObjects.Add("TemplateName", a.TemplateName);//巡檢模板名稱
+                itemObjects.Add("InspectionNum", db.DailyInspectionSampleContent.Where(x => x.DailyTemplateSN == a.DailyTemplateSN).Count());//巡檢路線數量
+                ja.Add(itemObjects);
+            }
+
+            JObject jo = new JObject();
+            jo.Add("rows", ja);
+            jo.Add("total", total);
+            return jo;
+        }
+        #endregion
+
         #region 巡檢紀錄_設備保養紀錄
         //public string GetJsonForGrid_InspectationPlan_Record_EquipMaintain(System.Web.Mvc.FormCollection form)
         //{
