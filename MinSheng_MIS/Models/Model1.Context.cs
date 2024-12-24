@@ -61,6 +61,7 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<InspectionPlan_Member> InspectionPlan_Member { get; set; }
         public virtual DbSet<InspectionPlan_RFIDOrder> InspectionPlan_RFIDOrder { get; set; }
         public virtual DbSet<InspectionPlan_Time> InspectionPlan_Time { get; set; }
+        public virtual DbSet<InspectionTrack> InspectionTrack { get; set; }
         public virtual DbSet<LaboratoryMaintenance> LaboratoryMaintenance { get; set; }
         public virtual DbSet<ManufacturerInfo> ManufacturerInfo { get; set; }
         public virtual DbSet<MeetingMinutes> MeetingMinutes { get; set; }
@@ -86,6 +87,5 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<WarningMessage> WarningMessage { get; set; }
         public virtual DbSet<WarningMessageFillinRecord> WarningMessageFillinRecord { get; set; }
         public virtual DbSet<WatchPairing> WatchPairing { get; set; }
-        public virtual DbSet<InspectionTrack> InspectionTrack { get; set; }
     }
 }
