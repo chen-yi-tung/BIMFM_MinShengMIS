@@ -158,42 +158,6 @@ namespace MinSheng_MIS.Controllers.API
         }
     }
 
-    public class GetReportLevelController : ApiController
-    {
-        public JObject Get()
-        {
-            JObject jo = new JObject()
-            {
-                { "State", "Success" },
-                { "ErrorMessage", "" },
-                { "Datas", "" }
-            };
-            try
-            {
-                JArray ja = new JArray();
-                var Dics = Surface.ReportLevel();
-
-                foreach (var a in Dics)
-                {
-                    JObject itemObject = new JObject
-                    {
-                        { "Text", a.Value },
-                        { "Value", a.Key }
-                    };
-                    ja.Add(itemObject);
-                }
-                jo["Datas"] = ja;
-
-            }
-            catch (Exception ex)
-            {
-                jo["State"] = "Failed";
-                jo["ErrorMessage"] = ex.Message;
-            }
-            return jo;
-        }
-    }
-
     public class RepairDetailController : ApiController
     {
         public JObject Post([FromBody] EquipmentReportForm item)

@@ -14,8 +14,6 @@ using static MinSheng_MIS.Models.ViewModels.ReadInspectionPlanPathData;
 
 namespace MinSheng_MIS.Services
 {
-
-
     public class Repair_ManagementService : IDisposable
     {
         Bimfm_MinSheng_MISEntities _db = new Bimfm_MinSheng_MISEntities();
