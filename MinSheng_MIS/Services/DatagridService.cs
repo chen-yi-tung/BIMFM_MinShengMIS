@@ -242,36 +242,16 @@ namespace MinSheng_MIS.Services
             #endregion
 
             #region 塞來自formdata的資料
-            //棟別編號
-            string ASN = form["ASN"]?.ToString();
-            //樓層編號
-            string FSN = form["FSN"]?.ToString();
-            //巡檢路線標題
-            string PathTitle = form["PathTitle"]?.ToString();
+            //巡檢路線名稱
+            string PathName = form["PathName"]?.ToString();
             #endregion
 
             #region 依據查詢字串檢索資料表
-            var SourceTable = from x1 in db.PathSample
-                              join x2 in db.Floor_Info on x1.FSN equals x2.FSN
-                              join x3 in db.AreaInfo on x2.ASN equals x3.ASN
-                              select new { x1.PSSN, x1.PathTitle, x1.FSN, x2.ASN, Floor = x2.FloorName, x3.Area };
+            var SourceTable = db.InspectionPathSample.AsQueryable();
 
-            if (!string.IsNullOrEmpty(ASN)) //查詢棟別編號
+            if (!string.IsNullOrEmpty(PathName)) //查詢巡檢路線名稱模糊查詢
             {
-                int IntASN = 0;
-                bool conversionSuccessful = int.TryParse(ASN, out IntASN);
-                if (conversionSuccessful)
-                {
-                    SourceTable = SourceTable.Where(x => x.ASN == IntASN);
-                }
-            }
-            if (!string.IsNullOrEmpty(FSN)) //查詢樓層編號
-            {
-                SourceTable = SourceTable.Where(x => x.FSN == FSN);
-            }
-            if (!string.IsNullOrEmpty(PathTitle)) //查詢路徑標題模糊查詢
-            {
-                SourceTable = SourceTable.Where(x => x.PathTitle.Contains(PathTitle));
+                SourceTable = SourceTable.Where(x => x.PathName.Contains(PathName));
             }
             #endregion
 
@@ -285,7 +265,7 @@ namespace MinSheng_MIS.Services
             }
             else
             {
-                SourceTable = SourceTable.OrderBy(x => x.PSSN);
+                SourceTable = SourceTable.OrderBy(x => x.PathName);
             }
             #endregion
 
@@ -299,20 +279,10 @@ namespace MinSheng_MIS.Services
             foreach (var a in SourceTable)
             {
                 var itemObjects = new JObject();
-                if (itemObjects["PSSN"] == null)
-                {
-                    itemObjects.Add("PSSN", a.PSSN);//路線模板編號
-                }
-                if (itemObjects["PathTitle"] == null)
-                {
-                    itemObjects.Add("PathTitle", a.PathTitle);//路線標題
-                }
-                if (itemObjects["Area"] == null)
-                    itemObjects.Add("Area", a.Area);//棟別                  
-
-                if (itemObjects["Floor"] == null)
-                    itemObjects.Add("Floor", a.Floor);//樓層
-
+                itemObjects.Add("PlanPathSN", a.PlanPathSN);//巡檢路線編號
+                itemObjects.Add("PathName", a.PathName);//巡檢路線名稱
+                itemObjects.Add("Frequency", "每"+a.Frequency + "小時");//巡檢頻率
+                itemObjects.Add("InspectionNum", db.InspectionDefaultOrder.Where(x => x.PlanPathSN == a.PlanPathSN).Count());//巡檢數量
                 ja.Add(itemObjects);
             }
 
