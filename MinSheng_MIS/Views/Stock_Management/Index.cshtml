@@ -82,9 +82,6 @@
         ]
 
         $(async function () {
-            //await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
-            @*await formDropdown.pushSelect({ id: "StockTypeSN", url: '@Url.Action("StockType", "DropDownList")' });
-            await formDropdown.pushSelect({ id: "StockStatus", url: '@Url.Action("StockStatus", "DropDownList")' });*@
             await pushSelect("StockTypeSN", '@Url.Action("StockType", "DropDownList")');
             await pushSelect("StockStatus", '@Url.Action("StockStatus", "DropDownList")');
             Initialize_DataGrid(getGridJSON);

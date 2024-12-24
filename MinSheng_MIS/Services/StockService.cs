@@ -156,5 +156,97 @@ namespace MinSheng_MIS.Services
             }
         }
         #endregion
+
+        #region 新增一般入庫
+        public JsonResService<string> NormalStockIn_Create(NomalComputationalStockInModel datas,string sarsn,string registrar,string filename)
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            JObject jo_res = new JObject();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                string ErrorMessage = NomalStockInRecordAnnotation(datas);
+                if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = ErrorMessage;
+                    return res;
+                }
+                #endregion
+
+                #region 存檔案
+
+                #endregion
+
+                #region 資料新增
+                //變更計算型庫存數量
+                var stock = _db.ComputationalStock.Find(datas.SISN);
+                stock.StockAmount += datas.NumberOfChanges;
+                if (stock.StockAmount < stock.MinStockAmount)
+                    stock.StockStatus = "2";//低於警戒值
+                else
+                    stock.StockStatus = "1";//充足
+                _db.ComputationalStock.AddOrUpdate(stock);
+                _db.SaveChanges();
+
+                var data = new StockChangesRecord();
+                data.SARSN = sarsn;
+                data.SISN = datas.SISN;
+                data.ChangeType = "2";//入庫
+                data.ChangeWay = "1";//一般
+                data.NumberOfChanges = (double)datas.NumberOfChanges;
+                data.CurrentInventory = stock.StockAmount;
+                data.Registrar = registrar;
+                data.ChangeTime = DateTime.Now;
+                data.PurchaseOrder = filename;
+                data.Memo = datas.Memo;
+                _db.StockChangesRecord.AddOrUpdate(data);
+                _db.SaveChanges();
+                #endregion
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
+        #endregion
+
+        #region StockChangesRecord資料驗證
+        private string NomalStockInRecordAnnotation(INomalComputationalStockIn data)
+        {
+            string ErrorMessage = "";
+            //庫存項目編號
+            if (string.IsNullOrEmpty(data.SISN.ToString()))
+            {
+                ErrorMessage = "庫存項目不可為空";
+                return ErrorMessage;
+            }
+            else if (_db.ComputationalStock.Find(data.SISN) == null)
+            {
+                ErrorMessage = "無此庫存項目";
+                return ErrorMessage;
+            }
+            //入庫數量
+            if (string.IsNullOrEmpty(data.NumberOfChanges.ToString()))
+            {
+                ErrorMessage = "入庫數量不可為空";
+                return ErrorMessage;
+            }
+            //備註
+            if (data.Memo.Length > 250)
+            {
+                ErrorMessage = "備註需介於0 ~ 250字之間!";
+                return ErrorMessage;
+            }
+            return ErrorMessage;
+        }
+        #endregion
     }
 }

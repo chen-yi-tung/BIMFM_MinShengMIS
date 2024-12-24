@@ -3223,7 +3223,7 @@ namespace MinSheng_MIS.Services
                         itemObject.Add("OutboundNum", item.NumberOfChanges); //出庫數量
                     }
                     itemObject.Add("Taker", item.Recipient); //取用人
-                    itemObject.Add("Document", item.PurchaseOrder != null ? "/Files/PurchaseOrder"+item.PurchaseOrder : null); //採購單據
+                    itemObject.Add("Document", item.PurchaseOrder != null ? "/Files/PurchaseOrder/"+item.PurchaseOrder : null); //採購單據
                     itemObject.Add("StockNum", item.CurrentInventory); //庫存數量
                     itemObject.Add("Memo", item.Memo); //備註
 

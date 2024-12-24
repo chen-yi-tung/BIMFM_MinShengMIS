@@ -626,6 +626,33 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region 庫存品項名稱下拉式選單
+        [HttpGet]
+        public ActionResult StockName(string stockTypeSN)
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = db.ComputationalStock.AsQueryable();
+
+            if (!string.IsNullOrEmpty(stockTypeSN))
+            {
+                Dics = Dics.Where(x => x.StockTypeSN.ToString() == stockTypeSN);
+            }
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.StockName },
+                    { "Value", a.SISN }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
         #region 設計圖說種類下拉式選單
         [HttpGet]
         public ActionResult ImgType()
