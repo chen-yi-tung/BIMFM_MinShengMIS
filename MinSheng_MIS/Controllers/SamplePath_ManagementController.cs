@@ -14,13 +14,13 @@ namespace MinSheng_MIS.Controllers
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly RFIDService _rfidService;
-        private readonly SamplePath_ManagementService _samplepathService;
+        private readonly SamplePath_ManagementService _samplePathService;
 
-        public SamplePath_ManagementController(Bimfm_MinSheng_MISEntities db)
+        public SamplePath_ManagementController()
         {
-            _db = db;
+            _db = new Bimfm_MinSheng_MISEntities();
             _rfidService = new RFIDService(_db);
-            _samplepathService = new SamplePath_ManagementService(_db);
+            _samplePathService = new SamplePath_ManagementService(_db);
         }
 
         #region 巡檢路線模板管理
