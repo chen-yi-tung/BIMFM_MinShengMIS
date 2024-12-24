@@ -966,23 +966,6 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         //--報修管理
-        //#region Floor 樓層
-        //[System.Web.Http.HttpGet]
-        //public ActionResult Floor(int ASN)
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var table = db.Floor_Info.Where(f => f.ASN == ASN).ToList();
-        //    foreach (var item in table)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item.FloorName);
-        //        jo.Add("Value", item.FSN);
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        //#endregion
 
         #region RepairState 報修單狀態
         [HttpGet]
