@@ -16,16 +16,16 @@ namespace MinSheng_MIS.Controllers
     {
         private readonly DatagridService _service = new DatagridService();
 
-        //--巡檢管理--
-        #region InspectionPlan_Management 巡檢計畫管理
-        //[HttpPost]
-        //public ActionResult InspectionPlan_Management(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_InspectionPlan(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
+        //--工單管理--
+        #region PlanManagement 工單管理
+        [HttpPost]
+        public ActionResult InspectionPlan_Management(FormCollection form)
+        {
+
+            var a = _service.GetJsonForGrid_InspectionPlan(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region SamplePath_Management 巡檢路線模板管理

@@ -14,10 +14,8 @@ namespace MinSheng_MIS.Surfaces
         public static Dictionary<string, string> InspectionPlanState() {
             var ValueOption = new Dictionary<string, string>();
             ValueOption.Add("1", "待執行");
-            ValueOption.Add("2", "巡檢中");
-            ValueOption.Add("3", "巡檢完成");
-            ValueOption.Add("4", "巡檢未完成");
-            ValueOption.Add("5", "停用"); 
+            ValueOption.Add("2", "執行中");
+            ValueOption.Add("3", "完成"); 
             return ValueOption;
         }
         #endregion
