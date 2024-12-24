@@ -257,6 +257,8 @@
           <Property Name="InstallDate" Type="datetime" />
           <Property Name="Memo" Type="nvarchar" MaxLength="200" />
           <Property Name="DBID" Type="int" />
+          <Property Name="GUID" Type="nvarchar" MaxLength="200" />
+          <Property Name="ElementID" Type="nvarchar" MaxLength="200" />
           <Property Name="EState" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="TSN" Type="char" MaxLength="8" />
           <Property Name="IsDelete" Type="bit" Nullable="false" />
@@ -2113,6 +2115,8 @@
           <Property Name="InstallDate" Type="DateTime" Precision="3" />
           <Property Name="Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="DBID" Type="Int32" />
+          <Property Name="GUID" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ElementID" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="EState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="TSN" Type="String" MaxLength="8" FixedLength="true" Unicode="false" />
           <Property Name="IsDelete" Type="Boolean" Nullable="false" />
@@ -3473,6 +3477,8 @@
                 <ScalarProperty Name="IsDelete" ColumnName="IsDelete" />
                 <ScalarProperty Name="TSN" ColumnName="TSN" />
                 <ScalarProperty Name="EState" ColumnName="EState" />
+                <ScalarProperty Name="ElementID" ColumnName="ElementID" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
                 <ScalarProperty Name="DBID" ColumnName="DBID" />
                 <ScalarProperty Name="Memo" ColumnName="Memo" />
                 <ScalarProperty Name="InstallDate" ColumnName="InstallDate" />

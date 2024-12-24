@@ -38,6 +38,8 @@ namespace MinSheng_MIS.Models
         public Nullable<System.DateTime> InstallDate { get; set; }
         public string Memo { get; set; }
         public Nullable<int> DBID { get; set; }
+        public string GUID { get; set; }
+        public string ElementID { get; set; }
         public string EState { get; set; }
         public string TSN { get; set; }
         public bool IsDelete { get; set; }
