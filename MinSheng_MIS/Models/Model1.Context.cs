@@ -66,8 +66,6 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<ManufacturerInfo> ManufacturerInfo { get; set; }
         public virtual DbSet<MeetingMinutes> MeetingMinutes { get; set; }
         public virtual DbSet<MonthlyReport> MonthlyReport { get; set; }
-        public virtual DbSet<PathSample> PathSample { get; set; }
-        public virtual DbSet<PathSampleOrder> PathSampleOrder { get; set; }
         public virtual DbSet<RFID> RFID { get; set; }
         public virtual DbSet<StockChangesRecord> StockChangesRecord { get; set; }
         public virtual DbSet<StockType> StockType { get; set; }

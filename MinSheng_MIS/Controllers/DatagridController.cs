@@ -39,6 +39,17 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region SampleSchedule_Management 每日巡檢時程模板管理
+        [HttpPost]
+        public ActionResult SampleSchedule_Management(FormCollection form)
+        {
+
+            var a = _service.GetJsonForGrid_DailyInspectionSample(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
+        #endregion
+
         #region InspectationPlan_Record_EquipMaintain 巡檢紀錄_設備保養紀錄
         //[HttpPost]
         //public ActionResult InspectationPlan_Record_EquipMaintain(FormCollection form)
