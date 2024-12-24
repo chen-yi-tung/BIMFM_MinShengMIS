@@ -33,7 +33,7 @@ namespace MinSheng_MIS.Services
             equipment.ESN = await GenerateEquipmentInfoSNAsync();
             equipment.EState = ((int)UniParams.EState.Normal).ToString();
             equipment.IsDelete = false;
-            equipment.EPhoto = null; // TODO
+            equipment.EPhoto = $"{equipment.ESN}{Path.GetExtension(data.EPhoto.FileName)}";
 
             _db.EquipmentInfo.Add(equipment);
 
@@ -53,10 +53,10 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 建立設備所有保養資訊
-        public async Task CreateEquipmentMaintainItemsValue(IUpdateMaintainItemValue data)
+        public async Task CreateEquipmentMaintainItemsValue(IUpdateMaintainItemValue data, bool templateChange = false)
         {
             // 資料驗證
-            await MaintainItemValueDataAnnotationAsync(data);
+            await MaintainItemValueDataAnnotationAsync(data, templateChange);
 
             // 批次建立 Equipment_MaintainItemValue
             AddRangeMaintainItemValue(data);
@@ -172,7 +172,7 @@ namespace MinSheng_MIS.Services
                 string extension = Path.GetExtension(data.EPhoto.FileName); // 檔案副檔名
                 if (!ComFunc.IsConformedForImage(data.EPhoto.ContentType, extension)
                     || ComFunc.IsConformedForPdf(data.EPhoto.ContentType, extension)) // 檔案白名單檢查
-                    throw new MyCusResException("非系統可接受的檔案格式!<br>僅支援上傳圖片或PDF!");
+                    throw new MyCusResException("非系統可接受的檔案格式!<br>僅支援上傳.jpg、.jpeg、.png 或 .pdf!");
             }
         }
         #endregion
@@ -185,21 +185,21 @@ namespace MinSheng_MIS.Services
                 ?? throw new MyCusResException("模板不存在!");
 
             // 確認是否符合一機一卡模板當前欄位
-            //if (!AreListsEqualIgnoreOrder(template.Template_AddField.Select(x => x.AFSN).ToList(), data.AddFieldList.Select(x => x.AFSN).ToList()))
-            //    throw new MyCusResException("模板已更新，請重新填寫!");
+            if (!AreListsEqualIgnoreOrder(template.Template_AddField.Select(x => x.AFSN), data.AddFieldList.Select(x => x.AFSN)))
+                throw new MyCusResException("模板已更新，請重新填寫!");
         }
         #endregion
 
         #region MaintainItemValue資料驗證
-        private async Task MaintainItemValueDataAnnotationAsync(IUpdateMaintainItemValue data)
+        private async Task MaintainItemValueDataAnnotationAsync(IUpdateMaintainItemValue data, bool templateChange = false)
         {
             // 關聯性PK是否存在:一機一卡編號
             var template = await _db.Template_OneDeviceOneCard.SingleOrDefaultAsync(x => x.TSN == data.TSN)
                 ?? throw new MyCusResException("模板不存在!");
 
             // 確認是否符合一機一卡模板當前保養項目
-            //if (!AreListsEqualIgnoreOrder(template.Template_MaintainItemSetting.Select(x => x.MISSN).ToList(), data.MaintainItemList.Select(x => x.MISSN).ToList()))
-            //    throw new MyCusResException("模板已更新，請重新填寫!");
+            if (!templateChange && !AreListsEqualIgnoreOrder(template.Template_MaintainItemSetting.Select(x => x.MISSN), data.MaintainItemList.Select(x => x.MISSN)))
+                throw new MyCusResException("模板已更新，請重新填寫!");
 
             // 保養週期代碼是否於系統可辨識範圍內
             if (!data.MaintainItemList.Select(x => x.Period).AsEnumerable().All(p => Surface.MaintainPeriod().ContainsKey(p)))
@@ -267,16 +267,16 @@ namespace MinSheng_MIS.Services
         /// <summary>
         /// 比較2個List忽略排序後的內容是否完全相等
         /// </summary>
-        /// <typeparam name="T">List類型</typeparam>
+        /// <typeparam name="T">IEnumerable類型</typeparam>
         /// <param name="list1">List1</param>
         /// <param name="list2">List2</param>
         /// <returns></returns>
-        private bool AreListsEqualIgnoreOrder<T>(List<T> list1, List<T> list2)
+        private bool AreListsEqualIgnoreOrder<T>(IEnumerable<T> list1, IEnumerable<T> list2)
         {
             if (list1 == null && list2 == null)
                 return true;
 
-            if (list1 == null || list2 == null || list1.Count != list2.Count)
+            if (list1 == null || list2 == null || list1.Count() != list2.Count())
                 return false;
 
             // 排序後比較

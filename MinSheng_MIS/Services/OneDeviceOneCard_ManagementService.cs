@@ -13,13 +13,13 @@ namespace MinSheng_MIS.Services
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly EquipmentInfo_ManagementService _eMgmtService;
-        private readonly SamplePath_ManagementService _pSamplePathService;
+        //private readonly SamplePath_ManagementService _pSamplePathService;
 
         public OneDeviceOneCard_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
             _eMgmtService = new EquipmentInfo_ManagementService(_db);
-            _pSamplePathService = new SamplePath_ManagementService(_db);
+            //_pSamplePathService = new SamplePath_ManagementService(_db);
         }
 
         #region 新增一機一卡模板
@@ -190,7 +190,7 @@ namespace MinSheng_MIS.Services
                     })
                     ?? Enumerable.Empty<UpdateMaintainItemValueInstance>();
                     foreach (var value in valueTargetList)
-                        await _eMgmtService.CreateEquipmentMaintainItemsValue(value);
+                        await _eMgmtService.CreateEquipmentMaintainItemsValue(value, true);
                 }
             }
             #endregion
