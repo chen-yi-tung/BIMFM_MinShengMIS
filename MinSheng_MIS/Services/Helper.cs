@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using System.Data;
+using MinSheng_MIS.Models;
 
 namespace MinSheng_MIS.Services
 {
@@ -17,7 +18,7 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="controller">呼叫的controller</param>
         /// <param name="field">指定的資料驗證欄位，若不指定則不填寫</param>
-        /// <param name="applyFormat">是否套用<see cref="JsonResService"/>的回傳格式，預設為否</param>
+        /// <param name="applyFormat">是否套用<see cref="JsonResService{String}"/>的回傳格式，預設為否</param>
         /// <returns></returns>
         public static ActionResult HandleInvalidModelState(Controller controller, string field = null, bool applyFormat = false)
         {
@@ -48,6 +49,47 @@ namespace MinSheng_MIS.Services
                     ContentType = "text/plain"
                 };
             }
+        }
+
+        /// <summary>
+        /// <see cref="MyCusResException"/>的錯誤訊息回傳
+        /// </summary>
+        /// <param name="controller">呼叫的controller</param>
+        /// <param name="error">例外錯誤</param>
+        /// <returns>套用<see cref="JsonResService{String}"/>的回傳格式</returns>
+        public static ActionResult HandleMyCusResException(Controller controller, MyCusResException error)
+        {
+            controller.Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject(new JsonResService<string>
+                    {
+                        AccessState = ResState.Failed,
+                        ErrorMessage = $"</br>{error.Message}",
+                        Datas = null
+                    }),
+                ContentType = "application/json"
+            };
+        }
+
+        /// <summary>
+        /// <see cref="Exception"/>的錯誤訊息回傳
+        /// </summary>
+        /// <param name="controller">呼叫的controller</param>
+        /// <returns>套用<see cref="JsonResService{String}"/>的回傳格式</returns>
+        public static ActionResult HandleException(Controller controller)
+        {
+            controller.Response.StatusCode = (int)HttpStatusCode.OK;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Failed,
+                    ErrorMessage = $"</br>系統異常!",
+                    Datas = null
+                }),
+                ContentType = "application/json"
+            };
         }
 
         /// <summary>
