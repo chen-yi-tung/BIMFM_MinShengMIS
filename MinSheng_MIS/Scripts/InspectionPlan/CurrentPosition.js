@@ -234,7 +234,7 @@ window.addEventListener('load', async () => {
         currentLocation.addEventListener('change', async (e) => {
             bim.dispose()
             await bim.init()
-            await bim.loadModels(getModelsUrl(ViewName))
+            await bim.loadModels(getModelsUrl(currentLocation.value))
         })
     }
 

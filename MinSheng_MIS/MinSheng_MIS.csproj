@@ -50,6 +50,10 @@
     <Reference Include="MiniExcel, Version=1.31.3.0, Culture=neutral, PublicKeyToken=e7310002a53eac39, processorArchitecture=MSIL">
       <HintPath>packages\MiniExcel.1.31.3\lib\net45\MiniExcel.dll</HintPath>
     </Reference>
+    <Reference Include="RFID, Version=2017.6.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>App_Data\RFID.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -538,6 +542,7 @@
     <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站1.png" />
     <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站2.png" />
     <Content Include="BimModels\民生整棟Forge\Resource\3D 視圖\進抽站\進抽站4.png" />
+    <Content Include="App_Data\RFID.dll" />
     <Content Include="Content\ArcGIS\arcgis.css" />
     <Content Include="Content\BigScreen.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.css" />

@@ -1476,8 +1476,8 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("ReportLevel", Surface.ReportLevel()[item.ReportLevel]);
                     itemObject.Add("ReportTime", item.ReportTime.ToString("yyyy/MM/dd HH:mm"));
                     itemObject.Add("ReportContent", item.ReportContent);
-                    itemObject.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area);
-                    itemObject.Add("FloorName", item.EquipmentInfo.Floor_Info.FloorName);
+                    itemObject.Add("ASN", item.EquipmentInfo.Floor_Info.ASN);
+                    itemObject.Add("FSN", item.EquipmentInfo.FSN);
                     itemObject.Add("EName", item.EquipmentInfo.EName);
                     itemObject.Add("NO", item.EquipmentInfo.NO);
                     itemObject.Add("RepairUserName", "");

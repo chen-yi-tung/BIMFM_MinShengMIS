@@ -216,6 +216,15 @@
                     //dg.frozenColumn('_assign', (v, row, i) =>
                     //    `<button onclick="dg.eventButton(${i}, '派工', '_assign')" ${row.ReportState !== "待派工" ? "disabled" : ""} class="btn btn-datagrid btn-other" data-bs-toggle="modal" data-bs-target="#addMultiAssign" data-title="報修單 派工">派工</button>`)
                 ]],
+                onLoadSuccess: function (data) {
+                    const rows = data.rows;
+                    rows.forEach((row, index) => {
+                        if (row.ReportState !== "待派工") {
+                            const checkbox = $('#DataGrid').datagrid('getPanel').find(`#DataGrid_datagrid-row-r1-1-${index} input[type="checkbox"]`);
+                            checkbox.prop('disabled', true);
+                        }
+                    });
+                },
                 columns: [[
                     dg.column('ReportState', '報修單狀態', 150),
                     dg.column('RSN', '報修單號', 150),

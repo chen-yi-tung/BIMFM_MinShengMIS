@@ -93,6 +93,7 @@ namespace MinSheng_MIS.Services
             itemObject.Add("RepairtId", item.RepairtId);
             itemObject.Add("RepairTime", item.RepairTime?.ToString("yyyy/MM/dd HH:mm"));
             itemObject.Add("RepairContent", item.RepairContent);
+            itemObject.Add("RepairImg", item.RepairImg);
             itemObject.Add("AuditResult", item.AuditResult == null ? "" : (bool)item.AuditResult ? "通過" : "未通過");
             itemObject.Add("AuditId", item.AuditId);
             itemObject.Add("AuditTime", item.AuditTime?.ToString("yyyy/MM/dd HH:mm"));
