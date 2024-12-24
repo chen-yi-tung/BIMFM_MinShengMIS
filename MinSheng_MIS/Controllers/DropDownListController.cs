@@ -146,6 +146,28 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region Frequency 巡檢頻率
+        [HttpGet]
+        public ActionResult Frequency()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.InspectionPlanFrequency();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
         #region 當日巡檢計畫下拉選單
         [HttpGet]
         public ActionResult TodayPlanList()

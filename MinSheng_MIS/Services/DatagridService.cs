@@ -275,13 +275,13 @@ namespace MinSheng_MIS.Services
             int total = SourceTable.Count();
             //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
             SourceTable = SourceTable.Skip((page - 1) * rows).Take(rows);
-
+            var dic_frequency = Surface.InspectionPlanFrequency();
             foreach (var a in SourceTable)
             {
                 var itemObjects = new JObject();
                 itemObjects.Add("PlanPathSN", a.PlanPathSN);//巡檢路線編號
                 itemObjects.Add("PathName", a.PathName);//巡檢路線名稱
-                itemObjects.Add("Frequency", "每"+a.Frequency + "小時");//巡檢頻率
+                itemObjects.Add("Frequency", dic_frequency[a.Frequency.ToString()]);//巡檢頻率
                 itemObjects.Add("InspectionNum", db.InspectionDefaultOrder.Where(x => x.PlanPathSN == a.PlanPathSN).Count());//巡檢數量
                 ja.Add(itemObjects);
             }

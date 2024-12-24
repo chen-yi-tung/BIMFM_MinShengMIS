@@ -22,6 +22,22 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        #region InspectionPlanState 巡檢頻率
+        public static Dictionary<string, string> InspectionPlanFrequency()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "每1小時");
+            ValueOption.Add("2", "每2小時");
+            ValueOption.Add("3", "每3小時");
+            ValueOption.Add("4", "每4小時");
+            ValueOption.Add("6", "每6小時");
+            ValueOption.Add("8", "每8小時");
+            ValueOption.Add("12", "每12小時");
+            ValueOption.Add("24", "每24小時");
+            return ValueOption;
+        }
+        #endregion
+
         //5-2-2 保養相關狀態編碼對照
         #region InspectionPlanMaintainState 巡檢計畫中保養計畫狀態
         public static Dictionary<string, string> InspectionPlanMaintainState()

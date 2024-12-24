@@ -14,12 +14,12 @@
         <form class="form justify-content-lg-end">
             <div class="form-group-zone">
                 <div class="form-group required">
-                    <label for="SampleName">巡檢模板名稱</label>
-                    <input type="text" class="form-control" name="SampleName" id="SampleName" maxlength="20" required>
+                    <label for="PathName">巡檢模板名稱</label>
+                    <input type="text" class="form-control" name="PathName" id="PathName" maxlength="20" required>
                 </div>
                 <div class="form-group required">
-                    <label for="PFrequency">巡檢頻率</label>
-                    <select class="form-select" name="PFrequency" id="PFrequency" required></select>
+                    <label for="Frequency">巡檢頻率</label>
+                    <select class="form-select" name="Frequency" id="Frequency" required></select>
                 </div>
             </div>
             <hr class="hr-default" />
@@ -186,6 +186,7 @@
         let sampleTr;
 
         $(async function () {
+            await pushSelect("Frequency", '@Url.Action("Frequency", "DropDownList")');
             addButtonEvent();
             delTemplateItem();
             addEquipmentDG_Controller = new AEDG(AEDGOptions);
