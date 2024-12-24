@@ -23,19 +23,17 @@
     <div class="search-area">
         <form class="form" method="post" action="">
             <div class="form-group">
-                <label for="Type">類別</label>
-                <select class="form-select" name="Type" id="Type"></select>
+                <label for="StockTypeSN">類別</label>
+                <select class="form-select" name="StockTypeSN" id="StockTypeSN"></select>
             </div>
             <div class="form-group">
-                <label for="SName">品項名稱</label>
-                <input class="form-control" id="SName" name="SName" type="text" />
+                <label for="StockName">品項名稱</label>
+                <input class="form-control" id="StockName" name="StockName" type="text" />
             </div>
             <div class="form-group">
-                <label for="Status">狀態</label>
-                <select class="form-select" name="Status" id="Status">
+                <label for="StockStatus">狀態</label>
+                <select class="form-select" name="StockStatus" id="StockStatus">
                     <option value="0">請選擇</option>
-                    <option value="0">充足</option>
-                    <option value="0">低於警戒值</option>
                 </select>
             </div>
             <div class="button-group">
@@ -53,7 +51,7 @@
 @section scripts {
     <script>
         //const baseUrl = '/PlanManagement/';
-        var getGridJSON = '@Url.Action("EquipmentInfo_Management", "Datagrid")';
+        var getGridJSON = '@Url.Action("Stock_Management", "Datagrid")';
         var DataGrid;
 
         const fakedata = [
@@ -85,16 +83,20 @@
 
         $(async function () {
             //await pushSelect("UserID", '@Url.Action("InspectionUser", "DropDownList")');
-            Initialize_DataGrid(fakedata);
+            @*await formDropdown.pushSelect({ id: "StockTypeSN", url: '@Url.Action("StockType", "DropDownList")' });
+            await formDropdown.pushSelect({ id: "StockStatus", url: '@Url.Action("StockStatus", "DropDownList")' });*@
+            await pushSelect("StockTypeSN", '@Url.Action("StockType", "DropDownList")');
+            await pushSelect("StockStatus", '@Url.Action("StockStatus", "DropDownList")');
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
 
         function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
-                //url: getGridJSON,
-                data: getGridJSON,
-                //method: 'POST',
+                url: getGridJSON,
+                //data: getGridJSON,
+                method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'IPSN',
                 frozenColumns: [[
@@ -103,12 +105,13 @@
                     dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
-                    dg.column('Type', '類別', 200),
-                    dg.column('SName', '品項名稱', 300),
-                    dg.column('Status', '狀態', 200),
-                    dg.column('Num', '數量', 200),
-                    dg.column('Init', '單位', 200),
-                    dg.column('WarningVal', '警戒值', 200),
+                    dg.hiddenColumn('SISN'),
+                    dg.column('StockType', '類別', 200),
+                    dg.column('StockName', '品項名稱', 300),
+                    dg.column('StockStatus', '狀態', 200),
+                    dg.column('StockAmount', '數量', 200),
+                    dg.column('Unit', '單位', 200),
+                    dg.column('MinStockAmount', '警戒值', 200),
                 ]],
                 rowStyler: (i, row) => row.Status === "低於警戒值" ? { class: 'isMinStock' } : undefined
             })
@@ -125,7 +128,7 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            
+
 
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());

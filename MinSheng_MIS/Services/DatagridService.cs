@@ -3111,78 +3111,74 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 庫存管理
-        //public JObject GetJsonForGrid_Stock_Management(System.Web.Mvc.FormCollection form)
-        //{
-        //    //解析查詢字串
-        //    var SISN = form["SISN"]?.ToString();
-        //    var StockType = form["StockType"]?.ToString();
-        //    var StockName = form["StockName"]?.ToString();
-        //    // DataGrid參數
-        //    var sort = form["sort"]?.ToString();
-        //    var order = form["order"]?.ToString();
-        //    //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-        //    int page = 1;
-        //    if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
-        //    int rows = 10;
-        //    if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+        public JObject GetJsonForGrid_Stock_Management(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var StockTypeSN = form["StockTypeSN"]?.ToString();//類別
+            var StockName = form["StockName"]?.ToString();//品項名稱
+            var StockStatus = form["StockStatus"]?.ToString();//狀態
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
-        //    var rpT = db.ComputationalStock.AsQueryable();
+            var rpT = db.ComputationalStock.AsQueryable();
 
-        //    //查詢出庫單號 (模糊查詢)
-        //    if (!string.IsNullOrEmpty(SISN)) rpT = rpT.Where(x => x.SISN.Contains(SISN));
-        //    //查詢領用單號 (模糊查詢)
-        //    if (!string.IsNullOrEmpty(StockType)) rpT = rpT.Where(x => x.StockType == StockType);
-        //    //查詢出庫人員 (模糊查詢)
-        //    if (!string.IsNullOrEmpty(StockName)) rpT = rpT.Where(x => x.StockName.Contains(StockName));
+            //類別
+            if (!string.IsNullOrEmpty(StockTypeSN)) rpT = rpT.Where(x => x.StockTypeSN.ToString() == StockTypeSN);
+            //品項名稱 (模糊查詢)
+            if (!string.IsNullOrEmpty(StockName)) rpT = rpT.Where(x => x.StockName.Contains(StockName));
+            //狀態
+            if (!string.IsNullOrEmpty(StockStatus)) rpT = rpT.Where(x => x.StockStatus == StockStatus);
 
-        //    // 確認 sort 和 order 不為空才進行排序
-        //    if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
-        //    else rpT = rpT.OrderBy(x => x.SISN);
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderBy(x => x.SISN);
 
-        //    //記住總筆數
-        //    int Total = rpT.Count();
-        //    //切頁
-        //    rpT = rpT.Skip((page - 1) * rows).Take(rows);
+            //記住總筆數
+            int Total = rpT.Count();
+            //切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
 
-        //    //回傳JSON陣列
-        //    JArray ja = new JArray();
+            //回傳JSON陣列
+            JArray ja = new JArray();
 
-        //    if (rpT != null || Total > 0)
-        //    {
-        //        var TypeDics = Surface.StockType();
-        //        var UnitDics = Surface.Unit();
-        //        foreach (var item in rpT)
-        //        {
-        //            var itemObject = new JObject
-        //            {
-        //                { "MinStockAmount", item.MinStockAmount },
-        //                // AvailableStockAmount計算:
-        //                // 1. 仍在物品有效期 x.ExpiryDate >= DateTime.Now.Date
-        //                // 2. 警戒值期限內的有效數量 x.ExpiryDate >= item.ExpiryDate(警戒值期限)
-        //                { "AvailableStockAmount", item.Stock.Where(x => x.ExpiryDate >= item.ExpiryDate && x.ExpiryDate >= DateTime.Now.Date).Sum(x => x.RemainingAmount) },
-        //                { "SISN", item.SISN },
-        //                { "StockType", item.StockType != null ? TypeDics[item.StockType] : null },
-        //                { "StockName", item.StockName },
-        //                { "StockAmount", item.StockAmount },
-        //                { "Unit", item.Unit != null ? UnitDics[item.Unit] : null },
-        //            };
+            if (rpT != null || Total > 0)
+            {
+                var dic_stockStatus = Surface.StockStatus();
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject
+                    {
+                        { "SISN", item.SISN },
+                        { "StockType", db.StockType.Find(item.StockTypeSN).StockTypeName.ToString() },
+                        { "StockName", item.StockName },
+                        { "StockStatus", dic_stockStatus[item.StockStatus] },
+                        { "StockAmount", item.StockAmount },
+                        { "Unit", item.Unit},
+                        { "MinStockAmount", item.MinStockAmount },
+                    };
 
-        //            ja.Add(itemObject);
-        //        }
-        //    }
+                    ja.Add(itemObject);
+                }
+            }
 
-        //    JObject jo = new JObject
-        //    {
-        //        { "rows", ja },
-        //        { "total", Total }
-        //    };
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
 
-        //    return jo;
-        //}
+            return jo;
+        }
         #endregion
 
         #region 庫存品項詳情_庫存變更紀錄
-        public JObject GetJsonForGrid_Stock_Management(System.Web.Mvc.FormCollection form)
+        public JObject GetJsonForGrid_StockChangeRecord(System.Web.Mvc.FormCollection form)
         {
             //解析查詢字串
             var SISN = form["SISN"]?.ToString();

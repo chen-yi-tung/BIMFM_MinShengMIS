@@ -543,10 +543,10 @@ namespace MinSheng_MIS.Controllers
 
         #region 庫存狀態 下拉式選單
         [HttpGet]
-        public ActionResult StockState()
+        public ActionResult StockStatus()
         {
             List<JObject> list = new List<JObject>();
-            var Dics = Surface.StockState();
+            var Dics = Surface.StockStatus();
 
             foreach (var a in Dics)
             {
@@ -609,14 +609,14 @@ namespace MinSheng_MIS.Controllers
         public ActionResult StockType()
         {
             List<JObject> list = new List<JObject>();
-            var Dics = Surface.StockType();
+            var Dics = db.StockType.ToList();
 
             foreach (var a in Dics)
             {
                 JObject jo = new JObject
                 {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
+                    { "Text", a.StockTypeName },
+                    { "Value", a.StockTypeSN }
                 };
                 list.Add(jo);
             }
