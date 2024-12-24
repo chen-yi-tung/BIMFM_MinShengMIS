@@ -16,46 +16,31 @@
                     <select class="form-select" name="ASN" id="ASN" required>
                         <option value="">請選擇</option>
                     </select>
-                    <input class="form-control" id="Area" name="Area" type="text" hidden />
                 </div>
-
                 <div class="form-group required">
                     <label for="FSN">樓層</label>
                     <select class="form-select" name="FSN" id="FSN" required>
                         <option value="">請選擇</option>
                     </select>
-                    <input class="form-control" id="Floor" name="Floor" type="text" hidden />
                 </div>
-
                 <div class="form-group col-2fr required">
-                    <label for="ESNEName">設備編號/名稱</label>
-                    <select class="form-select" name="ESN" id="ESNEName" required>
-                        <option value="">請選擇</option>
-                    </select>
+                    <label for="ESN">設備編號/名稱</label>
+                    <select class="form-select" name="ESN" id="ESN" placeholder="請先選擇棟別樓層" required ></select>
                 </div>
-
                 <div class="form-group required">
-                    <label for="RepairLevel">報修等級</label>
-                    <select class="form-select" name="ReportLevel" id="RepairLevel" required>
+                    <label for="ReportLevel">報修等級</label>
+                    <select class="form-select" name="ReportLevel" id="ReportLevel" required>
                         <option value="">請選擇</option>
+                        <option value="1">一般</option>
+                        <option value="2">緊急</option>
+                        <option value="3">最速件</option>
                     </select>
                 </div>
-
                 <div class="form-group col-2fr required">
                     <label for="ReportContent">報修內容</label>
-                    <textarea class="form-control" id="ReportContent" name="ReportContent" rows="3" cols="50"
-                        required></textarea>
+                    <textarea class="form-control" id="ReportContent" name="ReportContent" rows="3" cols="50" required></textarea>
                 </div>
-
-                <div class="form-group col-2fr required">
-                    <label for="RPic">報修照片</label>
-                    <div name="ReportImg" id="FileUploader"></div>
-                </div>
-
-            </div>
-
-            <div class="datatable-easyui w-100 d-none">
-                <table id="Template-datagrid"></table>
+                <div id="FileUploader"></div>
             </div>
         </form>
     </div>
@@ -74,23 +59,49 @@
         $(async function () {
             await formDropdown.ASN();
             addButtonEvent();
+            document.getElementById("FSN").addEventListener("change", async function() {
+                const FSNValue = this.value;
+                if(FSNValue) {
+                    const url = `@Url.Action("EquipmentNoEName", "DropDownList")?FSN=${encodeURIComponent(FSNValue)}`
+
+                    await formDropdown.pushSelect({id: "ESN", url: url});
+                }
+            });
             fileUploader = new FileUploader({
                 container: "#FileUploader",
-                className: "form-group w-100",
-                label: "",
-                id: "File"
+                className: "form-group col-2fr required",
+                label: "報修照片",
+                id: "File",
             })
         });
 
         function save() {
+            //重置自訂驗證錯誤訊息
+            getAllParams().forEach((e) => {
+                e.setCustomValidity('');
+            })
+            //自訂驗證錯誤
+            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            console.log("isValidity():", isValidity)
+            if (!isValidity) return;
+
+            var form = new FormData();
+            form.append("FSN", document.getElementById("FSN").value);
+            form.append("ESN", document.getElementById("ESN").value);
+            form.append("ReportLevel", document.getElementById("ReportLevel").value);
+            form.append("ReportContent", document.getElementById("ReportContent").value);
+            if (fileUploader.hasFile()) {
+                form.append("MFile", fileUploader.getFile());
+            }
+            console.log(Object.fromEntries(form.entries()));
+
             $.ajax({
-                url: "/EquipmentInfo_Management/Create",
-                data: fd,//JSON.stringify(fd),
+                url: '@Url.Action("Create", "Repair_Management")',
+                data: form,
                 type: "POST",
                 contentType: false,
                 processData: false,
-                //dataType: "json",
-                //contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
             })
@@ -99,7 +110,7 @@
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Success", inner: "新增成功！",
-                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+                    onHide: () => { window.location.href = "/Repair_Management/Index"; }
                 });
             }
             function onError(res) {

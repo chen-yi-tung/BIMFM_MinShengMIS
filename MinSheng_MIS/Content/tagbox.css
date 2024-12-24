@@ -49,7 +49,7 @@
     background: #5480CA;
     color: #FFFFFF;
     margin: 0.1em 0 0 0;
-    padding: 0em 1.8em 0.1em 0.5em;
+    padding: 0em 1.8em 0.1em 0.5em !important;
 }
 
 .tagbox-remove {

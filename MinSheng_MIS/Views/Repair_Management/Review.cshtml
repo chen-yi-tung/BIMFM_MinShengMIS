@@ -164,13 +164,17 @@
 
             var form = new FormData();
             const auditReason = document.querySelector('input[name="AuditResult"]:checked');
-            const auditReasonValue = Boolean(auditReason.value);
+            console.log("看這", auditReason.value);
+            const auditReasonValue = auditReason.value === "true";
+            console.log("再看這", auditReasonValue);
 
             form.append("RSN", RSN);
             form.append("AuditReason", document.getElementById("AuditReason").value);
-            form.append("AuditResult_Value", auditReasonValue);
+            form.append("AuditResult", auditReasonValue);
 
-            $.ajax({
+            console.log("最後傳送", Object.fromEntries(form.entries()));
+
+            @*$.ajax({
                 url: '@Url.Action("Audit", "Repair_Management")',
                 data: form,
                 type: "POST",
@@ -178,11 +182,11 @@
                 processData: false,
                 success: onSuccess,
                 error: onError
-            })
+            })*@
 
             function onSuccess(res) {
-                console.log(res);
-                const msg = res.State === 'Success' ? '新增成功!' : res.ErrorMessage;
+                console.log("這邊是甚麼", res);
+                const msg = res.State === 'Success' ? '送出成功!' : res.ErrorMessage;
                 createDialogModal({
                     id: "DialogModal-Success", inner: msg,
                     onHide: () => { window.location.href = "/Repair_Management/Index"; }
@@ -190,7 +194,7 @@
             }
             function onError(res) {
                 console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+                createDialogModal({ id: "DialogModal-Error", inner: `送出失敗！` + `${res?.responseText || ""}` })
             }
         }
     </script>
