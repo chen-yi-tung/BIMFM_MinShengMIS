@@ -93,14 +93,14 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult GetComputationalStockDetail(string id)
         {
-            JsonResService result = new JsonResService();
+            JsonResService<ComputationalStockDetailModel> result = new JsonResService<ComputationalStockDetailModel>();
             try
             {
                 // Data Annotation
                 //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
                 // 庫存詳情
-                result.Datas = _stockService.Stock_Details(id);
+                result = _stockService.Stock_Details(id);
 
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }

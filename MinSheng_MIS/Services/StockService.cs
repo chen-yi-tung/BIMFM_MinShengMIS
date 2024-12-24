@@ -114,10 +114,10 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 庫存詳情
-        public JsonResService Stock_Details(string sisn)
+        public JsonResService<ComputationalStockDetailModel> Stock_Details(string sisn)
         {
             #region 變數
-            JsonResService res = new JsonResService();
+            JsonResService<ComputationalStockDetailModel> res = new JsonResService<ComputationalStockDetailModel>();
             JObject jo_res = new JObject();
             var dic_stocktype = Surface.StockStatus();
             #endregion
