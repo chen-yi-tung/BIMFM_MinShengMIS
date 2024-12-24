@@ -335,18 +335,18 @@ namespace MinSheng_MIS.Models.ViewModels
         public AddFieldModifiableListInstance(string tsn, DeviceCardCreateViewModel data)
         {
             TSN = tsn;
-            AFNameList = data.AddItemList.Select(x => x.Value).AsEnumerable();
+            AFNameList = data.AddItemList?.Select(x => x.Value).AsEnumerable();
         }
 
         public AddFieldModifiableListInstance(in DeviceCardEditViewModel data, 
             bool onlyEmptyAfsn = false)
         {
-            var list = data.AddItemList.ToList();
+            var list = data.AddItemList?.ToList();
             if (onlyEmptyAfsn)
-                list.RemoveAll(x => !string.IsNullOrEmpty(x.AFSN));
+                list?.RemoveAll(x => !string.IsNullOrEmpty(x.AFSN));
 
             TSN = data.TSN;
-            AFNameList = list.Select(x => x.Value).AsEnumerable();
+            AFNameList = list?.Select(x => x.Value).AsEnumerable();
         }
     }
 
@@ -367,7 +367,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public MaintainItemModifiableListInstance(string tsn, DeviceCardCreateViewModel data)
         {
             TSN = tsn;
-            MINameList = data.MaintainItemList.Select(x => x.Value).AsEnumerable();
+            MINameList = data.MaintainItemList?.Select(x => x.Value).AsEnumerable();
         }
 
         public MaintainItemModifiableListInstance(in DeviceCardEditViewModel data, 
@@ -376,13 +376,13 @@ namespace MinSheng_MIS.Models.ViewModels
             TSN = data.TSN;
 
             var temp = new List<string>();
-            var list = data.MaintainItemList.ToList();
+            var list = data.MaintainItemList?.ToList();
             if (onlyEmptyMISSN)
-                list.RemoveAll(x => !string.IsNullOrEmpty(x.MISSN));
+                list?.RemoveAll(x => !string.IsNullOrEmpty(x.MISSN));
             if (noEquipmentUsed)
-                temp = list.Select(x => x.Value).ToList();
+                temp = list?.Select(x => x.Value).ToList();
             if (equipmentUsed && data.AddMaintainItemList != null)
-                temp.AddRange(data.AddMaintainItemList.Select(x => x.MaintainName).Distinct());
+                temp.AddRange(data.AddMaintainItemList?.Select(x => x.MaintainName).Distinct());
 
             MINameList = temp;
         }
@@ -408,19 +408,19 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             TSN = tsn;
             Frequency = data.Frequency;
-            CINameList = data.CheckItemList.Select(x => x.Value).AsEnumerable();
+            CINameList = data.CheckItemList?.Select(x => x.Value).AsEnumerable();
         }
 
         public CheckItemModifiableListInstance(in DeviceCardEditViewModel data,
             bool onlyEmptyCisn = false)
         {
-            var list = data.CheckItemList.ToList();
+            var list = data.CheckItemList?.ToList();
             if (onlyEmptyCisn)
-                list.RemoveAll(x => !string.IsNullOrEmpty(x.CISN));
+                list?.RemoveAll(x => !string.IsNullOrEmpty(x.CISN));
 
             TSN = data.TSN;
             Frequency = data.Frequency;
-            CINameList = list.Select(x => x.Value).AsEnumerable();
+            CINameList = list?.Select(x => x.Value).AsEnumerable();
         }
     }
 
@@ -443,7 +443,7 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             TSN = tsn;
             Frequency = data.Frequency;
-            RIList = data.ReportItemList.Select(x => new UpdateReportItemModel {
+            RIList = data.ReportItemList?.Select(x => new UpdateReportItemModel {
                 RIName = x.Value,
                 Unit = x.Unit,
             }).AsEnumerable();
@@ -452,13 +452,13 @@ namespace MinSheng_MIS.Models.ViewModels
         public ReportItemModifiableListInstance(in DeviceCardEditViewModel data,
             bool onlyEmptyRisn = false)
         {
-            var list = data.ReportItemList.ToList();
+            var list = data.ReportItemList?.ToList();
             if (onlyEmptyRisn)
-                list.RemoveAll(x => !string.IsNullOrEmpty(x.RISN));
+                list?.RemoveAll(x => !string.IsNullOrEmpty(x.RISN));
 
             TSN = data.TSN;
             Frequency = data.Frequency;
-            RIList = list.Select(x => new UpdateReportItemModel
+            RIList = list?.Select(x => new UpdateReportItemModel
             {
                 RIName = x.Value,
                 Unit = x.Unit,
