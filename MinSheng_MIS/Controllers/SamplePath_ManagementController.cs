@@ -36,14 +36,14 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         #region 欲新增的設備Grid
-        [HttpPost]
-        public ActionResult AddEquipmentGrid(FormCollection form)
-        {
-
-            var a = _samplepathService.GetJsonForGrid_DailyInspectionSample(form);
-            string result = JsonConvert.SerializeObject(a);
-            return Content(result, "application/json");
-        }
+        //[HttpPost]
+        //public ActionResult AddEquipmentGrid(FormCollection form)
+        //{
+        //    //todo
+        //    var a = _samplepathService.GetJsonForGrid_DailyInspectionSample(form);
+        //    string result = JsonConvert.SerializeObject(a);
+        //    return Content(result, "application/json");
+        //}
         #endregion
         #endregion
 
