@@ -1,4 +1,4 @@
-﻿namespace MinSheng_MIS.Service
+﻿namespace MinSheng_MIS.Services
 {
     public enum ResState
     {
@@ -7,7 +7,7 @@
         Unauthorized,
         Expired
     }
-    public class JsonResService
+    public class JsonResService<T>
     {
         public string State { get; private set; }
 
@@ -19,6 +19,6 @@
             }
         }
         public string ErrorMessage { get; set; }
-        public object Datas { get; set; }
+        public T Datas { get; set; }
     }
 }

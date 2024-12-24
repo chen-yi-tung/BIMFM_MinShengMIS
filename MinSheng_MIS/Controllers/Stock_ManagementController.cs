@@ -1,6 +1,5 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
-using MinSheng_MIS.Service;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
@@ -38,7 +37,7 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult CreateComputationalStock(ComputationalStockCreateModel data)
         {
-            JsonResService result = new JsonResService();
+            JsonResService<string> result = new JsonResService<string>();
             try
             {
                 // Data Annotation
@@ -51,7 +50,7 @@ namespace MinSheng_MIS.Controllers
             catch (MyCusResException ex)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>{ex.Message}";
+                result.ErrorMessage = $"</br>{ex.Message}";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
             catch (Exception)

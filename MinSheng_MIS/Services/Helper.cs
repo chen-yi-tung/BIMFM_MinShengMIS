@@ -5,33 +5,49 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Newtonsoft.Json;
+using System.Data;
 
 namespace MinSheng_MIS.Services
 {
     public static class Helper
     {
-        private static readonly string html_newLine = "<br>";
         /// <summary>
         /// 未通過Data Annotaion的錯誤
         /// </summary>
         /// <param name="controller">呼叫的controller</param>
         /// <param name="field">指定的資料驗證欄位，若不指定則不填寫</param>
+        /// <param name="applyFormat">是否套用<see cref="JsonResService"/>的回傳格式，預設為否</param>
         /// <returns></returns>
-        public static ActionResult HandleInvalidModelState(Controller controller, string field = null)
+        public static ActionResult HandleInvalidModelState(Controller controller, string field = null, bool applyFormat = false)
         {
-            controller.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            var errorMsg = string.IsNullOrEmpty(field) ?
+                string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).Distinct()) :
+                string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage).Distinct());
 
-            if (string.IsNullOrEmpty(field))
-                return new ContentResult { 
-                    Content = "</br>" + string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).Distinct()), 
-                    ContentType = "text/plain" 
-                };
-            else
+            if (applyFormat)
+            {
+                controller.Response.StatusCode = (int)HttpStatusCode.OK;
                 return new ContentResult
                 {
-                    Content = "</br>" + string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage).Distinct()),
+                    Content = JsonConvert.SerializeObject(new JsonResService<string>
+                        {
+                            AccessState = ResState.Failed,
+                            ErrorMessage = errorMsg,
+                            Datas = null,
+                        }),
+                    ContentType = "application/json"
+                };
+            }
+            else
+            {
+                controller.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return new ContentResult
+                {
+                    Content = "</br>" + errorMsg,
                     ContentType = "text/plain"
                 };
+            }
         }
 
         /// <summary>
@@ -43,7 +59,7 @@ namespace MinSheng_MIS.Services
         public static string HandleErrorMessageList(List<string> list, string errorTitle = null)
         {
             string result = string.Empty;
-            if (!string.IsNullOrEmpty(errorTitle)) result += html_newLine + errorTitle;
+            if (!string.IsNullOrEmpty(errorTitle)) result += "</br>" + errorTitle;
             // html列表
             if (!list.Any()) return null;
             result += "<ul>";

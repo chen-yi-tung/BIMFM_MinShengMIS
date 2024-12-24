@@ -1,13 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
-using MinSheng_MIS.Service;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using System.Linq.Dynamic.Core;
-using Microsoft.SqlServer.Server;
 using System.Data.Entity.Migrations;
 using MinSheng_MIS.Surfaces;
 
@@ -23,10 +19,11 @@ namespace MinSheng_MIS.Services
         }
 
         #region 新增庫存
-        public JsonResService Stock_Create(ComputationalStockCreateModel datas)
+        public JsonResService<string> Stock_Create(ComputationalStockCreateModel datas)
         {
             #region 變數
-            JsonResService res = new JsonResService();
+            JsonResService<string> res = new JsonResService<string>();
+            JObject jo_res = new JObject();
             #endregion
 
             try
