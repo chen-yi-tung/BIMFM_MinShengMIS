@@ -562,7 +562,7 @@
             <PropertyRef Name="StockTypeSN" />
           </Key>
           <Property Name="StockTypeSN" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="StockType" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="StockTypeName" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="SubSystemManagement">
           <Key>
@@ -2453,7 +2453,7 @@
             <PropertyRef Name="StockTypeSN" />
           </Key>
           <Property Name="StockTypeSN" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="StockType1" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="StockTypeName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ComputationalStock" Relationship="Bimfm_MinSheng_MISModel.FK_ComputationalStock_StockType" FromRole="StockType" ToRole="ComputationalStock" />
         </EntityType>
         <EntityType Name="SubSystemManagement">
@@ -3796,7 +3796,7 @@
           <EntitySetMapping Name="StockType">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.StockType">
               <MappingFragment StoreEntitySet="StockType">
-                <ScalarProperty Name="StockType1" ColumnName="StockType" />
+                <ScalarProperty Name="StockTypeName" ColumnName="StockTypeName" />
                 <ScalarProperty Name="StockTypeSN" ColumnName="StockTypeSN" />
               </MappingFragment>
             </EntityTypeMapping>

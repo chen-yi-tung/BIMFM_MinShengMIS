@@ -319,6 +319,17 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        //庫存品項狀態
+        #region StockStatus 庫存品項狀態
+        public static Dictionary<string, string> StockStatus()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "充足");
+            ValueOption.Add("2", "低於警戒值");
+            return ValueOption;
+        }
+        #endregion
+
         //單位
         #region 單位 Unit
         public static Dictionary<string, string> Unit()

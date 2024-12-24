@@ -18,6 +18,15 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Unit { get; set; }
         public float MinStockAmount { get; set; }
     }
+    public class ComputationalStockDetailModel 
+    {
+        public string StockType { get; set; } //類別
+        public string StockName { get; set; } //品項名稱
+        public string StockStauts { get; set; } //狀態
+        public float StockAmount { get; set; } //數量
+        public string Unit { get; set; } //單位
+        public float MinStockAmount { get; set; } //警戒值
+    }
     //-----Interface & Abstract class
     #region ComputationalStock 計算型庫存
     public interface IComputationalStock
@@ -26,6 +35,17 @@ namespace MinSheng_MIS.Models.ViewModels
         string StockName { get; set; }
         string Unit { get; set; }
         float MinStockAmount { get; set; }
+    }
+    #endregion
+    #region ComputationalStockDatail 計算型庫存詳情
+    public interface IComputationalStockDatail
+    {
+        int StockType { get; set; } //類別
+        string StockName { get; set; } //品項名稱
+        string StockStauts { get; set; } //狀態
+        float StockAmount { get; set; } //數量
+        string Unit { get; set; } //單位
+        float MinStockAmount { get; set; } //警戒值
     }
     #endregion
     //public class Stock_ViewModel

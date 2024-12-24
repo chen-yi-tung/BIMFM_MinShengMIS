@@ -85,9 +85,37 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 庫存品項 詳情
-        public ActionResult Detail()
+        public ActionResult Detail(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        [HttpGet]
+        public ActionResult GetComputationalStockDetail(string id)
+        {
+            JsonResService<ComputationalStockDetailModel> result = new JsonResService<ComputationalStockDetailModel>();
+            try
+            {
+                // Data Annotation
+                //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+                // 庫存詳情
+                result = _stockService.Stock_Details(id);
+
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>{ex.Message}";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (Exception)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>系統異常!";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
         }
         #endregion
 
