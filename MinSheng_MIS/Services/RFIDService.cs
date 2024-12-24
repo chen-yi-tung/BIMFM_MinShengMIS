@@ -7,7 +7,6 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace MinSheng_MIS.Services
 {
@@ -26,8 +25,8 @@ namespace MinSheng_MIS.Services
             await RFIDDataAnnotationAsync(data);
             if (string.IsNullOrEmpty(esn))
                 throw new ArgumentNullException($"{nameof(esn)}不可為null!");
-            if (!await _db.EquipmentInfo.AnyAsync(x => x.ESN == esn))
-                throw new ArgumentException($"{nameof(esn)}不存在!");
+            //if (!await _db.EquipmentInfo.AnyAsync(x => x.ESN == esn))
+            //    throw new ArgumentException($"{nameof(esn)}不存在!");
 
             // 新增/更新RFID
             var rfid = new RFID

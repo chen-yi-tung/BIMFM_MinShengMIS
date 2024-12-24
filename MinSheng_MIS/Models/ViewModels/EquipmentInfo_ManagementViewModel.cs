@@ -14,7 +14,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class EquipmentInfoCreateModel : EquipInfo, ICreateEquipmentInfo, ICreateAddFieldValueList, ICreateMaintainItemValueList
     {
         public string TSN { get; set; } // 一機一卡模板編號
-        [FileSizeLimit(5)] // 限制大小為 5 MB
+        [FileSizeLimit(10)] // 限制大小為 10 MB
         public HttpPostedFileBase EPhoto { get; set; } //新增的照片
         public List<EquipRFID> RFIDList { get; set; } // RFID
         public List<AddFieldValueModel> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位

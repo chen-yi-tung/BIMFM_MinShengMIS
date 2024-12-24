@@ -177,7 +177,9 @@ namespace MinSheng_MIS.Services
             foreach (var sourceProp in typeof(TSource).GetProperties())
             {
                 var destProp = typeof(TDestination).GetProperty(sourceProp.Name);
-                if (destProp != null && destProp.CanWrite)
+                if (destProp != null 
+                    && destProp.CanWrite
+                    && destProp.PropertyType == sourceProp.PropertyType) // 類型必須相同
                 {
                     destProp.SetValue(destination, sourceProp.GetValue(source));
                 }
