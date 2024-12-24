@@ -2,6 +2,7 @@
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace MinSheng_MIS.Controllers
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly StockService _stockService;
+        private readonly DatagridService _datagridService;
 
         public Stock_ManagementController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
             _stockService = new StockService(_db);
+            _datagridService = new DatagridService();
         }
         #region 庫存管理
         public ActionResult Index()
@@ -102,6 +105,33 @@ namespace MinSheng_MIS.Controllers
                 // 庫存詳情
                 result = _stockService.Stock_Details(id);
 
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>{ex.Message}";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (Exception)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>系統異常!";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+        }
+        [HttpPost]
+        public ActionResult GetComputationalStockDetailRecord(FormCollection form)
+        {
+            JsonResService<JObject> result = new JsonResService<JObject>();
+            try
+            {
+                // Data Annotation
+                //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+                // 庫存變更記錄grid
+                result.Datas = _datagridService.GetJsonForGrid_Stock_Management(form);
+                result.AccessState = ResState.Success;
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
             catch (MyCusResException ex)
