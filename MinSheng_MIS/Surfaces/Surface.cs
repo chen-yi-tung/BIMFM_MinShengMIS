@@ -94,8 +94,8 @@ namespace MinSheng_MIS.Surfaces
         #region MaintainPeriod 保養週期
         public static Dictionary<string, string> MaintainPeriod()
         {
-            return Enum.GetValues(typeof(MaintainPeriod.Period))
-                     .Cast<MaintainPeriod.Period>()
+            return Enum.GetValues(typeof(MaintainPeriod))
+                     .Cast<MaintainPeriod>()
                      .ToDictionary(
                          period => Convert.ToInt32(period).ToString(),
                          period => period.GetLabel()

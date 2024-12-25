@@ -60,12 +60,12 @@ namespace MinSheng_MIS.Controllers
 					#region 新增會議記錄文件
 					// 檔案上傳
 					if (!ComFunc.UploadFile(Info.MeetingFile, Server.MapPath($"~/{folderPath}/"), Info.MMSN))
-						return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
+						return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
 					FileName = Info.MMSN + extension;
 					#endregion
 				}
 				else
-					return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
+					return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
 			}
 			//新增會議紀錄
 			MeetingMinutesService mm = new MeetingMinutesService();
@@ -134,12 +134,12 @@ namespace MinSheng_MIS.Controllers
 					#region 新增會議紀錄文件
 					// 檔案上傳
 					if (!ComFunc.UploadFile(Info.MeetingFile, Server.MapPath($"~/{folderPath}/"), Info.MMSN))
-						return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
+						return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
 					FileName = Info.MMSN + extension;
 					#endregion
 				}
 				else
-					return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
+					return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
 			}
 			else //若為空且原有檔案，則刪除原有檔案
 			{

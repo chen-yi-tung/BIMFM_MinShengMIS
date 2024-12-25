@@ -8,11 +8,13 @@ using System.Web.Mvc;
 using Newtonsoft.Json;
 using System.Data;
 using MinSheng_MIS.Models;
+using System.Linq.Expressions;
 
 namespace MinSheng_MIS.Services
 {
     public static class Helper
     {
+        #region InvalidModelState/ Exception回傳
         /// <summary>
         /// 未通過Data Annotaion的錯誤
         /// </summary>
@@ -32,11 +34,11 @@ namespace MinSheng_MIS.Services
                 return new ContentResult
                 {
                     Content = JsonConvert.SerializeObject(new JsonResService<string>
-                        {
-                            AccessState = ResState.Failed,
-                            ErrorMessage = errorMsg,
-                            Datas = null,
-                        }),
+                    {
+                        AccessState = ResState.Failed,
+                        ErrorMessage = errorMsg,
+                        Datas = null,
+                    }),
                     ContentType = "application/json"
                 };
             }
@@ -63,11 +65,11 @@ namespace MinSheng_MIS.Services
             return new ContentResult
             {
                 Content = JsonConvert.SerializeObject(new JsonResService<string>
-                    {
-                        AccessState = ResState.Failed,
-                        ErrorMessage = $"</br>{error.Message}",
-                        Datas = null
-                    }),
+                {
+                    AccessState = ResState.Failed,
+                    ErrorMessage = $"</br>{error.Message}",
+                    Datas = null
+                }),
                 ContentType = "application/json"
             };
         }
@@ -85,7 +87,7 @@ namespace MinSheng_MIS.Services
                 Content = JsonConvert.SerializeObject(new JsonResService<string>
                 {
                     AccessState = ResState.Failed,
-                    ErrorMessage = $"</br>系統異常!",
+                    ErrorMessage = $"</br>系統異常！",
                     Datas = null
                 }),
                 ContentType = "application/json"
@@ -110,6 +112,68 @@ namespace MinSheng_MIS.Services
             result += "</ul>";
             return result;
         }
+        #endregion
+
+        #region DTO轉換
+        public static TDestination ToDto<TSource, TDestination>(this TSource source)
+            where TSource : class
+            where TDestination : class, new()  // TDestination 必須是具體類型
+        {
+            var destination = new TDestination();  // 創建具體類型的實例
+
+            // 遍歷源對象的屬性，並將它們映射到目標對象
+            foreach (var sourceProp in typeof(TSource).GetProperties())
+            {
+                var destProp = typeof(TDestination).GetProperty(sourceProp.Name);
+                if (destProp != null
+                    && destProp.CanWrite
+                    && destProp.PropertyType == sourceProp.PropertyType) // 類型必須相同
+                {
+                    destProp.SetValue(destination, sourceProp.GetValue(source));
+                }
+            }
+
+            return destination;
+        }
+        #endregion
+
+        #region 以DTO抓取資料庫資料(DTO屬性需與資料庫欄位同名)
+        // 直接使用表達式映射
+        public static List<TDestination> MapDatabaseToDto<TSource, TDestination>(IEnumerable<TSource> source)
+            where TDestination : new()
+        {
+            var mapExpression = MapDatabaseToQuery<TSource, TDestination>();
+            var mapFunc = mapExpression.Compile();
+
+            return source.Select(mapFunc).ToList();
+        }
+
+        // 定義映射表達式
+        public static Expression<Func<TSource, TDestination>> MapDatabaseToQuery<TSource, TDestination>()
+            where TDestination : new()
+        {
+            var sourceProperties = typeof(TSource).GetProperties();
+            var destinationProperties = typeof(TDestination).GetProperties();
+
+            var parameter = Expression.Parameter(typeof(TSource), "x");
+            var bindings = destinationProperties
+                .Where(d => sourceProperties.Any(s => s.Name == d.Name && s.PropertyType == d.PropertyType))
+                .Select(d =>
+                    Expression.Bind(
+                        d,
+                        Expression.Property(parameter, sourceProperties.First(s => s.Name == d.Name && s.PropertyType == d.PropertyType))
+                    ))
+                .ToArray();
+
+            return Expression.Lambda<Func<TSource, TDestination>>(
+                Expression.MemberInit(
+                    Expression.New(typeof(TDestination)),
+                    bindings
+                ),
+                parameter
+            );
+        }
+        #endregion
 
         /// <summary>
         /// 讀取伺服器內的Json檔案
@@ -166,27 +230,52 @@ namespace MinSheng_MIS.Services
             return results;
         }
 
-        #region DTO轉換
-        public static TDestination ToDto<TSource, TDestination>(this TSource source)
-            where TSource : class
-            where TDestination : class, new()  // TDestination 必須是具體類型
+        public static ICollection<T> AddOrUpdateList<T, TSource>(
+            IEnumerable<TSource> list,
+            string sn,
+            string initialLatestId,
+            string format,
+            int emptySnLength,
+            Func<string, int, string, string, string> generateIdFunc,  // 修改為新的 generateIdFunc 簽名
+            Func<TSource, string, string, T> createInstance)
         {
-            var destination = new TDestination();  // 創建具體類型的實例
+            string latestId = initialLatestId;
+            var results = new List<T>();
 
-            // 遍歷源對象的屬性，並將它們映射到目標對象
-            foreach (var sourceProp in typeof(TSource).GetProperties())
+            foreach (var item in list)
             {
-                var destProp = typeof(TDestination).GetProperty(sourceProp.Name);
-                if (destProp != null 
-                    && destProp.CanWrite
-                    && destProp.PropertyType == sourceProp.PropertyType) // 類型必須相同
-                {
-                    destProp.SetValue(destination, sourceProp.GetValue(source));
-                }
+                // 生成Id，傳遞格式、空位長度、最新Id 和 SN
+                string newId = generateIdFunc(format, emptySnLength, latestId, sn);
+
+                // 創建實例，傳遞當前 Id 和 Id 生成函數
+                var result = createInstance(item, sn, newId);
+                results.Add(result);
+
+                // 更新 latestId
+                latestId = newId;
             }
 
-            return destination;
+            return results;
         }
-        #endregion
+
+        /// <summary>
+        /// 比較2個List忽略排序後的內容是否完全相等
+        /// </summary>
+        /// <typeparam name="T">IEnumerable類型</typeparam>
+        /// <param name="list1">List1</param>
+        /// <param name="list2">List2</param>
+        /// <returns></returns>
+        public static bool AreListsEqualIgnoreOrder<T>(IEnumerable<T> list1, IEnumerable<T> list2)
+        {
+            if (list1 == null && list2 == null)
+                return true;
+
+            if (list1 == null || list2 == null || list1.Count() != list2.Count())
+                return false;
+
+            // 排序後比較
+            return list1.OrderBy(x => x).SequenceEqual(list2.OrderBy(x => x));
+        }
+
     }
 }

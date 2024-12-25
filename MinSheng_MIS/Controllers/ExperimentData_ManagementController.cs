@@ -67,13 +67,13 @@ namespace MinSheng_MIS.Controllers
                 {
                     // 檔案上傳
                     if (!ComFunc.UploadFile(File, Server.MapPath($"~/{folderPath}/"), data.EDRSN))
-                        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!");
+                        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
                     data.EDFile = data.EDRSN + extension;
                     db.ExperimentalDataRecord.AddOrUpdate(data);
                 }
                 else
-                    //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
-                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
+                    //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式！");
+                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
             }
             await db.SaveChangesAsync();
 
@@ -121,8 +121,8 @@ namespace MinSheng_MIS.Controllers
                     data.EDFile = data.EDRSN + extension;
                 }
                 else
-                    //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式!");
-                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF!", "application/json; charset=utf-8");
+                    //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式！");
+                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
             }
 
             db.ExperimentalDataRecord.AddOrUpdate(data);

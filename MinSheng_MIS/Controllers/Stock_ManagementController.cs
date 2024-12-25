@@ -60,7 +60,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
@@ -88,7 +88,7 @@ namespace MinSheng_MIS.Controllers
                 if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".pdf")
                 {
                     result.AccessState = ResState.Failed;
-                    result.ErrorMessage = "圖片僅接受jpg、jpeg、png、pdf!";
+                    result.ErrorMessage = "圖片僅接受jpg、jpeg、png、pdf！";
                     return Content(JsonConvert.SerializeObject(result), "application/json");
                 }
                 string Folder = Server.MapPath("~/Files/PurchaseOrder");
@@ -117,7 +117,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
@@ -152,7 +152,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
@@ -196,7 +196,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
@@ -223,7 +223,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }

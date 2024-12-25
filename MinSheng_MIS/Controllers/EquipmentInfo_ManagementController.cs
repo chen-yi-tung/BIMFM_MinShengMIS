@@ -36,6 +36,11 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 新增設備API
+        /// </summary>
+        /// <param name="data">Input</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult> CreateEquipment(EquipmentInfoCreateModel data)
         {
@@ -68,7 +73,7 @@ namespace MinSheng_MIS.Controllers
 
                 // 檔案上傳
                 if (!ComFunc.UploadFile(data.EPhoto, Server.MapPath($"~/{_photoPath}/"), esn))
-                    throw new MyCusResException("檔案上傳過程出錯!");
+                    throw new MyCusResException("檔案上傳過程出錯！");
 
                 await _db.SaveChangesAsync();
 

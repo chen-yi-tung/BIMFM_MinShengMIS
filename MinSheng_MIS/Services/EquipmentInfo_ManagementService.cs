@@ -1,13 +1,15 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Surfaces;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using static MinSheng_MIS.Services.UniParams.MaintenanceFormStatus;
+using static MinSheng_MIS.Services.UniParams;
 
 
 namespace MinSheng_MIS.Services
@@ -20,6 +22,23 @@ namespace MinSheng_MIS.Services
         {
             _db = db;
         }
+
+        #region 查詢符合Dto的EquipmentInfo資訊
+        public IQueryable<T> GetEquipmentInfoQueryByDto<T>(Expression<Func<EquipmentInfo, bool>> filter = null) 
+            where T : new()
+        {
+            // 初始查詢
+            var query = _db.EquipmentInfo.AsQueryable();
+
+            // 如果提供了過濾條件，應用過濾
+            if (filter != null)
+                query = query.Where(filter);
+
+            // 映射到目標類型
+            return query.Select(Helper.MapDatabaseToQuery<EquipmentInfo, T>());
+        }
+
+        #endregion
 
         #region 新增設備資訊
         public async Task<string> CreateEquipmentInfoAsync(ICreateEquipmentInfo data)
@@ -78,8 +97,8 @@ namespace MinSheng_MIS.Services
 
             // 維持不變
             update.DBID = origin.DBID;
-            //update.GUID = origin.GUID;
-            //update.ElementID = origin.ElementID;
+            update.GUID = origin.GUID;
+            update.ElementID = origin.ElementID;
             update.IsDelete = origin.IsDelete;
 
             _db.EquipmentInfo.AddOrUpdate(update);
@@ -90,7 +109,7 @@ namespace MinSheng_MIS.Services
         public async Task<T> GetEquipmentInfoAsync<T>(string ESN) where T : class, new()
         {
             var equipment = await _db.EquipmentInfo.FindAsync(ESN)
-                ?? throw new MyCusResException("查無資料!");
+                ?? throw new MyCusResException("查無資料！");
 
             T dest = equipment.ToDto<EquipmentInfo, T>();
             if (dest is IEquipmentInfoDetail info)
@@ -131,7 +150,8 @@ namespace MinSheng_MIS.Services
             // 刪除相關待派工及待執行的定期保養單
             DeletePendingMaintenanceFormList(
                 values.SelectMany(x => x.Template_MaintainItemSetting.Equipment_MaintenanceForm
-                    .Where(f => IsStatusEqualToStr(f.Status, Status.ToAssign) || IsStatusEqualToStr(f.Status, Status.ToDo)))
+                    .Where(f => IsEnumEqualToStr(f.Status, MaintenanceFormStatus.ToAssign) || 
+                    IsEnumEqualToStr(f.Status, MaintenanceFormStatus.ToDo)))
                 .AsEnumerable()
             );
 
@@ -162,17 +182,17 @@ namespace MinSheng_MIS.Services
 
             // 不可重複: 設備編號
             if (await _db.EquipmentInfo.Where(x => x.NO == data.NO).AnyAsync())
-                throw new MyCusResException("設備編號已被使用!");
+                throw new MyCusResException("設備編號已被使用！");
             // 關聯性PK是否存在: 樓層
             if (!floorSNList.Contains(data.FSN))
-                throw new MyCusResException("樓層不存在!");
+                throw new MyCusResException("樓層不存在！");
             // 照片驗證
             if (data.EPhoto != null && data.EPhoto.ContentLength > 0)
             {
                 string extension = Path.GetExtension(data.EPhoto.FileName); // 檔案副檔名
                 if (!ComFunc.IsConformedForImage(data.EPhoto.ContentType, extension)
                     || ComFunc.IsConformedForPdf(data.EPhoto.ContentType, extension)) // 檔案白名單檢查
-                    throw new MyCusResException("非系統可接受的檔案格式!<br>僅支援上傳.jpg、.jpeg、.png 或 .pdf!");
+                    throw new MyCusResException("非系統可接受的檔案格式!<br>僅支援上傳.jpg、.jpeg、.png 或 .pdf！");
             }
         }
         #endregion
@@ -182,11 +202,13 @@ namespace MinSheng_MIS.Services
         {
             // 關聯性PK是否存在:一機一卡編號
             var template = await _db.Template_OneDeviceOneCard.SingleOrDefaultAsync(x => x.TSN == data.TSN) 
-                ?? throw new MyCusResException("模板不存在!");
+                ?? throw new MyCusResException("模板不存在！");
 
             // 確認是否符合一機一卡模板當前欄位
-            if (!AreListsEqualIgnoreOrder(template.Template_AddField.Select(x => x.AFSN), data.AddFieldList.Select(x => x.AFSN)))
-                throw new MyCusResException("模板已更新，請重新填寫!");
+            if (!Helper.AreListsEqualIgnoreOrder(
+                template.Template_AddField.Select(x => x.AFSN), 
+                data.AddFieldList.Select(x => x.AFSN)))
+                throw new MyCusResException("模板已更新，請重新填寫！");
         }
         #endregion
 
@@ -195,15 +217,18 @@ namespace MinSheng_MIS.Services
         {
             // 關聯性PK是否存在:一機一卡編號
             var template = await _db.Template_OneDeviceOneCard.SingleOrDefaultAsync(x => x.TSN == data.TSN)
-                ?? throw new MyCusResException("模板不存在!");
+                ?? throw new MyCusResException("模板不存在！");
 
             // 確認是否符合一機一卡模板當前保養項目
-            if (!templateChange && !AreListsEqualIgnoreOrder(template.Template_MaintainItemSetting.Select(x => x.MISSN), data.MaintainItemList.Select(x => x.MISSN)))
-                throw new MyCusResException("模板已更新，請重新填寫!");
+            if (!templateChange && 
+                !Helper.AreListsEqualIgnoreOrder(
+                template.Template_MaintainItemSetting.Select(x => x.MISSN), 
+                data.MaintainItemList.Select(x => x.MISSN)))
+                throw new MyCusResException("模板已更新，請重新填寫！");
 
             // 保養週期代碼是否於系統可辨識範圍內
             if (!data.MaintainItemList.Select(x => x.Period).AsEnumerable().All(p => Surface.MaintainPeriod().ContainsKey(p)))
-                throw new MyCusResException("保養週期不存在!");
+                throw new MyCusResException("保養週期不存在！");
         }
         #endregion
 
@@ -263,25 +288,5 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region Helper
-        /// <summary>
-        /// 比較2個List忽略排序後的內容是否完全相等
-        /// </summary>
-        /// <typeparam name="T">IEnumerable類型</typeparam>
-        /// <param name="list1">List1</param>
-        /// <param name="list2">List2</param>
-        /// <returns></returns>
-        private bool AreListsEqualIgnoreOrder<T>(IEnumerable<T> list1, IEnumerable<T> list2)
-        {
-            if (list1 == null && list2 == null)
-                return true;
-
-            if (list1 == null || list2 == null || list1.Count() != list2.Count())
-                return false;
-
-            // 排序後比較
-            return list1.OrderBy(x => x).SequenceEqual(list2.OrderBy(x => x));
-        }
-        #endregion
     }
 }

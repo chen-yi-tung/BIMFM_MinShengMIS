@@ -1,14 +1,6 @@
 ﻿using MinSheng_MIS.Services;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using MinSheng_MIS.Models.ViewModels;
-using MinSheng_MIS.Models;
-using System.Web.Services.Description;
 
 namespace MinSheng_MIS.Controllers
 {
