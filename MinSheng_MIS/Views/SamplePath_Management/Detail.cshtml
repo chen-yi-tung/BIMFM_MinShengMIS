@@ -41,11 +41,11 @@
 
 @section scripts {
     <script>
-         const IPSN = '@ViewBag.id';
+         let PlanPathSN = location.href.split('/').pop();
          let apiUrl = null;
-        /*let sampleTr;*/
 
         $(async function () {
+            console.log(PlanPathSN)
             readData(apiUrl);
         })
         //每日巡檢時程模板 詳情
@@ -72,7 +72,6 @@
             ]
         }
         let fakeData = {
-            SIRSN: "1120301001",
             PName: "前處理機房巡檢",
             PFrequency: "每3小時",
             SampleItem: [
@@ -117,13 +116,12 @@
                 },
             ]
         }
-
        
-        function readData(url = null) {
+        function readData(url = null, SN) {
 
             url == null ? onSuccess(fakeData) :
                 $.ajax({
-                    url: url,
+                    url: `${url}/?PlanPathSN=${SN}`,
                     type: "GET",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
