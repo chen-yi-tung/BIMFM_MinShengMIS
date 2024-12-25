@@ -124,7 +124,7 @@ namespace MinSheng_MIS.Models.ViewModels
         //HttpPostedFileBase EPhoto { get; set; } //新增的設備照片
         string EName { get; set; } // 設備名稱
         string NO { get; set; } // 設備編號
-        DateTime InstallDate { get; set; } // 安裝日期
+        DateTime? InstallDate { get; set; } // 安裝日期
         string FSN { get; set; } // 樓層編號
         string Brand { get; set; } // 設備廠牌
         string Model { get; set; } // 設備型號
@@ -146,7 +146,7 @@ namespace MinSheng_MIS.Models.ViewModels
         [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
         [Display(Name = "設備編號")]
         public string NO { get; set; } // 設備編號
-        public DateTime InstallDate { get; set; } // 安裝日期
+        public DateTime? InstallDate { get; set; } // 安裝日期
         [Required]
         [StringLength(5, ErrorMessage = "{0} 的長度最多5個字元。")]
         [Display(Name = "樓層編號")]
