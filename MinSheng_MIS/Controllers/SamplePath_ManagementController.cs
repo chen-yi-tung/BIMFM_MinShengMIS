@@ -60,6 +60,11 @@ namespace MinSheng_MIS.Controllers
             }
         }
 
+        /// <summary>
+        /// 新增巡檢路線模板
+        /// </summary>
+        /// <param name="data">使用者input</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult> CreateSamplePath(SamplePathCreateViewModel data)
         {
@@ -105,6 +110,32 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Detail()
         {
             return View();
+        }
+
+        public async Task<ActionResult> ReadBody(string id)
+        {
+            try
+            {
+                // 獲取一機一卡詳情
+                SamplePathDetailViewModel sample = await _samplePathService.GetSamplePathAsync<SamplePathDetailViewModel>(id);
+                // 獲取增設基本資料欄位
+                sample.Equipments = _samplePathService.GetDefaultOrderRFIDInfoList(id);
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<SamplePathDetailViewModel>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = sample,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
         }
         #endregion
 

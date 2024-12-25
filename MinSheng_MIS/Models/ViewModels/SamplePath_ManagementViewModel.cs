@@ -19,6 +19,15 @@ namespace MinSheng_MIS.Models.ViewModels
     }
     #endregion
 
+    #region 巡檢路線模板-詳情
+    public class SamplePathDetailViewModel : ISamplePath, IDefaultOrder
+    {
+        public string PathName { get; set; } // 巡檢路線名稱
+        public int Frequency { get; set; } // 巡檢頻率
+        public IEnumerable<IInspectionRFIDs> Equipments { get; set; }
+    }
+    #endregion
+
     #region 新增巡檢設備Grid
     /// <summary>
     /// 新增巡檢設備grid的查詢條件
@@ -116,6 +125,16 @@ namespace MinSheng_MIS.Models.ViewModels
     #endregion
 
     //-----Interface
+    public interface ISamplePath
+    {
+        string PathName { get; set; } // 巡檢路線名稱
+        int Frequency { get; set; } // 巡檢頻率
+    }
+
+    public interface IDefaultOrder
+    {
+        IEnumerable<IInspectionRFIDs> Equipments { get; set; }
+    }
 
     public interface ICreateSamplePath : ISamplePathModifiableList
     {
@@ -140,7 +159,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public interface ISearchRFIDs : IInspection, IInspectionRfidSearch, IInspectionEquipmentInfo { }
 
     /// <summary>
-    /// 新增巡檢設備grid
+    /// 巡檢RFID及設備資料
     /// </summary>
     public interface IInspectionRFIDs : IInspectionRfidInfo, IInspectionEquipmentInfo { }
 

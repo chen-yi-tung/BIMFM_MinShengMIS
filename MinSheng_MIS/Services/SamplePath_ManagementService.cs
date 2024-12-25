@@ -136,6 +136,44 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 獲取巡檢路線模板
+        public async Task<T> GetSamplePathAsync<T>(string planPathSN) where T : class, new()
+        {
+            var sample = await _db.InspectionPathSample.FindAsync(planPathSN)
+                ?? throw new MyCusResException("查無資料！");
+
+            return sample.ToDto<InspectionPathSample, T>();
+        }
+        #endregion
+
+        #region 獲取巡檢設備順序
+        public List<IInspectionRFIDs> GetDefaultOrderRFIDInfoList(string planPathSN)
+        {
+            var codes = _db.InspectionDefaultOrder.Where(x => x.PlanPathSN == planPathSN)
+                .Select(x => x.RFIDInternalCode)
+                .AsEnumerable();
+
+            var result = _rfidService.GetRFIDQueryByDto<RFIDServiceQueryModel>(x => codes.Contains(x.RFIDInternalCode))
+                .AsEnumerable()
+                .Select(x => new InspectionRFIDsViewModel
+                {
+                    InternalCode = x.RFIDInternalCode,
+                    ExternalCode = x.RFIDExternalCode,
+                    RFIDName = x.Name,
+                    RFIDArea = x.Floor_Info.AreaInfo.Area,
+                    RFIDFloor = x.Floor_Info.FloorName,
+                    RFIDMemo = x.Memo,
+                    EName = x.EquipmentInfo.EName,
+                    NO = x.EquipmentInfo.NO,
+                    Brand = x.EquipmentInfo.Brand,
+                    Model = x.EquipmentInfo.Model,
+                    Frequency = $"每{x.EquipmentInfo.Template_OneDeviceOneCard.Frequency}小時"
+                });
+
+            return result.Cast<IInspectionRFIDs>().ToList();
+        }
+        #endregion
+
         #region 批次刪除巡檢預設順序 InspectionDefaultOrder
         /// <summary>
         /// 批次刪除巡檢預設順序內的特定設備
