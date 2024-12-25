@@ -108,8 +108,8 @@ function getCreateSaveData(sampleTr) {
         return;
 
     }
-    if (sampleTr.calc().length === 0) {
-        dialogError("請新增至少一項巡檢設備！")
+    if (!sampleTr.checkValidity()) {
+        dialogError("請至少新增一項巡檢設備！")
         return;
     }
 

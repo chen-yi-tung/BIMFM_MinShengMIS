@@ -85,111 +85,35 @@ function addButtonEvent() {
         console.log("onclick sample-path-create");
         createPath("#sample-path-form")
     })
-    $("#path-save").click(function () {
-        saveCurrentPath(() => { createDialogModal({ id: "DialogModal", inner: "儲存成功！" }) })
-    })
     $("#submit").click(function () {
-        console.log("onclick submit")
-        checkNeedSaveCurrentPath(save);
+        console.log("onclick submit");
+        save(getCreateSaveData());
+    })
+    $("#addItem").click(function () {
+        console.log("onclick addItem")
+        sampleTr.create();
     })
 }
 
-function getCreateSaveData(IPSN = undefined) {
-
-    let IPName = $("#IPName").val(),
-        PlanCreateUserID = $("#NavbarUserID").val(),
-        PlanDate = $("#PlanDate").val(),
-
-    if (!IPName) {
-        dialogError("請輸入工單名稱！")
+function getCreateSaveData() {
+    let TemplateName = $("#TemplateName").val();
+    if (!TemplateName) {
+        dialogError("請輸入巡檢模板名稱！")
         return;
     }
-    if (!PlanDate) {
-        dialogError("請輸入工單日期！")
+    if (!sampleTr.checkRequired()) {
+        dialogError("請至少新增一項巡檢設備！")
         return;
     }
-
-    let MaintainEquipment = $("#Maintain-datagrid").parent().hasClass("d-none") ? null : $("#Maintain-datagrid").datagrid('getRows').map(e => e.EMFISN);
-    let MaintainUserID = $("#MaintainUserID").val();
-
-    if (MaintainEquipment !== null && MaintainUserID === '') {
-        dialogError("未選擇定期保養審核人員！")
+    if (!sampleTr.checkValidity()) {
+        dialogError("請檢查是否完成模板內容必填！")
         return;
     }
-
-    let data = {
-        IPName: IPName,
-        PlanCreateUserID: PlanCreateUserID,
-        PlanDate: PlanDate,
-        Shift: Shift,
-        UserID: UserID,
-        MaintainUserID: MaintainUserID,
-        RepairUserID: RepairUserID,
-        MaintainEquipment: MaintainEquipment,
-        RepairEquipment: RepairEquipment,
-        InspectionPlanPaths: InspectionPlanPaths
-    }
-
-    if (IPSN !== '' || IPSN !== undefined || IPSN !== null) {
-        data.IPSN = IPSN
-    }
-
-    console.log(data);
-
-    return data;
-
-    function findUnusedEquip(data) {
-        let equip = getEquip();
-        let result = equip.filter((e, i, arr) => {
-            return data.findIndex(d => {
-                if (d.error) return false
-                return e.ASN == d.PathSample.ASN && e.FSN === d.PathSample.FSN
-            }) === -1
-        })
-        console.log("findUnusedEquip result:", result)
-
-        return result;
-
-        function getEquip() {
-            return [...getDgRows(autoLinkDG_Controller), ...getDgRows(templateDG_Controller)]
-        }
-    }
-    function checkOrder(data) {
-        let equip = getEquipData();
-        let beacon = data.PathSample.Beacon.map(e => e.deviceName);
-        let order = data.PathSampleOrder.filter(e => !beacon.includes(e));
-        let result;
-
-        if (equip.length > order.length) {
-            result = check(order, equip);
-        } else if (equip.length <= order.length) {
-            result = check(equip, order);
-        }
-
-        return {
-            equip: equip,
-            order: order,
-            result: result
-        };
-
-        function getEquipData() {
-            return [...new Set([...getESNs(autoLinkDG_Controller), ...getESNs(templateDG_Controller)])];
-        }
-        function getESNs(dgc) {
-            return getDgRows(dgc).filter(e => {
-                return e.ASN == data.PathSample.ASN && e.FSN === data.PathSample.FSN
-            }).map(e => e.ESN)
-        }
-        function check(a, b) {
-            return b.map(e => a.includes(e));
-        }
-    }
-    function getDgRows(dgc) {
-        if (dgc.edg.parent().hasClass('d-none')) {
-            return [];
-        }
-        return dgc.edg.datagrid('getRows');
-    }
+    //console.log(data);
+    return {
+        TemplateName,
+        TempalteItems: sampleTr.calc()
+    };
     function dialogError(inner) {
         createDialogModal({ id: "DialogModal-Error", inner: inner })
     }
