@@ -1054,16 +1054,26 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult OneDeviceOneCardTemplates()
         {
-            List<JObject> list = db.Template_OneDeviceOneCard.Select(x => new
+            var list = db.Template_OneDeviceOneCard.Select(x => new
                 {
-                    x.SampleName,
-                    x.TSN
-                }).AsEnumerable()
-                .Select(x => new JObject
+                    Text = x.SampleName,
+                    Value = x.TSN
+                }).AsEnumerable();
+
+            return Content(JsonConvert.SerializeObject(list), "application/json");
+        }
+        #endregion
+
+        #region OneDeviceOneCardTemplates 巡檢路線模板
+        [HttpGet]
+        public ActionResult InspectionPathSample()
+        {
+            var list = db.InspectionPathSample.Select(x => new
                 {
-                    { "Text", x.SampleName },
-                    { "Value", x.TSN }
-                }).ToList();
+                    Text = x.PathName,
+                    Value = x.PlanPathSN
+                }).AsEnumerable();
+
             return Content(JsonConvert.SerializeObject(list), "application/json");
         }
         #endregion
