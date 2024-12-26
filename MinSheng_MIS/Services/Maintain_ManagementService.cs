@@ -94,5 +94,39 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 定期保養單 審核
+        //public JsonResService<string> MaintainManagement_Audit(Maintain_ManagementAuditViewModel datas, string userName)
+        //{
+        //    JsonResService<string> res = new JsonResService<string>();
+
+        //    #region 更新保養單資料、新增保養單派工
+        //    foreach (var emfsn in datas.EMFSN)
+        //    {
+        //        var emfsndata = _db.Equipment_MaintenanceForm.Find(emfsn);
+        //        emfsndata.NextMaintainDate = datas.NextMaintainDate;
+        //        emfsndata.Status = "2"; // 待執行
+        //        emfsndata.Dispatcher = userName;
+        //        emfsndata.DispatcherTime = DateTime.Now;
+        //        var lastsn = _db.Equipment_MaintenanceFormMember.Where(x => x.EMFSN == emfsn)
+        //                .OrderByDescending(x => x.EMFMSN).Select(x => x.EMFMSN).FirstOrDefault();
+        //        foreach (var maintainer in datas.Maintainer)
+        //        {
+        //            lastsn = ComFunc.CreateNextID(emfsn + "%{2}", lastsn);
+        //            var emfmsndata = new Equipment_MaintenanceFormMember();
+        //            emfmsndata.EMFMSN = lastsn;
+        //            emfmsndata.EMFSN = emfsn;
+        //            emfmsndata.Maintainer = maintainer;
+        //            _db.Equipment_MaintenanceFormMember.Add(emfmsndata);
+        //        }
+        //    }
+        //    _db.SaveChanges();
+        //    #endregion
+
+        //    res.AccessState = ResState.Success;
+        //    res.Datas = "派工成功!";
+        //    return res;
+        //}
+        #endregion
+
     }
 }

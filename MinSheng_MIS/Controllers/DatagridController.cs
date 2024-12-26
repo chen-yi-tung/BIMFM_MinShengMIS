@@ -66,7 +66,6 @@ namespace MinSheng_MIS.Controllers
         //--定期保養管理--
         #region MaintainForm_Management 定期保養單管理
         [HttpPost]
-        [AllowAnonymous]
         public ActionResult MaintainForm_Management(FormCollection form)
         {
 
