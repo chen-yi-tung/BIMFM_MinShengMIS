@@ -945,5 +945,19 @@ namespace MinSheng_MIS.Models.ViewModels
             public List<string> Member { get; set; }
         }
         #endregion
+
+        #region APP-巡檢RFID列表
+        public class PlanRFIDInfo
+        {
+            public string Status { get; set; } //巡檢狀態
+            public string EName { get; set; } //設備名稱
+			public string EState { get; set; }//設備狀態
+            public string NO { get; set; } //設備編號
+            
+            public string Location { get; set; } //地點
+            public string RFIDInternalCode { get; set; } //RFID編碼
+			public string ESN { get; set; } //取設備內容用
+        }
+        #endregion
     }
 }

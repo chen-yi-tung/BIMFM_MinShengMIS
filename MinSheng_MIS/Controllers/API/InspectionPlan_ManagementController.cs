@@ -36,4 +36,29 @@ namespace MinSheng_MIS.Controllers.API
             return result;
         }
     }
+    public class GetInspectionRFIDListController : ApiController
+    {
+        private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly InspectionPlan_ManagementService _inspectionPlanService;
+
+        public GetInspectionRFIDListController()
+        {
+            _db = new Bimfm_MinSheng_MISEntities();
+            _inspectionPlanService = new InspectionPlan_ManagementService(_db);
+        }
+        public JsonResService<List<PlanRFIDInfo>> Get(string IPTSN)
+        {
+            JsonResService<List<PlanRFIDInfo>> result = new JsonResService<List<PlanRFIDInfo>>();
+            try
+            {
+                result = _inspectionPlanService.GetPlanRFIDList(IPTSN);
+            }
+            catch (Exception ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
+    }
 }

@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Web;
 using static MinSheng_MIS.Models.ViewModels.InspectionPlan_ManagementViewModel;
 
@@ -63,6 +64,65 @@ namespace MinSheng_MIS.Services
                     }
                     planInfo.Member= members;
                     datas.Add(planInfo);
+                }
+                res.Datas = datas;
+                #endregion
+
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
+        #endregion
+
+        #region APP-巡檢設備列表
+        public JsonResService<List<PlanRFIDInfo>> GetPlanRFIDList(string IPTSN)
+        {
+            #region 變數
+            JsonResService<List<PlanRFIDInfo>> res = new JsonResService<List<PlanRFIDInfo>>();
+            var dic_eState = Surface.EState();
+            var dic_status = Surface.Status();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                var data = from x1 in _db.InspectionPlan_RFIDOrder
+                           where x1.IPTSN == IPTSN
+                           join x2 in _db.InspectionPlan_Equipment on x1.IPESN equals x2.IPESN
+                           join x3 in _db.EquipmentInfo on x2.ESN equals x3.ESN
+                           join x4 in _db.RFID on x1.RFIDInternalCode equals x4.RFIDInternalCode
+                           join x5 in _db.Floor_Info on x4.FSN equals x5.FSN
+                           join x6 in _db.AreaInfo on x5.ASN equals x6.ASN
+                           select new { x1.Status,x3.EName,x3.EState,x3.NO,x3.FSN, x1.RFIDInternalCode,x3.ESN, x5.FloorName, x6.Area, x2.IPESN};
+
+                if (data == null)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "查無此巡檢時段之巡檢設備列表";
+                    return res;
+                }
+                #endregion
+
+                #region 資料
+                List<PlanRFIDInfo> datas = new List<PlanRFIDInfo>();
+                foreach (var plan in data)
+                {
+                    PlanRFIDInfo planRFIDInfo = new PlanRFIDInfo();
+                    planRFIDInfo.Status = dic_status[plan.Status];
+                    planRFIDInfo.EName = plan.EName;
+                    planRFIDInfo.EState = dic_eState[plan.EState];
+                    planRFIDInfo.NO = plan.NO;
+                    planRFIDInfo.Location = plan.Area + " " + plan.FloorName;
+                    planRFIDInfo.RFIDInternalCode = plan.RFIDInternalCode;
+                    planRFIDInfo.ESN = plan.ESN;
+                    planRFIDInfo.IPESN = plan.IPESN;
+                    datas.Add(planRFIDInfo);
                 }
                 res.Datas = datas;
                 #endregion
