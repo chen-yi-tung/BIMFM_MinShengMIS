@@ -1686,6 +1686,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\Repair_Management\Index.js" />
     <Content Include="Scripts\SampleSchedule_Management\Create.js" />
     <Content Include="Scripts\SampleSchedule_Management\CreateDataGrids.js" />
     <Content Include="Scripts\SamplePath_Management\Create.js" />

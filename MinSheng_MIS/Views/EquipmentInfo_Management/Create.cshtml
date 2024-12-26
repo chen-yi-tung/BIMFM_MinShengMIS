@@ -8,21 +8,28 @@
     <script src="/Scripts/dataTable/RFIDInfoModal.js" defer></script>
 }
 
+<style>
+    .edit-item-init {
+        grid-template-columns: 2fr 1fr 1fr;
+        background: rgb(255, 255, 255, 0.5) !important;
+    }
+</style>
+
 <h2>@ViewBag.Title</h2>
 
 <section>
     <div class="edit-area edit-area-lg flex-wrap flex-md-row justify-content-lg-between">
         <form class="form d-lg-contents">
             <div class="group-title">基本資料</div>
-            <div class="form-group-zone">
+            <div class="form-group-zone" id="basicZone">
                 <div id="FileUploader"></div>
                 <div class="form-group required">
                     <label for="EName">設備名稱</label>
                     <input class="form-control" id="EName" name="EName" type="text" required />
                 </div>
                 <div class="form-group required">
-                    <label for="ESN">設備編號</label>
-                    <input class="form-control" id="ESN" name="ESN" type="text" required />
+                    <label for="NO">設備編號</label>
+                    <input class="form-control" id="NO" name="NO" type="text" required />
                 </div>
                 <div class="form-group">
                     <label for="InstallDate">安裝日期</label>
@@ -33,14 +40,12 @@
                     <select class="form-select" name="ASN" id="ASN" required>
                         <option value="">請選擇</option>
                     </select>
-                    <input class="form-control" id="Area" name="Area" type="text" hidden />
                 </div>
                 <div class="form-group required">
                     <label for="FSN">樓層</label>
                     <select class="form-select" name="FSN" id="FSN" required>
                         <option value="">請選擇</option>
                     </select>
-                    <input class="form-control" id="Floor" name="Floor" type="text" hidden />
                 </div>
                 <div class="form-group">
                     <label for="Brand">設備廠牌</label>
@@ -51,42 +56,43 @@
                     <input class="form-control" id="Model" name="Model" type="text" maxlength="50" />
                 </div>
                 <div class="form-group">
-                    <label for="Company">設備廠商</label>
-                    <input class="form-control" id="Company" name="Company" type="text" maxlength="50" />
+                    <label for="Vendor">設備廠商</label>
+                    <input class="form-control" id="Vendor" name="Vendor" type="text" maxlength="50" />
                 </div>
                 <div class="form-group">
-                    <label for="Tel">連絡電話</label>
-                    <input class="form-control" id="Tel" name="Tel" type="text" />
+                    <label for="ContactPhone">連絡電話</label>
+                    <input class="form-control" id="ContactPhone" name="ContactPhone" type="text" />
                 </div>
                 <div class="form-group">
-                    <label for="Voltage">使用電壓</label>
-                    <input class="form-control" id="Voltage" name="Voltage" type="text" />
+                    <label for="OperatingVoltage">使用電壓</label>
+                    <input class="form-control" id="OperatingVoltage" name="OperatingVoltage" type="text" />
                 </div>
                 <div class="form-group">
-                    <label for="Other">其他耗材資料</label>
-                    <input class="form-control" id="Other" name="Other" type="text" />
+                    <label for="OtherInfo">其他耗材資料</label>
+                    <input class="form-control" id="OtherInfo" name="OtherInfo" type="text" />
                 </div>
                 <div class="form-group col-3fr">
                     <label for="Memo">備註</label>
-                    <textarea class="form-control" id="Memo" name="Memo" rows="3" cols="50" required></textarea>
+                    <textarea class="form-control" id="Memo" name="Memo" rows="3" cols="50"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="Other" class="d-flex gap-1">
                         <span class="form-tooltip-toggle" data-bs-placement="top-start"
-                            title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
+                              title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
                         RFID
                     </label>
                     <button type="button"
-                        class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
+                            class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
                         掃描<i class="scan-icon"></i>
                     </button>
                 </div>
                 @* <div class="datatable datatable-grid w-100 mt-2 form-group col-3fr" style="display: none;" id="RFIDZone">*@
-                <div class="datatable datatable-grid w-100 mt-2 form-group col-3fr" id="RFIDZone">
+                <div class="datatable datatable-grid w-100 mt-2 form-group col-3fr" id="RFIDZone" style="display: none;">
                     <div class="datatable-body overflow-auto">
                         <table class="datatable-table">
                             <thead>
                                 <tr>
+                                    <th class="datatable-header" style="width:130px"></th>
                                     <th class="datatable-header" style="width:130px"></th>
                                     <th class="datatable-header" style="width:130px"><span>RFID內碼</span></th>
                                     <th class="datatable-header" style="width:130px"><span>RFID外碼</span></th>
@@ -102,16 +108,19 @@
                                     <td id="d-_delete" class="p-2 d-flex justify-content-center gap-2">
                                         @*<button type="button" class="btn btn-datagrid" onclick="RFIDLocationModal('@Url.Action("ReadEquipment", "EquipmentInfo_Management")'+'/${val}')">編輯</button>*@
                                         <button type="button" class="btn btn-datagrid" data-bs-toggle="modal"
-                                            data-bs-target="#RFIDEquipmentInfo">編輯</button>
+                                                data-bs-target="#RFIDEquipmentInfo">
+                                            編輯
+                                        </button>
                                         <button type="button" class="btn btn-location"
-                                            onclick="RFIDLocationModal(urlFakeData)"><i
-                                                class="fa-solid fa-location-dot"></i></button>
+                                                onclick="RFIDLocationModal(fakeData_url)">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                        </button>
                                     </td>
                                     <td id="InterCode">XSCXCZS</td>
                                     <td id="ExterCode">XSCXCZS</td>
                                     <td id="RFIDName">前處理機房巡檢</td>
-                                    <td id="Area">前處理區</td>
-                                    <td id="Floor">1F</td>
+                                    <td id="ASN">前處理區</td>
+                                    <td id="FSN">1F</td>
                                     <td id="Memo">備註備註備註</td>
                                     <td id="d-_delete" class="p-1 pt-2">
                                         <button type="button" class="btn-delete-item"></button>
@@ -144,14 +153,14 @@
                                     <button type="button" class="btn btn-datagrid" data-bs-toggle="modal"
                                         data-bs-target="#RFIDEquipmentInfo">編輯</button>
                                     <button type="button" class="btn btn-location"
-                                        onclick="RFIDLocationModal(urlFakeData)"><i
+                                        onclick="RFIDLocationModal(fakeData_url)"><i
                                             class="fa-solid fa-location-dot"></i></button>
                                 </td>
                                 <td id="InterCode">XSCXCZS</td>
                                 <td id="ExterCode">XSCXCZS</td>
                                 <td id="RFIDName">前處理機房巡檢</td>
-                                <td id="Area">前處理區</td>
-                                <td id="Floor">1F</td>
+                                <td id="ASN">前處理區</td>
+                                <td id="FSN">1F</td>
                                 <td id="Memo">備註備註備註</td>
                                 <td id="d-_delete" class="p-1 pt-2">
                                     <button type="button" class="btn-delete-item"></button>
@@ -168,8 +177,6 @@
                     <label for="SampleName">模板名稱</label>
                     <select class="form-select" name="SampleName" id="SampleName">
                         <option value="">請選擇</option>
-                        <option value="1">模板一</option>
-                        <option value="2">模板二</option>
                     </select>
                 </div>
                 <div id="sampleContent" class="flex-column gap-3" style="display: none;">
@@ -183,7 +190,7 @@
                     <div>
                         <div class="group-sb-title">
                             <i class="fa-solid fa-map-pin"></i>
-                            <div>保養項目/週期</div>
+                            <div>保養項目/週期/下次保養日期</div>
                         </div>
                         <div id="MaintainZone" class="d-flex flex-column gap-2"></div>
                     </div>
@@ -201,7 +208,7 @@
 </section>
 
 @*RFID 設備資訊POP UP*@
-<div class="modal fade datagrid-modal" tabindex="-1" id="RFIDEquipmentInfo">
+@*<div class="modal fade datagrid-modal" tabindex="-1" id="RFIDEquipmentInfo">
     <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
@@ -224,12 +231,12 @@
                                 required>
                         </div>
                         <div class="form-group required">
-                            <label for="Area">棟別</label>
-                            <select class="form-select" name="Area" id="Area" required></select>
+                            <label for="ASN">棟別</label>
+                            <select class="form-select" name="ASN" id="ASN" required></select>
                         </div>
                         <div class="form-group required">
-                            <label for="Floor">樓層</label>
-                            <select class="form-select" name="Area" id="Area" required></select>
+                            <label for="FSN">樓層</label>
+                            <select class="form-select" name="FSN" id="FSN" required></select>
                         </div>
                         <div class="form-group col-3fr d-flex flex-column gap-2 bg-white p-4 align-items-end">
                             <button type="button" class="btn btn-location">
@@ -252,7 +259,7 @@
             </div>
         </div>
     </div>
-</div>
+</div>*@
 
 
 <div class="edit-button-area">
@@ -266,53 +273,92 @@
         let apiUrl = null;
 
         $(async function () {
-            readData(apiUrl);
-            createAddItem(fakeData);
-            createMaintainItem(fakeData);
             await formDropdown.ASN();
-            addButtonEvent();
-            delTemplateItem();
+            await pushSelect("SampleName", "/DropDownList/OneDeviceOneCardTemplates");
+
             fileUploader = new FileUploader({
                 container: "#FileUploader",
-                className: "form-group col-3fr",
+                className: "form-group col-3fr required",
                 icon: "plus",
                 buttonText: "上傳照片",
                 label: "照片",
                 id: "File"
             })
+
+            //監聽 模板名稱，有選擇就顯示模板資訊內容
+            document.getElementById('SampleName').addEventListener('change', function () {
+                //先清空，防止舊資料疊加
+                document.getElementById("addItemZone").innerHTML = "";
+                document.getElementById("MaintainZone").innerHTML = "";
+                document.getElementById("InspectionRecord").innerHTML = "";
+
+                const selectedValue = this.value;
+
+                if (selectedValue !== "") {
+                    $.ajax({
+                        url: "@Url.Action("ReadBody", "OneDeviceOneCard_Management")" + `/${selectedValue}`,
+                        type: "GET",
+                        contentType: "application/json",
+                        processData: false,
+                        success: onSuccess,
+                        error: onError
+                    })
+                }
+
+                function onSuccess(res) {
+                    console.log("Datas", res.Datas);
+                    createAddItem(res.Datas);
+                    createMaintainItem(res.Datas.MaintainItemList, "MaintainZone");
+                    InspectionRecord("#InspectionRecord", res.Datas);
+                }
+                function onError(res) {
+                    console.log("拿取模板名稱失敗");
+                }
+
+                //新增 增設基本資訊欄位
+                function createAddItem(data) {
+                    const addItemZone = document.getElementById("addItemZone");
+                    data.AddItemList.forEach((field, index) => {
+                        const div = document.createElement("div");
+                        div.className = "form-group";
+
+                        const label = document.createElement("label");
+                        label.setAttribute("for", `addField-${index + 1}`);
+                        label.textContent = field.Value;
+
+                        const input_SN = document.createElement("input");
+                        input_SN.type = "text";
+                        input_SN.id = `addField_SN-${index + 1}`;
+                        input_SN.name = `addField_SN-${index + 1}`;
+                        input_SN.value = field.AFSN;
+                        input_SN.hidden = true;
+
+
+                        const input_value = document.createElement("input");
+                        input_value.className = "form-control";
+                        input_value.type = "text";
+                        input_value.id = `addField_value-${index + 1}`;
+                        input_value.name = `addField_value-${index + 1}`;
+
+                        div.appendChild(label);
+                        div.appendChild(input_SN);
+                        div.appendChild(input_value);
+                        addItemZone.appendChild(div);
+                    });
+                }
+            });
+
+            addButtonEvent();
         });
 
-        document.getElementById('SampleName').addEventListener('change', function () {
-            const sampleContent = document.getElementById('sampleContent');
-            if (this.value) {
-                sampleContent.style.display = 'flex';
-            } else {
-                sampleContent.style.display = 'none';
-            }
-        })
-
-        const urlFakeData = {
+        const fakeData_url = {
             RFIDName: "軸承潤滑劑",
-            Area: "A棟",
-            Floor: "5F",
+            ASN: "A棟",
+            FSN: "5F",
             Location: "",
         }
 
-        const dropdownFakedata = [
-            {
-                SN: "d0001",
-                Value: "攪拌機模板"
-            },
-            {
-                SN: "d0002",
-                Value: "選項二"
-            },
-            {
-                SN: "d0003",
-                Value: "選項三"
-            },
-        ]
-        const fakeData = {
+        const fakeData_Sample = {
             PSN: "P336448226",
             AddField: [
                 {
@@ -395,35 +441,61 @@
             }
         }
 
+        document.getElementById('SampleName').addEventListener('change', function () {
+            const sampleContent = document.getElementById('sampleContent');
+            if (this.value) {
+                sampleContent.style.display = 'flex';
+            } else {
+                sampleContent.style.display = 'none';
+            }
+        })
+
         function save() {
             let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
             console.log("todo save():", isValidity)
-            if (!isValidity) return;
-            if (!$("#LocationX").val() || !$("#LocationX").val()) return;
+            if (!isValidity) {
+                console.log("驗證不通過");
+                return;
+            }
+            //if (!$("#LocationX").val() || !$("#LocationX").val()) return;
 
+
+            const TSN = document.getElementById('SampleName').value;
+            const SampleData = IntegrateSampleData(TSN);
             const fd = new FormData();
 
-            fd.append("ASN", $("#ASN").val())
-            fd.append("FSN", $("#FSN").val())
-            fd.append("RoomName", $("#RoomName").val())
-            fd.append("System", $("#System").val())
-            fd.append("SubSystem", $("#SubSystem").val())
-            fd.append("PropertyCode", $("#PropertyCode").val())
-            fd.append("EName", $("#EName").val())
-            fd.append("Brand", $("#Brand").val())
-            fd.append("Model", $("#Model").val())
-            console.log(Object.fromEntries(fd.entries()));
+            //有選模板的話，才傳送模板資訊
+            if (TSN) {
+                fd.append("TSN", TSN);
+                SampleData.AddFieldList.forEach((item, i) => {
+                    for (const key in item) {
+                        fd.append(`AddFieldList[${i}][${key}]`, item[key]);
+                    }
+                })
+                SampleData.MaintainItemList.forEach((item, i) => {
+                    for (const key in item) {
+                        fd.append(`MaintainItemList[${i}][${key}]`, item[key]);
+                    }
+                })
+            }
 
-            if (!fd) return;
+            if (fileUploader.hasFile()) {
+                fd.append("EPhoto", fileUploader.getFile());
+            }
+            document.querySelectorAll("#basicZone input, #basicZone select, #basicZone textarea").forEach(el => {
+                if (el.id && el.type !== "file" && el.type !== "checkbox" && el.id !== "ASN") {
+                    fd.append(el.id, el.value);
+                }
+            })
+
+            console.log("最後傳出的資料為", fd);
 
             $.ajax({
-                url: "/EquipmentInfo_Management/Create",
-                data: fd,//JSON.stringify(fd),
+                url: "/EquipmentInfo_Management/CreateEquipment",
+                data: fd,
                 type: "POST",
                 contentType: false,
                 processData: false,
-                //dataType: "json",
-                //contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
             })
@@ -432,7 +504,7 @@
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Success", inner: "新增成功！",
-                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Index"; }
                 });
 
                 InspectionRecord("#InspectionRecord", res);
@@ -441,91 +513,28 @@
                 console.log(res);
                 createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
             }
-        }
 
-        function readData(url = null) {
-            url == null ? onSuccess(fakeData) :
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
-            function onSuccess(res) {
-                InspectionRecord("#InspectionRecord", res);
+            function IntegrateSampleData(TSN) {
+                if (TSN) {
+                    //整理 增設基本資料欄位
+                    const addItems = $('#addItemZone').children().toArray().map(e => ({
+                        AFSN: $(e).find("input[name^='addField_SN']").val(),
+                        Value: $(e).find("input[name^='addField_value']").val(),
+                    }));
 
-            }
-            function onError(res) {
-                console.log(res);
-            }
+                    //整理 保養項目/週期/下次保養日期
+                    const maintainItems = $('#MaintainZone').children().toArray().map(e => ({
+                        MISSN: $(e).find("input[name^='addField_SN']").val(),
+                        Period: $(e).find("select[name^='period']").val(),
+                        NextMaintainDate: $(e).find("input[name^='nextMaintainDate']").val(),
+                    }));
 
-        }
-
-        function createAddItem(data) {
-            const addItemZone = document.getElementById("addItemZone");
-            data.AddField.forEach((field, index) => {
-                const div = document.createElement("div");
-                div.className = "form-group";
-
-                const label = document.createElement("label");
-                label.setAttribute("for", `addField-${index + 1}`);
-                label.textContent = field.Text;
-
-                const input = document.createElement("input");
-                input.className = "form-control";
-                input.type = "text";
-                input.id = `addField-${index + 1}`;
-                input.name = `addField-${field.SN}`;
-
-                div.appendChild(label);
-                div.appendChild(input);
-                addItemZone.appendChild(div);
-            });
-        }
-
-        function createMaintainItem(data) {
-            const MaintainZone = document.getElementById("MaintainZone");
-            data.MaintainItems.forEach((filed, index) => {
-                const div = document.createElement("div");
-                div.className = "edit-item-init"
-
-                const input = document.createElement("input");
-                input.className = "form-control";
-                input.type = "text";
-                input.value = filed.Text;
-                input.disabled = true;
-
-                const select = document.createElement("select");
-                select.className = "form-select"
-
-                div.appendChild(input);
-                div.appendChild(select);
-                MaintainZone.appendChild(div);
-            })
-        }
-
-        function delTemplateItem() {
-            let delBtns = document.querySelectorAll('.btn-delete-item');
-            delBtns.forEach(function (delBtn) {
-                delBtn.onclick = function () {
-                    let tr = delBtn.closest('tr');
-                    if (tr) {
-                        tr.remove();
-                        checkTableEmpty();
+                    return {
+                        AddFieldList:addItems,
+                        MaintainItemList: maintainItems,
                     }
-                };
-            });
-        }
-
-        function checkTableEmpty() {
-            const tbody = document.getElementById('item-area');
-            const datatable = document.getElementById('RFIDZone');
-            if (tbody.children.length === 0) {
-                datatable.style.display = 'none';
+                }
             }
         }
-
     </script>
 }
