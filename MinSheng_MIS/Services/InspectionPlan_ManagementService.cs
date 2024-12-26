@@ -34,6 +34,7 @@ namespace MinSheng_MIS.Services
                            where x1.UserID == userID
                            join x2 in _db.InspectionPlan_Time on x1.IPTSN equals x2.IPTSN
                            join x3 in _db.InspectionPlan on x2.IPSN equals x3.IPSN
+                           where x3.PlanDate == searchdate
                            select new { x3.PlanDate, x2.IPTSN, x2.StartTime, x2.EndTime, x2.InspectionState };
                 if (data == null)
                 {
@@ -44,17 +45,26 @@ namespace MinSheng_MIS.Services
                 #endregion
 
                 #region 資料
-                JArray datas = new JArray();
-                foreach(var plan in data)
+                List<PlanInfo> datas = new List<PlanInfo>();
+                List<string> members = new List<string>();
+                foreach (var plan in data)
                 {
                     PlanInfo planInfo = new PlanInfo();
                     planInfo.InspectionState = dic_inspectionState[plan.InspectionState];
                     planInfo.IPTSN = plan.IPTSN;
                     planInfo.InspectionTime = plan.PlanDate.ToString("yyyy/MM/dd") + " " + plan.StartTime + "-" + plan.EndTime;
-                    var member = _db.InspectionPlan_Member.Where(x => x.IPTSN == plan.IPTSN);
+                    var memberlist = from x1 in _db.InspectionPlan_Member
+                                  where x1.IPTSN == plan.IPTSN
+                                  join x2 in _db.AspNetUsers on x1.UserID equals x2.UserName
+                                  select new { x2.MyName};
+                    foreach(var member in memberlist)
+                    {
+                        members.Add(member.MyName);
+                    }
+                    planInfo.Member= members;
                     datas.Add(planInfo);
                 }
-                //res.Datas = datas;
+                res.Datas = datas;
                 #endregion
 
                 res.AccessState = ResState.Success;
