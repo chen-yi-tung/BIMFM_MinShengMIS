@@ -957,6 +957,16 @@ namespace MinSheng_MIS.Models.ViewModels
             public string Location { get; set; } //地點
             public string RFIDInternalCode { get; set; } //RFID編碼
 			public string ESN { get; set; } //取設備內容用
+			public string IPESN { get; set; } //填報用
+        }
+		#endregion
+
+		#region APP-巡檢填報
+		public class PlanFillInInfo
+		{
+			public string IPESN { get; set; }
+			public List<InspectionPlan_EquipmentCheckItem> EquipmentCheckItems { get;set;}
+			public List<InspectionPlan_EquipmentReportingItem> EquipmentReportingItems { get; set; }
         }
         #endregion
     }

@@ -61,4 +61,29 @@ namespace MinSheng_MIS.Controllers.API
             return result;
         }
     }
+    public class GetInspectionrReportController : ApiController
+    {
+        private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly InspectionPlan_ManagementService _inspectionPlanService;
+
+        public GetInspectionrReportController()
+        {
+            _db = new Bimfm_MinSheng_MISEntities();
+            _inspectionPlanService = new InspectionPlan_ManagementService(_db);
+        }
+        public JsonResService<PlanFillInInfo> Get(string IPESN)
+        {
+            JsonResService<PlanFillInInfo> result = new JsonResService<PlanFillInInfo>();
+            try
+            {
+                result = _inspectionPlanService.GetPlanReportContent(IPESN);
+            }
+            catch (Exception ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
+    }
 }

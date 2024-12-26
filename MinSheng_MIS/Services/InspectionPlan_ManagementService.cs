@@ -138,5 +138,45 @@ namespace MinSheng_MIS.Services
             }
         }
         #endregion
+
+        #region APP-取得巡檢填報內容
+        public JsonResService<PlanFillInInfo> GetPlanReportContent(string IPESN)
+        {
+            #region 變數
+            JsonResService<PlanFillInInfo> res = new JsonResService<PlanFillInInfo>();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                var data = _db.InspectionPlan_Equipment.Find(IPESN);
+
+                if (data == null)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "查無此設備巡檢填報內容";
+                    return res;
+                }
+                #endregion
+
+                #region 資料
+                PlanFillInInfo datas = new PlanFillInInfo();
+                datas.IPESN = IPESN;
+                datas.EquipmentCheckItems = _db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == IPESN).OrderBy(x => x.Id).ToList();
+                datas.EquipmentReportingItems = _db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == IPESN).OrderBy(x => x.Id).ToList();
+                res.Datas = datas;
+                #endregion
+
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
+        #endregion
     }
 }
