@@ -1,9 +1,6 @@
 ﻿using MinSheng_MIS.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
@@ -30,8 +27,11 @@ namespace MinSheng_MIS.Models.ViewModels
     // <summary>
     /// 每日模板內容
     /// </summary>
-    public class SampleScheduleContentDetailModel : ISampleScheduleContentDetail
+    public class SampleScheduleContentDetailModel : ISampleScheduleContentDetail, ISamplePathInfo
     {
+        int ISamplePathInfo.Frequency { get; set; }
+        int ISamplePathInfo.EquipmentCount { get; set; }
+
         public string StartTime { get; set; } // 巡檢時間(起)
         public string EndTime { get; set; } // 巡檢時間(迄)
         public string PathName { get; set; } // 巡檢路線名稱
@@ -71,11 +71,17 @@ namespace MinSheng_MIS.Models.ViewModels
         IEnumerable<InspectionSampleContent> Contents { get; set; } // 每日模板內容
     }
 
-    public interface ISampleScheduleContentDetail : IInspectionSampleContent
+    public interface ISampleScheduleContentDetail : ISamplePathInfo, IInspectionSampleContent
+    {
+        new string Frequency { get; set; } // 巡檢頻率
+        new string EquipmentCount { get; set; } // 巡檢數量
+    }
+
+    public interface ISamplePathInfo
     {
         string PathName { get; set; } // 巡檢路線名稱
-        string Frequency { get; set; } // 巡檢頻率
-        string EquipmentCount { get; set; } // 巡檢數量
+        int Frequency { get; set; } // 巡檢頻率
+        int EquipmentCount { get; set; } // 巡檢數量
     }
 
     public interface IInspectionSampleInfoModifiable
@@ -94,6 +100,8 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         public string DailyTemplateSN { get; set; } // 每日模板編號
         public IEnumerable<InspectionSampleContent> Contents { get; set; } // 每日模板內容
+
+        public SampleContentModifiableListInstance() { }
 
         public SampleContentModifiableListInstance(string sn, SampleScheduleCreateViewModel data)
         {
