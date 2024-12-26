@@ -58,7 +58,7 @@
                                         <input class="form-control" type="time" id="EndTime" name="EndTime" step="any" required />
                                     </td>
                                     <td>
-                                        <select class="form-select" id="PathName" name="PathName" required></select>
+                                        <select class="form-select" id="PlanPathSN" name="PlanPathSN" required></select>
                                     </td>
                                     <td id="Frequency">--</td>
                                     <td id="Quantity">--</td>
@@ -112,12 +112,12 @@
 
 @section scripts {
     <script>
-        let apiUrl = null;
-        let SubmitUrl = '@Url.Action("CreateSampleSchedule", "SamplePath_Schedule")';
+        let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
+        let SubmitUrl = '@Url.Action("CreateSampleSchedule", "SampleSchedule_Management")';
         let sampleTr = SampleTr();
 
         $(async function () {
-            await pushSelect("PathName", "/DropDownList/Area");
+            await pushSelect("PlanPathSN", "/DropDownList/InspectionPathSample");
             addButtonEvent();
             sampleTr.init();
         })
@@ -129,14 +129,14 @@
             thead: true,
             columns: [
                 { id: "Index", title: "" },
-                { id: "InterCode", title: "RFID內碼" },
-                { id: "ExterCode", title: "RFID外碼" },
+                { id: "InternalCode", title: "RFID內碼" },
+                { id: "ExternalCode", title: "RFID外碼" },
                 { id: "RFIDName", title: "RFID名稱" },
-                { id: "Area", title: "RFID棟別" },
-                { id: "Floor", title: "RFID樓層" },
-                { id: "Memo", title: "RFID備註" },
+                { id: "RFIDArea", title: "RFID棟別" },
+                { id: "RFIDFloor", title: "RFID樓層" },
+                { id: "RFIDMemo", title: "RFID備註" },
                 { id: "EName", title: "設備名稱" },
-                { id: "ESN", title: "設備編號" },
+                { id: "NO", title: "設備編號" },
                 { id: "Brand", title: "廠牌" },
                 { id: "Model", title: "型號" },
                 { id: "Frequency", title: "巡檢頻率" },
@@ -146,7 +146,7 @@
             PathNameSN: "1120301001",
             PathName: "前處理機房巡檢",
             Frequency: "3",
-            EItem: [
+            Equipments: [
                 {
                     InterCode: "XSCXCZS",
                     ExterCode: "XSCXCZS",
@@ -203,15 +203,15 @@
             $("#PathDetail").empty();
             $("#PathDetail").append(createTableInner(tempData[SN], SerializedName));
             $("#EInfo").empty();
-            tempData[SN].EItem ?
+            tempData[SN].Equipments ?
                 $("#EInfo").append(createTableGrid(
-                    createIndexToArrayData(tempData[SN].EItem), GridOptions)) :
+                    createIndexToArrayData(tempData[SN].Equipments), GridOptions)) :
                 $("#EInfo").parents(".datatable").remove();
         }
         const updateTemplateInfo = async (SN, element) => {
             if (SN) {
                 if (!tempData[SN]) await readData(apiUrl, SN)
-                $(element).parent().parent().find("#Quantity").text(tempData[SN].EItem?.length || "--");
+                $(element).parent().parent().find("#Quantity").text(tempData[SN].Equipments?.length || "--");
                 $(element).parent().parent().find("#Frequency").text(tempData[SN].Frequency);
             } else {
                 $(element).parent().parent().find("#Quantity").text("--");
@@ -220,32 +220,26 @@
         }
         function readData(url = null, SN) {
             return new Promise((resolve, reject) => {
-                if (url == null) {
-                    resolve(onSuccess(JSON.parse(JSON.stringify(fakeData))))
-                } else {
-                    $.ajax({
-                        url: url,
-                        type: "GET",
-                        dataType: "json",
-                        contentType: "application/json;charset=utf-8",
-                        success: (res) => {
-                            onSuccess(res);
-                            resolve("");
-                        },
-                        error: (ex) => {
-                            onError(ex);
-                            reject(ex);
-                        }
-                    });
-                }
+                $.ajax({
+                    url: `${url}?id=${SN}`,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: (res) => {
+                        onSuccess(res);
+                        resolve("");
+                    },
+                    error: (ex) => {
+                        onError(ex);
+                        reject(ex);
+                    }
+                });
             });
 
             function onSuccess(res) {
+                res = res.Datas
                 const convertString = (v) => `每${v}個小時`
                 res.Frequency = convertString(res.Frequency);
-                res.EItem.forEach(e => {
-                    e.Frequency = convertString(e.Frequency);
-                })
                 console.log("getPathDetail(after converting)", res);
                 tempData[SN] = res;
             }
@@ -302,7 +296,7 @@
                     reorderNumbers();
                 })
                 this.list.on("click", ".btn-datagrid", function (e) {
-                    let SN = $(this).parent().parent().find("#PathName").val();
+                    let SN = $(this).parent().parent().find("#PlanPathSN").val();
                     if (!SN) {
                         createDialogModal({ id: "DialogModal", inner: "請先選擇巡檢路線", button: [{ className: "btn btn-export", cancel: true, text: "確定" }] })
                         return
@@ -316,7 +310,7 @@
                     b.click();
                     b.remove();
                 })
-                this.list.on("change", "#PathName", function (e) {
+                this.list.on("change", "#PlanPathSN", function (e) {
                     let SN = $(this).val();
                     //console.log(SN);
                     updateTemplateInfo(SN, this);
@@ -338,7 +332,7 @@
                     return {
                         StartTime: $(e).find("#StartTime").val(),
                         EndTime: $(e).find("#EndTime").val(),
-                        PathName: $(e).find("#PathName").val()
+                        PlanPathSN: $(e).find("#PlanPathSN").val()
                     }
                 })
             }
@@ -346,13 +340,13 @@
                 return this.list.children().length > 0
             }
             this.checkValidity = () => {
-                let Eitems = this.list.children().toArray().map((e) => ({
+                let Equipments = this.list.children().toArray().map((e) => ({
                     StartTime: $(e).find("#StartTime").val(),
                     EndTime: $(e).find("#EndTime").val(),
-                    PathName: $(e).find("#PathName").val()
+                    PlanPathSN: $(e).find("#PlanPathSN").val()
                 }))
-                for (item of Eitems) {
-                    if (!item.StartTime || !item.EndTime || !item.PathName) return false
+                for (item of Equipments) {
+                    if (!item.StartTime || !item.EndTime || !item.PlanPathSN) return false
                 }
                 return true
             }
