@@ -402,7 +402,7 @@
           <Property Name="Id" Type="char" MaxLength="28" Nullable="false" />
           <Property Name="IPESN" Type="char" MaxLength="25" Nullable="false" />
           <Property Name="ReportValue" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="ReportContent" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ReportContent" Type="nvarchar" MaxLength="50" />
           <Property Name="Unit" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="InspectionPlan_Member">
@@ -539,7 +539,7 @@
           <Property Name="ChangeTime" Type="datetime" Nullable="false" />
           <Property Name="PurchaseOrder" Type="nvarchar" MaxLength="50" />
           <Property Name="Recipient" Type="nvarchar" MaxLength="50" />
-          <Property Name="Memo" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="Memo" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="StockType">
           <Key>
@@ -2235,7 +2235,7 @@
           <Property Name="Id" Type="String" Nullable="false" MaxLength="28" FixedLength="true" Unicode="false" />
           <Property Name="IPESN" Type="String" Nullable="false" MaxLength="25" FixedLength="true" Unicode="false" />
           <Property Name="ReportValue" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ReportContent" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ReportContent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Unit" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="InspectionPlan_Equipment" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment" FromRole="InspectionPlan_EquipmentReportingItem" ToRole="InspectionPlan_Equipment" />
         </EntityType>
@@ -2386,7 +2386,7 @@
           <Property Name="ChangeTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="PurchaseOrder" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Recipient" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Memo" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Memo" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ComputationalStock" Relationship="Bimfm_MinSheng_MISModel.FK_StockChangesRecord_ComputationalStock" FromRole="StockChangesRecord" ToRole="ComputationalStock" />
           <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_StockChangesRecord" FromRole="StockChangesRecord" ToRole="RFID" />
         </EntityType>

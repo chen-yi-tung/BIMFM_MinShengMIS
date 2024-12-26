@@ -93,6 +93,28 @@ namespace MinSheng_MIS.Services
 
             try
             {
+                #region 若計畫為待執行，則建立InspectionPlan_RFIDOrder、巡檢設備 InspectionPlan_Equipment、InspectionPlan_EquipmentCheckItem、InspectionPlan_EquipmentReportingItem，並將巡檢狀態改為2:執行中
+                
+                var inspectionPlanTime = _db.InspectionPlan_Time.Find(IPTSN);
+                if(inspectionPlanTime.InspectionState == "1")
+                {
+                    //新增巡檢RFID順序
+                    //將巡檢時段計畫改為執行中
+                    inspectionPlanTime.InspectionState = "2";
+                    _db.InspectionPlan_Time.AddOrUpdate(inspectionPlanTime);
+                    _db.SaveChanges();
+                    //將工單狀態改為執行中
+                    var inspectionPlan = _db.InspectionPlan.Find(inspectionPlanTime.IPSN);
+                    if(inspectionPlan.PlanState == "1")
+                    {
+                        inspectionPlan.PlanState = "2";
+                        _db.InspectionPlan.AddOrUpdate(inspectionPlan);
+                        _db.SaveChanges();
+                    }
+                }
+                
+                #endregion
+
                 #region 資料檢查
                 var data = from x1 in _db.InspectionPlan_RFIDOrder
                            where x1.IPTSN == IPTSN
@@ -248,6 +270,8 @@ namespace MinSheng_MIS.Services
                 checkRFIDOrder.Status = "2";
                 _db.InspectionPlan_RFIDOrder.AddOrUpdate(checkRFIDOrder);
                 _db.SaveChanges();
+                //填報完成檢查是否該巡檢時段皆已完成
+                //填報完成檢查是否該工單已執行完成
                 #endregion
 
                 res.AccessState = ResState.Success;

@@ -237,11 +237,14 @@ namespace MinSheng_MIS.Services
                 return ErrorMessage;
             }
             //備註
-            if (data.Memo.Length > 250)
+            if (!string.IsNullOrEmpty(data.Memo))
             {
-                ErrorMessage = "備註需介於0 ~ 250字之間！";
-                return ErrorMessage;
-            }
+                if (data.Memo.Length > 250)
+                {
+                    ErrorMessage = "備註需介於0 ~ 250字之間！";
+                    return ErrorMessage;
+                }
+            }       
             return ErrorMessage;
         }
         #endregion
@@ -335,10 +338,13 @@ namespace MinSheng_MIS.Services
                 }
             }
             //備註
-            if (data.Memo.Length > 250)
+            if (!string.IsNullOrEmpty(data.Memo))
             {
-                ErrorMessage = "備註需介於0 ~ 250字之間！";
-                return ErrorMessage;
+                if (data.Memo.Length > 250)
+                {
+                    ErrorMessage = "備註需介於0 ~ 250字之間！";
+                    return ErrorMessage;
+                }
             }
             return ErrorMessage;
         }
