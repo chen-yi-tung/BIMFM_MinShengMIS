@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Surfaces;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -48,13 +49,13 @@ namespace MinSheng_MIS.Services
 
                 #region 資料
                 List<PlanInfo> datas = new List<PlanInfo>();
-                List<string> members = new List<string>();
                 foreach (var plan in data)
                 {
                     PlanInfo planInfo = new PlanInfo();
                     planInfo.InspectionState = dic_inspectionState[plan.InspectionState];
                     planInfo.IPTSN = plan.IPTSN;
                     planInfo.InspectionTime = plan.PlanDate.ToString("yyyy/MM/dd") + " " + plan.StartTime + "-" + plan.EndTime;
+                    List<string> members = new List<string>();
                     var memberlist = from x1 in _db.InspectionPlan_Member
                                   where x1.IPTSN == plan.IPTSN
                                   join x2 in _db.AspNetUsers on x1.UserID equals x2.UserName

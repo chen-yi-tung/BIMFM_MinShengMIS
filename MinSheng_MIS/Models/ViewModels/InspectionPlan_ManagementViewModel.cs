@@ -966,9 +966,11 @@ namespace MinSheng_MIS.Models.ViewModels
 		{
             public string InspectionOrder { get; set; }
 			public string ReportUserName { get; set; }
+            [JsonIgnore]
 
             public List<InspectionPlan_EquipmentCheckItem> EquipmentCheckItems { get;set;}
-			public List<InspectionPlan_EquipmentReportingItem> EquipmentReportingItems { get; set; }
+            [JsonIgnore]
+            public List<InspectionPlan_EquipmentReportingItem> EquipmentReportingItems { get; set; }
         }
         #endregion
     }
