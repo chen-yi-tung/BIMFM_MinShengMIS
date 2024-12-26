@@ -331,7 +331,7 @@ namespace MinSheng_MIS.Services
                 checkRFIDOrder.Status = "2";
                 _db.InspectionPlan_RFIDOrder.AddOrUpdate(checkRFIDOrder);
                 _db.SaveChanges();
-                //填報完成檢查是否該巡檢時段皆已完成
+                //填報完成檢查是否該巡檢時段皆已完成 todo
                 //填報完成檢查是否該工單已執行完成
                 #endregion
 
