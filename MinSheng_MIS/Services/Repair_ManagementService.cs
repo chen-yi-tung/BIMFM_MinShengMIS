@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Web;
 using System.Web.UI;
 using static MinSheng_MIS.Models.ViewModels.ReadInspectionPlanPathData;
@@ -45,6 +46,8 @@ namespace MinSheng_MIS.Services
                 foreach (var rsn in item.RSN)
                 {
                     var dbItem = _db.EquipmentReportForm.Find(rsn);
+                    dbItem.Dispatcher = HttpContext.Current.User.Identity.Name;
+                    dbItem.DispatcherTime = DateTime.Now;
                     dbItem.DueDate = item.DueDate;
                     dbItem.ReportState = "2";
                     Equipment_ReportFormMember newAssignment = new Equipment_ReportFormMember();
@@ -163,13 +166,13 @@ namespace MinSheng_MIS.Services
                 newForm.RSN = GetNextRSN();
                 newForm.ReportTime = DateTime.Now;
                 newForm.ReportState = "1";
+                newForm.ESN = item.ESN;
             }
             //編輯
             else
             {
-                newForm.RSN = item.RSN;
+                newForm = _db.EquipmentReportForm.Find(item.RSN);
             }
-            newForm.ESN = item.ESN;
             newForm.ReportLevel = item.ReportLevel;
             newForm.ReportContent = item.ReportContent;
             newForm.InformatUserID = item.UserName;
@@ -204,10 +207,11 @@ namespace MinSheng_MIS.Services
             return ja;
         }
 
-        public JArray GetRepairList()
+        public JArray GetRepairList(Repair_ManagementRepairListFilterViewModel item)
         {
             JArray ja = new JArray();
-            var repairList = _db.EquipmentReportForm.ToList();
+            item.DateEnd = item.DateEnd.AddDays(1);
+            var repairList = _db.EquipmentReportForm.Where(e => e.InformatUserID == item.UserName && item.DateStart <= e.ReportTime && e.ReportTime < item.DateEnd).ToList();
             foreach (var repair in repairList)
             {
                 JObject itemObject = new JObject();

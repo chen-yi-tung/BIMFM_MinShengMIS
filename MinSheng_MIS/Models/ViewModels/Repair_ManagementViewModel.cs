@@ -44,4 +44,18 @@ namespace MinSheng_MIS.Models.ViewModels
         public string EName { get; set; }
         public string NO { get; set; }
     }
+
+    public class Repair_ManagementRepairWorkSortViewModel
+    {
+        public string UserName { get; set; }
+        public string OrderBy { get; set; }
+        public string Order { get; set; }
+    }
+
+    public class Repair_ManagementRepairListFilterViewModel
+    {
+        public string UserName { get; set; }
+        public DateTime DateStart { get; set; }
+        public DateTime DateEnd { get; set; }
+    }
 }

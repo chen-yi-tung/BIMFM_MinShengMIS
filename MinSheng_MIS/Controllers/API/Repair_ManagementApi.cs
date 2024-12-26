@@ -7,11 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
 
 namespace MinSheng_MIS.Controllers.API
 {
+    #region 報修
     public class GetEquipmentByRFIDController : ApiController
     {
         public JObject Post([FromBody] List<RFID> rfids)
@@ -89,7 +91,7 @@ namespace MinSheng_MIS.Controllers.API
                     ESN = form["ESN"],
                     ReportLevel = form["ReportLevel"],
                     ReportContent = form["ReportContent"],
-                    UserName = form["UserName"]
+                    UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length)
                 };
                 item.ReportImg = HttpContext.Current.Request.Files[0];
                 using (Repair_ManagementService ds = new Repair_ManagementService())
@@ -132,9 +134,9 @@ namespace MinSheng_MIS.Controllers.API
         }
     }
 
-    public class GetRepairListController : ApiController
+    public class RepairListController : ApiController
     {
-        public JObject Get()
+        public JObject Post([FromBody] Repair_ManagementRepairListFilterViewModel item)
         {
             JObject jo = new JObject()
             {
@@ -146,7 +148,8 @@ namespace MinSheng_MIS.Controllers.API
             {
                 using (Repair_ManagementService ds = new Repair_ManagementService())
                 {
-                    jo["Datas"] = ds.GetRepairList();
+                    item.UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                    jo["Datas"] = ds.GetRepairList(item);
                 }
             }
             catch (Exception ex)
@@ -202,10 +205,9 @@ namespace MinSheng_MIS.Controllers.API
                 var item = new Repair_ManagementAddOrUpdateViewModel
                 {
                     RSN = form["RSN"],
-                    ESN = form["ESN"],
                     ReportLevel = form["ReportLevel"],
                     ReportContent = form["ReportContent"],
-                    UserName = form["UserName"]
+                    UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length)
                 };
                 if (HttpContext.Current.Request.Files.Count > 0)
                     item.ReportImg = HttpContext.Current.Request.Files[0];
@@ -248,4 +250,5 @@ namespace MinSheng_MIS.Controllers.API
             return jo;
         }
     }
+    #endregion
 }
