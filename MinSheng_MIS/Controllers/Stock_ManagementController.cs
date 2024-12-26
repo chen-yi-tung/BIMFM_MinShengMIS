@@ -214,7 +214,7 @@ namespace MinSheng_MIS.Controllers
                 //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
                 // 庫存變更記錄grid
-                //result.Datas = _datagridService.GetJsonForGrid_StockChangeRecord(form);
+                result.Datas = _datagridService.GetJsonForGrid_StockChangeRecord(form);
                 result.AccessState = ResState.Success;
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
