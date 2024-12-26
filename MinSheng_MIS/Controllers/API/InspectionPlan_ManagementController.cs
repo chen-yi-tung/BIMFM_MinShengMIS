@@ -1,4 +1,5 @@
 ﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json.Linq;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using static MinSheng_MIS.Models.ViewModels.InspectionPlan_ManagementViewModel;
 
@@ -21,11 +23,13 @@ namespace MinSheng_MIS.Controllers.API
             _db = new Bimfm_MinSheng_MISEntities();
             _inspectionPlanService = new InspectionPlan_ManagementService(_db);
         }
-        public JsonResService<List<PlanInfo>> Get(string userID,DateTime searchdate)
+        public JsonResService<List<PlanInfo>> Get(DateTime searchdate)
         {
             JsonResService<List<PlanInfo>> result = new JsonResService<List<PlanInfo>>();
             try
             {
+                string userID = HttpContext.Current.User.Identity.Name;
+
                 result = _inspectionPlanService.GetPlanList(userID,searchdate);
             }
             catch (Exception ex)
@@ -90,7 +94,8 @@ namespace MinSheng_MIS.Controllers.API
             JsonResService<string> result = new JsonResService<string>();
             try
             {
-                result = _inspectionPlanService.PlanReportFillIn(data);
+                string userID = HttpContext.Current.User.Identity.Name;
+                result = _inspectionPlanService.PlanReportFillIn(userID, data);
             }
             catch (Exception ex)
             {

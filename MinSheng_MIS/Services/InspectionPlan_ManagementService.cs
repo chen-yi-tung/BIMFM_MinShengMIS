@@ -203,7 +203,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region APP-取得巡檢填報
-        public JsonResService<string> PlanReportFillIn(PlanFillInInfo data)
+        public JsonResService<string> PlanReportFillIn(string userID,PlanFillInInfo data)
         {
             #region 變數
             JsonResService<string> res = new JsonResService<string>();
@@ -224,7 +224,7 @@ namespace MinSheng_MIS.Services
                 var inspectionEquipment = _db.InspectionPlan_Equipment.Find(checkRFIDOrder.IPESN);
                 #region 填報
                 //巡檢設備
-                inspectionEquipment.ReportUserName = data.ReportUserName;
+                inspectionEquipment.ReportUserName = userID;
                 inspectionEquipment.FillinTime = DateTime.Now;
                 _db.InspectionPlan_Equipment.AddOrUpdate(inspectionEquipment);
                 _db.SaveChanges();
