@@ -89,7 +89,7 @@ namespace MinSheng_MIS.Services
             }
             else if(data.StockName.Length > 50)
             {
-                ErrorMessage = "庫存品項需介於1 ~ 50字之間!";
+                ErrorMessage = "庫存品項需介於1 ~ 50字之間！";
                 return ErrorMessage;
             }
             //單位
@@ -100,7 +100,7 @@ namespace MinSheng_MIS.Services
             }
             else if (data.Unit.Length > 10)
             {
-                ErrorMessage = "單位需介於1 ~ 10字之間!";
+                ErrorMessage = "單位需介於1 ~ 10字之間！";
                 return ErrorMessage;
             }
             //庫存警戒值
@@ -237,11 +237,14 @@ namespace MinSheng_MIS.Services
                 return ErrorMessage;
             }
             //備註
-            if (data.Memo.Length > 250)
+            if (!string.IsNullOrEmpty(data.Memo))
             {
-                ErrorMessage = "備註需介於0 ~ 250字之間!";
-                return ErrorMessage;
-            }
+                if (data.Memo.Length > 250)
+                {
+                    ErrorMessage = "備註需介於0 ~ 250字之間！";
+                    return ErrorMessage;
+                }
+            }       
             return ErrorMessage;
         }
         #endregion
@@ -330,15 +333,18 @@ namespace MinSheng_MIS.Services
                 var enablestockout = _db.ComputationalStock.Find(data.SISN).StockAmount - _db.RFID.Where(x => currrentRFIDstocks.Contains(x.SARSN)).Count();
                 if(data.NumberOfChanges > enablestockout)
                 {
-                    ErrorMessage = "出庫失敗，當前可出庫數量為:"+ enablestockout+"。請重新確認出庫數量!";
+                    ErrorMessage = "出庫失敗，當前可出庫數量為:"+ enablestockout+"。請重新確認出庫數量！";
                     return ErrorMessage;
                 }
             }
             //備註
-            if (data.Memo.Length > 250)
+            if (!string.IsNullOrEmpty(data.Memo))
             {
-                ErrorMessage = "備註需介於0 ~ 250字之間!";
-                return ErrorMessage;
+                if (data.Memo.Length > 250)
+                {
+                    ErrorMessage = "備註需介於0 ~ 250字之間！";
+                    return ErrorMessage;
+                }
             }
             return ErrorMessage;
         }

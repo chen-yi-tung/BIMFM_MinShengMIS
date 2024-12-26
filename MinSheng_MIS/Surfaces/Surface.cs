@@ -20,6 +20,27 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        #region Status 巡檢RFID順序狀態
+        public static Dictionary<string, string> Status()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待執行");
+            ValueOption.Add("2", "完成");
+            return ValueOption;
+        }
+        #endregion
+
+        #region InspectionState 巡檢時段狀態
+        public static Dictionary<string, string> InspectionState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待執行");
+            ValueOption.Add("2", "執行中");
+            ValueOption.Add("3", "完成");
+            return ValueOption;
+        }
+        #endregion
+
         #region InspectionPlanState 巡檢頻率
         public static Dictionary<string, string> InspectionPlanFrequency()
         {
@@ -94,8 +115,8 @@ namespace MinSheng_MIS.Surfaces
         #region MaintainPeriod 保養週期
         public static Dictionary<string, string> MaintainPeriod()
         {
-            return Enum.GetValues(typeof(MaintainPeriod.Period))
-                     .Cast<MaintainPeriod.Period>()
+            return Enum.GetValues(typeof(MaintainPeriod))
+                     .Cast<MaintainPeriod>()
                      .ToDictionary(
                          period => Convert.ToInt32(period).ToString(),
                          period => period.GetLabel()

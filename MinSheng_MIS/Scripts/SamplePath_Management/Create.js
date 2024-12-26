@@ -10,12 +10,12 @@ async function addDropDownList() {
 async function addAreaFloorEvent() {
     let areaList = ["ModalForm"];
     areaList.forEach((id) => {
-        pushSelect(`${id} #Area`, "/DropDownList/Area");
-        let ASN = $(`#${id} #Area`);
+        pushSelect(`${id} #RFIDArea`, "/DropDownList/Area");
+        let ASN = $(`#${id} #RFIDArea`);
 
         ASN.on("change", async function () {
-            await pushSelect(`${id} #Floor`, "/DropDownList/Floor" + `?ASN=${ASN.val()}`);
-            $(`#${id} #Floor`).val('');
+            await pushSelect(`${id} #RFIDFloor`, "/DropDownList/Floor" + `?ASN=${ASN.val()}`);
+            $(`#${id} #RFIDFloor`).val('');
         });
     })
 
@@ -97,10 +97,10 @@ function getCreateSaveData(sampleTr) {
 
     let PathName = $("#InspectionForm #PathName").val(),
         Frequency = $("#InspectionForm #Frequency").val(),
-        InternalCodes = sampleTr.calc()
+        RFIDInternalCodes = sampleTr.calc()
 
     if (!PathName) {
-        dialogError("請輸入巡檢模板名稱！")
+        dialogError("請輸入巡檢路線名稱！")
         return;
     }
     if (!Frequency) {
@@ -108,15 +108,15 @@ function getCreateSaveData(sampleTr) {
         return;
 
     }
-    if (sampleTr.calc().length === 0) {
-        dialogError("請新增至少一項巡檢設備！")
+    if (!sampleTr.checkValidity()) {
+        dialogError("請至少新增一項巡檢設備！")
         return;
     }
 
     let data = {
         PathName,
         Frequency,
-        InternalCodes
+        RFIDInternalCodes
     }
 
     return data;

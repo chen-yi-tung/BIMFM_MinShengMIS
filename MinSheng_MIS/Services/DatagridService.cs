@@ -3048,22 +3048,17 @@ namespace MinSheng_MIS.Services
                     var dic_stocktype = Surface.StockType();
                     foreach (var item in rpT)
                     {
-                        var itemObject = new JObject();
-                        itemObject.Add("DateTime", item.ChangeTime.ToString("yyyy/MM/dd HH:mm:ss")); //日期時間
-                        itemObject.Add("Registrant", db.AspNetUsers.Where(x => x.UserName == item.Registrar).FirstOrDefault()?.MyName.ToString() ?? null); //登記人
-                        if (item.ChangeType == "1")//出庫
-                        {
-                            itemObject.Add("InboundNum", item.NumberOfChanges); //入庫數量
-                            itemObject.Add("OutboundNum", null); //出庫數量
-                        }
-                        else { //入庫
-                            itemObject.Add("InboundNum", null); //入庫數量
-                            itemObject.Add("OutboundNum", item.NumberOfChanges); //出庫數量
-                        }
-                        itemObject.Add("Taker", item.Recipient); //取用人
-                        itemObject.Add("Document", item.PurchaseOrder != null ? "/Files/PurchaseOrder/" + item.PurchaseOrder : null); //採購單據
-                        itemObject.Add("StockNum", item.CurrentInventory); //庫存數量
-                        itemObject.Add("Memo", item.Memo); //備註
+                        itemObject.Add("InboundNum", item.NumberOfChanges); //入庫數量
+                        itemObject.Add("OutboundNum", null); //出庫數量
+                    }
+                    else{ //入庫
+                        itemObject.Add("InboundNum", null); //入庫數量
+                        itemObject.Add("OutboundNum", item.NumberOfChanges); //出庫數量
+                    }
+                    itemObject.Add("Taker", item.Recipient); //取用人
+                    itemObject.Add("Document", !string.IsNullOrEmpty(item.PurchaseOrder) ? ("/Files/PurchaseOrder/"+item.PurchaseOrder) : null); //採購單據
+                    itemObject.Add("StockNum", item.CurrentInventory); //庫存數量
+                    itemObject.Add("Memo", item.Memo); //備註
 
                         ja.Add(itemObject);
                     }

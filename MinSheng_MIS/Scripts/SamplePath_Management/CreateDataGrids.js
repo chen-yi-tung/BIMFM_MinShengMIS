@@ -4,7 +4,7 @@ const AEDGOptions = {
     edg: '#Template-datagrid',
     id: "AddEquipment",
     type: "Template",
-    initDatagridUrl: "/Datagrid/SamplePath_Management",
+    initDatagridUrl: "/SamplePath_Management/AddEquipmentRFIDsGrid",
     appendDataUrl: "/SamplePath_Management/AddReportForm",
     appendDataKey: "RSN",
     removeDataUrl: "/SamplePath_Management/DeleteReportForm",
@@ -12,7 +12,7 @@ const AEDGOptions = {
     filterCheckKey: "",
     sampleTr: sampleTr,
     datagridOptions: {
-        idField: 'RSN',
+        idField: 'InternalCode',
         remoteSort: false,
         sortOrder: 'asc',
         singleSelect: true,
@@ -21,14 +21,14 @@ const AEDGOptions = {
     },
     columns: [[
         { field: 'EquipStatenum', hidden: true },
-        { field: 'InterCode', title: 'RFID內碼', align: 'center', width: 130, sortable: true },
-        { field: 'ExterCode', title: 'RFID外碼', align: 'center', width: 130, sortable: true },
+        { field: 'InternalCode', title: 'RFID內碼', align: 'center', width: 130, sortable: true },
+        { field: 'ExternalCode', title: 'RFID外碼', align: 'center', width: 130, sortable: true },
         { field: 'RFIDName', title: 'RFID名稱', align: 'center', width: 130, sortable: true },
-        { field: 'Area', title: 'RFID棟別', align: 'center', width: 120, sortable: true },
-        { field: 'Floor', title: 'RFID樓層', align: 'center', width: 120, sortable: true },
-        { field: 'Memo', title: 'RFID備註', align: 'center', width: 120, sortable: true },
+        { field: 'RFIDArea', title: 'RFID棟別', align: 'center', width: 120, sortable: true },
+        { field: 'RFIDFloor', title: 'RFID樓層', align: 'center', width: 120, sortable: true },
+        { field: 'RFIDMemo', title: 'RFID備註', align: 'center', width: 120, sortable: true },
         { field: 'EName', title: '設備名稱', align: 'center', width: 250, sortable: true },
-        { field: 'ESN', title: '設備編號', align: 'center', width: 120, sortable: true },
+        { field: 'NO', title: '設備編號', align: 'center', width: 120, sortable: true },
         { field: 'Brand', title: '廠牌', align: 'center', width: 120, sortable: true },
         { field: 'Model', title: '型號', align: 'center', width: 120, sortable: true },
         { field: 'Frequency', title: '巡檢頻率', align: 'center', width: 120, sortable: true },
@@ -116,37 +116,37 @@ function AEDG(options) {
         console.log('requestData', requestData);
         dg.datagrid(Object.assign({}, self.options.datagridOptions,
             {
-                //url: self.options.initDatagridUrl,
-                //method: 'POST',
-                data: [
-                    {
-                        InterCode: "InterCode1",
-                        ExterCode: "ExterCode1",
-                        RFIDName: "RFIDName1",
-                        EName: "螺旋發送機1",
-                        ESN: "SP-02021",
-                        Area: "前處理機房",
-                        Floor: "2F",
-                        Memo: "備註備註",
-                        Brand: "XX廠牌",
-                        Model: "W004N",
-                        Frequency: "每2小時"
-                    },
-                    {
-                        InterCode: "InterCode2",
-                        ExterCode: "ExterCode2",
-                        RFIDName: "RFIDName2",
-                        EName: "螺旋發送機2",
-                        ESN: "SP-0202B",
-                        Area: "前處理機房",
-                        Floor: "1F",
-                        Memo: "備註備註",
-                        Brand: "YY廠牌",
-                        Model: "W005N",
-                        Frequency: "每5小時"
-                    },
+                url: self.options.initDatagridUrl,
+                method: 'POST',
+                //data: [
+                //    {
+                //        InterCode: "InterCode1",
+                //        ExterCode: "ExterCode1",
+                //        RFIDName: "RFIDName1",
+                //        EName: "螺旋發送機1",
+                //        ESN: "SP-02021",
+                //        Area: "前處理機房",
+                //        Floor: "2F",
+                //        Memo: "備註備註",
+                //        Brand: "XX廠牌",
+                //        Model: "W004N",
+                //        Frequency: "每2小時"
+                //    },
+                //    {
+                //        InterCode: "InterCode2",
+                //        ExterCode: "ExterCode2",
+                //        RFIDName: "RFIDName2",
+                //        EName: "螺旋發送機2",
+                //        ESN: "SP-0202B",
+                //        Area: "前處理機房",
+                //        Floor: "1F",
+                //        Memo: "備註備註",
+                //        Brand: "YY廠牌",
+                //        Model: "W005N",
+                //        Frequency: "每5小時"
+                //    },
 
-                ],
+                //],
                 queryParams: requestData,
                 fit: true,
                 pagination: self.options.pageOptions.showPageList,
@@ -154,7 +154,24 @@ function AEDG(options) {
                 pageSize: 10,
                 frozenColumns: self.options.frozenColumns,
                 columns: self.options.columns,
-                onLoadSuccess: (data) => { self.filterCheck(dg, data, self.options.filterCheckKey) }
+                loadFilter: function (data) {
+                    if (data.Datas) {
+                        if (!data.Datas.rows) data.Datas.rows = []
+                        return data.Datas
+                    }
+                    return {
+                        total: 0,
+                        rows: []
+                    }
+                },
+                onLoadSuccess: (data) => {
+                    const rows = data.rows;
+                    console.log('data', rows)
+                    //self.filterCheck(dg, data, self.options.filterCheckKey)
+                },
+                onLoadSuccess: function (ex) {
+                    console.error('get data error', ex)
+                },
             }))
         $(dg.datagrid('getPager')).pagination(self.options.pageOptions);
         self.addButtonEvent(dg);
@@ -177,7 +194,7 @@ function AEDG(options) {
 
     this.modal.one("shown.bs.modal", () => {
         self.initDatagrid(self.mdg);
-        self.modal.on("shown.bs.modal", () => { self.mdg.datagrid("load", getQueryParams(`#${self.options.id} form`)) });
+        self.modal.on("shown.bs.modal", () => { self.mdg.datagrid("load", { ...getQueryParams(`#${self.options.id} form`), InternalCodes: this.sampleTr.calc() }) });
         self.modal.on("hidden.bs.modal", () => { $(`#${self.options.id} form`)[0].reset(); self.mdg.datagrid("clearChecked"); });
     });
 
@@ -212,6 +229,7 @@ AEDG.prototype.loadDatagrid = function (id) {
     let requestData = { ...getQueryParams(`#${id} form`), InternalCodes: this.sampleTr.calc() };
     console.log('requestData', requestData);
     dg.datagrid("load", requestData);
+    dg.datagrid("clearChecked");
 }
 AEDG.prototype.getCheckbox = function (dg, index) {
     return dg.datagrid('getPanel').find('.datagrid-row [field="_select"]')[index].querySelector("input[type=radio]");

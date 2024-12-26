@@ -71,13 +71,13 @@
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Detail/${row.PSSN}`, "_blank")
+                window.open(`${baseUrl}/Detail/${row.PlanPathSN}`, "_blank")
             })
             dg.addEvent("edit", function (row, i) {
-                window.open(`${baseUrl}/Edit/${row.PSSN}`, "_self")
+                window.open(`${baseUrl}/Edit/${row.PlanPathSN}`, "_self")
             })
             dg.addEvent("delete", function (row, i) {
-                window.open(`${baseUrl}/Delete/${row.PSSN}`, "_self")
+                window.open(`${baseUrl}/Delete/${row.PlanPathSN}`, "_self")
             })
         }
 

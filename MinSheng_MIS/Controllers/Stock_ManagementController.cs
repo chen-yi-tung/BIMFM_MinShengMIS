@@ -60,7 +60,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
@@ -82,28 +82,32 @@ namespace MinSheng_MIS.Controllers
                 //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
                 // 新增一般入庫
-                #region 採購單
-                //檢查檔案格式todo
-                string extension = Path.GetExtension(data.PurchaseOrder.FileName).ToLower();
-                if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".pdf")
-                {
-                    result.AccessState = ResState.Failed;
-                    result.ErrorMessage = "圖片僅接受jpg、jpeg、png、pdf!";
-                    return Content(JsonConvert.SerializeObject(result), "application/json");
-                }
-                string Folder = Server.MapPath("~/Files/PurchaseOrder");
-                if (!Directory.Exists(Folder))
-                {
-                    System.IO.Directory.CreateDirectory(Folder);
-                }
-
                 var lastSARSN = _db.StockChangesRecord.OrderByDescending(x => x.SARSN).FirstOrDefault()?.SARSN ?? (DateTime.Today.ToString("yyyyMMddHHmm") + "000");
                 var SARSN = ComFunc.CreateNextID("!{yyMMddHHmm}%{3}", lastSARSN);
-                string FolderPath = Server.MapPath("~/Files/PurchaseOrder");
-                string Filename = SARSN + Path.GetExtension(data.PurchaseOrder.FileName);
-                System.IO.Directory.CreateDirectory(FolderPath);
-                string filefullpath = Path.Combine(FolderPath, Filename);
-                data.PurchaseOrder.SaveAs(filefullpath);
+                string Filename = null;
+                #region 採購單
+                //檢查檔案格式
+                if (data.PurchaseOrder != null)
+                {
+                    string extension = Path.GetExtension(data.PurchaseOrder.FileName).ToLower();
+                    if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".pdf")
+                    {
+                        result.AccessState = ResState.Failed;
+                        result.ErrorMessage = "圖片僅接受jpg、jpeg、png、pdf！";
+                        return Content(JsonConvert.SerializeObject(result), "application/json");
+                    }
+                    string Folder = Server.MapPath("~/Files/PurchaseOrder");
+                    if (!Directory.Exists(Folder))
+                    {
+                        System.IO.Directory.CreateDirectory(Folder);
+                    }
+                    string FolderPath = Server.MapPath("~/Files/PurchaseOrder");
+                    Filename = SARSN + Path.GetExtension(data.PurchaseOrder.FileName);
+                    System.IO.Directory.CreateDirectory(FolderPath);
+                    string filefullpath = Path.Combine(FolderPath, Filename);
+                    data.PurchaseOrder.SaveAs(filefullpath);
+                }
+                
                 #endregion
                 result = _stockService.NormalStockIn_Create(data, SARSN, User.Identity.Name, Filename);
                 return Content(JsonConvert.SerializeObject(result), "application/json");
@@ -117,7 +121,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
@@ -152,7 +156,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
@@ -196,7 +200,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
@@ -223,7 +227,7 @@ namespace MinSheng_MIS.Controllers
             catch (Exception)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常!";
+                result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
         }
