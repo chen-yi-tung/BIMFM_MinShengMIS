@@ -12,13 +12,11 @@ namespace MinSheng_MIS.Services
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly RFIDService _rfidService;
-        private readonly EquipmentInfo_ManagementService _eMgmtService;
 
         public SamplePath_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
             _rfidService = new RFIDService(_db);
-            _eMgmtService = new EquipmentInfo_ManagementService(_db);
         }
 
         #region 可新增之巡檢設備RFID
@@ -213,7 +211,7 @@ namespace MinSheng_MIS.Services
             if (data.RFIDInternalCodes?.Any() != true)
                 throw new MyCusResException($"請新增至少一項巡檢設備！");
             // 長度限制
-            if (data.RFIDInternalCodes.Count() > 100000)
+            if (data.RFIDInternalCodes.Count() >= 100000)
                 throw new MyCusResException($"巡檢設備不可超過100000項！"); 
             // 不可重複：RFID內碼
             if (data.RFIDInternalCodes.Count() != data.RFIDInternalCodes.Distinct().Count())
@@ -227,46 +225,6 @@ namespace MinSheng_MIS.Services
         #endregion
 
         //-----其他
-        #region 產生巡檢路線模板唯一編碼
-        /// <summary>
-        /// 產生巡檢路線模板唯一編碼
-        /// </summary>
-        /// <returns>唯一編碼</returns>
-        /// <remarks>唯一編碼規則為"!{yyMMdd}%{3}"</remarks>
-        public async Task<string> GeneratePlanPathSnAsync()
-        {
-            string format = "!{yyMMdd}%{3}";
-            string emptySN = new string('0', 9); // 產生9位數的'0'
-
-            // 前一筆資料
-            var latest = await _db.InspectionPathSample.OrderByDescending(x => x.PlanPathSN).FirstOrDefaultAsync();
-            // SN碼
-            return latest == null ?
-                ComFunc.CreateNextID(format, emptySN) :
-                ComFunc.CreateNextID(format, latest.PlanPathSN);
-        }
-        #endregion
-
-        #region 產生唯一編碼
-        /// <summary>
-        /// 產生 InspectionDefaultOrder 唯一編碼
-        /// </summary>
-        /// <param name="planPathSN">PlanPathSN碼</param>
-        /// <param name="latestId">前一筆資料唯一編碼</param>
-        /// <returns>唯一編碼</returns>
-        /// <remarks>唯一編碼規則為"${PlanPathSN}%{5}"</remarks>
-        public string GenerateUniqueIdByPlanPathSn(string planPathSN, string latestId)
-        {
-            string format = planPathSN + "%{5}";
-            string emptySN = new string('0', 14); // 產生14位數的'0'
-
-            // SN碼
-            return latestId == null ?
-                ComFunc.CreateNextID(format, emptySN) :
-                ComFunc.CreateNextID(format, latestId);
-        }
-        #endregion
-
         #region 批次新增 InspectionDefaultOrder
         /// <summary>
         /// 批次新增巡檢設備預設順序
@@ -287,11 +245,12 @@ namespace MinSheng_MIS.Services
                 latestId,
                 "${SN}%{5}",
                 14,
+                new string[] { data.PlanPathSN }, // param
                 (format, Len, lastId, sn) => ComFunc.GenerateUniqueSn(format, Len, lastId, sn),
-                (item, sn, newId) => new InspectionDefaultOrder
+                (item, param, newId) => new InspectionDefaultOrder
                 {
                     DefaultOrder = newId,
-                    PlanPathSN = sn,
+                    PlanPathSN = param[0],
                     RFIDInternalCode = item,
                 }
             ));

@@ -18,7 +18,11 @@ namespace MinSheng_MIS.Attributes
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (value is HttpPostedFileBase file && file.ContentLength > _maxSize)
-                return new ValidationResult($"檔案大小不得超過 {_maxSize} MB");
+            {
+                // 使用 Display Name（若未設定，則使用屬性名稱）
+                var displayName = validationContext.DisplayName ?? validationContext.MemberName;
+                return new ValidationResult($"{displayName} 檔案大小超過 {_maxSize} MB！");
+            }
 
             return ValidationResult.Success;
         }

@@ -195,6 +195,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\ContinentalTime.cs" />
     <Compile Include="Attributes\EnumLabel.cs" />
     <Compile Include="Attributes\FileSizeLimit.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -442,6 +443,7 @@
     <Compile Include="Models\ViewModels\Repair_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\RFIDViewModel.cs" />
     <Compile Include="Models\ViewModels\SamplePath_ManagementViewModel.cs" />
+    <Compile Include="Models\ViewModels\SampleSchedule_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\StockIn_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\StockOut_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\Stock_ManagementViewModels.cs" />
@@ -472,6 +474,7 @@
     <Compile Include="Services\OneDeviceOneCard_ManagementService.cs" />
     <Compile Include="Services\RFIDService.cs" />
     <Compile Include="Services\SamplePath_ManagementService.cs" />
+    <Compile Include="Services\SampleSchedule_ManagementService.cs" />
     <Compile Include="Services\StockService.cs" />
     <Compile Include="Services\UniParams.cs" />
     <Compile Include="Services\WarningMessageService.cs" />
