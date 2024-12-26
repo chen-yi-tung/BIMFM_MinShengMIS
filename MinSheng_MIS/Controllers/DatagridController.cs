@@ -73,14 +73,15 @@ namespace MinSheng_MIS.Controllers
 
         //--定期保養管理--
         #region MaintainForm_Management 定期保養單管理
-        //[HttpPost]
-        //public ActionResult MaintainForm_Management(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_MaintainForm(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult MaintainForm_Management(FormCollection form)
+        {
+
+            var a = _service.GetJsonForGrid_MaintainForm(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region MaintainItem_Management 保養項目管理

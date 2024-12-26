@@ -430,6 +430,7 @@
     <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\Maintain_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\MeetingMinutes_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\OneDeviceOneCard_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\PathSampleViewModel.cs" />
@@ -467,6 +468,7 @@
     <Compile Include="Services\OneDeviceOneCard_ManagementService.cs" />
     <Compile Include="Services\RFIDService.cs" />
     <Compile Include="Services\SamplePath_ManagementService.cs" />
+    <Compile Include="Services\Maintain_ManagementService.cs" />
     <Compile Include="Services\StockService.cs" />
     <Compile Include="Services\UniParams.cs" />
     <Compile Include="Services\WarningMessageService.cs" />

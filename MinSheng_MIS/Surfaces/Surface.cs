@@ -103,6 +103,19 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        #region 保養單狀態 MaintainStatus
+        public static Dictionary<string, string> MaintainStatus()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待派工");
+            ValueOption.Add("2", "待執行");
+            ValueOption.Add("3", "待審核");
+            ValueOption.Add("4", "審核通過");
+            ValueOption.Add("5", "審核未過");
+            return ValueOption;
+        }
+        #endregion
+
         //5-2-3 維修相關狀態編碼對照
         #region InspectionPlanRepairState 巡檢計畫中維修單狀態
         public static Dictionary<string, string> InspectionPlanRepairState()
