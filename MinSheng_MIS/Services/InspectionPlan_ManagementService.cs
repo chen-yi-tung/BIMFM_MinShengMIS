@@ -98,7 +98,68 @@ namespace MinSheng_MIS.Services
                 var inspectionPlanTime = _db.InspectionPlan_Time.Find(IPTSN);
                 if(inspectionPlanTime.InspectionState == "1")
                 {
+                    var PlanPathSN = _db.InspectionPlan_Time.Find(IPTSN).PlanPathSN;
+                    //新增巡檢設備
+                    var esnList = (from x1 in _db.InspectionDefaultOrder
+                                  where x1.PlanPathSN == PlanPathSN
+                                  orderby x1.DefaultOrder
+                                  join x2 in _db.RFID on x1.RFIDInternalCode equals x2.RFIDInternalCode
+                                  select  x2.ESN ).Distinct().ToList();
+                    foreach(var esn in esnList)
+                    {
+                        InspectionPlan_Equipment plan_Equipment = new InspectionPlan_Equipment();
+                        plan_Equipment.IPESN = IPTSN + esn;
+                        plan_Equipment.IPTSN = IPTSN;
+                        plan_Equipment.ESN = esn;
+                        _db.InspectionPlan_Equipment.AddOrUpdate(plan_Equipment);
+                        _db.SaveChanges();
+
+                        //建立巡檢項目
+                        var TSN = _db.EquipmentInfo.Find(esn).TSN.ToString();
+                        //建立巡檢設備檢查項目
+                        var CheckItems = _db.Template_CheckItem.Where(x => x.TSN == TSN).OrderBy(x => x.CISN).ToList();
+                        foreach (var checkItem in CheckItems)
+                        {
+                            InspectionPlan_EquipmentCheckItem inspectionPlan_EquipmentCheckItem = new InspectionPlan_EquipmentCheckItem();
+                            var lastId = _db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == plan_Equipment.IPESN).OrderByDescending(x => x.Id).FirstOrDefault()?.Id ?? (plan_Equipment.IPESN + "000");
+                            inspectionPlan_EquipmentCheckItem.Id = ComFunc.CreateNextID(plan_Equipment.IPESN+"%{3}", lastId);
+                            inspectionPlan_EquipmentCheckItem.IPESN = plan_Equipment.IPESN;
+                            inspectionPlan_EquipmentCheckItem.CheckItemName = checkItem.CheckItemName;
+                            _db.InspectionPlan_EquipmentCheckItem.AddOrUpdate(inspectionPlan_EquipmentCheckItem);
+                            _db.SaveChanges();
+                        }
+                        //建立巡檢設備填報項目
+                        var ReportingItems = _db.Template_ReportingItem.Where(x => x.TSN == TSN).OrderBy(x => x.RISN).ToList();
+                        foreach (var ReportingItem in ReportingItems)
+                        {
+                            InspectionPlan_EquipmentReportingItem inspectionPlan_EquipmentReportingItem = new InspectionPlan_EquipmentReportingItem();
+                            var lastId = _db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == plan_Equipment.IPESN).OrderByDescending(x => x.Id).FirstOrDefault()?.Id ?? (plan_Equipment.IPESN + "000");
+                            inspectionPlan_EquipmentReportingItem.Id = ComFunc.CreateNextID(plan_Equipment.IPESN+"%{3}", lastId);
+                            inspectionPlan_EquipmentReportingItem.IPESN = plan_Equipment.IPESN;
+                            inspectionPlan_EquipmentReportingItem.ReportValue = ReportingItem.ReportingItemName;
+                            inspectionPlan_EquipmentReportingItem.Unit = ReportingItem.Unit;
+                            _db.InspectionPlan_EquipmentReportingItem.AddOrUpdate(inspectionPlan_EquipmentReportingItem);
+                            _db.SaveChanges();
+                        }
+                    }
                     //新增巡檢RFID順序
+                    var RFIDs = from x1 in _db.InspectionDefaultOrder
+                                where x1.PlanPathSN == PlanPathSN
+                                orderby x1.DefaultOrder
+                                join x2 in _db.RFID on x1.RFIDInternalCode equals x2.RFIDExternalCode
+                                select new { x1.RFIDInternalCode, x2.ESN };
+                    foreach(var RFID in RFIDs)
+                    {
+                        InspectionPlan_RFIDOrder inspectionPlan_RFIDOrder = new InspectionPlan_RFIDOrder();
+                        var lastInspectionOrder = _db.InspectionPlan_RFIDOrder.Where(x => x.IPTSN == IPTSN).OrderByDescending(x => x.InspectionOrder).FirstOrDefault()?.InspectionOrder ?? (IPTSN + "00000");
+                        inspectionPlan_RFIDOrder.InspectionOrder = ComFunc.CreateNextID(IPTSN+"%{5}", lastInspectionOrder);
+                        inspectionPlan_RFIDOrder.IPTSN = IPTSN;
+                        inspectionPlan_RFIDOrder.IPESN = IPTSN + RFID.ESN;
+                        inspectionPlan_RFIDOrder.RFIDInternalCode = RFID.RFIDInternalCode;
+                        inspectionPlan_RFIDOrder.Status = "1";
+                        _db.InspectionPlan_RFIDOrder.AddOrUpdate(inspectionPlan_RFIDOrder);
+                        _db.SaveChanges();
+                    }
                     //將巡檢時段計畫改為執行中
                     inspectionPlanTime.InspectionState = "2";
                     _db.InspectionPlan_Time.AddOrUpdate(inspectionPlanTime);
