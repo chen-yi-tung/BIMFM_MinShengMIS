@@ -67,35 +67,45 @@
     <script>
         //const baseUrl = '/PlanManagement/';
         var getGridJSON = '@Url.Action("EquipmentInfo_Management", "Datagrid")';
+
         var DataGrid;
 
         const fakedata = [
             {
                 EName: "軸承潤滑劑",
                 NO: 'T-1361662',
+                EState: '正常',
                 InstallDate: "2024/10/02",
-                Area: "A棟",
-                Floor: "2F",
+                ASN: "A棟",
+                FSN: "2F",
                 Brand: "國際牌",
                 Model: "E5-572-593Y",
+                Vendor: '廠商廠商',
+                FilePath: '/Files/EquipmentOperatingManual/000005.pdf',
             },
             {
                 EName: "軸承潤滑劑",
                 NO: 'T-1361662',
+                EState: '報修中',
                 InstallDate: "2024/10/02",
-                Area: "A棟",
-                Floor: "2F",
+                ASN: "A棟",
+                FSN: "2F",
                 Brand: "國際牌",
                 Model: "E5-572-593Y",
+                Vendor: '廠商廠商',
+                FilePath: '',
             },
             {
                 EName: "軸承潤滑劑",
                 NO: 'T-1361662',
+                EState: '正常',
                 InstallDate: "2024/10/02",
-                Area: "A棟",
-                Floor: "2F",
+                ASN: "A棟",
+                FSN: "2F",
                 Brand: "國際牌",
                 Model: "E5-572-593Y",
+                Vendor: '廠商廠商',
+                FilePath: '',
             },
         ]
 
@@ -118,23 +128,24 @@
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                    dg.frozenColumn('FilePath', "", 111, (v, row, i) => {
-                        let disabled = v == null || v == "";
-                        return dg.eventButton(i, "操作手冊", "filePath")
-                    }),
+                    dg.frozenColumn('_FilePath', "", 111, (v, row, i) => dg.eventButton(i, "操作手冊", "filePath", { disabled: row.FilePath === "" })),
+                    //dg.frozenColumn('FilePath', "", 111, (v, row, i) => {
+                    //    let disabled = v == null || v == "";
+                    //    return dg.eventButton(i, "操作手冊", "filePath")
+                    //}),
                     dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('ESN'),
-                    dg.column('EName', '設備名稱', 200),
+                    dg.column('EName', '設備名稱', 250),
                     dg.column('NO', '設備編號', 200),
-                    dg.column('EState', '設備狀態', 200),
-                    dg.column('Area', '棟別', 200),
-                    dg.column('Floor', '樓層', 200),
-                    dg.column('Brand', '設備廠牌', 300),
-                    dg.column('Model', '設備型號', 600),
-                    dg.column('Vendor', '設備廠商', 600),
-                    dg.hiddenColumn('FilePath'),
+                    dg.column('EState', '設備狀態', 120),
+                    dg.column('ASN', '棟別', 200),
+                    dg.column('FSN', '樓層', 200),
+                    dg.column('Brand', '設備廠牌', 200),
+                    dg.column('Model', '設備型號', 200),
+                    dg.column('Vendor', '設備廠商', 200),
+                    //dg.hiddenColumn('FilePath'),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
