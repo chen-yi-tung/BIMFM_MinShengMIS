@@ -12,8 +12,8 @@
         <form class="form">
             <div class="form-group-zone">
                 <div class="form-group required">
-                    <label for="StockType">類別</label>
-                    <select class="form-select" name="StockType" id="StockType" required>
+                    <label for="StockTypeSN">類別</label>
+                    <select class="form-select" name="StockTypeSN" id="StockTypeSN" required>
                         <option value="">請選擇</option>
                     </select>
                 </div>
@@ -47,22 +47,21 @@
 
 @section scripts {
     <script>
-
+       let submitURL = '@Url.Action("CreateComputationalStock", "Stock_Management")'
         $(async function () {
-            pushSelect("StockType", `@Url.Action("StockType", "DropDownList")`);
+            pushSelect("StockTypeSN", `@Url.Action("StockType", "DropDownList")`);
             //await formDropdown.ASN();
             addButtonEvent();
         });
 
         function save() {
+            if (!checkValidity()) return
             $.ajax({
-                url: "/EquipmentInfo_Management/Create",
-                data: fd,//JSON.stringify(fd),
+                url: submitURL,
+                data: JSON.stringify(getQueryParams("form")),
                 type: "POST",
-                contentType: false,
-                processData: false,
-                //dataType: "json",
-                //contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
             })
@@ -71,13 +70,20 @@
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Success", inner: "新增成功！",
-                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+                    onHide: () => { window.location.href = "/Stock_Management/Index"; }
                 });
             }
             function onError(res) {
                 console.log(res);
                 createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
             }
+        }
+
+        function checkValidity() {
+            getQueryParams("form");
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            //console.log("isValidity():", isValidity)
+            return isValidity
         }
     </script>
 }
