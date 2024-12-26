@@ -61,22 +61,36 @@ namespace MinSheng_MIS.Controllers.API
             return result;
         }
     }
-    public class GetInspectionrReportController : ApiController
+    public class InspectionrReportController : ApiController
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly InspectionPlan_ManagementService _inspectionPlanService;
 
-        public GetInspectionrReportController()
+        public InspectionrReportController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
             _inspectionPlanService = new InspectionPlan_ManagementService(_db);
         }
-        public JsonResService<PlanFillInInfo> Get(string IPESN)
+        public JsonResService<PlanFillInInfo> Get(string InspectionOrder)
         {
             JsonResService<PlanFillInInfo> result = new JsonResService<PlanFillInInfo>();
             try
             {
-                result = _inspectionPlanService.GetPlanReportContent(IPESN);
+                result = _inspectionPlanService.GetPlanReportContent(InspectionOrder);
+            }
+            catch (Exception ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
+        public JsonResService<string> Post(PlanFillInInfo data)
+        {
+            JsonResService<string> result = new JsonResService<string>();
+            try
+            {
+                result = _inspectionPlanService.PlanReportFillIn(data);
             }
             catch (Exception ex)
             {

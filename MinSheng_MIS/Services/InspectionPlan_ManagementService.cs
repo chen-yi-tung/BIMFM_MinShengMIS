@@ -4,6 +4,7 @@ using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Web;
@@ -99,7 +100,7 @@ namespace MinSheng_MIS.Services
                            join x4 in _db.RFID on x1.RFIDInternalCode equals x4.RFIDInternalCode
                            join x5 in _db.Floor_Info on x4.FSN equals x5.FSN
                            join x6 in _db.AreaInfo on x5.ASN equals x6.ASN
-                           select new { x1.Status,x3.EName,x3.EState,x3.NO,x3.FSN, x1.RFIDInternalCode,x3.ESN, x5.FloorName, x6.Area, x2.IPESN};
+                           select new { x1.Status,x3.EName,x3.EState,x3.NO,x3.FSN, x1.RFIDInternalCode,x3.ESN, x5.FloorName, x6.Area, x1.InspectionOrder};
 
                 if (data == null)
                 {
@@ -121,7 +122,7 @@ namespace MinSheng_MIS.Services
                     planRFIDInfo.Location = plan.Area + " " + plan.FloorName;
                     planRFIDInfo.RFIDInternalCode = plan.RFIDInternalCode;
                     planRFIDInfo.ESN = plan.ESN;
-                    planRFIDInfo.IPESN = plan.IPESN;
+                    planRFIDInfo.InspectionOrder = plan.InspectionOrder;
                     datas.Add(planRFIDInfo);
                 }
                 res.Datas = datas;
@@ -140,7 +141,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region APP-取得巡檢填報內容
-        public JsonResService<PlanFillInInfo> GetPlanReportContent(string IPESN)
+        public JsonResService<PlanFillInInfo> GetPlanReportContent(string InspectionOrder)
         {
             #region 變數
             JsonResService<PlanFillInInfo> res = new JsonResService<PlanFillInInfo>();
@@ -149,7 +150,7 @@ namespace MinSheng_MIS.Services
             try
             {
                 #region 資料檢查
-                var data = _db.InspectionPlan_Equipment.Find(IPESN);
+                var data = _db.InspectionPlan_RFIDOrder.Find(InspectionOrder);
 
                 if (data == null)
                 {
@@ -161,10 +162,60 @@ namespace MinSheng_MIS.Services
 
                 #region 資料
                 PlanFillInInfo datas = new PlanFillInInfo();
-                datas.IPESN = IPESN;
-                datas.EquipmentCheckItems = _db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == IPESN).OrderBy(x => x.Id).ToList();
-                datas.EquipmentReportingItems = _db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == IPESN).OrderBy(x => x.Id).ToList();
+                datas.InspectionOrder = data.InspectionOrder;
+                datas.EquipmentCheckItems = _db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == data.IPESN).OrderBy(x => x.Id).ToList();
+                datas.EquipmentReportingItems = _db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == data.IPESN).OrderBy(x => x.Id).ToList();
                 res.Datas = datas;
+                #endregion
+
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
+        #endregion
+
+        #region APP-取得巡檢填報
+        public JsonResService<string> PlanReportFillIn(PlanFillInInfo data)
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                var checkRFIDOrder = _db.InspectionPlan_RFIDOrder.Find(data.InspectionOrder);
+
+                if (checkRFIDOrder == null)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "查無此設備巡檢填報內容";
+                    return res;
+                }
+                #endregion
+                var inspectionEquipment = _db.InspectionPlan_Equipment.Find(checkRFIDOrder.IPESN);
+                #region 填報
+                //巡檢設備
+                inspectionEquipment.ReportUserName = data.ReportUserName;
+                inspectionEquipment.FillinTime = DateTime.Now;
+                _db.InspectionPlan_Equipment.AddOrUpdate(inspectionEquipment);
+                _db.SaveChanges();
+                //巡檢設備檢查項目
+                _db.InspectionPlan_EquipmentCheckItem.AddOrUpdate(data.EquipmentCheckItems.ToArray());
+                _db.SaveChanges();
+                //巡檢設備填報項目
+                _db.InspectionPlan_EquipmentReportingItem.AddOrUpdate(data.EquipmentReportingItems.ToArray());
+                _db.SaveChanges();
+                //巡檢RFID更改狀態為完成
+                checkRFIDOrder.Status = "2";
+                _db.InspectionPlan_RFIDOrder.AddOrUpdate(checkRFIDOrder);
+                _db.SaveChanges();
                 #endregion
 
                 res.AccessState = ResState.Success;
