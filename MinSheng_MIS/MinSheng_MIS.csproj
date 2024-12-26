@@ -195,6 +195,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\ContinentalTime.cs" />
     <Compile Include="Attributes\EnumLabel.cs" />
     <Compile Include="Attributes\FileSizeLimit.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -433,6 +434,7 @@
     <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\Maintain_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\MeetingMinutes_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\OneDeviceOneCard_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\PathSampleViewModel.cs" />
@@ -442,6 +444,7 @@
     <Compile Include="Models\ViewModels\Repair_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\RFIDViewModel.cs" />
     <Compile Include="Models\ViewModels\SamplePath_ManagementViewModel.cs" />
+    <Compile Include="Models\ViewModels\SampleSchedule_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\StockIn_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\StockOut_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\Stock_ManagementViewModels.cs" />
@@ -472,6 +475,8 @@
     <Compile Include="Services\OneDeviceOneCard_ManagementService.cs" />
     <Compile Include="Services\RFIDService.cs" />
     <Compile Include="Services\SamplePath_ManagementService.cs" />
+    <Compile Include="Services\Maintain_ManagementService.cs" />
+    <Compile Include="Services\SampleSchedule_ManagementService.cs" />
     <Compile Include="Services\StockService.cs" />
     <Compile Include="Services\UniParams.cs" />
     <Compile Include="Services\WarningMessageService.cs" />
@@ -1681,6 +1686,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\Repair_Management\Index.js" />
     <Content Include="Scripts\SampleSchedule_Management\Create.js" />
     <Content Include="Scripts\SampleSchedule_Management\CreateDataGrids.js" />
     <Content Include="Scripts\SamplePath_Management\Create.js" />

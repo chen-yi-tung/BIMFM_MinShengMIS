@@ -258,6 +258,35 @@ namespace MinSheng_MIS.Services
             return results;
         }
 
+        public static ICollection<T> AddOrUpdateList<T, TSource>(
+            IEnumerable<TSource> list,
+            string sn,
+            string initialLatestId,
+            string format,
+            int emptySnLength,
+            string[] param,
+            Func<string, int, string, string, string> generateIdFunc,  // 修改為新的 generateIdFunc 簽名
+            Func<TSource, string[], string, T> createInstance)
+        {
+            string latestId = initialLatestId;
+            var results = new List<T>();
+
+            foreach (var item in list)
+            {
+                // 生成Id，傳遞格式、空位長度、最新Id 和 SN
+                string newId = generateIdFunc(format, emptySnLength, latestId, sn);
+
+                // 創建實例，傳遞當前 Id 和 Id 生成函數
+                var result = createInstance(item, param, newId);
+                results.Add(result);
+
+                // 更新 latestId
+                latestId = newId;
+            }
+
+            return results;
+        }
+
         /// <summary>
         /// 比較2個List忽略排序後的內容是否完全相等
         /// </summary>

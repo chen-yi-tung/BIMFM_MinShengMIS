@@ -15,6 +15,7 @@ namespace MinSheng_MIS.Models.ViewModels
         [Display(Name = "巡檢頻率")]
         public int Frequency { get; set; } // 巡檢頻率
         [Required]
+        [Display(Name = "巡檢設備")]
         public IEnumerable<string> RFIDInternalCodes { get; set; } // 巡檢設備RFID清單
     }
     #endregion
@@ -196,9 +197,9 @@ namespace MinSheng_MIS.Models.ViewModels
         public string PlanPathSN { get; set; } // 巡檢路線編號
         public IEnumerable<string> RFIDInternalCodes { get; set; } // 巡檢設備RFID清單
 
-        public DefaultOrderModifiableListInstance(string planPathSN, SamplePathCreateViewModel data)
+        public DefaultOrderModifiableListInstance(string sn, SamplePathCreateViewModel data)
         {
-            PlanPathSN = planPathSN;
+            PlanPathSN = sn;
             RFIDInternalCodes = data.RFIDInternalCodes;
         }
     }

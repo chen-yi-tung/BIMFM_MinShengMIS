@@ -20,6 +20,16 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        #region Status 巡檢RFID順序狀態
+        public static Dictionary<string, string> Status()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待執行");
+            ValueOption.Add("2", "完成");
+            return ValueOption;
+        }
+        #endregion
+
         #region InspectionState 巡檢時段狀態
         public static Dictionary<string, string> InspectionState()
         {
@@ -111,6 +121,19 @@ namespace MinSheng_MIS.Surfaces
                          period => Convert.ToInt32(period).ToString(),
                          period => period.GetLabel()
                      );
+        }
+        #endregion
+
+        #region 保養單狀態 MaintainStatus
+        public static Dictionary<string, string> MaintainStatus()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待派工");
+            ValueOption.Add("2", "待執行");
+            ValueOption.Add("3", "待審核");
+            ValueOption.Add("4", "審核通過");
+            ValueOption.Add("5", "審核未過");
+            return ValueOption;
         }
         #endregion
 

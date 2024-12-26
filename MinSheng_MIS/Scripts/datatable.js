@@ -39,7 +39,7 @@ function createTableOuter(options) {
  */
 function createTableInner(data, sn) {
     const nullString = "-";
-    return sn.map((e) => {
+    return sn.map((e, i) => {
         let html = "";
         let colspan = getColspan(e.colspan)
         if (e.formatter) {
@@ -94,6 +94,16 @@ function createTableInner(data, sn) {
                 <td class="datatable-table-td" ${colspan} id="d-${e.value}"><pre>${data[e.value] ?? nullString}</pre></td>
             </tr>`;
         }
+        else if (e.btn == true) {
+            allData[data.RFIDInternalCode] = data;
+            html = `
+            <tr>
+                <td class="datatable-table-th">${e.text}</td>
+                <td class="datatable-table-td" ${colspan} id="d-${e.value}">
+                    <button type="button" class="btn btn-search" onclick="createMapModal('Modal-Location-${data.RFIDInternalCode}','${data.RFIDInternalCode}')">查看定位</button>
+                </td>
+            </tr>`;
+        }
         else {
             switch (e.type) {
                 case "ImgPath":
@@ -110,7 +120,8 @@ function createTableInner(data, sn) {
                             <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putFile(data[e.value]) : nullString}</td>
                         </tr>`;
                     break;
-                case "dualCol": {
+                //內容：兩格
+                case "DualCol": {
                     const rows = data[e.value]?.length || 0;
                     if (rows === 0) {
                         html = '';
@@ -126,7 +137,7 @@ function createTableInner(data, sn) {
                                 <div>${first.Value}</div>
                             </td>
                             <td class="datatable-table-td" style="width: 160px;">
-                                <div class="${isDanger ? 'text-danger' : ''}">${first.Value} ${first.Init ? first.Init : ""}</div>
+                                <div class="${isDanger ? 'text-danger' : ''}">${first.Unit ? first.Unit : ""}</div>
                             </td>
                         </tr>
                         ${data[e.value]?.slice(1).map((item, i) => {
@@ -134,15 +145,63 @@ function createTableInner(data, sn) {
                         return `<tr>
                                     <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
                                     <td class="datatable-table-td text-start ps-2">
-                                        <div>${item.Item}</div>
+                                        <div>${item.Value}</div>
                                     </td>
                                     <td class="datatable-table-td" style="width: 160px;">
-                                        <div class="${isDanger ? 'text-danger' : ''}">${item.Value} ${item.Init ? item.Init : ""}</div>
+                                        <div class="${isDanger ? 'text-danger' : ''}">${item.Unit ? item.Unit : ""}</div>
                                     </td>
                                 </tr>
                                 `}).join('')}
                         `;
                 }
+                    break;
+                //內容：三格
+                case "TripleCol": {
+                    const rows = data[e.value]?.length || 0;
+                    if (rows === 0) {
+                        html = '';
+                        break;
+                    }
+                    const first = data[e.value][0];
+                    html = `
+                        <tr>
+                            <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
+                            <td class="datatable-table-td datatable-table-sort">1</td>
+                            <td class="datatable-table-td text-start ps-2">
+                                <div>${first.Value}</div>
+                            </td>
+                            <td class="datatable-table-td" style="width: 80px;">
+                                <div>${first.Period ? first.Period : ""}</div>
+                            </td>
+                            <td class="datatable-table-td" style="width: 140px;">
+                                <div>${first.NextMaintainDate ? first.NextMaintainDate : ""}</div>
+                            </td>
+                        </tr>
+                        ${data[e.value]?.slice(1).map((item, i) => {
+                        return `<tr>
+                                    <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
+                                    <td class="datatable-table-td text-start ps-2">
+                                        <div>${item.Value}</div>
+                                    </td>
+                                    <td class="datatable-table-td" style="width: 80px;">
+                                        <div>${item.Period ? item.Period : ""}</div>
+                                    </td>
+                                    <td class="datatable-table-td" style="width: 140px;">
+                                        <div>${item.NextMaintainDate ? item.NextMaintainDate : ""}</div>
+                                    </td>
+                                </tr>
+                                `}).join('')}
+                        `;
+                }
+                    break;
+
+                //兩格都是變數
+                case "Variable":
+                    html = `
+                        <tr>
+                            <td class="datatable-table-th">${e.text}</td>
+                            <td class="datatable-table-td" id="d-${e.value}" ${colspan}>${e.value ?? nullString}</td>
+                        </tr>`;
                     break;
                 default: {
                     html = `
@@ -157,6 +216,8 @@ function createTableInner(data, sn) {
         return html;
 
     }).join("");
+
+
 
     function putImage(imgs) {
         if (Array.isArray(imgs) && imgs.length !== 0) {
@@ -197,7 +258,7 @@ function createTableInner(data, sn) {
                 value = data[itemNum];
             }
             else {
-                value = data.value;
+                value = data.Value;
             }
             return `<td class="datatable-table-td text-start" ${colspan}>${value ?? nullString}</td>`
         }
@@ -352,9 +413,7 @@ function createInspectionTable(options) {
 }
 
 //新增 保養項目/週期/下次保養日期 欄位
-function createMaintainItem(itemName, containerId, equipmentData) {
-    console.log("equipmentData看這邊12/23", equipmentData);
-    console.log("itemName", itemName);
+function createMaintainItem(MaintainItemList, containerId, equipmentData) {
     const MaintainEditZone = document.getElementById(containerId);
     if (!MaintainEditZone) {
         return;
@@ -368,7 +427,7 @@ function createMaintainItem(itemName, containerId, equipmentData) {
         { value: "4", text: "每年" },
     ];
 
-    itemName.forEach((filed, i) => {
+    MaintainItemList.forEach((field, i) => {
         const div = document.createElement("div");
         div.className = "edit-item-init"
         div.style = "background: #E3EBF3;"
@@ -381,11 +440,18 @@ function createMaintainItem(itemName, containerId, equipmentData) {
             div.appendChild(ESNDisplay);
         }
 
+        const SN = document.createElement("input");
+        SN.type = "text";
+        SN.id = `addField_SN-${i + 1}`;
+        SN.name = `addField_SN-${i + 1}`;
+        SN.value = field.MISSN;
+        SN.hidden = true;
+
         const maintainName = document.createElement("input");
         maintainName.className = "form-control";
         maintainName.name = `maintainName-${i}`;
         maintainName.type = "text";
-        maintainName.value = filed;
+        maintainName.value = field.Value;
         maintainName.disabled = true;
 
 
@@ -404,9 +470,10 @@ function createMaintainItem(itemName, containerId, equipmentData) {
         nextMaintainDate.className = "form-control";
         nextMaintainDate.name = `nextMaintainDate-${i}`;
         nextMaintainDate.type = "date";
-        nextMaintainDate.value = filed;
+        //nextMaintainDate.value = field.Value;
         nextMaintainDate.required = true;
 
+        div.appendChild(SN);
         div.appendChild(maintainName);
         div.appendChild(period);
         div.appendChild(nextMaintainDate);
@@ -415,7 +482,6 @@ function createMaintainItem(itemName, containerId, equipmentData) {
 }
 
 function createAccordion(options) {
-    console.log("o", options)
     const finishStatusDefault = "未完成";
     if (options.data.length === 0) {
         return "";
@@ -430,10 +496,7 @@ function createAccordion(options) {
                        return `
                             <div class="accordion-item" id="${options.id}_${i + 1}" style="border: 1px solid #8A9BA5">
                                 <h2 class="accordion-header" id="header-${options.id}-${i}">
-                                    <button class="accordion-button border-0 collapsed" type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#sub-body-${options.id}-${i}" aria-expanded="false"
-                                        aria-controls="body-${options.id}-${i}">
+                                    <button class="accordion-button border-0 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sub-body-${options.id}-${i}" aria-expanded="false" aria-controls="body-${options.id}-${i}">
                                         <div class="w-100">${options.data[i][options.itemTitleKey]} ${options.itemSubTitleKey ? `${options.data[i][options.itemSubTitleKey]}` : ""}</div>
                                         <div class="mx-2" style="white-space: nowrap;" id="finishStatus-${options.id}-${i}">${finishStatusDefault}</div>
                                     </button>
@@ -535,8 +598,6 @@ function createAccordion(options) {
  * @returns {string} TableOuter
  */
 function createAccordionItem(options, i) {
-    console.log("createAccordionItem", options)
-    console.log("options.state", options.state)
     const subContent = `
         <div class="subDatatable ${options.className ?? ""} ${options.id === 'EquipmentItem' ? 'sub-accordion' : ''}">
             <div class="datatable-body">
@@ -719,6 +780,42 @@ function createDialogModal(options) {
         options.onClick ? btn.click(options.onClick) : 0;
         return btn;
     }
+}
+
+/**
+ * 
+ * @param {String} id
+ * @param {String} RFIDInternalCode
+ * @returns
+ */
+function createMapModal(id, RFIDInternalCode) {
+    let data = allData[RFIDInternalCode]
+    console.log("data是甚麼", data);
+    let modal = $(`
+        <div class="modal fade modal-delete" id="${id ?? ''}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-white rounded-0">
+                    <div class="modal-header p-2 rounded-0" style="background: #D9EFFD; border-bottom: 1px solid #8A9BA5;">
+                        <h5 class="modal-title w-100 text-center">定位資訊</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center pb-2"></div>
+                </div>
+            </div>
+        </div>
+        `);
+
+    let myModal = bootstrap.Modal.getOrCreateInstance(modal[0]);
+    myModal.show();
+
+    modal[0].addEventListener("hidden.bs.modal", () => {
+        myModal.dispose();
+        modal.remove();
+
+        document.body.focus();
+    })
+
+    return myModal;
 }
 
 
