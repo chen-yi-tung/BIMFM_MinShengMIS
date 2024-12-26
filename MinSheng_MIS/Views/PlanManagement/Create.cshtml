@@ -4,6 +4,8 @@
 @section styles {
     @Html.Partial("DataGridScripts")
     <script src="~/Scripts/PlanManagement/CreateDataGrids.js" defer></script>
+    <script src="~/Scripts/PlanManagement/Create.js"></script>
+    <link rel="stylesheet" href="/Content/tagbox.css">
 }
 
 
@@ -55,23 +57,22 @@
                                             <i class="fa-solid fa-bars"></i>
                                         </button>
                                     </td>
-                                    <td id="StartTime">
-                                        <input class="form-control" type="time" id="StartTime" name="StartTime" min="1" value="1" step="any" required />
-
+                                    <td>
+                                        <input class="form-control" type="time" id="StartTime" name="StartTime" step="any" required />
                                     </td>
-                                    <td id="EndTime">
-                                        <input class="form-control" type="time" id="EndTime" name="EndTime" min="1" value="1" step="any" required />
+                                    <td>
+                                        <input class="form-control" type="time" id="EndTime" name="EndTime" step="any" required />
                                     </td>
-                                    <td id="Name">
-                                        <select class="form-select" id="d-Name" name="Name" required></select>
+                                    <td>
+                                        <select class="form-select" id="PathName" name="PathName" required></select>
                                     </td>
-                                    <td id="Quantity">10</td>
-                                    <td id="Frequency">每3小時</td>
+                                    <td id="Quantity">--</td>
+                                    <td id="Frequency">--</td>
                                     <td id="Info">
-                                        <button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo">巡檢路線資訊</button>
+                                        <button type="button" class="btn btn-datagrid">巡檢路線資訊</button>
                                     </td>
-                                    <td id="UserID">
-                                        <select class="form-select" id="UserID" name="UserID" required></select>
+                                    <td>
+                                        <select class="form-select operator-name" id="UserID" name="UserID" required></select>
                                     </td>
                                     <td id="d-_delete" class="p-1 pt-2">
                                         <button type="button" class="btn-delete-item"></button>
@@ -148,25 +149,20 @@
 
 @section scripts {
     <script>
-        const IPSN = '@ViewBag.id';
-        ////let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
         let apiUrl = null;
-        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
-        let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
-        let sampleTr;
+        let SubmitUrl = '@Url.Action("CreatePlan", "PlanManagement")';
+        let sampleTr = SampleTr();
 
         $(async function () {
             addButtonEvent();
-            addTemplateItem();
-            delTemplateItem();
+            await pushSelect("PathName", "/DropDownList/Area");
             autoLinkDG_Controller = new PIDG(ALDGOptions);
-            //await addDropDownList();
-            //await addAreaFloorEvent();
-            readData(apiUrl);
+            sampleTr.init();
+            sampleTr.create();
         })
 
         const SerializedName = [
-            { text: "巡檢路線名稱", value: "PName" },
+            { text: "巡檢路線名稱", value: "PathName" },
         ]
         const GridOptions = {
             thead: true,
@@ -183,74 +179,56 @@
                 { id: "Frequency", title: "巡檢頻率" },
             ]
         }
-        let fakeData = {
-            SIRSN: "1120301001",
-            PName: "生物處理機台巡檢",
+        fakeData = {
+            PathNameSN: "1120301001",
+            PathName: "前處理機房巡檢",
+            Frequency: "3",
             EItem: [
                 {
                     InterCode: "XSCXCZS",
                     ExterCode: "XSCXCZS",
+                    RFIDName: "RFIDName1",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Memo: "備註",
                     EName: "螺旋發送機1",
                     ESN: "SP-0202A",
-                    Area: "前處理區",
-                    Floor: "1F",
                     Brand: "A廠牌",
                     Model: "XMA-56",
-                    Frequency: "每2小時",
+                    Frequency: "3",
                 },
                 {
                     InterCode: "XSCXCZS",
                     ExterCode: "XSCXCZS",
+                    RFIDName: "RFIDName2",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Memo: "備註",
                     EName: "螺旋發送機2",
                     ESN: "SP-0202A",
-                    Area: "前處理區",
-                    Floor: "1F",
                     Brand: "B廠牌",
                     Model: "XMA-56",
-                    Frequency: "每2小時",
+                    Frequency: "2",
                 },
                 {
                     InterCode: "XSCXCZS",
                     ExterCode: "XSCXCZS",
-                    EName: "螺旋發送機3",
-                    ESN: "SP-0202A",
+                    RFIDName: "RFIDName3",
                     Area: "前處理區",
                     Floor: "1F",
+                    Memo: "備註",
+                    EName: "螺旋發送機3",
+                    ESN: "SP-0202A",
                     Brand: "C廠牌",
                     Model: "XMA-56",
-                    Frequency: "每2小時",
+                    Frequency: "2",
                 },
             ]
         }
-
-        function readData(url = null) {
-
-            url == null ? onSuccess(fakeData) :
-                console.log("fakeData", fakeData);
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
-
-            function onSuccess(res) {
-                console.log(res);
-                fakeData = res;
-                $("#PathDetail").append(createTableInner(res, SerializedName));
-
-                res.EItem ?
-                $("#EInfo").append(createTableGrid(
-                    createIndexToArrayData(res.EItem), GridOptions)) :
-                    $("#EInfo").parents(".datatable").remove();
-            }
-            function onError(res) {
-                console.log(res);
-            }
-
-            //在每列加上次序
+        let tempData = {};
+        const updatePathDetail = async (SN) => {
+            if (!tempData[SN]) await readData(apiUrl, SN);
+            // 在每列加上index
             function createIndexToArrayData(arr) {
                 return arr.map((e, i) => {
                     return {
@@ -259,15 +237,62 @@
                     }
                 })
             }
+            $("#PathDetail").empty();
+            $("#PathDetail").append(createTableInner(tempData[SN], SerializedName));
+            $("#EInfo").empty();
+            tempData[SN].EItem ?
+                $("#EInfo").append(createTableGrid(
+                    createIndexToArrayData(tempData[SN].EItem), GridOptions)) :
+                $("#EInfo").parents(".datatable").remove();
+        }
+        const updateTemplateInfo = async (SN, element) => {
+            if (SN) {
+                if (!tempData[SN]) await readData(apiUrl, SN)
+                $(element).parent().parent().find("#Quantity").text(tempData[SN].EItem?.length || "--");
+                $(element).parent().parent().find("#Frequency").text(tempData[SN].Frequency);
+            } else {
+                $(element).parent().parent().find("#Quantity").text("--");
+                $(element).parent().parent().find("#Frequency").text("--");
+            }
+        }
+        function readData(url = null, SN) {
+            return new Promise((resolve, reject) => {
+                if (url == null) {
+                    resolve(onSuccess(JSON.parse(JSON.stringify(fakeData))))
+                } else {
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                        success: (res) => {
+                            onSuccess(res);
+                            resolve("");
+                        },
+                        error: (ex) => {
+                            onError(ex);
+                            reject(ex);
+                        }
+                    });
+                }
+            });
+
+            function onSuccess(res) {
+                const convertString = (v) => `每${v}個小時`
+                res.Frequency = convertString(res.Frequency);
+                res.EItem.forEach(e => {
+                    e.Frequency = convertString(e.Frequency);
+                })
+                console.log("getPathDetail(after converting)", res);
+                tempData[SN] = res;
+            }
+            function onError(ex) {
+                console.log(ex);
+            }
         }
 
-        function save() {
-            let data = getCreateSaveData(IPSN);
-
-            console.log(data);
-
+        function save(data) {
             if (!data) return;
-
             $.ajax({
                 url: SubmitUrl,
                 data: JSON.stringify(data),
@@ -281,89 +306,20 @@
             function onSuccess(res) {
                 console.log(res);
                 createDialogModal({
-                    id: "DialogModal-Success", inner: "儲存成功！",
-                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
+                    id: "DialogModal-Success", inner: "新增成功！",
+                    onHide: () => { window.location.href = "/PlanManagement/Index"; }
                 });
             }
             function onError(res) {
                 console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` })
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` })
             }
         }
 
-        function deleteIP() {
-            $.ajax({
-                url: delUrl,
-                type: "DELETE",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-            function onSuccess(res) {
-                console.log(res);
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "刪除成功！",
-                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
-                });
-            }
-            function onError(res) {
-                console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
-            }
-        }
-
-        //$(async function () {
-        //    sampleTr = new SampleTr();
-        //    await sampleTr.init()
-        //    addButtonEvent();
-        //    maintainDG_Controller = new IPDG(MDGOptions);
-        //    repairDG_Controller = new IPDG(RDGOptions);
-        //    await addDropDownList();
-        //    await addAreaFloorEvent();
-        //    controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        //    sortRouteModal.autoRouteToggle(true);
-
-        //    $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
-
-        //    window.addEventListener("beforeunload", (event) => {
-        //        sessionStorage.clear();
-        //    });
-
-        //    addSaveSamplePathEvent();
-
-        //    $("#delete").click(deleteIP);
-
-        //    readData(apiUrl);
-        //})
-        @*function SampleTr() {
-            this.count = 0;
+        function SampleTr() {
+            this.count = 1;
             this.list = $("#item-area")
             this.init = async function () {
-                await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
-                this.list.on("change", "#StockType", async function (e) {
-                    console.log(e.target)
-                    let item = $(e.target).closest("tr[id]")[0]
-                    let id = item.id
-                    await pushSelect(`${id} #StockName`, `@Url.Action("FormStockName", "DropDownList")?StockType=${e.target.value}`);
-                })
-                this.list.on("change", "#StockName", async function (e) {
-                    if (!sampleTr.checkDuplicate()) {
-                        e.target.value = ""
-                        createDialogModal({ id: "DialogModal-Error", inner: `有重複的品項品名！` })
-                        return
-                    }
-
-                    console.log(e.target)
-                    let item = $(e.target).closest("tr[id]")
-                    let id = item.attr("id")
-                    $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SISN=${e.target.value}`, (res) => {
-                        console.log(res)
-                        item.find("#d-Unit").text(res?.Unit || "-")
-                    })
-                })
-
                 const observer = new ResizeObserver((entries) => {
                     for (const entry of entries) {
                         let style = getComputedStyle(entry.target)
@@ -377,39 +333,65 @@
 
                 this.list.on("click", ".btn-delete-item", function (e) {
                     $(this).parent().parent().remove();
+                    sampleTr.count--;
+                    reorderNumbers();
                 })
-
+                this.list.on("click", ".btn-datagrid", function (e) {
+                    let SN = $(this).parent().parent().find("#PathName").val();
+                    if (!SN) {
+                        createDialogModal({ id: "DialogModal", inner: "請先選擇巡檢路線", button: [{ className: "btn btn-export", cancel: true, text: "確定" }] })
+                        return
+                    }
+                    updatePathDetail(SN);
+                    let b = document.createElement("button");
+                    b.type = "button";
+                    b.setAttribute("data-bs-toggle", "modal");
+                    b.setAttribute("data-bs-target", "#PlanInfo");
+                    document.querySelector("body").appendChild(b);
+                    b.click();
+                    b.remove();
+                })
+                this.list.on("change", "#PathName", function (e) {
+                    let SN = $(this).val();
+                    //console.log(SN);
+                    updateTemplateInfo(SN, this);
+                })
                 this.sample = $("#sample-input-tr").clone();
                 $("#sample-input-tr").remove();
             }
             this.create = function (data = null) {
                 let item = this.sample.clone();
-                item.attr('id', this.count);
-                this.list.append(item);
-                if (data != null) {
-                    pushSelect(`${item.attr("id")} #StockName`,
-                        `@Url.Action("FormStockName", "DropDownList")?StockType=${data.StockType}`)
-                        .then(() => {
-                            item.find("#StockName").val(data.SISN)
-                        });
-                    item.find("#StockType").val(data.StockType)
-                    item.find("#Amount").val(data.Amount)
-                    item.find("#d-Unit").text(data.Unit)
-                    item.find("#SRContent").val(data.SRContent)
-                }
-
                 this.count++;
+                item.attr('id', this.count);
+                item.find("#Info button").attr("index", this.count);
+                item.find("#d-Num").text(this.count)
+                item.find(`#UserID`).attr("id", "UserID" + this.count);
+                this.list.append(item);
+                addDropDownList("#UserID" + this.count);
             }
             this.calc = function () {
                 return this.list.children().toArray().map((e) => {
                     return {
-                        SISN: $(e).find("#StockName").val(),
-                        Amount: $(e).find("#Amount").val(),
-                        SRContent: $(e).find("#SRContent").val()
+                        StartTime: $(e).find("#StartTime").val(),
+                        EndTime: $(e).find("#EndTime").val(),
+                        PathName: $(e).find("#PathName").val(),
+                        Operator: $(e).find(".operator-name").tagbox('getValues')
                     }
                 })
             }
             this.checkValidity = () => {
+                let Eitems = this.list.children().toArray().map((e) => ({
+                    StartTime: $(e).find("#StartTime").val(),
+                    EndTime: $(e).find("#EndTime").val(),
+                    PathName: $(e).find("#PathName").val(),
+                    Operator: $(e).find(".operator-name").tagbox('getValues')
+                }))
+                for (item of Eitems) {
+                    if (!item.StartTime || !item.EndTime || !item.PathName || item.Operator.length == 0) return false
+                }
+                return true
+            }
+            this.checkRequired = () => {
                 return this.list.children().length > 0
             }
             this.checkDuplicate = () => {
@@ -420,56 +402,6 @@
                 return sisns.length == [...sets].length
             }
             return this;
-        }*@
-        function addTemplateItem() {
-            let itemArea = document.getElementById('item-area');
-            let addItem = document.getElementById('addItem');
-
-            addItem.onclick = function () {
-                let newNumber = itemArea.querySelectorAll('tr').length + 1;
-                itemArea.insertAdjacentHTML('beforeend', `<tr id="sample-input-tr">
-                                                                <td id="d-Num">${newNumber}</td>
-                                                                <td id="d-Sort">
-                                                                    <button type="button" class="btn-sort">
-                                                                        <i class="fa-solid fa-bars"></i>
-                                                                    </button>
-                                                                </td>
-                                                                <td id="StartTime">
-                                                                    <input class="form-control" type="time" id="StartTime" name="StartTime" min="1" value="1" step="any" required />
-                                                                </td>
-                                                                <td id="EndTime">
-                                                                    <input class="form-control" type="time" id="EndTime" name="EndTime" min="1" value="1" step="any" required />
-                                                                </td>
-                                                                <td id="Name">
-                                                                    <select class="form-select" id="d-Name" name="Name" required></select>
-                                                                </td>
-                                                                <td id="Quantity">-</td>
-                                                                <td id="Frequency">-</td>
-                                                                <td id="Info">
-                                                                    <button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo">巡檢路線資訊</button>
-                                                                </td>
-                                                                <td id="UserID">
-                                                                    <select class="form-select" id="UserID" name="UserID" required></select>
-                                                                </td>
-                                                                <td id="d-_delete" class="p-1 pt-2">
-                                                                    <button type="button" class="btn-delete-item"></button>
-                                                                </td>
-                                                            </tr>`);
-                delTemplateItem();
-            }
-        }
-
-        function delTemplateItem() {
-            let delBtns = document.querySelectorAll('.btn-delete-item');
-            delBtns.forEach(function (delBtn) {
-                delBtn.onclick = function () {
-                    let tr = delBtn.closest('tr');
-                    if (tr) {
-                        tr.remove();
-                        reorderNumbers();
-                    }
-                };
-            });
         }
 
         //當刪除新增的模板後，需重新排序次序

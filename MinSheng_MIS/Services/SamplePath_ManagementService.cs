@@ -90,6 +90,7 @@ namespace MinSheng_MIS.Services
 
             var result = new GridResult<InspectionRFIDsViewModel>();
             if (query?.Any() == true)
+            {
                 result.Rows = query.AsEnumerable()
                     .Select(x =>
                     {
@@ -97,7 +98,8 @@ namespace MinSheng_MIS.Services
                         dto.Frequency = $"每{x.Frequency}小時";
                         return dto;
                     });
-
+                result.Total = Total;
+            }
             return result;
         }
         #endregion
