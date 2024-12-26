@@ -25,8 +25,8 @@
                     </select>
                 </div>
                 <div class="form-group required" id="SNameContainer">
-                    <label for="StockName">品項名稱</label>
-                    <select class="form-select" name="StockName" id="StockName" required>
+                    <label for="SISN">品項名稱</label>
+                    <select class="form-select" name="SISN" id="SISN" required>
                         <option value="null">請選擇</option>
                     </select>
                 </div>
@@ -83,7 +83,7 @@
                 <div id="FileUploader"></div>
                 <div class="form-group col-3fr">
                     <label for="Memo">備註</label>
-                    <textarea class="form-control" id="Memo" name="Memo" rows="3" cols="50" required></textarea>
+                    <textarea class="form-control" id="Memo" name="Memo" rows="3" cols="50"></textarea>
                 </div>
             </div>
         </form>
@@ -141,17 +141,29 @@
     <script>
         var fileUploader;
         let apiUrl = null;
-
+        let submitUrl = "";
+        let currentTab = "Normal";
         $(async function () {
             await pushSelect("StockTypeSN", '@Url.Action("StockType", "DropDownList")');
-            await pushSelect("StockName", '@Url.Action("StockName", "DropDownList")'); //to do要連動StockTypeSN
-            readData(apiUrl);
-            //await formDropdown.ASN();
+            //readData(apiUrl);
             addButtonEvent();
             //delTemplateItem();
+            $("#StockTypeSN").change(async() => {
+                /*console.log($("#StockTypeSN").val());*/
+                let StockTypeSN = $("#StockTypeSN").val()
+                if (StockTypeSN) {
+                    await pushSelect("SISN", '@Url.Action("StockName", "DropDownList")' + `?stockTypeSN=${StockTypeSN}`);
+                } else {
+                    $("#SISN").empty();
+                    $("#SISN").append(`<option value="">請選擇</option>`)
+                    $("#SISN").val("");
+                }
+            })
             fileUploader = new FileUploader({
                 container: "#FileUploader",
                 className: "form-group col-3fr",
+                required: false,
+                accept: [".jpg", ".jpeg", ".png", ".pdf"],
                 label: "檔案上傳",
                 id: "File"
             })
@@ -168,34 +180,33 @@
         }
 
         function save() {
-            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-            console.log("todo save():", isValidity)
+            let isValidity = false;
+            let fd = new FormData();
+            switch (currentTab) {
+                case 'Normal':
+                    submitUrl = '@Url.Action("CreateNormalComputationalStockIn", "Stock_Management")';
+                    let NormalForm = document.getElementById("Normal");
+                    isValidity = NormalForm.reportValidity();
+                    console.log("todo save():", isValidity)
+                    fd.append("NumberOfChanges", $("#NumberOfChanges").val())
+                    fd.append("SISN", $("#SISN").val())
+                    break
+                case 'RFID':
+                    alert("RFID");
+                    break
+            }
+            let file = fileUploader.getFile();
+            if (file) fd.append("PurchaseOrder", file);
+            fd.append("Memo", $("#Memo").val())
             if (!isValidity) return;
-            if (!$("#LocationX").val() || !$("#LocationX").val()) return;
-
-            const fd = new FormData();
-
-            fd.append("ASN", $("#ASN").val())
-            fd.append("FSN", $("#FSN").val())
-            fd.append("RoomName", $("#RoomName").val())
-            fd.append("System", $("#System").val())
-            fd.append("SubSystem", $("#SubSystem").val())
-            fd.append("PropertyCode", $("#PropertyCode").val())
-            fd.append("EName", $("#EName").val())
-            fd.append("Brand", $("#Brand").val())
-            fd.append("Model", $("#Model").val())
-            console.log(Object.fromEntries(fd.entries()));
-
             if (!fd) return;
-
+            console.log(Object.fromEntries(fd.entries()));
             $.ajax({
-                url: "/EquipmentInfo_Management/Create",
-                data: fd,//JSON.stringify(fd),
+                url: submitUrl,
+                data: fd,
                 type: "POST",
                 contentType: false,
                 processData: false,
-                //dataType: "json",
-                //contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
             })
@@ -204,13 +215,13 @@
                 console.log(res);
                 createDialogModal({
                     id: "DialogModal-Success", inner: "新增成功！",
-                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+                    onHide: () => { window.location.href = "/Stock_Management/Index"; }
                 });
 
             }
             function onError(res) {
                 console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.ErrorMessage || ""}` })
             }
         }
 
@@ -261,7 +272,7 @@
                 tablinks[i].className = tablinks[i].className.replace(" tab-checked", "");
             }
             evt.currentTarget.className += " tab-checked";
-
+            currentTab = tabName;
             var showRFID = tabName === "RFID"; // 點選 "RFID" 時顯示 #Type
             var showElements = tabName === "Normal"; // 如果是 "一般"，顯示這些元素
 
@@ -276,22 +287,9 @@
                 history.back();
             })
             $("#submit").click(function () {
-                let PSSN = $("#PSSN").val();
-                createCreateStockDialog({
-                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
-                    data: PSSN,
-                    onSuccess() {
-                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
-                        window.location.href = url;
-                    }
-                })
-            });
-        }
-
-        function createCreateStockDialog(options) {
-            let modal = createDialogModal({
-                id: "DialogModal-CreateStock",
-                inner: `
+                createDialogModal({
+                    id: "DialogModal-CreateStock",
+                    inner: `
                                 <div class="d-flex justify-content-center align-items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                                         class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
@@ -301,11 +299,12 @@
                                     新增後無法更改，確認是否新增入庫?？
                                 </div>
                             `,
-                button: [
-                    { className: "btn btn-cancel", cancel: true, text: "取消", },
-                    { className: "btn btn-delete", text: "確定新增" },
-                ]
-            })
+                    button: [
+                        { className: "btn btn-cancel", text: "取消", cancel: true, },
+                        { className: "btn btn-delete", text: "確定新增", cancel: true, onClick: save, },
+                    ]
+                })
+            });
         }
     </script>
 }

@@ -23,27 +23,26 @@
 
 @section scripts {
     <script>
-        var getGridJSON = '@Url.Action("EquipmentInfo_Management", "Datagrid")';
+        let SISN = location.href.split("/").pop();
+        var getGridJSON = '@Url.Action("GetComputationalStockDetailRecord", "Stock_Management")';
         var DataGrid;
         const IPSN = '@ViewBag.id';
-        let apiUrl = null;
+        let apiUrl = '@Url.Action("GetComputationalStockDetail", "Stock_Management")' + `?id=${SISN}`;
 
         $(async function () {
             readData(apiUrl);
-            await
-            Initialize_DataGrid(fakeData.Log);
+            Initialize_DataGrid(getGridJSON);
         })
         const SerializedName = [
-            { text: "類別", value: "Type" },
-            { text: "品項名稱", value: "SName" },
-            { text: "狀態", value: "Status" },
-            { text: "數量", value: "Num" },
-            { text: "單位", value: "Init" },
-            { text: "警戒值", value: "WarningVal" },
+            { text: "類別", value: "StockType" },
+            { text: "品項名稱", value: "StockName" },
+            { text: "狀態", value: "StockStauts" },
+            { text: "數量", value: "StockAmount" },
+            { text: "單位", value: "Unit" },
+            { text: "警戒值", value: "MinStockAmount" },
         ]
         let fakeData = {
-            SIRSN: "1120301001",
-            Type: "潤滑劑",
+            StockType: "潤滑劑",
             SName: "軸承潤滑劑",
             Status: "低於警戒值",
             Num: "18",
@@ -86,21 +85,21 @@
         function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
-                //url: getGridJSON,
-                data: getGridJSON,
-                //method: 'POST',
-                queryParams: getQueryParams(),
-                idField: 'IPSN',
+                url: getGridJSON,
+                method: 'POST',
+                queryParams: { SISN },
+                //idField: 'IPSN',
                 columns: [[
-                    dg.column('ChangeTime', '日期時間', 220),
-                    dg.column('Registrar', '登記人', 160),
+                    dg.column('DateTime', '日期時間', 220),
                     dg.column('InboundNum', '入庫數量', 140),
-                    dg.formatColumn('Document', '採購單據', 300, function (val, row, index) {
-                        return `<a href="#" class="" >${row.Document}</a>`;
-                    }),
-                    dg.column('Recipient', '取用人', 160),
                     dg.column('OutboundNum', '出庫數量', 140),
-                    dg.column('CurrentInventory', '庫存數量', 140),
+                    dg.column('StockNum', '庫存數量', 140),
+                    dg.column('Registrant', '登記人', 160),
+                    dg.formatColumn('Document', '採購單據', 300, function (val, row, index) {
+                        if (row.Document) return `<a href="${row.Document}" target="_blank" class="" >採購單據</a>`
+                        return ''
+                    }),
+                    dg.column('Taker', '取用人', 160),
                     dg.column('Memo', '備註', 300),
                 ]]
             })
@@ -121,15 +120,16 @@
 
             function onSuccess(res) {
                 console.log("res", res);
+                res = res.Datas;
                 const tableRow = createTableInner(res, SerializedName);
                 $("#PlanDetail").append(tableRow);
 
-                if (res.Status === "低於警戒值") {
-                    $("#PlanDetail").find('#d-Status').css("color", "red");
+                if (res.StockStauts === "低於警戒值") {
+                    $("#PlanDetail").find('#d-StockStauts').css("color", "red");
                 }
 
-                if (res.WarningVal > res.Num) {
-                    $("#PlanDetail").find('#d-Num').css("color", "red");
+                if (res.MinStockAmount > res.StockAmount) {
+                    $("#PlanDetail").find('#d-StockAmount').css("color", "red");
                 }
             }
 
