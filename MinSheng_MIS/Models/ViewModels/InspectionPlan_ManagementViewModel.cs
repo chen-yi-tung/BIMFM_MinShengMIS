@@ -965,7 +965,6 @@ namespace MinSheng_MIS.Models.ViewModels
 		public class PlanFillInInfo
 		{
 			public string InspectionOrder { get; set; }
-			public string ReportUserName { get; set; }
 
 			public List<EquipmentCheckItem> EquipmentCheckItems { get; set; }
 			public List<EquipmentReportingItem> EquipmentReportingItems { get; set; }
