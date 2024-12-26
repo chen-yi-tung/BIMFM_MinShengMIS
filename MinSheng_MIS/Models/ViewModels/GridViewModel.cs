@@ -25,7 +25,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class GridResult<T>
     {
         [JsonProperty("total")]
-        public string Total { get; set; } = "0"; // 總筆數
+        public int Total { get; set; } = 0; // 總筆數
         [JsonProperty("rows")]
         public IEnumerable<T> Rows { get; set; } // 內容
     }
