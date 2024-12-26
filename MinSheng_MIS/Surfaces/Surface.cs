@@ -20,6 +20,17 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        #region InspectionState 巡檢時段狀態
+        public static Dictionary<string, string> InspectionState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待執行");
+            ValueOption.Add("2", "執行中");
+            ValueOption.Add("3", "完成");
+            return ValueOption;
+        }
+        #endregion
+
         #region InspectionPlanState 巡檢頻率
         public static Dictionary<string, string> InspectionPlanFrequency()
         {

@@ -200,6 +200,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Account_ManagementController.cs" />
     <Compile Include="Controllers\API\DropDownListApi.cs" />
+    <Compile Include="Controllers\API\InspectionPlan_ManagementController.cs" />
     <Compile Include="Controllers\API\Repair_ManagementApi.cs" />
     <Compile Include="Controllers\AsBuiltDrawing_ManagementController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
@@ -408,6 +409,7 @@
     <Compile Include="Models\ViewModels\ExperimentalLabelViewModels.cs" />
     <Compile Include="Models\ViewModels\ExperimentData_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\GridViewModel.cs" />
+    <Compile Include="Models\ViewModels\InspectionPlan_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\JsonResponseViewModel.cs" />
     <Compile Include="Models\ViewModels\LaboratoryMaintenance_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\MaintainItemQuery.cs" />
@@ -462,6 +464,7 @@
     <Compile Include="Services\DesignDiagramsService.cs" />
     <Compile Include="Services\EquipmentInfo_ManagementService.cs" />
     <Compile Include="Services\Helper.cs" />
+    <Compile Include="Services\InspectionPlan_ManagementService.cs" />
     <Compile Include="Services\JsonResService.cs" />
     <Compile Include="Services\MeetingMinutesService.cs" />
     <Compile Include="Services\PlanInformationService.cs" />

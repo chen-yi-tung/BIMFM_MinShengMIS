@@ -934,7 +934,16 @@ namespace MinSheng_MIS.Models.ViewModels
 				return ex.Message;
 			}
 		}
-		#endregion
+        #endregion
 
-	}
+        #region APP-巡檢工單列表
+		public class PlanInfo
+		{
+            public string InspectionState { get; set; }
+            public string IPTSN { get; set; }
+            public string InspectionTime { get; set; }
+            public List<string> Member { get; set; }
+        }
+        #endregion
+    }
 }
