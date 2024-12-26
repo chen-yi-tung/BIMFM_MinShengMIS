@@ -164,8 +164,29 @@ namespace MinSheng_MIS.Services
                 #region 資料
                 PlanFillInInfo datas = new PlanFillInInfo();
                 datas.InspectionOrder = data.InspectionOrder;
-                datas.EquipmentCheckItems = _db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == data.IPESN).OrderBy(x => x.Id).ToList();
-                datas.EquipmentReportingItems = _db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == data.IPESN).OrderBy(x => x.Id).ToList();
+                var equipmentCheckItems = _db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == data.IPESN).OrderBy(x => x.Id).ToList();
+                List<EquipmentCheckItem> checkItems = new List<EquipmentCheckItem>();
+                foreach (var item in equipmentCheckItems)
+                {
+                    EquipmentCheckItem checkItem = new EquipmentCheckItem();
+                    checkItem.Id = item.Id;
+                    checkItem.CheckItemName = item.CheckItemName;
+                    checkItem.CheckResult = item.CheckResult;
+                    checkItems.Add(checkItem);
+                }
+                datas.EquipmentCheckItems = checkItems;
+                var equipmentReportingItems = _db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == data.IPESN).OrderBy(x => x.Id).ToList();
+                List<EquipmentReportingItem> reportItems = new List<EquipmentReportingItem>();
+                foreach (var item in equipmentReportingItems)
+                {
+                    EquipmentReportingItem reportItem = new EquipmentReportingItem();
+                    reportItem.Id = item.Id;
+                    reportItem.ReportValue = item.ReportValue;
+                    reportItem.ReportContent = item.ReportContent;
+                    reportItem.Unit = item.Unit;
+                    reportItems.Add(reportItem);
+                }
+                datas.EquipmentReportingItems = reportItems;
                 res.Datas = datas;
                 #endregion
 
@@ -208,11 +229,21 @@ namespace MinSheng_MIS.Services
                 _db.InspectionPlan_Equipment.AddOrUpdate(inspectionEquipment);
                 _db.SaveChanges();
                 //巡檢設備檢查項目
-                _db.InspectionPlan_EquipmentCheckItem.AddOrUpdate(data.EquipmentCheckItems.ToArray());
-                _db.SaveChanges();
+                foreach (var item in data.EquipmentCheckItems)
+                {
+                    var checkItem = _db.InspectionPlan_EquipmentCheckItem.Find(item.Id);
+                    checkItem.CheckResult = item.CheckResult;
+                    _db.InspectionPlan_EquipmentCheckItem.AddOrUpdate(checkItem);
+                    _db.SaveChanges();
+                }
                 //巡檢設備填報項目
-                _db.InspectionPlan_EquipmentReportingItem.AddOrUpdate(data.EquipmentReportingItems.ToArray());
-                _db.SaveChanges();
+                foreach (var item in data.EquipmentReportingItems)
+                {
+                    var reportItem = _db.InspectionPlan_EquipmentReportingItem.Find(item.Id);
+                    reportItem.ReportContent = item.ReportContent;
+                    _db.InspectionPlan_EquipmentReportingItem.AddOrUpdate(reportItem);
+                    _db.SaveChanges();
+                }
                 //巡檢RFID更改狀態為完成
                 checkRFIDOrder.Status = "2";
                 _db.InspectionPlan_RFIDOrder.AddOrUpdate(checkRFIDOrder);
