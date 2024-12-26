@@ -33,4 +33,11 @@ namespace MinSheng_MIS.Models.ViewModels
         public DateTime NextMaintainDate { get; set; }
         public List<string> Maintainer { get; set; }
     }
+
+    public class Maintain_ManagementAuditViewModel
+    {
+        public string EMFSN { get; set; }
+        public string AuditReason { get; set; }
+        public string AuditResult { get; set; }
+    }
 }
