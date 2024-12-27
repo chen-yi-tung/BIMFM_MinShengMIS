@@ -44,7 +44,7 @@ function getCreateSaveData() {
     }
     return {
         TemplateName,
-        TempalteItems: sampleTr.calc()
+        Contents: sampleTr.calc()
     };
     function dialogError(inner) {
         createDialogModal({ id: "DialogModal-Error", inner: inner })

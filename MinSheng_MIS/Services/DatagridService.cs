@@ -3053,13 +3053,13 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("Registrant", db.AspNetUsers.Where(x => x.UserName == item.Registrar).FirstOrDefault()?.MyName.ToString() ?? null); //登記人
                     if (item.ChangeType == "1")//出庫
                     {
-                        itemObject.Add("InboundNum", item.NumberOfChanges); //入庫數量
-                        itemObject.Add("OutboundNum", null); //出庫數量
+                        itemObject.Add("InboundNum", null); //入庫數量
+                        itemObject.Add("OutboundNum", item.NumberOfChanges); //出庫數量
                     }
                     else
                     { //入庫
-                        itemObject.Add("InboundNum", null); //入庫數量
-                        itemObject.Add("OutboundNum", item.NumberOfChanges); //出庫數量
+                        itemObject.Add("InboundNum", item.NumberOfChanges); //入庫數量
+                        itemObject.Add("OutboundNum", null); //出庫數量
                     }
                     itemObject.Add("Taker", item.Recipient); //取用人
                     itemObject.Add("Document", item.PurchaseOrder != null ? "/Files/PurchaseOrder/" + item.PurchaseOrder : null); //採購單據

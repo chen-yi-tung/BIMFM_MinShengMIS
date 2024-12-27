@@ -4,14 +4,14 @@ const ALDGOptions = {
     edg: '#Template-datagrid',
     id: "AutoLink",
     type: "Template",
-    initDatagridUrl: "/Datagrid/PlanManagement",
+    initDatagridUrl: "/Datagrid/SampleSchedule_Management",
     appendDataUrl: "/PlanManagement/AddReportForm",
     appendDataKey: "RSN",
     removeDataUrl: "/PlanManagement/DeleteReportForm",
     removeDataKey: "RSN",
     filterCheckKey: "",
     datagridOptions: {
-        idField: 'RSN',
+        idField: 'DailyTemplateSN',
         remoteSort: false,
         sortOrder: 'asc',
         singleSelect: true,
@@ -19,12 +19,12 @@ const ALDGOptions = {
         checkOnSelect: false,
     },
     columns: [[
-        { field: 'Name', title: '每日巡檢時程模板', align: 'center', width: 400, sortable: true },
+        { field: 'TemplateName', title: '每日巡檢時程模板', align: 'center', width: 400, sortable: true },
         {
             field: '_info', align: 'center', width: 150, formatter: (val, row, index) => {
-                return `<button class="btn btn-datagrid" data-index="${index}" data-btn-type="read"
-                            onclick="window.open('PlanManagement/Detail/${ row.IPSN }', "_blank")"
-                        >巡檢排程資訊</button>`;
+                return `<a href="/SampleSchedule_Management/Detail/${row.DailyTemplateSN}" target="_blank" >
+                <button type="button" class="btn btn-datagrid">巡檢排程資訊</button>
+                <a/>`
             }
         },
     ]],
@@ -32,7 +32,7 @@ const ALDGOptions = {
         /*{ field: '_select', checkbox: true, },*/
         {
             field: 'action', align: 'center', width: 40, formatter: function (value, row, index) {
-                return `<input type="radio" name="dgRadio">`;
+                return `<input type="radio" name="dgRadio"  data-index="${index}" value="${row.DailyTemplateSN}">`;
             },
         },
     ]],
@@ -136,30 +136,8 @@ function PIDG(options) {
        
         dg.datagrid(Object.assign({}, self.options.datagridOptions,
             {
-                //url: self.options.initDatagridUrl,
-                //method: 'POST',
-                data: [
-                    {
-                        IPSN: "1120301001",
-                        Name: "前處理機房巡檢"
-                    },
-                    {
-                        IPSN: "1120301002",
-                        Name: "生物處理機台巡檢"
-                    },
-                    {
-                        IPSN: "1120301003",
-                        Name: "2"
-                    },
-                    {
-                        IPSN: "1120301004",
-                        Name: "3"
-                    },
-                    {
-                        IPSN: "1120301005",
-                        Name: "4"
-                    },
-                ],
+                url: self.options.initDatagridUrl,
+                method: 'POST',
                 queryParams: getQueryParams(`#${self.options.id} form`),
                 fit: true,
                 pagination: self.options.pageOptions.showPageList,
@@ -196,7 +174,7 @@ function PIDG(options) {
 
     this.searchBtn.click(() => { self.loadDatagrid(self.options.id) });
 
-    this.addRowBtn.on("click", () => { self.addRowEvent() });
+    this.addRowBtn.on("click", () => { self.addRowEvent(self.mdg) });
 
     this.deleteBtn.on("click", () => { if (this.edg.datagrid("getChecked").length !== 0) { this.removeData(); } });
 
@@ -246,23 +224,9 @@ PIDG.prototype.filterCheck = function (dg, data, key) {
     }
 }
 PIDG.prototype.addRowEvent = function () {
-    if (this.mdg.datagrid("getChecked").length !== 0) {
-
-        this.addRowBtn.off("click");
-
-        this.addRowBtn.on("click", () => {
-            if (this.mdg.datagrid("getChecked").length !== 0) {
-                this.changeEditAreaCss();
-                this.appendData();
-            }
-        });
-
-        if (this.edg.closest(".datatable-easyui").hasClass('d-none')) {
-            this.changeEditAreaCss();
-            this.initResultDatagrid(this.edg);
-        }
-        this.addRowBtn.click();
-    }
+    let selectedRadio = $("input[name=dgRadio]:checked").val();
+    if (selectedRadio) updateTemplateWithSN(selectedRadio);
+    bootstrap.Modal.getInstance(this.modal[0]).hide();
 }
 PIDG.prototype.addSpinner = function (btn) {
     $(btn).append(` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);

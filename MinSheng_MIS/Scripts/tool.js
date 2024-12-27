@@ -207,7 +207,7 @@ function FileUploader({
         this.check && this.check.prop("checked", true);
     }
     this.getFile = (index = 0) => {
-        return this.items[index].file;
+        return this.items[index]?.file;
     }
     this.getAllFile = () => {
         return this.items.map((item) => item.file)

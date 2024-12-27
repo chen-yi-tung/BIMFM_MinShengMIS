@@ -113,13 +113,13 @@
                 rowStyler: (i, row) => row.Status === "低於警戒值" ? { class: 'isMinStock' } : undefined
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Detail/${row.IPSN}`, "_blank")
+                window.open(`${baseUrl}/Detail/${row.SISN}`, "_blank")
             })
             dg.addEvent("edit", function (row, i) {
-                window.open(`${baseUrl}/Edit/${row.IPSN}`, "_self")
+                window.open(`${baseUrl}/Edit/${row.SISN}`, "_self")
             })
             dg.addEvent("delete", function (row, i) {
-                window.open(`${baseUrl}/Delete/${row.IPSN}`, "_self")
+                window.open(`${baseUrl}/Delete/${row.SISN}`, "_self")
             })
         }
 
