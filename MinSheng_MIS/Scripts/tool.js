@@ -173,7 +173,7 @@ function FileUploader({
         return `<div class="form-file-item" data-file-name="${name}">
                     <img class="form-file-preview"/>
                     <div class="d-flex flex-column">
-                        <a id="FileName" class="form-file-name" target="_blank"></a>
+                        <div id="FileName" class="form-file-name"></div>
                         <div class="form-file-size"></div>
                     </div>
                     <button type="button" class="btn-delete-item flex-shrink-0" id="FileDelete"></button>
@@ -192,11 +192,15 @@ function FileUploader({
         return this.items.length !== 0
     }
     this.setFile = (path, file = null) => {
-        if (!multiple) { this.clearAllFile() }
+        if (!multiple) {
+            this.clearAllFile()
+        }
         let container = $(temp_item())
         list.append(container);
+
         if (file == null) {
-            file = { name: path.split("/").at(-1) }
+            file = { name: path.split("/").pop(), type: "image/" };
+            //file = { name: path.split("/").at(-1) }
         }
         this.items.push({ container, file })
 
@@ -204,8 +208,14 @@ function FileUploader({
         fileName.text(file.name);
         fileName.attr("href", path);
 
+        document.querySelector('.form-file-list').classList.add('d-flex');
+        document.querySelector('.form-file-preview').classList.add('d-flex');
+        document.querySelector('.form-file-hr').classList.add('d-block');
+        document.querySelector('.form-file-preview').src = path;
+
         this.check && this.check.prop("checked", true);
     }
+
     this.getFile = (index = 0) => {
         return this.items[index]?.file;
     }

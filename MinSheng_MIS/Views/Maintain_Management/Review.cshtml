@@ -77,7 +77,7 @@
 
         const fakeData = {
             Datas: {
-                EMFSN: "E00003_000001_230107",
+                EMFSN: "M241226000014",
                 Status: "審核未過",
                 MaintainName: "皮帶之保養",
                 Maintainer: "王曉明、任趙仁",
@@ -172,15 +172,15 @@
 
             console.log("最後傳送", Object.fromEntries(form.entries()));
 
-            @*$.ajax({
-                url: '@Url.Action("Audit", "Repair_Management")',
+            $.ajax({
+                url: '@Url.Action("Audit", "Maintain_Management")',
                 data: form,
                 type: "POST",
                 contentType: false,
                 processData: false,
                 success: onSuccess,
                 error: onError
-            })*@
+            })
 
             function onSuccess(res) {
                 console.log(res);

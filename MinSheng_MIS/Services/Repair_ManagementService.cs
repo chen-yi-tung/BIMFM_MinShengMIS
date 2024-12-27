@@ -104,8 +104,13 @@ namespace MinSheng_MIS.Services
             dbItem.AuditResult = item.AuditResult;
             if (item.AuditResult)
             {
+                dbItem.ReportState = "4";
                 EquipmentInfo equipment = _db.EquipmentInfo.Find(dbItem.ESN);
                 equipment.EState = "1";
+            }
+            else
+            {
+                dbItem.ReportState = "5";
             }
             _db.SaveChanges();
         }
