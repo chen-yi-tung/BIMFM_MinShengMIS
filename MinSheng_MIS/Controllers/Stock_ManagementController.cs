@@ -238,6 +238,32 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult DeleteComputationalStock(string SISN)
+        {
+            JsonResService<string> result = new JsonResService<string>();
+            try
+            {
+                // Data Annotation
+                //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+                // 刪除庫存
+                result = _stockService.Stock_Delete(SISN);
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = $"</br>{ex.Message}";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (Exception)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>系統異常！";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+        }
         #endregion
     }
 }
