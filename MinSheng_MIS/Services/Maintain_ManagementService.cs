@@ -21,6 +21,7 @@ namespace MinSheng_MIS.Services
             _db = db;
         }
 
+        // WEB
         #region 定期保養單 詳情
         public JsonResService<Maintain_ManagementDetailViewModel> MaintainManagement_Details(string emfsn)
         {
@@ -71,7 +72,7 @@ namespace MinSheng_MIS.Services
             #region 更新保養單資料、新增保養單派工
             foreach (var emfsn in datas.EMFSN)
             {
-                var emfsndata = _db.Equipment_MaintenanceForm.Find(emfsn);
+                var emfsndata = _db.Equipment_MaintenanceForm.Where(x => x.EMFSN == emfsn && x.Status == "1").FirstOrDefault();
                 if (emfsndata == null)
                     throw new MyCusResException("查無此定期保養單");
 
@@ -105,10 +106,29 @@ namespace MinSheng_MIS.Services
         {
             JsonResService<string> res = new JsonResService<string>();
 
-            
+            #region 檢查資料
+            var maindata = _db.Equipment_MaintenanceForm.Where(x => x.EMFSN == datas.EMFSN && x.Status == "3").FirstOrDefault();
+            if (maindata == null)
+                throw new MyCusResException("查無此設備保養單");
+            if (string.IsNullOrEmpty(datas.AuditReason.Trim()))
+                throw new MyCusResException("請填寫審核意見內容!");
+            #endregion
+
+            #region 更新資料
+            if (datas.AuditResult) maindata.Status = "4"; // 審核通過
+            else maindata.Status = "5"; // 審核未過
+
+            maindata.AuditId = userName;
+            maindata.AuditTime = DateTime.Now;
+            maindata.AuditResult = datas.AuditResult;
+            maindata.AuditReason = datas.AuditReason;
+
+            _db.Equipment_MaintenanceForm.AddOrUpdate(maindata);
+            _db.SaveChanges();
+            #endregion
 
             res.AccessState = ResState.Success;
-            res.Datas = "";
+            res.Datas = "填報成功!";
             return res;
         }
         #endregion
@@ -209,7 +229,7 @@ namespace MinSheng_MIS.Services
 
             #region 檢查資料
             var maindata = _db.Equipment_MaintenanceForm
-                .Where(x => (x.Status == "2" || x.Status == "5") && x.EMFSN == datas.EMFSN).FirstOrDefault();
+                .Where(x => x.EMFSN == datas.EMFSN && (x.Status == "2" || x.Status == "5")).FirstOrDefault();
             if (maindata == null)
                 throw new MyCusResException("查無此設備保養單");
             if (string.IsNullOrEmpty(datas.ReportContent.Trim()))
@@ -230,34 +250,6 @@ namespace MinSheng_MIS.Services
             res.Datas = "填報成功!";
             return res;
         }
-        #endregion
-
-        #region 定期保養單 填報
-        //public JsonResService<string> MaintainManagementApp_Report(MaintainManagementApp_Report datas, string userName)
-        //{
-        //    #region 變數
-        //    JsonResService<string> res = new JsonResService<string>();
-        //    #endregion
-
-        //    #region 更新資料
-        //    var maindata = _db.Equipment_MaintenanceForm
-        //        .Where(x => (x.Status == "2" || x.Status == "5") && x.EMFSN == datas.EMFSN).FirstOrDefault();
-        //    if (maindata == null)
-        //        throw new MyCusResException("查無此設備保養單");
-
-        //    maindata.Status = "3"; // 待審核
-        //    maindata.ReportTime = DateTime.Now;
-        //    maindata.ReportContent = datas.ReportContent;
-        //    maindata.ReportId = userName;
-
-        //    _db.Equipment_MaintenanceForm.AddOrUpdate(maindata);
-        //    _db.SaveChanges();
-        //    #endregion
-
-        //    res.AccessState = ResState.Success;
-        //    res.Datas = "填報成功!";
-        //    return res;
-        //}
         #endregion
     }
 }

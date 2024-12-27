@@ -45,7 +45,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         public string EMFSN { get; set; }
         public string AuditReason { get; set; }
-        public string AuditResult { get; set; }
+        public bool AuditResult { get; set; }
     }
     #endregion
 
