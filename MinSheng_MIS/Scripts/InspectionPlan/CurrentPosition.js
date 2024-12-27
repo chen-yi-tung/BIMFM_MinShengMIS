@@ -246,6 +246,9 @@ window.addEventListener('load', async () => {
                 deviceName: "BT-20142",
             },
         ])
+
+        //bim.createEquipmentPoint(new THREE.Vector3(0, 0, 0), true);
+
         /* bim.createSamplePath()
         const pathRecord = await bim.createPathRecord()
         document.body.addEventListener('keydown', (e) => {
