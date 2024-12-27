@@ -119,11 +119,9 @@ namespace MinSheng_MIS.Models.ViewModels
     /// <summary>
     /// 設備資料可變更之資訊
     /// </summary>
-    public interface IEquipmentInfo
+    public interface IEquipmentInfo : IEquipmentName
     {
         //HttpPostedFileBase EPhoto { get; set; } //新增的設備照片
-        string EName { get; set; } // 設備名稱
-        string NO { get; set; } // 設備編號
         DateTime? InstallDate { get; set; } // 安裝日期
         string FSN { get; set; } // 樓層編號
         string Brand { get; set; } // 設備廠牌
@@ -133,6 +131,12 @@ namespace MinSheng_MIS.Models.ViewModels
         string OperatingVoltage { get; set; } // 使用電壓
         string OtherInfo { get; set; } // 其他耗材資料
         string Memo { get; set; } // 備註
+    }
+
+    public interface IEquipmentName
+    {
+        string EName { get; set; } // 設備名稱
+        string NO { get; set; } // 設備編號
     }
 
     public abstract class EquipInfo : IEquipmentInfo
