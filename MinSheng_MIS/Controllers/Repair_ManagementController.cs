@@ -184,6 +184,7 @@ namespace MinSheng_MIS.Controllers
         {
             JObject jo = new JObject();
             DatagridService ds = new DatagridService();
+            form.Add("rows", int.MaxValue.ToString());
             jo = ds.RepairManagementDataGrid(form);
             using (var package = new ExcelPackage())
             {
