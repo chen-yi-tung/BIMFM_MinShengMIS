@@ -46,6 +46,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EPPlus, Version=4.5.3.3, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>packages\EPPlus.4.5.3.3\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -71,6 +74,7 @@
     <Reference Include="MiniExcel, Version=1.31.3.0, Culture=neutral, PublicKeyToken=e7310002a53eac39, processorArchitecture=MSIL">
       <HintPath>packages\MiniExcel.1.31.3\lib\net45\MiniExcel.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="RFID, Version=2017.6.6.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>App_Data\RFID.dll</HintPath>
@@ -250,6 +254,7 @@
     <Compile Include="Attributes\JWTAuthorizeAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Account_ManagementController.cs" />
+    <Compile Include="Controllers\API\Maintain_ManagementApi.cs" />
     <Compile Include="Controllers\API\DropDownListApi.cs" />
     <Compile Include="Controllers\API\InspectionPlan_ManagementController.cs" />
     <Compile Include="Controllers\API\Repair_ManagementApi.cs" />

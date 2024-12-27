@@ -2,11 +2,13 @@
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
 using static MinSheng_MIS.Models.ViewModels.InspectionPlan_ManagementViewModel;
@@ -28,9 +30,16 @@ namespace MinSheng_MIS.Controllers.API
             JsonResService<List<PlanInfo>> result = new JsonResService<List<PlanInfo>>();
             try
             {
-                string userID = HttpContext.Current.User.Identity.Name;
-
-                result = _inspectionPlanService.GetPlanList(userID,searchdate);
+                string userID = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                if (string.IsNullOrEmpty(userID))
+                {
+                    result.AccessState = ResState.Failed;
+                    result.ErrorMessage = "無登入者資料";
+                }
+                else
+                {
+                    result = _inspectionPlanService.GetPlanList(userID, searchdate);
+                }
             }
             catch (Exception ex)
             {
@@ -94,8 +103,16 @@ namespace MinSheng_MIS.Controllers.API
             JsonResService<string> result = new JsonResService<string>();
             try
             {
-                string userID = HttpContext.Current.User.Identity.Name;
-                result = _inspectionPlanService.PlanReportFillIn(userID, data);
+                string userID = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                if (string.IsNullOrEmpty(userID))
+                {
+                    result.AccessState = ResState.Failed;
+                    result.ErrorMessage = "無登入者資料";
+                }
+                else
+                {
+                    result = _inspectionPlanService.PlanReportFillIn(userID, data);
+                }
             }
             catch (Exception ex)
             {

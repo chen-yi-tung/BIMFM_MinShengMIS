@@ -139,7 +139,7 @@
 
 @section scripts {
     <script>
-        var getGridJSON = '@Url.Action("ManagementDataGrid", "Datagrid")';
+        var getGridJSON = '@Url.Action("MaintainForm_Management", "Datagrid")';
         var DataGrid;
         let currentEMFSN = "";
 
@@ -220,16 +220,16 @@
             await formDropdown.ASN()
             await addDropDownList();
             await addButtonEvent();
-            Initialize_DataGrid(fakedata);
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
 
         function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
-                //url: getGridJSON,
-                data: getGridJSON,
-                //method: 'POST',
+                url: getGridJSON,
+                //data: fakedata,
+                method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'EMFSN',
                 singleSelect: false,
@@ -283,6 +283,8 @@
                 modal.addEventListener('hidden.bs.modal', () => {
                     document.getElementById("NextMaintainDate").value = "";
                     $('#addMultiAssign #Maintainer').tagbox('clear');
+
+                    document.getElementById("multiAssign").focus();
                 }, { once: true })
             });
         }
@@ -369,15 +371,15 @@
                 console.log("傳送的資料", sendData);
 
 
-                @*$.ajax({
-                    url: "@Url.Action("Assignment", "Repair_Management")",
+                $.ajax({
+                    url: "@Url.Action("Assignment", "Maintain_Management")",
                     data: JSON.stringify(sendData),
                     type: "POST",
                     contentType: "application/json",
                     processData: false,
                     success: onSuccess,
                     error: onError
-                })*@
+                })
                 const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
 
                 function onSuccess(res) {
@@ -385,7 +387,7 @@
                     console.log(res);
                     createDialogModal({
                         id: "DialogModal-Success", inner: "派工成功！",
-                        onHide: () => { window.location.href = "/Maintain_Management_Management/Index"; }
+                        onHide: () => { window.location.href = "/Maintain_Management/Index"; }
                     });
                 }
                 function onError(res) {
