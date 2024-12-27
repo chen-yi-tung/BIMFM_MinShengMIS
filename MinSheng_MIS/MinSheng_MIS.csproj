@@ -525,6 +525,7 @@
     <Compile Include="Services\DatagridService.cs" />
     <Compile Include="Services\DesignDiagramsService.cs" />
     <Compile Include="Services\EquipmentInfo_ManagementService.cs" />
+    <Compile Include="Services\EquipmentOperatingManualService.cs" />
     <Compile Include="Services\Helper.cs" />
     <Compile Include="Services\InspectionPlan_ManagementService.cs" />
     <Compile Include="Services\JsonResService.cs" />
@@ -1755,6 +1756,7 @@
     <Content Include="Scripts\PlanManagement\CreateDataGrids.js" />
     <Content Include="Scripts\popper.min.js" />
     <Content Include="Scripts\share.js" />
+    <Content Include="Scripts\Sortable.min.js" />
     <Content Include="Scripts\tool.js" />
     <Content Include="Views\Stock_Management\CreateInbound.cshtml" />
     <Content Include="Web.config" />
