@@ -16,12 +16,12 @@
         <form class="form justify-content-lg-end">
             <div class="form-group-zone">
                 <div class="form-group required">
-                    <label for="PlanName">工單名稱</label>
-                    <input type="text" class="form-control" name="PlanName" id="PlanName" maxlength="20" required>
+                    <label for="IPName">工單名稱</label>
+                    <input type="text" class="form-control" name="IPName" id="IPName" maxlength="20" required>
                 </div>
                 <div class="form-group required">
                     <label for="PlanDate">工單日期</label>
-                    <input type="date" class="form-control" name="PlanDate" id="PlanDate" maxlength="20" required>
+                    <input type="date" class="form-control" name="PlanDate" id="PlanDate" required>
                 </div>
             </div>
             <hr class="hr-default" />
@@ -64,7 +64,7 @@
                                         <input class="form-control" type="time" id="EndTime" name="EndTime" step="any" required />
                                     </td>
                                     <td>
-                                        <select class="form-select" id="PathName" name="PathName" required></select>
+                                        <select class="form-select" id="PlanPathSN" name="PlanPathSN" required></select>
                                     </td>
                                     <td id="Quantity">--</td>
                                     <td id="Frequency">--</td>
@@ -127,8 +127,8 @@
                 <div class="search-area">
                     <form class="form">
                         <div class="form-group">
-                            <label for="EName">巡檢路線名稱</label>
-                            <input class="form-control" id="EName" name="EName" type="text" />
+                            <label for="TemplateName">巡檢路線名稱</label>
+                            <input class="form-control" id="TemplateName" name="TemplateName" type="text" />
                         </div>
                         <div class="button-group">
                             <button type="button" class="btn btn-search" id="search">查詢</button>
@@ -149,13 +149,14 @@
 
 @section scripts {
     <script>
-        let apiUrl = null;
-        let SubmitUrl = '@Url.Action("CreatePlan", "PlanManagement")';
+        let pathApiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
+        let templateApiUrl = '@Url.Action("ReadBody", "SampleSchedule_Management")';
+        let SubmitUrl = '@Url.Action("CreateInspectionPlan", "PlanManagement")';
         let sampleTr = SampleTr();
 
         $(async function () {
             addButtonEvent();
-            await pushSelect("PathName", "/DropDownList/Area");
+            await pushSelect("PlanPathSN", "/DropDownList/InspectionPathSample");
             autoLinkDG_Controller = new PIDG(ALDGOptions);
             sampleTr.init();
             sampleTr.create();
@@ -168,12 +169,14 @@
             thead: true,
             columns: [
                 { id: "Index", title: "" },
-                { id: "InterCode", title: "RFID內碼" },
-                { id: "ExterCode", title: "RFID外碼" },
+                { id: "InternalCode", title: "RFID內碼" },
+                { id: "ExternalCode", title: "RFID外碼" },
+                { id: "RFIDName", title: "RFID名稱" },
+                { id: "RFIDArea", title: "RFID棟別" },
+                { id: "RFIDFloor", title: "RFID樓層" },
+                { id: "RFIDMemo", title: "RFID備註" },
                 { id: "EName", title: "設備名稱" },
-                { id: "ESN", title: "設備編號" },
-                { id: "Area", title: "棟別" },
-                { id: "Floor", title: "樓層" },
+                { id: "NO", title: "設備編號" },
                 { id: "Brand", title: "廠牌" },
                 { id: "Model", title: "型號" },
                 { id: "Frequency", title: "巡檢頻率" },
@@ -183,7 +186,7 @@
             PathNameSN: "1120301001",
             PathName: "前處理機房巡檢",
             Frequency: "3",
-            EItem: [
+            Equipments: [
                 {
                     InterCode: "XSCXCZS",
                     ExterCode: "XSCXCZS",
@@ -225,9 +228,18 @@
                 },
             ]
         }
-        let tempData = {};
+        let pathData = {};
+        const updateTemplateWithSN = async (SN) => {
+            let templateData = await readData(templateApiUrl, SN);
+            let allPathSN = templateData.Contents.map(e => e.PlanPathSN);
+            console.log('allPathSN', allPathSN);
+            sampleTr.list.empty();
+            templateData.Contents.forEach(c => {
+                sampleTr.create(c);
+            })
+        }
         const updatePathDetail = async (SN) => {
-            if (!tempData[SN]) await readData(apiUrl, SN);
+            if (!pathData[SN]) pathData[SN] = await readData(pathApiUrl, SN);
             // 在每列加上index
             function createIndexToArrayData(arr) {
                 return arr.map((e, i) => {
@@ -238,18 +250,18 @@
                 })
             }
             $("#PathDetail").empty();
-            $("#PathDetail").append(createTableInner(tempData[SN], SerializedName));
+            $("#PathDetail").append(createTableInner(pathData[SN], SerializedName));
             $("#EInfo").empty();
-            tempData[SN].EItem ?
+            pathData[SN].Equipments ?
                 $("#EInfo").append(createTableGrid(
-                    createIndexToArrayData(tempData[SN].EItem), GridOptions)) :
+                    createIndexToArrayData(pathData[SN].Equipments), GridOptions)) :
                 $("#EInfo").parents(".datatable").remove();
         }
         const updateTemplateInfo = async (SN, element) => {
             if (SN) {
-                if (!tempData[SN]) await readData(apiUrl, SN)
-                $(element).parent().parent().find("#Quantity").text(tempData[SN].EItem?.length || "--");
-                $(element).parent().parent().find("#Frequency").text(tempData[SN].Frequency);
+                if (!pathData[SN]) pathData[SN] = await readData(pathApiUrl, SN)
+                $(element).parent().parent().find("#Quantity").text(pathData[SN].Equipments?.length || "--");
+                $(element).parent().parent().find("#Frequency").text(pathData[SN].Frequency);
             } else {
                 $(element).parent().parent().find("#Quantity").text("--");
                 $(element).parent().parent().find("#Frequency").text("--");
@@ -257,40 +269,32 @@
         }
         function readData(url = null, SN) {
             return new Promise((resolve, reject) => {
-                if (url == null) {
-                    resolve(onSuccess(JSON.parse(JSON.stringify(fakeData))))
-                } else {
-                    $.ajax({
-                        url: url,
-                        type: "GET",
-                        dataType: "json",
-                        contentType: "application/json;charset=utf-8",
-                        success: (res) => {
-                            onSuccess(res);
-                            resolve("");
-                        },
-                        error: (ex) => {
-                            onError(ex);
-                            reject(ex);
-                        }
-                    });
-                }
+                $.ajax({
+                    url: `${url}?id=${SN}`,
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    success: (res) => {
+                        resolve(onSuccess(res));
+                    },
+                    error: (ex) => {
+                        onError(ex);
+                        reject(ex);
+                    }
+                });
             });
 
             function onSuccess(res) {
+                res = res.Datas
                 const convertString = (v) => `每${v}個小時`
                 res.Frequency = convertString(res.Frequency);
-                res.EItem.forEach(e => {
-                    e.Frequency = convertString(e.Frequency);
-                })
                 console.log("getPathDetail(after converting)", res);
-                tempData[SN] = res;
+                return res
             }
             function onError(ex) {
-                console.log(ex);
+                console.error(ex);
             }
         }
-
         function save(data) {
             if (!data) return;
             $.ajax({
@@ -337,7 +341,7 @@
                     reorderNumbers();
                 })
                 this.list.on("click", ".btn-datagrid", function (e) {
-                    let SN = $(this).parent().parent().find("#PathName").val();
+                    let SN = $(this).parent().parent().find("#PlanPathSN").val();
                     if (!SN) {
                         createDialogModal({ id: "DialogModal", inner: "請先選擇巡檢路線", button: [{ className: "btn btn-export", cancel: true, text: "確定" }] })
                         return
@@ -351,7 +355,7 @@
                     b.click();
                     b.remove();
                 })
-                this.list.on("change", "#PathName", function (e) {
+                this.list.on("change", "#PlanPathSN", function (e) {
                     let SN = $(this).val();
                     //console.log(SN);
                     updateTemplateInfo(SN, this);
@@ -366,6 +370,13 @@
                 item.find("#Info button").attr("index", this.count);
                 item.find("#d-Num").text(this.count)
                 item.find(`#UserID`).attr("id", "UserID" + this.count);
+                if (data) {
+                    item.find("#PlanPathSN").val(data.PlanPathSN);
+                    item.find("#StartTime").val(data.StartTime);
+                    item.find("#EndTime").val(data.EndTime);
+                    item.find("#Quantity").text(data.EquipmentCount);
+                    item.find("#Frequency").text(data.Frequency);
+                }
                 this.list.append(item);
                 addDropDownList("#UserID" + this.count);
             }
@@ -374,20 +385,20 @@
                     return {
                         StartTime: $(e).find("#StartTime").val(),
                         EndTime: $(e).find("#EndTime").val(),
-                        PathName: $(e).find("#PathName").val(),
-                        Operator: $(e).find(".operator-name").tagbox('getValues')
+                        PlanPathSN: $(e).find("#PlanPathSN").val(),
+                        Executors: $(e).find(".operator-name").tagbox('getValues')
                     }
                 })
             }
             this.checkValidity = () => {
-                let Eitems = this.list.children().toArray().map((e) => ({
+                let Equipments = this.list.children().toArray().map((e) => ({
                     StartTime: $(e).find("#StartTime").val(),
                     EndTime: $(e).find("#EndTime").val(),
-                    PathName: $(e).find("#PathName").val(),
-                    Operator: $(e).find(".operator-name").tagbox('getValues')
+                    PlanPathSN: $(e).find("#PlanPathSN").val(),
+                    Executors: $(e).find(".operator-name").tagbox('getValues')
                 }))
-                for (item of Eitems) {
-                    if (!item.StartTime || !item.EndTime || !item.PathName || item.Operator.length == 0) return false
+                for (item of Equipments) {
+                    if (!item.StartTime || !item.EndTime || !item.PlanPathSN || item.Executors.length == 0) return false
                 }
                 return true
             }

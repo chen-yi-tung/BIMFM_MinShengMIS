@@ -49,9 +49,9 @@ function addButtonEvent() {
 }
 
 function getCreateSaveData() {
-    let PlanName = $("#PlanName").val();
+    let IPName = $("#IPName").val();
     let PlanDate = $("#PlanDate").val();
-    if (!PlanName) {
+    if (!IPName) {
         dialogError("請輸入工單名稱！")
         return;
     }
@@ -68,9 +68,9 @@ function getCreateSaveData() {
         return;
     }
     return {
-        PlanName,
+        IPName,
         PlanDate,
-        TempalteItems: sampleTr.calc()
+        Inspections: sampleTr.calc()
     }
     function dialogError(inner) {
         createDialogModal({ id: "DialogModal-Error", inner: inner })
