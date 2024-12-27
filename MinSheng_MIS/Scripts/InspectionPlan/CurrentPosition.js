@@ -217,7 +217,7 @@ window.addEventListener('load', async () => {
 
         const ViewName = '進抽站-B2F';
         await bim.init()
-        await bim.loadModels(getModelsUrl(ViewName))
+        await bim.loadModels(bim.getModelsUrl(ViewName))
 
         //bim.hideWall()
         bim.createBeaconPoint([
@@ -262,30 +262,9 @@ window.addEventListener('load', async () => {
         currentLocation.addEventListener('change', async (e) => {
             bim.dispose()
             await bim.init()
-            await bim.loadModels(getModelsUrl(currentLocation.value))
+            await bim.loadModels(bim.getModelsUrl(currentLocation.value))
         })
     }
-
-    function getModelsUrl(ViewName) {
-        const ModelTypeList = [
-            "AR",
-            "BT",
-            "E",
-            "EL",
-            "F",
-            "PP",
-            "PPO",
-            "VE",
-            "WW"
-        ]
-        return ModelTypeList.map((type) => {
-            return {
-                type,
-                url: `/BimModels/TopView/${type}/Resource/3D 視圖/${ViewName}/${ViewName}.svf`
-            }
-        })
-    }
-
     // #endregion
 
     // #region chart function

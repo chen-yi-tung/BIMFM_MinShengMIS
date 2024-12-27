@@ -561,6 +561,7 @@
     <Content Include="App_Data\RFID.dll" />
     <Content Include="Content\ArcGIS\arcgis.css" />
     <Content Include="Content\BigScreen.css" />
+    <Content Include="Content\bim.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.rtl.css" />

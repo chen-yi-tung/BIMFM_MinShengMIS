@@ -2,6 +2,9 @@
     ViewBag.Title = "巡檢路線模板 詳情";
 }
 @section styles {
+    @Styles.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css")
+    @Styles.Render("~/Content/loading.css")
+    @Styles.Render("~/Content/bim.css")
     @Html.Partial("DataGridScripts")
     <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
     <script src="/Scripts/dataTable/PlanRecord.js" defer></script>
@@ -33,20 +36,29 @@
         <div class="modal-content">
             <div class="modal-body">
                 <h3>定位資訊</h3>
-
+                <div id="BIM" style="height: 50vh;">
+                    <div class="pin-area"></div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 @section scripts {
+    @Scripts.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js")
+    @Scripts.Render("~/Scripts/Forge/Viewer.Loading.js")
+    @Scripts.Render("~/Scripts/Forge/Viewer.Toolkit.js")
+    @Scripts.Render("~/Scripts/Forge/ForgePin.js")
+    @Scripts.Render("~/Scripts/Forge/UpViewer.js")
     <script>
-        let PlanPathSN = location.href.split('/').pop();
-        let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
+        const PlanPathSN = location.href.split('/').pop();
+        const apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
+        let bim = null;
 
         $(async function () {
             console.log(PlanPathSN)
             readData(apiUrl, PlanPathSN);
+            bim = new UpViewer(document.getElementById("BIM"));
         })
         //每日巡檢時程模板 詳情
         const SerializedName = [
@@ -68,7 +80,11 @@
                 { id: "Brand", title: "廠牌" },
                 { id: "Model", title: "型號" },
                 { id: "Frequency", title: "巡檢頻率" },
-                { id: "Btn", title: "" },
+                {
+                    id: "Btn", title: "", formatter: (v, row, i) => {
+                        return `<button type="button" class="btn btn-location" data-bs-toggle="modal" data-bs-target="#Location" data-row-index="${i}"><i class="fa-solid fa-location-dot"></i></button>`
+                    }
+                },
             ]
         }
         let fakeData = {
@@ -134,10 +150,12 @@
                 if (res.Datas) res = res.Datas
                 res.Frequency = `每${res.Frequency}小時`
                 $("#PlanDetail").append(createTableInner(res, SerializedName));
-                res.Equipments?
+                res.Equipments ?
                     $("#PlanRecord").append(createTableGrid(
                         createIndexToArrayData(res.Equipments), GridOptions)) :
                     $("#PlanRecord").parents(".datatable").remove();
+
+                setupBIMModal(res.Equipments);
             }
 
             function onError(res) {
@@ -149,12 +167,31 @@
                     return {
                         Index: i + 1,
                         ...e,
-                        Btn: `<button type="button" class="btn btn-location" data-bs-toggle="modal" data-bs-target="#Location"><i class="fa-solid fa-location-dot"></i></button>`
                     }
                 })
             }
+
+            function setupBIMModal(data) {
+                const modal = document.getElementById('Location')
+                modal.addEventListener('shown.bs.modal', async function (event) {
+                    const button = event.relatedTarget
+                    const index = button.getAttribute('data-row-index')
+                    const row = data[index];
+                    if (bim.equipmentPoint) {
+                        bim.equipmentPoint.hide();
+                    }
+                    await bim.init()
+                    await bim.loadModels(bim.getModelsUrl(row.RFIDViewName))
+                    const position = new THREE.Vector3(row.Location_X, row.Location_Y, 0)
+                    if (bim.equipmentPoint) {
+                        bim.equipmentPoint.position = position;
+                    }
+                    else {
+                        bim.createEquipmentPoint(position)
+                    }
+                    bim.equipmentPoint.show().update();
+                })
+            }
         }
-
-
     </script>
 }
