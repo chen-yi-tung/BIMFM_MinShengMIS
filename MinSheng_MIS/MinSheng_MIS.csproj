@@ -1756,6 +1756,7 @@
     <Content Include="Scripts\PlanManagement\CreateDataGrids.js" />
     <Content Include="Scripts\popper.min.js" />
     <Content Include="Scripts\share.js" />
+    <Content Include="Scripts\Sortable.min.js" />
     <Content Include="Scripts\tool.js" />
     <Content Include="Views\Stock_Management\CreateInbound.cshtml" />
     <Content Include="Web.config" />
