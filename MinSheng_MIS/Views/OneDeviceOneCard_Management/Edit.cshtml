@@ -61,17 +61,7 @@
                     <div class="form-group d-grid" style="grid-template-columns: 1fr 24px; column-gap: 1rem; ">
                         <label for="Frequency">巡檢頻率</label>
                         <div></div>
-                        <select class="form-select" style="grid-column-start: unset;" name="Frequency" id="Frequency" placeholder="請選擇">
-                            <option value="">請選擇</option>
-                            <option value="1">1小時</option>
-                            <option value="2">2小時</option>
-                            <option value="3">3小時</option>
-                            <option value="4">4小時</option>
-                            <option value="5">6小時</option>
-                            <option value="6">8小時</option>
-                            <option value="7">12小時</option>
-                            <option value="8">24小時</option>
-                        </select>
+                        <select class="form-select" style="grid-column-start: unset;" name="Frequency" id="Frequency" placeholder="請選擇"></select>
                     </div>
                     <div class="form-group d-flex flex-column align-items-center">
                         <label for="CheckItemsArea" class="w-100">檢查項目名稱</label>
@@ -123,8 +113,7 @@
 
         $(async function () {
             observeChildChanges();
-            //await addDropDownList();
-            //await addAreaFloorEvent();
+            await pushSelect("Frequency", '@Url.Action("Frequency", "DropDownList")');
             readData(apiUrl);
         })
 

@@ -274,7 +274,7 @@
 
         $(async function () {
             await formDropdown.ASN();
-            await pushSelect("SampleName", "/DropDownList/OneDeviceOneCardTemplates");
+            await pushSelect("SampleName", "@Url.Action("OneDeviceOneCardTemplates", "DropDownList")");
 
             fileUploader = new FileUploader({
                 container: "#FileUploader",
