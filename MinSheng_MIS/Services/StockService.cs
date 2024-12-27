@@ -256,6 +256,7 @@ namespace MinSheng_MIS.Services
             return ErrorMessage;
         }
         #endregion
+
         #region 新增一般出庫
         public JsonResService<string> NormalStockOut_Create(NomalComputationalStockOutModel datas, string registrar)
         {
@@ -314,6 +315,7 @@ namespace MinSheng_MIS.Services
             }
         }
         #endregion
+
         #region NomalStockOutRecord資料驗證
         private string NomalStockOutRecordAnnotation(INomalComputationalStockOut data)
         {
@@ -356,6 +358,14 @@ namespace MinSheng_MIS.Services
             }
             return ErrorMessage;
         }
+        #endregion
+
+        #region 庫存管理-編輯
+
+        #endregion
+
+        #region 庫存管理-刪除
+        
         #endregion
     }
 }

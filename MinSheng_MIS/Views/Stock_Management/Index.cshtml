@@ -109,6 +109,7 @@
                     dg.column('StockAmount', '數量', 200),
                     dg.column('Unit', '單位', 200),
                     dg.column('MinStockAmount', '警戒值', 200),
+                    dg.hiddenColumn('CanDelete'),
                 ]],
                 rowStyler: (i, row) => row.Status === "低於警戒值" ? { class: 'isMinStock' } : undefined
             })
