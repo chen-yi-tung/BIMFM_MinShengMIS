@@ -236,6 +236,14 @@ namespace MinSheng_MIS.Services
                 ErrorMessage = "入庫數量不可為空";
                 return ErrorMessage;
             }
+            else
+            {
+                if (data.NumberOfChanges == 0)
+                {
+                    ErrorMessage = "入庫數量不可小於0";
+                    return ErrorMessage;
+                }
+            }
             //備註
             if (!string.IsNullOrEmpty(data.Memo))
             {
