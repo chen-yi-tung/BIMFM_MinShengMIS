@@ -34,6 +34,11 @@ namespace MinSheng_MIS.Controllers
         #region 定期保養單 審核
         public ActionResult Review()
         {
+            string userName = HttpContext.User.Identity.Name;
+            using (Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities())
+            {
+                ViewBag.MyName = db.AspNetUsers.Where(a => a.UserName == userName).Select(a => a.MyName).FirstOrDefault();
+            }
             return View();
         }
         [HttpPost]
