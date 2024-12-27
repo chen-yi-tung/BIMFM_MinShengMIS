@@ -238,7 +238,7 @@ namespace MinSheng_MIS.Services
             }
             else
             {
-                if (data.NumberOfChanges == 0)
+                if (data.NumberOfChanges <= 0)
                 {
                     ErrorMessage = "入庫數量不可小於0";
                     return ErrorMessage;
