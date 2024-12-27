@@ -32,7 +32,7 @@ namespace MinSheng_MIS.Services
             newForm.InformatUserID = HttpContext.Current.User.Identity.Name;
             newForm.ReportState = "1";
             newForm.ReportSource = "1";
-            newForm.ReportImg = SaveImageFromHttpPostedFileBase(newForm.RSN, item.ReportImg);
+            newForm.ReportImg = SaveImageFromHttpPostedFileBase($"{newForm.RSN}_Report", item.ReportImg);
             _db.EquipmentReportForm.Add(newForm);
             EquipmentInfo equipment = _db.EquipmentInfo.Find(newForm.ESN);
             equipment.EState = "2";
@@ -112,6 +112,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region APP
+        #region 報修
         public JArray GetEquipmentByRFID(List<string> rfids)
         {
             JArray ja = new JArray();
@@ -178,7 +179,7 @@ namespace MinSheng_MIS.Services
             newForm.InformatUserID = item.UserName;
             newForm.ReportSource = "1";
             if (item.ReportImg != null)
-                newForm.ReportImg = SaveImageFromHttpPostedFile(newForm.RSN, item.ReportImg);
+                newForm.ReportImg = SaveImageFromHttpPostedFile($"{newForm.RSN}_Report", item.ReportImg);
             _db.EquipmentReportForm.AddOrUpdate(newForm);
             EquipmentInfo equipment = _db.EquipmentInfo.Find(newForm.ESN);
             equipment.EState = "2";
@@ -207,11 +208,16 @@ namespace MinSheng_MIS.Services
             return ja;
         }
 
-        public JArray GetRepairList(Repair_ManagementRepairListFilterViewModel item)
+        public JArray RepairList(Repair_ManagementRepairListFilterViewModel item)
         {
             JArray ja = new JArray();
-            item.DateEnd = item.DateEnd.AddDays(1);
-            var repairList = _db.EquipmentReportForm.Where(e => e.InformatUserID == item.UserName && item.DateStart <= e.ReportTime && e.ReportTime < item.DateEnd).ToList();
+            var repairTable = _db.EquipmentReportForm.Where(r => r.ReportState == "1" && r.InformatUserID == item.UserName).AsQueryable();
+            if (item.Date != null)
+            {
+                var dateEnd = item.Date?.AddDays(1);
+                repairTable = repairTable.Where(r => item.Date <= r.ReportTime && r.ReportTime < dateEnd);
+            }
+            var repairList = repairTable.OrderByDescending(r => r.ReportTime).ToList();
             foreach (var repair in repairList)
             {
                 JObject itemObject = new JObject();
@@ -231,6 +237,7 @@ namespace MinSheng_MIS.Services
         {
             var item = _db.EquipmentReportForm.Find(rsn);
             JObject jo = new JObject();
+            jo.Add("ESN", item.ESN);
             jo.Add("EName", item.EquipmentInfo.EName);
             jo.Add("NO", item.EquipmentInfo.NO);
             jo.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area);
@@ -240,6 +247,7 @@ namespace MinSheng_MIS.Services
             jo.Add("ReportLevel", item.ReportLevel);
             jo.Add("ReportContent", item.ReportContent);
             jo.Add("ReportImg", item.ReportImg);
+            jo.Add("ReportTime", item.ReportTime);
             return jo;
         }
 
@@ -256,8 +264,97 @@ namespace MinSheng_MIS.Services
             _db.EquipmentReportForm.Remove(item);
             _db.SaveChanges();
         }
+
+        public JArray RepairRecord(Repair_ManagementRepairRecordViewModel item)
+        {
+            JArray ja = new JArray();
+            var repairTable = _db.EquipmentReportForm.Where(e => e.ESN == item.ESN).AsQueryable();
+            if (item.Order == "ASC") repairTable = repairTable.OrderBy(e => e.ReportTime);
+            else repairTable = repairTable.OrderByDescending(e => e.ReportTime);
+            var repairList = repairTable.ToList();
+            foreach (var repair in repairList)
+            {
+                JObject itemObject = new JObject();
+                itemObject.Add("ReportTime", repair.ReportTime.ToString("yyyy-MM-dd"));
+                itemObject.Add("ReportContent", repair.ReportContent);
+                itemObject.Add("ReportState", Surface.ReportState()[repair.ReportState]);
+                itemObject.Add("RepairTime", repair.RepairTime?.ToString("yyyy-MM-dd"));
+                itemObject.Add("RepairUserName", string.Join(",", _db.Equipment_ReportFormMember.Where(e => e.RSN == repair.RSN).Select(e => e.RepairUserName).ToList()));
+                ja.Add(itemObject);
+            }
+            return ja;
+        }
         #endregion
 
+        #region 維修
+        public JArray RepairWorkList(Repair_ManagementRepairWorkSortViewModel item)
+        {
+            JArray ja = new JArray();
+            var repairTable = _db.EquipmentReportForm.Where(e => (e.ReportState == "2" || e.ReportState == "5") && e.Equipment_ReportFormMember.Any(m => m.RepairUserName == item.UserName)).AsQueryable();
+            if (item.Order == "ASC")
+            {
+                repairTable = repairTable.OrderBy(r => r.DispatcherTime);
+            }
+            else
+            {
+                repairTable = repairTable.OrderByDescending(r => r.DispatcherTime);
+            }
+            var repairList = repairTable.ToList();
+            foreach (var repair in repairList)
+            {
+                JObject itemObject = new JObject();
+                itemObject.Add("RSN", repair.RSN);
+                itemObject.Add("ReportState", Surface.ReportState()[repair.ReportState]);
+                itemObject.Add("EName", repair.EquipmentInfo.EName);
+                itemObject.Add("NO", repair.EquipmentInfo.NO);
+                itemObject.Add("Area", repair.EquipmentInfo.Floor_Info.AreaInfo.Area);
+                itemObject.Add("FloorName", repair.EquipmentInfo.Floor_Info.FloorName);
+                itemObject.Add("ReportLevel", Surface.ReportLevel()[repair.ReportLevel]);
+                JArray rfidJArray = new JArray();
+                foreach (var rfid in _db.RFID.Where(r => r.ESN == repair.ESN))
+                {
+                    rfidJArray.Add(new JObject() { { "RFIDInternalCode", rfid.RFIDInternalCode } });
+                }
+                itemObject.Add("RFIDS", rfidJArray);
+                ja.Add(itemObject);
+            }
+            return ja;
+        }
+
+        public void RepairWorkFillin(Repair_ManagementRepairFillinViewModel item)
+        {
+            var form = _db.EquipmentReportForm.Find(item.RSN);
+            form.RepairContent = item.RepairContent;
+            if (item.RepairImg != null)
+                form.RepairImg = SaveImageFromHttpPostedFile($"{item.RSN}_Repair", item.RepairImg);
+            form.RepairTime = DateTime.Now;
+            form.ReportState = "3";
+            _db.SaveChanges();
+        }
+        #endregion
+        #endregion
+
+        #region 保養借放(設備保養紀錄)
+        public JArray MaintenanceRecord(MaitenanceRecordViewModel item)
+        {
+            JArray ja = new JArray();
+            var maintenanceTable = _db.Equipment_MaintenanceForm.Where(e => e.ESN == item.ESN).AsQueryable();
+            if (item.Order == "ASC") maintenanceTable = maintenanceTable.OrderBy(e => e.ReportTime);
+            else maintenanceTable = maintenanceTable.OrderByDescending(e => e.ReportTime);
+            var maintenanceList = maintenanceTable.ToList();
+            foreach (var maintenance in maintenanceList)
+            {
+                JObject itemObject = new JObject();
+                itemObject.Add("DispatcherTime", maintenance.DispatcherTime?.ToString("yyyy-MM-dd"));
+                itemObject.Add("MaintainName", maintenance.MaintainName);
+                itemObject.Add("Maintainer", string.Join(",", _db.Equipment_MaintenanceFormMember.Where(e => e.EMFSN == maintenance.EMFSN).Select(e => e.Maintainer).ToList()));
+                ja.Add(itemObject);
+            }
+            return ja;
+        }
+        #endregion
+
+        #region 工具
         public string GetNextRSN()
         {
             string prefix = "R" + DateTime.Now.ToString("yyMMdd");
@@ -275,7 +372,7 @@ namespace MinSheng_MIS.Services
             return erfmsn;
         }
 
-        public string SaveImageFromHttpPostedFileBase(string rsn, HttpPostedFileBase img)
+        public string SaveImageFromHttpPostedFileBase(string fileName, HttpPostedFileBase img)
         {
             if (img != null && img.ContentLength > 0)
             {
@@ -283,7 +380,7 @@ namespace MinSheng_MIS.Services
                 if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".pdf")
                     throw new Exception("圖片僅接受jpg、jpeg、png、pdf");
                 if (!Directory.Exists(_server.MapPath("/Files/Repair_Management"))) Directory.CreateDirectory(_server.MapPath("/Files/Repair_Management"));
-                string path = $"/Files/Repair_Management/{rsn}{extension}";
+                string path = $"/Files/Repair_Management/{fileName}{extension}";
                 string fullPath = _server.MapPath($"{path}");
                 img.SaveAs(fullPath);
                 return path;
@@ -291,7 +388,7 @@ namespace MinSheng_MIS.Services
             return null;
         }
 
-        public string SaveImageFromHttpPostedFile(string rsn, HttpPostedFile img)
+        public string SaveImageFromHttpPostedFile(string fileName, HttpPostedFile img)
         {
             if (img != null && img.ContentLength > 0)
             {
@@ -299,7 +396,7 @@ namespace MinSheng_MIS.Services
                 if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".pdf")
                     throw new Exception("圖片僅接受jpg、jpeg、png、pdf");
                 if (!Directory.Exists(_server.MapPath("/Files/Repair_Management"))) Directory.CreateDirectory(_server.MapPath("/Files/Repair_Management"));
-                string path = $"/Files/Repair_Management/{rsn}{extension}";
+                string path = $"/Files/Repair_Management/{fileName}{extension}";
                 string fullPath = _server.MapPath($"{path}");
                 img.SaveAs(fullPath);
                 return path;
@@ -311,5 +408,6 @@ namespace MinSheng_MIS.Services
         {
             _db.Dispose();
         }
+        #endregion
     }
 }

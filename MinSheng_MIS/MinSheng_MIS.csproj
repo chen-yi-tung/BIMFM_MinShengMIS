@@ -453,7 +453,7 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\AddInspectionPlan.cs" />
-    <Compile Include="Models\ViewModels\AppLoginViewModel.cs" />
+    <Compile Include="Models\ViewModels\AppAccountViewModel.cs" />
     <Compile Include="Models\ViewModels\AsBuiltDrawingViewModel.cs" />
     <Compile Include="Models\ViewModels\DesignDiagramsViewModel.cs" />
     <Compile Include="Models\ViewModels\EquipmentInfo_ManagementViewModel.cs" />

@@ -48,14 +48,31 @@ namespace MinSheng_MIS.Models.ViewModels
     public class Repair_ManagementRepairWorkSortViewModel
     {
         public string UserName { get; set; }
-        public string OrderBy { get; set; }
         public string Order { get; set; }
     }
 
     public class Repair_ManagementRepairListFilterViewModel
     {
         public string UserName { get; set; }
-        public DateTime DateStart { get; set; }
-        public DateTime DateEnd { get; set; }
+        public DateTime? Date { get; set; }
+    }
+
+    public class Repair_ManagementRepairFillinViewModel
+    {
+        public string RSN { get; set; }
+        public string RepairContent { get; set; }
+        public HttpPostedFile RepairImg { get; set; }
+    }
+
+    public class Repair_ManagementRepairRecordViewModel
+    {
+        public string ESN { get; set; }
+        public string Order { get; set; }
+    }
+
+    public class MaitenanceRecordViewModel
+    {
+        public string ESN { get; set; }
+        public string Order { get; set; }
     }
 }
