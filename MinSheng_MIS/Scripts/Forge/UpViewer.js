@@ -36,9 +36,8 @@
 
         Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
             this.viewer.start();
-            this.viewer.impl.controls.handleKeyDown = function (e) { };
-            this.viewer.impl.controls.handleKeyUp = function (e) { };
             await this.viewer.loadExtension("Viewer.Toolkit");
+            this.viewer.toolkit.removeKeyControls()
 
             //setting 3d view env
             this.viewer.setBackgroundOpacity(0);
@@ -98,38 +97,85 @@
         const model = this.models.find((model) => model.type === "BT").model;
         const pins = [];
         data.forEach((d) => {
-            let position = this.viewer.toolkit.getBoundingBox(model, d.dbId).getCenter();
-            let pin = new ForgePin({
+            const pin = new ForgePin({
                 viewer: this.viewer,
-                position,
+                dbId: d.dbId,
                 data: d,
+                model,
                 img: "/Content/img/bluetooth.svg",
                 id: `bluetooth-${d.dbId}`,
             });
 
-            d.deviceName && $(pin.e).append(`<div class="bluetooth-name">${d.deviceName}</div>`);
+            d.deviceName && $(pin.element).append(`<div class="bluetooth-name">${d.deviceName}</div>`);
 
             pin.show();
             pin.update();
             pins.push(pin);
         });
-        this.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
-            pins.forEach((pin) => {
-                pin.update();
-            });
-        });
     }
-    createEquipmentPoint(position) {
-        let pin = new ForgePin({
-            viewer: this.viewer,
-            position: position,
+    createEquipmentPoint(position = new THREE.Vector3(0, 0, 0), interactive = false) {
+        this.equipmentPoint = new EquipmentPoint({ viewer: this.viewer, position });
+        this.equipmentPoint.interactive = interactive;
+        return this.equipmentPoint;
+    }
+}
+
+class EquipmentPoint extends ForgePin {
+    #interactive = false;
+    #dragging = false;
+    constructor(options = {}) {
+        super(Object.assign({
+            position: new THREE.Vector3(0, 0, 0),
             data: {},
-            img: "/Content/img/gis-marker.svg",
-            id: `equipment-${d.dbId}`,
-        });
-        this.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
-            pin.update();
-        });
+            img: "/Content/img/equipment.svg",
+            offset: ["-50%", "-100%"],
+            id: `equipment`,
+        }, options));
+    }
+    get interactive() {
+        return this.#interactive;
+    }
+    set interactive(v) {
+        this.#interactive = v;
+        this.#dragging = false;
+        const rect = this.viewer.container;
+        if (v) {
+            const update = (event) => {
+                const hit = this.viewer.clientToWorld(event.offsetX, event.offsetY);
+                if (!hit) { return }
+                this.position = hit.point;
+                this.show().update();
+            }
+
+            rect.onclick = update;
+            rect.onpointerdown  = (event) => {
+                this.#dragging = true;
+                update(event)
+            }
+            rect.onpointermove  = (event) => {
+                this.#dragging && update(event);
+            }
+            rect.onpointerup  = (event) => {
+                if (this.#dragging) {
+                    this.#dragging = false;
+                    update(event)
+                }
+            }
+            rect.onpointerleave  = (event) => {
+                if (this.#dragging) {
+                    this.#dragging = false;
+                    update(event)
+                }
+            }
+        }
+        else {
+            this.#dragging = false;
+            rect.onclick = null;
+            rect.onpointerdown  = null;
+            rect.onpointermove  = null;
+            rect.onpointerup  = null;
+            rect.onpointerleave  = null;
+        }
     }
 }
 
