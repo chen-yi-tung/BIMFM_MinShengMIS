@@ -254,6 +254,7 @@
     <Compile Include="Attributes\JWTAuthorizeAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Account_ManagementController.cs" />
+    <Compile Include="Controllers\API\Maintain_ManagementApi.cs" />
     <Compile Include="Controllers\API\DropDownListApi.cs" />
     <Compile Include="Controllers\API\InspectionPlan_ManagementController.cs" />
     <Compile Include="Controllers\API\Repair_ManagementApi.cs" />
