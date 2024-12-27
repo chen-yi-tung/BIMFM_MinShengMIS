@@ -1577,6 +1577,7 @@
     <Content Include="Content\img\bg.png" />
     <Content Include="Content\img\bluetooth.svg" />
     <Content Include="Content\img\bs-logo.png" />
+    <Content Include="Content\img\equipment.svg" />
     <Content Include="Content\img\gis-marker.png" />
     <Content Include="Content\img\heart.svg" />
     <Content Include="Content\img\inner-map.jpg" />
@@ -1756,6 +1757,7 @@
     <Content Include="Scripts\PlanManagement\CreateDataGrids.js" />
     <Content Include="Scripts\popper.min.js" />
     <Content Include="Scripts\share.js" />
+    <Content Include="Scripts\Sortable.min.js" />
     <Content Include="Scripts\tool.js" />
     <Content Include="Views\Stock_Management\CreateInbound.cshtml" />
     <Content Include="Web.config" />

@@ -18,8 +18,15 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Unit { get; set; }
         public float MinStockAmount { get; set; }
     }
+    public class ComputationalStockEditModel: ComputationalStockCreateModel
+    {
+        [Required]
+        public string SISN { get; set; }
+    }
     public class ComputationalStockDetailModel 
     {
+        public string SISN { get; set; } //庫存品項編號
+        public int StockTypeSN { get; set; } //類別編號
         public string StockType { get; set; } //類別
         public string StockName { get; set; } //品項名稱
         public string StockStauts { get; set; } //狀態

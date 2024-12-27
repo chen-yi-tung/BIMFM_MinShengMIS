@@ -6,6 +6,7 @@ using MinSheng_MIS.Models.ViewModels;
 using System.Linq.Dynamic.Core;
 using System.Data.Entity.Migrations;
 using MinSheng_MIS.Surfaces;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MinSheng_MIS.Services
 {
@@ -18,7 +19,7 @@ namespace MinSheng_MIS.Services
             _db = db;
         }
 
-        #region 新增庫存
+        #region 新增庫存品項
         public JsonResService<string> Stock_Create(ComputationalStockCreateModel datas)
         {
             #region 變數
@@ -29,13 +30,14 @@ namespace MinSheng_MIS.Services
             try
             {
                 #region 資料檢查
-                string ErrorMessage = ComputationalStockAnnotation(datas);
+                string ErrorMessage = ComputationalStockAnnotation(datas,"");
                 if (!string.IsNullOrEmpty(ErrorMessage))
                 {
                     res.AccessState = ResState.Failed;
                     res.ErrorMessage = ErrorMessage;
                     return res;
                 }
+                
                 #endregion
 
                 #region 資料新增
@@ -67,7 +69,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region ComputationalStock資料驗證
-        private string ComputationalStockAnnotation(IComputationalStock data)
+        private string ComputationalStockAnnotation(IComputationalStock data,string sisn)
         {
             string ErrorMessage = "";
             //庫存類別編號
@@ -92,6 +94,27 @@ namespace MinSheng_MIS.Services
                 ErrorMessage = "庫存品項需介於1 ~ 50字之間！";
                 return ErrorMessage;
             }
+            else//檢查庫存品項名稱是否重複
+            {
+                if (string.IsNullOrEmpty(sisn))
+                {
+                    var isDuplicate = _db.ComputationalStock.Where(x => x.StockName == data.StockName).Count();
+                    if (isDuplicate > 0)
+                    {
+                        ErrorMessage = "此庫存品項名稱重複!";
+                        return ErrorMessage;
+                    }
+                }
+                else
+                {
+                    var isDuplicate = _db.ComputationalStock.Where(x => x.StockName == data.StockName && x.SISN != sisn).Count();
+                    if (isDuplicate > 0)
+                    {
+                        ErrorMessage = "此庫存品項名稱重複!";
+                        return ErrorMessage;
+                    }
+                }
+            }
             //單位
             if (string.IsNullOrEmpty(data.Unit))
             {
@@ -107,6 +130,11 @@ namespace MinSheng_MIS.Services
             if (string.IsNullOrEmpty(data.MinStockAmount.ToString()))
             {
                 ErrorMessage = "庫存警戒值不可為空";
+                return ErrorMessage;
+            }
+            else if(data.MinStockAmount < 0)
+            {
+                ErrorMessage = "庫存警戒值不可小於0";
                 return ErrorMessage;
             }
             return ErrorMessage;
@@ -136,6 +164,7 @@ namespace MinSheng_MIS.Services
 
                 #region 資料
                 ComputationalStockDetailModel datas = new ComputationalStockDetailModel();
+                datas.StockTypeSN = data.StockTypeSN;
                 datas.StockType = _db.StockType.Find(data.StockTypeSN).StockTypeName.ToString();
                 datas.StockName = data.StockName;
                 datas.StockStauts = dic_stocktype[data.StockStatus];
@@ -236,6 +265,14 @@ namespace MinSheng_MIS.Services
                 ErrorMessage = "入庫數量不可為空";
                 return ErrorMessage;
             }
+            else
+            {
+                if (data.NumberOfChanges <= 0)
+                {
+                    ErrorMessage = "入庫數量不可小於0";
+                    return ErrorMessage;
+                }
+            }
             //備註
             if (!string.IsNullOrEmpty(data.Memo))
             {
@@ -248,6 +285,7 @@ namespace MinSheng_MIS.Services
             return ErrorMessage;
         }
         #endregion
+
         #region 新增一般出庫
         public JsonResService<string> NormalStockOut_Create(NomalComputationalStockOutModel datas, string registrar)
         {
@@ -306,6 +344,7 @@ namespace MinSheng_MIS.Services
             }
         }
         #endregion
+
         #region NomalStockOutRecord資料驗證
         private string NomalStockOutRecordAnnotation(INomalComputationalStockOut data)
         {
@@ -347,6 +386,94 @@ namespace MinSheng_MIS.Services
                 }
             }
             return ErrorMessage;
+        }
+        #endregion
+
+        #region 庫存品項編輯
+        public JsonResService<string> Stock_Edit(ComputationalStockEditModel datas)
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            JObject jo_res = new JObject();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                var data = _db.ComputationalStock.Find(datas.SISN);
+                if (data == null)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "查無此庫存品項，無法刪除。";
+                    return res;
+                }
+                string ErrorMessage = ComputationalStockAnnotation(datas, datas.SISN);
+                if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = ErrorMessage;
+                    return res;
+                }
+                #endregion
+
+                #region 資料編輯
+                data.StockTypeSN = datas.StockTypeSN;
+                data.StockName = datas.StockName;
+                data.Unit = datas.Unit;
+                data.MinStockAmount = datas.MinStockAmount;
+                if (data.StockAmount < data.MinStockAmount)
+                    data.StockStatus = "2";
+                else
+                    data.StockStatus = "1";
+                _db.ComputationalStock.AddOrUpdate(data);
+                _db.SaveChanges();
+                #endregion
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
+        #endregion
+
+        #region 刪除庫存品項
+        public JsonResService<string> Stock_Delete(string SISN)
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            JObject jo_res = new JObject();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                var haverecord = _db.StockChangesRecord.Where(x => x.SISN == SISN).Count();
+                if (haverecord > 0)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "此庫存品項有出入庫紀錄，因此無法刪除。";
+                    return res;
+                }
+                #endregion
+
+                #region 資料刪除
+                var data = _db.ComputationalStock.Find(SISN);
+                _db.ComputationalStock.Remove(data);
+                _db.SaveChanges();
+                #endregion
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
         }
         #endregion
     }

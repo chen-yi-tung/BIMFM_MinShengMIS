@@ -5,6 +5,7 @@
     @Html.Partial("DataGridScripts")
     <script src="~/Scripts/SamplePath_Management/CreateDataGrids.js" defer></script>
     <script src="~/Scripts/SamplePath_Management/Create.js"></script>
+    <script src="~/Scripts/Sortable.min.js"></script>
 }
 
 
@@ -204,6 +205,7 @@
     <script>
         let SubmitUrl = '@Url.Action("CreateSamplePath", "SamplePath_Management")';
         let sampleTr = SampleTr();
+        let sortableController = null;
 
         $(async function () {
             // 宣告按鈕監聽事件
@@ -216,7 +218,24 @@
             await addAreaFloorEvent();
             // 初始化模板
             await sampleTr.init();
+            setSortableItem("#item-area");
         })
+        const setSortableItem = (containerSelector, options = null) => {
+            let defaultOptions = {
+                animation: 150,
+                handle: '.btn-sort',
+                onEnd: () => {
+                    reorderNumbers();
+                }
+            }
+            const element = document.querySelector(containerSelector);
+            if (!element) {
+                console.warn('not found sortable container target!');
+                return
+            }
+            if (options) Object.assign(defaultOptions, options);
+            sortableController = Sortable.create(element, defaultOptions)
+        }
         // 新增
         function save(data) {
             console.log('requestData', data);

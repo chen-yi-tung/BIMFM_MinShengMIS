@@ -2990,16 +2990,24 @@ namespace MinSheng_MIS.Services
                 var dic_stockStatus = Surface.StockStatus();
                 foreach (var item in rpT)
                 {
-                    var itemObject = new JObject
+                    var itemObject = new JObject();
+                    itemObject.Add("SISN", item.SISN);
+                    itemObject.Add("StockType", db.StockType.Find(item.StockTypeSN).StockTypeName.ToString());
+                    itemObject.Add("StockName", item.StockName);
+                    itemObject.Add("StockStatus", dic_stockStatus[item.StockStatus]);
+                    itemObject.Add("StockAmount", item.StockAmount);
+                    itemObject.Add("Unit", item.Unit);
+                    itemObject.Add("MinStockAmount", item.MinStockAmount);
+
+                    var haverecord = db.StockChangesRecord.Where(x => x.SISN == item.SISN).Count();
+                    if(haverecord > 0)
                     {
-                        { "SISN", item.SISN },
-                        { "StockType", db.StockType.Find(item.StockTypeSN).StockTypeName.ToString() },
-                        { "StockName", item.StockName },
-                        { "StockStatus", dic_stockStatus[item.StockStatus] },
-                        { "StockAmount", item.StockAmount },
-                        { "Unit", item.Unit},
-                        { "MinStockAmount", item.MinStockAmount },
-                    };
+                        itemObject.Add("CanDelete", false);
+                    }
+                    else
+                    {
+                        itemObject.Add("CanDelete", true);
+                    }
 
                     ja.Add(itemObject);
                 }
