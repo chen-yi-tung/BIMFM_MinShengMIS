@@ -285,8 +285,8 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region APP-取得巡檢填報
-        public JsonResService<string> PlanReportFillIn(string userID,PlanFillInInfo data)
+        #region APP-巡檢填報
+        public JsonResService<string> PlanReportFillIn(string userID, PlanFillInInfo data)
         {
             #region 變數
             JsonResService<string> res = new JsonResService<string>();
@@ -331,8 +331,25 @@ namespace MinSheng_MIS.Services
                 checkRFIDOrder.Status = "2";
                 _db.InspectionPlan_RFIDOrder.AddOrUpdate(checkRFIDOrder);
                 _db.SaveChanges();
+
                 //填報完成檢查是否該巡檢時段皆已完成 todo
-                //填報完成檢查是否該工單已執行完成
+                var checkDone = _db.InspectionPlan_RFIDOrder.Where(x => x.IPTSN == inspectionEquipment.IPTSN && x.Status == "1").Count();
+                if(checkDone == 0) //無待執行巡檢RFID
+                {
+                    var inspectionPlanTime = _db.InspectionPlan_Time.Find(inspectionEquipment.IPTSN);
+                    inspectionPlanTime.InspectionState = "3";
+                    _db.InspectionPlan_Time.AddOrUpdate(inspectionPlanTime);
+                    _db.SaveChanges();
+                    //填報完成檢查是否該工單已執行完成
+                    var checkAllDone = _db.InspectionPlan_Time.Where(x => x.InspectionState != "3").Count();
+                    if (checkAllDone == 0) //巡檢時段皆已巡檢完成
+                    {
+                        var inspectionPlan = _db.InspectionPlan.Find(inspectionPlanTime.IPSN);
+                        inspectionPlan.PlanState = "3";
+                        _db.InspectionPlan.AddOrUpdate(inspectionPlan);
+                        _db.SaveChanges();
+                    }
+                }
                 #endregion
 
                 res.AccessState = ResState.Success;
