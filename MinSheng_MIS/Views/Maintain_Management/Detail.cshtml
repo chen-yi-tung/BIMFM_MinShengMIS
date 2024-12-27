@@ -36,11 +36,11 @@
 
 @section scripts {
     <script>
-        @*const EMFISN = '@ViewBag.EMFSN';*@
+        @*const EMFSN = '@ViewBag.EMFSN';*@
         const url = window.location.search;
-        const EMFISN = new URLSearchParams(url).get('EMFSN');
-        //let apiUrl = '@Url.Action("ReadBody", "Maintain_Management")?emfsn=' + `/${EMFSN}`;
-        let apiUrl = null;
+        const EMFSN = new URLSearchParams(url).get('EMFSN');
+        console.log("EMFSN", EMFSN);
+        let apiUrl = '@Url.Action("ReadBody", "Maintain_Management")?emfsn=' + `${EMFSN}`;
 
         const fakeData = {
             Datas: {
@@ -105,10 +105,10 @@
         
 
         function readData(url = null) {
-            url == null ? onSuccess(fakeData) :
+            url == null ? onSuccess(apiUrl) :
                 $.ajax({
                     url: url,
-                    type: "POST",
+                    type: "GET",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
