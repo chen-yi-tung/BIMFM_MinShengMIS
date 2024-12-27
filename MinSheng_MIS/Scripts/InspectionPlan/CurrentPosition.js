@@ -220,7 +220,32 @@ window.addEventListener('load', async () => {
         await bim.loadModels(getModelsUrl(ViewName))
 
         //bim.hideWall()
-        bim.createBeaconPoint()
+        bim.createBeaconPoint([
+            {
+                dbId: 20132,
+                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389a20',
+                ElementID: 3709472,
+                deviceName: "BT-20132",
+            },
+            {
+                dbId: 20133,
+                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f14',
+                ElementID: 3710740,
+                deviceName: "BT-20133",
+            },
+            {
+                dbId: 20134,
+                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f2e',
+                ElementID: 3710766,
+                deviceName: "BT-20134",
+            },
+            {
+                dbId: 20142,
+                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f67',
+                ElementID: 3710823,
+                deviceName: "BT-20142",
+            },
+        ])
         /* bim.createSamplePath()
         const pathRecord = await bim.createPathRecord()
         document.body.addEventListener('keydown', (e) => {
