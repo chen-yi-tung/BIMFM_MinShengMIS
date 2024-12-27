@@ -349,6 +349,7 @@ namespace MinSheng_MIS.Services
                 itemObject.Add("DispatcherTime", maintenance.DispatcherTime?.ToString("yyyy-MM-dd"));
                 itemObject.Add("MaintainName", maintenance.MaintainName);
                 itemObject.Add("Maintainer", string.Join(",", _db.Equipment_MaintenanceFormMember.Where(e => e.EMFSN == maintenance.EMFSN).Select(e => e.Maintainer).ToList()));
+                itemObject.Add("Status", Surface.MaintainStatus()[maintenance.Status]);
                 ja.Add(itemObject);
             }
             return ja;
