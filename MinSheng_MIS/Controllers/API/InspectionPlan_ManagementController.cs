@@ -2,6 +2,7 @@
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,8 +30,15 @@ namespace MinSheng_MIS.Controllers.API
             try
             {
                 string userID = HttpContext.Current.User.Identity.Name;
-
-                result = _inspectionPlanService.GetPlanList(userID,searchdate);
+                if (string.IsNullOrEmpty(userID))
+                {
+                    result.AccessState = ResState.Failed;
+                    result.ErrorMessage = "無登入者資料";
+                }
+                else
+                {
+                    result = _inspectionPlanService.GetPlanList(userID, searchdate);
+                }
             }
             catch (Exception ex)
             {
@@ -95,7 +103,15 @@ namespace MinSheng_MIS.Controllers.API
             try
             {
                 string userID = HttpContext.Current.User.Identity.Name;
-                result = _inspectionPlanService.PlanReportFillIn(userID, data);
+                if (string.IsNullOrEmpty(userID))
+                {
+                    result.AccessState = ResState.Failed;
+                    result.ErrorMessage = "無登入者資料";
+                }
+                else
+                {
+                    result = _inspectionPlanService.PlanReportFillIn(userID, data);
+                }
             }
             catch (Exception ex)
             {
