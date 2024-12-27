@@ -148,6 +148,7 @@ namespace MinSheng_MIS.Services
             jo.Add("InstallDate", equipment.InstallDate);
 
             jo.Add("Memo", equipment.Memo);
+            jo.Add("EPhoto", $"Files/EquipmentInfo/{equipment.EPhoto}");
 
             var maintenanceFrom = _db.Equipment_MaintenanceForm.FirstOrDefault(e => e.ESN == esn);
             if (maintenanceFrom != null)

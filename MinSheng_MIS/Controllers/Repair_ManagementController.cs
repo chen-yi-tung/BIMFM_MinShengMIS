@@ -1,8 +1,10 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -174,6 +176,54 @@ namespace MinSheng_MIS.Controllers
                 jo["ErrorMessage"] = ex.Message;
             }
             return Content(JsonConvert.SerializeObject(jo), "application/json;charset=utf-8");
+        }
+        #endregion
+
+        #region 報修管理 匯出
+        public ActionResult ExportToExcel(FormCollection form)
+        {
+            JObject jo = new JObject();
+            DatagridService ds = new DatagridService();
+            jo = ds.RepairManagementDataGrid(form);
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("報修管理");
+
+                worksheet.Cells["A1"].Value = "報修單狀態";
+                worksheet.Cells["B1"].Value = "報修單號";
+                worksheet.Cells["C1"].Value = "報修等級";
+                worksheet.Cells["D1"].Value = "報修時間";
+                worksheet.Cells["E1"].Value = "報修內容";
+                worksheet.Cells["F1"].Value = "棟別";
+                worksheet.Cells["G1"].Value = "樓層";
+                worksheet.Cells["H1"].Value = "設備名稱";
+                worksheet.Cells["I1"].Value = "設備編號";
+                worksheet.Cells["J1"].Value = "執行人員";
+
+                int row = 2;
+                foreach (var item in jo["rows"])
+                {
+                    worksheet.Cells["A" + row].Value = item["ReportState"].ToString();
+                    worksheet.Cells["B" + row].Value = item["RSN"].ToString();
+                    worksheet.Cells["C" + row].Value = item["ReportLevel"].ToString();
+                    worksheet.Cells["D" + row].Value = item["ReportTime"].ToString();
+                    worksheet.Cells["E" + row].Value = item["ReportContent"].ToString();
+                    worksheet.Cells["F" + row].Value = item["ASN"].ToString();
+                    worksheet.Cells["G" + row].Value = item["FSN"].ToString();
+                    worksheet.Cells["H" + row].Value = item["EName"].ToString();
+                    worksheet.Cells["I" + row].Value = item["NO"].ToString();
+                    worksheet.Cells["J" + row].Value = item["RepairUserName"].ToString();
+                    row++;
+                }
+
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("content-disposition", $"attachment; filename=報修管理{DateTime.Now.Ticks}.xlsx");
+                Response.BinaryWrite(package.GetAsByteArray());
+            }
+
+            return null;
         }
         #endregion
         #endregion
