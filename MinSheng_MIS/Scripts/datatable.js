@@ -492,7 +492,7 @@ function createAccordion(options) {
             <div class="datatable-body">
                 <div class="accordion accordion-flush datatable-accordion d-flex flex-column" style="gap: 12px" id="accordion-${options.id ?? ''}">
                    ${options.data.map((d, i) => {
-                       return `
+            return `
                             <div class="accordion-item" id="${options.id}_${i + 1}" style="border: 1px solid #8A9BA5">
                                 <h2 class="accordion-header" id="header-${options.id}-${i}">
                                     <button class="accordion-button border-0 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sub-body-${options.id}-${i}" aria-expanded="false" aria-controls="body-${options.id}-${i}">
@@ -520,7 +520,7 @@ function createAccordion(options) {
                                 </div>
                             </div>
                         `
-                    }).join("")}
+        }).join("")}
                 </div>
             </div>
         </div>
@@ -552,8 +552,8 @@ function createAccordion(options) {
             <div class="datatable-body">
                 <div class="accordion accordion-flush datatable-accordion d-flex flex-column" style="gap: 12px" id="accordion-${options.id ?? ''}">
                    ${options.data.map((d, i) => {
-                        return createAccordionItem(options, i)
-                    }).join("")}
+            return createAccordionItem(options, i)
+        }).join("")}
                 </div>
             </div>
         </div>
@@ -783,36 +783,67 @@ function createDialogModal(options) {
 
 /**
  * 
- * @param {String} id
- * @param {String} RFIDInternalCode
+ * @param {Object} data
  * @returns
  */
-function createMapModal(id, RFIDInternalCode) {
-    let data = allData[RFIDInternalCode]
-    console.log("data是甚麼", data);
-    let modal = $(`
-        <div class="modal fade modal-delete" id="${id ?? ''}" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
+function createMapModal(data) {
+    if (typeof UpViewer === 'undefined') {
+        console.warn([
+            "請先載入以下資源：",
+            "https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css",
+            "/Content/loading.css",
+            "/Content/bim.css",
+            "https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js",
+            "/Scripts/Forge/Viewer.Loading.js",
+            "/Scripts/Forge/Viewer.Toolkit.js",
+            "/Scripts/Forge/ForgePin.js",
+            "/Scripts/Forge/UpViewer.js"
+        ].join('\n'))
+        return;
+    }
+    const modal = $(`
+        <div class="modal fade modal-delete" id="Location" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-screen-md">
                 <div class="modal-content bg-white rounded-0">
                     <div class="modal-header p-2 rounded-0" style="background: #D9EFFD; border-bottom: 1px solid #8A9BA5;">
                         <h5 class="modal-title w-100 text-center">定位資訊</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body text-center pb-2"></div>
+                    <div class="modal-body text-center pb-2">
+                        <div id="BIM" style="height: 50vh;">
+                            <div class="pin-area"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        `);
+        </div>`);
 
-    let myModal = bootstrap.Modal.getOrCreateInstance(modal[0]);
-    myModal.show();
-
+    const bim = new UpViewer(modal.find("#BIM")[0]);
+    const myModal = bootstrap.Modal.getOrCreateInstance(modal[0]);
     modal[0].addEventListener("hidden.bs.modal", () => {
+        bim.dispose();
         myModal.dispose();
         modal.remove();
-
         document.body.focus();
     })
+
+    modal[0].addEventListener('shown.bs.modal', async function (event) {
+        if (bim.equipmentPoint) {
+            bim.equipmentPoint.hide();
+        }
+        await bim.init()
+        await bim.loadModels(bim.getModelsUrl(data.RFIDViewName))
+        const position = new THREE.Vector3(data.Location_X, data.Location_Y, 0)
+        if (bim.equipmentPoint) {
+            bim.equipmentPoint.position = position;
+        }
+        else {
+            bim.createEquipmentPoint(position)
+        }
+        bim.equipmentPoint.show().update();
+    })
+
+    myModal.show();
 
     return myModal;
 }
@@ -896,7 +927,7 @@ window.addEventListener('load', () => {
                 const placement = el.getAttribute('data-bs-placement')
                 console.log('placement', placement);
 
-                
+
                 if (placement === 'auto') return defaultBsPopperConfig;
 
                 newPopperConfig.placement = placement;
@@ -904,7 +935,7 @@ window.addEventListener('load', () => {
                 if (placement === 'top-start') {
                     const modifier_arrow = defaultBsPopperConfig.modifiers.find(x => x.name === 'arrow');
                     const modifier_offset = defaultBsPopperConfig.modifiers.find(x => x.name === 'offset');
-                    
+
                     if (modifier_arrow) {
                         modifier_arrow.options.padding = 24;
                     }
