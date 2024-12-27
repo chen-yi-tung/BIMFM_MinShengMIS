@@ -67,13 +67,11 @@
 @section scripts {
     <script>
         @*const EMFSN = '@ViewBag.EMFSN';*@
-        @*const UserName = '@ViewBag.MyName';*@
-        const UserName = "任趙仁";
-
+        const UserName = '@ViewBag.MyName';
         const url = window.location.search;
         const EMFSN = new URLSearchParams(url).get('EMFSN');
-        //let apiUrl = '@Url.Action("ReadBody", "MaintainForm_Management")?emfsn=' + `/${EMFSN}`;
-        let apiUrl = null;
+        let apiUrl = '@Url.Action("ReadBody", "Maintain_Management")?emfsn=' + `${EMFSN}`;
+        //let apiUrl = null;
 
         const fakeData = {
             Datas: {
@@ -128,10 +126,11 @@
 
         function readData(url = null) {
 
-            url == null ? onSuccess(fakeData) :
+            url == null ? onSuccess(apiUrl) :
                 $.ajax({
                     url: url,
-                    type: "POST",
+                    type: "GET",
+                    //data: EMFSN,
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: onSuccess,
@@ -162,9 +161,7 @@
 
             var form = new FormData();
             const auditReason = document.querySelector('input[name="AuditResult"]:checked');
-            console.log("看這", auditReason.value);
             const auditReasonValue = auditReason.value === "true";
-            console.log("再看這", auditReasonValue);
 
             form.append("EMFSN", EMFSN);
             form.append("AuditReason", document.getElementById("AuditReason").value);
