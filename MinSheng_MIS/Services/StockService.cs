@@ -18,7 +18,7 @@ namespace MinSheng_MIS.Services
             _db = db;
         }
 
-        #region 新增庫存
+        #region 新增庫存品項
         public JsonResService<string> Stock_Create(ComputationalStockCreateModel datas)
         {
             #region 變數
@@ -364,8 +364,41 @@ namespace MinSheng_MIS.Services
 
         #endregion
 
-        #region 庫存管理-刪除
-        
+        #region 刪除庫存品項
+        public JsonResService<string> Stock_Delete(string SISN)
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            JObject jo_res = new JObject();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                var haverecord = _db.StockChangesRecord.Where(x => x.SISN == SISN).Count();
+                if (haverecord > 0)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "此庫存品項有出入庫紀錄，因此無法刪除。";
+                    return res;
+                }
+                #endregion
+
+                #region 資料刪除
+                var data = _db.ComputationalStock.Find(SISN);
+                _db.ComputationalStock.Remove(data);
+                _db.SaveChanges();
+                #endregion
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
         #endregion
     }
 }
