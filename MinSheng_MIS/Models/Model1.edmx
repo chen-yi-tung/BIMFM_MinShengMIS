@@ -384,7 +384,6 @@
           <Property Name="ESN" Type="char" MaxLength="12" Nullable="false" />
           <Property Name="ReportUserName" Type="nvarchar" MaxLength="128" />
           <Property Name="FillinTime" Type="datetime" />
-          <Property Name="Memo" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="InspectionPlan_EquipmentCheckItem">
           <Key>
@@ -2211,7 +2210,6 @@
           <Property Name="ESN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="false" />
           <Property Name="ReportUserName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="FillinTime" Type="DateTime" Precision="3" />
-          <Property Name="Memo" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_EquipmentInfo" FromRole="InspectionPlan_Equipment" ToRole="EquipmentInfo" />
           <NavigationProperty Name="InspectionPlan_Time" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_InspectionPlan_Time" FromRole="InspectionPlan_Equipment" ToRole="InspectionPlan_Time" />
           <NavigationProperty Name="InspectionPlan_EquipmentCheckItem" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment" FromRole="InspectionPlan_Equipment" ToRole="InspectionPlan_EquipmentCheckItem" />
@@ -3530,7 +3528,6 @@
           <EntitySetMapping Name="InspectionPlan_Equipment">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan_Equipment">
               <MappingFragment StoreEntitySet="InspectionPlan_Equipment">
-                <ScalarProperty Name="Memo" ColumnName="Memo" />
                 <ScalarProperty Name="FillinTime" ColumnName="FillinTime" />
                 <ScalarProperty Name="ReportUserName" ColumnName="ReportUserName" />
                 <ScalarProperty Name="ESN" ColumnName="ESN" />
