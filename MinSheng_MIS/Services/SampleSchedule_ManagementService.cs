@@ -93,13 +93,13 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region DailyInspectionSampleContent 資料驗證
-        private void InspectionSampleContentDataAnnotation(IInspectionSampleContentModifiableList data)
+        internal void InspectionSampleContentDataAnnotation(IInspectionSampleContentModifiableList data)
         {
             if (data.Contents?.Any() != true)
-                throw new MyCusResException($"請新增至少一項巡檢設備！");
+                throw new MyCusResException($"請新增至少一項巡檢路線！");
             // 長度限制
             if (data.Contents.Count() >= 100000)
-                throw new MyCusResException($"巡檢設備不可超過100000項！");
+                throw new MyCusResException($"巡檢路線不可超過100000項！");
             // 關聯性PK是否存在：巡檢路線編號
             if (Helper.AreListsEqualIgnoreOrder(
                 data.Contents.Select(x => x.PlanPathSN),

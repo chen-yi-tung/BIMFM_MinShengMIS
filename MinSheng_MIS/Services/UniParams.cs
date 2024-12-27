@@ -98,6 +98,48 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 工單狀態
+        public enum InspectionPlanState
+        {
+            /// <summary>
+            /// 待執行
+            /// </summary>
+            [EnumLabel("待執行")]
+            ToDo = 1,
+            /// <summary>
+            /// 執行中
+            /// </summary>
+            [EnumLabel("執行中")]
+            InProgress = 2,
+            /// <summary>
+            /// 完成
+            /// </summary>
+            [EnumLabel("完成")]
+            Done = 3,
+        }
+        #endregion
+
+        #region 巡檢狀態
+        public enum InspectionState
+        {
+            /// <summary>
+            /// 待執行
+            /// </summary>
+            [EnumLabel("待執行")]
+            ToDo = 1,
+            /// <summary>
+            /// 執行中
+            /// </summary>
+            [EnumLabel("執行中")]
+            InProgress = 2,
+            /// <summary>
+            /// 完成
+            /// </summary>
+            [EnumLabel("完成")]
+            Done = 3,
+        }
+        #endregion
+
         /// <summary>
         /// 將字串視為列舉值轉為對應的列舉成員
         /// </summary>
