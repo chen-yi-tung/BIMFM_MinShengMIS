@@ -5,6 +5,7 @@
     @Html.Partial("DataGridScripts")
     <script src="~/Scripts/PlanManagement/CreateDataGrids.js" defer></script>
     <script src="~/Scripts/PlanManagement/Create.js"></script>
+    <script src="~/Scripts/Sortable.min.js"></script>
     <link rel="stylesheet" href="/Content/tagbox.css">
 }
 
@@ -153,6 +154,7 @@
         let templateApiUrl = '@Url.Action("ReadBody", "SampleSchedule_Management")';
         let SubmitUrl = '@Url.Action("CreateInspectionPlan", "PlanManagement")';
         let sampleTr = SampleTr();
+        let sortableController = null;
 
         $(async function () {
             addButtonEvent();
@@ -160,6 +162,7 @@
             autoLinkDG_Controller = new PIDG(ALDGOptions);
             sampleTr.init();
             sampleTr.create();
+            setSortableItem("#item-area");
         })
 
         const SerializedName = [
@@ -229,11 +232,29 @@
             ]
         }
         let pathData = {};
+
+        const setSortableItem = (containerSelector, options = null) => {
+            let defaultOptions = {
+                animation: 150,
+                handle: '.btn-sort',
+                onEnd: () => {
+                    reorderNumbers();
+                }
+            }
+            const element = document.querySelector(containerSelector);
+            if (!element) {
+                console.warn('not found sortable container target!');
+                return
+            }
+            if (options) Object.assign(defaultOptions, options);
+            sortableController = Sortable.create(element, defaultOptions)
+        }
         const updateTemplateWithSN = async (SN) => {
             let templateData = await readData(templateApiUrl, SN);
             let allPathSN = templateData.Contents.map(e => e.PlanPathSN);
             console.log('allPathSN', allPathSN);
             sampleTr.list.empty();
+            sampleTr.count = 0;
             templateData.Contents.forEach(c => {
                 sampleTr.create(c);
             })
@@ -325,7 +346,7 @@
         }
 
         function SampleTr() {
-            this.count = 1;
+            this.count = 0;
             this.list = $("#item-area")
             this.init = async function () {
                 const observer = new ResizeObserver((entries) => {

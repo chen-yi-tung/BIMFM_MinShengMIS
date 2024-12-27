@@ -5,6 +5,7 @@
     @Html.Partial("DataGridScripts")
     <script src="~/Scripts/SampleSchedule_Management/CreateDataGrids.js" defer></script>
     <script src="~/Scripts/SampleSchedule_Management/Create.js"></script>
+    <script src="~/Scripts/Sortable.min.js"></script>
 }
 
 
@@ -115,11 +116,12 @@
         let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
         let SubmitUrl = '@Url.Action("CreateSampleSchedule", "SampleSchedule_Management")';
         let sampleTr = SampleTr();
-
+        let sortableController = null;
         $(async function () {
             await pushSelect("PlanPathSN", "/DropDownList/InspectionPathSample");
             addButtonEvent();
             sampleTr.init();
+            setSortableItem("#item-area");
         })
         const SerializedName = [
             { text: "巡檢路線名稱", value: "PathName" },
@@ -189,6 +191,22 @@
             ]
         }
         let tempData = {};
+        const setSortableItem = (containerSelector, options = null) => {
+            let defaultOptions = {
+                animation: 150,
+                handle: '.btn-sort',
+                onEnd: () => {
+                    reorderNumbers();
+                }
+            }
+            const element = document.querySelector(containerSelector);
+            if (!element) {
+                console.warn('not found sortable container target!');
+                return
+            }
+            if (options) Object.assign(defaultOptions, options);
+            sortableController = Sortable.create(element, defaultOptions)
+        }
         const updatePathDetail = async (SN) => {
             if (!tempData[SN]) await readData(apiUrl, SN);
             // 在每列加上index
