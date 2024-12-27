@@ -180,21 +180,21 @@
                     </select>
                 </div>
                 <div id="sampleContent" class="flex-column gap-3" style="display: none;">
-                    <div>
+                    <div style="display: none;" id="addFieldSection">
                         <div class="group-sb-title">
                             <i class="fa-solid fa-map-pin"></i>
                             <div>增設基本資料欄位</div>
                         </div>
                         <div id="addItemZone" class="form-group-zone"></div>
                     </div>
-                    <div>
+                    <div style="display: none;" id="maintainSection">
                         <div class="group-sb-title">
                             <i class="fa-solid fa-map-pin"></i>
                             <div>保養項目/週期/下次保養日期</div>
                         </div>
                         <div id="MaintainZone" class="d-flex flex-column gap-2"></div>
                     </div>
-                    <div>
+                    <div style="display: none;" id="inspectionInfoSection">
                         <div class="group-sb-title">
                             <i class="fa-solid fa-map-pin"></i>
                             <div>巡檢資訊</div>
@@ -306,10 +306,29 @@
                 }
 
                 function onSuccess(res) {
-                    console.log("Datas", res.Datas);
-                    createAddItem(res.Datas);
-                    createMaintainItem(res.Datas.MaintainItemList, "MaintainZone");
-                    InspectionRecord("#InspectionRecord", res.Datas);
+                    const data = res.Datas;
+                    console.log("模板資料", data);
+
+                    if (data) {
+                        if (data.AddItemList.length > 0) {
+                            document.getElementById('addFieldSection').style.display = "block";
+                        } else {
+                            document.getElementById("addFieldSection").style.display = "none";
+                        }
+                        if (data.MaintainItemList.length > 0) {
+                            document.getElementById('maintainSection').style.display = "block";
+                        } else {
+                            document.getElementById("maintainSection").style.display = "none";
+                        }
+                        if (data.Frequency) {
+                            document.getElementById('inspectionInfoSection').style.display = "block";
+                        } else {
+                            document.getElementById("inspectionInfoSection").style.display = "none";
+                        }
+                        createAddItem(data);
+                        createMaintainItem(data.MaintainItemList, "MaintainZone");
+                        InspectionRecord("#InspectionRecord", data);
+                    }
                 }
                 function onError(res) {
                     console.log("拿取模板名稱失敗");

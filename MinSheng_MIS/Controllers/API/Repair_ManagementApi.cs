@@ -7,11 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
 
 namespace MinSheng_MIS.Controllers.API
 {
+    #region 報修
     public class GetEquipmentByRFIDController : ApiController
     {
         public JObject Post([FromBody] List<RFID> rfids)
@@ -89,7 +91,7 @@ namespace MinSheng_MIS.Controllers.API
                     ESN = form["ESN"],
                     ReportLevel = form["ReportLevel"],
                     ReportContent = form["ReportContent"],
-                    UserName = form["UserName"]
+                    UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length)
                 };
                 item.ReportImg = HttpContext.Current.Request.Files[0];
                 using (Repair_ManagementService ds = new Repair_ManagementService())
@@ -132,9 +134,9 @@ namespace MinSheng_MIS.Controllers.API
         }
     }
 
-    public class GetRepairListController : ApiController
+    public class RepairListController : ApiController
     {
-        public JObject Get()
+        public JObject Post([FromBody] Repair_ManagementRepairListFilterViewModel item)
         {
             JObject jo = new JObject()
             {
@@ -146,7 +148,9 @@ namespace MinSheng_MIS.Controllers.API
             {
                 using (Repair_ManagementService ds = new Repair_ManagementService())
                 {
-                    jo["Datas"] = ds.GetRepairList();
+                    if (item == null) item = new Repair_ManagementRepairListFilterViewModel();
+                    item.UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                    jo["Datas"] = ds.RepairList(item);
                 }
             }
             catch (Exception ex)
@@ -202,10 +206,9 @@ namespace MinSheng_MIS.Controllers.API
                 var item = new Repair_ManagementAddOrUpdateViewModel
                 {
                     RSN = form["RSN"],
-                    ESN = form["ESN"],
                     ReportLevel = form["ReportLevel"],
                     ReportContent = form["ReportContent"],
-                    UserName = form["UserName"]
+                    UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length)
                 };
                 if (HttpContext.Current.Request.Files.Count > 0)
                     item.ReportImg = HttpContext.Current.Request.Files[0];
@@ -248,4 +251,125 @@ namespace MinSheng_MIS.Controllers.API
             return jo;
         }
     }
+
+    public class RepairRecordController : ApiController
+    {
+        public JObject Post([FromBody] Repair_ManagementRepairRecordViewModel item)
+        {
+            JObject jo = new JObject()
+            {
+                { "State", "Success" },
+                { "ErrorMessage", "" },
+                { "Datas", "" }
+            };
+            try
+            {
+                using (Repair_ManagementService ds = new Repair_ManagementService())
+                {
+                    jo["Datas"] = ds.RepairRecord(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                jo["State"] = "Failed";
+                jo["ErrorMessage"] = ex.Message;
+            }
+            return jo;
+        }
+    }
+    #endregion
+
+    #region 維修
+    public class RepairWorkListController : ApiController
+    {
+        public JObject Post([FromBody] Repair_ManagementRepairWorkSortViewModel item)
+        {
+            JObject jo = new JObject()
+            {
+                { "State", "Success" },
+                { "ErrorMessage", "" },
+                { "Datas", "" }
+            };
+            try
+            {
+                using (Repair_ManagementService ds = new Repair_ManagementService())
+                {
+                    item.UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                    jo["Datas"] = ds.RepairWorkList(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                jo["State"] = "Failed";
+                jo["ErrorMessage"] = ex.Message;
+            }
+            return jo;
+        }
+    }
+
+    public class RepairWorkFillinController : ApiController
+    {
+        public JObject Post()
+        {
+            JObject jo = new JObject()
+            {
+                { "State", "Success" },
+                { "ErrorMessage", "" },
+                { "Datas", "" }
+            };
+            try
+            {
+                using (Repair_ManagementService ds = new Repair_ManagementService())
+                {
+                    var form = HttpContext.Current.Request.Form;
+
+                    // 建立模型並綁定表單資料
+                    var item = new Repair_ManagementRepairFillinViewModel
+                    {
+                        RSN = form["RSN"],
+                        RepairContent = form["RepairContent"],
+                    };
+                    if (HttpContext.Current.Request.Files.Count > 0)
+                        item.RepairImg = HttpContext.Current.Request.Files[0];
+                    ds.RepairWorkFillin(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                jo["State"] = "Failed";
+                jo["ErrorMessage"] = ex.Message;
+            }
+            return jo;
+        }
+    }
+    #endregion
+
+
+    #region 保養借放(設備保養紀錄)
+    public class MaintenanceRecordController : ApiController
+    {
+        public JObject Post([FromBody] MaitenanceRecordViewModel item)
+        {
+            JObject jo = new JObject()
+            {
+                { "State", "Success" },
+                { "ErrorMessage", "" },
+                { "Datas", "" }
+            };
+            try
+            {
+                using (Repair_ManagementService ds = new Repair_ManagementService())
+                {
+                    jo["Datas"] = ds.MaintenanceRecord(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                jo["State"] = "Failed";
+                jo["ErrorMessage"] = ex.Message;
+            }
+            return jo;
+        }
+    }
+    #endregion
 }

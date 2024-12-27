@@ -234,10 +234,14 @@
 
             function onSuccess(res) {
                 console.log(res);
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "新增成功！",
-                    onHide: () => { window.location.href = "/SamplePath_Management/Index"; }
-                });
+                if (!res.ErrorMessage) {
+                    createDialogModal({
+                        id: "DialogModal-Success", inner: "新增成功！",
+                        onHide: () => { window.location.href = "/SamplePath_Management/Index"; }
+                    });
+                } else {
+                    createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.ErrorMessage || ""}` })
+                }
             }
             function onError(res) {
                 console.log(res);

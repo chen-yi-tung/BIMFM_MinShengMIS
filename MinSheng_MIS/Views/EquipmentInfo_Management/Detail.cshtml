@@ -70,14 +70,14 @@
         </div>
     </div>
 </section>
-            
+
 
 
 
 @section scripts {
     <script>
-        const IPRSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${IPRSN}`;
+        const ESN = '@ViewBag.id';
+        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${ESN}`;
         let apiUrl = null;
         let allData = {};
         $(async function () {
@@ -107,6 +107,7 @@
 
         const fakeData = {
             Datas: {
+                ESN: "000123",
                 EPhoto: "/Files/EquipmentInfo/E24122400001.png",
                 EName: "名稱名稱",
                 NO: "365541",
@@ -244,7 +245,7 @@
                 ]
             },
             ErrorMessage: "",
-            state: ""
+            State: ""
         }
 
         //處理傳進來的AddFieldList格式
@@ -305,7 +306,7 @@
                     MaintainInfo("#MaintainInfo", data);
                     InspectionInfo("#InspectionInfo", data);
                 }
-               
+
 
             }
             function onError(res) {
@@ -313,7 +314,7 @@
             }
         }
 
-        
+
 
     </script>
 }
