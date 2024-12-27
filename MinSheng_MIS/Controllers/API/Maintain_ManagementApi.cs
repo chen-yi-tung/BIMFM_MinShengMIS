@@ -98,8 +98,6 @@ namespace MinSheng_MIS.Controllers.API
             try
             {
                 string userName = HttpContext.Current.User.Identity.Name;
-                if (string.IsNullOrEmpty(userName))
-                    throw new MyCusResException("無登入者資料!");
                 result = _maintainService.MaintainManagementApp_Report(datas, userName);
             }
             catch (MyCusResException ex)
