@@ -118,6 +118,25 @@
         this.equipmentPoint.interactive = interactive;
         return this.equipmentPoint;
     }
+    getModelsUrl(ViewName) {
+        const ModelTypeList = [
+            "AR",
+            "BT",
+            "E",
+            "EL",
+            "F",
+            "PP",
+            "PPO",
+            "VE",
+            "WW"
+        ]
+        return ModelTypeList.map((type) => {
+            return {
+                type,
+                url: `/BimModels/TopView/${type}/Resource/3D 視圖/${ViewName}/${ViewName}.svf`
+            }
+        })
+    }
 }
 
 class EquipmentPoint extends ForgePin {
