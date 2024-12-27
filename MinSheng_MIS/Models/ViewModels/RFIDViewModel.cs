@@ -34,4 +34,19 @@ namespace MinSheng_MIS.Models.ViewModels
         decimal Location_Y { get; set; } // Y定位
         string Memo { get; set; } // 備註
     }
+
+    public class RFIDGridSearchModel
+    {
+        public string RFIDInternalCode { get; set; }//RFID內碼
+        public string RFIDExternalCode { get; set; }//RFID外碼
+        public string Name { get; set; }//RFID名稱
+        public string ASN { get; set; }//RFID棟別
+        public string FSN { get; set; }//RFID樓層
+        public string Memo { get; set; }//RFID備註
+        public string EName { get; set; }//設備名稱
+        public string NO { get; set; }//設備編號
+        public string Brand { get; set; }//廠牌
+        public string Model { get; set; }//型號
+        public string Frequency { get; set; }//巡檢頻率
+    }
 }

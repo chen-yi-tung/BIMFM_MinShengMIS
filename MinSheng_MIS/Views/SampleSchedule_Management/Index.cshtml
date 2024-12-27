@@ -13,8 +13,8 @@
         <form class="form" method="post" action="">
 
             <div class="form-group">
-                <label for="SampleName">巡檢模板名稱</label>
-                <input class="form-control" id="SampleName" name="SampleName" type="text" />
+                <label for="TemplateName">巡檢模板名稱</label>
+                <input class="form-control" id="TemplateName" name="TemplateName" type="text" />
             </div>
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
@@ -30,7 +30,7 @@
 
     @section scripts {
         <script>
-        var getGridJSON = '@Url.Action("SamplePath_Management", "Datagrid")';
+        var getGridJSON = '@Url.Action("SampleSchedule_Management", "Datagrid")';
         var DataGrid;
 
 
@@ -50,9 +50,9 @@
         function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
-                //url: getGridJSON,
-                data: fakeData,
-                //method: 'POST',
+                url: getGridJSON,
+                //data: fakeData,
+                method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'PSSN',
                 //sortName: 'PSSN',
@@ -63,19 +63,19 @@
                     dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
-                    dg.hiddenColumn('PSSN'),
-                    dg.column('SampleName', '巡檢模板名稱', 500),
-                    dg.column('Num', '巡檢數量', 200),
+                    dg.hiddenColumn('DailyTemplateSN'),
+                    dg.column('TemplateName', '巡檢模板名稱', 500),
+                    dg.column('InspectionNum', '巡檢路線數量', 200),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Detail/${row.PSSN}`, "_blank")
+                window.open(`${baseUrl}/Detail/${row.DailyTemplateSN}`, "_blank")
             })
             dg.addEvent("edit", function (row, i) {
-                window.open(`${baseUrl}/Edit/${row.PSSN}`, "_self")
+                window.open(`${baseUrl}/Edit/${row.DailyTemplateSN}`, "_self")
             })
             dg.addEvent("delete", function (row, i) {
-                window.open(`${baseUrl}/Delete/${row.PSSN}`, "_self")
+                window.open(`${baseUrl}/Delete/${row.DailyTemplateSN}`, "_self")
             })
         }
 

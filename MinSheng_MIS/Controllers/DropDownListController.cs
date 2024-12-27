@@ -1,6 +1,4 @@
-﻿using Microsoft.Ajax.Utilities;
-using Microsoft.Owin.Security.DataHandler.Encoder;
-using MinSheng_MIS.Models;
+﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Security.Policy;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 
@@ -31,27 +27,6 @@ namespace MinSheng_MIS.Controllers
                 jo.Add("Text", item.Area);//Area Name
                 jo.Add("Value", item.ASN); // ASN 
                 list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region 根據樓層查詢模版路徑名稱
-        [System.Web.Http.HttpGet]
-        public ActionResult PathTitle(string FSN)
-        {
-            List<JObject> list = new List<JObject>();
-            if (FSN != null)
-            {
-                var abc = db.PathSample.Where(x => x.FSN == FSN).ToList();
-                foreach (var item in abc)
-                {
-                    JObject jo = new JObject();
-                    jo.Add("Text", item.PathTitle);// PathTitle
-                    jo.Add("Value", item.PSSN); // PSSN
-                    list.Add(jo);
-                }
             }
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
@@ -151,15 +126,34 @@ namespace MinSheng_MIS.Controllers
 
             foreach (var a in Dics)
             {
-                if (a.Key != "5")
+                JObject jo = new JObject
                 {
-                    JObject jo = new JObject
-                    {
-                        { "Text", a.Value },
-                        { "Value", a.Key }
-                    };
-                    list.Add(jo);
-                }
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region Frequency 巡檢頻率
+        [HttpGet]
+        public ActionResult Frequency()
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = Surface.InspectionPlanFrequency();
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.Value },
+                    { "Value", a.Key }
+                };
+                list.Add(jo);
             }
 
             string text = JsonConvert.SerializeObject(list);
@@ -543,10 +537,10 @@ namespace MinSheng_MIS.Controllers
 
         #region 庫存狀態 下拉式選單
         [HttpGet]
-        public ActionResult StockState()
+        public ActionResult StockStatus()
         {
             List<JObject> list = new List<JObject>();
-            var Dics = Surface.StockState();
+            var Dics = Surface.StockStatus();
 
             foreach (var a in Dics)
             {
@@ -564,22 +558,21 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region InspectionUser巡檢人員
-        //[HttpGet]
-        //public ActionResult InspectionUser()
-        //{
-        //    List<JObject> list = new List<JObject> { };
-        //    var data = db.InspectionPlanMember.Select(x => x.UserID).Distinct().ToList();
-        //    var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
-        //    foreach (var item in mynamedatalist)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item.MyName);
-        //        jo.Add("Value", item.UserName);
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
+        [HttpGet]
+        public ActionResult InspectionUser()
+        {
+            List<JObject> list = new List<JObject> { };
+            var mynamedatalist = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
+            foreach (var item in mynamedatalist)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
         #endregion
 
         #region 單位下拉式選單
@@ -609,14 +602,41 @@ namespace MinSheng_MIS.Controllers
         public ActionResult StockType()
         {
             List<JObject> list = new List<JObject>();
-            var Dics = Surface.StockType();
+            var Dics = db.StockType.ToList();
 
             foreach (var a in Dics)
             {
                 JObject jo = new JObject
                 {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
+                    { "Text", a.StockTypeName },
+                    { "Value", a.StockTypeSN }
+                };
+                list.Add(jo);
+            }
+
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region 庫存品項名稱下拉式選單
+        [HttpGet]
+        public ActionResult StockName(string stockTypeSN)
+        {
+            List<JObject> list = new List<JObject>();
+            var Dics = db.ComputationalStock.AsQueryable();
+
+            if (!string.IsNullOrEmpty(stockTypeSN))
+            {
+                Dics = Dics.Where(x => x.StockTypeSN.ToString() == stockTypeSN);
+            }
+
+            foreach (var a in Dics)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", a.StockName },
+                    { "Value", a.SISN }
                 };
                 list.Add(jo);
             }
@@ -1020,12 +1040,39 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        // --2024/10/25後更新
         #region MaintainPeriod 保養週期
         [HttpGet]
         public ActionResult MaintainPeriod()
         {
             List<JObject> list = ConvertDicToJObjectList(Surface.MaintainPeriod());
+
+            return Content(JsonConvert.SerializeObject(list), "application/json");
+        }
+        #endregion
+
+        #region OneDeviceOneCardTemplates 一機一卡模板
+        [HttpGet]
+        public ActionResult OneDeviceOneCardTemplates()
+        {
+            var list = db.Template_OneDeviceOneCard.Select(x => new
+                {
+                    Text = x.SampleName,
+                    Value = x.TSN
+                }).AsEnumerable();
+
+            return Content(JsonConvert.SerializeObject(list), "application/json");
+        }
+        #endregion
+
+        #region OneDeviceOneCardTemplates 巡檢路線模板
+        [HttpGet]
+        public ActionResult InspectionPathSample()
+        {
+            var list = db.InspectionPathSample.Select(x => new
+                {
+                    Text = x.PathName,
+                    Value = x.PlanPathSN
+                }).AsEnumerable();
 
             return Content(JsonConvert.SerializeObject(list), "application/json");
         }

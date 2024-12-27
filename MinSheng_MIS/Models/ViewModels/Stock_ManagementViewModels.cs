@@ -27,6 +27,24 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Unit { get; set; } //單位
         public float MinStockAmount { get; set; } //警戒值
     }
+    public class NomalComputationalStockInModel : INomalComputationalStockIn
+    {
+        [Required]
+        public string SISN { get; set; } //品項
+        [Required]
+        public float NumberOfChanges { get; set; } //入庫數量
+        public HttpPostedFileBase PurchaseOrder { get; set; } //採購單
+        public string Memo { get; set; } //備註
+    }
+    public class NomalComputationalStockOutModel : INomalComputationalStockOut
+    {
+        [Required]
+        public string SISN { get; set; } //品項
+        [Required]
+        public float NumberOfChanges { get; set; } //出庫數量
+        public string Recipient { get; set; } //取用人
+        public string Memo { get; set; } //備註
+    }
     //-----Interface & Abstract class
     #region ComputationalStock 計算型庫存
     public interface IComputationalStock
@@ -46,6 +64,24 @@ namespace MinSheng_MIS.Models.ViewModels
         float StockAmount { get; set; } //數量
         string Unit { get; set; } //單位
         float MinStockAmount { get; set; } //警戒值
+    }
+    #endregion
+    #region NomalComputationalStockIn 一般庫存入庫
+    public interface INomalComputationalStockIn
+    {
+        string SISN { get; set; } //品項
+        float NumberOfChanges { get; set; } //入庫數量
+        HttpPostedFileBase PurchaseOrder { get; set; } //採購單
+        string Memo { get; set; } //備註
+    }
+    #endregion
+    #region NomalComputationalStockOut 一般庫存出庫
+    public interface INomalComputationalStockOut
+    {
+        string SISN { get; set; } //品項
+        float NumberOfChanges { get; set; } //出庫數量
+        string Recipient { get; set; } //取用人
+        string Memo { get; set; } //備註
     }
     #endregion
     //public class Stock_ViewModel

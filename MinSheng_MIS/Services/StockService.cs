@@ -89,7 +89,7 @@ namespace MinSheng_MIS.Services
             }
             else if(data.StockName.Length > 50)
             {
-                ErrorMessage = "庫存品項需介於1 ~ 50字之間!";
+                ErrorMessage = "庫存品項需介於1 ~ 50字之間！";
                 return ErrorMessage;
             }
             //單位
@@ -100,7 +100,7 @@ namespace MinSheng_MIS.Services
             }
             else if (data.Unit.Length > 10)
             {
-                ErrorMessage = "單位需介於1 ~ 10字之間!";
+                ErrorMessage = "單位需介於1 ~ 10字之間！";
                 return ErrorMessage;
             }
             //庫存警戒值
@@ -154,6 +154,199 @@ namespace MinSheng_MIS.Services
                 res.ErrorMessage = ex.Message;
                 throw;
             }
+        }
+        #endregion
+
+        #region 新增一般入庫
+        public JsonResService<string> NormalStockIn_Create(NomalComputationalStockInModel datas,string sarsn,string registrar,string filename)
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            JObject jo_res = new JObject();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                string ErrorMessage = NomalStockInRecordAnnotation(datas);
+                if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = ErrorMessage;
+                    return res;
+                }
+                #endregion
+
+                #region 資料新增
+                //變更計算型庫存數量
+                var stock = _db.ComputationalStock.Find(datas.SISN);
+                stock.StockAmount += datas.NumberOfChanges;
+                if (stock.StockAmount < stock.MinStockAmount)
+                    stock.StockStatus = "2";//低於警戒值
+                else
+                    stock.StockStatus = "1";//充足
+                _db.ComputationalStock.AddOrUpdate(stock);
+                _db.SaveChanges();
+
+                //新增入庫紀錄
+                var data = new StockChangesRecord();
+                data.SARSN = sarsn;
+                data.SISN = datas.SISN;
+                data.ChangeType = "2";//入庫
+                data.ChangeWay = "1";//一般
+                data.NumberOfChanges = (double)datas.NumberOfChanges;
+                data.CurrentInventory = stock.StockAmount;
+                data.Registrar = registrar;
+                data.ChangeTime = DateTime.Now;
+                data.PurchaseOrder = filename;
+                data.Memo = datas.Memo;
+                _db.StockChangesRecord.AddOrUpdate(data);
+                _db.SaveChanges();
+                #endregion
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
+        #endregion
+
+        #region NomalStockInRecord資料驗證
+        private string NomalStockInRecordAnnotation(INomalComputationalStockIn data)
+        {
+            string ErrorMessage = "";
+            //庫存項目編號
+            if (string.IsNullOrEmpty(data.SISN.ToString()))
+            {
+                ErrorMessage = "庫存項目不可為空";
+                return ErrorMessage;
+            }
+            else if (_db.ComputationalStock.Find(data.SISN) == null)
+            {
+                ErrorMessage = "無此庫存項目";
+                return ErrorMessage;
+            }
+            //入庫數量
+            if (string.IsNullOrEmpty(data.NumberOfChanges.ToString()))
+            {
+                ErrorMessage = "入庫數量不可為空";
+                return ErrorMessage;
+            }
+            //備註
+            if (!string.IsNullOrEmpty(data.Memo))
+            {
+                if (data.Memo.Length > 250)
+                {
+                    ErrorMessage = "備註需介於0 ~ 250字之間！";
+                    return ErrorMessage;
+                }
+            }       
+            return ErrorMessage;
+        }
+        #endregion
+        #region 新增一般出庫
+        public JsonResService<string> NormalStockOut_Create(NomalComputationalStockOutModel datas, string registrar)
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            JObject jo_res = new JObject();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                string ErrorMessage = NomalStockOutRecordAnnotation(datas);
+                if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = ErrorMessage;
+                    return res;
+                }
+                #endregion
+
+                #region 資料新增
+                //變更計算型庫存數量
+                var stock = _db.ComputationalStock.Find(datas.SISN);
+                stock.StockAmount -= datas.NumberOfChanges;
+                if (stock.StockAmount < stock.MinStockAmount)
+                    stock.StockStatus = "2";//低於警戒值
+                else
+                    stock.StockStatus = "1";//充足
+                _db.ComputationalStock.AddOrUpdate(stock);
+                _db.SaveChanges();
+
+                //新增出庫紀錄
+                var data = new StockChangesRecord();
+                var lastSARSN = _db.StockChangesRecord.OrderByDescending(x => x.SARSN).FirstOrDefault()?.SARSN ?? (DateTime.Today.ToString("yyyyMMddHHmm") + "000");
+                data.SARSN = ComFunc.CreateNextID("!{yyMMddHHmm}%{3}", lastSARSN);
+                data.SISN = datas.SISN;
+                data.ChangeType = "1";//出庫
+                data.ChangeWay = "1";//一般
+                data.NumberOfChanges = (double)datas.NumberOfChanges;
+                data.CurrentInventory = stock.StockAmount;
+                data.Registrar = registrar;
+                data.ChangeTime = DateTime.Now;
+                data.Recipient = datas.Recipient;
+                data.Memo = datas.Memo;
+                _db.StockChangesRecord.AddOrUpdate(data);
+                _db.SaveChanges();
+                #endregion
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
+        #endregion
+        #region NomalStockOutRecord資料驗證
+        private string NomalStockOutRecordAnnotation(INomalComputationalStockOut data)
+        {
+            string ErrorMessage = "";
+            //庫存項目編號
+            if (string.IsNullOrEmpty(data.SISN.ToString()))
+            {
+                ErrorMessage = "庫存項目不可為空";
+                return ErrorMessage;
+            }
+            else if (_db.ComputationalStock.Find(data.SISN) == null)
+            {
+                ErrorMessage = "無此庫存項目";
+                return ErrorMessage;
+            }
+            //出庫數量
+            if (string.IsNullOrEmpty(data.NumberOfChanges.ToString()))
+            {
+                ErrorMessage = "出庫數量不可為空";
+                return ErrorMessage;
+            }
+            else //可出庫數量 = 當前總數量 - 當前rfid庫存數量
+            {
+                var currrentRFIDstocks = _db.StockChangesRecord.Where(x => x.SISN == data.SISN).Select(x => x.SARSN).ToList();
+                var enablestockout = _db.ComputationalStock.Find(data.SISN).StockAmount - _db.RFID.Where(x => currrentRFIDstocks.Contains(x.SARSN)).Count();
+                if(data.NumberOfChanges > enablestockout)
+                {
+                    ErrorMessage = "出庫失敗，當前可出庫數量為:"+ enablestockout+"。請重新確認出庫數量！";
+                    return ErrorMessage;
+                }
+            }
+            //備註
+            if (!string.IsNullOrEmpty(data.Memo))
+            {
+                if (data.Memo.Length > 250)
+                {
+                    ErrorMessage = "備註需介於0 ~ 250字之間！";
+                    return ErrorMessage;
+                }
+            }
+            return ErrorMessage;
         }
         #endregion
     }

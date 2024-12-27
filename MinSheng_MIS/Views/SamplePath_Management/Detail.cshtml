@@ -41,30 +41,30 @@
 
 @section scripts {
     <script>
-         const IPSN = '@ViewBag.id';
-         let apiUrl = null;
-        /*let sampleTr;*/
+        let PlanPathSN = location.href.split('/').pop();
+        let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
 
         $(async function () {
-            readData(apiUrl);
+            console.log(PlanPathSN)
+            readData(apiUrl, PlanPathSN);
         })
         //每日巡檢時程模板 詳情
         const SerializedName = [
-            { text: "巡檢路線名稱", value: "PName" },
-            { text: "巡檢頻率", value: "PFrequency" },
+            { text: "巡檢路線名稱", value: "PathName" },
+            { text: "巡檢頻率", value: "Frequency" },
         ]
         const GridOptions = {
             thead: true,
             columns: [
                 { id: "Index", title: "" },
-                { id: "InterCode", title: "RFID內碼" },
-                { id: "ExterCode", title: "RFID外碼" },
-                { id: "RName", title: "RFID名稱" },
-                { id: "RArea", title: "RFID棟別" },
-                { id: "RFloor", title: "RFID樓層" },
-                { id: "RMemo", title: "RFID備註" },
+                { id: "InternalCode", title: "RFID內碼" },
+                { id: "ExternalCode", title: "RFID外碼" },
+                { id: "RFIDName", title: "RFID名稱" },
+                { id: "RFIDArea", title: "RFID棟別" },
+                { id: "RFIDFloor", title: "RFID樓層" },
+                { id: "RFIDMemo", title: "RFID備註" },
                 { id: "EName", title: "設備名稱" },
-                { id: "ESN", title: "設備編號" },
+                { id: "NO", title: "設備編號" },
                 { id: "Brand", title: "廠牌" },
                 { id: "Model", title: "型號" },
                 { id: "Frequency", title: "巡檢頻率" },
@@ -72,45 +72,44 @@
             ]
         }
         let fakeData = {
-            SIRSN: "1120301001",
             PName: "前處理機房巡檢",
             PFrequency: "每3小時",
-            SampleItem: [
+            Equipments: [
                 {
-                    InterCode: "XSCXCZS",
-                    ExterCode: "XSCXCZS",
-                    RName: "前處理機房巡檢",
-                    RArea: "前處理區",
-                    RFloor: "1F",
-                    RMemo: "備註備註備註",
+                    InternalCode: "XSCXCZS",
+                    ExternalCode: "XSCXCZS",
+                    RFIDName: "前處理機房巡檢",
+                    RFIDArea: "前處理區",
+                    RFIDFloor: "1F",
+                    RFIDMemo: "備註備註備註",
                     EName: "螺旋發送機",
-                    ESN: "SP-0202A",
+                    NO: "SP-0202A",
                     Brand: "XX廠牌",
                     Model: "W004N",
                     Frequency: "每2小時",
                 },
                 {
-                    InterCode: "XSCXCZS",
-                    ExterCode: "XSCXCZS",
-                    RName: "前處理機房巡檢",
-                    RArea: "前處理區",
-                    RFloor: "1F",
-                    RMemo: "備註備註備註",
+                    InternalCode: "XSCXCZS",
+                    ExternalCode: "XSCXCZS",
+                    RFIDName: "前處理機房巡檢",
+                    RFIDArea: "前處理區",
+                    RFIDFloor: "1F",
+                    RFIDMemo: "備註備註備註",
                     EName: "螺旋發送機",
-                    ESN: "SP-0202A",
+                    NO: "SP-0202A",
                     Brand: "XX廠牌",
                     Model: "W004N",
                     Frequency: "每2小時",
                 },
                 {
-                    InterCode: "XSCXCZS",
-                    ExterCode: "XSCXCZS",
-                    RName: "前處理機房巡檢",
-                    RArea: "前處理區",
-                    RFloor: "1F",
-                    RMemo: "備註備註備註",
+                    InternalCode: "XSCXCZS",
+                    ExternalCode: "XSCXCZS",
+                    RFIDName: "前處理機房巡檢",
+                    RFIDArea: "前處理區",
+                    RFIDFloor: "1F",
+                    RFIDMemo: "備註備註備註",
                     EName: "螺旋發送機",
-                    ESN: "SP-0202A",
+                    NO: "SP-0202A",
                     Brand: "XX廠牌",
                     Model: "W004N",
                     Frequency: "每2小時",
@@ -118,12 +117,11 @@
             ]
         }
 
-       
-        function readData(url = null) {
+        function readData(url = null, SN) {
 
             url == null ? onSuccess(fakeData) :
                 $.ajax({
-                    url: url,
+                    url: `${url}?id=${SN}`,
                     type: "GET",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
@@ -133,10 +131,12 @@
 
             function onSuccess(res) {
                 console.log("res", res);
+                if (res.Datas) res = res.Datas
+                res.Frequency = `每${res.Frequency}小時`
                 $("#PlanDetail").append(createTableInner(res, SerializedName));
-                res.SampleItem ?
+                res.Equipments?
                     $("#PlanRecord").append(createTableGrid(
-                        createIndexToArrayData(res.SampleItem), GridOptions)) :
+                        createIndexToArrayData(res.Equipments), GridOptions)) :
                     $("#PlanRecord").parents(".datatable").remove();
             }
 

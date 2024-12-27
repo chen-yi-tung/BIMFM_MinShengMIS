@@ -14,7 +14,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class EquipmentInfoCreateModel : EquipInfo, ICreateEquipmentInfo, ICreateAddFieldValueList, ICreateMaintainItemValueList
     {
         public string TSN { get; set; } // 一機一卡模板編號
-        [FileSizeLimit(5)] // 限制大小為 5 MB
+        [FileSizeLimit(10)] // 限制大小為 10 MB
         public HttpPostedFileBase EPhoto { get; set; } //新增的照片
         public List<EquipRFID> RFIDList { get; set; } // RFID
         public List<AddFieldValueModel> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位
@@ -124,7 +124,7 @@ namespace MinSheng_MIS.Models.ViewModels
         //HttpPostedFileBase EPhoto { get; set; } //新增的設備照片
         string EName { get; set; } // 設備名稱
         string NO { get; set; } // 設備編號
-        DateTime InstallDate { get; set; } // 安裝日期
+        DateTime? InstallDate { get; set; } // 安裝日期
         string FSN { get; set; } // 樓層編號
         string Brand { get; set; } // 設備廠牌
         string Model { get; set; } // 設備型號
@@ -146,7 +146,7 @@ namespace MinSheng_MIS.Models.ViewModels
         [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
         [Display(Name = "設備編號")]
         public string NO { get; set; } // 設備編號
-        public DateTime InstallDate { get; set; } // 安裝日期
+        public DateTime? InstallDate { get; set; } // 安裝日期
         [Required]
         [StringLength(5, ErrorMessage = "{0} 的長度最多5個字元。")]
         [Display(Name = "樓層編號")]

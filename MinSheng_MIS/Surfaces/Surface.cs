@@ -14,10 +14,45 @@ namespace MinSheng_MIS.Surfaces
         public static Dictionary<string, string> InspectionPlanState() {
             var ValueOption = new Dictionary<string, string>();
             ValueOption.Add("1", "待執行");
-            ValueOption.Add("2", "巡檢中");
-            ValueOption.Add("3", "巡檢完成");
-            ValueOption.Add("4", "巡檢未完成");
-            ValueOption.Add("5", "停用"); 
+            ValueOption.Add("2", "執行中");
+            ValueOption.Add("3", "完成"); 
+            return ValueOption;
+        }
+        #endregion
+
+        #region Status 巡檢RFID順序狀態
+        public static Dictionary<string, string> Status()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待執行");
+            ValueOption.Add("2", "完成");
+            return ValueOption;
+        }
+        #endregion
+
+        #region InspectionState 巡檢時段狀態
+        public static Dictionary<string, string> InspectionState()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待執行");
+            ValueOption.Add("2", "執行中");
+            ValueOption.Add("3", "完成");
+            return ValueOption;
+        }
+        #endregion
+
+        #region InspectionPlanState 巡檢頻率
+        public static Dictionary<string, string> InspectionPlanFrequency()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "每1小時");
+            ValueOption.Add("2", "每2小時");
+            ValueOption.Add("3", "每3小時");
+            ValueOption.Add("4", "每4小時");
+            ValueOption.Add("6", "每6小時");
+            ValueOption.Add("8", "每8小時");
+            ValueOption.Add("12", "每12小時");
+            ValueOption.Add("24", "每24小時");
             return ValueOption;
         }
         #endregion
@@ -80,12 +115,25 @@ namespace MinSheng_MIS.Surfaces
         #region MaintainPeriod 保養週期
         public static Dictionary<string, string> MaintainPeriod()
         {
-            return Enum.GetValues(typeof(MaintainPeriod.Period))
-                     .Cast<MaintainPeriod.Period>()
+            return Enum.GetValues(typeof(MaintainPeriod))
+                     .Cast<MaintainPeriod>()
                      .ToDictionary(
                          period => Convert.ToInt32(period).ToString(),
                          period => period.GetLabel()
                      );
+        }
+        #endregion
+
+        #region 保養單狀態 MaintainStatus
+        public static Dictionary<string, string> MaintainStatus()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "待派工");
+            ValueOption.Add("2", "待執行");
+            ValueOption.Add("3", "待審核");
+            ValueOption.Add("4", "審核通過");
+            ValueOption.Add("5", "審核未過");
+            return ValueOption;
         }
         #endregion
 

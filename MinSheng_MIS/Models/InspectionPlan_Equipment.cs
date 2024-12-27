@@ -27,7 +27,6 @@ namespace MinSheng_MIS.Models
         public string ESN { get; set; }
         public string ReportUserName { get; set; }
         public Nullable<System.DateTime> FillinTime { get; set; }
-        public string Memo { get; set; }
     
         public virtual EquipmentInfo EquipmentInfo { get; set; }
         public virtual InspectionPlan_Time InspectionPlan_Time { get; set; }

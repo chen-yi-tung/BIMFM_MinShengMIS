@@ -175,11 +175,11 @@
             function onSuccess(res) {
                 console.log(res);
 
-                SampleInfo('#SampleInfo', res);
-                AddField('#AddField', res);
-                MaintainInfo("#MaintainInfo", res);
-                InspectionInfo("#InspectionInfo", res);
-                displaySections(res);
+                SampleInfo('#SampleInfo', res.Datas);
+                AddField('#AddField', res.Datas);
+                MaintainInfo("#MaintainInfo", res.Datas);
+                InspectionInfo("#InspectionInfo", res.Datas);
+                displaySections(res.Datas);
             }
             function onError(res) {
                 console.log(res);

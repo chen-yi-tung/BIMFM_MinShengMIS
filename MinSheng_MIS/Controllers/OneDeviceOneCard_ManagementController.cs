@@ -47,7 +47,7 @@ namespace MinSheng_MIS.Controllers
                 // 建立 Template_OneDeviceOneCard
                 string tsn = await _dCardService.CreateOneDeviceOneCardAsync(data);
                 if (data.Frequency.HasValue && data.CheckItemList?.Any() != true && data.ReportItemList?.Any() != true)
-                    throw new MyCusResException("請至少填入一筆檢查項目或填報項目!");
+                    throw new MyCusResException("請至少填入一筆檢查項目或填報項目！");
 
                 // 建立 Template_AddField (非必填)
                 if (data.AddItemList?.Any() == true)
@@ -97,7 +97,7 @@ namespace MinSheng_MIS.Controllers
             try
             {
                 var template = await _db.Template_OneDeviceOneCard.FindAsync(TSN)
-                    ?? throw new MyCusResException("查無資料!");
+                    ?? throw new MyCusResException("查無資料！");
 
                 var result = await Task.WhenAll(template.EquipmentInfo.Select(async e =>
                     await _eMgmtService.GetEquipmentInfoAsync<EquipmentInfoDetailModel>(e.ESN)));

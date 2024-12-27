@@ -1,14 +1,6 @@
 ﻿using MinSheng_MIS.Services;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using MinSheng_MIS.Models.ViewModels;
-using MinSheng_MIS.Models;
-using System.Web.Services.Description;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -16,16 +8,16 @@ namespace MinSheng_MIS.Controllers
     {
         private readonly DatagridService _service = new DatagridService();
 
-        //--巡檢管理--
-        #region InspectionPlan_Management 巡檢計畫管理
-        //[HttpPost]
-        //public ActionResult InspectionPlan_Management(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_InspectionPlan(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
+        //--工單管理--
+        #region PlanManagement 工單管理
+        [HttpPost]
+        public ActionResult InspectionPlan_Management(FormCollection form)
+        {
+
+            var a = _service.GetJsonForGrid_InspectionPlan(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region SamplePath_Management 巡檢路線模板管理
@@ -34,6 +26,17 @@ namespace MinSheng_MIS.Controllers
         {
             
             var a = _service.GetJsonForGrid_SamplePath(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
+        #endregion
+
+        #region SampleSchedule_Management 每日巡檢時程模板管理
+        [HttpPost]
+        public ActionResult SampleSchedule_Management(FormCollection form)
+        {
+
+            var a = _service.GetJsonForGrid_DailyInspectionSample(form);
             string result = JsonConvert.SerializeObject(a);
             return Content(result, "application/json");
         }
@@ -62,14 +65,14 @@ namespace MinSheng_MIS.Controllers
 
         //--定期保養管理--
         #region MaintainForm_Management 定期保養單管理
-        //[HttpPost]
-        //public ActionResult MaintainForm_Management(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_MaintainForm(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
+        [HttpPost]
+        public ActionResult MaintainForm_Management(FormCollection form)
+        {
+
+            var a = _service.GetJsonForGrid_MaintainForm(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
         #region MaintainItem_Management 保養項目管理
@@ -185,58 +188,15 @@ namespace MinSheng_MIS.Controllers
 
 
         //--庫存管理--
-        #region PurchaseRequisition_Management 請購管理
-        //[HttpPost]
-        //public ActionResult PurchaseRequisition_Management(FormCollection form)
-        //{
-        //    var a = _service.GetJsonForGrid_PurchaseRequisition_Management(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
-        #endregion
-
-        #region StockIn_Management 入庫管理
-        //[HttpPost]
-        //public ActionResult StockIn_Management(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_StockIn_Management(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
-        #endregion
-
-        #region StoresRequisition_Management 領用申請管理
-        //[HttpPost]
-        //public ActionResult StoresRequisition_Management(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_StoresRequisition_Management(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
-        #endregion
-
-        #region StockOut_Management 出庫管理
-        //[HttpPost]
-        //public ActionResult StockOut_Management(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_StockOut_Management(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
-        #endregion
-
         #region Stock_Management 庫存管理
-        //[HttpPost]
-        //public ActionResult Stock_Management(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_Stock_Management(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
+        [HttpPost]
+        public ActionResult Stock_Management(FormCollection form)
+        {
+
+            var a = _service.GetJsonForGrid_Stock_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
 

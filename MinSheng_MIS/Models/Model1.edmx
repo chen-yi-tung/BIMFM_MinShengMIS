@@ -384,7 +384,6 @@
           <Property Name="ESN" Type="char" MaxLength="12" Nullable="false" />
           <Property Name="ReportUserName" Type="nvarchar" MaxLength="128" />
           <Property Name="FillinTime" Type="datetime" />
-          <Property Name="Memo" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="InspectionPlan_EquipmentCheckItem">
           <Key>
@@ -402,7 +401,7 @@
           <Property Name="Id" Type="char" MaxLength="28" Nullable="false" />
           <Property Name="IPESN" Type="char" MaxLength="25" Nullable="false" />
           <Property Name="ReportValue" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="ReportContent" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ReportContent" Type="nvarchar" MaxLength="50" />
           <Property Name="Unit" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="InspectionPlan_Member">
@@ -511,22 +510,6 @@
           <Property Name="Year" Type="char" MaxLength="4" Nullable="false" />
           <Property Name="Month" Type="char" MaxLength="2" Nullable="false" />
         </EntityType>
-        <EntityType Name="PathSample">
-          <Key>
-            <PropertyRef Name="PSSN" />
-          </Key>
-          <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
-          <Property Name="PathTitle" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="FSN" Type="nvarchar" MaxLength="20" Nullable="false" />
-        </EntityType>
-        <EntityType Name="PathSampleOrder">
-          <Key>
-            <PropertyRef Name="FPSSN" />
-          </Key>
-          <Property Name="FPSSN" Type="nchar" MaxLength="9" Nullable="false" />
-          <Property Name="PSSN" Type="char" MaxLength="6" Nullable="false" />
-          <Property Name="BeaconID" Type="nvarchar" MaxLength="8" Nullable="false" />
-        </EntityType>
         <EntityType Name="RFID">
           <Key>
             <PropertyRef Name="RFIDInternalCode" />
@@ -555,7 +538,7 @@
           <Property Name="ChangeTime" Type="datetime" Nullable="false" />
           <Property Name="PurchaseOrder" Type="nvarchar" MaxLength="50" />
           <Property Name="Recipient" Type="nvarchar" MaxLength="50" />
-          <Property Name="Memo" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="Memo" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="StockType">
           <Key>
@@ -1143,18 +1126,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PathSampleOrder_PathSample">
-          <End Role="PathSample" Type="Self.PathSample" Multiplicity="1" />
-          <End Role="PathSampleOrder" Type="Self.PathSampleOrder" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PathSample">
-              <PropertyRef Name="PSSN" />
-            </Principal>
-            <Dependent Role="PathSampleOrder">
-              <PropertyRef Name="PSSN" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RFID_EquipmentInfo">
           <End Role="EquipmentInfo" Type="Self.EquipmentInfo" Multiplicity="0..1" />
           <End Role="RFID" Type="Self.RFID" Multiplicity="*" />
@@ -1354,8 +1325,6 @@
           <EntitySet Name="ManufacturerInfo" EntityType="Self.ManufacturerInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MeetingMinutes" EntityType="Self.MeetingMinutes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MonthlyReport" EntityType="Self.MonthlyReport" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PathSample" EntityType="Self.PathSample" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PathSampleOrder" EntityType="Self.PathSampleOrder" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RFID" EntityType="Self.RFID" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StockChangesRecord" EntityType="Self.StockChangesRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StockType" EntityType="Self.StockType" Schema="dbo" store:Type="Tables" />
@@ -1515,10 +1484,6 @@
             <End Role="Floor_Info" EntitySet="Floor_Info" />
             <End Role="InspectionTrack" EntitySet="InspectionTrack" />
           </AssociationSet>
-          <AssociationSet Name="FK_PathSampleOrder_PathSample" Association="Self.FK_PathSampleOrder_PathSample">
-            <End Role="PathSample" EntitySet="PathSample" />
-            <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
-          </AssociationSet>
           <AssociationSet Name="FK_RFID_EquipmentInfo" Association="Self.FK_RFID_EquipmentInfo">
             <End Role="EquipmentInfo" EntitySet="EquipmentInfo" />
             <End Role="RFID" EntitySet="RFID" />
@@ -1618,8 +1583,6 @@
           <EntitySet Name="ManufacturerInfo" EntityType="Bimfm_MinSheng_MISModel.ManufacturerInfo" />
           <EntitySet Name="MeetingMinutes" EntityType="Bimfm_MinSheng_MISModel.MeetingMinutes" />
           <EntitySet Name="MonthlyReport" EntityType="Bimfm_MinSheng_MISModel.MonthlyReport" />
-          <EntitySet Name="PathSample" EntityType="Bimfm_MinSheng_MISModel.PathSample" />
-          <EntitySet Name="PathSampleOrder" EntityType="Bimfm_MinSheng_MISModel.PathSampleOrder" />
           <EntitySet Name="RFID" EntityType="Bimfm_MinSheng_MISModel.RFID" />
           <EntitySet Name="StockChangesRecord" EntityType="Bimfm_MinSheng_MISModel.StockChangesRecord" />
           <EntitySet Name="StockType" EntityType="Bimfm_MinSheng_MISModel.StockType" />
@@ -1786,10 +1749,6 @@
           <AssociationSet Name="FK_InspectionPlan_RFIDOrder_RFID" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_RFID">
             <End Role="RFID" EntitySet="RFID" />
             <End Role="InspectionPlan_RFIDOrder" EntitySet="InspectionPlan_RFIDOrder" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PathSampleOrder_PathSample" Association="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample">
-            <End Role="PathSample" EntitySet="PathSample" />
-            <End Role="PathSampleOrder" EntitySet="PathSampleOrder" />
           </AssociationSet>
           <AssociationSet Name="FK_RFID_StockChangesRecord" Association="Bimfm_MinSheng_MISModel.FK_RFID_StockChangesRecord">
             <End Role="StockChangesRecord" EntitySet="StockChangesRecord" />
@@ -2251,7 +2210,6 @@
           <Property Name="ESN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="false" />
           <Property Name="ReportUserName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="FillinTime" Type="DateTime" Precision="3" />
-          <Property Name="Memo" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_EquipmentInfo" FromRole="InspectionPlan_Equipment" ToRole="EquipmentInfo" />
           <NavigationProperty Name="InspectionPlan_Time" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_InspectionPlan_Time" FromRole="InspectionPlan_Equipment" ToRole="InspectionPlan_Time" />
           <NavigationProperty Name="InspectionPlan_EquipmentCheckItem" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentCheckItem_InspectionPlan_Equipment" FromRole="InspectionPlan_Equipment" ToRole="InspectionPlan_EquipmentCheckItem" />
@@ -2275,7 +2233,7 @@
           <Property Name="Id" Type="String" Nullable="false" MaxLength="28" FixedLength="true" Unicode="false" />
           <Property Name="IPESN" Type="String" Nullable="false" MaxLength="25" FixedLength="true" Unicode="false" />
           <Property Name="ReportValue" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ReportContent" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ReportContent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Unit" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="InspectionPlan_Equipment" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_EquipmentReportingItem_InspectionPlan_Equipment" FromRole="InspectionPlan_EquipmentReportingItem" ToRole="InspectionPlan_Equipment" />
         </EntityType>
@@ -2393,24 +2351,6 @@
           <Property Name="Year" Type="String" Nullable="false" MaxLength="4" FixedLength="true" Unicode="false" />
           <Property Name="Month" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
         </EntityType>
-        <EntityType Name="PathSample">
-          <Key>
-            <PropertyRef Name="PSSN" />
-          </Key>
-          <Property Name="PSSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
-          <Property Name="PathTitle" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="FSN" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="PathSampleOrder" Relationship="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" FromRole="PathSample" ToRole="PathSampleOrder" />
-        </EntityType>
-        <EntityType Name="PathSampleOrder">
-          <Key>
-            <PropertyRef Name="FPSSN" />
-          </Key>
-          <Property Name="FPSSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="true" />
-          <Property Name="PSSN" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
-          <Property Name="BeaconID" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="PathSample" Relationship="Bimfm_MinSheng_MISModel.FK_PathSampleOrder_PathSample" FromRole="PathSampleOrder" ToRole="PathSample" />
-        </EntityType>
         <EntityType Name="RFID">
           <Key>
             <PropertyRef Name="RFIDInternalCode" />
@@ -2444,7 +2384,7 @@
           <Property Name="ChangeTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="PurchaseOrder" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Recipient" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Memo" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Memo" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ComputationalStock" Relationship="Bimfm_MinSheng_MISModel.FK_StockChangesRecord_ComputationalStock" FromRole="StockChangesRecord" ToRole="ComputationalStock" />
           <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_StockChangesRecord" FromRole="StockChangesRecord" ToRole="RFID" />
         </EntityType>
@@ -3078,18 +3018,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PathSampleOrder_PathSample">
-          <End Type="Bimfm_MinSheng_MISModel.PathSample" Role="PathSample" Multiplicity="1" />
-          <End Type="Bimfm_MinSheng_MISModel.PathSampleOrder" Role="PathSampleOrder" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PathSample">
-              <PropertyRef Name="PSSN" />
-            </Principal>
-            <Dependent Role="PathSampleOrder">
-              <PropertyRef Name="PSSN" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RFID_StockChangesRecord">
           <End Type="Bimfm_MinSheng_MISModel.StockChangesRecord" Role="StockChangesRecord" Multiplicity="0..1" />
           <End Type="Bimfm_MinSheng_MISModel.RFID" Role="RFID" Multiplicity="*" />
@@ -3600,7 +3528,6 @@
           <EntitySetMapping Name="InspectionPlan_Equipment">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.InspectionPlan_Equipment">
               <MappingFragment StoreEntitySet="InspectionPlan_Equipment">
-                <ScalarProperty Name="Memo" ColumnName="Memo" />
                 <ScalarProperty Name="FillinTime" ColumnName="FillinTime" />
                 <ScalarProperty Name="ReportUserName" ColumnName="ReportUserName" />
                 <ScalarProperty Name="ESN" ColumnName="ESN" />
@@ -3740,24 +3667,6 @@
                 <ScalarProperty Name="ReportContent" ColumnName="ReportContent" />
                 <ScalarProperty Name="ReportTitle" ColumnName="ReportTitle" />
                 <ScalarProperty Name="MRSN" ColumnName="MRSN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PathSample">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PathSample">
-              <MappingFragment StoreEntitySet="PathSample">
-                <ScalarProperty Name="FSN" ColumnName="FSN" />
-                <ScalarProperty Name="PathTitle" ColumnName="PathTitle" />
-                <ScalarProperty Name="PSSN" ColumnName="PSSN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PathSampleOrder">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.PathSampleOrder">
-              <MappingFragment StoreEntitySet="PathSampleOrder">
-                <ScalarProperty Name="BeaconID" ColumnName="BeaconID" />
-                <ScalarProperty Name="PSSN" ColumnName="PSSN" />
-                <ScalarProperty Name="FPSSN" ColumnName="FPSSN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

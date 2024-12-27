@@ -1,17 +1,4 @@
 ﻿function RepairRecord(selector, data) {
-    console.log("data" ,data)
-    //const sn = {
-    //    EquipmentItem: [
-    //        { text: "設備名稱", value: "IName", colspan: true },
-    //        { text: "設備型號", value: "Model", colspan: true },
-    //        { text: "所在位置", value: "Location", colspan: true },
-    //        { text: "檢查項目", value: "InspectItems" },
-    //        { text: "填報列表", value: "ReportItems" },
-    //    ],
-    //};
-    console.log('selector', $(selector));
-    console.log('data.IName', data.IName);
-
     $(selector).append(
         data.InspectionRecord ?
             createAccordion({
@@ -24,8 +11,8 @@
                 ],
                 subsn: [
                     { text: "所在位置", value: "Location", colspan: true },
-                    { text: "檢查項目", value: "InspectItems", type: "dualCol" },
-                    { text: "填報列表", value: "ReportItems", type: "dualCol" },
+                    { text: "檢查項目", value: "InspectItems", type: "DualCol" },
+                    { text: "填報列表", value: "ReportItems", type: "DualCol" },
                 ],
                 data: data.InspectionRecord,
                 itemTitleKey: `IName`,
@@ -38,81 +25,106 @@
 }
 
 function InspectionRecord(selector, data) {
-    console.log("InspectionRecord data", data)
-    console.log('InspectionRecord selector', $(selector));
-
     $(selector).append(
-        data.InspectionRecord ?
+        data.ReportItemList ?
             createInspectionTable({
 
-                id: `InspectionRecord`,
+                id: `ReportItemList`,
                 sn: [
-                    { text: "巡檢頻率", value: "Ifrequency", colspan: "3" },
-                    { text: "檢查項目", value: "InspectItems", colspan: "2", itemNum: true },
-                    { text: "填報項目名稱/單位", value: "ReportItems", type: "dualCol" },
+                    { text: "巡檢頻率", value: "Frequency", colspan: "3" },
+                    { text: "檢查項目", value: "CheckItemList", colspan: "2", itemNum: true },
+                    { text: "填報項目名稱/單位", value: "ReportItemList", type: "DualCol" },
                 ],
-                data: data.InspectionRecord,
+                data: data,
             })
             : "",
     )
 }
 
 function EquipmentRFID(selector, data) {
-    console.log("EquipmentRFID data", data)
-    console.log('EquipmentRFID selector', $(selector));
-
     $(selector).append(
         data.RFID ?
             createAccordion({
                 id: `RFID`,
                 sn: [
-                    { text: "RFID名稱", value: "IName" },
-                    { text: "RFID內碼", value: "InterCode" },
-                    { text: "RFID外碼", value: "ExterCode" },
-                    { text: "棟別", value: "Area" },
-                    { text: "樓層", value: "Floor" },
-                    { text: "定位", value: "Location" },
+                    { text: "RFID名稱", value: "Name" },
+                    { text: "RFID內碼", value: "RFIDInternalCode" },
+                    { text: "RFID外碼", value: "RFIDExternalCode" },
+                    { text: "棟別", value: "ASN" },
+                    { text: "樓層", value: "FSN" },
+                    { text: "定位", value: "Location", btn: true },
                     { text: "備註", value: "Memo" },
                 ],
                 data: data.RFID,
-                itemTitleKey: `IName`,
+                itemTitleKey: `Name`,
             })
             : "",
     )
 }
 
 function MaintainInfo(selector, data) {
-    console.log("MaintainInfo data", data)
-    console.log('MaintainInfo selector', $(selector));
+    //console.log("MaintainInfo data", data)
+    //console.log('MaintainInfo selector', selector);
 
     $(selector).append(
-        data.SampleInfo.MaintainItems ?
+        data.MaintainItemList ?
             createInspectionTable({
-                id: `MaintainInfo`,
+                id: `MaintainItemList`,
                 sn: [
-                    { text: "保養項目/週期", value: "MaintainItems", type: "dualCol" },
+                    { text: "保養項目/週期", value: "MaintainItemList", type: "TripleCol" },
                 ],
-                data: data.SampleInfo,
+                data: data,
             })
             : "",
     )
 }
 
 function InspectionInfo(selector, data) {
-    console.log("InspectionInfo data", data)
-    console.log('InspectionInfo selector', $(selector));
 
     $(selector).append(
-        data.SampleInfo.InspectionItems ?
-            createInspectionTable({
-                id: `InspectionInfo`,
-                sn: [
-                    { text: "巡檢頻率", value: "Ifrequency", colspan: "3" },
-                    { text: "檢查項目", value: "InspectItems", colspan: "2", itemNum: "true" },
-                    { text: "填報項目名稱/單位", value: "ReportItems", type: "dualCol" },
-                ],
-                data: data.SampleInfo.InspectionItems,
-            })
+        data ?
+            createTableInner(
+                data,
+                [
+                    {
+                        text: "巡檢頻率",
+                        value: "Frequency",
+                        colspan: true
+                    }
+                ]
+            )
+            : "",
+    )
+    $(selector).append(
+        data.CheckItemList ?
+            createTableInner(data,
+                [
+                    {
+                        text: "檢查項目",
+                        value: "CheckItemList",
+                        itemNum: [
+                            { value: "Value" },
+                        ],
+                        colspan: true
+                    },
+                ]
+            )
+            : "",
+    )
+    $(selector).append(
+        data.ReportItemList ?
+            createTableInner(data,
+                [
+                    {
+                        text: "填報項目名稱/單位",
+                        value: "ReportItemList",
+                        itemNum: [
+                            { value: "Value" },
+                            { value: "Unit" },
+                        ],
+                    },
+                ]
+            )
             : "",
     )
 }

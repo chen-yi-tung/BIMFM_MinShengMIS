@@ -1,19 +1,16 @@
 ﻿using MiniExcelLibs;
 using MiniExcelLibs.Attributes;
 using MiniExcelLibs.OpenXml;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
+using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using System.Linq.Dynamic.Core;
 
 namespace MinSheng_MIS.Services
 {
@@ -353,6 +350,67 @@ namespace MinSheng_MIS.Services
 
             int nextSequence = currentSequence + 1;
             return nextSequence.ToString().PadLeft(sequenceLength, '0');
+        }
+        #endregion
+
+        #region 產生唯一編碼
+        /// <summary>
+        /// 產生唯一編碼
+        /// </summary>
+        /// <param name="format">編碼格式 (如 "!{yyMMdd}%{3}" 或 "${SN}%{5}")</param>
+        /// <param name="emptySnLength">初始編碼的位數</param>
+        /// <param name="latestId">前一筆資料唯一編碼</param>
+        /// <param name="sn">SN碼 (若編碼格式需要，可提供)</param>
+        /// <returns>唯一編碼</returns>
+        /// <remarks>
+        /// 使用者需提供自訂的編碼格式與初始編碼位數。
+        /// </remarks>
+        public static string GenerateUniqueSn(string format, int emptySnLength, string latestId = null, string sn = null)
+        {
+            if (string.IsNullOrEmpty(format))
+                throw new ArgumentException("Format cannot be null or empty.", nameof(format));
+
+            if (emptySnLength <= 0)
+                throw new ArgumentException("Empty SN length must be greater than zero.", nameof(emptySnLength));
+
+            if (format.Contains("${SN}") && string.IsNullOrEmpty(sn))
+                throw new ArgumentException("sn cannot be null or empty when format includes '${SN}'.", nameof(sn));
+
+            string emptySN = new string('0', emptySnLength); // 產生指定位數的'0'
+
+            // 將 PlanPathSN 插入格式中 (若需要)
+            if (!string.IsNullOrEmpty(sn))
+                format = format.Replace("${SN}", sn);
+
+            // 產生唯一編碼
+            return latestId == null ?
+                ComFunc.CreateNextID(format, emptySN) :
+                ComFunc.CreateNextID(format, latestId);
+        }
+        #endregion
+
+        #region 獲取最後一個PK編碼
+        /// <summary>
+        /// 根據指定的篩選條件，對查詢進行排序並選擇指定的欄位，返回最新的資料 ID。
+        /// </summary>
+        /// <param name="query">要進行查詢的IQueryable資料集</param>
+        /// <param name="fieldName">用於排序和選擇欄位的欄位名稱。</param>
+        /// <param name="filter">篩選條件的 Lambda 表達式。此參數為可選，如果未提供則不應用篩選。</param>
+        /// <returns>返回符合條件的資料的最新 ID。如果沒有符合條件的資料，則返回 null。</returns>
+        /// <remarks>排序為desc</remarks>
+        public string GetLatestIdWithFilter(
+            IQueryable<dynamic> query, 
+            string fieldName, 
+            Expression<Func<dynamic, bool>> filter = null )
+        {
+            // 如果有篩選條件，應用篩選
+            if (filter != null)
+                query = query.Where(filter);
+
+            // 應用篩選條件，並動態排序和選擇欄位
+            return query.OrderBy($"{fieldName} descending") // 動態排序
+                .Select($"{fieldName}")                     // 動態選擇欄位
+                .FirstOrDefault()?.ToString();
         }
         #endregion
 

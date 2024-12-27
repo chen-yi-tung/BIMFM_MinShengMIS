@@ -13,13 +13,13 @@ namespace MinSheng_MIS.Services
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly EquipmentInfo_ManagementService _eMgmtService;
-        private readonly SamplePath_ManagementService _pSamplePathService;
+        //private readonly SamplePath_ManagementService _pSamplePathService;
 
         public OneDeviceOneCard_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
             _eMgmtService = new EquipmentInfo_ManagementService(_db);
-            _pSamplePathService = new SamplePath_ManagementService(_db);
+            //_pSamplePathService = new SamplePath_ManagementService(_db);
         }
 
         #region 新增一機一卡模板
@@ -31,7 +31,7 @@ namespace MinSheng_MIS.Services
             // 建立 Template_OneDeviceOneCard
             var deviceCard = new Template_OneDeviceOneCard
             {
-                TSN = await GenerateTSNAsync(),
+                TSN = await GenerateTsnAsync(),
                 SampleName = data.SampleName,
                 Frequency = data.Frequency
             };
@@ -90,7 +90,7 @@ namespace MinSheng_MIS.Services
         {
             // 是否模板存在
             if (!await _db.Template_OneDeviceOneCard.AnyAsync(x => x.TSN == data.TSN))
-                throw new MyCusResException("模板不存在!");
+                throw new MyCusResException("模板不存在！");
 
             // 資料驗證
             DeviceCardDataAnnotation(data, data.TSN);
@@ -190,7 +190,7 @@ namespace MinSheng_MIS.Services
                     })
                     ?? Enumerable.Empty<UpdateMaintainItemValueInstance>();
                     foreach (var value in valueTargetList)
-                        await _eMgmtService.CreateEquipmentMaintainItemsValue(value);
+                        await _eMgmtService.CreateEquipmentMaintainItemsValue(value, true);
                 }
             }
             #endregion
@@ -256,7 +256,7 @@ namespace MinSheng_MIS.Services
         public async Task<T> GetOneDeviceOneCardAsync<T>(string TSN) where T : class, new()
         {
             var template = await _db.Template_OneDeviceOneCard.FindAsync(TSN)
-                ?? throw new MyCusResException("查無資料!");
+                ?? throw new MyCusResException("查無資料！");
 
             return template.ToDto<Template_OneDeviceOneCard, T>();
         }
@@ -422,7 +422,7 @@ namespace MinSheng_MIS.Services
                 _db.Template_OneDeviceOneCard.Where(x => x.TSN != tsn);
 
             if (templates.Select(x => x.SampleName).ToList().Contains(data.SampleName))
-                throw new MyCusResException("模板名稱已被使用!");
+                throw new MyCusResException("模板名稱已被使用！");
         }
         #endregion
 
@@ -433,7 +433,7 @@ namespace MinSheng_MIS.Services
             ValidateList(data.AFNameList, "增設基本欄位", 100);
             // 與既有欄位進行比對
             //if (compareOrigin && await _db.Template_AddField.Where(x => x.TSN == data.TSN).AnyAsync(x => data.AFNameList.Contains(x.FieldName)))
-            //    throw new MyCusResException("增設基本欄位不可重複!");
+            //    throw new MyCusResException("增設基本欄位不可重複！");
         }
         #endregion
 
@@ -444,7 +444,7 @@ namespace MinSheng_MIS.Services
             ValidateList(data.MINameList, "保養項目", 100);
             // 與既有欄位進行比對
             //if (await _db.Template_MaintainItemSetting.Where(x => x.TSN == data.TSN).AnyAsync(x => data.MINameList.Contains(x.MaintainName)))
-            //    throw new MyCusResException("保養項目名稱不可重複!");
+            //    throw new MyCusResException("保養項目名稱不可重複！");
         }
         #endregion
 
@@ -453,12 +453,12 @@ namespace MinSheng_MIS.Services
         {
             // 當檢查項目不為空，則檢查頻率為必填
             if (data.Frequency == null && data.CINameList?.Any() == true)
-                throw new MyCusResException("請填寫檢查頻率!");
+                throw new MyCusResException("請填寫檢查頻率！");
             // 驗證新增設基本欄位(data包含既有的欄位)
             ValidateList(data.CINameList, "檢查項目", 100);
             // 與既有欄位進行比對
             //if (await _db.Template_CheckItem.Where(x => x.TSN == data.TSN).AnyAsync(x => data.CINameList.Contains(x.CheckItemName)))
-            //    throw new MyCusResException("檢查項目名稱不可重複!");
+            //    throw new MyCusResException("檢查項目名稱不可重複！");
         }
         #endregion
 
@@ -467,13 +467,13 @@ namespace MinSheng_MIS.Services
         {
             // 當填報項目不為空，則檢查頻率為必填
             if (data.Frequency == null && data.RIList?.Any() == true)
-                throw new MyCusResException("請填寫檢查頻率!");
+                throw new MyCusResException("請填寫檢查頻率！");
             ValidateList(data.RIList?.Select(x => x.RIName), "填報項目", 100);
             // 與既有欄位進行比對
             //var riNameList = data.RIList.Select(r => r.RIName).ToList();
             //if (await _db.Template_ReportingItem
             //    .AnyAsync(x => x.TSN == data.TSN && riNameList.Contains(x.ReportingItemName)))
-            //    throw new MyCusResException("檢查項目名稱不可重複!");
+            //    throw new MyCusResException("檢查項目名稱不可重複！");
         }
         #endregion
 
@@ -483,10 +483,11 @@ namespace MinSheng_MIS.Services
         /// 產生一機一卡模板唯一編碼
         /// </summary>
         /// <returns>唯一編碼</returns>
-        public async Task<string> GenerateTSNAsync()
+        /// <remarks>唯一編碼規則為"!{yyMMdd}%{2}"</remarks>
+        public async Task<string> GenerateTsnAsync()
         {
             string format = "!{yyMMdd}%{2}";
-            string emptySN = new string('0', 8); // 產生11位數的'0'
+            string emptySN = new string('0', 8); // 產生8位數的'0'
 
             // 前一筆資料
             var latest = await _db.Template_OneDeviceOneCard.OrderByDescending(x => x.TSN).FirstOrDefaultAsync();
@@ -513,7 +514,6 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="tsn">TSN碼</param>
         /// <param name="latestId">前一筆資料唯一編碼</param>
-        /// <param name="fieldName">唯一編碼欄位名稱</param>
         /// <returns>唯一編碼</returns>
         /// <remarks>唯一編碼規則為"${TSN}%{3}"</remarks>
         public string GenerateUniqueIdByTSN(string tsn, string latestId)
@@ -664,7 +664,7 @@ namespace MinSheng_MIS.Services
 
             foreach (var item in targetList)
             {
-                var field = _db.Template_AddField.Find(item.AFSN) ?? throw new MyCusResException("AFSN不存在!");
+                var field = _db.Template_AddField.Find(item.AFSN) ?? throw new MyCusResException("AFSN不存在！");
                 field.FieldName = item.Value;
                 _db.Template_AddField.AddOrUpdate(field);
             }
@@ -685,7 +685,7 @@ namespace MinSheng_MIS.Services
 
             foreach (var item in targetList)
             {
-                var field = _db.Template_MaintainItemSetting.Find(item.MISSN) ?? throw new MyCusResException("MISSN不存在!");
+                var field = _db.Template_MaintainItemSetting.Find(item.MISSN) ?? throw new MyCusResException("MISSN不存在！");
                 field.MaintainName = item.Value;
                 _db.Template_MaintainItemSetting.AddOrUpdate(field);
             }
@@ -706,7 +706,7 @@ namespace MinSheng_MIS.Services
 
             foreach (var item in targetList)
             {
-                var field = _db.Template_CheckItem.Find(item.CISN) ?? throw new MyCusResException("CISN不存在!");
+                var field = _db.Template_CheckItem.Find(item.CISN) ?? throw new MyCusResException("CISN不存在！");
                 field.CheckItemName = item.Value;
                 _db.Template_CheckItem.AddOrUpdate(field);
             }
@@ -727,7 +727,7 @@ namespace MinSheng_MIS.Services
 
             foreach (var item in targetList)
             {
-                var field = _db.Template_ReportingItem.Find(item.RISN) ?? throw new MyCusResException("RISN不存在!");
+                var field = _db.Template_ReportingItem.Find(item.RISN) ?? throw new MyCusResException("RISN不存在！");
                 field.ReportingItemName = item.Value;
                 _db.Template_ReportingItem.AddOrUpdate(field);
             }
@@ -741,10 +741,10 @@ namespace MinSheng_MIS.Services
             {
                 // List長度限制
                 if (list.Count() > listMaxLength)
-                    throw new MyCusResException($"{fieldName}不可超過{listMaxLength}項!");
+                    throw new MyCusResException($"{fieldName}不可超過{listMaxLength}項！");
                 // 不可重複：名稱
                 if (list.Count() != list.Distinct().Count())
-                    throw new MyCusResException($"{fieldName}名稱不可重複!");
+                    throw new MyCusResException($"{fieldName}名稱不可重複！");
             }
         }
         #endregion

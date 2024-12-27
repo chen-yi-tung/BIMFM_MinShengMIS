@@ -6,8 +6,8 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace MinSheng_MIS.Services
 {
@@ -19,15 +19,38 @@ namespace MinSheng_MIS.Services
             _db = db;
         }
 
+        #region 查詢設備的所有RFID
+        public IEnumerable<RFID> GetRFIDsByEsn(string esn)
+        {
+            return _db.RFID.Where(x => x.ESN == esn).AsEnumerable();
+        }
+        #endregion
+
+        #region 查詢符合Dto的RFID資訊
+        public IQueryable<T> GetRFIDQueryByDto<T>(Expression<Func<RFID, bool>> filter = null) 
+            where T : new()
+        {
+            // 基本查詢
+            var query = _db.RFID.AsQueryable();
+
+            // 如果有過濾條件，應用過濾
+            if (filter != null)
+                query = query.Where(filter);
+
+            // 映射到目標類型
+            return query.Select(Helper.MapDatabaseToQuery<RFID, T>());
+        }
+        #endregion
+
         #region 新增設備RFID
         public async Task AddEquipRFIDAsync(EquipRFID data, string esn)
         {
             // 資料驗證
             await RFIDDataAnnotationAsync(data);
             if (string.IsNullOrEmpty(esn))
-                throw new ArgumentNullException($"{nameof(esn)}不可為null!");
-            if (!await _db.EquipmentInfo.AnyAsync(x => x.ESN == esn))
-                throw new ArgumentException($"{nameof(esn)}不存在!");
+                throw new ArgumentNullException($"{nameof(esn)}不可為null！");
+            //if (!await _db.EquipmentInfo.AnyAsync(x => x.ESN == esn))
+            //    throw new ArgumentException($"{nameof(esn)}不存在！");
 
             // 新增/更新RFID
             var rfid = new RFID
@@ -46,13 +69,6 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 查詢設備RFID
-        public IEnumerable<RFID> GetRFIDsByEsn(string esn)
-        {
-            return _db.RFID.Where(x => x.ESN == esn).AsEnumerable();
-        }
-        #endregion
-
         //-----資料驗證
         #region RFID資料驗證
         public async Task RFIDDataAnnotationAsync(IRFIDInfo data)
@@ -61,24 +77,24 @@ namespace MinSheng_MIS.Services
 
             // 不可重複: RFID內碼
             if (await _db.RFID.AnyAsync(x => x.RFIDInternalCode == data.InternalCode))
-                throw new MyCusResException("RFID內碼已存在!");
+                throw new MyCusResException("RFID內碼已存在！");
             // 不可重複: RFID外碼
             if (await _db.RFID.AnyAsync(x => x.RFIDExternalCode == data.ExternalCode))
-                throw new MyCusResException("RFID外碼已存在!");
+                throw new MyCusResException("RFID外碼已存在！");
             // 關聯性PK是否存在: 樓層
             if (!floorSNList.Contains(data.FSN))
-                throw new MyCusResException("樓層不存在!");
+                throw new MyCusResException("樓層不存在！");
 
             #region 批次驗證(X)
             //// 不可重複: RFID內碼
             //if (await _db.RFID.Where(x => data.RFIDList.Any(r => r.InternalCode == x.RFIDInternalCode)).AnyAsync())
-            //    throw new MyCusResException("RFID內碼已存在!");
+            //    throw new MyCusResException("RFID內碼已存在！");
             //// 不可重複: RFID外碼
             //if (await _db.RFID.Where(x => data.RFIDList.Any(r => r.ExternalCode == x.RFIDExternalCode)).AnyAsync())
-            //    throw new MyCusResException("RFID外碼已存在!");
+            //    throw new MyCusResException("RFID外碼已存在！");
             //// 關聯性PK是否存在: 樓層
             //if (!floorSNList.All(floor => data.RFIDList.Select(x => x.FSN).AsEnumerable().Contains(floor)))
-            //    throw new MyCusResException("樓層不存在!");
+            //    throw new MyCusResException("樓層不存在！");
             #endregion
         }
         #endregion
