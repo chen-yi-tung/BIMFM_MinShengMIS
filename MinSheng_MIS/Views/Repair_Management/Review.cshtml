@@ -164,9 +164,7 @@
 
             var form = new FormData();
             const auditReason = document.querySelector('input[name="AuditResult"]:checked');
-            console.log("看這", auditReason.value);
             const auditReasonValue = auditReason.value === "true";
-            console.log("再看這", auditReasonValue);
 
             form.append("RSN", RSN);
             form.append("AuditReason", document.getElementById("AuditReason").value);
@@ -174,7 +172,7 @@
 
             console.log("最後傳送", Object.fromEntries(form.entries()));
 
-            @*$.ajax({
+            $.ajax({
                 url: '@Url.Action("Audit", "Repair_Management")',
                 data: form,
                 type: "POST",
@@ -182,10 +180,10 @@
                 processData: false,
                 success: onSuccess,
                 error: onError
-            })*@
+            })
 
             function onSuccess(res) {
-                console.log("這邊是甚麼", res);
+                console.log("res", res);
                 const msg = res.State === 'Success' ? '送出成功!' : res.ErrorMessage;
                 createDialogModal({
                     id: "DialogModal-Success", inner: msg,
