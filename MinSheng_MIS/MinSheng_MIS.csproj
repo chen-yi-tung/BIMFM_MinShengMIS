@@ -525,6 +525,7 @@
     <Compile Include="Services\DatagridService.cs" />
     <Compile Include="Services\DesignDiagramsService.cs" />
     <Compile Include="Services\EquipmentInfo_ManagementService.cs" />
+    <Compile Include="Services\EquipmentOperatingManualService.cs" />
     <Compile Include="Services\Helper.cs" />
     <Compile Include="Services\InspectionPlan_ManagementService.cs" />
     <Compile Include="Services\JsonResService.cs" />

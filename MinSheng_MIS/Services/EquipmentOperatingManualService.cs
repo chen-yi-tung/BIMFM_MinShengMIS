@@ -18,8 +18,6 @@ namespace MinSheng_MIS.Services
 
             var eomitem = new EquipmentOperatingManual();
             eomitem.EOMSN = newEOMSN;
-            eomitem.System = eom.System;
-            eomitem.SubSystem = eom.SubSystem;
             eomitem.EName = eom.EName;
             eomitem.Brand = eom.Brand;
             eomitem.Model = eom.Model;
