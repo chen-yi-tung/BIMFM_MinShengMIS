@@ -533,6 +533,11 @@ namespace MinSheng_MIS.Services
 
                 foreach (var item in maintenanceForms)
                 {
+                    var maintainerAccs = item.Equipment_MaintenanceFormMember.Select(m => m.Maintainer);
+                    var maintainerList = db.AspNetUsers
+                        .Where(x => maintainerAccs.Contains(x.UserName))
+                        .Select(x => x.MyName).ToList();
+
                     JObject itemObject = new JObject();
                     itemObject.Add("Status", Surface.MaintainStatus()[item.Status]); // 保養單狀態
                     itemObject.Add("EMFSN", item.EMFSN); // 保養單號
@@ -545,7 +550,7 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("NO", item.EquipmentInfo.NO); // 設備編號 (NO)
                     itemObject.Add("MaintainName", item.MaintainName); // 保養項目
                     itemObject.Add("Period", Surface.MaintainPeriod()[item.Period]); // 保養週期
-                    itemObject.Add("Maintainer", string.Join("、", item.Equipment_MaintenanceFormMember.Select(x => x.Maintainer))); // 執行人員
+                    itemObject.Add("Maintainer", string.Join("、", maintainerList)); // 執行人員
 
                     ja.Add(itemObject);
                 }

@@ -49,11 +49,11 @@ namespace MinSheng_MIS.Services
             datas.Period = Surface.MaintainPeriod()[data.Period];
             datas.LastMaintainDate = data.lastMaintainDate?.ToString("yyyy/MM/dd") ?? "";
             datas.NextMaintainDate = data.NextMaintainDate.ToString("yyyy/MM/dd");
-            datas.ReportId = data.ReportId;
+            datas.ReportId = _db.AspNetUsers.Where(x => x.UserName == data.ReportId).First().MyName;
             datas.ReportTime = data.ReportTime?.ToString("yyyy/MM/dd HH:mm") ?? "";
             datas.ReportContent = data.ReportContent;
             datas.AuditResult = data.AuditResult.ToString().ToLower();
-            datas.AuditId = data.AuditId;
+            datas.AuditId = _db.AspNetUsers.Where(x => x.UserName == data.AuditId).First().MyName;
             datas.AuditTime = data.AuditTime?.ToString("yyyy/MM/dd HH:mm") ?? "";
             datas.AuditReason = data.AuditReason;
             res.Datas = datas;
