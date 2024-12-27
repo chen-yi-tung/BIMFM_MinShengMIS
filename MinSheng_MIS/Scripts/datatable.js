@@ -470,7 +470,6 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
         nextMaintainDate.className = "form-control";
         nextMaintainDate.name = `nextMaintainDate-${i}`;
         nextMaintainDate.type = "date";
-        //nextMaintainDate.value = field.Value;
         nextMaintainDate.required = true;
 
         div.appendChild(SN);

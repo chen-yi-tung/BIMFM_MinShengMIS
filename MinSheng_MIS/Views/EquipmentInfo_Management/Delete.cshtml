@@ -26,15 +26,15 @@
             </div>
             <section id="EquipmentRFID"></section>
         </div>
-        <hr class="hr-default">
-        <div class="d-flex flex-column gap-2 w-100">
+        <hr class="hr-default" style="display: none;">
+        <div class="flex-column gap-2 w-100" style="display: none;" id="SampleZone">
             <div class="zone-title">一機一卡模板資訊</div>
             <div class="datatable">
                 <div class="datatable-body">
                     <table class="datatable-table" id="SampleInfo"></table>
                 </div>
             </div>
-            <div class="d-flex flex-column w-100">
+            <div class="flex-column w-100" id="addFieldSection">
                 <div class="group-sb-title">
                     <i class="fa-solid fa-map-pin"></i>
                     <div>增設基本資料欄位</div>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex flex-column w-100">
+            <div class="flex-column w-100" id="maintainSection">
                 <div class="group-sb-title">
                     <i class="fa-solid fa-map-pin"></i>
                     <div>保養資訊</div>
@@ -56,7 +56,7 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex flex-column w-100">
+            <div class="flex-column w-100" id="inspectionInfoSection">
                 <div class="group-sb-title">
                     <i class="fa-solid fa-map-pin"></i>
                     <div>巡檢資訊</div>
@@ -81,28 +81,29 @@
 
 @section scripts {
     <script>
-        const IPRSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${IPRSN}`;
+        const ESN = '@ViewBag.id';
+        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${ESN}`;
         let apiUrl = null;
-
+        let allData = {};
         $(async function () {
             addButtonEvent();
             readData(apiUrl);
         })
 
+        //基本資料欄位
         const SerializedName = [
-            { text: "設備圖片", value: "Pic" },
+            { text: "設備圖片", value: "EPhoto", type: "ImgPath" },
             { text: "設備名稱", value: "EName" },
-            { text: "設備編號", value: "ESN" },
-            { text: "棟別", value: "Area" },
-            { text: "樓層", value: "Floor" },
+            { text: "設備編號", value: "NO" },
+            { text: "棟別", value: "AFN" },
+            { text: "樓層", value: "FSN" },
             { text: "設備廠牌", value: "Brand" },
             { text: "設備型號", value: "Model" },
-            { text: "設備廠商", value: "Company" },
-            { text: "聯絡電話", value: "Tel" },
+            { text: "設備廠商", value: "Vendor" },
+            { text: "聯絡電話", value: "ContactPhone" },
             { text: "安裝日期", value: "InstallDate" },
-            { text: "使用電壓", value: "Voltage" },
-            { text: "其他耗材資料", value: "Other" },
+            { text: "使用電壓", value: "OperatingVoltage" },
+            { text: "其他耗材資料", value: "OtherInfo" },
             { text: "備註", value: "Memo" },
         ]
 
@@ -111,148 +112,155 @@
         ]
 
         const fakeData = {
-            Pic: "P336448226",
-            EName: "名稱名稱",
-            ESN: "365541",
-            Area: "進流抽水站",
-            Floor: "B1F",
-            Brand: "廠牌名稱",
-            Model: "op1002",
-            Company: "郝繽紛公司",
-            Tel: "0909111222",
-            InstallDate: "2024/08/10",
-            Voltage: "20V",
-            Other: "資料資料",
-            Memo: "",
-            RFID: [
-                {
-                    IName: "軸承潤滑劑一",
-                    InterCode: "A101",
-                    ExterCode: "125533FFFF",
-                    Area: "A棟",
-                    Floor: "5F",
-                    Location: "-",
-                    Memo: "備註備註",
-                },
-                {
-                    IName: "軸承潤滑劑二",
-                    InterCode: "A102",
-                    ExterCode: "225533FFFF",
-                    Area: "A棟",
-                    Floor: "5F",
-                    Location: "-",
-                    Memo: "備註備註",
-                },
-                {
-                    IName: "軸承潤滑劑三",
-                    InterCode: "A103",
-                    ExterCode: "325533FFFF",
-                    Area: "A棟",
-                    Floor: "5F",
-                    Location: "-",
-                    Memo: "備註備註",
-                },
-            ],
-            SampleInfo: {
+            Datas: {
+                ESN: "000123",
+                EPhoto: "/Files/EquipmentInfo/E24122400001.png",
+                EName: "名稱名稱",
+                NO: "365541",
+                AFN: "進流抽水站",
+                FSN: "B1F",
+                Brand: "廠牌名稱",
+                Model: "op1002",
+                Vendor: "郝繽紛公司",
+                ContactPhone: "0909111222",
+                InstallDate: "2024/08/10",
+                OperatingVoltage: "20V",
+                OtherInfo: "資料資料",
+                Memo: "這是一段備註",
+                RFID: [
+                    {
+                        Name: "軸承潤滑劑一",
+                        RFIDInternalCode: "A101",
+                        RFIDExternalCode: "125533FFFF",
+                        ASN: "A棟",
+                        FSN: "5F",
+                        Location_X: "",
+                        Location_Y: "",
+                        Memo: "備註備註",
+                    },
+                    {
+                        Name: "軸承潤滑劑二",
+                        RFIDInternalCode: "A102",
+                        RFIDExternalCode: "225533FFFF",
+                        ASN: "A棟",
+                        FSN: "5F",
+                        Location_X: "",
+                        Location_Y: "",
+                        Memo: "備註備註",
+                    },
+                    {
+                        Name: "軸承潤滑劑三",
+                        RFIDInternalCode: "A103",
+                        RFIDExternalCode: "325533FFFF",
+                        ASN: "A棟",
+                        FSN: "5F",
+                        Location_X: "",
+                        Location_Y: "",
+                        Memo: "備註備註",
+                    },
+                ],
                 SampleName: "攪拌機模板",
-                AddField: [
+                AddFieldList: [
                     {
-                        SN: "F0001",
-                        text: "馬力數",
-                        value: "馬力數內容內容"
+                        AFSN: "F0001",
+                        Text: "馬力數",
+                        Value: "馬力數內容內容"
                     },
                     {
-                        SN: "F0002",
-                        text: "起動方式",
-                        value: "起動方式內容內容"
+                        AFSN: "F0002",
+                        Text: "起動方式",
+                        Value: "起動方式內容內容"
                     },
                     {
-                        SN: "F0003",
-                        text: "額定電流",
-                        value: "額定電流內容內容"
+                        AFSN: "F0003",
+                        Text: "額定電流",
+                        Value: "額定電流內容內容"
                     },
                     {
-                        SN: "F0004",
-                        text: "油料編號",
-                        value: "油料編號內容內容"
-                    },
-                ],
-                MaintainItems: [
-                    {
-                        SN: "I0001",
-                        Item: "外部清潔與保養",
-                        Value: "每月"
-                    },
-                    {
-                        SN: "I0002",
-                        Item: "各部螺絲鎖定",
-                        Value: "每週"
-                    },
-                    {
-                        SN: "I0003",
-                        Item: "檢查管路是否通暢",
-                        Value: "每日"
-                    },
-                    {
-                        SN: "I0004",
-                        Item: "軸承潤滑油添加",
-                        Value: "每月"
+                        AFSN: "F0004",
+                        Text: "油料編號",
+                        Value: "油料編號內容內容"
                     },
                 ],
-                InspectionItems: {
-                    Ifrequency: "1小時",
-                    InspectItems: [
-                        {
-                            SN: "000123",
-                            value: "馬達是否正常運轉"
-                        },
-                        {
-                            SN: "000124",
-                            value: "管線是否正常無漏液"
-                        },
-                        {
-                            SN: "000125",
-                            value: "出口端是否正常出藥"
-                        },
-                        {
-                            SN: "000126",
-                            value: "設備是否正常無漏水"
-                        },
-                    ],
-                    ReportItems: [
-                        {
-                            SN: "I0001",
-                            Item: "馬達電壓",
-                            Value: "v"
-                        },
-                        {
-                            SN: "I0002",
-                            Item: "電流",
-                            Value: "A"
-                        },
-                        {
-                            SN: "I0003",
-                            Item: "水壓",
-                            Value: "Pa"
-                        },
-                        {
-                            SN: "I0004",
-                            Item: "流量",
-                            Value: "CMH"
-                        },
-                    ]
-                }
-            }
+                MaintainItemList: [
+                    {
+                        MISSN: "I0001",
+                        Value: "外部清潔與保養",
+                        Period: "每月",
+                        NextMaintainDate: "2024/12/25"
+                    },
+                    {
+                        MISSN: "I0002",
+                        Value: "各部螺絲鎖定",
+                        Period: "每週",
+                        NextMaintainDate: "2024/12/25"
+                    },
+                    {
+                        MISSN: "I0003",
+                        Value: "檢查管路是否通暢",
+                        Period: "每日",
+                        NextMaintainDate: "2024/12/25"
+                    },
+                    {
+                        MISSN: "I0004",
+                        Value: "軸承潤滑油添加",
+                        Period: "每月",
+                        NextMaintainDate: "2024/12/25"
+                    },
+                ],
+                Frequency: "1小時",
+                CheckItemList: [
+                    {
+                        CISN: "000123",
+                        Value: "馬達是否正常運轉"
+                    },
+                    {
+                        CISN: "000124",
+                        Value: "管線是否正常無漏液"
+                    },
+                    {
+                        CISN: "000125",
+                        Value: "出口端是否正常出藥"
+                    },
+                    {
+                        CISN: "000126",
+                        Value: "設備是否正常無漏水"
+                    },
+                ],
+                ReportItemList: [
+                    {
+                        RISN: "I0001",
+                        Value: "馬達電壓",
+                        Unit: "v"
+                    },
+                    {
+                        RISN: "I0002",
+                        Value: "電流",
+                        Unit: "A"
+                    },
+                    {
+                        RISN: "I0003",
+                        Value: "水壓",
+                        Unit: "Pa"
+                    },
+                    {
+                        RISN: "I0004",
+                        Value: "流量",
+                        Unit: "CMH"
+                    },
+                ]
+            },
+            ErrorMessage: "",
+            State: ""
         }
 
-        // 預處理函式：將陣列轉為物件結構
-        function preprocessData(array) {
-            const result = {};
-            array.forEach((item) => {
-                result[item.value] = item.value;
-                result[item.text] = item.text;
-            });
-            return result;
+        //處理傳進來的AddFieldList格式
+        function preprocessAddItemsData(array) {
+            return array.map((item) => ({
+                text: item.Text,
+                value: item.Value,
+                type: "Variable"
+            }))
         }
 
         function readData(url = null) {
@@ -269,17 +277,43 @@
 
             function onSuccess(res) {
                 console.log(res);
-                const preprocessedData = preprocessData(fakeData.SampleInfo.AddField);
+                const data = res.Datas
+                const AddItemsData = preprocessAddItemsData(data.AddFieldList);
 
-                $("#OriginalInfo").append(createTableInner(res, SerializedName));
-                $("#SampleInfo").append(createTableInner(res.SampleInfo, SampleName));
-                $("#AddField").append(createTableInner(preprocessedData, fakeData.SampleInfo.AddField));
-
-
-                EquipmentRFID("#EquipmentRFID", res);
-                MaintainInfo("#MaintainInfo", res);
-                InspectionInfo("#InspectionInfo", res);
+                $("#OriginalInfo").append(createTableInner(data, SerializedName));
                 ImageDisplay(".datatable-img-item>img");
+                EquipmentRFID("#EquipmentRFID", data);
+
+                //判斷是否有模板
+                if (data.SampleName) {
+                    document.querySelector(".hr-default").style.display = "block";
+                    document.getElementById("SampleZone").style.display = "flex";
+
+                    if (data.AddFieldList && data.AddFieldList.length > 0) {
+                        document.getElementById("addFieldSection").style.display = "flex";
+                    } else {
+                        document.getElementById("addFieldSection").style.display = "none";
+                    }
+
+                    if (data.MaintainItemList && data.MaintainItemList.length > 0) {
+                        document.getElementById("maintainSection").style.display = "flex";
+                    } else {
+                        document.getElementById("maintainSection").style.display = "none";
+                    }
+
+                    if (data.Frequency) {
+                        document.getElementById("inspectionInfoSection").style.display = "flex";
+                    } else {
+                        document.getElementById("inspectionInfoSection").style.display = "none";
+                    }
+
+                    $("#SampleInfo").append(createTableInner(data, SampleName));
+                    $("#AddField").append(createTableInner(data, AddItemsData));
+                    MaintainInfo("#MaintainInfo", data);
+                    InspectionInfo("#InspectionInfo", data);
+                }
+
+
             }
             function onError(res) {
                 console.log(res);
@@ -291,12 +325,11 @@
                 history.back();
             });
             $("#delete").click(function () {
-                let PSSN = $("#PSSN").val();
                 createDeleteDialog({
-                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
-                    data: PSSN,
+                    //url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")' + `?id=${ESN}`,
+                    data: ESN,
                     onSuccess() {
-                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
+                        let url = '@Url.Action("Index", "EquipmentInfo_Management")';
                         window.location.href = url;
                     }
                 })
