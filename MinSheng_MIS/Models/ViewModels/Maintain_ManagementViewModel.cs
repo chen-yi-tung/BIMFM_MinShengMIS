@@ -91,7 +91,6 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         public string EMFSN { get; set; }
         public string ReportContent { get; set; }
-        public string UserName { get; set; }
     }
 
 }

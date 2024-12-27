@@ -201,7 +201,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 定期保養單 填報
-        public JsonResService<string> MaintainManagementApp_Report(MaintainManagementApp_Report datas)
+        public JsonResService<string> MaintainManagementApp_Report(MaintainManagementApp_Report datas, string userName)
         {
             #region 變數
             JsonResService<string> res = new JsonResService<string>();
@@ -214,15 +214,13 @@ namespace MinSheng_MIS.Services
                 throw new MyCusResException("查無此設備保養單");
             if (string.IsNullOrEmpty(datas.ReportContent.Trim()))
                 throw new MyCusResException("請填寫保養填報內容!");
-            if (string.IsNullOrEmpty(datas.UserName.Trim()))
-                throw new Exception("缺少填報人員姓名!");
             #endregion
 
             #region 更新資料
             maindata.Status = "3"; // 待審核
             maindata.ReportTime = DateTime.Now;
             maindata.ReportContent = datas.ReportContent;
-            maindata.ReportId = datas.UserName;
+            maindata.ReportId = userName;
 
             _db.Equipment_MaintenanceForm.AddOrUpdate(maindata);
             _db.SaveChanges();
