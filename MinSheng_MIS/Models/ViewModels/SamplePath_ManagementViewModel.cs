@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -71,6 +72,9 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Brand { get; set; } // 設備廠牌
         public string Model { get; set; } // 設備型號
         public string Frequency { get; set; } // 巡檢頻率
+        public string RFIDViewName { get; internal set; } // RFID樓層模型名稱(定位用)
+        public decimal? Location_X { get; internal set; } // 座標X(定位用)
+        public decimal? Location_Y { get; internal set; } // 座標Y(定位用)
     }
 
     /// <summary>
@@ -115,6 +119,8 @@ namespace MinSheng_MIS.Models.ViewModels
 
         public Floor_Info Floor_Info { get; set; } // RFID樓層
         public EquipmentInfo EquipmentInfo { get; set; } // RFID樓層
+        public decimal? Location_X { get; set; }
+        public decimal? Location_Y { get; set; }
     }
 
     public class RFIDQueryModel : InspectionRFIDsViewModel
