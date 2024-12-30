@@ -244,14 +244,14 @@ namespace MinSheng_MIS.Controllers
 
         //--警示訊息管理--
         #region WarningMessage_Management 警示訊息管理
-        //[HttpPost]
-        //public ActionResult WarningMessage_Management(FormCollection form)
-        //{
-        //    
-        //    var a = _service.GetJsonForGrid_WarningMessage_Management(form);
-        //    string result = JsonConvert.SerializeObject(a);
-        //    return Content(result, "application/json");
-        //}
+        [HttpPost]
+        public ActionResult WarningMessage_Management(FormCollection form)
+        {
+
+            var a = _service.GetJsonForGrid_WarningMessage_Management(form);
+            string result = JsonConvert.SerializeObject(a);
+            return Content(result, "application/json");
+        }
         #endregion
 
 
