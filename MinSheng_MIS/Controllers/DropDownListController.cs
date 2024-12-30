@@ -557,19 +557,37 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region InspectionUser巡檢人員
+        #region InspectionMember巡檢人員
         [HttpGet]
-        public ActionResult InspectionUser()
+        public ActionResult InspectionMember()
         {
-            List<JObject> list = new List<JObject> { };
-            var mynamedatalist = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
-            foreach (var item in mynamedatalist)
+            List<JObject> list = new List<JObject>();
+            var members = db.InspectionPlan_Member.Select(x => x.UserID).Distinct().ToList();
+            if(members != null)
             {
-                JObject jo = new JObject();
-                jo.Add("Text", item.MyName);
-                jo.Add("Value", item.UserName);
-                list.Add(jo);
+                var mynamedatalist = from x1 in members
+                                     join x2 in db.AspNetUsers on x1 equals x2.UserName
+                                     select new { x2.UserName, x2.MyName };
+                foreach (var item in mynamedatalist)
+                {
+                    JObject jo = new JObject();
+                    jo.Add("Text", item.MyName);
+                    jo.Add("Value", item.UserName);
+                    list.Add(jo);
+                }
             }
+            else
+            {
+                var mynamedatalist = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
+                foreach (var item in mynamedatalist)
+                {
+                    JObject jo = new JObject();
+                    jo.Add("Text", item.MyName);
+                    jo.Add("Value", item.UserName);
+                    list.Add(jo);
+                }
+            }
+
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }
@@ -1004,6 +1022,42 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #region RepairUserName 報修管理執行人員
+        [System.Web.Http.HttpGet]
+        public ActionResult RepairUserName()
+        {
+            List<JObject> list = new List<JObject>();
+            var table = db.Equipment_ReportFormMember.Select(e => e.RepairUserName).ToHashSet();
+            foreach (var item in table)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", $"{db.AspNetUsers.Where(a => a.UserName == item).Select(a => a.MyName).FirstOrDefault()}");
+                jo.Add("Value", item);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
+        #region RepairAssignmentUserName 報修管理派工人員
+        [System.Web.Http.HttpGet]
+        public ActionResult RepairAssignmentUserName()
+        {
+            List<JObject> list = new List<JObject>();
+            var table = db.AspNetUsers.Where(a => a.Authority == "4").ToList();
+            foreach (var item in table)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
+        #endregion
+
         #region EquipmentNoEName 設備編號/名稱
         [System.Web.Http.HttpGet]
         public ActionResult EquipmentNoEName(string FSN)
@@ -1015,24 +1069,6 @@ namespace MinSheng_MIS.Controllers
                 JObject jo = new JObject();
                 jo.Add("Text", $"{item.NO} {item.EName}");
                 jo.Add("Value", item.ESN);
-                list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region InspectionUserName 執行人員
-        [System.Web.Http.HttpGet]
-        public ActionResult InspectionUserName()
-        {
-            List<JObject> list = new List<JObject>();
-            var table = db.AspNetUsers.Where(a => a.Authority == "4").ToList();
-            foreach (var item in table)
-            {
-                JObject jo = new JObject();
-                jo.Add("Text", item.UserName);
-                jo.Add("Value", item.UserName);
                 list.Add(jo);
             }
             string text = JsonConvert.SerializeObject(list);
@@ -1055,10 +1091,10 @@ namespace MinSheng_MIS.Controllers
         public ActionResult OneDeviceOneCardTemplates()
         {
             var list = db.Template_OneDeviceOneCard.Select(x => new
-                {
-                    Text = x.SampleName,
-                    Value = x.TSN
-                }).AsEnumerable();
+            {
+                Text = x.SampleName,
+                Value = x.TSN
+            }).AsEnumerable();
 
             return Content(JsonConvert.SerializeObject(list), "application/json");
         }
@@ -1069,10 +1105,10 @@ namespace MinSheng_MIS.Controllers
         public ActionResult InspectionPathSample()
         {
             var list = db.InspectionPathSample.Select(x => new
-                {
-                    Text = x.PathName,
-                    Value = x.PlanPathSN
-                }).AsEnumerable();
+            {
+                Text = x.PathName,
+                Value = x.PlanPathSN
+            }).AsEnumerable();
 
             return Content(JsonConvert.SerializeObject(list), "application/json");
         }

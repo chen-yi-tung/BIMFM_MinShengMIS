@@ -41,14 +41,22 @@ namespace MinSheng_MIS.Models.ViewModels
     { }
     #endregion
 
-    #region 工單檢視
-    public class InspectionPlanDetailViewModel
+    #region 工單-詳情
+    public class InspectionPlanDetailViewModel : IInspectionPlanDetailViewModel
     {
         public string IPSN { get; set; } // 工單編號
         public string PlanState { get; set; } // 工單狀態
         public string IPName { get; set; } // 工單名稱
-        public DateTime PlanDate { get; set; } // 工單日期
+        public string PlanDate { get; set; } // 工單日期
         public List<InspectionPlanContentDetail> Inspections { get; set; } = new List<InspectionPlanContentDetail>(); // 工單巡檢內容
+    }
+
+    public interface IInspectionPlanDetailViewModel
+    {
+        string IPSN { get; set; } // 工單編號
+        string PlanState { get; set; } // 工單狀態
+        string IPName { get; set; } // 工單名稱
+        string PlanDate { get; set; } // 工單日期
     }
 
     /// <summary>

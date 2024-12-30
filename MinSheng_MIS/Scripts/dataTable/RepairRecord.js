@@ -1,25 +1,48 @@
 ﻿function RepairRecord(selector, data) {
+    console.log(" $(selector)", $(selector))
     $(selector).append(
-        data.InspectionRecord ?
+        data.Inspections ?
             createAccordion({
-                id: `InspectionRecord`,
-                state: data.State,
+                id: `Inspections`,
+                state: data.PlanState,
                 sn: [
-                        { text: "巡檢狀態", value: "IState" },
-                        { text: "巡檢頻率", value: "Ifrequency" },
-                        { text: "巡檢數量", value: "INum" },
+                    { text: "巡檢狀態", value: "InspectionState" },
+                    { text: "巡檢頻率", value: "Frequency" },
+                    { text: "巡檢數量", value: "EquipmentCount" },
+                    {
+                        type: "accordion", value: "Equipments", sn: [
+                            { text: "所在位置", value: "Location", colspan: true },
+                            { text: "最新填報者", value: "ReportUserName", colspan: true },
+                            { text: "最新填報時間", value: "FillinTime", colspan: true },
+                            { text: "檢查項目", value: "CheckItems", type: "DualCol" },
+                            { text: "填報列表", value: "RportItems", type: "DualCol" },
+                        ]
+                    },
                 ],
-                subsn: [
-                    { text: "所在位置", value: "Location", colspan: true },
-                    { text: "檢查項目", value: "InspectItems", type: "DualCol" },
-                    { text: "填報列表", value: "ReportItems", type: "DualCol" },
-                ],
-                data: data.InspectionRecord,
-                itemTitleKey: `IName`,
-                itemSubTitleKey: `ITime`,
+                data: data.Inspections,
+                itemTitleKey: `PathName`,
+                itemSubTitleKey: `PlanDate`,
                 layer: 2,
                 icon: "clipboard-list",
             })
+            : "",
+    )
+
+    $(selector).append(
+        data.Inspections.Equipments ?
+            createTableInner(data.Inspections,
+                [
+                    {
+                        text: "填報列表",
+                        value: "RportItems",
+                        type: "DualCol",
+                        itemNum: [
+                            { value: "Value" },
+                            { value: "Unit" },
+                        ],
+                    },
+                ]
+            )
             : "",
     )
 }
@@ -73,7 +96,18 @@ function MaintainInfo(selector, data) {
                 sn: [
                     { text: "保養項目/週期", value: "MaintainItemList", type: "TripleCol" },
                 ],
-                data: data,
+                data: {
+                    ...data,
+                    MaintainItemList: data.MaintainItemList.map(item => {
+                        // 假設要處理每個項目的value
+                        return {
+                            ...item,
+                            Value: item.Text,
+                            Period: item.PeriodText, // 自訂轉換邏輯
+                            NextMaintainDate: item.NextMaintainDate.replace(/-/g, "/"),
+                        };
+                    }),
+                },
             })
             : "",
     )

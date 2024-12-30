@@ -54,7 +54,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string TotalNum {  get; set; }
         public string PendingNum { get; set; }
         public string NotApprovedNum { get; set; }
-        public List<MaintainManagementApp_ListItem> MaintainFormLsit { get; set; }
+        public List<MaintainManagementApp_ListItem> MaintainFormList { get; set; }
         public class MaintainManagementApp_ListItem
         {
             public List<string> RFIDList{ get; set; }

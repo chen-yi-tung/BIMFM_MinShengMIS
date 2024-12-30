@@ -27,29 +27,30 @@
 
 @section scripts {
     <script>
-        const IPRSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${IPRSN}`;
-        let apiUrl = null;
+        const IPSN = '@ViewBag.id';
+        //let apiUrl = '@Url.Action("ReadBody", "PlanManagement")?id=' + `${IPSN}`;
+        let apiUrl = '@Url.Action("ReadBody", "PlanManagement")?id=' + IPSN;
+        //let apiUrl = null;
 
         $(async function () {
             readData(apiUrl);
         })
 
         const SerializedName = [
-            { text: "工單編號", value: "PSN" },
-            { text: "工單狀態", value: "State" },
-            { text: "工單名稱", value: "PName" },
-            { text: "工單日期", value: "PTime" },
+            { text: "工單編號", value: "IPSN" },
+            { text: "工單狀態", value: "PlanState" },
+            { text: "工單名稱", value: "IPName" },
+            { text: "工單日期", value: "PlanDate" },
         ]
 
         const fakeData = {
-            PSN: "P336448226",
-            State: "完成",
-            PName: "巡檢工單名稱",
-            PTime: "2024/10/02",
+            IPSN: "P336448226",
+            PlanState: "完成",
+            IPName: "巡檢工單名稱",
+            PlanDate: "2024/10/02",
             InspectionRecord: [
                 {
-                    IName: "第一個巡檢前處理機房巡檢",
+                    PathName: "第一個巡檢前處理機房巡檢",
                     ITime: "00:00～01:00",
                     IState: "完成",
                     Ifrequency: "每3小時",
@@ -130,7 +131,7 @@
                     ],
                 },
                 {
-                    IName: "第二個巡檢前處理機房巡檢",
+                    PathName: "第二個巡檢前處理機房巡檢",
                     ITime: "01:00～02:00",
                     IState: "進行中",
                     Ifrequency: "每2小時",
@@ -263,7 +264,7 @@
 
         function readData(url = null) {
 
-            url == null ? onSuccess(fakeData) :
+            url == null ? onSuccess(apiUrl) :
                 $.ajax({
                     url: url,
                     type: "GET",
@@ -274,10 +275,11 @@
                 })
 
             function onSuccess(res) {
-                console.log(res);
-                $("#PlanDetail").append(createTableInner(res, SerializedName));
+                const data = res.Datas
+                console.log(data);
+                $("#PlanDetail").append(createTableInner(data, SerializedName));
 
-                RepairRecord("#RepairRecord", res);
+                RepairRecord("#RepairRecord", data);
                 ImageDisplay(".datatable-img-item>img");
             }
             function onError(res) {
@@ -285,7 +287,7 @@
             }
         }
 
-        
+
 
     </script>
 }

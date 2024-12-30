@@ -178,7 +178,7 @@ namespace MinSheng_MIS.Services
 
                 maintainlist.Add(resdataitem);
             }
-            resdata.MaintainFormLsit = maintainlist;
+            resdata.MaintainFormList = maintainlist;
             #endregion
 
             res.AccessState = ResState.Success;

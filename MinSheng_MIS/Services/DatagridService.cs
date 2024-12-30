@@ -544,8 +544,8 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("NextMaintainDate", item.NextMaintainDate.ToString("yyyy/MM/dd")); // 最近應保養日期
                     itemObject.Add("ReportTime", item.ReportTime?.ToString("yyyy/MM/dd") ?? "-"); // 實際保養日期
                     itemObject.Add("EState", Surface.EState()[item.EquipmentInfo.EState]); // 設備狀態
-                    itemObject.Add("ASN", item.EquipmentInfo.Floor_Info.AreaInfo.Area); // 棟別 (區域)
-                    itemObject.Add("FSN", item.EquipmentInfo.Floor_Info.FloorName); // 樓層
+                    itemObject.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area); // 棟別 (區域)
+                    itemObject.Add("Floor", item.EquipmentInfo.Floor_Info.FloorName); // 樓層
                     itemObject.Add("EName", item.EquipmentInfo.EName); // 設備名稱
                     itemObject.Add("ESN", item.EquipmentInfo.NO); // 設備編號 (NO)
                     itemObject.Add("MaintainName", item.MaintainName); // 保養項目
@@ -1320,18 +1320,19 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("ReportLevel", Surface.ReportLevel()[item.ReportLevel]);
                     itemObject.Add("ReportTime", item.ReportTime.ToString("yyyy/MM/dd HH:mm"));
                     itemObject.Add("ReportContent", item.ReportContent);
-                    itemObject.Add("ASN", item.EquipmentInfo.Floor_Info.ASN);
-                    itemObject.Add("FSN", item.EquipmentInfo.FSN);
+                    itemObject.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area);
+                    itemObject.Add("FloorName", item.EquipmentInfo.Floor_Info.FloorName);
                     itemObject.Add("EName", item.EquipmentInfo.EName);
                     itemObject.Add("NO", item.EquipmentInfo.NO);
-                    itemObject.Add("RepairUserName", "");
+                    itemObject.Add("RepairMyName", "");
                     var memberlist = db.Equipment_ReportFormMember.Where(e => e.RSN == item.RSN).ToList();
                     foreach (var member in memberlist)
                     {
-                        if (!string.IsNullOrEmpty(itemObject["RepairUserName"]?.ToString()))
-                            itemObject["RepairUserName"] = $"{itemObject["RepairUserName"]}、{member.RepairUserName}";
+                        var myName = db.AspNetUsers.Where(a => a.UserName == member.RepairUserName).Select(a => a.MyName).FirstOrDefault();
+                        if (!string.IsNullOrEmpty(itemObject["RepairMyName"]?.ToString()))
+                            itemObject["RepairMyName"] = $"{itemObject["RepairMyName"]}、{myName}";
                         else
-                            itemObject["RepairUserName"] = member.RepairUserName;
+                            itemObject["RepairMyName"] = myName;
                     }
                     ja.Add(itemObject);
                 }
@@ -3005,7 +3006,7 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("MinStockAmount", item.MinStockAmount);
 
                     var haverecord = db.StockChangesRecord.Where(x => x.SISN == item.SISN).Count();
-                    if(haverecord > 0)
+                    if (haverecord > 0)
                     {
                         itemObject.Add("CanDelete", false);
                     }
@@ -3083,14 +3084,14 @@ namespace MinSheng_MIS.Services
                 }
 
             }
-                JObject jo = new JObject
+            JObject jo = new JObject
                 {
                     { "rows", ja },
                     { "total", Total }
                 };
 
-                return jo;
-            
+            return jo;
+
         }
         #endregion
 

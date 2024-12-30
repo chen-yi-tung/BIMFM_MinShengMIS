@@ -39,6 +39,9 @@ namespace MinSheng_MIS.Services
                     RFIDMemo = x.Memo,
                     RFIDName = x.Name,
                     Frequency = x.EquipmentInfo.Template_OneDeviceOneCard.Frequency,
+                    RFIDViewName = x.Floor_Info.ViewName,
+                    Location_X = x.Location_X,
+                    Location_Y = x.Location_Y,
                 });
 
             // 篩選已選擇之RFID
