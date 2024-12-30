@@ -26,7 +26,7 @@ namespace MinSheng_MIS.Models
         public System.DateTime TimeOfOccurrence { get; set; }
         public string FSN { get; set; }
         public string Message { get; set; }
-        public string PMSN { get; set; }
+        public string UserName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WarningMessageFillinRecord> WarningMessageFillinRecord { get; set; }
