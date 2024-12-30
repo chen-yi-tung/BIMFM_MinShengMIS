@@ -110,8 +110,8 @@ function ShowEquipment(selector, data, addItems) {
                 type: "addEquipmentSetting",
                 sn: [
                     { text: "設備圖片", value: "FilePath", type: "ImgPath" },
-                    { text: "棟別", value: "ASN" },
-                    { text: "樓層", value: "FSN" },
+                    { text: "棟別", value: "AreaName" },
+                    { text: "樓層", value: "FloorName" },
                     { text: "設備廠牌", value: "Brand" },
                     { text: "設備型號", value: "Model" },
                     { text: "設備廠商", value: "Vendor" },

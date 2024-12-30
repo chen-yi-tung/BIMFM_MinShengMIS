@@ -41,7 +41,7 @@ namespace MinSheng_MIS.Models.ViewModels
     { }
     #endregion
 
-    #region 工單檢視
+    #region 工單-詳情
     public class InspectionPlanDetailViewModel
     {
         public string IPSN { get; set; } // 工單編號

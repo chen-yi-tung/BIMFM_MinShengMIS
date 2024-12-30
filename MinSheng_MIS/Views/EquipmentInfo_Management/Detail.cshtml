@@ -77,8 +77,8 @@
 @section scripts {
     <script>
         const ESN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${ESN}`;
-        let apiUrl = null;
+        let apiUrl = '@Url.Action("ReadBody", "EquipmentInfo_Management")' + `/${ESN}`;
+        //let apiUrl = null;
         let allData = {};
         $(async function () {
             readData(apiUrl);
@@ -89,8 +89,8 @@
             { text: "設備圖片", value: "EPhoto", type: "ImgPath" },
             { text: "設備名稱", value: "EName" },
             { text: "設備編號", value: "NO" },
-            { text: "棟別", value: "AFN" },
-            { text: "樓層", value: "FSN" },
+            { text: "棟別", value: "AreaName" },
+            { text: "樓層", value: "FloorName" },
             { text: "設備廠牌", value: "Brand" },
             { text: "設備型號", value: "Model" },
             { text: "設備廠商", value: "Vendor" },
@@ -111,8 +111,8 @@
                 EPhoto: "/Files/EquipmentInfo/E24122400001.png",
                 EName: "名稱名稱",
                 NO: "365541",
-                AFN: "進流抽水站",
-                FSN: "B1F",
+                AreaName: "進流抽水站",
+                FloorName: "B1F",
                 Brand: "廠牌名稱",
                 Model: "op1002",
                 Vendor: "郝繽紛公司",
