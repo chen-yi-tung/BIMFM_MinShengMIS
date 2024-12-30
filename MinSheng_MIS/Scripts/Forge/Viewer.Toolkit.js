@@ -161,13 +161,18 @@
             const handleClick = () => {
                 this.viewer.clearSelection()
             }
+            const checkCursor = ()=>{
+                this.viewer.container.style.cursor = this.viewer.canvas.style.cursor;
+            }
             if (v) {
                 this.viewer.canvas.style.pointerEvents = null;
                 this.viewer.removeEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT, handleClick);
+                this.viewer.removeEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, checkCursor);
             }
             else {
                 this.viewer.canvas.style.pointerEvents = 'none';
                 this.viewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT, handleClick);
+                this.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, checkCursor);
             }
         }
         #map(n, start1, stop1, start2, stop2) {

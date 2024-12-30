@@ -834,8 +834,9 @@ function createMapModal(data) {
         await bim.init()
         await bim.loadModels(bim.getModelsUrl(data.RFIDViewName))
         const position = new THREE.Vector3(data.Location_X, data.Location_Y, 0)
-        bim.createEquipmentPoint(position, true)
-        bim.equipmentPoint.show().update();
+        console.log('position', position)
+        const tool = bim.activateEquipmentPointTool(position, false)
+        tool.setPosition(position)
     })
 
     myModal.show();
