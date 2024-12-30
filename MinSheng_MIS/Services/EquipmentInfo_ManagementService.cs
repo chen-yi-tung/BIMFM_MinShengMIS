@@ -18,10 +18,12 @@ namespace MinSheng_MIS.Services
     public class EquipmentInfo_ManagementService
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly RFIDService _rfidService;
 
         public EquipmentInfo_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
+            _rfidService = new RFIDService(_db);
         }
 
         #region 查詢符合Dto的EquipmentInfo資訊
@@ -165,6 +167,23 @@ namespace MinSheng_MIS.Services
                 });
 
             return result.Cast<IMaintainItemValueDetail>().ToList();
+        }
+        #endregion
+
+        #region 獲取設備RFID資訊
+        public async Task<List<IRFIDInfoDetail>> GetRFIDListAsync(string ESN)
+        {
+            var equipment = await _db.EquipmentInfo.SingleOrDefaultAsync(x => x.ESN == ESN);
+
+            if (equipment?.RFID == null)
+                return null;
+
+            var result = await Task.WhenAll(
+                equipment.RFID 
+                .Select(x => _rfidService.GetRfidAsync<EquipRFIDDetail>(x.RFIDInternalCode)
+                ));
+
+            return result.Cast<IRFIDInfoDetail>().ToList();
         }
         #endregion
 

@@ -121,6 +121,8 @@ namespace MinSheng_MIS.Controllers
                 equipment.AddFieldList = _eMgmtService.GetAddFieldList(id);
                 // 獲取保養項目
                 equipment.MaintainItemList = _eMgmtService.GetMaintainItemList(id);
+                // 獲取RFID
+                equipment.RFIDList = await _eMgmtService.GetRFIDListAsync(id);
 
                 if (!string.IsNullOrEmpty(equipment.TSN))
                 {

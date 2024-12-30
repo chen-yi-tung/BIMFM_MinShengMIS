@@ -78,7 +78,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string TSN { get; set; } // 一機一卡模板編號
         public string SampleName { get; set; } // 一機一卡模板名稱
         public int? Frequency { get; set; } // 巡檢頻率
-        public IEnumerable<EquipRFIDDetail> RFIDList { get; set; } // RFID
+        public IEnumerable<IRFIDInfoDetail> RFIDList { get; set; } // RFID
         public IEnumerable<IAddFieldValueDetail> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位
         public IEnumerable<IMaintainItemValueDetail> MaintainItemList { get; set; } // 一機一卡模板資料：保養項目設定
         public IEnumerable<ICheckItemDetail> CheckItemList { get; set; } // 一機一卡模板資料：檢查項目

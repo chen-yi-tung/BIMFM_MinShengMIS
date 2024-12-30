@@ -1,10 +1,39 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
-    public class EquipRFIDDetail : EquipRFID
+    public class EquipRFIDDetail : EquipRFID, IRFIDInfoDetail
     {
         public string ASN { get; set; } // 棟別編號
+        public string AreaName { get; set; } // 棟別名稱
+        public string FloorName { get; set; } // 樓層名稱
+
+        // override
+        public new string InternalCode
+        {
+            get => RFIDInternalCode;
+            set => RFIDInternalCode = value;
+        } // 將 InternalCode 映射到 RFIDInternalCode
+        [JsonIgnore]
+        public string RFIDInternalCode { get; set; } // 這裡儲存實際的 RFID 內碼
+
+        // RFID外碼
+        public new string ExternalCode
+        {
+            get => RFIDExternalCode;
+            set => RFIDExternalCode = value;
+        } // 將 InternalCode 映射到 RFIDInternalCode
+        [JsonIgnore]
+        public string RFIDExternalCode { get; set; } // 這裡儲存實際的 RFID 內碼
+    }
+
+    public interface IRFIDInfoDetail : IRFIDInfo
+    {
+        string ASN { get; set; } // 棟別編號
+        string AreaName { get; set; } // 棟別名稱
+        string FloorName { get; set; } // 樓層名稱
     }
 
     public class EquipRFID : IRFIDInfo
@@ -23,9 +52,9 @@ namespace MinSheng_MIS.Models.ViewModels
         [Required]
         public string Name { get; set; } // 名稱
         [Required]
-        public decimal Location_X { get; set; } // X定位
+        public Nullable<decimal> Location_X { get; set; } // X定位
         [Required]
-        public decimal Location_Y { get; set; } // Y定位
+        public Nullable<decimal> Location_Y { get; set; } // Y定位
         public string Memo { get; set; } // 備註
     }
 
@@ -35,8 +64,8 @@ namespace MinSheng_MIS.Models.ViewModels
         string ExternalCode { get; set; } // RFID外碼
         string FSN { get; set; } // 樓層編號
         string Name { get; set; } // 名稱
-        decimal Location_X { get; set; } // X定位
-        decimal Location_Y { get; set; } // Y定位
+        Nullable<decimal> Location_X { get; set; } // X定位
+        Nullable<decimal> Location_Y { get; set; } // Y定位
         string Memo { get; set; } // 備註
     }
 
