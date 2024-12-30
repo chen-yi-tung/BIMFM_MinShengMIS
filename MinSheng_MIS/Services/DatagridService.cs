@@ -3397,154 +3397,142 @@ namespace MinSheng_MIS.Services
 
         //--警示訊息管理--
         #region 警示訊息管理
-        //public JObject GetJsonForGrid_WarningMessage_Management(System.Web.Mvc.FormCollection form)
-        //{
-        //    //解析查詢字串
-        //    var WMType = form["WMType"]?.ToString();
-        //    var WMState = form["WMState"]?.ToString();
-        //    var ASN = form["ASN"]?.ToString();
-        //    var Area = form["Area"]?.ToString();
-        //    var FSN = form["FSN"]?.ToString();
-        //    var Floor = form["Floor"]?.ToString();
-        //    var Message = form["Message"]?.ToString();
-        //    var IPSN = form["IPSN"]?.ToString();
-        //    var MyName = form["MyName"]?.ToString();
-        //    var DateStart = form["DateStart"]?.ToString();
-        //    var DateEnd = form["DateEnd"]?.ToString();
-        //    // DataGrid參數
-        //    var sort = form["sort"]?.ToString();
-        //    var order = form["order"]?.ToString();
-        //    //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-        //    int page = 1;
-        //    if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
-        //    int rows = 10;
-        //    if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
+        public JObject GetJsonForGrid_WarningMessage_Management(System.Web.Mvc.FormCollection form)
+        {
+            //解析查詢字串
+            var WMType = form["WMType"]?.ToString();
+            var WMState = form["WMState"]?.ToString();
+            var ASN = form["ASN"]?.ToString();
+            var Area = form["Area"]?.ToString();
+            var FSN = form["FSN"]?.ToString();
+            var Floor = form["Floor"]?.ToString();
+            var Message = form["Message"]?.ToString();
+            var MyName = form["MyName"]?.ToString();
+            var DateStart = form["DateStart"]?.ToString();
+            var DateEnd = form["DateEnd"]?.ToString();
+            // DataGrid參數
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            //回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+            int page = 1;
+            if (!string.IsNullOrEmpty(form["page"]?.ToString())) page = short.Parse(form["page"].ToString());
+            int rows = 10;
+            if (!string.IsNullOrEmpty(form["rows"]?.ToString())) rows = short.Parse(form["rows"]?.ToString());
 
-        //    var rpT = from x1 in db.WarningMessage
-        //              join x2 in db.InspectionPlanMember
-        //              on x1.PMSN equals x2.PMSN
-        //              join x3 in db.Floor_Info
-        //              on x1.FSN equals x3.FSN
-        //              join x4 in db.AspNetUsers
-        //              on x2.UserID equals x4.UserName
-        //              join x5 in db.AreaInfo
-        //              on x3.ASN equals x5.ASN
-        //              select new
-        //              {
-        //                  x1.WMSN,
-        //                  x1.WMType,
-        //                  x1.WMState,
-        //                  x1.TimeOfOccurrence,
-        //                  x1.FSN,
-        //                  x1.Message,
-        //                  x1.PMSN,
-        //                  x2.IPSN,
-        //                  x3.ASN,
-        //                  x3.FloorName,
-        //                  x4.MyName,
-        //                  x5.Area
-        //              };
-        //    //查詢事件等級
-        //    if (!string.IsNullOrEmpty(WMType))
-        //    {
-        //        rpT = rpT.Where(x => x.WMType == WMType);
-        //    }
-        //    //查詢事件處理狀況
-        //    if (!string.IsNullOrEmpty(WMState))
-        //    {
-        //        rpT = rpT.Where(x => x.WMState == WMState);
-        //    }
-        //    //查詢棟別
-        //    if (!string.IsNullOrEmpty(ASN))
-        //    {
-        //        var numASN = Int32.Parse(ASN);
-        //        rpT = rpT.Where(x => x.ASN == numASN);
-        //    }
-        //    if (!string.IsNullOrEmpty(Area))
-        //    {
-        //        rpT = rpT.Where(x => x.Area == Area);
-        //    }
-        //    //查詢樓層
-        //    if (!string.IsNullOrEmpty(FSN))
-        //    {
-        //        rpT = rpT.Where(x => x.FSN == FSN);
-        //    }
-        //    if (!string.IsNullOrEmpty(Floor))
-        //    {
-        //        rpT = rpT.Where(x => x.FloorName == Floor);
-        //    }
-        //    //查詢事件內容(模糊查詢)
-        //    if (!string.IsNullOrEmpty(Message))
-        //    {
-        //        rpT = rpT.Where(x => x.Message.Contains(Message));
-        //    }
-        //    //查詢巡檢計畫編號(模糊查詢)
-        //    if (!string.IsNullOrEmpty(IPSN))
-        //    {
-        //        rpT = rpT.Where(x => x.IPSN.Contains(IPSN));
-        //    }
-        //    //查詢人員姓名(模糊查詢)
-        //    if(!string.IsNullOrEmpty(MyName))
-        //    {
-        //        rpT = rpT.Where(x => x.MyName.Contains(MyName));
-        //    }
-        //    //查詢發生時間(起)
-        //    if (!string.IsNullOrEmpty(DateStart) && DateTime.Parse(DateStart) != DateTime.MinValue)
-        //    {
-        //        DateTime start = DateTime.Parse(DateStart); //轉為DateTime
-        //        rpT = rpT.Where(x => x.TimeOfOccurrence >= start);
-        //    }
-        //    //查詢發生時間(迄)
-        //    if (!string.IsNullOrEmpty(DateEnd) && DateTime.Parse(DateEnd) != DateTime.MinValue)
-        //    {
-        //        DateTime end = DateTime.Parse(DateEnd); //轉為DateTime
-        //        rpT = rpT.Where(x => x.TimeOfOccurrence <= end);
-        //    }
+            var rpT = from x1 in db.WarningMessage
+                      join x3 in db.Floor_Info
+                      on x1.FSN equals x3.FSN
+                      join x4 in db.AspNetUsers
+                      on x1.UserName equals x4.UserName
+                      join x5 in db.AreaInfo
+                      on x3.ASN equals x5.ASN
+                      select new
+                      {
+                          x1.WMSN,
+                          x1.WMType,
+                          x1.WMState,
+                          x1.TimeOfOccurrence,
+                          x1.FSN,
+                          x1.Message,
+                          x3.ASN,
+                          x3.FloorName,
+                          x4.MyName,
+                          x5.Area
+                      };
+            //查詢事件等級
+            if (!string.IsNullOrEmpty(WMType))
+            {
+                rpT = rpT.Where(x => x.WMType == WMType);
+            }
+            //查詢事件處理狀況
+            if (!string.IsNullOrEmpty(WMState))
+            {
+                rpT = rpT.Where(x => x.WMState == WMState);
+            }
+            //查詢棟別
+            if (!string.IsNullOrEmpty(ASN))
+            {
+                var numASN = Int32.Parse(ASN);
+                rpT = rpT.Where(x => x.ASN == numASN);
+            }
+            if (!string.IsNullOrEmpty(Area))
+            {
+                rpT = rpT.Where(x => x.Area == Area);
+            }
+            //查詢樓層
+            if (!string.IsNullOrEmpty(FSN))
+            {
+                rpT = rpT.Where(x => x.FSN == FSN);
+            }
+            if (!string.IsNullOrEmpty(Floor))
+            {
+                rpT = rpT.Where(x => x.FloorName == Floor);
+            }
+            //查詢事件內容(模糊查詢)
+            if (!string.IsNullOrEmpty(Message))
+            {
+                rpT = rpT.Where(x => x.Message.Contains(Message));
+            }
+            //查詢人員姓名(模糊查詢)
+            if (!string.IsNullOrEmpty(MyName))
+            {
+                rpT = rpT.Where(x => x.MyName.Contains(MyName));
+            }
+            //查詢發生時間(起)
+            if (!string.IsNullOrEmpty(DateStart) && DateTime.Parse(DateStart) != DateTime.MinValue)
+            {
+                DateTime start = DateTime.Parse(DateStart); //轉為DateTime
+                rpT = rpT.Where(x => x.TimeOfOccurrence >= start);
+            }
+            //查詢發生時間(迄)
+            if (!string.IsNullOrEmpty(DateEnd) && DateTime.Parse(DateEnd) != DateTime.MinValue)
+            {
+                DateTime end = DateTime.Parse(DateEnd); //轉為DateTime
+                rpT = rpT.Where(x => x.TimeOfOccurrence <= end);
+            }
 
-        //    // 確認 sort 和 order 不為空才進行排序
-        //    if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
-        //    else rpT = rpT.OrderByDescending(x => x.WMSN);
+            // 確認 sort 和 order 不為空才進行排序
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) rpT = rpT.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else rpT = rpT.OrderByDescending(x => x.WMSN);
 
-        //    // 記住總筆數
-        //    int Total = rpT.Count();
-        //    // 切頁
-        //    rpT = rpT.Skip((page - 1) * rows).Take(rows);
+            // 記住總筆數
+            int Total = rpT.Count();
+            // 切頁
+            rpT = rpT.Skip((page - 1) * rows).Take(rows);
 
-        //    //回傳JSON陣列
-        //    JArray ja = new JArray();
+            //回傳JSON陣列
+            JArray ja = new JArray();
 
-        //    var WMTypedic = Surface.WMType();
-        //    var WMStatedic = Surface.WMState();
+            var WMTypedic = Surface.WMType();
+            var WMStatedic = Surface.WMState();
 
-        //    if (rpT != null || Total > 0)
-        //    {
-        //        foreach (var item in rpT)
-        //        {
-        //            var itemObject = new JObject //DataGrid顯示的資料內容
-        //            {
-        //                { "WMSN", item.WMSN },
-        //                { "PMSN", item.PMSN },
-        //                { "WMType", WMTypedic[item.WMType] },
-        //                { "WMState", WMStatedic[item.WMState] },
-        //                { "TimeOfOccurrence", item.TimeOfOccurrence.ToString("yyyy/MM/dd HH:mm:ss") },
-        //                { "Location", item.Area + " " + item.FloorName },
-        //                { "Message", item.Message },
-        //                { "IPSN", item.IPSN },
-        //                { "MyName", item.MyName },
-        //            };
+            if (rpT != null || Total > 0)
+            {
+                foreach (var item in rpT)
+                {
+                    var itemObject = new JObject //DataGrid顯示的資料內容
+                    {
+                        { "WMSN", item.WMSN },
+                        { "WMType", WMTypedic[item.WMType] },
+                        { "WMState", WMStatedic[item.WMState] },
+                        { "TimeOfOccurrence", item.TimeOfOccurrence.ToString("yyyy/MM/dd HH:mm:ss") },
+                        { "Location", item.Area + " " + item.FloorName },
+                        { "Message", item.Message },
+                        { "MyName", item.MyName },
+                    };
 
-        //            ja.Add(itemObject);
-        //        }
-        //    }
+                    ja.Add(itemObject);
+                }
+            }
 
-        //    JObject jo = new JObject
-        //    {
-        //        { "rows", ja },
-        //        { "total", Total }
-        //    };
+            JObject jo = new JObject
+            {
+                { "rows", ja },
+                { "total", Total }
+            };
 
-        //    return jo;
-        //}
+            return jo;
+        }
         #endregion
 
         //--文件管理--

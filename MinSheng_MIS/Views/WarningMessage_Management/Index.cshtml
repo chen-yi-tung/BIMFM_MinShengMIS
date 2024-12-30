@@ -47,11 +47,6 @@
             </div>
 
             <div class="form-group">
-                <label for="IPSN">巡檢計畫編碼</label>
-                <input class="form-control" id="IPSN" name="IPSN" type="text" />
-            </div>
-
-            <div class="form-group">
                 <label for="MyName">人員姓名</label>
                 <input class="form-control" id="MyName" name="MyName" type="text" />
             </div>
@@ -127,13 +122,11 @@
                 ]],
                 columns: [[
                     dg.hiddenColumn('WMSN'),
-                    dg.hiddenColumn('PMSN'),
                     dg.column('WMType', '事件等級', 120),
                     dg.column('WMState', '事件處理狀況', 150),
                     dg.column('TimeOfOccurrence', '發生時間', 200),
                     dg.column('Location', '發生地點', 250),
                     dg.column('Message', '事件內容', 250),
-                    dg.column('IPSN', '巡檢計畫編碼', 150),
                     dg.column('MyName', '人員姓名', 150),
                 ]]
             })

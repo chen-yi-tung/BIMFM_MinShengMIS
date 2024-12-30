@@ -5,8 +5,8 @@
     @Html.Partial("DataGridScripts")
 }
 <style>
-    .isMinStock td[field='Status'] > .datagrid-cell,
-    .isMinStock td[field='Num'] > .datagrid-cell {
+    .isMinStock td[field='StockStatus'] > .datagrid-cell,
+    .isMinStock td[field='StockAmount'] > .datagrid-cell {
         color: rgb(229, 0, 0);
         font-weight: 500;
     }
@@ -110,7 +110,7 @@
                     dg.column('Unit', '單位', 200),
                     dg.column('MinStockAmount', '警戒值', 200),
                 ]],
-                rowStyler: (i, row) => row.Status === "低於警戒值" ? { class: 'isMinStock' } : undefined
+                rowStyler: (i, row) => row.StockStatus === "低於警戒值" ? { class: 'isMinStock' } : undefined
             })
             dg.addEvent("detail", function (row, i) {
                 window.open(`${baseUrl}/Detail/${row.SISN}`, "_blank")
