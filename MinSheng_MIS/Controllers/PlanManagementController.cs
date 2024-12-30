@@ -74,8 +74,9 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯工單
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         #endregion
@@ -133,8 +134,9 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 工單 刪除
-        public ActionResult Delete()
+        public ActionResult Delete(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         #endregion
