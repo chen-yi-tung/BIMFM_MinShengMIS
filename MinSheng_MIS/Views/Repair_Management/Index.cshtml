@@ -15,14 +15,7 @@
         <form class="form" method="post" action="">
             <div class="form-group">
                 <label for="ReportState">報修單狀態</label>
-                <select class="form-select" name="ReportState" id="ReportState">
-                    <option value="">請選擇</option>
-                    <option value="1">待派工</option>
-                    <option value="2">待執行</option>
-                    <option value="3">待審核</option>
-                    <option value="4">審核通過</option>
-                    <option value="5">審核未過</option>
-                </select>
+                <select class="form-select" name="ReportState" id="ReportState"></select>
             </div>
 
             <div class="form-group">
@@ -32,12 +25,7 @@
 
             <div class="form-group">
                 <label for="ReportLevel">報修等級</label>
-                <select class="form-select" name="ReportLevel" id="ReportLevel">
-                    <option value="">請選擇</option>
-                    <option value="1">一般</option>
-                    <option value="2">緊急</option>
-                    <option value="3">最速件</option>
-                </select>
+                <select class="form-select" name="ReportLevel" id="ReportLevel"></select>
             </div>
 
             <div class="form-group">
@@ -75,9 +63,9 @@
                 <input class="form-control" id="NO" name="NO" type="text" />
             </div>
 
-            <div class="form-group col-2fr">
-                <label for="RepairUserName">執行人員</label>
-                <select type="text" class="form-select repair-user-name" name="RepairUserName" id="RepairUserName"></select>
+            <div class="form-group">
+                <label for="Member">執行人員</label>
+                <select type="text" class="form-select" name="Member" id="Member"></select>
             </div>
 
             <div class="button-group">
@@ -193,6 +181,9 @@
 
         $(async function () {
             await formDropdown.ASN();
+            await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
+            await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
+            await pushSelect("Member", '@Url.Action("InspectionMember", "DropDownList")');
             await addDropDownList();
             await addButtonEvent();
             Initialize_DataGrid(getGridJSON);
@@ -289,26 +280,38 @@
 
         //點擊 匯出btn
         $("#export").click(function () {
-            const RSN = getCheckedRSN();
+            const fd = {};
+            document.querySelectorAll('.search-area input, .search-area select').forEach((el) => {
+                if (el.id && el.id !== "_easyui_textbox_input1") {
+                    if (el.id === "RepairUserName") {
+                        fd['RepairUserName'] = $('#RepairUserName').tagbox('getValues')
+                    } else {
+                        fd[el.id] = el.value;
+                    }
+                }
+            })
+            console.log("匯出的資料為", fd);
 
-            if (RSN.length > 0) {
-                console.log("匯出的項目為", RSN);
-
-                //待API完成
-                @*$.ajax({
-                    url: "@Url.Action("Assignment", "Repair_Management")",
-                    data: JSON.stringify(sendData),
-                    type: "POST",
-                    contentType: "application/json",
-                    processData: false,
-                    success: onSuccess,
-                    error: onError
-                })*@
-            } else {
+            @*$.ajax({
+                url: "@Url.Action("ExportToExcel", "Repair_Management")",
+                data: fd,
+                type: "POST",
+                contentType: "object",
+                processData: false,
+                success: onSuccess,
+                error: onError
+            })*@
+            function onSuccess(res) {
+                console.log(res);
                 createDialogModal({
-                    id: "DialogModal-Error", inner: `請先勾選欲匯出的報修單！`,
-                })
-                return;
+                    id: "DialogModal-Success", inner: "匯出成功！",
+                    onHide: () => {
+                    }
+                });
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `匯出失敗！` + `${res?.responseText || ""}` })
             }
         })
 
