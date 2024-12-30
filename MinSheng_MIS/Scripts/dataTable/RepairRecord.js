@@ -73,7 +73,18 @@ function MaintainInfo(selector, data) {
                 sn: [
                     { text: "保養項目/週期", value: "MaintainItemList", type: "TripleCol" },
                 ],
-                data: data,
+                data: {
+                    ...data,
+                    MaintainItemList: data.MaintainItemList.map(item => {
+                        // 假設要處理每個項目的value
+                        return {
+                            ...item,
+                            Value: item.Text,
+                            Period: item.PeriodText, // 自訂轉換邏輯
+                            NextMaintainDate: item.NextMaintainDate.replace(/-/g, "/"),
+                        };
+                    }),
+                },
             })
             : "",
     )

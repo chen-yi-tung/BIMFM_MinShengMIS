@@ -124,7 +124,7 @@
                 //data: getGridJSON,
                 method: 'POST',
                 queryParams: getQueryParams(),
-                idField: 'IPSN',
+                idField: 'ESN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
@@ -149,16 +149,16 @@
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                window.open(`${baseUrl}/Detail/${row.IPSN}`, "_blank")
+                window.open(`${baseUrl}/Detail/${row.ESN}`, "_blank")
             })
             dg.addEvent("edit", function (row, i) {
-                window.open(`${baseUrl}/Edit/${row.IPSN}`, "_self")
+                window.open(`${baseUrl}/Edit/${row.ESN}`, "_self")
             })
             dg.addEvent("filePath", function (row, i) {
                 window.open(row.FilePath, "_blank")
             })
             dg.addEvent("delete", function (row, i) {
-                window.open(`${baseUrl}/Delete/${row.IPSN}`, "_self")
+                window.open(`${baseUrl}/Delete/${row.ESN}`, "_self")
             })
         }
 

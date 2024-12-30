@@ -14,12 +14,14 @@ namespace MinSheng_MIS.Controllers
         private readonly string _photoPath = "Files/EquipmentInfo";
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly EquipmentInfo_ManagementService _eMgmtService;
+        private readonly OneDeviceOneCard_ManagementService _dCardService;
         private readonly RFIDService _rfidService;
 
         public EquipmentInfo_ManagementController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
             _eMgmtService = new EquipmentInfo_ManagementService(_db);
+            _dCardService = new OneDeviceOneCard_ManagementService(_db);
             _rfidService = new RFIDService(_db);
         }
 
@@ -42,7 +44,7 @@ namespace MinSheng_MIS.Controllers
         /// <param name="data">Input</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> CreateEquipment(EquipmentInfoCreateModel data)
+        public async Task<ActionResult> CreateEquipment(EquipmentInfoCreateViewModel data)
         {
             try
             {
@@ -103,30 +105,48 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 設備 詳情
-        public ActionResult Detail()
+        public ActionResult Detail(string id)
         {
+            ViewBag.id = id;
             return View();
         }
 
-        //public async Task<ActionResult> Read_Data(string id)
-        //{
-        //    var data = await _db.EquipmentInfo.FirstOrDefaultAsync(x => x.ESN == id)
-        //        ?? throw new HttpException(400, "EDRSN is Undefined.");
-            
+        public async Task<ActionResult> ReadBody(string id)
+        {
+            try
+            {
+                // 獲取設備詳情
+                var equipment = await _eMgmtService.GetEquipmentInfoAsync<EquipmentInfoDetailViewModel>(id);
+                // 獲取增設基本資料欄位
+                equipment.AddFieldList = _eMgmtService.GetAddFieldList(id);
+                // 獲取保養項目
+                equipment.MaintainItemList = _eMgmtService.GetMaintainItemList(id);
 
-        //    ED_ViewModel model = new ED_ViewModel
-        //    {
-        //        ExperimentType = data.TestingAndAnalysisWorkflow?.ExperimentType,
-        //        ExperimentName = data.TestingAndAnalysisWorkflow?.ExperimentName,
-        //        TAWSN = data.TAWSN,
-        //        EDate = data.EDate.ToString("yyyy-MM-dd"),
-        //        UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == data.UploadUserName)?.Result.MyName,
-        //        UploadDateTime = data.UploadDateTime.ToString("yyyy/MM/dd"),
-        //        FilePath = !string.IsNullOrEmpty(data.EDFile) ? ComFunc.UrlMaker(folderPath, data.EDFile) : null,
-        //        ExperimentalDataItem = data.ExperimentalData.Select(x => new ED_Info { DataName = x.DataName, Data = x.Data }).ToList()
-        //    };
-        //    return Content(JsonConvert.SerializeObject(model), "application/json");
-        //}
+                if (!string.IsNullOrEmpty(equipment.TSN))
+                {
+                    // 獲取檢查項目
+                    equipment.CheckItemList = await _dCardService.GetCheckItemDetailListAsync(equipment.TSN);
+                    // 獲取填報項目名稱/單位
+                    equipment.ReportItemList = await _dCardService.GetReportItemDetailListAsync(equipment.TSN);
+
+                }
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<EquipmentInfoDetailViewModel>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = equipment,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
+        }
         #endregion
 
         #region 刪除 設備
