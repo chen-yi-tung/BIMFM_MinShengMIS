@@ -19,22 +19,25 @@
 }
 
 <h2>@ViewBag.Title</h2>
-
-<div class="datatable datatable-small mt-5">
-    <div class="datatable-body">
-        <table class="datatable-table" id="ItemInfo"></table>
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table" id="ItemInfo"></table>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="datatable mt-5">
-    <div class="datatable-header">填報記錄</div>
-    <div class="datatable-body datatable-easyui">
-        <table id="DataGrid"></table>
-    </div>
-</div>
+        <div class="datatable mt-5">
+            <div class="datatable-header">填報記錄</div>
+            <div class="datatable-body datatable-easyui">
+                <table id="DataGrid"></table>
+            </div>
+        </div>
+</section>
 
-@section scripts {
-    <script>
+    @section scripts {
+        <script>
 
         const WMSN = '@ViewBag.id';
         const apiUrl = '@Url.Action("GetWarningMessageInfo", "WarningMessage_Management")' + `/?WMSN=${WMSN}`;
@@ -127,5 +130,5 @@
             }
             return randomData;
         }
-    </script>
-}
+        </script>
+    }
