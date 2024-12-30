@@ -9,6 +9,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string ASN { get; set; } // 棟別編號
         public string AreaName { get; set; } // 棟別名稱
         public string FloorName { get; set; } // 樓層名稱
+        public string RFIDViewName { get; set; } // RFID樓層模型名稱(定位用)
 
         // override
         public new string InternalCode
@@ -34,6 +35,7 @@ namespace MinSheng_MIS.Models.ViewModels
         string ASN { get; set; } // 棟別編號
         string AreaName { get; set; } // 棟別名稱
         string FloorName { get; set; } // 樓層名稱
+        string RFIDViewName { get; set; } // RFID樓層模型名稱(定位用)
     }
 
     public class EquipRFID : IRFIDInfo

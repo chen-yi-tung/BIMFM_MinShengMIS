@@ -83,6 +83,7 @@ namespace MinSheng_MIS.Services
                 info.ASN = rfid.Floor_Info.ASN.ToString();
                 info.AreaName = rfid.Floor_Info.AreaInfo.Area;
                 info.FloorName = rfid.Floor_Info.FloorName;
+                info.RFIDViewName = rfid.Floor_Info.ViewName;
 
                 dest = (T)info;
             }
