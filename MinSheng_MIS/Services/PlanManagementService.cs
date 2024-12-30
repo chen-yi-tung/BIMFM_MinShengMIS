@@ -1,6 +1,8 @@
-﻿using MinSheng_MIS.Models;
+﻿using MinSheng_MIS.Attributes;
+using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,6 +73,90 @@ namespace MinSheng_MIS.Services
 
             // 批次建立 InspectionPlan_Time 及 InspectionPlan_Member
             AddRangeInspectionPlanTime(data);
+        }
+        #endregion
+
+        #region 獲取工單
+        public async Task<T> GetInspectionPlanAsync<T>(string ipsn) where T : class, new()
+        {
+            var plan = await _db.InspectionPlan.FindAsync(ipsn)
+                ?? throw new MyCusResException("查無資料！");
+
+            plan.PlanState = ConvertStringToEnum<InspectionPlanState>(plan.PlanState).GetLabel() 
+                ?? "undefined";
+
+            return plan.ToDto<InspectionPlan, T>();
+        }
+        #endregion
+
+        #region 獲取巡檢路線及時段
+        public List<IInspectionPlanContentDetail> GetInspectionPlanTime(string IPSN)
+        {
+            var result = _db.InspectionPlan_Time.Where(x => x.IPSN == IPSN)
+                .AsEnumerable()
+                .Select(x => 
+                {
+                    var temp = x.ToDto<InspectionPlan_Time, InspectionPlanContentDetail>();
+                    temp.InspectionState = ConvertStringToEnum<InspectionState>(x.InspectionState).GetLabel() ?? "undefined";
+                    temp.Frequency = $"每{x.Frequency}小時";
+                    temp.EquipmentCount = x.InspectionPlan_Equipment.Count.ToString();
+                    return temp;
+                });
+
+            return result.Cast<IInspectionPlanContentDetail>().ToList();
+        }
+        #endregion
+
+        #region 獲取巡檢路線設備
+        public async Task<List<IInspectionPlanEquipment>> GetInspectionPlanEquipmentAsync(string IPTSN)
+        {
+            var userDic = await _db.AspNetUsers.ToDictionaryAsync(k => k.UserName, v => v.MyName);
+            var test = _db.InspectionPlan_Equipment.Where(x => x.IPTSN == IPTSN).ToList();
+            var result = _db.InspectionPlan_Equipment.Where(x => x.IPTSN == IPTSN)
+                .AsEnumerable()
+                .Select(x => 
+                {
+                    var temp = x.ToDto<InspectionPlan_Equipment, InspectionPlanEquipment>();
+                    temp.EName = x.EquipmentInfo.EName;
+                    temp.NO = x.EquipmentInfo.NO;
+                    temp.Location = $"{x.EquipmentInfo.Floor_Info.AreaInfo.Area} {x.EquipmentInfo.Floor_Info.FloorName}";
+                    temp.ReportUserName = x.ReportUserName != null ? userDic.TryGetValue(x.ReportUserName, out string name) ? name : "undefined" : "-";
+                    return temp;
+                });
+
+            return result.Cast<IInspectionPlanEquipment>().ToList();
+        }
+        #endregion
+
+        #region 獲取巡檢路線設備檢查項目
+        public List<IInspectionPlanCheckItem> GetInspectionPlanCheckItems(string IPESN)
+        {
+            var result = _db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == IPESN)
+                .AsEnumerable()
+                .Select(x => new InspectionPlanCheckItem
+                {
+                    Item = x.CheckItemName,
+                    Result = x.CheckResult != null ? ConvertStringToEnum<CheckResult>(x.CheckResult).GetLabel() : "-",
+                });
+
+            return result.Cast<IInspectionPlanCheckItem>().ToList();
+        }
+        #endregion
+
+        #region 獲取巡檢路線設備填報項目
+        public List<IInspectionPlanRportItem> GetInspectionPlanRportItems(string IPESN)
+        {
+            var result = _db.InspectionPlan_EquipmentReportingItem?.Where(x => x.IPESN == IPESN)
+                .AsEnumerable()
+                .Select(x => new InspectionPlanRportItem
+                {
+                    Item = x.ReportValue,
+                    Value = x.ReportContent ?? "-",
+                    Unit = x.Unit,
+                })
+                ?? Enumerable.Empty<object>();
+
+            return result.Cast<IInspectionPlanRportItem>().ToList();
         }
         #endregion
 

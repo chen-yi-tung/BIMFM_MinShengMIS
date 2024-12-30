@@ -74,12 +74,12 @@ namespace MinSheng_MIS.Controllers.API
             return result;
         }
     }
-    public class InspectionrReportController : ApiController
+    public class InspectionReportController : ApiController
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly InspectionPlan_ManagementService _inspectionPlanService;
 
-        public InspectionrReportController()
+        public InspectionReportController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
             _inspectionPlanService = new InspectionPlan_ManagementService(_db);
@@ -112,6 +112,40 @@ namespace MinSheng_MIS.Controllers.API
                 else
                 {
                     result = _inspectionPlanService.PlanReportFillIn(userID, data);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
+    }
+    public class EndInspectionController : ApiController
+    {
+        private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly InspectionPlan_ManagementService _inspectionPlanService;
+
+        public EndInspectionController()
+        {
+            _db = new Bimfm_MinSheng_MISEntities();
+            _inspectionPlanService = new InspectionPlan_ManagementService(_db);
+        }
+        public JsonResService<string> Post(string IPTSN)
+        {
+            JsonResService<string> result = new JsonResService<string>();
+            try
+            {
+                string userID = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                if (string.IsNullOrEmpty(userID))
+                {
+                    result.AccessState = ResState.Failed;
+                    result.ErrorMessage = "無登入者資料";
+                }
+                else
+                {
+                    result = _inspectionPlanService.EndInspection(userID, IPTSN);
                 }
             }
             catch (Exception ex)

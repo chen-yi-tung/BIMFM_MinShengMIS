@@ -428,6 +428,7 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
     ];
 
     MaintainItemList.forEach((field, i) => {
+        console.log("field", field);
         const div = document.createElement("div");
         div.className = "edit-item-init"
         div.style = "background: #E3EBF3;"
@@ -459,6 +460,8 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
         period.className = "form-select"
         period.name = `period-${i}`;
         period.required = true;
+
+        //await pushSelect(`period-${i}`, '@Url.Action("MaintainPeriod", "DropDownList")');
         optionsData.forEach(optionData => {
             const option = document.createElement("option");
             option.value = optionData.value;

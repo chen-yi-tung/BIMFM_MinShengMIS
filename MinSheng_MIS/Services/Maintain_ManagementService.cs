@@ -47,14 +47,14 @@ namespace MinSheng_MIS.Services
             datas.NO = data.EquipmentInfo.NO;
             datas.Location = $"{data.EquipmentInfo.Floor_Info.FloorName} {data.EquipmentInfo.Floor_Info.AreaInfo.Area}";
             datas.Period = Surface.MaintainPeriod()[data.Period];
-            datas.LastMaintainDate = data.lastMaintainDate?.ToString("yyyy/MM/dd") ?? "";
+            datas.LastMaintainDate = data.lastMaintainDate?.ToString("yyyy/MM/dd") ?? "-";
             datas.NextMaintainDate = data.NextMaintainDate.ToString("yyyy/MM/dd");
-            datas.ReportId = data.ReportId;
-            datas.ReportTime = data.ReportTime?.ToString("yyyy/MM/dd HH:mm") ?? "";
+            datas.ReportId = GetMyNameByUserNameOrEmpty(data.ReportId);
+            datas.ReportTime = data.ReportTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
             datas.ReportContent = data.ReportContent;
             datas.AuditResult = data.AuditResult.ToString().ToLower();
-            datas.AuditId = data.AuditId;
-            datas.AuditTime = data.AuditTime?.ToString("yyyy/MM/dd HH:mm") ?? "";
+            datas.AuditId = GetMyNameByUserNameOrEmpty(data.AuditId);
+            datas.AuditTime = data.AuditTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
             datas.AuditReason = data.AuditReason;
             res.Datas = datas;
             #endregion
@@ -178,7 +178,7 @@ namespace MinSheng_MIS.Services
 
                 maintainlist.Add(resdataitem);
             }
-            resdata.MaintainFormLsit = maintainlist;
+            resdata.MaintainFormList = maintainlist;
             #endregion
 
             res.AccessState = ResState.Success;
@@ -251,5 +251,13 @@ namespace MinSheng_MIS.Services
             return res;
         }
         #endregion
+
+        private string GetMyNameByUserNameOrEmpty (string userName)
+        {
+            if (string.IsNullOrEmpty (userName))
+                return "-";
+            else 
+                return _db.AspNetUsers.Where(x => x.UserName == userName).First().MyName;
+        }
     }
 }

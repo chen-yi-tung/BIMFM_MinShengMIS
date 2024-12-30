@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -71,50 +72,9 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Brand { get; set; } // 設備廠牌
         public string Model { get; set; } // 設備型號
         public string Frequency { get; set; } // 巡檢頻率
-    }
-
-    /// <summary>
-    /// Service向RFIDService獲取Query使用
-    /// </summary>
-    public class RFIDServiceQueryModel : IInspectionRfidInfo, IInspectionRfidSearch
-    {
-        string IInspectionRfidSearch.RFIDArea { get; set; }
-        string IInspectionRfidSearch.RFIDFloor { get; set; }
-
-        // RFID內碼
-        public string InternalCode 
-        {
-            get => RFIDInternalCode;
-            set => RFIDInternalCode = value;
-        } // 將 InternalCode 映射到 RFIDInternalCode
-        public string RFIDInternalCode { get; set; } // 這裡儲存實際的 RFID 內碼
-
-        // RFID外碼
-        public string ExternalCode
-        {
-            get => RFIDExternalCode;
-            set => RFIDExternalCode = value;
-        } // 將 InternalCode 映射到 RFIDInternalCode
-        public string RFIDExternalCode { get; set; } // 這裡儲存實際的 RFID 內碼
-
-        // RFID名稱
-        public string RFIDName
-        {
-            get => Name;
-            set => Name = value;
-        } // 將 RFIDName 映射到 Name
-        public string Name { get; set; } // 這裡儲存實際的 RFID 名稱
-
-        // RFID備註
-        public string RFIDMemo
-        {
-            get => Memo;
-            set => Memo = value;
-        } // 將 RFIDName 映射到 Name
-        public string Memo { get; set; } // 這裡儲存實際的 RFID 備註
-
-        public Floor_Info Floor_Info { get; set; } // RFID樓層
-        public EquipmentInfo EquipmentInfo { get; set; } // RFID樓層
+        public string RFIDViewName { get; internal set; } // RFID樓層模型名稱(定位用)
+        public decimal? Location_X { get; internal set; } // 座標X(定位用)
+        public decimal? Location_Y { get; internal set; } // 座標Y(定位用)
     }
 
     public class RFIDQueryModel : InspectionRFIDsViewModel

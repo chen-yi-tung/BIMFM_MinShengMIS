@@ -208,9 +208,9 @@ function FileUploader({
         fileName.text(file.name);
         fileName.attr("href", path);
 
-        document.querySelector('.form-file-list').classList.add('d-flex');
-        document.querySelector('.form-file-preview').classList.add('d-flex');
-        document.querySelector('.form-file-hr').classList.add('d-block');
+        document.querySelector('.form-file-list').style.display = 'flex';
+        document.querySelector('.form-file-preview').style.display = 'flex';
+        document.querySelector('.form-file-hr').style.display = 'block';
         document.querySelector('.form-file-preview').src = path;
 
         this.check && this.check.prop("checked", true);

@@ -76,14 +76,14 @@ namespace MinSheng_MIS.Controllers
         {
             string account = form["UserID"];
             string password = form["UserPW"];
-            var userdata = UserManager.Users.Where(x => x.IsEnabled == true).Where(x => x.UserName == account).FirstOrDefault();
+            var userdata = UserManager.Users.Where(x => x.IsEnabled == true).Where(x => x.UserName == account && x.Authority != "4").FirstOrDefault();
             if (userdata != null)
             {
                 var result = await SignInManager.PasswordSignInAsync(account, password, isPersistent: false, shouldLockout: false);
                 if (result == SignInStatus.Success)
                 {
                     Session["MyName"] = userdata.MyName;
-                    return RedirectToAction("Index", "MeetingMinutes_Management");
+                    return RedirectToAction("Index", "PlanManagement");
                 }
             }
             ViewBag.Message = "登入嘗試失敗!";

@@ -140,6 +140,22 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 檢查結果
+        public enum CheckResult
+        {
+            /// <summary>
+            /// 正常
+            /// </summary>
+            [EnumLabel("正常")]
+            Normal = 1,
+            /// <summary>
+            /// 異常
+            /// </summary>
+            [EnumLabel("異常")]
+            Defective = 2
+        }
+        #endregion
+
         /// <summary>
         /// 將字串視為列舉值轉為對應的列舉成員
         /// </summary>

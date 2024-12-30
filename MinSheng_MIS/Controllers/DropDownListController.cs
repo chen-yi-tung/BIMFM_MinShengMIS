@@ -557,19 +557,37 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region InspectionUser巡檢人員
+        #region InspectionMember巡檢人員
         [HttpGet]
-        public ActionResult InspectionUser()
+        public ActionResult InspectionMember()
         {
-            List<JObject> list = new List<JObject> { };
-            var mynamedatalist = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
-            foreach (var item in mynamedatalist)
+            List<JObject> list = new List<JObject>();
+            var members = db.InspectionPlan_Member.Select(x => x.UserID).Distinct().ToList();
+            if(members != null)
             {
-                JObject jo = new JObject();
-                jo.Add("Text", item.MyName);
-                jo.Add("Value", item.UserName);
-                list.Add(jo);
+                var mynamedatalist = from x1 in members
+                                     join x2 in db.AspNetUsers on x1 equals x2.UserName
+                                     select new { x2.UserName, x2.MyName };
+                foreach (var item in mynamedatalist)
+                {
+                    JObject jo = new JObject();
+                    jo.Add("Text", item.MyName);
+                    jo.Add("Value", item.UserName);
+                    list.Add(jo);
+                }
             }
+            else
+            {
+                var mynamedatalist = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
+                foreach (var item in mynamedatalist)
+                {
+                    JObject jo = new JObject();
+                    jo.Add("Text", item.MyName);
+                    jo.Add("Value", item.UserName);
+                    list.Add(jo);
+                }
+            }
+
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }

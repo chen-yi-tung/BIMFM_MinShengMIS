@@ -120,5 +120,15 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
         #endregion
+
+        // 覆寫 Dispose 方法來釋放資源
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _db?.Dispose();  // _db釋放
+            }
+            base.Dispose(disposing);  // 呼叫父類別的Dispose方法
+        }
     }
 }
