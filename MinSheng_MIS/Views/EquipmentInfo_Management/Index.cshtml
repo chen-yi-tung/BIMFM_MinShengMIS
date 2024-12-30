@@ -128,7 +128,7 @@
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                    dg.frozenColumn('_FilePath', "", 111, (v, row, i) => dg.eventButton(i, "操作手冊", "filePath", { disabled: row.FilePath === "" })),
+                    dg.frozenColumn('_FilePath', "", 111, (v, row, i) => dg.eventButton(i, "操作手冊", "filePath", { disabled: !row.FilePath })),
                     //dg.frozenColumn('FilePath', "", 111, (v, row, i) => {
                     //    let disabled = v == null || v == "";
                     //    return dg.eventButton(i, "操作手冊", "filePath")
