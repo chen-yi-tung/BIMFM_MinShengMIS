@@ -249,5 +249,4 @@ class ForgePin {
     dispatchEvent(event) {
         this.element.dispatchEvent(event);
     }
-
 }

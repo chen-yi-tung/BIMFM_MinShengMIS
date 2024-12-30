@@ -809,9 +809,9 @@ function createMapModal(data) {
                         <h5 class="modal-title w-100 text-center">定位資訊</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body text-center pb-2">
+                    <div class="modal-body text-center" style="padding: 0;">
                         <div id="BIM" style="height: 50vh;">
-                            <div class="pin-area"></div>
+                            <div class="pin-area" id="pin-area"></div>
                         </div>
                     </div>
                 </div>
@@ -834,12 +834,7 @@ function createMapModal(data) {
         await bim.init()
         await bim.loadModels(bim.getModelsUrl(data.RFIDViewName))
         const position = new THREE.Vector3(data.Location_X, data.Location_Y, 0)
-        if (bim.equipmentPoint) {
-            bim.equipmentPoint.position = position;
-        }
-        else {
-            bim.createEquipmentPoint(position)
-        }
+        bim.createEquipmentPoint(position, true)
         bim.equipmentPoint.show().update();
     })
 

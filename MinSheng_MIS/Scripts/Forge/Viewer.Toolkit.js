@@ -4,8 +4,8 @@
         constructor(viewer, options) {
             super(viewer, options);
             this.name = "Viewer.Toolkit";
-            this.#controls.handleKeyDown = this.viewer.impl.controls.handleKeyDown.bind(this.viewer.impl.controls)
-            this.#controls.handleKeyUp = this.viewer.impl.controls.handleKeyUp.bind(this.viewer.impl.controls)
+            this.#controls.handleKeyDown = this.viewer.impl.controls.handleKeyDown.bind(this.viewer.impl.controls);
+            this.#controls.handleKeyUp = this.viewer.impl.controls.handleKeyUp.bind(this.viewer.impl.controls);
         }
         load() {
             delete this.activate;
@@ -78,7 +78,7 @@
         }
         getCenter(dbId, model) {
             const b = this.getBoundingBox(dbId, model);
-            
+
             if (!this.isBox3Valid(b)) {
                 return null;
             }
@@ -105,7 +105,9 @@
         planeDirectionToRotation(dir, pivot = new THREE.Vector3(1, 0, 0), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0)) {
             const pdir = plane.projectPoint(dir).normalize();
             const rot = (pdir.angleTo(pivot) * 180) / Math.PI;
-            if (dir.y >= 0) { return -rot; }
+            if (dir.y >= 0) {
+                return -rot;
+            }
             return rot;
         }
         getTopPlaneView(v) {
@@ -134,7 +136,7 @@
                     this.viewer.navigation.toOrthographic();
                     resolve(true);
                 } else {
-                    viewer.addEventListener(
+                    this.viewer.addEventListener(
                         Autodesk.Viewing.CAMERA_TRANSITION_COMPLETED,
                         () => {
                             this.viewer.navigation.toOrthographic();
@@ -145,13 +147,28 @@
                 }
             });
         }
-        removeKeyControls() {
-            this.viewer.impl.controls.handleKeyDown = function (e) { };
-            this.viewer.impl.controls.handleKeyUp = function (e) { };
+        setKeyControls(v) {
+            if (v) {
+                this.viewer.impl.controls.handleKeyDown = this.#controls.handleKeyDown;
+                this.viewer.impl.controls.handleKeyUp = this.#controls.handleKeyUp;
+            }
+            else {
+                this.viewer.impl.controls.handleKeyDown = function (e) { };
+                this.viewer.impl.controls.handleKeyUp = function (e) { };
+            }
         }
-        resetKeyControls() {
-            this.viewer.impl.controls.handleKeyDown = this.#controls.handleKeyDown;
-            this.viewer.impl.controls.handleKeyUp = this.#controls.handleKeyUp;
+        setPointerControls(v) {
+            const handleClick = () => {
+                this.viewer.clearSelection()
+            }
+            if (v) {
+                this.viewer.canvas.style.pointerEvents = null;
+                this.viewer.removeEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT, handleClick);
+            }
+            else {
+                this.viewer.canvas.style.pointerEvents = 'none';
+                this.viewer.addEventListener(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT, handleClick);
+            }
         }
         #map(n, start1, stop1, start2, stop2) {
             return ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2;
@@ -162,7 +179,7 @@
                 this.#map(v.x, bbox.min.x, bbox.max.x, -1, 1),
                 this.#map(v.y, bbox.min.y, bbox.max.y, -1, 1),
                 this.#map(v.z, bbox.min.z, bbox.max.z, -1, 1)
-            )
+            );
         }
         unnormalizePosition(v) {
             const bbox = this.viewer.model.getBoundingBox();
@@ -170,7 +187,7 @@
                 this.#map(v.x, -1, 1, bbox.min.x, bbox.max.x),
                 this.#map(v.y, -1, 1, bbox.min.y, bbox.max.y),
                 this.#map(v.z, -1, 1, bbox.min.z, bbox.max.z)
-            )
+            );
         }
     }
     Autodesk.Viewing.theExtensionManager.registerExtension("Viewer.Toolkit", Toolkit);
