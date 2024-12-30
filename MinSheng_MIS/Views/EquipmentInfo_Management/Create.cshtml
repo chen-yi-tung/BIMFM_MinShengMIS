@@ -328,6 +328,11 @@
                         createAddItem(data);
                         createMaintainItem(data.MaintainItemList, "MaintainZone");
                         InspectionRecord("#InspectionRecord", data);
+
+                        const frequencyDiv = document.querySelector('#d-Frequency');
+                        if (frequencyDiv) {
+                            frequencyDiv.textContent += '小時';
+                        }
                     }
                 }
                 function onError(res) {

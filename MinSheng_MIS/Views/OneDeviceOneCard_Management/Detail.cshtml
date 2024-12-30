@@ -179,6 +179,10 @@
                 AddField('#AddField', res.Datas);
                 MaintainInfo("#MaintainInfo", res.Datas);
                 InspectionInfo("#InspectionInfo", res.Datas);
+                const frequencyDiv = document.querySelector('#d-Frequency');
+                if (frequencyDiv) {
+                    frequencyDiv.textContent += '小時';
+                }
                 displaySections(res.Datas);
             }
             function onError(res) {
