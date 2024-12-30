@@ -407,6 +407,7 @@
             // 所有檢查通過，直接執行儲存
             save();
 
+            //取得有使用此模板的設備資訊
             async function getEquipments() {
                 const maintainItemList = labelItems.calc().MaintainItemList;
                 const hasEmptyMISSN = maintainItemList.some(item => !item.MISSN || item.MISSN.trim() === "");
@@ -456,7 +457,6 @@
                         }, {once:true})
                     }
                 }
-
                 return false;
             }
         }

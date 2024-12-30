@@ -81,8 +81,9 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 工單詳情
-        public ActionResult Detail()
+        public ActionResult Detail(string id)
         {
+            ViewBag.id = id;
             return View();
         }
 
