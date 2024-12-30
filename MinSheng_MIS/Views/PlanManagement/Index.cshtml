@@ -87,7 +87,7 @@
 
         $(async function () {
             await pushSelect("PlanState", '@Url.Action("PlanState", "DropDownList")');
-            await pushSelect("Member", '@Url.Action("InspectionUser", "DropDownList")');
+            await pushSelect("Member", '@Url.Action("InspectionMember", "DropDownList")');
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
