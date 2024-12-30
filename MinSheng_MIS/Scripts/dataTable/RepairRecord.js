@@ -66,19 +66,19 @@ function InspectionRecord(selector, data) {
 
 function EquipmentRFID(selector, data) {
     $(selector).append(
-        data.RFID ?
+        data.RFIDList ?
             createAccordion({
                 id: `RFID`,
                 sn: [
                     { text: "RFID名稱", value: "Name" },
-                    { text: "RFID內碼", value: "RFIDInternalCode" },
-                    { text: "RFID外碼", value: "RFIDExternalCode" },
-                    { text: "棟別", value: "ASN" },
-                    { text: "樓層", value: "FSN" },
+                    { text: "RFID內碼", value: "InternalCode" },
+                    { text: "RFID外碼", value: "ExternalCode" },
+                    { text: "棟別", value: "AreaName" },
+                    { text: "樓層", value: "FloorName" },
                     { text: "定位", value: "Location", btn: true },
                     { text: "備註", value: "Memo" },
                 ],
-                data: data.RFID,
+                data: data.RFIDList,
                 itemTitleKey: `Name`,
             })
             : "",

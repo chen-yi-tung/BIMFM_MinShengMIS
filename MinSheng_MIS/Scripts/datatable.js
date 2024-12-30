@@ -97,12 +97,12 @@ function createTableInner(data, sn) {
             </tr>`;
         }
         else if (e.btn == true) {
-            allData[data.RFIDInternalCode] = data;
+            allData[data.InternalCode] = data;
             html = `
             <tr>
                 <td class="datatable-table-th">${e.text}</td>
                 <td class="datatable-table-td" ${colspan} id="d-${e.value}">
-                    <button type="button" class="btn btn-search" onclick="createMapModal('Modal-Location-${data.RFIDInternalCode}','${data.RFIDInternalCode}')">查看定位</button>
+                    <button type="button" class="btn btn-search" onclick="createMapModal(allData['${data.InternalCode}'])">查看定位</button>
                 </td>
             </tr>`;
         }

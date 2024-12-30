@@ -2,9 +2,7 @@
     ViewBag.Title = "巡檢路線模板 詳情";
 }
 @section styles {
-    @Styles.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css")
-    @Styles.Render("~/Content/loading.css")
-    @Styles.Render("~/Content/bim.css")
+    @Html.Partial("MapScripts")
     @Html.Partial("DataGridScripts")
     <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
     <script src="/Scripts/dataTable/PlanRecord.js" defer></script>
@@ -31,11 +29,6 @@
 </section>
 
 @section scripts {
-    @Scripts.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js")
-    @Scripts.Render("~/Scripts/Forge/Viewer.Loading.js")
-    @Scripts.Render("~/Scripts/Forge/Viewer.Toolkit.js")
-    @Scripts.Render("~/Scripts/Forge/ForgePin.js")
-    @Scripts.Render("~/Scripts/Forge/UpViewer.js")
     <script>
         const PlanPathSN = location.href.split('/').pop();
         const apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';

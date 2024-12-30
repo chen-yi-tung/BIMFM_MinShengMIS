@@ -1,0 +1,17 @@
+﻿@model Nullable<bool>
+@{
+	bool defer = true;
+	if (Model.HasValue)
+	{
+		defer = (bool)Model;
+	}
+}
+<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css">
+<link rel="stylesheet" href="~/Content/loading.css">
+<link rel="stylesheet" href="~/Content/bim.css">
+
+<script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js" defer="@defer.ToString()"></script>
+<script src="~/Scripts/Forge/Viewer.Loading.js" defer="@defer.ToString()"></script>
+<script src="~/Scripts/Forge/Viewer.Toolkit.js" defer="@defer.ToString()"></script>
+<script src="~/Scripts/Forge/ForgePin.js" defer="@defer.ToString()"></script>
+<script src="~/Scripts/Forge/UpViewer.js" defer="@defer.ToString()"></script>

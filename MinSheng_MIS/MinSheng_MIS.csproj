@@ -1895,6 +1895,7 @@
     <Content Include="Views\Stock_Management\Detail.cshtml" />
     <Content Include="Views\Stock_Management\Delete.cshtml" />
     <Content Include="Views\Stock_Management\CreateOutbound.cshtml" />
+    <Content Include="Views\Shared\MapScripts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BimModels\" />
