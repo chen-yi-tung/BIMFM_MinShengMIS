@@ -92,8 +92,8 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-            //-----資料驗證
-            #region RFID資料驗證
+        //-----資料驗證
+        #region RFID資料驗證
         public async Task RFIDDataAnnotationAsync(IRFIDInfo data)
         {
             var floorSNList = await _db.Floor_Info.Select(x => x.FSN).ToListAsync(); // 取得所有樓層SN列表

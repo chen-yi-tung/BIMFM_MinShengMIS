@@ -144,7 +144,7 @@ namespace MinSheng_MIS.Services
                 .Select(x => new InspectionPlanCheckItem
                 {
                     Item = x.CheckItemName,
-                    Result = x.CheckResult != null ? ConvertStringToEnum<CheckResult>(x.CheckResult).GetLabel() : "-",
+                    Result = x.CheckResult != null ? ConvertStringToEnum<CheckResult>(x.CheckResult).GetLabel() : null,
                 });
 
             return result.Cast<IInspectionPlanCheckItem>().ToList();
@@ -159,7 +159,7 @@ namespace MinSheng_MIS.Services
                 .Select(x => new InspectionPlanRportItem
                 {
                     Item = x.ReportValue,
-                    Value = x.ReportContent ?? "-",
+                    Value = x.ReportContent,
                     Unit = x.Unit,
                 })
                 ?? Enumerable.Empty<object>();
