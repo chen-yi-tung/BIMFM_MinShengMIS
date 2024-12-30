@@ -1,6 +1,6 @@
 ﻿async function addDropDownList() {
     await $('.repair-user-name').tagbox({
-        url: "/DropDownList/AllMyName",
+        url: "/DropDownList/RepairUserName",
         textField: 'Text',
         valueField: 'Value',
         hasDownArrow: true,
