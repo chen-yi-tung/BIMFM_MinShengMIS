@@ -764,41 +764,5 @@ namespace MinSheng_MIS.Controllers
             }).ToList();
         }
         #endregion
-
-        #region DrawingSystemManagement 報修單狀態
-        [HttpGet]
-        public ActionResult DrawingSystemManagement()
-        {
-            List<JObject> list = new List<JObject>();
-            var table = db.DrawingSystemManagement.ToList();
-            foreach (var item in table)
-            {
-                JObject jo = new JObject();
-                jo.Add("Text", item.DSystem);
-                jo.Add("Value", item.DSystemID);
-                list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region DrawingSubSystemManagement 報修單狀態
-        [HttpGet]
-        public ActionResult DrawingSubSystemManagement(int dSystemID)
-        {
-            List<JObject> list = new List<JObject>();
-            var table = db.DrawingSubSystemManagement.Where(d => d.DSystemID == dSystemID).ToList();
-            foreach (var item in table)
-            {
-                JObject jo = new JObject();
-                jo.Add("Text", item.DSubSystem);
-                jo.Add("Value", item.DSubSystemID);
-                list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
     }
 }
