@@ -23,6 +23,8 @@ namespace MinSheng_MIS.Services
         #region WEB
         public void CreateFromWeb(Repair_ManagementWebCreateViewModel item)
         {
+            if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "2"))
+                throw new Exception("此設備已經報修中");
             EquipmentReportForm newForm = new EquipmentReportForm();
             newForm.RSN = GetNextRSN();
             newForm.ESN = item.ESN;
@@ -36,6 +38,7 @@ namespace MinSheng_MIS.Services
             _db.EquipmentReportForm.Add(newForm);
             EquipmentInfo equipment = _db.EquipmentInfo.Find(newForm.ESN);
             equipment.EState = "2";
+            SuspendMaintenance(newForm.ESN);
             _db.SaveChanges();
         }
 
@@ -107,6 +110,7 @@ namespace MinSheng_MIS.Services
                 dbItem.ReportState = "4";
                 EquipmentInfo equipment = _db.EquipmentInfo.Find(dbItem.ESN);
                 equipment.EState = "1";
+                ResumeMaintenance(dbItem.ESN);
             }
             else
             {
@@ -170,10 +174,13 @@ namespace MinSheng_MIS.Services
             //新增
             if (item.RSN == null)
             {
+                if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "2"))
+                    throw new Exception("此設備已經報修中");
                 newForm.RSN = GetNextRSN();
                 newForm.ReportTime = DateTime.Now;
                 newForm.ReportState = "1";
                 newForm.ESN = item.ESN;
+                SuspendMaintenance(newForm.ESN);
             }
             //編輯
             else
@@ -409,6 +416,54 @@ namespace MinSheng_MIS.Services
                 return path;
             }
             return null;
+        }
+
+        public void SuspendMaintenance(string esn)
+        {
+            var maintenanceList = _db.Equipment_MaintenanceForm.Where(e => (e.Status == "1" || e.Status == "2") && e.ESN == esn).ToList();
+            var emfsnList = maintenanceList.Select(m => m.EMFSN).ToList();
+            var memberList = _db.Equipment_MaintenanceFormMember.Where(e => emfsnList.Contains(e.EMFSN)).ToList();
+            _db.Equipment_MaintenanceFormMember.RemoveRange(memberList);
+            _db.Equipment_MaintenanceForm.RemoveRange(maintenanceList);
+            var maintenanceItem = _db.Equipment_MaintainItemValue.Where(e => e.ESN == esn).ToList();
+            foreach (var item in maintenanceItem)
+            {
+                item.IsCreateForm = false;
+            }
+            _db.SaveChanges();
+        }
+
+        public void ResumeMaintenance(string esn)
+        {
+            DateTime InOneMonth = DateTime.Today.AddMonths(1);
+            var maintenanceItem = _db.Equipment_MaintainItemValue.Where(e => e.ESN == esn).ToList();
+            foreach (var item in maintenanceItem)
+            {
+                if (item.NextMaintainDate != null && item.NextMaintainDate <= InOneMonth)
+                {
+                    Equipment_MaintenanceForm newForm = new Equipment_MaintenanceForm();
+                    newForm.EMFSN = GetNextEMFSN(item.NextMaintainDate?.ToString("yyMMdd"));
+                    newForm.ESN = esn;
+                    newForm.MISSN = item.MISSN;
+                    newForm.MaintainName = item.Template_MaintainItemSetting.MaintainName;
+                    newForm.Period = item.Period;
+                    newForm.lastMaintainDate = item.lastMaintainDate;
+                    newForm.NextMaintainDate = (DateTime)item.NextMaintainDate;
+                    newForm.Status = "1";
+                    _db.Equipment_MaintenanceForm.Add(newForm);
+                }
+                item.IsCreateForm = true;
+                _db.SaveChanges();
+            }
+        }
+
+        public string GetNextEMFSN(string date)
+        {
+            string prefix = "M" + date;
+            string emfsn = _db.Equipment_MaintenanceForm.Select(e => e.EMFSN).Where(e => e.StartsWith(prefix)).OrderByDescending(e => e).FirstOrDefault();
+            if (emfsn != null) emfsn = prefix + (int.Parse(emfsn.Substring(prefix.Length)) + 1).ToString().PadLeft(6, '0');
+            else emfsn = prefix + "000001";
+            return emfsn;
         }
 
         public void Dispose()
