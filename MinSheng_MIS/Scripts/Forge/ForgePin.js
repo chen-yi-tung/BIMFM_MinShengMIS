@@ -65,10 +65,6 @@ class PinPopover {
 }
 
 class ForgePin {
-    static Pins = new Set();
-    static update() {
-        ForgePin.Pins.forEach((pin) => pin.update());
-    }
     #options = null;
     #position = null;
     #zIndex = 0;
@@ -146,11 +142,6 @@ class ForgePin {
         if (this.#options.onTouchStart) {
             this.on("touchstart", this.#options.onTouchStart.bind(this));
         }
-
-        if (ForgePin.Pins.size === 0) {
-            this.viewer.addEventListener("cameraChanged", ForgePin.update);
-        }
-        ForgePin.Pins.add(this);
     }
     get visible() {
         return this.element.style.display == "inline-block";
@@ -249,5 +240,4 @@ class ForgePin {
     dispatchEvent(event) {
         this.element.dispatchEvent(event);
     }
-
 }

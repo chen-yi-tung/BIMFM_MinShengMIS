@@ -14,14 +14,7 @@
         <form class="form" method="post" action="">
             <div class="form-group">
                 <label for="Status">保養單狀態</label>
-                <select class="form-select" name="Status" id="Status">
-                    <option value="">請選擇</option>
-                    <option value="1">待派工</option>
-                    <option value="2">待執行</option>
-                    <option value="3">待審核</option>
-                    <option value="4">審核通過</option>
-                    <option value="5">審核未過</option>
-                </select>
+                <select class="form-select" name="Status" id="Status"></select>
             </div>
 
             <div class="form-group">
@@ -80,18 +73,12 @@
 
             <div class="form-group">
                 <label for="Period">保養週期</label>
-                <select type="text" class="form-select" name="Period" id="Period">
-                    <option value="">請選擇</option>
-                    <option value="1">每日</option>
-                    <option value="2">每月</option>
-                    <option value="3">每季</option>
-                    <option value="4">每年</option>
-                </select>
+                <select type="text" class="form-select" name="Period" id="Period"></select>
             </div>
 
-            <div class="form-group col-2fr">
-                <label for="Maintainer">執行人員</label>
-                <select type="text" class="form-select repair-user-name" name="Maintainer" id="Maintainer"></select>
+            <div class="form-group">
+                <label for="Member">執行人員</label>
+                <select type="text" class="form-select" name="Member" id="Member"></select>
             </div>
 
             <div class="button-group">
@@ -218,6 +205,10 @@
 
         $(async function () {
             await formDropdown.ASN()
+            await pushSelect("Status", '@Url.Action("MaintainStatus", "DropDownList")');
+            await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
+            await pushSelect("Period", '@Url.Action("MaintainPeriod", "DropDownList")');
+            await pushSelect("Member", '@Url.Action("MaintainUserName", "DropDownList")');
             await addDropDownList();
             await addButtonEvent();
             Initialize_DataGrid(getGridJSON);
@@ -254,8 +245,8 @@
                     dg.column('NextMaintainDate', '最近應保養日期', 180),
                     dg.column('ReportTime', '實際保養時間', 160),
                     dg.column('EState', '設備狀態', 150),
-                    dg.column('ASN', '棟別', 200),
-                    dg.column('FSN', '樓層', 200),
+                    dg.column('Area', '棟別', 200),
+                    dg.column('Floor', '樓層', 200),
                     dg.column('EName', '設備名稱', 300),
                     dg.column('ESN', '設備編號', 150),
                     dg.column('MaintainName', '保養項目', 200),
@@ -315,86 +306,66 @@
 
         //點擊 匯出btn
         $("#export").click(function () {
-            const EMFSN = getCheckedEMFSN();
 
-            if (EMFSN.length > 0) {
-                console.log("匯出的項目為", EMFSN);
+        })
 
-                //待API完成
-                @* $.ajax({
-                    url: "@Url.Action("Assignment", "Repair_Management")",
-                    data: JSON.stringify(sendData),
-                    type: "POST",
-                    contentType: "application/json",
-                    processData: false,
-                    success: onSuccess,
-                    error: onError
-                }) *@
-            } else {
-                    createDialogModal({
-                        id: "DialogModal-Error", inner: `請先勾選欲匯出的報修單！`,
-                    })
-                    return;
-                }
+        //search area onClick Function
+        function addSearchAreaClickEvent() {
+            $("#search").click(function () {
+                DataGrid.datagrid('load', getQueryParams());
+            });
+        }
+
+        //取得被勾選的報修單號
+        function getCheckedEMFSN() {
+            const checkedRows = $('#DataGrid').datagrid('getChecked');
+            const emfsnList = checkedRows.map(row => row.EMFSN);
+            return emfsnList;
+        }
+
+        function save() {
+            const maintainerValue = $('#addMultiAssign #Maintainer').tagbox('getValues');
+            if (!maintainerValue?.length) {
+                alert('請選擇執行人員');
+                return false;
+            }
+            let isValidity = $('#addMultiAssign form')[0].reportValidity()
+            console.log("isValidity():", isValidity);
+
+            if (!isValidity) return;
+
+            const sendData = {
+                EMFSN: currentEMFSN,
+                NextMaintainDate: document.getElementById("NextMaintainDate").value,
+                Maintainer: $('#addMultiAssign #Maintainer').tagbox('getValues'),
+            }
+            console.log("傳送的資料", sendData);
+
+
+            $.ajax({
+                url: "@Url.Action("Assignment", "Maintain_Management")",
+                data: JSON.stringify(sendData),
+                type: "POST",
+                contentType: "application/json",
+                processData: false,
+                success: onSuccess,
+                error: onError
             })
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
 
-            //search area onClick Function
-            function addSearchAreaClickEvent() {
-                $("#search").click(function () {
-                    DataGrid.datagrid('load', getQueryParams());
+            function onSuccess(res) {
+                modal.hide();
+                console.log(res);
+                createDialogModal({
+                    id: "DialogModal-Success", inner: "派工成功！",
+                    onHide: () => { window.location.href = "/Maintain_Management/Index"; }
                 });
             }
-
-            //取得被勾選的報修單號
-            function getCheckedEMFSN() {
-                const checkedRows = $('#DataGrid').datagrid('getChecked');
-                const emfsnList = checkedRows.map(row => row.EMFSN);
-                return emfsnList;
+            function onError(res) {
+                modal.hide();
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `派工失敗！` + `${res?.responseText || ""}` })
             }
-
-            function save() {
-                const maintainerValue = $('#addMultiAssign #Maintainer').tagbox('getValues');
-                if (!maintainerValue?.length) {
-                    alert('請選擇執行人員');
-                    return false;
-                }
-                let isValidity = $('#addMultiAssign form')[0].reportValidity()
-                console.log("isValidity():", isValidity);
-
-                if (!isValidity) return;
-
-                const sendData = {
-                    EMFSN: currentEMFSN,
-                    NextMaintainDate: document.getElementById("NextMaintainDate").value,
-                    Maintainer: $('#addMultiAssign #Maintainer').tagbox('getValues'),
-                }
-                console.log("傳送的資料", sendData);
-
-
-                $.ajax({
-                    url: "@Url.Action("Assignment", "Maintain_Management")",
-                    data: JSON.stringify(sendData),
-                    type: "POST",
-                    contentType: "application/json",
-                    processData: false,
-                    success: onSuccess,
-                    error: onError
-                })
-                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addMultiAssign'));
-
-                function onSuccess(res) {
-                    modal.hide();
-                    console.log(res);
-                    createDialogModal({
-                        id: "DialogModal-Success", inner: "派工成功！",
-                        onHide: () => { window.location.href = "/Maintain_Management/Index"; }
-                    });
-                }
-                function onError(res) {
-                    modal.hide();
-                    console.log(res);
-                    createDialogModal({ id: "DialogModal-Error", inner: `派工失敗！` + `${res?.responseText || ""}` })
-                }
-            }
+        }
     </script>
 }

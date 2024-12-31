@@ -82,10 +82,18 @@ namespace MinSheng_MIS.Services
             var plan = await _db.InspectionPlan.FindAsync(ipsn)
                 ?? throw new MyCusResException("查無資料！");
 
-            plan.PlanState = ConvertStringToEnum<InspectionPlanState>(plan.PlanState).GetLabel() 
+            T dest = plan.ToDto<InspectionPlan, T>();
+
+            if (dest is IInspectionPlanDetailViewModel info)
+            {
+                info.PlanDate = plan.PlanDate.ToString("yyyy-MM-dd");
+                info.PlanState = ConvertStringToEnum<InspectionPlanState>(plan.PlanState).GetLabel()
                 ?? "undefined";
 
-            return plan.ToDto<InspectionPlan, T>();
+                dest = (T)info;
+            }
+
+            return dest;
         }
         #endregion
 
@@ -136,7 +144,7 @@ namespace MinSheng_MIS.Services
                 .Select(x => new InspectionPlanCheckItem
                 {
                     Item = x.CheckItemName,
-                    Result = x.CheckResult != null ? ConvertStringToEnum<CheckResult>(x.CheckResult).GetLabel() : "-",
+                    Result = x.CheckResult != null ? ConvertStringToEnum<CheckResult>(x.CheckResult).GetLabel() : null,
                 });
 
             return result.Cast<IInspectionPlanCheckItem>().ToList();
@@ -151,7 +159,7 @@ namespace MinSheng_MIS.Services
                 .Select(x => new InspectionPlanRportItem
                 {
                     Item = x.ReportValue,
-                    Value = x.ReportContent ?? "-",
+                    Value = x.ReportContent,
                     Unit = x.Unit,
                 })
                 ?? Enumerable.Empty<object>();

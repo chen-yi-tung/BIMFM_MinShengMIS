@@ -247,7 +247,7 @@ window.addEventListener('load', async () => {
             },
         ])
 
-        //bim.createEquipmentPoint(new THREE.Vector3(0, 0, 0), true);
+        //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
 
         /* bim.createSamplePath()
         const pathRecord = await bim.createPathRecord()
@@ -263,6 +263,7 @@ window.addEventListener('load', async () => {
             bim.dispose()
             await bim.init()
             await bim.loadModels(bim.getModelsUrl(currentLocation.value))
+            //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
         })
     }
     // #endregion

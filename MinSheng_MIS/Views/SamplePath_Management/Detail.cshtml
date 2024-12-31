@@ -2,9 +2,7 @@
     ViewBag.Title = "巡檢路線模板 詳情";
 }
 @section styles {
-    @Styles.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css")
-    @Styles.Render("~/Content/loading.css")
-    @Styles.Render("~/Content/bim.css")
+    @Html.Partial("MapScripts")
     @Html.Partial("DataGridScripts")
     <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
     <script src="/Scripts/dataTable/PlanRecord.js" defer></script>
@@ -30,26 +28,7 @@
     </div>
 </section>
 
-@*定位資訊POP UP*@
-<div class="modal fade datagrid-modal" tabindex="-1" id="Location">
-    <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h3>定位資訊</h3>
-                <div id="BIM" style="height: 50vh;">
-                    <div class="pin-area"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section scripts {
-    @Scripts.Render("https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js")
-    @Scripts.Render("~/Scripts/Forge/Viewer.Loading.js")
-    @Scripts.Render("~/Scripts/Forge/Viewer.Toolkit.js")
-    @Scripts.Render("~/Scripts/Forge/ForgePin.js")
-    @Scripts.Render("~/Scripts/Forge/UpViewer.js")
     <script>
         const PlanPathSN = location.href.split('/').pop();
         const apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
@@ -82,7 +61,7 @@
                 { id: "Frequency", title: "巡檢頻率" },
                 {
                     id: "Btn", title: "", formatter: (v, row, i) => {
-                        return `<button type="button" class="btn btn-location" data-bs-toggle="modal" data-bs-target="#Location" data-row-index="${i}"><i class="fa-solid fa-location-dot"></i></button>`
+                        return `<button type="button" class="btn btn-location" data-btn-type="location" data-row-index="${i}"><i class="fa-solid fa-location-dot"></i></button>`
                     }
                 },
             ]
@@ -155,7 +134,13 @@
                         createIndexToArrayData(res.Equipments), GridOptions)) :
                     $("#PlanRecord").parents(".datatable").remove();
 
-                setupBIMModal(res.Equipments);
+                $("#PlanRecord").on('click', `[data-btn-type="location"]`, (event) => {
+                    const button = event.currentTarget;
+                    const index = button.getAttribute('data-row-index')
+                    console.log(button, index)
+                    const row = res.Equipments[+(index)];
+                    createMapModal(row);
+                })
             }
 
             function onError(res) {
@@ -168,28 +153,6 @@
                         Index: i + 1,
                         ...e,
                     }
-                })
-            }
-
-            function setupBIMModal(data) {
-                const modal = document.getElementById('Location')
-                modal.addEventListener('shown.bs.modal', async function (event) {
-                    const button = event.relatedTarget
-                    const index = button.getAttribute('data-row-index')
-                    const row = data[index];
-                    if (bim.equipmentPoint) {
-                        bim.equipmentPoint.hide();
-                    }
-                    await bim.init()
-                    await bim.loadModels(bim.getModelsUrl(row.RFIDViewName))
-                    const position = new THREE.Vector3(row.Location_X, row.Location_Y, 0)
-                    if (bim.equipmentPoint) {
-                        bim.equipmentPoint.position = position;
-                    }
-                    else {
-                        bim.createEquipmentPoint(position)
-                    }
-                    bim.equipmentPoint.show().update();
                 })
             }
         }

@@ -24,21 +24,6 @@
                     <label for="EOMSN">設備操作手冊編號</label>
                     <input class="form-control" id="EOMSN" name="EOMSN" type="text" maxlength="50" required />
                 </div>
-                @*<div class="form-group required">
-                    <label for="System">系統別</label>
-                    <select class="form-select" name="System" id="System" required disabled>
-                        <option value="">請選擇</option>
-                    </select>
-                    <input class="form-control" id="System" name="System" type="text" hidden />
-                </div>
-
-                <div class="form-group required">
-                    <label for="SubSystem">子系統別</label>
-                    <select class="form-select" name="SubSystem" id="SubSystem" required disabled>
-                        <option value="">請選擇</option>
-                    </select>
-                    <input class="form-control" id="SubSystem" name="SubSystem" type="text" hidden />
-                </div>*@
 
                 <div class="form-group required">
                     <label for="EName">設備名稱</label>
@@ -162,6 +147,7 @@
 
             var form = new FormData();
             form.append("EOMSN", document.getElementById("EOMSN").value);
+            form.append("EName", document.getElementById("EName").value);
             form.append("Brand", document.getElementById("Brand").value);
             form.append("Model", document.getElementById("Model").value);
             if (fileUploader.hasFile()) {

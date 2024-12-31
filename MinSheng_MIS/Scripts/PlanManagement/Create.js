@@ -7,7 +7,7 @@ let autoLinkDG_Controller
 async function addDropDownList(selector) {
     console.log("selector", selector);
     await $(selector).tagbox({
-        url: "/DropDownList/AllMyName",
+        url: "/DropDownList/AssignmentUserName",
         textField: 'Text',
         valueField: 'Value',
         hasDownArrow: true,

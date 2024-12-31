@@ -1696,6 +1696,7 @@
     <Content Include="jsonSamples\inquiryPlan.json" />
     <Content Include="jsonSamples\QuotationItem.json" />
     <Content Include="Files\EquipmentOperatingManual\000005.pdf" />
+    <Content Include="Scripts\datatable_new.js" />
     <Content Include="Scripts\dataTable\OneDeviceOneCard.js" />
     <Content Include="Scripts\dataTable\RFIDResultModal.js" />
     <Content Include="Scripts\dataTable\RFIDInfoModal.js" />
@@ -1894,6 +1895,7 @@
     <Content Include="Views\Stock_Management\Detail.cshtml" />
     <Content Include="Views\Stock_Management\Delete.cshtml" />
     <Content Include="Views\Stock_Management\CreateOutbound.cshtml" />
+    <Content Include="Views\Shared\MapScripts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BimModels\" />

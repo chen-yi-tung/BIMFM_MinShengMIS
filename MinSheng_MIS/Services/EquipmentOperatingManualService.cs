@@ -32,6 +32,7 @@ namespace MinSheng_MIS.Services
             #region 編輯設備操作手冊
 
             var eomitem = db.EquipmentOperatingManual.Find(newEOMSN);
+            eomitem.EName = eom.EName;
             eomitem.Brand = eom.Brand;
             eomitem.Model = eom.Model;
             if (!string.IsNullOrEmpty(Filename))
