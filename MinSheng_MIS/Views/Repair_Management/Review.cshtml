@@ -70,7 +70,7 @@
         const UserName = '@ViewBag.MyName';
         const url = window.location.search;
         const RSN = new URLSearchParams(url).get('RSN');
-        let apiUrl = '@Url.Action("Audit", "Repair_Management")?rsn=' + RSN;
+        let apiUrl = '@Url.Action("Detail", "Repair_Management")?rsn=' + RSN;
         //let apiUrl = null;
 
         const fakeData = {

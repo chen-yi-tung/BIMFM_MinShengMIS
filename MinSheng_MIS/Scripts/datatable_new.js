@@ -118,7 +118,6 @@ function createAccordion(data, options, parentId = 0) {
                 case "items": {
                     let arr = data[e.value];
                     if (!Array.isArray(arr)) { arr = [data[e.value]]; }
-
                     const rows = data[e.value]?.length || 0;
                     if (rows === 0) {
                         return '';
@@ -152,7 +151,7 @@ function createAccordion(data, options, parentId = 0) {
                             if (maxColspan > items.length + 1) {
                                 colspan = getColspan(e.colspan, maxColspan - items.length);
                             }
-                            const value = data[e.value];
+                            const value = data[e.value] ?? nullString;
                             const style = toValue(e.style, value, data, index) ?? "";
                             const className = toValue(e.className, value, data, index) ?? "";
                             const cellClass = index === 0 ? 'text-start' : 'text-center';

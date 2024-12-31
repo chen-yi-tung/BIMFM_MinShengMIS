@@ -350,12 +350,12 @@
                 history.back();
             });
             $("#delete").click(function () {
-                let PSSN = $("#PSSN").val();
+                let IPSN = $("#IPSN").val();
                 createDeleteDialog({
-                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
-                    data: PSSN,
+                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?IPSN=' + IPSN,
+                    data: IPSN,
                     onSuccess() {
-                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
+                        let url = '@Url.Action("Index", "PlanManagement")';
                         window.location.href = url;
                     }
                 })

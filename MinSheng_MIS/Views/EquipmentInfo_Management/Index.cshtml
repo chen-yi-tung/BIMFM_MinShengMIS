@@ -127,13 +127,9 @@
                 idField: 'ESN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.EState === "停用" })),
                     dg.frozenColumn('_FilePath', "", 111, (v, row, i) => dg.eventButton(i, "操作手冊", "filePath", { disabled: !row.FilePath })),
-                    //dg.frozenColumn('FilePath', "", 111, (v, row, i) => {
-                    //    let disabled = v == null || v == "";
-                    //    return dg.eventButton(i, "操作手冊", "filePath")
-                    //}),
-                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
+                    dg.frozenColumn('_deactivate', (v, row, i) => dg.eventButton(i, "停用", "deactivate", { className: "btn btn-datagrid btn-delete", disabled: row.EState !== "正常" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('ESN'),
@@ -145,7 +141,6 @@
                     dg.column('Brand', '設備廠牌', 200),
                     dg.column('Model', '設備型號', 200),
                     dg.column('Vendor', '設備廠商', 200),
-                    //dg.hiddenColumn('FilePath'),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
@@ -157,14 +152,44 @@
             dg.addEvent("filePath", function (row, i) {
                 window.open(row.FilePath, "_blank")
             })
-            dg.addEvent("delete", function (row, i) {
-                window.open(`${baseUrl}/Delete/${row.ESN}`, "_self")
+            dg.addEvent("deactivate", function (row, i) {
+                console.log("row", row);
+                createDialogModal({
+                    inner: "此操作無法回復，是否要停用設備?",
+                    button: [
+                        { className: "btn btn-cancel", cancel: true, text: "取消" },
+                        { className: "btn btn-delete", text: "確定停用", onClick: () => {
+                            onDeactivate(row.ESN)
+                        }},
+                    ]
+                })
             })
+            //停用
+            function onDeactivate(ESN) {
+                console.log("onDeactivate", ESN);
+
+                @*$.ajax({
+                    url: "/EquipmentInfo_Management/Edit",
+                    type: "GET",
+                    dataType: "json",
+                    data: ESN,
+                    contentType: "application/json;charset=utf-8",
+                    success: onSuccess,
+                    error: onError
+                })*@
+
+                function onSuccess() {
+                    window.location.reload();
+                }
+                function onError() {
+                    console.log("ErrorMessage", ErrorMessage);
+                }
+            }
         }
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            
+
 
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());
