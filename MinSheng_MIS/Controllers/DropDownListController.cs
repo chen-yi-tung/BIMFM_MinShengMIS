@@ -329,7 +329,7 @@ namespace MinSheng_MIS.Controllers
         {
             List<JObject> list = new List<JObject>();
             var members = db.InspectionPlan_Member.Select(x => x.UserID).Distinct().ToList();
-            if(members != null)
+            if (members != null)
             {
                 var mynamedatalist = from x1 in members
                                      join x2 in db.AspNetUsers on x1 equals x2.UserName
@@ -454,58 +454,58 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 圖系統下拉式選單
-        //[HttpGet]
-        //public ActionResult DSystem()
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var DSystemlist = new List<DrawingSystemManagement>();
-        //    DSystemlist = db.DrawingSystemManagement.Where(x => x.SystemIsEnable == true).ToList();
+        [HttpGet]
+        public ActionResult DSystem()
+        {
+            List<JObject> list = new List<JObject>();
+            var DSystemlist = new List<DrawingSystemManagement>();
+            DSystemlist = db.DrawingSystemManagement.ToList();
 
-        //    foreach (var item in DSystemlist)
-        //    {
-        //        JObject jo = new JObject
-        //        {
-        //            { "Text", item.DSystem },
-        //            { "Value", item.DSystemID }
-        //        };
-        //        list.Add(jo);
-        //    }
+            foreach (var item in DSystemlist)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", item.DSystem },
+                    { "Value", item.DSystemID }
+                };
+                list.Add(jo);
+            }
 
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
         #endregion
 
         #region 圖子系統下拉式選單
-        //[HttpGet]
-        //public ActionResult DSubSystem(string DSystemID = "")
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var DSubSystemlist = new List<DrawingSubSystemManagement>();
+        [HttpGet]
+        public ActionResult DSubSystem(string DSystemID = "")
+        {
+            List<JObject> list = new List<JObject>();
+            var DSubSystemlist = new List<DrawingSubSystemManagement>();
 
-        //    if (string.IsNullOrEmpty(DSystemID))
-        //    {
-        //        DSubSystemlist = db.DrawingSubSystemManagement.Where(x => x.SubSystemIsEnable == true).ToList();
-        //    }
-        //    else
-        //    {
-        //        var dsystemid = Convert.ToInt32(DSystemID);
-        //        DSubSystemlist = db.DrawingSubSystemManagement.Where(x => x.SubSystemIsEnable == true && x.DSystemID == dsystemid).ToList();
-        //    }
+            if (string.IsNullOrEmpty(DSystemID))
+            {
+                //DSubSystemlist = db.DrawingSubSystemManagement.ToList();
+            }
+            else
+            {
+                var dsystemid = Convert.ToInt32(DSystemID);
+                DSubSystemlist = db.DrawingSubSystemManagement.Where(x => x.DSystemID == dsystemid).ToList();
+            }
 
-        //    foreach (var item in DSubSystemlist)
-        //    {
-        //        JObject jo = new JObject
-        //        {
-        //            { "Text", item.DSubSystem },
-        //            { "Value", item.DSubSystemID }
-        //        };
-        //        list.Add(jo);
-        //    }
+            foreach (var item in DSubSystemlist)
+            {
+                JObject jo = new JObject
+                {
+                    { "Text", item.DSubSystem },
+                    { "Value", item.DSubSystemID }
+                };
+                list.Add(jo);
+            }
 
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
         #endregion
 
         //--實驗室管理--

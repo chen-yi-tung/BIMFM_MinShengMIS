@@ -100,7 +100,7 @@
         $(async function () {
             $("#_checkFilePath").prop("checked", true);
             await formDropdown.ASN();
-            ////await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
+            await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
 
             const Systems = document.getElementById('DSystemID')
             Systems.addEventListener("change", function () {
