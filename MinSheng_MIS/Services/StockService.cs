@@ -404,7 +404,7 @@ namespace MinSheng_MIS.Services
                 if (data == null)
                 {
                     res.AccessState = ResState.Failed;
-                    res.ErrorMessage = "查無此庫存品項，無法刪除。";
+                    res.ErrorMessage = "查無此庫存品項，無法編輯。";
                     return res;
                 }
                 string ErrorMessage = ComputationalStockAnnotation(datas, datas.SISN);
@@ -451,6 +451,13 @@ namespace MinSheng_MIS.Services
             try
             {
                 #region 資料檢查
+                var stockdata = _db.ComputationalStock.Find(SISN);
+                if (stockdata == null)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "查無此庫存品項，無法刪除。";
+                    return res;
+                }
                 var haverecord = _db.StockChangesRecord.Where(x => x.SISN == SISN).Count();
                 if (haverecord > 0)
                 {
