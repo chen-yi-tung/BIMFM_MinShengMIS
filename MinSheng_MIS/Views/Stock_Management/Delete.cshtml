@@ -24,25 +24,27 @@
 
 @section scripts {
     <script>
-        const IPSN = '@ViewBag.id';
-        let apiUrl = null;
+        const SISN = '@ViewBag.id';
 
         $(async function () {
             addButtonEvent();
-            readData(apiUrl);
+            readData('@Url.Action("GetComputationalStockDetail")?id=' + SISN);
         })
         const SerializedName = [
-            { text: "類別", value: "Type" },
-            { text: "品項名稱", value: "SName" },
-            { text: "單位", value: "Init" },
-            { text: "警戒值", value: "WarningVal" },
+            { text: "類別", value: "StockType" },
+            { text: "品項名稱", value: "StockName" },
+            { text: "單位", value: "Unit" },
+            { text: "警戒值", value: "MinStockAmount" },
         ]
         let fakeData = {
-            SIRSN: "1120301001",
-            Type: "潤滑劑",
-            SName: "軸承潤滑劑",
-            Init: "罐",
-            WarningVal: "20",
+            "SISN": null,
+            "StockTypeSN": 1,
+            "StockType": "設備零件",
+            "StockName": "5mm螺絲",
+            "StockStauts": "充足",
+            "StockAmount": 11,
+            "Unit": "個",
+            "MinStockAmount": 10
         }
 
         function readData(url = null) {
@@ -58,6 +60,7 @@
                 })
 
             function onSuccess(res) {
+                if (res.Datas) res = res.Datas;
                 console.log("res", res);
                 $("#PlanDetail").append(createTableInner(res, SerializedName));
             }
@@ -71,13 +74,11 @@
                 history.back();
             });
             $("#delete").click(function () {
-                let PSSN = $("#PSSN").val();
                 createDeleteDialog({
-                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
-                    data: PSSN,
+                    url: '@Url.Action("DeleteComputationalStock")?SISN=' + SISN,
+                    data: SISN,
                     onSuccess() {
-                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
-                        window.location.href = url;
+                        window.location.href = '@Url.Action("Index")';
                     }
                 })
             });

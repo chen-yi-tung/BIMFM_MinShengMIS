@@ -12,30 +12,22 @@
         <form class="form">
             <div class="form-group-zone">
                 <div class="form-group required">
-                    <label for="Type">類別</label>
-                    <select class="form-select" name="Type" id="Type" required>
-                        <option value="0">請選擇</option>
-                        <option value="1">選項一</option>
-                        <option value="2">潤滑劑</option>
-                    </select>
+                    <label for="StockTypeSN">類別</label>
+                    <select class="form-select" name="StockTypeSN" id="StockTypeSN" required></select>
                 </div>
                 <div class="form-group required">
-                    <label for="SName">品項名稱</label>
-                    <input type="text" class="form-control" name="SName" id="SName" maxlength="20" required>
+                    <label for="StockName">品項名稱</label>
+                    <input type="text" class="form-control" name="StockName" id="StockName" maxlength="20" required>
                 </div>
                 <div class="form-group required">
-                    <label for="Init">單位</label>
-                    <input type="text" class="form-control" name="Init" id="Init" maxlength="20" required>
+                    <label for="Unit">單位</label>
+                    <input type="text" class="form-control" name="Unit" id="Unit" maxlength="20" required>
                 </div>
                 <div class="form-group required">
-                    <label for="WarningVal">警戒值</label>
-                    <input type="text" class="form-control" name="WarningVal" id="WarningVal" maxlength="20" required>
+                    <label for="MinStockAmount">警戒值</label>
+                    <input type="text" class="form-control" name="MinStockAmount" id="MinStockAmount" maxlength="20"
+                        required>
                 </div>
-
-            </div>
-
-            <div class="datatable-easyui w-100 d-none">
-                <table id="Template-datagrid"></table>
             </div>
         </form>
     </div>
@@ -49,19 +41,24 @@
 
 @section scripts {
     <script>
-        let apiUrl = null;
+        const SISN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("GetComputationalStockDetail")?id=' + SISN;
+        let submitURL = '@Url.Action("EditComputationalStock")';
 
         $(async function () {
             readData(apiUrl);
-            //await formDropdown.ASN();
             addButtonEvent();
         });
 
         let fakeData = {
-            Type: "2",
-            SName: "軸承潤滑劑",
-            Init: "罐",
-            WarningVal: "20"
+            "SISN": null,
+            "StockTypeSN": 1,
+            "StockType": "設備零件",
+            "StockName": "5mm螺絲",
+            "StockStauts": "充足",
+            "StockAmount": 11,
+            "Unit": "個",
+            "MinStockAmount": 10
         }
 
         function readData(url = null) {
@@ -76,11 +73,16 @@
                 success: onSuccess,
                 error: onError
             })
-            function onSuccess(res) {
+            async function onSuccess(res) {
+                if (res.Datas) res = res.Datas;
+
                 console.log("res:", res);
                 for (const [k, v] of Object.entries(res)) {
                     $(`#${k}`).val(v);
                 }
+
+                await formDropdown.pushSelect({ id: "StockTypeSN", url: '@Url.Action("StockType", "DropDownList")' });
+                formDropdown.setValue("StockTypeSN", res.StockTypeSN)
             }
             function onError(res) {
                 console.log(res);
@@ -88,14 +90,17 @@
         }
 
         function save() {
+            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+            if (!isValidity) return;
+
+            const fd = getQueryParams("form");
+            fd.SISN = SISN;
             $.ajax({
-                url: "/EquipmentInfo_Management/Create",
-                data: fd,//JSON.stringify(fd),
+                url: submitURL,
+                data: JSON.stringify(fd),
                 type: "POST",
-                contentType: false,
-                processData: false,
-                //dataType: "json",
-                //contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
                 success: onSuccess,
                 error: onError
             })
@@ -103,13 +108,13 @@
             function onSuccess(res) {
                 console.log(res);
                 createDialogModal({
-                    id: "DialogModal-Success", inner: "新增成功！",
-                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Management"; }
+                    id: "DialogModal-Success", inner: "編輯成功！",
+                    onHide: () => { window.location.href = '@Url.Action("Index")'; }
                 });
             }
             function onError(res) {
                 console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
+                createDialogModal({ id: "DialogModal-Error", inner: `編輯失敗！` + `${res?.responseText || ""}` })
             }
         }
     </script>
