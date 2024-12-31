@@ -277,17 +277,13 @@ namespace MinSheng_MIS.Controllers
 
         #region 設備狀態 下拉式選單
         [HttpGet]
-        public ActionResult EState(string url = "")
+        public ActionResult EState()
         {
             List<JObject> list = new List<JObject>();
             var Dics = Surface.EState();
 
             foreach (var a in Dics)
             {
-                if (url == "AddToPlan" && a.Key == "3")
-                {
-                    continue;
-                }
                 JObject jo = new JObject
                 {
                     { "Text", a.Value },
