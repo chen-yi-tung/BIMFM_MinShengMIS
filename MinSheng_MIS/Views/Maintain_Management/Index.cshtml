@@ -208,7 +208,7 @@
             await pushSelect("Status", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
             await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
             await pushSelect("Period", '@Url.Action("MaintainPeriod", "DropDownList")');
-            await pushSelect("Member", '@Url.Action("InspectionMember", "DropDownList")');
+            await pushSelect("Member", '@Url.Action("MaintainUserName", "DropDownList")');
             await addDropDownList();
             await addButtonEvent();
             Initialize_DataGrid(getGridJSON);

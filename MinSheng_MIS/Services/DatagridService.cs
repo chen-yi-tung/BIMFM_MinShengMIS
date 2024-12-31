@@ -502,9 +502,9 @@ namespace MinSheng_MIS.Services
                     maintenanceForms = maintenanceForms.Where(x => x.Period == form["Period"]);
                 }
                 // 執行人員
-                if (!string.IsNullOrEmpty(form["Maintainer"]?.ToString()))
+                if (!string.IsNullOrEmpty(form["Member"]?.ToString()))
                 {
-                    maintenanceForms = maintenanceForms.Where(x => x.Equipment_MaintenanceFormMember.Any(m => m.Maintainer.Contains(form["Maintainer"])));
+                    maintenanceForms = maintenanceForms.Where(x => x.Equipment_MaintenanceFormMember.Any(m => m.Maintainer.Contains(form["Member"])));
                 }
                 #endregion
 
@@ -1288,9 +1288,9 @@ namespace MinSheng_MIS.Services
                     equipmentReportFormTable = equipmentReportFormTable.Where(e => e.EquipmentInfo.NO.Contains(no));
                 }
                 //執行人員
-                if (!string.IsNullOrEmpty(form["RepairUserName"]?.ToString()))
+                if (!string.IsNullOrEmpty(form["Member"]?.ToString()))
                 {
-                    string repairUserName = form["RepairUserName"].ToString();
+                    string repairUserName = form["Member"].ToString();
                     var userRepairSet = db.Equipment_ReportFormMember.Where(e => e.RepairUserName == repairUserName).Select(e => e.RSN).ToHashSet();
                     equipmentReportFormTable = equipmentReportFormTable.Where(a => userRepairSet.Contains(a.RSN));
                 }

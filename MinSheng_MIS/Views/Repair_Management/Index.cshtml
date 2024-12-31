@@ -183,7 +183,7 @@
             await formDropdown.ASN();
             await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
             await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
-            await pushSelect("Member", '@Url.Action("InspectionMember", "DropDownList")');
+            await pushSelect("Member", '@Url.Action("RepairUserName", "DropDownList")');
             await addDropDownList();
             await addButtonEvent();
             Initialize_DataGrid(getGridJSON);

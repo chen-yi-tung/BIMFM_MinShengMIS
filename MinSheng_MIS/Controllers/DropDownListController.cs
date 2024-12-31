@@ -296,22 +296,22 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region MaintainUser保養人員
-        //[HttpGet]
-        //public ActionResult MaintainUser() //保養人員
-        //{
-        //    List<JObject> list = new List<JObject> { };
-        //    var data = db.InspectionPlanMaintain.Select(x => x.MaintainUserID).ToList();
-        //    var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
-        //    foreach (var item in mynamedatalist)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item.MyName);
-        //        jo.Add("Value", item.UserName);
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
+        [HttpGet]
+        public ActionResult MaintainUserName() //保養人員
+        {
+            List<JObject> list = new List<JObject> { };
+            var data = db.Equipment_MaintenanceFormMember.Select(x => x.Maintainer).ToList();
+            var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
+            foreach (var item in mynamedatalist)
+            {
+                JObject jo = new JObject();
+                jo.Add("Text", item.MyName);
+                jo.Add("Value", item.UserName);
+                list.Add(jo);
+            }
+            string text = JsonConvert.SerializeObject(list);
+            return Content(text, "application/json");
+        }
         #endregion
 
         # region 審核人員_保養
@@ -1040,9 +1040,9 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region RepairAssignmentUserName 報修管理派工人員
+        #region AssignmentUserName 派工人員
         [System.Web.Http.HttpGet]
-        public ActionResult RepairAssignmentUserName()
+        public ActionResult AssignmentUserName()
         {
             List<JObject> list = new List<JObject>();
             var table = db.AspNetUsers.Where(a => a.Authority == "4").ToList();
