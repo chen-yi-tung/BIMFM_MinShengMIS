@@ -51,28 +51,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 巡檢班別
-        [HttpGet]
-        public ActionResult Shift()
-        {
-            List<JObject> list = new List<JObject>();
-            var Dics = Surface.Shift();
-
-            foreach (var a in Dics)
-            {
-                JObject jo = new JObject
-                {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
-                };
-                list.Add(jo);
-            }
-
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
         #region 根據棟別查詢樓層
         [System.Web.Http.HttpGet]
         public ActionResult Floor(int? ASN)
@@ -205,77 +183,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region ReportFormState相關 報修單狀態
-        [System.Web.Http.HttpGet]
-        public ActionResult Report_Management_Management_ReportFormState(string url = "")
-        {
-            List<JObject> list = new List<JObject>();
-            var Dics = ReportState(url);
-
-            foreach (var a in Dics)
-            {
-                JObject jo = new JObject
-                {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
-                };
-                list.Add(jo);
-            }
-
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-
-
-        //根據不同當下路由決定不同的下拉式選單
-        private static Dictionary<string, string> ReportState(string url = "")
-        {
-            //預設空字串回傳全部 key為
-            var abc = Surface.EquipmentReportFormState();
-            var result = new Dictionary<string, string>();
-            if (url == "")
-            {
-                foreach (var a in abc)
-                {
-                    result.Add(a.Key, a.Value);
-                }
-            }
-            else if (url == "CanAddToPlanReportState") //新增巡檢計畫->新增報修單 DataGrid 報修單狀態
-            {
-                foreach (var a in abc)
-                {
-                    if (a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
-                    {
-                        result.Add(a.Key, a.Value);
-                    }
-                }
-            }
-            return result;
-        }
-
-        #endregion
-
-        #region ReportLevel 報修等級
-        //[System.Web.Http.HttpGet]
-        //public ActionResult ReportLevel()
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var Dics = Surface.ReportLevel();
-
-        //    foreach (var a in Dics)
-        //    {
-        //        JObject jo = new JObject
-        //        {
-        //            { "Text", a.Value },
-        //            { "Value", a.Key }
-        //        };
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        #endregion
-
         #region InformantUserID 使用者名稱
         [System.Web.Http.HttpGet]
         public ActionResult InformantUserID()
@@ -332,44 +239,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion 
 
-        #region RepairUser施工人員
-        //[HttpGet]
-        //public ActionResult RepairUser()
-        //{
-        //    List<JObject> list = new List<JObject> { };
-        //    var data = db.InspectionPlanRepair.Select(x => x.RepairUserID).ToList();
-        //    var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
-        //    foreach (var item in mynamedatalist)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item.MyName);
-        //        jo.Add("Value", item.UserName);
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        #endregion
-
-        #region AuditUser_Repair審核人員_維修
-        //[HttpGet]
-        //public ActionResult AuditUser_Repair()
-        //{
-        //    List<JObject> list = new List<JObject> { };
-        //    var data = db.RepairAuditInfo.Select(x => x.AuditUserID).ToList();
-        //    var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
-        //    foreach (var item in mynamedatalist)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item.MyName);
-        //        jo.Add("Value", item.UserName);
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        #endregion
-
         #region 主系統/主系統
         [System.Web.Http.HttpGet]
         public ActionResult SystemName()
@@ -401,53 +270,6 @@ namespace MinSheng_MIS.Controllers
                 jo.Add("Value", item.SubSystem); //SubSystem
                 list.Add(jo);
             }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region FormItemState 保養項目狀態
-        [HttpGet]
-        public ActionResult FormItemState()
-        {
-            List<JObject> list = new List<JObject>();
-            var Dics = Surface.EquipmentMaintainFormItemState();
-
-            foreach (var a in Dics)
-            {
-                JObject jo = new JObject
-                {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
-                };
-                list.Add(jo);
-            }
-
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region 新增巡檢計畫->新增定期保養單DataGrid 保養狀態下拉式選單
-        [HttpGet]
-        public ActionResult AddFormItemState()
-        {
-            List<JObject> list = new List<JObject>();
-            var Dics = Surface.EquipmentMaintainFormItemState();
-
-            foreach (var a in Dics)
-            {
-                if (a.Key == "1" || a.Key == "5" || a.Key == "8" || a.Key == "9" || a.Key == "10" || a.Key == "11")
-                {
-                    JObject jo = new JObject
-                    {
-                        { "Text", a.Value },
-                        { "Value", a.Key }
-                    };
-                    list.Add(jo);
-                }
-            }
-
             string text = JsonConvert.SerializeObject(list);
             return Content(text, "application/json");
         }
@@ -530,28 +352,6 @@ namespace MinSheng_MIS.Controllers
                     jo.Add("Value", item.UserName);
                     list.Add(jo);
                 }
-            }
-
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region 單位下拉式選單
-        [HttpGet]
-        public ActionResult Unit()
-        {
-            List<JObject> list = new List<JObject>();
-            var Dics = Surface.Unit();
-
-            foreach (var a in Dics)
-            {
-                JObject jo = new JObject
-                {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
-                };
-                list.Add(jo);
             }
 
             string text = JsonConvert.SerializeObject(list);
@@ -769,111 +569,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        //--庫存管理--
-        #region FormPRDept 請購部門
-        //[HttpGet]
-        //public ActionResult FormPRDept()
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var dept = db.PurchaseRequisition.Select(x => x.PRDept).Distinct().ToList();
-        //    foreach (var item in dept)
-        //    {
-        //        JObject jo = new JObject
-        //        {
-        //            { "Text", item },
-        //            { "Value", item }
-        //        };
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        #endregion
-
-        #region FormPRState 請購申請狀態
-        [HttpGet]
-        public ActionResult FormPRState()
-        {
-            List<JObject> list = new List<JObject>();
-            var Dics = Surface.PRState();
-
-            foreach (var a in Dics)
-            {
-                JObject jo = new JObject
-                {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
-                };
-                list.Add(jo);
-            }
-
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region FormStockName 品名
-        /// <summary>
-        /// 以庫存種類對庫存(表[ComputationalStock])進行搜尋
-        /// </summary>
-        /// <param name="StockType">使用者選擇的庫存類型</param>
-        /// <returns>所有指定種類下的品名及對應SN的Option List</returns>
-        //[HttpGet]
-        //public ActionResult FormStockName(string StockType)
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var query = db.ComputationalStock.Select(x => new { x.SISN, x.StockType, x.StockName });
-        //    if (!string.IsNullOrEmpty(StockType))
-        //        query = query.Where(x => x.StockType == StockType);
-
-        //    list = query.AsEnumerable().Select(a => new JObject
-        //    {
-        //        { "Text", a.StockName },
-        //        { "Value", a.SISN }
-        //    }).ToList();
-
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        #endregion
-
-        #region GetUnitText 單位
-        /// <summary>
-        /// 以庫存項目編碼對庫存(表[ComputationalStock])進行搜尋
-        /// </summary>
-        /// <param name="SISN">使用者選擇的庫存名稱value</param>
-        /// <returns></returns>
-        [HttpGet]
-        public ActionResult GetUnitText(string SISN)
-        {
-            var Dics = Surface.Unit();
-            var unit = db.ComputationalStock.Where(x => x.SISN == SISN).AsEnumerable().Select(x => new JObject { { "Unit", Dics[x.Unit] } }).FirstOrDefault();
-            string text = JsonConvert.SerializeObject(unit);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region FormSRState 領用申請狀態
-        [HttpGet]
-        public ActionResult FormSRState()
-        {
-            List<JObject> list = new List<JObject>();
-            var Dics = Surface.SRState();
-
-            foreach (var a in Dics)
-            {
-                JObject jo = new JObject
-                {
-                    { "Text", a.Value },
-                    { "Value", a.Key }
-                };
-                list.Add(jo);
-            }
-
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
 
         //--警示訊息管理--
         #region WMType 事件等級
@@ -984,6 +679,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        //--派工相關
         #region AssignmentUserName 派工人員
         [System.Web.Http.HttpGet]
         public ActionResult AssignmentUserName()
