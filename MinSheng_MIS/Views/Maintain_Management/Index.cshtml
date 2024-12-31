@@ -205,7 +205,7 @@
 
         $(async function () {
             await formDropdown.ASN()
-            await pushSelect("Status", '@Url.Action("MaintainRecord_MaintainState", "DropDownList")');
+            await pushSelect("Status", '@Url.Action("MaintainStatus", "DropDownList")');
             await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
             await pushSelect("Period", '@Url.Action("MaintainPeriod", "DropDownList")');
             await pushSelect("Member", '@Url.Action("MaintainUserName", "DropDownList")');

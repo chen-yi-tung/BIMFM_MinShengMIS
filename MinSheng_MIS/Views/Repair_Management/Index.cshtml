@@ -181,7 +181,7 @@
 
         $(async function () {
             await formDropdown.ASN();
-            await pushSelect("ReportState", '@Url.Action("Report_Management_Management_ReportFormState", "DropDownList")');
+            await pushSelect("ReportState", '@Url.Action("ReportState", "DropDownList")');
             await pushSelect("ReportLevel", '@Url.Action("ReportLevel", "DropDownList")');
             await pushSelect("Member", '@Url.Action("RepairUserName", "DropDownList")');
             await addDropDownList();

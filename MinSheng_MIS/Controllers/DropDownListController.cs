@@ -183,16 +183,15 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region MaintainState相關 保養單狀態
+        #region MaintainStatus相關 保養單狀態
         [HttpGet]
-        public ActionResult MaintainRecord_MaintainState()
+        public ActionResult MaintainStatus()
         {
             List<JObject> list = new List<JObject>();
-            var Dics = Surface.InspectionPlanMaintainState();
+            var Dics = Surface.MaintainStatus();
 
             foreach (var a in Dics)
             {
-                if (a.Key == "1" || a.Key == "2") { continue; } //巡檢保養紀錄 不用1. 2
                 JObject jo = new JObject
                 {
                     { "Text", a.Value },
@@ -314,25 +313,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        # region 審核人員_保養
-        //[HttpGet]
-        //public ActionResult AuditUser_Maintain() //審核人員_保養
-        //{
-        //    List<JObject> list = new List<JObject> { };
-        //    var data = db.MaintainAuditInfo.Select(x => x.AuditUserID).ToList();
-        //    var mynamedatalist = db.AspNetUsers.Where(x => data.Contains(x.UserName)).ToList();
-        //    foreach (var item in mynamedatalist)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item.MyName);
-        //        jo.Add("Value", item.UserName);
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        #endregion 
-
         #region ReportUser報修人員
         [HttpGet]
         public ActionResult ReportUser() //報修人員
@@ -383,42 +363,6 @@ namespace MinSheng_MIS.Controllers
         //        JObject jo = new JObject();
         //        jo.Add("Text", item.MyName);
         //        jo.Add("Value", item.UserName);
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        #endregion
-
-        #region 主系統 //要換掉
-        //[System.Web.Http.HttpGet]
-        //public ActionResult System()
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var abc = db.EquipmentInfo.Select(x => x.System).Distinct().ToList();
-        //    foreach (var item in abc)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item);//System
-        //        jo.Add("Value", item); // System
-        //        list.Add(jo);
-        //    }
-        //    string text = JsonConvert.SerializeObject(list);
-        //    return Content(text, "application/json");
-        //}
-        #endregion
-
-        #region 子系統 //要換掉
-        //[System.Web.Http.HttpGet]
-        //public ActionResult SubSystem(string System)
-        //{
-        //    List<JObject> list = new List<JObject>();
-        //    var abc = db.EquipmentInfo.Where(x => x.System == System).Select(x => x.SubSystem).Distinct().ToList();
-        //    foreach (var item in abc)
-        //    {
-        //        JObject jo = new JObject();
-        //        jo.Add("Text", item);//SubSystem
-        //        jo.Add("Value", item); // SubSystem
         //        list.Add(jo);
         //    }
         //    string text = JsonConvert.SerializeObject(list);
