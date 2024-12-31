@@ -68,6 +68,11 @@
     /* text-overflow: ellipsis; */
 }
 
+.datagrid-body .datagrid-cell:empty::after {
+    content: "-";
+    display: block;
+}
+
 .datagrid-header .datagrid-cell span {
     font-size: 18px !important;
     color: var(--theme-datagrid-thead-color) !important;

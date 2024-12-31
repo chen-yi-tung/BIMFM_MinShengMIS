@@ -107,10 +107,14 @@
 
             function onSuccess(res) {
                 console.log(res);
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "編輯成功！",
-                    onHide: () => { window.location.href = '@Url.Action("Index")'; }
-                });
+                if (!res.ErrorMessage) {
+                    createDialogModal({
+                        id: "DialogModal-Success", inner: "編輯成功！",
+                        onHide: () => { window.location.href = '@Url.Action("Index")'; }
+                    });
+                } else {
+                    createDialogModal({ id: "DialogModal-Error", inner: `編輯失敗！` + `${res?.ErrorMessage || ""}` })
+                }
             }
             function onError(res) {
                 console.log(res);
