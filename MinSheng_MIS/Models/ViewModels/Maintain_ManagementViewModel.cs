@@ -14,6 +14,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Status { get; set; }
         public string MaintainName { get; set; }
         public string Maintainer { get; set; }
+        public string ESN { get; set; }
         public string EName { get; set; }
         public string EState { get; set; }
         public string NO { get; set; }

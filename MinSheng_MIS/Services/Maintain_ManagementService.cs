@@ -30,32 +30,33 @@ namespace MinSheng_MIS.Services
             #endregion
 
             #region 資料檢查
-            var data = _db.Equipment_MaintenanceForm.Find(emfsn);
+            var maindata = _db.Equipment_MaintenanceForm.Find(emfsn);
 
-            if (data == null)
+            if (maindata == null)
                 throw new MyCusResException("查無此設備保養單");
             #endregion
 
             #region 塞資料
             Maintain_ManagementDetailViewModel datas = new Maintain_ManagementDetailViewModel();
-            datas.EMFSN = data.EMFSN;
-            datas.Status = Surface.MaintainStatus()[data.Status];
-            datas.MaintainName = data.MaintainName;
-            datas.Maintainer = string.Join("、", data.Equipment_MaintenanceFormMember.Select(x => x.Maintainer));
-            datas.EName = data.EquipmentInfo.EName;
-            datas.EState = Surface.EState()[data.EquipmentInfo.EState];
-            datas.NO = data.EquipmentInfo.NO;
-            datas.Location = $"{data.EquipmentInfo.Floor_Info.FloorName} {data.EquipmentInfo.Floor_Info.AreaInfo.Area}";
-            datas.Period = Surface.MaintainPeriod()[data.Period];
-            datas.LastMaintainDate = data.lastMaintainDate?.ToString("yyyy/MM/dd") ?? "-";
-            datas.NextMaintainDate = data.NextMaintainDate.ToString("yyyy/MM/dd");
-            datas.ReportId = GetMyNameByUserNameOrEmpty(data.ReportId);
-            datas.ReportTime = data.ReportTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
-            datas.ReportContent = data.ReportContent;
-            datas.AuditResult = data.AuditResult.ToString().ToLower();
-            datas.AuditId = GetMyNameByUserNameOrEmpty(data.AuditId);
-            datas.AuditTime = data.AuditTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
-            datas.AuditReason = data.AuditReason;
+            datas.EMFSN = maindata.EMFSN;
+            datas.Status = Surface.MaintainStatus()[maindata.Status];
+            datas.MaintainName = maindata.MaintainName;
+            datas.Maintainer = string.Join("、", maindata.Equipment_MaintenanceFormMember.Select(x => x.Maintainer));
+            datas.ESN = maindata.ESN;
+            datas.EName = maindata.EquipmentInfo.EName;
+            datas.EState = Surface.EState()[maindata.EquipmentInfo.EState];
+            datas.NO = maindata.EquipmentInfo.NO;
+            datas.Location = $"{maindata.EquipmentInfo.Floor_Info.FloorName} {maindata.EquipmentInfo.Floor_Info.AreaInfo.Area}";
+            datas.Period = Surface.MaintainPeriod()[maindata.Period];
+            datas.LastMaintainDate = maindata.lastMaintainDate?.ToString("yyyy/MM/dd") ?? "-";
+            datas.NextMaintainDate = maindata.NextMaintainDate.ToString("yyyy/MM/dd");
+            datas.ReportId = GetMyNameByUserNameOrEmpty(maindata.ReportId);
+            datas.ReportTime = maindata.ReportTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
+            datas.ReportContent = maindata.ReportContent;
+            datas.AuditResult = maindata.AuditResult.ToString().ToLower();
+            datas.AuditId = GetMyNameByUserNameOrEmpty(maindata.AuditId);
+            datas.AuditTime = maindata.AuditTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
+            datas.AuditReason = maindata.AuditReason;
             res.Datas = datas;
             #endregion
 
