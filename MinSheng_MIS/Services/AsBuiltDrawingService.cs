@@ -51,6 +51,7 @@ namespace MinSheng_MIS.Services
             drawing.ImgName = info.ImgName;
             drawing.ImgVersion = info.ImgVersion;
             drawing.UploadDate = DateTime.Now;
+            drawing.UploadUser = HttpContext.Current.User.Identity.Name;
 
             db.AsBuiltDrawing.AddOrUpdate(drawing);
             db.SaveChanges();
