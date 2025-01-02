@@ -35,7 +35,7 @@ function getCreateSaveData() {
         return;
     }
     if (!sampleTr.checkRequired()) {
-        dialogError("請至少新增一項巡檢設備！")
+        dialogError("請至少新增一條巡檢路線！")
         return;
     }
     if (!sampleTr.checkValidity()) {

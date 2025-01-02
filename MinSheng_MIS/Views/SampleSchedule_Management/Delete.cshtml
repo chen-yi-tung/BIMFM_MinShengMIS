@@ -3,9 +3,6 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
-    <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
-    <script src="/Scripts/dataTable/PlanRecord.js" defer></script>
-    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
 }
 
 
@@ -59,134 +56,193 @@
 
 @section scripts {
     <script>
-        @*const IPSN = '@ViewBag.id';*@
-        let apiUrl = null;
-        /*let sampleTr;*/
+        let DailyTemplateSN = location.href.split('/').pop();
+        let templateApiUrl = '@Url.Action("ReadBody")';
+        let pathApiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
 
         $(async function () {
+            console.log('DailyTemplateSN', DailyTemplateSN);
+            updateTemplate(await readData(templateApiUrl, 'sample', DailyTemplateSN))
             addButtonEvent();
-            readData(apiUrl);
         })
+        let tempData = {};
         //每日巡檢時程模板 詳情
         const SerializedName_Sample = [
-            { text: "巡檢路線名稱", value: "PName" },
+            { text: "巡檢模板名稱", value: "TemplateName" },
         ]
         const GridOptions_Sample = {
             thead: true,
             columns: [
                 { id: "Index", title: "" },
                 { id: "PTime", title: "巡檢時間" },
-                { id: "PName", title: "巡檢路線名稱" },
+                { id: "PathName", title: "巡檢路線名稱" },
                 { id: "Frequency", title: "巡檢頻率" },
-                { id: "PNum", title: "巡檢數量" },
+                { id: "EquipmentCount", title: "巡檢數量" },
                 { id: "Btn", title: "" },
             ]
         }
         let fakeData_Sample = {
-            SIRSN: "1120301001",
-            PName: "前處理機房巡檢",
-            SampleItem: [
+            TemplateName: "前處理機房巡檢",
+            Contents: [
                 {
-                    PTime: "00:00～01:00",
-                    PName: "前處理機房巡檢",
-                    Frequency: "每3小時",
-                    PNum: "10",
+                    StartTime: "00:00",
+                    EndTime: "01:00",
+                    PathName: "前處理機房巡檢",
+                    PlanPathSN: "2412250001",
+                    Frequency: "3",
+                    EquipmentCount: "10",
                 },
                 {
-                    PTime: "01:00~02:00",
-                    PName: "前處理機房巡檢",
-                    Frequency: "每3小時",
-                    PNum: "10",
+                    StartTime: "01:00",
+                    EndTime: "02:00",
+                    PathName: "前處理機房巡檢",
+                    PlanPathSN: "2412250002",
+                    Frequency: "3",
+                    EquipmentCount: "10",
                 },
                 {
-                    PTime: "02:00~03:00",
-                    PName: "生物處理機台巡檢",
-                    Frequency: "每3小時",
-                    PNum: "4",
+                    StartTime: "02:00",
+                    EndTime: "03:00",
+                    PathName: "生物處理機台巡檢",
+                    PlanPathSN: "2412250003",
+                    Frequency: "3",
+                    EquipmentCount: "4",
                 },
             ]
         }
 
         //巡檢路線資訊
         const SerializedName_Path = [
-            { text: "巡檢路線名稱", value: "PName" },
+            { text: "巡檢路線名稱", value: "PathName" },
             { text: "巡檢時間", value: "PTime" },
         ]
         const GridOptions_Path = {
             thead: true,
             columns: [
                 { id: "Index", title: "" },
-                { id: "InterCode", title: "RFID內碼" },
-                { id: "ExterCode", title: "RFID外碼" },
+                { id: "InternalCode", title: "RFID內碼" },
+                { id: "ExternalCode", title: "RFID外碼" },
+                { id: "RFIDName", title: "RFID名稱" },
+                { id: "RFIDArea", title: "RFID棟別" },
+                { id: "RFIDFloor", title: "RFID樓層" },
+                { id: "RFIDMemo", title: "RFID備註" },
                 { id: "EName", title: "設備名稱" },
-                { id: "ESN", title: "設備編號" },
-                { id: "Area", title: "棟別" },
-                { id: "Floor", title: "樓層" },
+                { id: "NO", title: "設備編號" },
                 { id: "Brand", title: "廠牌" },
                 { id: "Model", title: "型號" },
                 { id: "Frequency", title: "巡檢頻率" },
             ]
         }
         let fakeData_Path = {
-            SIRSN: "1120301001",
-            PName: "前處理機房巡檢",
-            PTime: "00:00~01:00",
-            EItem: [
+            PlanPathSN: "1120301001",
+            PathName: "前處理機房巡檢",
+            StartTime: "00:00",
+            EndTime: "01:00",
+            Equipments: [
                 {
                     InterCode: "XSCXCZS",
                     ExterCode: "XSCXCZS",
+                    RFIDName: "RFIDName1",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Memo: "備註",
                     EName: "螺旋發送機1",
                     ESN: "SP-0202A",
-                    Area: "前處理區",
-                    Floor: "1F",
                     Brand: "A廠牌",
                     Model: "XMA-56",
-                    Frequency: "每2小時",
+                    Frequency: "3",
                 },
                 {
                     InterCode: "XSCXCZS",
                     ExterCode: "XSCXCZS",
+                    RFIDName: "RFIDName2",
+                    Area: "前處理區",
+                    Floor: "1F",
+                    Memo: "備註",
                     EName: "螺旋發送機2",
                     ESN: "SP-0202A",
-                    Area: "前處理區",
-                    Floor: "1F",
                     Brand: "B廠牌",
                     Model: "XMA-56",
-                    Frequency: "每2小時",
+                    Frequency: "2",
                 },
                 {
                     InterCode: "XSCXCZS",
                     ExterCode: "XSCXCZS",
-                    EName: "螺旋發送機3",
-                    ESN: "SP-0202A",
+                    RFIDName: "RFIDName3",
                     Area: "前處理區",
                     Floor: "1F",
+                    Memo: "備註",
+                    EName: "螺旋發送機3",
+                    ESN: "SP-0202A",
                     Brand: "C廠牌",
                     Model: "XMA-56",
-                    Frequency: "每2小時",
+                    Frequency: "2",
                 },
             ]
         }
-        
-        function readData(url = null) {
+        function updateTemplate(res) {
+            $("#PlanDetail").append(createTableInner(res, SerializedName_Sample));
+            res.Contents ?
+                $("#PlanRecord").append(createTableGrid(createIndexToArrayData(res.Contents, res.PlanPathSN), GridOptions_Sample)) :
+                $("#PlanRecord").parents(".datatable").remove();
+        }
+        async function updatePath(SN) {
+            if (!tempData[SN]) {
+                console.log('first time store')
+                tempData[SN] = await readData(pathApiUrl, 'path', SN);
+            }
 
-            url == null ? onSuccess(fakeData_Sample) :
+            $("#PathDetail").empty();
+            $("#EInfo").empty();
+            $("#PathDetail").append(createTableInner(tempData[SN], SerializedName_Path));
+            tempData[SN].Equipments ?
+                $("#EInfo").append(createTableGrid(createIndexToArrayData(tempData[SN].Equipments), GridOptions_Path)) :
+                $("#EInfo").parents(".datatable").remove();
+        }
+        function readData(url = null, type, SN) {
+            let apiUrl;
+            switch (type) {
+                case 'sample':
+                    apiUrl = `${url}/?id=${SN}`
+                    break
+                case 'path':
+                    apiUrl = `${url}/?id=${SN}`
+                    break
+            }
+            return new Promise((resolve, reject) => {
                 $.ajax({
-                    url: url,
+                    url: apiUrl,
                     type: "GET",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
+                    success: (res) => {
+                        resolve(onSuccess(res));
+                    },
+                    error: (ex) => {
+                        onError(ex);
+                        reject(null);
+                    }
+                });
+            });
 
             function onSuccess(res) {
-                console.log("res", res);
-                $("#PlanDetail").append(createTableInner(res, SerializedName_Sample));
-                res.SampleItem ?
-                    $("#PlanRecord").append(createTableGrid(
-                        createIndexToArrayData(res.SampleItem), GridOptions_Sample)) :
-                    $("#PlanRecord").parents(".datatable").remove();
+                res = res.Datas
+                switch (type) {
+                    case 'sample':
+                        res.Contents.forEach(item => {
+                            item.PTime = `${item.StartTime}~${item.EndTime}`
+                            //item.Frequency = `每${item.Frequency}個小時`
+                        })
+                        break
+                    case 'path':
+                        res.PTime = `${res.StartTime}~${res.EndTime}`
+                        res.Equipments.forEach(item => {
+                            //item.Frequency = `每${item.Frequency}個小時`
+                        })
+                        break
+                }
+                console.log("res (after adjusting)", res);
+                return res
             }
 
             function onError(res) {
@@ -198,21 +254,13 @@
         //在每列加上次序
         function createIndexToArrayData(arr) {
             return arr.map((e, i) => {
-                return {
+                let returnObject = {
                     Index: i + 1,
                     ...e,
-                    Btn: `<button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo" onclick="PushData(fakeData_Path)">巡檢路線資訊</button>`
                 }
+                if (e.PlanPathSN) returnObject.Btn = `<button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo" onclick="updatePath('${e.PlanPathSN}')">巡檢路線資訊</button>`
+                return returnObject
             })
-        }
-
-        function PushData(res) {
-            console.log("res", res);
-            $("#PathDetail").append(createTableInner(res, SerializedName_Path));
-            res.EItem ?
-                $("#EInfo").append(createTableGrid(
-                    createIndexToArrayData(res.EItem), GridOptions_Path)) :
-                $("#EInfo").parents(".datatable").remove();
         }
 
         // 監聽Modal關閉後移除表格
@@ -223,16 +271,14 @@
 
         function addButtonEvent() {
             $("#back").click(function () {
-                history.back();
+                window.location.href = '@Url.Action("Index")';
             });
             $("#delete").click(function () {
-                let PSSN = $("#PSSN").val();
                 createDeleteDialog({
-                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
-                    data: PSSN,
+                    url: '@Url.Action("DeleteSampleSchedule")?DailyTemplateSN=' + DailyTemplateSN,
+                    data: DailyTemplateSN,
                     onSuccess() {
-                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
-                        window.location.href = url;
+                        window.location.href = '@Url.Action("Index")';
                     }
                 })
             });
