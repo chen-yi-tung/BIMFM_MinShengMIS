@@ -36,13 +36,12 @@ namespace MinSheng_MIS.Services
         public JArray ChartInspectionEquipmentState(DateTime StartDate, DateTime EndDate)
         {
             JArray ChartInspectionEquipmentState = new JArray();
-            var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate).ToList();
             var RepairEquipments = (from x1 in db.EquipmentReportForm
-                                    where x1.RepairTime >= StartDate && x1.RepairTime < EndDate
+                                    where x1.RepairTime >= StartDate && x1.RepairTime < EndDate && x1.ReportState == "4"
                                     select new { x1.ESN })
                                   .Distinct().ToList(); //該檢索時間段所維修過的設備
             var MaintainEquipments = (from x1 in db.Equipment_MaintenanceForm
-                                      where x1.ReportTime >= StartDate && x1.ReportTime < EndDate
+                                      where x1.ReportTime >= StartDate && x1.ReportTime < EndDate && x1.Status == "4"
                                       select new { x1.ESN }).Distinct().ToList(); //該檢索時間段所保養的設備
             var intersection = RepairEquipments.Intersect(MaintainEquipments); //找出在該檢索時間段有做保養及維修之設備
             JObject rm = new JObject { { "label", "保養" }, { "value", MaintainEquipments.Count() - intersection.Count() } };
@@ -158,7 +157,6 @@ namespace MinSheng_MIS.Services
         public JArray ChartEquipmentProgressStatistics(DateTime StartDate, DateTime EndDate)
         {
             JArray ChartEquipmentProgressStatistics = new JArray();
-            var inspectionplan = db.InspectionPlan.Where(x => x.PlanDate >= StartDate && x.PlanDate < EndDate).ToList();
             var MaintainStatuseDic = Surface.MaintainStatus();
             var MaintainList = (from x1 in db.Equipment_MaintenanceForm
                                where x1.NextMaintainDate >= StartDate && x1.NextMaintainDate < EndDate
