@@ -107,7 +107,10 @@ namespace MinSheng_MIS.Services
                     var temp = x.ToDto<InspectionPlan_Time, InspectionPlanContentDetail>();
                     temp.InspectionState = ConvertStringToEnum<InspectionState>(x.InspectionState).GetLabel() ?? "undefined";
                     temp.Frequency = $"每{x.Frequency}小時";
-                    temp.EquipmentCount = x.InspectionPlan_Equipment.Count.ToString();
+                    temp.EquipmentCount = (x.InspectionPlan_Equipment?.Any() == true ?
+                        x.InspectionPlan_Equipment.Count.ToString() :
+                        x.InspectionPathSample?.InspectionDefaultOrder?.Count.ToString())
+                        ?? "0";
                     return temp;
                 });
 
