@@ -39,6 +39,9 @@ namespace MinSheng_MIS.Services
                     RFIDMemo = x.Memo,
                     RFIDName = x.Name,
                     Frequency = x.EquipmentInfo.Template_OneDeviceOneCard.Frequency,
+                    RFIDViewName = x.Floor_Info.ViewName,
+                    Location_X = x.Location_X,
+                    Location_Y = x.Location_Y,
                 });
 
             // 篩選已選擇之RFID
@@ -167,7 +170,10 @@ namespace MinSheng_MIS.Services
                     NO = x.EquipmentInfo.NO,
                     Brand = x.EquipmentInfo.Brand,
                     Model = x.EquipmentInfo.Model,
-                    Frequency = $"每{x.EquipmentInfo.Template_OneDeviceOneCard.Frequency}小時"
+                    Frequency = $"每{x.EquipmentInfo.Template_OneDeviceOneCard.Frequency}小時",
+                    RFIDViewName = x.Floor_Info.ViewName.Trim(),
+                    Location_X = x.Location_X,
+                    Location_Y = x.Location_Y
                 });
 
             return result.Cast<IInspectionRFIDs>().ToList();

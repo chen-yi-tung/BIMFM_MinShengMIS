@@ -79,9 +79,9 @@
             { text: "設備編號", value: "NO" },
             { text: "所在地點", value: "Location" },
             {
-                text: "設備屬性", value: "EMFSN", formatter: (val) => {
+                text: "設備屬性", value: "ESN", formatter: (val) => {
                     console.log("val", val);
-                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail?EMFSN=${val}', '_blank')">設備資料</button>` : "-"
+                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail/${val}', '_blank')">設備資料</button>` : "-"
                 }
             },
             { text: "保養週期", value: "Period" },

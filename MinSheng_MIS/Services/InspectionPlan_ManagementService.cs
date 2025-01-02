@@ -340,25 +340,6 @@ namespace MinSheng_MIS.Services
                 checkRFIDOrder.Status = "2";
                 _db.InspectionPlan_RFIDOrder.AddOrUpdate(checkRFIDOrder);
                 _db.SaveChanges();
-
-                //填報完成檢查是否該巡檢時段皆已完成 todo
-                var checkDone = _db.InspectionPlan_RFIDOrder.Where(x => x.IPTSN == inspectionEquipment.IPTSN && x.Status == "1").Count();
-                if(checkDone == 0) //無待執行巡檢RFID
-                {
-                    var inspectionPlanTime = _db.InspectionPlan_Time.Find(inspectionEquipment.IPTSN);
-                    inspectionPlanTime.InspectionState = "3";
-                    _db.InspectionPlan_Time.AddOrUpdate(inspectionPlanTime);
-                    _db.SaveChanges();
-                    //填報完成檢查是否該工單已執行完成
-                    var checkAllDone = _db.InspectionPlan_Time.Where(x => x.InspectionState != "3").Count();
-                    if (checkAllDone == 0) //巡檢時段皆已巡檢完成
-                    {
-                        var inspectionPlan = _db.InspectionPlan.Find(inspectionPlanTime.IPSN);
-                        inspectionPlan.PlanState = "3";
-                        _db.InspectionPlan.AddOrUpdate(inspectionPlan);
-                        _db.SaveChanges();
-                    }
-                }
                 #endregion
 
                 res.AccessState = ResState.Success;
@@ -373,5 +354,55 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region APP-結束巡檢
+        public JsonResService<string> EndInspection(string userID, string IPTSN)
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            #endregion
+
+            try
+            {
+                #region 資料檢查
+                var data = _db.InspectionPlan_Time.Find(IPTSN);
+
+                if (data == null)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "查無此設備巡檢時段工單";
+                    return res;
+                }
+                #endregion
+
+                #region 結束巡檢
+                data.InspectionState = "3";
+                 _db.InspectionPlan_Time.AddOrUpdate(data);
+                 _db.SaveChanges();
+                //to do 刪rfid
+                var deleteRFID = _db.InspectionPlan_RFIDOrder.Where(x => x.IPTSN == IPTSN).ToList();
+                _db.InspectionPlan_RFIDOrder.RemoveRange(deleteRFID);
+                _db.SaveChanges();
+                //填報完成檢查是否該工單已執行完成
+                var checkAllDone = _db.InspectionPlan_Time.Where(x => x.InspectionState != "3").Count();
+                if (checkAllDone == 0) //巡檢時段皆已巡檢完成
+                {
+                    var inspectionPlan = _db.InspectionPlan.Find(data.IPSN);
+                    inspectionPlan.PlanState = "3";
+                    _db.InspectionPlan.AddOrUpdate(inspectionPlan);
+                    _db.SaveChanges();
+                }
+                #endregion
+
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
+        #endregion
     }
 }

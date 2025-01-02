@@ -170,6 +170,6 @@
 		grid-template-columns: repeat(3, 1fr);
 	}
 	.modal-screen-md {
-		margin: 3em 5em;
+		margin: 16px 5em;
 	}
 }

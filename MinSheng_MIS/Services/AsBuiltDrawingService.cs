@@ -21,17 +21,18 @@ namespace MinSheng_MIS.Services
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
         #region 新增竣工圖
-        public void AddAsBuiltDrawing(AsBuiltDrawingViewModel info,string ADSN,string FileName)
+        public void AddAsBuiltDrawing(AsBuiltDrawingViewModel info, string ADSN, string FileName)
         {
             var drawing = new AsBuiltDrawing();
             drawing.ADSN = ADSN;
-            drawing.ImgPath = "/"+FileName;
+            drawing.ImgPath = "/" + FileName;
             drawing.FSN = info.FSN;
             drawing.DSubSystemID = info.DSubSystemID;
             drawing.ImgNum = info.ImgNum;
             drawing.ImgName = info.ImgName;
             drawing.ImgVersion = info.ImgVersion;
             drawing.UploadDate = DateTime.Now;
+            drawing.UploadUser = HttpContext.Current.User.Identity.Name;
 
             db.AsBuiltDrawing.AddOrUpdate(drawing);
             db.SaveChanges();
@@ -50,6 +51,7 @@ namespace MinSheng_MIS.Services
             drawing.ImgName = info.ImgName;
             drawing.ImgVersion = info.ImgVersion;
             drawing.UploadDate = DateTime.Now;
+            drawing.UploadUser = HttpContext.Current.User.Identity.Name;
 
             db.AsBuiltDrawing.AddOrUpdate(drawing);
             db.SaveChanges();

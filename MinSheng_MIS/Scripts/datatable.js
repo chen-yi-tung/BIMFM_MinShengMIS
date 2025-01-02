@@ -38,8 +38,10 @@ function createTableOuter(options) {
  * @returns {string} TableInner
  */
 function createTableInner(data, sn) {
+    console.log("data2", data)
     const nullString = "-";
     return sn.map((e, i) => {
+        console.log("sn", e)
         let html = "";
         let colspan = getColspan(e.colspan)
         if (e.formatter) {
@@ -95,12 +97,12 @@ function createTableInner(data, sn) {
             </tr>`;
         }
         else if (e.btn == true) {
-            allData[data.RFIDInternalCode] = data;
+            allData[data.InternalCode] = data;
             html = `
             <tr>
                 <td class="datatable-table-th">${e.text}</td>
                 <td class="datatable-table-td" ${colspan} id="d-${e.value}">
-                    <button type="button" class="btn btn-search" onclick="createMapModal('Modal-Location-${data.RFIDInternalCode}','${data.RFIDInternalCode}')">查看定位</button>
+                    <button type="button" class="btn btn-search" onclick="createMapModal(allData['${data.InternalCode}'])">查看定位</button>
                 </td>
             </tr>`;
         }
@@ -122,6 +124,7 @@ function createTableInner(data, sn) {
                     break;
                 //內容：兩格
                 case "DualCol": {
+                    console.log("dualcol", data[e.value])
                     const rows = data[e.value]?.length || 0;
                     if (rows === 0) {
                         html = '';
@@ -131,24 +134,17 @@ function createTableInner(data, sn) {
                     const isDanger = first.Value === '異常';
                     html = `
                         <tr>
-                            <td class="datatable-table-th" rowspan="${rows}">${e.text}</td>
-                            <td class="datatable-table-td datatable-table-sort">1</td>
-                            <td class="datatable-table-td text-start ps-2">
-                                <div>${first.Value}</div>
-                            </td>
-                            <td class="datatable-table-td" style="width: 160px;">
-                                <div class="${isDanger ? 'text-danger' : ''}">${first.Unit ? first.Unit : ""}</div>
-                            </td>
+                            <td class="datatable-table-th" rowspan="${rows+1}">${e.text}</td>
                         </tr>
-                        ${data[e.value]?.slice(1).map((item, i) => {
+                        ${data[e.value]?.map((item, i) => {
                         const isDanger = item.Value === '異常';
                         return `<tr>
-                                    <td class="datatable-table-td datatable-table-sort">${i + 2}</td>
+                                    <td class="datatable-table-td datatable-table-sort">${i + 1}</td>
                                     <td class="datatable-table-td text-start ps-2">
-                                        <div>${item.Value}</div>
+                                        <div>${item.Item}</div>
                                     </td>
                                     <td class="datatable-table-td" style="width: 160px;">
-                                        <div class="${isDanger ? 'text-danger' : ''}">${item.Unit ? item.Unit : ""}</div>
+                                        <div class="${isDanger ? 'text-danger' : ''}">${item.Value ? item.Value : ""}${item.Unit ? item.Unit : ""}</div>
                                     </td>
                                 </tr>
                                 `}).join('')}
@@ -428,6 +424,7 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
     ];
 
     MaintainItemList.forEach((field, i) => {
+        console.log("field", field);
         const div = document.createElement("div");
         div.className = "edit-item-init"
         div.style = "background: #E3EBF3;"
@@ -459,6 +456,8 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
         period.className = "form-select"
         period.name = `period-${i}`;
         period.required = true;
+
+        //await pushSelect(`period-${i}`, '@Url.Action("MaintainPeriod", "DropDownList")');
         optionsData.forEach(optionData => {
             const option = document.createElement("option");
             option.value = optionData.value;
@@ -492,7 +491,7 @@ function createAccordion(options) {
             <div class="datatable-body">
                 <div class="accordion accordion-flush datatable-accordion d-flex flex-column" style="gap: 12px" id="accordion-${options.id ?? ''}">
                    ${options.data.map((d, i) => {
-                       return `
+            return `
                             <div class="accordion-item" id="${options.id}_${i + 1}" style="border: 1px solid #8A9BA5">
                                 <h2 class="accordion-header" id="header-${options.id}-${i}">
                                     <button class="accordion-button border-0 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sub-body-${options.id}-${i}" aria-expanded="false" aria-controls="body-${options.id}-${i}">
@@ -520,7 +519,7 @@ function createAccordion(options) {
                                 </div>
                             </div>
                         `
-                    }).join("")}
+        }).join("")}
                 </div>
             </div>
         </div>
@@ -552,8 +551,8 @@ function createAccordion(options) {
             <div class="datatable-body">
                 <div class="accordion accordion-flush datatable-accordion d-flex flex-column" style="gap: 12px" id="accordion-${options.id ?? ''}">
                    ${options.data.map((d, i) => {
-                        return createAccordionItem(options, i)
-                    }).join("")}
+            return createAccordionItem(options, i)
+        }).join("")}
                 </div>
             </div>
         </div>
@@ -625,7 +624,7 @@ function createAccordionItem(options, i) {
                                 <table class="datatable-table">
                                     ${createTableInner(options.data[i], options.sn)}
                                 </table>
-                                    ${options.state === '完成' ? subContent : ""}
+                                    ${options.state === '執行中' || '完成' ? subContent : ""}
                             </div>
                         </div>
                     </div>
@@ -635,7 +634,7 @@ function createAccordionItem(options, i) {
 }
 
 function createSubAccordionItem(options, i) {
-    const equip = options.data[i].EquipmentItem
+    const equip = options.data[i].Equipments;
     return equip.map((t, index) => {
         return `
         <div class="accordion-item" id="${options.id}_${i + 1}-${index + 1}">
@@ -644,7 +643,7 @@ function createSubAccordionItem(options, i) {
                 data-bs-toggle="collapse"
                 data-bs-target="#body-${options.id}_${i + 1}-${index + 1}" aria-expanded="false"
                 aria-controls="body-${options.id}_${i + 1}-${index + 1}">
-                ${t.IName}
+                ${t.EName}
             </button>
         </h2>
         <div id="body-${options.id}_${i + 1}-${index + 1}" class="accordion-collapse collapse"
@@ -783,36 +782,63 @@ function createDialogModal(options) {
 
 /**
  * 
- * @param {String} id
- * @param {String} RFIDInternalCode
+ * @param {Object} data
  * @returns
  */
-function createMapModal(id, RFIDInternalCode) {
-    let data = allData[RFIDInternalCode]
-    console.log("data是甚麼", data);
-    let modal = $(`
-        <div class="modal fade modal-delete" id="${id ?? ''}" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
+function createMapModal(data) {
+    if (typeof UpViewer === 'undefined') {
+        console.warn([
+            "請先載入以下資源：",
+            "https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css",
+            "/Content/loading.css",
+            "/Content/bim.css",
+            "https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js",
+            "/Scripts/Forge/Viewer.Loading.js",
+            "/Scripts/Forge/Viewer.Toolkit.js",
+            "/Scripts/Forge/ForgePin.js",
+            "/Scripts/Forge/UpViewer.js"
+        ].join('\n'))
+        return;
+    }
+    const modal = $(`
+        <div class="modal fade modal-delete" id="Location" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-screen-md">
                 <div class="modal-content bg-white rounded-0">
                     <div class="modal-header p-2 rounded-0" style="background: #D9EFFD; border-bottom: 1px solid #8A9BA5;">
                         <h5 class="modal-title w-100 text-center">定位資訊</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body text-center pb-2"></div>
+                    <div class="modal-body text-center" style="padding: 0;">
+                        <div id="BIM" style="height: 50vh;">
+                            <div class="pin-area" id="pin-area"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        `);
+        </div>`);
 
-    let myModal = bootstrap.Modal.getOrCreateInstance(modal[0]);
-    myModal.show();
-
+    const bim = new UpViewer(modal.find("#BIM")[0]);
+    const myModal = bootstrap.Modal.getOrCreateInstance(modal[0]);
     modal[0].addEventListener("hidden.bs.modal", () => {
+        bim.dispose();
         myModal.dispose();
         modal.remove();
-
         document.body.focus();
     })
+
+    modal[0].addEventListener('shown.bs.modal', async function (event) {
+        if (bim.equipmentPoint) {
+            bim.equipmentPoint.hide();
+        }
+        await bim.init()
+        await bim.loadModels(bim.getModelsUrl(data.RFIDViewName))
+        const position = new THREE.Vector3(data.Location_X, data.Location_Y, 0)
+        console.log('position', position)
+        const tool = bim.activateEquipmentPointTool(position, false)
+        tool.setPosition(position)
+    })
+
+    myModal.show();
 
     return myModal;
 }
@@ -896,7 +922,7 @@ window.addEventListener('load', () => {
                 const placement = el.getAttribute('data-bs-placement')
                 console.log('placement', placement);
 
-                
+
                 if (placement === 'auto') return defaultBsPopperConfig;
 
                 newPopperConfig.placement = placement;
@@ -904,7 +930,7 @@ window.addEventListener('load', () => {
                 if (placement === 'top-start') {
                     const modifier_arrow = defaultBsPopperConfig.modifiers.find(x => x.name === 'arrow');
                     const modifier_offset = defaultBsPopperConfig.modifiers.find(x => x.name === 'offset');
-                    
+
                     if (modifier_arrow) {
                         modifier_arrow.options.padding = 24;
                     }

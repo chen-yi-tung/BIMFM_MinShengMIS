@@ -36,7 +36,7 @@
                 <input class="form-control" id="PlanDateTo" name="PlanDateTo" type="date" />
             </div>
 
-            <div class="form-group col-2fr">
+            <div class="form-group">
                 <label for="Member">執行人員</label>
                 <select type="text" class="form-select" name="Member" id="Member"></select>
             </div>
@@ -87,7 +87,7 @@
 
         $(async function () {
             await pushSelect("PlanState", '@Url.Action("PlanState", "DropDownList")');
-            await pushSelect("Member", '@Url.Action("InspectionUser", "DropDownList")');
+            await pushSelect("Member", '@Url.Action("InspectionMember", "DropDownList")');
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
@@ -111,7 +111,7 @@
                     dg.column('PlanState', '工單狀態', 200),
                     dg.column('PlanDate', '工單日期', 200),
                     dg.column('IPName', '工單名稱', 300),
-                    dg.column('MyName', '巡檢人員', 600),
+                    dg.column('Member', '巡檢人員', 600),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {

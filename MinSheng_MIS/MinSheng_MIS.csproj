@@ -561,6 +561,7 @@
     <Content Include="App_Data\RFID.dll" />
     <Content Include="Content\ArcGIS\arcgis.css" />
     <Content Include="Content\BigScreen.css" />
+    <Content Include="Content\bim.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-5.2.3-dist\css\bootstrap-grid.rtl.css" />
@@ -1695,6 +1696,7 @@
     <Content Include="jsonSamples\inquiryPlan.json" />
     <Content Include="jsonSamples\QuotationItem.json" />
     <Content Include="Files\EquipmentOperatingManual\000005.pdf" />
+    <Content Include="Scripts\datatable_new.js" />
     <Content Include="Scripts\dataTable\OneDeviceOneCard.js" />
     <Content Include="Scripts\dataTable\RFIDResultModal.js" />
     <Content Include="Scripts\dataTable\RFIDInfoModal.js" />
@@ -1793,12 +1795,6 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\SamplePath_Management\Index.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Management.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Create.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Read.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Edit.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Record.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\TrackRecord.cshtml" />
     <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\Account_Management\Index.cshtml" />
     <Content Include="Views\Account_Management\Create.cshtml" />
@@ -1820,8 +1816,6 @@
     <Content Include="Views\EquipmentOperatingManual\Edit.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Delete.cshtml" />
     <Content Include="Views\Stock_Management\Index.cshtml" />
-    <Content Include="Views\Stock_Management\Read.cshtml" />
-    <Content Include="Views\Stock_Management\MinStockAmountSetting.cshtml" />
     <Content Include="Views\LaboratoryLabel_Management\Create.cshtml" />
     <Content Include="Views\LaboratoryLabel_Management\Edit.cshtml" />
     <Content Include="Views\LaboratoryLabel_Management\Detail.cshtml" />
@@ -1855,7 +1849,6 @@
     <Content Include="Views\BIM\FloorModelView.cshtml" />
     <Content Include="Views\BigScreen\Index.cshtml" />
     <Content Include="Views\InspectionPlan_Management\InformationManagement.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\CurrentInformation.cshtml" />
     <Content Include="Views\InspectionPlan_Management\CurrentPosition.cshtml" />
     <Content Include="Views\Shared\DataGridScripts.cshtml" />
     <Content Include="Views\PlanManagement\Index.cshtml" />
@@ -1893,6 +1886,7 @@
     <Content Include="Views\Stock_Management\Detail.cshtml" />
     <Content Include="Views\Stock_Management\Delete.cshtml" />
     <Content Include="Views\Stock_Management\CreateOutbound.cshtml" />
+    <Content Include="Views\Shared\MapScripts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BimModels\" />

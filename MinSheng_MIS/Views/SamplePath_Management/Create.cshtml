@@ -2,6 +2,7 @@
     ViewBag.Title = "新增 巡檢路線模板";
 }
 @section styles {
+    @Html.Partial("MapScripts")
     @Html.Partial("DataGridScripts")
     <script src="~/Scripts/SamplePath_Management/CreateDataGrids.js" defer></script>
     <script src="~/Scripts/SamplePath_Management/Create.js"></script>
@@ -86,8 +87,7 @@
                                     <td id="Model">-</td>
                                     <td id="Frequency">--</td>
                                     <td id="d-_delete" class="p-2">
-                                        <button type="button" class="btn btn-location" data-bs-toggle="modal"
-                                                data-bs-target="#Location">
+                                        <button type="button" class="btn btn-location" data-btn-type="location">
                                             <i class="fa-solid fa-location-dot"></i>
                                         </button>
                                     </td>
@@ -188,19 +188,6 @@
     </div>
 </div>
 
-
-@*定位資訊POP UP*@
-<div class="modal fade datagrid-modal" tabindex="-1" id="Location">
-    <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h3>定位資訊</h3>
-
-            </div>
-        </div>
-    </div>
-</div>
-
 @section scripts {
     <script>
         let SubmitUrl = '@Url.Action("CreateSamplePath", "SamplePath_Management")';
@@ -219,6 +206,13 @@
             // 初始化模板
             await sampleTr.init();
             setSortableItem("#item-area");
+
+            $("#item-area").on('click', `[data-btn-type="location"]`, (event) => {
+                const button = event.currentTarget;
+                const sn = button.getAttribute('data-sn')
+                const row = sampleTr.datas.get(sn);
+                createMapModal(row);
+            })
         })
         const setSortableItem = (containerSelector, options = null) => {
             let defaultOptions = {
@@ -271,6 +265,7 @@
         function SampleTr() {
             this.count = 0;
             this.list = $("#item-area")
+            this.datas = new Map();
             this.init = async function () {
                 this.list.on("change", "#InterCode", async function (e) {
                     console.log(e.target)
@@ -318,6 +313,8 @@
                     item.find("#Model").text(data.Model)
                     item.find("#Frequency").text(data.Frequency)
                     item.find("#d-Num").text(this.count)
+                    item.find(`[data-btn-type="location"]`).attr('data-sn', data.InternalCode)
+                    this.datas.set(data.InternalCode, data)
                 }
                 this.list.append(item);
             }

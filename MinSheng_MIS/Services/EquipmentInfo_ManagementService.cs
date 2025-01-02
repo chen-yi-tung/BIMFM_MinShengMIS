@@ -1,4 +1,5 @@
-﻿using MinSheng_MIS.Models;
+﻿using MinSheng_MIS.Attributes;
+using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Surfaces;
 using System;
@@ -17,10 +18,12 @@ namespace MinSheng_MIS.Services
     public class EquipmentInfo_ManagementService
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly RFIDService _rfidService;
 
         public EquipmentInfo_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
+            _rfidService = new RFIDService(_db);
         }
 
         #region 查詢符合Dto的EquipmentInfo資訊
@@ -47,8 +50,8 @@ namespace MinSheng_MIS.Services
             await EquipmentInfoDataAnnotationAsync(data);
 
             // 建立 EquipmentInfo
-            EquipmentInfo equipment = (data as EquipmentInfoCreateModel)
-                .ToDto<EquipmentInfoCreateModel, EquipmentInfo>();
+            EquipmentInfo equipment = (data as EquipmentInfoCreateViewModel)
+                .ToDto<EquipmentInfoCreateViewModel, EquipmentInfo>();
             equipment.ESN = await GenerateEquipmentInfoSNAsync();
             equipment.EState = ((int)UniParams.EState.Normal).ToString();
             equipment.IsDelete = false;
@@ -114,13 +117,73 @@ namespace MinSheng_MIS.Services
             T dest = equipment.ToDto<EquipmentInfo, T>();
             if (dest is IEquipmentInfoDetail info)
             {
-                info.ASN = equipment.Floor_Info.AreaInfo.Area;
-                info.FSN = equipment.Floor_Info.FloorName;
+                info.ASN = equipment.Floor_Info.ASN.ToString();
+                info.AreaName = equipment.Floor_Info.AreaInfo.Area;
+                info.FloorName = equipment.Floor_Info.FloorName;
 
-                return (T)info;
+                dest = (T)info;
+            }
+            if (dest is IDeviceCardDetail infoView)
+            {
+                infoView.SampleName = equipment.Template_OneDeviceOneCard?.SampleName;
+                infoView.Frequency = equipment.Template_OneDeviceOneCard?.Frequency;
+
+                dest = (T)infoView;
             }
 
             return dest;
+        }
+        #endregion
+
+        #region 獲取增設基本資料欄位及填值
+        public List<IAddFieldValueDetail> GetAddFieldList(string ESN)
+        {
+            var test = _db.Equipment_AddFieldValue.Where(x => x.ESN == ESN).ToList();
+            var result = _db.Equipment_AddFieldValue.Where(x => x.ESN == ESN)
+                .AsEnumerable()
+                .Select(x => new AddFieldValueDetail
+                {
+                    AFSN = x.AFSN,
+                    Text = x.Template_AddField != null ? x.Template_AddField.FieldName : "-",
+                    Value = x.Value,
+                });
+
+            return result.Cast<IAddFieldValueDetail>().ToList();
+        }
+        #endregion
+
+        #region 獲取保養資訊
+        public List<IMaintainItemValueDetail> GetMaintainItemList(string ESN)
+        {
+            var result = _db.Equipment_MaintainItemValue.Where(x => x.ESN == ESN)
+                .AsEnumerable()
+                .Select(x => new MaintainItemValueDetail
+                {
+                    MISSN = x.MISSN,
+                    Text = x.Template_MaintainItemSetting != null ? x.Template_MaintainItemSetting.MaintainName : "-",
+                    Period = x.Period,
+                    PeriodText = ConvertStringToEnum<MaintainPeriod>(x.Period).GetLabel(),
+                    NextMaintainDate = x.NextMaintainDate?.ToString("yyyy-MM-dd"),
+                });
+
+            return result.Cast<IMaintainItemValueDetail>().ToList();
+        }
+        #endregion
+
+        #region 獲取設備RFID資訊
+        public async Task<List<IRFIDInfoDetail>> GetRFIDListAsync(string ESN)
+        {
+            var equipment = await _db.EquipmentInfo.SingleOrDefaultAsync(x => x.ESN == ESN);
+
+            if (equipment?.RFID == null)
+                return null;
+
+            var result = await Task.WhenAll(
+                equipment.RFID 
+                .Select(x => _rfidService.GetRfidAsync<EquipRFIDDetail>(x.RFIDInternalCode)
+                ));
+
+            return result.Cast<IRFIDInfoDetail>().ToList();
         }
         #endregion
 

@@ -205,12 +205,19 @@ function FileUploader({
         this.items.push({ container, file })
 
         let fileName = container.find("#FileName")
-        fileName.text(file.name);
-        fileName.attr("href", path);
 
-        document.querySelector('.form-file-list').classList.add('d-flex');
-        document.querySelector('.form-file-preview').classList.add('d-flex');
-        document.querySelector('.form-file-hr').classList.add('d-block');
+        //檢查檔案格式為PDF時，回傳連結
+        const fileExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.csv'];
+        if (fileExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
+            fileName.replaceWith(`<a href="${path}" target="_blank">${file.name}</a>`);
+        } else {
+            fileName.text(file.name);
+            fileName.attr("href", path);
+        }
+
+        document.querySelector('.form-file-list').style.display = 'flex';
+        document.querySelector('.form-file-preview').style.display = 'flex';
+        document.querySelector('.form-file-hr').style.display = 'block';
         document.querySelector('.form-file-preview').src = path;
 
         this.check && this.check.prop("checked", true);
@@ -289,6 +296,13 @@ function FileUploader({
 
                     //顯示檔名+附檔名
                     let fileName = container.find("#FileName")
+
+                    //檢查檔案格式是否為PDF
+                    //if (file.name.toLowerCase().endsWith('.pdf')) {
+                    //    fileName.replaceWith(`<a href="#" class="form-file-name">${file.name}</a>`);
+                    //} else {
+                    //    fileName.text(file.name);
+                    //}
                     fileName.text(file.name);
                     fileName.removeAttr("href");
 

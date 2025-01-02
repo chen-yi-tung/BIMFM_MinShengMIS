@@ -346,7 +346,7 @@
           <Property Name="FloorName" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="BIMPath" Type="nvarchar" MaxLength="100" />
           <Property Name="BeaconPath" Type="nvarchar" MaxLength="100" />
-          <Property Name="ViewName" Type="nchar" MaxLength="20" />
+          <Property Name="ViewName" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="InspectionDefaultOrder">
           <Key>
@@ -678,7 +678,7 @@
           <Property Name="TimeOfOccurrence" Type="datetime" Nullable="false" />
           <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
           <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="PMSN" Type="char" MaxLength="11" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" />
         </EntityType>
         <EntityType Name="WarningMessageFillinRecord">
           <Key>
@@ -2164,7 +2164,7 @@
           <Property Name="FloorName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="BIMPath" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="BeaconPath" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="ViewName" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="ViewName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AreaInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="Floor_Info" ToRole="AreaInfo" />
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentInfo_Floor_Info" FromRole="Floor_Info" ToRole="EquipmentInfo" />
           <NavigationProperty Name="InspectionTrack" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionTrack_Floor_Info" FromRole="Floor_Info" ToRole="InspectionTrack" />
@@ -2548,7 +2548,7 @@
           <Property Name="TimeOfOccurrence" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
           <Property Name="Message" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PMSN" Type="String" Nullable="false" MaxLength="11" FixedLength="true" Unicode="false" />
+          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="WarningMessageFillinRecord" Relationship="Bimfm_MinSheng_MISModel.FK_WarningMessageFillinRecord_WarningMessage" FromRole="WarningMessage" ToRole="WarningMessageFillinRecord" />
         </EntityType>
         <EntityType Name="WarningMessageFillinRecord">
@@ -3845,7 +3845,7 @@
           <EntitySetMapping Name="WarningMessage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.WarningMessage">
               <MappingFragment StoreEntitySet="WarningMessage">
-                <ScalarProperty Name="PMSN" ColumnName="PMSN" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Message" ColumnName="Message" />
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="TimeOfOccurrence" ColumnName="TimeOfOccurrence" />

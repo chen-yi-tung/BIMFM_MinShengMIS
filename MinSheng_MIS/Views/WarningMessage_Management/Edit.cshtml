@@ -22,37 +22,41 @@
 
 <h2>警示訊息填報</h2>
 
-<div class="datatable datatable-small mt-5">
-    <div class="datatable-body">
-        <table class="datatable-table" id="ItemInfo"></table>
-    </div>
-</div>
-
-<div class="edit-area edit-area-small">
-    <form class="form">
-        <div class="form-group d-lg-contents required">
-            <label for="">處理狀態</label>
-            <div class="d-flex flex-column flex-sm-row" style="gap:0.5em;">
-                <label class="btn" for="FillinState_1">
-                    <input type="radio" class="form-check-input" id="FillinState_1" name="FillinState" value="2"
-                           required>
-                    處理中
-                </label>
-                <label class="btn" for="FillinState_2">
-                    <input type="radio" class="form-check-input" id="FillinState_2" name="FillinState" value="3"
-                           required>
-                    已處理
-                </label>
+<section>
+    <div class="info-area">
+        <div class="datatable datatable-small">
+            <div class="datatable-body">
+                <table class="datatable-table" id="ItemInfo"></table>
             </div>
         </div>
-        <input type="text" class="form-check-input" id="WMSN" name="WMSN" value='@ViewBag.id' required hidden>
-        <div class="form-group d-lg-contents">
-            <label for="Memo">備註</label>
-            <textarea class="w-100" name="Memo" id="Memo" rows="5"></textarea>
+
+        <div class="edit-area info-zone">
+            <form class="form p-0 bg-transparent">
+                <div class="form-group w-100 required">
+                    <label for="">處理狀態</label>
+                    <div class="d-flex flex-sm-row" style="gap:0.5em;">
+                        <label class="btn" for="FillinState_1">
+                            <input type="radio" class="form-check-input" id="FillinState_1" name="FillinState" value="2"
+                                   required>
+                            處理中
+                        </label>
+                        <label class="btn" for="FillinState_2">
+                            <input type="radio" class="form-check-input" id="FillinState_2" name="FillinState" value="3"
+                                   required>
+                            已處理
+                        </label>
+                    </div>
+                </div>
+                <input type="text" class="form-check-input" id="WMSN" name="WMSN" value='@ViewBag.id' required hidden>
+                <div class="form-group w-100">
+                    <label for="Memo">備註</label>
+                    <textarea class="w-100" name="Memo" id="Memo" rows="5"></textarea>
+                </div>
+                <div id="FileUploader"></div>
+            </form>
         </div>
-        <div id="FileUploader"></div>
-    </form>
-</div>
+    </div>
+</section>
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
@@ -61,88 +65,88 @@
 
 @section scripts {
     <script>
-        const WMSN = '@ViewBag.id';
-        const apiUrl = '@Url.Action("GetWarningMessageInfo", "WarningMessage_Management")' + `/?WMSN=${WMSN}`;
+const WMSN = '@ViewBag.id';
+const apiUrl = '@Url.Action("GetWarningMessageInfo", "WarningMessage_Management")' + `/?WMSN=${WMSN}`;
 
-        const SerializedName = [
-            { text: "事件等級", value: "WMType" },
-            { text: "事件處理狀況", value: "WMState" },
-            { text: "發生時間", value: "TimeOfOccurrence" },
-            { text: "發生地點", value: "Location" },
-            { text: "時間內容", value: "Message" },
-        ]
+const SerializedName = [
+    { text: "事件等級", value: "WMType" },
+    { text: "事件處理狀況", value: "WMState" },
+    { text: "發生時間", value: "TimeOfOccurrence" },
+    { text: "發生地點", value: "Location" },
+    { text: "時間內容", value: "Message" },
+]
 
-        const fakeData = {
-            WMSN: "1",
-            WMType: "緊急",
-            WMState: "待處理",
-            TimeOfOccurrence: "2022/02/01 11:20:10",
-            Location: "B1儲藏室",
-            Message: "電力失常",
-        }
+const fakeData = {
+    WMSN: "1",
+    WMType: "緊急",
+    WMState: "待處理",
+    TimeOfOccurrence: "2022/02/01 11:20:10",
+    Location: "B1儲藏室",
+    Message: "電力失常",
+}
 
-        function readData(url = null) {
-            url == null ? onSuccess(fakeData) :
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
+function readData(url = null) {
+    url == null ? onSuccess(fakeData) :
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: onSuccess,
+            error: onError
+        })
 
-            function onSuccess(res) {
-                console.log(res);
-                $("#ItemInfo").append(createTableInner(res, SerializedName));
-            }
-            function onError(res) {
-                console.log(res);
-            }
-        }
+    function onSuccess(res) {
+        console.log(res);
+        $("#ItemInfo").append(createTableInner(res, SerializedName));
+    }
+    function onError(res) {
+        console.log(res);
+    }
+}
 
-        function save() {
-            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-            console.log("todo save():", isValidity)
-            if (!isValidity) return;
+function save() {
+    let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+    console.log("todo save():", isValidity)
+    if (!isValidity) return;
 
-            let form = new FormData(document.querySelector(".edit-area .form"))
-            console.log(Object.fromEntries(form.entries()))
+    let form = new FormData(document.querySelector(".edit-area .form"))
+    console.log(Object.fromEntries(form.entries()))
 
-            $.ajax({
-                url: '@Url.Action("WarningMessageFillin", "WarningMessage_Management")',
-                data: form,
-                type: "POST",
-                contentType: false,
-                processData: false,
-                success: onSuccess,
-                error: onError
-            })
-            function onSuccess(res) {
-                console.log(res);
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "儲存成功！",
-                    onHide: () => { window.location.href = "/WarningMessage_Management/Management"; }
-                });
-            }
-            function onError(res) {
-                console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
-            }
-        }
+    $.ajax({
+        url: '@Url.Action("WarningMessageFillin", "WarningMessage_Management")',
+        data: form,
+        type: "POST",
+        contentType: false,
+        processData: false,
+        success: onSuccess,
+        error: onError
+    })
+    function onSuccess(res) {
+        console.log(res);
+        createDialogModal({
+            id: "DialogModal-Success", inner: "儲存成功！",
+            onHide: () => { window.location.href = "/WarningMessage_Management/Index"; }
+        });
+    }
+    function onError(res) {
+        console.log(res);
+        createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+    }
+}
 
-        function addButtonEvent() {
-            $("#back").click(function () {
-                history.back();
-            });
-            $("#submit").click(function () {
-                save();
-            });
-        }
+function addButtonEvent() {
+    $("#back").click(function () {
+        history.back();
+    });
+    $("#submit").click(function () {
+        save();
+    });
+}
 
-        window.onload = function () {
-            addButtonEvent();
-            readData(apiUrl);
-        }
+window.onload = function () {
+    addButtonEvent();
+    readData(apiUrl);
+}
     </script>
 }
