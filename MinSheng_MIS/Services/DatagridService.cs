@@ -421,7 +421,7 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("ReportTime", item.ReportTime?.ToString("yyyy/MM/dd") ?? "-"); // 實際保養日期
                     itemObject.Add("EState", Surface.EState()[item.EquipmentInfo.EState]); // 設備狀態
                     itemObject.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area); // 棟別 (區域)
-                    itemObject.Add("Floor", item.EquipmentInfo.Floor_Info.FloorName); // 樓層
+                    itemObject.Add("FloorName", item.EquipmentInfo.Floor_Info.FloorName); // 樓層
                     itemObject.Add("EName", item.EquipmentInfo.EName); // 設備名稱
                     itemObject.Add("ESN", item.EquipmentInfo.NO); // 設備編號 (NO)
                     itemObject.Add("MaintainName", item.MaintainName); // 保養項目
