@@ -253,6 +253,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region function GetMyNameByUserNameOrEmpty
         private string GetMyNameByUserNameOrEmpty (string userName)
         {
             if (string.IsNullOrEmpty (userName))
@@ -260,5 +261,14 @@ namespace MinSheng_MIS.Services
             else 
                 return _db.AspNetUsers.Where(x => x.UserName == userName).First().MyName;
         }
+        #endregion
+
+        // 排程
+        #region
+        public void CreateMaintainForm()
+        {
+            var maindata = _db.Equipment_MaintainItemValue.Where(x => !x.IsCreateForm && x.NextMaintainDate <= DateTime.Now.Date.AddMonths(1)).FirstOrDefault();
+        }
+        #endregion
     }
 }
