@@ -352,10 +352,10 @@
             $("#delete").click(function () {
                 let IPSN = $("#IPSN").val();
                 createDeleteDialog({
-                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?IPSN=' + IPSN,
+                    url: '@Url.Action("DeletePlanManagement")?IPSN=' + IPSN,
                     data: IPSN,
                     onSuccess() {
-                        let url = '@Url.Action("Index", "PlanManagement")';
+                        let url = '@Url.Action("Index")';
                         window.location.href = url;
                     }
                 })
