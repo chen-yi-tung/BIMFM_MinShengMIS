@@ -114,4 +114,34 @@ namespace MinSheng_MIS.Controllers.API
         }
     }
     #endregion
+
+    #region 定期保養單 新增排程
+    public class MaintainCreateScheduleController : ApiController
+    {
+        private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly Maintain_ManagementService _maintainService;
+
+        public MaintainCreateScheduleController()
+        {
+            _db = new Bimfm_MinSheng_MISEntities();
+            _maintainService = new Maintain_ManagementService(_db);
+        }
+        public string Get()
+        {
+            string result = string.Empty;
+            try
+            {
+                int count = _maintainService.MaintainFormCreatingSchedule();
+                result = $"產生{count}筆保養單!";
+            }
+            catch (MyCusResException ex)
+            {
+            }
+            catch (Exception)
+            {
+            }
+            return result;
+        }
+    }
+    #endregion
 }
