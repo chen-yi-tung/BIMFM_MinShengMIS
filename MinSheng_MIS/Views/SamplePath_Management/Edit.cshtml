@@ -2,8 +2,11 @@
     ViewBag.Title = "編輯 巡檢路線模板";
 }
 @section styles {
+    @Html.Partial("MapScripts")
     @Html.Partial("DataGridScripts")
     <script src="~/Scripts/SamplePath_Management/CreateDataGrids.js" defer></script>
+    <script src="~/Scripts/SamplePath_Management/Create.js"></script>
+    <script src="~/Scripts/Sortable.min.js"></script>
 }
 
 
@@ -11,15 +14,25 @@
 
 <section>
     <div class="edit-area edit-area-full flex-lg-row">
-        <form class="form justify-content-lg-end">
+        <form class="form justify-content-lg-end" id="InspectionForm">
             <div class="form-group-zone">
                 <div class="form-group required">
-                    <label for="SampleName">巡檢模板名稱</label>
-                    <input type="text" class="form-control" name="SampleName" id="SampleName" maxlength="20" required>
+                    <label for="PathName">巡檢路線名稱</label>
+                    <input type="text" class="form-control" name="PathName" id="PathName" maxlength="50" required>
                 </div>
                 <div class="form-group required">
-                    <label for="PFrequency">巡檢頻率</label>
-                    <select class="form-select" name="PFrequency" id="PFrequency" required></select>
+                    <label for="Frequency">巡檢頻率</label>
+                    <select class="form-select" name="Frequency" id="Frequency" required>
+                        <option value="">請選擇</option>
+                        <option value="1">1小時</option>
+                        <option value="2">2小時</option>
+                        <option value="3">3小時</option>
+                        <option value="4">4小時</option>
+                        <option value="5">6小時</option>
+                        <option value="6">8小時</option>
+                        <option value="7">12小時</option>
+                        <option value="8">24小時</option>
+                    </select>
                 </div>
             </div>
             <hr class="hr-default" />
@@ -27,7 +40,9 @@
             <div class="datatable-easyui w-100 d-none">
                 <table id="Template-datagrid"></table>
             </div>
-            <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal" data-bs-target="#AddEquipment">+ 新增巡檢設備</button>
+            <button type="button" class="btn btn-search align-self-start" id="create-item">
+                + 新增巡檢設備
+            </button>
 
             <div class="m-0 w-100 text-center">
                 <div class="datatable datatable-grid w-100 h-100">
@@ -54,25 +69,27 @@
                             </thead>
                             <tbody id="item-area">
                                 <tr id="sample-input-tr">
-                                    <td id="d-Num">1</td>
+                                    <td id="d-Num">--</td>
                                     <td id="d-Sort">
                                         <button type="button" class="btn-sort">
                                             <i class="fa-solid fa-bars"></i>
                                         </button>
                                     </td>
-                                    <td id="InterCode">XSCXCZS</td>
-                                    <td id="ExterCode">XSCXCZS</td>
-                                    <td id="RFIDName">前處理機房巡檢</td>
-                                    <td id="Area">前處理區</td>
-                                    <td id="Floor">1F</td>
-                                    <td id="Memo">備註備註備註</td>
-                                    <td id="EName">螺旋發送機</td>
-                                    <td id="ESN">SP-0202A</td>
-                                    <td id="Brand">XX廠牌</td>
-                                    <td id="Model">W004N</td>
-                                    <td id="Frequency">每2小時</td>
+                                    <td id="InternalCode">--</td>
+                                    <td id="ExternalCode">--</td>
+                                    <td id="RFIDName">--</td>
+                                    <td id="RFIDArea">--</td>
+                                    <td id="RFIDFloor">-</td>
+                                    <td id="RFIDMemo">--</td>
+                                    <td id="EName">-</td>
+                                    <td id="NO">--</td>
+                                    <td id="Brand">-</td>
+                                    <td id="Model">-</td>
+                                    <td id="Frequency">--</td>
                                     <td id="d-_delete" class="p-2">
-                                        <button type="button" class="btn btn-location" data-bs-toggle="modal" data-bs-target="#Location"><i class="fa-solid fa-location-dot"></i></button>
+                                        <button type="button" class="btn btn-location" data-btn-type="location">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                        </button>
                                     </td>
                                     <td id="d-_delete" class="p-1 pt-2">
                                         <button type="button" class="btn-delete-item"></button>
@@ -99,15 +116,15 @@
             <div class="modal-body">
                 <h2>請勾選欲新增的設備</h2>
                 <div class="search-area">
-                    <form class="form">
+                    <form class="form" id="ModalForm">
                         <div class="form-group">
-                            <label for="InterCode">RFID內碼</label>
-                            <input class="form-control" id="InterCode" name="InterCode" type="text" />
+                            <label for="InternalCode">RFID內碼</label>
+                            <input class="form-control" id="InternalCode" name="InternalCode" type="text" />
                         </div>
 
                         <div class="form-group">
-                            <label for="ExterCode">RFID外碼</label>
-                            <input class="form-control" id="ExterCode" name="ExterCode" type="text" />
+                            <label for="ExternalCode">RFID外碼</label>
+                            <input class="form-control" id="ExternalCode" name="ExternalCode" type="text" />
                         </div>
 
                         <div class="form-group">
@@ -116,18 +133,18 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="ESN">設備編號</label>
-                            <input class="form-control" id="ESN" name="ESN" type="text" />
+                            <label for="NO">設備編號</label>
+                            <input class="form-control" id="NO" name="NO" type="text" />
                         </div>
 
                         <div class="form-group">
-                            <label for="Area">棟別</label>
-                            <select class="form-select" name="Area" id="Area"></select>
+                            <label for="RFIDArea">RFID棟別</label>
+                            <select class="form-select" name="RFIDArea" id="RFIDArea"></select>
                         </div>
 
                         <div class="form-group">
-                            <label for="Floor">樓層</label>
-                            <select class="form-select" name="Floor" id="Floor"></select>
+                            <label for="RFIDFloor">RFID樓層</label>
+                            <select class="form-select" name="RFIDFloor" id="RFIDFloor"></select>
                         </div>
 
                         <div class="form-group">
@@ -142,12 +159,22 @@
 
                         <div class="form-group">
                             <label for="Frequency">巡檢頻率</label>
-                            <input class="form-control" id="Frequency" name="Frequency" type="text" />
+                            <select class="form-select" name="Frequency" id="Frequency" disabled>
+                                <option value="">請選擇</option>
+                                <option value="1">1小時</option>
+                                <option value="2">2小時</option>
+                                <option value="3">3小時</option>
+                                <option value="4">4小時</option>
+                                <option value="5">6小時</option>
+                                <option value="6">8小時</option>
+                                <option value="7">12小時</option>
+                                <option value="8">24小時</option>
+                            </select>
                         </div>
 
                         <div class="button-group">
                             <button type="button" class="btn btn-search" id="search">查詢</button>
-                            <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                            <button type="button" class="btn btn-clear" id="clear">清除</button>
                         </div>
                     </form>
                 </div>
@@ -155,20 +182,7 @@
             </div>
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                <button type="button" class="btn btn-export" id="add-row">確定</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-@*定位資訊POP UP*@
-<div class="modal fade datagrid-modal" tabindex="-1" id="Location">
-    <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h3>定位資訊</h3>
-
+                <button type="button" class="btn btn-export" data-bs-dismiss="modal" id="add-row">確定</button>
             </div>
         </div>
     </div>
@@ -176,122 +190,54 @@
 
 @section scripts {
     <script>
-        const IPSN = '@ViewBag.id';
-        ////let apiUrl = '@Url.Action("Edit_Data", "InspectionPlan_Management")' + `/${IPSN}`;
-        let apiUrl = null;
-        let delUrl = '@Url.Action("Delete", "InspectionPlan_Management")' + `/${IPSN}`;
-        let SubmitUrl = '@Url.Action("Edit_Update", "InspectionPlan_Management")';
-        let sampleTr;
+        const PlanPathSN = location.href.split('/').pop();
+        const apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
+        const SubmitUrl = '@Url.Action("EditSamplePath", "SamplePath_Management")';
+        let sampleTr = SampleTr();
+        let sortableController = null;
 
         $(async function () {
+            // 宣告按鈕監聽事件
             addButtonEvent();
-            delTemplateItem();
+            // Datagrid(in Popup Modal)
             addEquipmentDG_Controller = new AEDG(AEDGOptions);
-            //await addDropDownList();
-            //await addAreaFloorEvent();
-            readData(apiUrl);
+            // 取得下拉選單
+            await addDropDownList();
+            // 棟別&樓層控制
+            await addAreaFloorEvent();
+            // 初始化模板
+            await sampleTr.init();
+            setSortableItem("#item-area");
+            readData(apiUrl, PlanPathSN);
+            $("#Frequency").on('change', () => {
+                sampleTr.clear();
+            });
+            $("#item-area").on('click', `[data-btn-type="location"]`, (event) => {
+                const button = event.currentTarget;
+                const sn = button.getAttribute('data-sn')
+                const row = sampleTr.datas.get(sn);
+                createMapModal(row);
+            })
         })
-
-        const SerializedName = [
-            { text: "巡檢路線名稱", value: "生物處理機台巡檢" },
-        ]
-        const GridOptions = {
-            thead: true,
-            columns: [
-                { id: "InterCode", title: "RFID內碼" },
-                { id: "ExterCode", title: "RFID外碼" },
-                { id: "EName", title: "設備名稱" },
-                { id: "ESN", title: "設備編號" },
-                { id: "Area", title: "棟別" },
-                { id: "Floor", title: "樓層" },
-                { id: "Brand", title: "廠牌" },
-                { id: "Model", title: "型號" },
-                { id: "Frequency", title: "巡檢頻率" },
-            ]
-        }
-        let fakeData = {
-            SIRSN: "1120301001",
-            StockInMyName: "王大明",
-            SampleItem: [
-                {
-                    InterCode: "XSCXCZS",
-                    ExterCode: "XSCXCZS",
-                    EName: "螺旋發送機1",
-                    ESN: "SP-0202A",
-                    Area: "前處理區",
-                    Floor: "1F",
-                    Brand: "A廠牌",
-                    Model: "XMA-56",
-                    Frequency: "每2小時",
-                },
-                {
-                    InterCode: "XSCXCZS",
-                    ExterCode: "XSCXCZS",
-                    EName: "螺旋發送機2",
-                    ESN: "SP-0202A",
-                    Area: "前處理區",
-                    Floor: "1F",
-                    Brand: "B廠牌",
-                    Model: "XMA-56",
-                    Frequency: "每2小時",
-                },
-                {
-                    InterCode: "XSCXCZS",
-                    ExterCode: "XSCXCZS",
-                    EName: "螺旋發送機3",
-                    ESN: "SP-0202A",
-                    Area: "前處理區",
-                    Floor: "1F",
-                    Brand: "C廠牌",
-                    Model: "XMA-56",
-                    Frequency: "每2小時",
-                },
-            ]
-        }
-
-
-        function readData(url = null) {
-
-            url == null ? onSuccess(fakeData) :
-                console.log("fakeData", fakeData);
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
-
-            function onSuccess(res) {
-                console.log("res", res);
-                $("#PathDetail").append(createTableInner(res, SerializedName));
-
-                res.EItem ?
-                $("#EInfo").append(createTableGrid(
-                    createIndexToArrayData(res.EItem), GridOptions)) :
-                    $("#EInfo").parents(".datatable").remove();
+        const setSortableItem = (containerSelector, options = null) => {
+            let defaultOptions = {
+                animation: 150,
+                handle: '.btn-sort',
+                onEnd: () => {
+                    reorderNumbers();
+                }
             }
-            function onError(res) {
-                console.log(res);
+            const element = document.querySelector(containerSelector);
+            if (!element) {
+                console.warn('not found sortable container target!');
+                return
             }
-
-            //在每列加上次序
-            function createIndexToArrayData(arr) {
-                return arr.map((e, i) => {
-                    return {
-                        Index: i + 1,
-                        ...e
-                    }
-                })
-            }
+            if (options) Object.assign(defaultOptions, options);
+            sortableController = Sortable.create(element, defaultOptions)
         }
-
-        function save() {
-            let data = getCreateSaveData(IPSN);
-
-            console.log(data);
-
+        // 新增
+        function save(data) {
+            console.log('requestData', data);
             if (!data) return;
 
             $.ajax({
@@ -306,10 +252,14 @@
 
             function onSuccess(res) {
                 console.log(res);
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "儲存成功！",
-                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
-                });
+                if (!res.ErrorMessage) {
+                    createDialogModal({
+                        id: "DialogModal-Success", inner: "儲存成功！",
+                        onHide: () => { window.location.href = "/SamplePath_Management/Index"; }
+                    });
+                } else {
+                    createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.ErrorMessage || ""}` })
+                }
             }
             function onError(res) {
                 console.log(res);
@@ -317,77 +267,18 @@
             }
         }
 
-        function deleteIP() {
-            $.ajax({
-                url: delUrl,
-                type: "DELETE",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-
-            function onSuccess(res) {
-                console.log(res);
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "刪除成功！",
-                    onHide: () => { window.location.href = "/InspectionPlan_Management/Management"; }
-                });
-            }
-            function onError(res) {
-                console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
-            }
-        }
-
-        //$(async function () {
-        //    sampleTr = new SampleTr();
-        //    await sampleTr.init()
-        //    addButtonEvent();
-        //    maintainDG_Controller = new IPDG(MDGOptions);
-        //    repairDG_Controller = new IPDG(RDGOptions);
-        //    await addDropDownList();
-        //    await addAreaFloorEvent();
-        //    controlToggle("path-draw", ForgeDraw.Control.DRAW);
-        //    sortRouteModal.autoRouteToggle(true);
-
-        //    $("#PlanDate").attr('min', new Date().toJSON().split('T')[0]);
-
-        //    window.addEventListener("beforeunload", (event) => {
-        //        sessionStorage.clear();
-        //    });
-
-        //    addSaveSamplePathEvent();
-
-        //    $("#delete").click(deleteIP);
-
-        //    readData(apiUrl);
-        //})
-        @*function SampleTr() {
+        function SampleTr() {
             this.count = 0;
             this.list = $("#item-area")
+            this.datas = new Map();
             this.init = async function () {
-                await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
-                this.list.on("change", "#StockType", async function (e) {
+                this.list.on("change", "#InterCode", async function (e) {
                     console.log(e.target)
-                    let item = $(e.target).closest("tr[id]")[0]
-                    let id = item.id
-                    await pushSelect(`${id} #StockName`, `@Url.Action("FormStockName", "DropDownList")?StockType=${e.target.value}`);
-                })
-                this.list.on("change", "#StockName", async function (e) {
                     if (!sampleTr.checkDuplicate()) {
                         e.target.value = ""
                         createDialogModal({ id: "DialogModal-Error", inner: `有重複的品項品名！` })
                         return
                     }
-
-                    console.log(e.target)
-                    let item = $(e.target).closest("tr[id]")
-                    let id = item.attr("id")
-                    $.getJSON(`@Url.Action("GetUnitText", "DropDownList")?SISN=${e.target.value}`, (res) => {
-                        console.log(res)
-                        item.find("#d-Unit").text(res?.Unit || "-")
-                    })
                 })
 
                 const observer = new ResizeObserver((entries) => {
@@ -403,6 +294,8 @@
 
                 this.list.on("click", ".btn-delete-item", function (e) {
                     $(this).parent().parent().remove();
+                    sampleTr.count--;
+                    reorderNumbers();
                 })
 
                 this.sample = $("#sample-input-tr").clone();
@@ -411,55 +304,51 @@
             this.create = function (data = null) {
                 let item = this.sample.clone();
                 item.attr('id', this.count);
-                this.list.append(item);
+                sampleTr.count++;
                 if (data != null) {
-                    pushSelect(`${item.attr("id")} #StockName`,
-                        `@Url.Action("FormStockName", "DropDownList")?StockType=${data.StockType}`)
-                        .then(() => {
-                            item.find("#StockName").val(data.SISN)
-                        });
-                    item.find("#StockType").val(data.StockType)
-                    item.find("#Amount").val(data.Amount)
-                    item.find("#d-Unit").text(data.Unit)
-                    item.find("#SRContent").val(data.SRContent)
+                    item.find("#InternalCode").text(data.InternalCode)
+                    item.find("#ExternalCode").text(data.ExternalCode)
+                    item.find("#RFIDName").text(data.RFIDName)
+                    item.find("#RFIDArea").text(data.RFIDArea)
+                    item.find("#RFIDFloor").text(data.RFIDFloor)
+                    item.find("#RFIDMemo").text(data.RFIDMemo)
+                    item.find("#EName").text(data.EName)
+                    item.find("#NO").text(data.NO)
+                    item.find("#Brand").text(data.Brand)
+                    item.find("#Model").text(data.Model)
+                    item.find("#Frequency").text(data.Frequency)
+                    item.find("#d-Num").text(this.count)
+                    item.find(`[data-btn-type="location"]`).attr('data-sn', data.InternalCode)
+                    this.datas.set(data.InternalCode, data)
                 }
-
-                this.count++;
+                this.list.append(item);
             }
             this.calc = function () {
                 return this.list.children().toArray().map((e) => {
-                    return {
-                        SISN: $(e).find("#StockName").val(),
-                        Amount: $(e).find("#Amount").val(),
-                        SRContent: $(e).find("#SRContent").val()
-                    }
+                    return $(e).find("#InternalCode").text()
                 })
+            }
+            this.clear = function () {
+                this.list.empty();
             }
             this.checkValidity = () => {
                 return this.list.children().length > 0
             }
             this.checkDuplicate = () => {
                 let sisns = this.list.children().toArray().map((e) => {
-                    return $(e).find("#StockName").val()
+                    return $(e).find("#InterCode").val()
                 }).filter(e => e || void 0)
                 let sets = new Set([...sisns])
                 return sisns.length == [...sets].length
             }
             return this;
-        }*@
-        function delTemplateItem() {
-            let delBtns = document.querySelectorAll('.btn-delete-item');
-            delBtns.forEach(function (delBtn) {
-                delBtn.onclick = function () {
-                    let tr = delBtn.closest('tr');
-                    if (tr) {
-                        tr.remove();
-                        reorderNumbers();
-                    }
-                };
-            });
         }
-
+        //將Modal的資料依序加入模板裡
+        function insertRowData(data) {
+            data.forEach(e => {
+                sampleTr.create(e);
+            })
+        }
         //當刪除新增的模板後，需重新排序次序
         function reorderNumbers() {
             let itemArea = document.getElementById('item-area');
@@ -470,6 +359,36 @@
                     numCell.textContent = index + 1;
                 }
             });
+        }
+        function readData(url = null, SN) {
+            $.ajax({
+                url: `${url}?id=${SN}`,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
+            function onSuccess(res) {
+                console.log("res", res);
+                if (res.Datas) res = res.Datas
+                $("#Frequency").val(res.Frequency);
+                $("#PathName").val(res.PathName);
+                insertRowData(res.Equipments);
+            }
+
+            function onError(res) {
+                console.log(res);
+            }
+            //在每列加上次序
+            function createIndexToArrayData(arr) {
+                return arr.map((e, i) => {
+                    return {
+                        Index: i + 1,
+                        ...e,
+                    }
+                })
+            }
         }
     </script>
 }
