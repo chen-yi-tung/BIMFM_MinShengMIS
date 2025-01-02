@@ -1795,12 +1795,6 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\SamplePath_Management\Index.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Management.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Create.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Read.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Edit.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\Record.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\TrackRecord.cshtml" />
     <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\Account_Management\Index.cshtml" />
     <Content Include="Views\Account_Management\Create.cshtml" />
@@ -1822,8 +1816,6 @@
     <Content Include="Views\EquipmentOperatingManual\Edit.cshtml" />
     <Content Include="Views\EquipmentOperatingManual\Delete.cshtml" />
     <Content Include="Views\Stock_Management\Index.cshtml" />
-    <Content Include="Views\Stock_Management\Read.cshtml" />
-    <Content Include="Views\Stock_Management\MinStockAmountSetting.cshtml" />
     <Content Include="Views\LaboratoryLabel_Management\Create.cshtml" />
     <Content Include="Views\LaboratoryLabel_Management\Edit.cshtml" />
     <Content Include="Views\LaboratoryLabel_Management\Detail.cshtml" />
@@ -1857,7 +1849,6 @@
     <Content Include="Views\BIM\FloorModelView.cshtml" />
     <Content Include="Views\BigScreen\Index.cshtml" />
     <Content Include="Views\InspectionPlan_Management\InformationManagement.cshtml" />
-    <Content Include="Views\InspectionPlan_Management\CurrentInformation.cshtml" />
     <Content Include="Views\InspectionPlan_Management\CurrentPosition.cshtml" />
     <Content Include="Views\Shared\DataGridScripts.cshtml" />
     <Content Include="Views\PlanManagement\Index.cshtml" />
