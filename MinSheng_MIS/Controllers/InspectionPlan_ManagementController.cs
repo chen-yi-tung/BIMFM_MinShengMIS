@@ -76,7 +76,7 @@ namespace MinSheng_MIS.Controllers
                     StartDate = new DateTime(StartYear, StartMonth, 1);
 
                     int lastDay = DateTime.DaysInMonth(EndYear, EndMonth);
-                    EndDate = new DateTime(EndYear, EndMonth, lastDay);
+                    EndDate = new DateTime(EndYear, EndMonth, lastDay).AddDays(1);
                 }
                 else
                 {

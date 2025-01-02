@@ -182,7 +182,6 @@ window.addEventListener('load', async () => {
                 }
             })
             console.log(res);
-
             ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
             ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
             InspectionMembers(res?.InspectionMembers)
