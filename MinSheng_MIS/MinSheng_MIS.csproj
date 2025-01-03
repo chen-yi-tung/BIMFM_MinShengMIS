@@ -252,6 +252,7 @@
     <Compile Include="Attributes\EnumLabel.cs" />
     <Compile Include="Attributes\FileSizeLimit.cs" />
     <Compile Include="Attributes\JWTAuthorizeAttribute.cs" />
+    <Compile Include="Attributes\RFIDStockOut.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Account_ManagementController.cs" />
     <Compile Include="Controllers\API\Maintain_ManagementApi.cs" />
@@ -276,6 +277,7 @@
     <Compile Include="Controllers\SamplePath_ManagementController.cs" />
     <Compile Include="Controllers\SampleSchedule_ManagementController.cs" />
     <Compile Include="Controllers\EquipmentOperatingManualController.cs" />
+    <Compile Include="Controllers\StockRFID_ManagementController.cs" />
     <Compile Include="Controllers\Stock_ManagementController.cs" />
     <Compile Include="Controllers\TestingAndAnalysisWorkflowController.cs" />
     <Compile Include="Controllers\LaboratoryLabel_ManagementController.cs" />
@@ -504,6 +506,7 @@
     <Compile Include="Models\ViewModels\RFIDViewModel.cs" />
     <Compile Include="Models\ViewModels\SamplePath_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\SampleSchedule_ManagementViewModel.cs" />
+    <Compile Include="Models\ViewModels\StockRFID_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\StockIn_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\StockOut_ManagementViewModels.cs" />
     <Compile Include="Models\ViewModels\Stock_ManagementViewModels.cs" />
