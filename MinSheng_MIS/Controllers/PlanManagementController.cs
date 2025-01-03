@@ -5,6 +5,7 @@ using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 using static MinSheng_MIS.Services.UniParams;
 
@@ -138,6 +139,34 @@ namespace MinSheng_MIS.Controllers
         {
             ViewBag.id = id;
             return View();
+        }
+        /// <summary>
+        /// 刪除工單
+        /// </summary>
+        /// <param name="data">使用者input</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteInspectionPlan(string IPSN)
+        {
+            JsonResService<string> result = new JsonResService<string>();
+            try
+            {
+                // 刪除工單
+                result = _inspectionPlanService.DeleteInspectionPlan(IPSN);
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = $"</br>{ex.Message}";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (Exception)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>系統異常！";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
         }
         #endregion
 

@@ -341,6 +341,14 @@ main {
                     width: auto !important;
                 }
             }
+
+            .legend-container {
+                .legend-statistics {
+                    .value {
+                        color: #E77272;
+                    }
+                }
+            }
         }
 
         &.side2 {

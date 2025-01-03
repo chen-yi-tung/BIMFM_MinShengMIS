@@ -32,6 +32,7 @@ namespace MinSheng_MIS.Models
         public int Frequency { get; set; }
         public string InspectionState { get; set; }
     
+        public virtual InspectionPathSample InspectionPathSample { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InspectionPlan_Equipment> InspectionPlan_Equipment { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -88,6 +88,7 @@ namespace MinSheng_MIS.Controllers
                 JObject jo = new JObject();
                 jo.Add("Text", $"{item.AreaInfo.Area} {item.FloorName}"); // Area Name Floor Name
                 jo.Add("Value", item.ViewName.Trim()); // ViewName
+                jo.Add("FSN", item.FSN); // ViewName
                 list.Add(jo);
             }
             string text = JsonConvert.SerializeObject(list);

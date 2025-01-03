@@ -4,9 +4,6 @@
 @section styles {
     @Html.Partial("MapScripts")
     @Html.Partial("DataGridScripts")
-    <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
-    <script src="/Scripts/dataTable/PlanRecord.js" defer></script>
-    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
 }
 
 
@@ -113,17 +110,14 @@
         }
 
         function readData(url = null, SN) {
-
-            url == null ? onSuccess(fakeData) :
-                $.ajax({
-                    url: `${url}?id=${SN}`,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
-                    success: onSuccess,
-                    error: onError
-                })
-
+            $.ajax({
+                url: `${url}?id=${SN}`,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: onSuccess,
+                error: onError
+            })
             function onSuccess(res) {
                 console.log("res", res);
                 if (res.Datas) res = res.Datas

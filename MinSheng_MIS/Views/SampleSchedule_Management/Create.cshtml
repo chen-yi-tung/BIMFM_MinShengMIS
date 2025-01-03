@@ -114,7 +114,8 @@
 @section scripts {
     <script>
         let apiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
-        let SubmitUrl = '@Url.Action("CreateSampleSchedule", "SampleSchedule_Management")';
+        let templateApiUrl = '@Url.Action("ReadBody")';
+        let SubmitUrl = '@Url.Action("CreateSampleSchedule")';
         let sampleTr = SampleTr();
         let sortableController = null;
         $(async function () {
@@ -208,7 +209,7 @@
             sortableController = Sortable.create(element, defaultOptions)
         }
         const updatePathDetail = async (SN) => {
-            if (!tempData[SN]) await readData(apiUrl, SN);
+            if (!tempData[SN]) tempData[SN] = await readData(apiUrl, SN);
             // 在每列加上index
             function createIndexToArrayData(arr) {
                 return arr.map((e, i) => {
@@ -228,7 +229,7 @@
         }
         const updateTemplateInfo = async (SN, element) => {
             if (SN) {
-                if (!tempData[SN]) await readData(apiUrl, SN)
+                if (!tempData[SN]) tempData[SN] = await readData(apiUrl, SN);
                 $(element).parent().parent().find("#Quantity").text(tempData[SN].Equipments?.length || "--");
                 $(element).parent().parent().find("#Frequency").text(tempData[SN].Frequency);
             } else {
@@ -244,8 +245,7 @@
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: (res) => {
-                        onSuccess(res);
-                        resolve("");
+                        resolve(onSuccess(res));
                     },
                     error: (ex) => {
                         onError(ex);
@@ -259,13 +259,12 @@
                 const convertString = (v) => `每${v}個小時`
                 res.Frequency = convertString(res.Frequency);
                 console.log("getPathDetail(after converting)", res);
-                tempData[SN] = res;
+                return res
             }
             function onError(ex) {
                 console.log(ex);
             }
         }
-
         function save(data) {
             if (!data) return;
             $.ajax({

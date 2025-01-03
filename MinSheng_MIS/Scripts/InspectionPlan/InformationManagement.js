@@ -110,8 +110,7 @@ window.addEventListener('load', async () => {
     //目前月份
     const MAX_MONTH = new Date().getMonth() + 1;
     //預設民國年分
-    //const DEFAULT_YEAR = MAX_YEAR;
-    const DEFAULT_YEAR = 2023;
+    const DEFAULT_YEAR = MAX_YEAR;
 
     const StartYear = $("#StartYear"),
         StartMonth = $("#StartMonth"),
@@ -175,14 +174,7 @@ window.addEventListener('load', async () => {
             })
         }
         function generate(res) {
-            // use fakeData
-            Object.entries(res).forEach(([k, v]) => {
-                if (v.length === 0) {
-                    res[k] = fakeData?.[k];
-                }
-            })
             console.log(res);
-
             ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
             ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
             InspectionMembers(res?.InspectionMembers)
@@ -310,15 +302,9 @@ window.addEventListener('load', async () => {
     }
     //巡檢人員表格
     function InspectionMembers(data) {
-        const minRowCount = 13;
         const row = $("#InspectionMembers .row").first()
         const list = $("#InspectionMembers .simplebar-content")
         list.empty()
-
-        if (data?.length === 0) {
-            for (let i = 0; i <= minRowCount; i++) { list.append(row.clone()) }
-            return;
-        }
 
         data.forEach((e) => {
             let item = row.clone()
@@ -343,11 +329,6 @@ window.addEventListener('load', async () => {
 
             }
         })
-
-        if (data.length < minRowCount) {
-            for (let i = data.length + 1; i <= minRowCount; i++) { list.append(row.clone()) }
-            return;
-        }
     }
     //緊急事件 等級占比
     function ChartInspectionAberrantLevel(data) {
@@ -519,7 +500,18 @@ window.addEventListener('load', async () => {
                     }
                 },
                 plugins: {
-                    legend, tooltip,
+                    legend,
+                    tooltip: {
+                        bodyFont: { family, size: 12 },
+                        callbacks: {
+                            title: () => '',
+                            label: (context) => {
+                                let label = context?.dataset?.label ?? '';
+                                let value = context.formattedValue ?? '';
+                                return ` ${label}：${value}`;
+                            }
+                        }
+                    },
                     htmlLegend: { value: false }
                 }
             },

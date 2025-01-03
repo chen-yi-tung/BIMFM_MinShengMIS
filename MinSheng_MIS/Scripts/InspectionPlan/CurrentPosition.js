@@ -131,7 +131,6 @@
     }
 }
 const bim = new UpViewer(document.getElementById('BIM'))
-const FSN = "1_1"
 const currentLocation = new CurrentLocation()
 window.addEventListener('load', async () => {
     // #region chart options
@@ -152,6 +151,14 @@ window.addEventListener('load', async () => {
     const pieBackground = {
         backgroundColor: "#fff",
         shadow: { color: "rgba(0, 0, 0, 0.25)", blur: 4, offset: { x: 0, y: 4 } }
+    }
+    const emptyDoughnut = {
+        color: 'rgba(0,0,0,0.3)',
+        borderColor: 'rgba(0,0,0,0.2)',
+        font: {
+            family: 'Noto Sans TC',
+            size: 16,
+        },
     }
     const calcPercentage = (data, labels, options = { maximumFractionDigits: 1 }) => {
         const d = data?.datasets?.[0]?.data;
@@ -180,12 +187,10 @@ window.addEventListener('load', async () => {
     // #region chart
     init()
     async function init() {
-        currentLocation.init();
-
-        const data = { FSN };
+        await currentLocation.init();
         const res = await $.ajax({
             url: "/InspectionPlan_Management/GetCurrentPositionData",
-            data,
+            data: { FSN: currentLocation.FSN },
             type: "GET",
             dataType: "json",
             contentType: "application/json;charset=utf-8",
@@ -214,39 +219,10 @@ window.addEventListener('load', async () => {
         ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
         InspectionCurrentPos(res?.InspectionCurrentPos)
 
-
-        const ViewName = '進抽站-B2F';
         await bim.init()
-        await bim.loadModels(bim.getModelsUrl(ViewName))
-
+        await bim.loadModels(bim.getModelsUrl(currentLocation.value))
+        await createBeaconPoint(currentLocation.FSN);
         //bim.hideWall()
-        bim.createBeaconPoint([
-            {
-                dbId: 20132,
-                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389a20',
-                ElementID: 3709472,
-                deviceName: "BT-20132",
-            },
-            {
-                dbId: 20133,
-                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f14',
-                ElementID: 3710740,
-                deviceName: "BT-20133",
-            },
-            {
-                dbId: 20134,
-                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f2e',
-                ElementID: 3710766,
-                deviceName: "BT-20134",
-            },
-            {
-                dbId: 20142,
-                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f67',
-                ElementID: 3710823,
-                deviceName: "BT-20142",
-            },
-        ])
-
         //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
 
         /* bim.createSamplePath()
@@ -260,16 +236,73 @@ window.addEventListener('load', async () => {
         console.log("%c請按空白鍵開始動畫", "color:green;font-size: 2em;padding:0.5rem;") */
 
         currentLocation.addEventListener('change', async (e) => {
-            bim.dispose()
-            await bim.init()
+            bim.destroyBeaconPoint()
+            bim.unloadModels()
+            //bim.dispose()
+            //await bim.init()
             await bim.loadModels(bim.getModelsUrl(currentLocation.value))
+            await createBeaconPoint(currentLocation.FSN)
             //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
         })
+    }
+    async function createBeaconPoint(FSN) {
+        const data = { FSN };
+        const beaconPoint = [
+            {
+                DBID: 20132,
+                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389a20',
+                ElementID: 3709472,
+                DeviceName: "BT-20132",
+            },
+            {
+                DBID: 20133,
+                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f14',
+                ElementID: 3710740,
+                DeviceName: "BT-20133",
+            },
+            {
+                DBID: 20134,
+                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f2e',
+                ElementID: 3710766,
+                DeviceName: "BT-20134",
+            },
+            {
+                DBID: 20142,
+                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f67',
+                ElementID: 3710823,
+                DeviceName: "BT-20142",
+            },
+        ]
+        /* const beaconPoint = await $.ajax({
+            url: "/Beacon/GetFloorBeacons",
+            data,
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+        }).then((res) => {
+            if (res.ErrorMessage) throw new Error(res.ErrorMessage);
+            if (res.Datas) return res.Datas;
+            return res;
+        }) */
+        console.log(beaconPoint);
+        bim.createBeaconPoint(beaconPoint)
+        const pins = {
+            FSN,
+            pins: bim.beaconPoint.map((pin) => {
+                return {
+                    ...pin.data,
+                    position: pin?.position?.toArray?.() ?? null
+                }
+            })
+        }
+        console.log('PINS', pins)
+        downloadJson(pins, `BeaconPoint_${FSN}`)
+
     }
     // #endregion
 
     // #region chart function
-    //本日報修、維修及保養統計
+    //本日設備維修及保養統計
     function ChartInspectionEquipmentState(data) {
         const container = document.getElementById('ChartInspectionEquipmentState');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -281,7 +314,7 @@ window.addEventListener('load', async () => {
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '報修狀況',
+                    label: '本日設備維修及保養統計',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -291,7 +324,7 @@ window.addEventListener('load', async () => {
                 responsive: false,
                 layout: { padding: 4 },
                 plugins: {
-                    legend, tooltip, pieBackground,
+                    legend, tooltip, pieBackground, emptyDoughnut,
                     htmlLegend: {
                         statistics: {
                             value: (data) => data.reduce((t, e) => t + e, 0),
@@ -304,11 +337,12 @@ window.addEventListener('load', async () => {
             },
             plugins: [
                 chartPlugins.pieBackground,
-                chartPlugins.htmlLegend
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }
-    //本日巡檢計畫進度
+    //本日巡檢總計畫進度
     function ChartInspectionCompleteState(data) {
         const container = document.getElementById('ChartInspectionCompleteState');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -320,7 +354,7 @@ window.addEventListener('load', async () => {
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '本日巡檢計畫進度',
+                    label: '本日巡檢總計畫進度',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -330,7 +364,7 @@ window.addEventListener('load', async () => {
                 responsive: false,
                 layout: { padding: 4 },
                 plugins: {
-                    legend, tooltip, pieBackground,
+                    legend, tooltip, pieBackground, emptyDoughnut,
                     htmlLegend: {
                         statistics: {
                             value: (data) => data.reduce((t, e) => t + e, 0),
@@ -343,7 +377,8 @@ window.addEventListener('load', async () => {
             },
             plugins: [
                 chartPlugins.pieBackground,
-                chartPlugins.htmlLegend
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }
@@ -397,7 +432,7 @@ window.addEventListener('load', async () => {
         container.replaceChildren();
         container.insertAdjacentHTML('beforeend', htmls.join(''));
     }
-    //巡檢異常狀態 等級占比
+    //本月緊急事件等級占比/處理狀況
     function ChartInspectionAberrantLevel(data) {
         const container = document.getElementById('ChartInspectionAberrantLevel');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -613,7 +648,8 @@ function CurrentLocation() {
     const menu = document.querySelector(".current-location-menu")
     const text = document.getElementById("CurrentLocation")
     this.activeIndex = 0;
-    this.value;
+    this.value = null;
+    this.FSN = null;
     this.data = [];
     this.init = async () => {
         this.data = await $.getJSON("/DropDownList/ViewName")
@@ -641,6 +677,7 @@ function CurrentLocation() {
         if (!d) return;
         text.textContent = d.Text;
         this.value = d.Value;
+        this.FSN = d.FSN;
         const items = Array.from(menu.querySelectorAll(".dropdown-item"))
         items.forEach((e) => {
             if (parseInt(e.dataset.index) === this.activeIndex) {
@@ -658,4 +695,16 @@ function CurrentLocation() {
     }
 
     return this
+}
+
+const __DEBUG_DOWNLOAD_JSON__ = false;
+function downloadJson(obj, fileName) {
+    if (!__DEBUG_DOWNLOAD_JSON__) return;
+    const json = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+    const a = document.createElement('a');
+    a.setAttribute("href", json);
+    a.setAttribute("download", fileName + ".json");
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
 }
