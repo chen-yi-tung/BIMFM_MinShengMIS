@@ -30,8 +30,10 @@ namespace MinSheng_MIS.Controllers
         public ActionResult GetCurrentPositionData(string FSN)
         {
             JObject jo = new JObject();
-            DateTime StartDate = DateTime.Today;
+            #region 當日
+            DateTime StartDate = DateTime.Today.Date;
             DateTime EndDate = DateTime.Today.AddDays(1);
+            #endregion
             #region 當月
             DateTime currentDate = DateTime.Now;
             DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
