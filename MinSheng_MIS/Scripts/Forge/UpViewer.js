@@ -110,15 +110,28 @@
         );
         this.viewer.loading.hide();
     }
+    unloadModels() {
+        bim.models.forEach(({ model }) => {
+            bim.viewer.unloadModel(model)
+        })
+        this.models = [];
+    }
     dispose() {
         if (this.viewer == null) {
             return;
         }
+        this.models = [];
         this.viewer.tearDown();
         this.viewer.finish();
         this.viewer = null;
         this.equipmentPointTool = null;
         this.container.replaceChildren();
+    }
+    updateBeaconPoint() {
+        if (!this.beaconPoint) return;
+        this.beaconPoint.forEach((pin) => {
+            pin.update();
+        })
     }
     createBeaconPoint(data = []) {
         const model = this.models.find((model) => model.type === "BT").model;
@@ -126,24 +139,30 @@
         data.forEach((d) => {
             const pin = new ForgePin({
                 viewer: this.viewer,
-                dbId: d.dbId,
+                dbId: d.DBID,
                 data: d,
                 model,
                 img: "/Content/img/bluetooth.svg",
-                id: `bluetooth-${d.dbId}`,
+                id: `bluetooth-${d.DBID}`,
             });
 
-            d.deviceName && $(pin.element).append(`<div class="bluetooth-name">${d.deviceName}</div>`);
+            d.DeviceName && $(pin.element).append(`<div class="bluetooth-name">${d.DeviceName}</div>`);
+            pins.push(pin);
 
             pin.show();
             pin.update();
-            pins.push(pin);
         });
-        this.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
-            pins.forEach((pin) => {
-                pin.update();
-            })
-        })
+        this.beaconPoint = pins;
+        this.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, this.updateBeaconPoint.bind(this))
+        return pins;
+    }
+    destroyBeaconPoint() {
+        this.viewer.removeEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, this.updateBeaconPoint.bind(this))
+        if (!this.beaconPoint) return;
+        this.beaconPoint.forEach((pin) => {
+            pin.destroy();
+        });
+        this.beaconPoint = null;
     }
     activateEquipmentPointTool(position = new THREE.Vector3(0, 0, 0), interactive = false) {
         if (position.z === 0) {
