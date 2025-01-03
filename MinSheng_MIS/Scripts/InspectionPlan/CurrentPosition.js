@@ -687,7 +687,7 @@ function CurrentLocation() {
     return this
 }
 
-const __DEBUG_DOWNLOAD_JSON__ = true;
+const __DEBUG_DOWNLOAD_JSON__ = false;
 function downloadJson(obj, fileName) {
     if (!__DEBUG_DOWNLOAD_JSON__) return;
     const json = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
