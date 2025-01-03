@@ -34,7 +34,7 @@ namespace MinSheng_MIS.Controllers
         //RFID入庫
         //POST: StockRFID_Management/CreateRFIDStockIn
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateRFIDStockIn(SIRFID_ViewModel StockItem)
         {
             JsonResService<string> result = new JsonResService<string>();
@@ -200,7 +200,7 @@ namespace MinSheng_MIS.Controllers
 
         //RFID出庫
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> RFIDStockOut(SORFID_ViewModel soViewModel)
         {
             JsonResService<string> result = new JsonResService<string>();
