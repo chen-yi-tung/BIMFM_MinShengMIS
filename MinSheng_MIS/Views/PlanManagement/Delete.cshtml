@@ -3,7 +3,7 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
-    <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
+    <script src="/Scripts/datatable_new.js" defer></script>
     <script src="/Scripts/ImageDisplay.js" defer></script>
 }
 
@@ -13,12 +13,15 @@
     <div class="info-area">
         <div class="datatable datatable-small">
             <div class="datatable-body">
-               <table class="datatable-table" id="PlanDetail"></table>
+                <table class="datatable-table" id="PlanDetail"></table>
             </div>
         </div>
 
         <section id="RepairRecord" class="info-zone">
             <div class="zone-title">巡檢紀錄</div>
+            <div class="datatable border-0">
+                <div class="datatable-body" id="PlanRecord"></div>
+            </div>
         </section>
     </div>
 </section>
@@ -31,9 +34,8 @@
 
 @section scripts {
     <script>
-        const IPRSN = '@ViewBag.id';
-        //let apiUrl = '@Url.Action("ReadBody", "RepairRecord_Management")' + `/${IPRSN}`;
-        let apiUrl = null;
+        const IPSN = '@ViewBag.id';
+        let apiUrl = '@Url.Action("ReadBody", "PlanManagement")?id=' + IPSN;
 
         $(async function () {
             addButtonEvent();
@@ -41,10 +43,10 @@
         })
 
         const SerializedName = [
-            { text: "工單編號", value: "PSN" },
-            { text: "工單狀態", value: "State" },
-            { text: "工單名稱", value: "PName" },
-            { text: "工單日期", value: "PTime" },
+            { text: "工單編號", value: "IPSN" },
+            { text: "工單狀態", value: "PlanState" },
+            { text: "工單名稱", value: "IPName" },
+            { text: "工單日期", value: "PlanDate" },
         ]
 
         const fakeData = {
@@ -268,7 +270,7 @@
 
         function readData(url = null) {
 
-            url == null ? onSuccess(fakeData) :
+            url == null ? onSuccess(apiUrl) :
                 $.ajax({
                     url: url,
                     type: "GET",
@@ -279,10 +281,63 @@
                 })
 
             function onSuccess(res) {
-                console.log(res);
-                $("#PlanDetail").append(createTableInner(res, SerializedName));
+                const data = res.Datas;
+                console.log(data);
+                $("#PlanDetail").append(createTableInner(data, SerializedName));
 
-                RepairRecord("#RepairRecord", res);
+                const inner = createAccordion(data.Inspections, {
+                    id: "Inspections",
+                    title(data) {
+                        return `${data.PathName} (${data.StartTime}~${data.EndTime})`
+                    },
+                    icon: 'clipboard-list',
+                    iconStyle: 'color: #2C5984',
+                    iconClass: 'me-2',
+                    items: [
+                        { text: "巡檢狀態", value: "InspectionState" },
+                        { text: "巡檢頻率", value: "Frequency" },
+                        { text: "巡檢數量", value: "EquipmentCount" },
+                        {
+                            type: "accordion", value: "Equipments", options: {
+                                id: "Equipments",
+                                title(data) {
+                                    return `${data.EName} ${data.NO}`
+                                },
+                                className: 'subDatatable',
+                                items: [
+                                    { text: "所在位置", value: "Location" },
+                                    { text: "最新填報者", value: "ReportUserName" },
+                                    { text: "最新填報時間", value: "FillinTime" },
+                                    {
+                                        type: "items", text: "檢查項目", value: "CheckItems", items: [
+                                            { value: "Item" },
+                                            {
+                                                value: "Result",
+                                                style(v, row, i) {
+                                                    if (v === '異常') return 'color: red;'
+                                                    return ''
+                                                }
+                                            },
+                                        ]
+                                    },
+                                    {
+                                        type: "items", text: "填報列表", value: "RportItems", items: [
+                                            { value: "Item" },
+                                            {
+                                                value: "Value",
+                                                formatter(v, row, i) {
+                                                    return `${v} ${row.Unit}`
+                                                },
+                                            },
+                                        ]
+                                    },
+                                ],
+                            }
+                        },
+                    ]
+                })
+
+                $("#PlanRecord").append(inner);
                 ImageDisplay(".datatable-img-item>img");
             }
             function onError(res) {
@@ -295,19 +350,21 @@
                 history.back();
             });
             $("#delete").click(function () {
-                let PSSN = $("#PSSN").val();
                 createDeleteDialog({
-                    url: '@Url.Action("DeleteSampleSchedule", "SampleSchedule_Management")?PSSN=' + PSSN,
-                    data: PSSN,
-                    onSuccess() {
-                        let url = '@Url.Action("Index", "SampleSchedule_Management")';
-                        window.location.href = url;
+                    url: '@Url.Action("DeleteInspectionPlan")?IPSN=' + IPSN,
+                    onSuccess(res) {
+                        console.log(res);
+                        if (!res.ErrorMessage) {
+                            window.location.href = '@Url.Action("Index")';
+                        } else {
+                            createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` + `${res?.ErrorMessage || ""}` })
+                        }
+                    },
+                    onError(ex) {
+                        createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
                     }
                 })
             });
         }
-
-
-
     </script>
 }

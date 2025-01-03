@@ -3,9 +3,6 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
-    <script src="/Scripts/dataTable/InspectionPlanRepair.js" defer></script>
-    <script src="/Scripts/dataTable/PlanRecord.js" defer></script>
-    <script src="/Scripts/dataTable/EquipmentInfoModal.js" defer></script>
 }
 
 
@@ -55,7 +52,7 @@
 @section scripts {
     <script>
         let DailyTemplateSN = location.href.split('/').pop();
-        let templateApiUrl = '@Url.Action("ReadBody", "SampleSchedule_Management")';
+        let templateApiUrl = '@Url.Action("ReadBody")';
         let pathApiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
 
         $(async function () {

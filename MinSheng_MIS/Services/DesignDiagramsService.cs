@@ -21,6 +21,7 @@ namespace MinSheng_MIS.Services
             dditem.ImgName = ddvm.ImgName;
             dditem.ImgType = ddvm.ImgType;
             dditem.UploadDate = DateTime.Now.Date;
+            dditem.UploadUser = HttpContext.Current.User.Identity.Name;
             dditem.ImgPath = "/" + Filename;
 
             db.DesignDiagrams.AddOrUpdate(dditem);
@@ -35,6 +36,7 @@ namespace MinSheng_MIS.Services
             dditem.ImgName = ddvm.ImgName;
             dditem.ImgType = ddvm.ImgType;
             dditem.UploadDate = DateTime.Now.Date;
+            dditem.UploadUser = HttpContext.Current.User.Identity.Name;
             if (!string.IsNullOrEmpty(Filename))
             {
                 dditem.ImgPath = "/" + Filename;

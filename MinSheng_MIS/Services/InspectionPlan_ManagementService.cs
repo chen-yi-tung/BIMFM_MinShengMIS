@@ -375,10 +375,13 @@ namespace MinSheng_MIS.Services
                 #endregion
 
                 #region 結束巡檢
-
                 data.InspectionState = "3";
                  _db.InspectionPlan_Time.AddOrUpdate(data);
                  _db.SaveChanges();
+                //to do 刪rfid
+                var deleteRFID = _db.InspectionPlan_RFIDOrder.Where(x => x.IPTSN == IPTSN).ToList();
+                _db.InspectionPlan_RFIDOrder.RemoveRange(deleteRFID);
+                _db.SaveChanges();
                 //填報完成檢查是否該工單已執行完成
                 var checkAllDone = _db.InspectionPlan_Time.Where(x => x.InspectionState != "3").Count();
                 if (checkAllDone == 0) //巡檢時段皆已巡檢完成

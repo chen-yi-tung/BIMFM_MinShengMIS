@@ -30,10 +30,10 @@
 <body>
     <nav class="navbar navbar-light navbar-expand-lg fixed-top vw-100">
         <div class="container-fluid d-flex">
-            <a class="navbar-brand" href="/InspectionPlan_Management/Management">
+            <div class="navbar-brand">
                 <img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
                 <span class="navbar-brand-title">民生資訊管理系統</span>
-            </a>
+            </div>
 
             <form id="logoutForm" method="post" action="/Home/LogOff" class="d-none d-lg-flex">
                 @Html.AntiForgeryToken()
@@ -54,9 +54,9 @@
             <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
                 aria-labelledby="offcanvasNavbarLabel">
                 <div class="offcanvas-header d-lg-none">
-                    <a class="navbar-brand" href="/InspectionPlan_Management/Management">
+                    <div class="navbar-brand">
                         <img src="/Content/img/logo.png" alt="" height="38" class="d-inline-block align-text-top">
-                    </a>
+                    </div>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
                         aria-label="Close"></button>
                 </div>

@@ -2,6 +2,7 @@
 using MinSheng_MIS.Models.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -12,6 +13,7 @@ namespace MinSheng_MIS.Services
     public class WarningMessageService
     {
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+        #region 新增警示訊息填報紀錄
         public void AddWarningMessageFillinRecord(FillinInfo info,string UserName) //新增警示訊息填報紀錄
         {
             //依填報事件處理狀況 更新警示訊息事件處理狀況
@@ -42,5 +44,36 @@ namespace MinSheng_MIS.Services
             db.WarningMessageFillinRecord.AddOrUpdate(record);
             db.SaveChanges();
         }
+        #endregion
+        #region 新增警示訊息
+        public void AddWarningMessage(WarningMessageCreateModel info) //新增警示訊息
+        {
+            //編WMSN
+            var newWMSN = "";
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
+            var WMSN = db.WarningMessage.Where(x => x.TimeOfOccurrence >= today && x.TimeOfOccurrence < tomorrow).OrderByDescending(x => x.WMSN).FirstOrDefault()?.WMSN.ToString();
+            if (WMSN != null)
+            {
+                newWMSN = (int.Parse(WMSN) + 1).ToString();
+            }
+            else
+            {
+                newWMSN = DateTime.Today.ToString("yyMMdd") + "0001";
+            }
+
+            var data = new WarningMessage();
+            data.WMSN = newWMSN;
+            data.WMType = info.WMType;
+            data.WMState = "1";
+            data.TimeOfOccurrence = DateTime.Now;
+            data.FSN = info.FSN;
+            data.Message = info.Message;
+            data.UserName = info.UserName;
+
+            db.WarningMessage.AddOrUpdate(data);
+            db.SaveChanges();
+        }
+        #endregion
     }
 }

@@ -96,19 +96,19 @@
                 ]],
                 columns: [[
                     dg.hiddenColumn('MMSN'),
-                    dg.column('MeetingTopic', '會議主題', 200),
+                    dg.column('MeetingTopic', '會議主題', 250),
                     dg.column('MeetingDate', '會議時間', 220),
                     //dg.column('MeetingDateStart', '開始時間', 120),
                     //dg.column('MeetingDateEnd', '結束時間', 120),
-                    dg.column('MeetingVenue', '會議地點', 200),
-                    dg.column('Chairperson', '會議主席', 110),
+                    dg.column('MeetingVenue', '會議地點', 250),
+                    dg.column('Chairperson', '會議主席', 200),
                     //dg.column('Participant', '與會者', 110),
                     dg.column('ExpectedAttendence', '應到', 100),
                     dg.column('ActualAttendence', '實到', 100),
                     dg.column('AbsenteeList', '缺席', 100),
-                    dg.column('TakeTheMinutes', '會議記錄負責人', 160),
+                    dg.column('TakeTheMinutes', '會議記錄負責人', 200),
                     //dg.column('Agenda', '議題順序', 200),
-                    dg.column('MeetingContent', '會議內容', 300)
+                    //dg.column('MeetingContent', '會議內容', 300)
                 ]]
             })
             dg.addEvent("detail", function (row, i) {

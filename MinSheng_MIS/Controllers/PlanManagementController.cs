@@ -5,6 +5,7 @@ using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 using static MinSheng_MIS.Services.UniParams;
 
@@ -74,15 +75,17 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯工單
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         #endregion
 
         #region 工單詳情
-        public ActionResult Detail()
+        public ActionResult Detail(string id)
         {
+            ViewBag.id = id;
             return View();
         }
 
@@ -132,9 +135,38 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 工單 刪除
-        public ActionResult Delete()
+        public ActionResult Delete(string id)
         {
+            ViewBag.id = id;
             return View();
+        }
+        /// <summary>
+        /// 刪除工單
+        /// </summary>
+        /// <param name="data">使用者input</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteInspectionPlan(string IPSN)
+        {
+            JsonResService<string> result = new JsonResService<string>();
+            try
+            {
+                // 刪除工單
+                result = _inspectionPlanService.DeleteInspectionPlan(IPSN);
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = $"</br>{ex.Message}";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+            catch (Exception)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = "</br>系統異常！";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
         }
         #endregion
 

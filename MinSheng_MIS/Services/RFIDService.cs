@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using static MinSheng_MIS.Services.UniParams;
 
 namespace MinSheng_MIS.Services
 {
@@ -66,6 +67,28 @@ namespace MinSheng_MIS.Services
             };
 
             _db.RFID.AddOrUpdate(rfid);
+        }
+        #endregion
+
+        #region 獲取設備RFID
+        public async Task<T> GetRfidAsync<T>(string internalCode) where T : class, new()
+        {
+            var rfid = await _db.RFID.FindAsync(internalCode)
+                ?? throw new MyCusResException("查無資料！");
+
+            T dest = rfid.ToDto<RFID, T>();
+
+            if (dest is IRFIDInfoDetail info)
+            {
+                info.ASN = rfid.Floor_Info.ASN.ToString();
+                info.AreaName = rfid.Floor_Info.AreaInfo.Area;
+                info.FloorName = rfid.Floor_Info.FloorName;
+                info.RFIDViewName = rfid.Floor_Info.ViewName;
+
+                dest = (T)info;
+            }
+
+            return dest;
         }
         #endregion
 

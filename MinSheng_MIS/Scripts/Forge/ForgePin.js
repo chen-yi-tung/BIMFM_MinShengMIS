@@ -65,10 +65,6 @@ class PinPopover {
 }
 
 class ForgePin {
-    static Pins = new Set();
-    static update() {
-        ForgePin.Pins.forEach((pin) => pin.update());
-    }
     #options = null;
     #position = null;
     #zIndex = 0;
@@ -146,11 +142,6 @@ class ForgePin {
         if (this.#options.onTouchStart) {
             this.on("touchstart", this.#options.onTouchStart.bind(this));
         }
-
-        if (ForgePin.Pins.size === 0) {
-            this.viewer.addEventListener("cameraChanged", ForgePin.update);
-        }
-        ForgePin.Pins.add(this);
     }
     get visible() {
         return this.element.style.display == "inline-block";
@@ -203,6 +194,11 @@ class ForgePin {
         if (!force && !this.visible) {
             return;
         }
+        if (!this.#position) {
+            this.hide();
+            console.error(`[ForgePin] The DBID: ${this.dbId}, Position is not set.`);
+            return;
+        }
         const current2Dpos = this.get2DPosition(this.#position);
         const ox = this.#formatAsPx(this.#offset[0]);
         const oy = this.#formatAsPx(this.#offset[1]);
@@ -249,5 +245,4 @@ class ForgePin {
     dispatchEvent(event) {
         this.element.dispatchEvent(event);
     }
-
 }

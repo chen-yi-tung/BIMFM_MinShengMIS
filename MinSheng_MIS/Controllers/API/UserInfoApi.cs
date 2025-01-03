@@ -78,7 +78,7 @@ namespace MinSheng_MIS.Controllers.API
             // 建立 Token
             var token = new JwtSecurityToken(
                 expires: DateTime.UtcNow.AddMinutes(30),
-                claims: new[] { new Claim(nameof(ipAddress), ipAddress), new Claim(nameof(userName), userName) },
+                claims: new[] { new Claim(nameof(ipAddress), ipAddress), new Claim(ClaimTypes.Name, userName) },
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
@@ -118,7 +118,7 @@ namespace MinSheng_MIS.Controllers.API
                 {
                     jo["ErrorMessage"] = "新密碼與再次輸入新密碼不相符。";
                 }
-                var userName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                var userName = HttpContext.Current.User.Identity.Name;
                 var appUser = UserManager.Find(userName, user.OldPassword);
                 if (appUser != null && appUser.Authority == "4")
                 {
@@ -132,6 +132,59 @@ namespace MinSheng_MIS.Controllers.API
                 else
                 {
                     jo["ErrorMessage"] = "舊密碼輸入錯誤。";
+                }
+            }
+            catch (Exception ex)
+            {
+                jo["State"] = "Failed";
+                jo["ErrorMessage"] = ex.Message;
+            }
+            return jo;
+        }
+    }
+
+    public class UserInfoController : ApiController
+    {
+        private ApplicationUserManager _userManager;
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
+
+        public JObject Get()
+        {
+            JObject jo = new JObject()
+            {
+                { "State", "Success" },
+                { "ErrorMessage", "" },
+                { "Datas", "" }
+            };
+            try
+            {
+                var userName = HttpContext.Current.User.Identity.Name;
+                var appUser = UserManager.FindByName(userName);
+                if (appUser != null)
+                {
+                    JObject itemObject = new JObject();
+                    itemObject.Add("MyName", appUser.MyName);
+                    itemObject.Add("UserName", appUser.UserName);
+                    itemObject.Add("Email", appUser.Email);
+                    itemObject.Add("PhoneNumber", appUser.PhoneNumber);
+                    itemObject.Add("Apartment", appUser.Apartment);
+                    itemObject.Add("Title", appUser.Title);
+                    jo["Datas"] = itemObject;
+                }
+                else
+                {
+                    jo["ErrorMessage"] = "帳號異常。";
                 }
             }
             catch (Exception ex)

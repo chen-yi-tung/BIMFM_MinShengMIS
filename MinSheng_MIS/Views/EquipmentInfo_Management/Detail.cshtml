@@ -2,6 +2,7 @@
     ViewBag.Title = "設備 詳情";
 }
 @section styles {
+    @Html.Partial("MapScripts")
     @Html.Partial("DataGridScripts")
     <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
     <script src="/Scripts/ImageDisplay.js" defer></script>
@@ -121,33 +122,33 @@
                 OperatingVoltage: "20V",
                 OtherInfo: "資料資料",
                 Memo: "這是一段備註",
-                RFID: [
+                RFIDList: [
                     {
                         Name: "軸承潤滑劑一",
-                        RFIDInternalCode: "A101",
-                        RFIDExternalCode: "125533FFFF",
-                        ASN: "A棟",
-                        FSN: "5F",
+                        InternalCode: "A101",
+                        ExternalCode: "125533FFFF",
+                        AreaName: "A棟",
+                        FloorName: "5F",
                         Location_X: "",
                         Location_Y: "",
                         Memo: "備註備註",
                     },
                     {
                         Name: "軸承潤滑劑二",
-                        RFIDInternalCode: "A102",
-                        RFIDExternalCode: "225533FFFF",
-                        ASN: "A棟",
-                        FSN: "5F",
+                        InternalCode: "A102",
+                        ExternalCode: "225533FFFF",
+                        AreaName: "A棟",
+                        FloorName: "5F",
                         Location_X: "",
                         Location_Y: "",
                         Memo: "備註備註",
                     },
                     {
                         Name: "軸承潤滑劑三",
-                        RFIDInternalCode: "A103",
-                        RFIDExternalCode: "325533FFFF",
-                        ASN: "A棟",
-                        FSN: "5F",
+                        InternalCode: "A103",
+                        ExternalCode: "325533FFFF",
+                        AreaName: "A棟",
+                        FloorName: "5F",
                         Location_X: "",
                         Location_Y: "",
                         Memo: "備註備註",

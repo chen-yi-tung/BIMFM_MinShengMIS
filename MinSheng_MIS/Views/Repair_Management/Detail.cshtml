@@ -87,7 +87,7 @@
             {
                 text: "設備屬性", value: "ESN", formatter: (val) => {
                     console.log("val", val);
-                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail?ESN=${val}', '_blank')">設備資料</button>` : "-"
+                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail/${val}', '_blank')">設備資料</button>` : "-"
                 }
             },
         ]

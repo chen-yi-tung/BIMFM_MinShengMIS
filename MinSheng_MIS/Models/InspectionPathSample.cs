@@ -19,6 +19,7 @@ namespace MinSheng_MIS.Models
         {
             this.DailyInspectionSampleContent = new HashSet<DailyInspectionSampleContent>();
             this.InspectionDefaultOrder = new HashSet<InspectionDefaultOrder>();
+            this.InspectionPlan_Time = new HashSet<InspectionPlan_Time>();
         }
     
         public string PlanPathSN { get; set; }
@@ -29,5 +30,7 @@ namespace MinSheng_MIS.Models
         public virtual ICollection<DailyInspectionSampleContent> DailyInspectionSampleContent { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InspectionDefaultOrder> InspectionDefaultOrder { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<InspectionPlan_Time> InspectionPlan_Time { get; set; }
     }
 }

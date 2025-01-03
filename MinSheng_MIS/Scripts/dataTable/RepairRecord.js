@@ -1,25 +1,48 @@
 ﻿function RepairRecord(selector, data) {
+    console.log(" $(selector)", $(selector))
     $(selector).append(
-        data.InspectionRecord ?
+        data.Inspections ?
             createAccordion({
-                id: `InspectionRecord`,
-                state: data.State,
+                id: `Inspections`,
+                state: data.PlanState,
                 sn: [
-                        { text: "巡檢狀態", value: "IState" },
-                        { text: "巡檢頻率", value: "Ifrequency" },
-                        { text: "巡檢數量", value: "INum" },
+                    { text: "巡檢狀態", value: "InspectionState" },
+                    { text: "巡檢頻率", value: "Frequency" },
+                    { text: "巡檢數量", value: "EquipmentCount" },
+                    {
+                        type: "accordion", value: "Equipments", sn: [
+                            { text: "所在位置", value: "Location", colspan: true },
+                            { text: "最新填報者", value: "ReportUserName", colspan: true },
+                            { text: "最新填報時間", value: "FillinTime", colspan: true },
+                            { text: "檢查項目", value: "CheckItems", type: "DualCol" },
+                            { text: "填報列表", value: "RportItems", type: "DualCol" },
+                        ]
+                    },
                 ],
-                subsn: [
-                    { text: "所在位置", value: "Location", colspan: true },
-                    { text: "檢查項目", value: "InspectItems", type: "DualCol" },
-                    { text: "填報列表", value: "ReportItems", type: "DualCol" },
-                ],
-                data: data.InspectionRecord,
-                itemTitleKey: `IName`,
-                itemSubTitleKey: `ITime`,
+                data: data.Inspections,
+                itemTitleKey: `PathName`,
+                itemSubTitleKey: `PlanDate`,
                 layer: 2,
                 icon: "clipboard-list",
             })
+            : "",
+    )
+
+    $(selector).append(
+        data.Inspections.Equipments ?
+            createTableInner(data.Inspections,
+                [
+                    {
+                        text: "填報列表",
+                        value: "RportItems",
+                        type: "DualCol",
+                        itemNum: [
+                            { value: "Value" },
+                            { value: "Unit" },
+                        ],
+                    },
+                ]
+            )
             : "",
     )
 }
@@ -43,19 +66,19 @@ function InspectionRecord(selector, data) {
 
 function EquipmentRFID(selector, data) {
     $(selector).append(
-        data.RFID ?
+        data.RFIDList ?
             createAccordion({
                 id: `RFID`,
                 sn: [
                     { text: "RFID名稱", value: "Name" },
-                    { text: "RFID內碼", value: "RFIDInternalCode" },
-                    { text: "RFID外碼", value: "RFIDExternalCode" },
-                    { text: "棟別", value: "ASN" },
-                    { text: "樓層", value: "FSN" },
+                    { text: "RFID內碼", value: "InternalCode" },
+                    { text: "RFID外碼", value: "ExternalCode" },
+                    { text: "棟別", value: "AreaName" },
+                    { text: "樓層", value: "FloorName" },
                     { text: "定位", value: "Location", btn: true },
                     { text: "備註", value: "Memo" },
                 ],
-                data: data.RFID,
+                data: data.RFIDList,
                 itemTitleKey: `Name`,
             })
             : "",

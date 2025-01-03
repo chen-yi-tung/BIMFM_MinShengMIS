@@ -104,11 +104,14 @@
 }
 
 .btn-delete,
-.btn-delete-confirm{
+.btn-delete-confirm {
     --bs-btn-bg: #E06666;
     --bs-btn-color: white;
     --bs-btn-hover-bg: #ca5c5c;
     --bs-btn-hover-color: white;
+    --bs-btn-active-bg: #ca5c5c;
+    --bs-btn-active-border-color: #ca5c5c;
+    --bs-btn-active-color: white;
 }
 
 .btn-delete-item{

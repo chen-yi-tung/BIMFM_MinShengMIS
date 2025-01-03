@@ -1,4 +1,5 @@
 ﻿class UpViewer {
+    #scale = 2;
     constructor(container) {
         Autodesk.Viewing.Private.InitParametersSetting.alpha = true; //設定透明背景可用
         this.container = container;
@@ -37,7 +38,6 @@
         Autodesk.Viewing.Initializer({ env: "Local" }, async () => {
             this.viewer.start();
             await this.viewer.loadExtension("Viewer.Toolkit");
-            this.viewer.toolkit.removeKeyControls()
 
             //setting 3d view env
             this.viewer.setBackgroundOpacity(0);
@@ -46,14 +46,19 @@
             console.log("Viewer init done");
 
             resolve(true);
+
+            this.addHomeToggle();
         });
         return promise;
     }
     async loadModels(urls, { onModelLoadDone = () => { }, onLoadDone = () => { } } = {}) {
+        console.log('loadModels', urls);
+
         this.viewer.loading.show();
         const models = await Promise.all(
             urls.map(({ url, type }) => {
                 return new Promise(async (resolve, reject) => {
+                    console.log('loadModel', type, url);
                     this.viewer.loadModel(
                         window.location.origin + url,
                         {
@@ -61,7 +66,9 @@
                             modelOverrideName: type,
                         },
                         async (model) => {
+                            console.log('loadModel waiting', type, url);
                             await this.viewer.waitForLoadDone();
+                            console.log('loadModel done', type, url);
                             this.models.push({
                                 type,
                                 model,
@@ -69,6 +76,7 @@
                             resolve(model);
                         },
                         async (model) => {
+                            console.log('loadModel failed', type, url, model);
                             reject(model);
                         }
                     );
@@ -80,18 +88,50 @@
             await onModelLoadDone(model);
         }
         await onLoadDone(models);
+
+        if (!this.equipmentPointTool) {
+            this.equipmentPointTool = new EquipmentPointTool(this.viewer);
+            this.viewer.toolController.registerTool(this.equipmentPointTool)
+        }
+
+        this.viewer.toolkit.setKeyControls(false);
+        this.viewer.toolkit.setPointerControls(false);
+
         this.viewer.setLightPreset(this.profileSettings.settings.lightPreset || 16);
-        this.viewer.toolkit.autoFitModelsTop(models.filter(e => e), 10, true)
+
+        this.viewer.toolController.deactivateTool("hotkeys");
+        this.viewer.toolController.deactivateTool("gestures");
+        this.viewer.toolController.activateTool("pan");
+
+        this.viewer.toolkit.autoFitModelsTop(
+            models.filter((e) => e),
+            this.#scale,
+            true
+        );
         this.viewer.loading.hide();
+    }
+    unloadModels() {
+        bim.models.forEach(({ model }) => {
+            bim.viewer.unloadModel(model)
+        })
+        this.models = [];
     }
     dispose() {
         if (this.viewer == null) {
             return;
         }
+        this.models = [];
         this.viewer.tearDown();
         this.viewer.finish();
         this.viewer = null;
+        this.equipmentPointTool = null;
         this.container.replaceChildren();
+    }
+    updateBeaconPoint() {
+        if (!this.beaconPoint) return;
+        this.beaconPoint.forEach((pin) => {
+            pin.update();
+        })
     }
     createBeaconPoint(data = []) {
         const model = this.models.find((model) => model.type === "BT").model;
@@ -99,57 +139,81 @@
         data.forEach((d) => {
             const pin = new ForgePin({
                 viewer: this.viewer,
-                dbId: d.dbId,
+                dbId: d.DBID,
                 data: d,
                 model,
                 img: "/Content/img/bluetooth.svg",
-                id: `bluetooth-${d.dbId}`,
+                id: `bluetooth-${d.DBID}`,
             });
 
-            d.deviceName && $(pin.element).append(`<div class="bluetooth-name">${d.deviceName}</div>`);
+            d.DeviceName && $(pin.element).append(`<div class="bluetooth-name">${d.DeviceName}</div>`);
+            pins.push(pin);
 
             pin.show();
             pin.update();
-            pins.push(pin);
         });
+        this.beaconPoint = pins;
+        this.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, this.updateBeaconPoint.bind(this))
+        return pins;
     }
-    createEquipmentPoint(position = new THREE.Vector3(0, 0, 0), interactive = false) {
-        this.equipmentPoint = new EquipmentPoint({ viewer: this.viewer, position });
-        this.equipmentPoint.interactive = interactive;
-        return this.equipmentPoint;
+    destroyBeaconPoint() {
+        this.viewer.removeEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, this.updateBeaconPoint.bind(this))
+        if (!this.beaconPoint) return;
+        this.beaconPoint.forEach((pin) => {
+            pin.destroy();
+        });
+        this.beaconPoint = null;
+    }
+    activateEquipmentPointTool(position = new THREE.Vector3(0, 0, 0), interactive = false) {
+        if (position.z === 0) {
+            const box = new THREE.Box3();
+            this.viewer.getAllModels().forEach((model) => {
+                const b = model.getBoundingBox();
+                box.union(b);
+            });
+            position.z = box.getCenter().z;
+        }
+        this.viewer.toolController.activateTool(this.equipmentPointTool.getName());
+        this.equipmentPointTool.setPosition(position);
+        this.equipmentPointTool.interactive = interactive;
+        return this.equipmentPointTool;
     }
     getModelsUrl(ViewName) {
-        const ModelTypeList = [
-            "AR",
-            "BT",
-            "E",
-            "EL",
-            "F",
-            "PP",
-            "PPO",
-            "VE",
-            "WW"
-        ]
+        const ModelTypeList = ["AR", "BT", "E", "EL", "F", "PP", "PPO", "VE", "WW"];
         return ModelTypeList.map((type) => {
             return {
                 type,
-                url: `/BimModels/TopView/${type}/Resource/3D 視圖/${ViewName}/${ViewName}.svf`
-            }
-        })
+                url: `/BimModels/TopView/${type}/Resource/3D 視圖/${ViewName}/${ViewName}.svf`,
+            };
+        });
+    }
+    addHomeToggle() {
+        this.viewer.container.insertAdjacentHTML("beforeend", `<div class="home-wrapper"><button class="home-toggle"></button></div>`);
+        const toggle = this.viewer.container.querySelector(".home-toggle");
+        toggle.onclick = () => {
+            this.viewer.toolkit.autoFitModelsTop(this.viewer.getAllModels(), this.#scale, false);
+        };
     }
 }
 
-class EquipmentPoint extends ForgePin {
+class EquipmentPointTool {
+    #name = 'Viewer.Tool.EquipmentPoint'
+    #active = false;
+    #pinOptions = {
+        position: new THREE.Vector3(0, 0, 0),
+        data: {},
+        img: "/Content/img/equipment.svg",
+        offset: ["-50%", "-100%"],
+        id: `equipment`,
+    }
     #interactive = false;
     #dragging = false;
-    constructor(options = {}) {
-        super(Object.assign({
-            position: new THREE.Vector3(0, 0, 0),
-            data: {},
-            img: "/Content/img/equipment.svg",
-            offset: ["-50%", "-100%"],
-            id: `equipment`,
-        }, options));
+    #panTool = null;
+    #panToolEvent = {};
+    #buttonNumber = 0;
+    constructor(viewer) {
+        this.viewer = viewer;
+        this.pin = new ForgePin(Object.assign({ viewer: this.viewer }, this.#pinOptions))
     }
     get interactive() {
         return this.#interactive;
@@ -157,44 +221,78 @@ class EquipmentPoint extends ForgePin {
     set interactive(v) {
         this.#interactive = v;
         this.#dragging = false;
-        const rect = this.viewer.container;
-        if (v) {
-            const update = (event) => {
-                const hit = this.viewer.clientToWorld(event.offsetX, event.offsetY);
-                if (!hit) { return }
-                this.position = hit.point;
-                this.show().update();
-            }
+    }
+    getNames() {
+        return [this.#name];
+    }
+    getName() {
+        return this.#name;
+    }
+    register() { }
+    deregister() {
+        this.pin.destroy()
+    }
+    isActive() {
+        return this.#active;
+    }
+    activate() {
+        if (this.#active) return;
+        this.#active = true;
+        this.pin.show().update();
 
-            rect.onclick = update;
-            rect.onpointerdown  = (event) => {
-                this.#dragging = true;
-                update(event)
+        this.#panTool = this.viewer.toolController.getTool("pan");
+        this.#panToolEvent['handleButtonDown'] = this.#panTool.handleButtonDown.bind(this.#panTool)
+        this.#panTool.handleButtonDown = (event, button) => {
+            if (button === this.#buttonNumber) {
+                return false;
             }
-            rect.onpointermove  = (event) => {
-                this.#dragging && update(event);
-            }
-            rect.onpointerup  = (event) => {
-                if (this.#dragging) {
-                    this.#dragging = false;
-                    update(event)
-                }
-            }
-            rect.onpointerleave  = (event) => {
-                if (this.#dragging) {
-                    this.#dragging = false;
-                    update(event)
-                }
-            }
-        }
-        else {
-            this.#dragging = false;
-            rect.onclick = null;
-            rect.onpointerdown  = null;
-            rect.onpointermove  = null;
-            rect.onpointerup  = null;
-            rect.onpointerleave  = null;
+            this.#panToolEvent['handleButtonDown'](event, button)
         }
     }
-}
+    deactivate() {
+        if (!this.#active) return;
+        this.interactive = false;
+        this.#active = false;
+        this.pin.hide()
 
+        Object.entries(this.#panToolEvent).forEach((eventName, func) => {
+            this.#panTool[eventName] = func;
+        })
+    }
+    update(highResTimestamp) {
+        requestAnimationFrame(() => {
+            this.pin.update();
+        })
+    }
+    handleSingleClick(e, b) {
+        if (!this.#interactive) return;
+        if (b !== this.#buttonNumber) return;
+        const hit = this.viewer.clientToWorld(e.canvasX, e.canvasY);
+        if (!hit) {
+            return;
+        }
+        this.pin.position = hit.point;
+        this.pin.show().update();
+        console.log("click: ", e, hit?.point);
+    }
+    handleButtonDown(e, b) {
+        if (!this.#interactive) return;
+        if (b !== this.#buttonNumber) return;
+        this.#dragging = true;
+        this.handleSingleClick(e, b);
+    }
+    handleMouseMove(e) {
+        if (!this.#interactive) return;
+        this.#dragging && this.handleSingleClick(e, this.#buttonNumber);
+    }
+    handleButtonUp(e) {
+        if (!this.#interactive) return;
+        if (this.#dragging) {
+            this.#dragging = false;
+            this.handleSingleClick(e, this.#buttonNumber);
+        }
+    }
+    setPosition(v) {
+        this.pin.position = v;
+    }
+}

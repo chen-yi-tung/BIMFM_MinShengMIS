@@ -30,7 +30,7 @@ namespace MinSheng_MIS.Controllers.API
             JsonResService<List<PlanInfo>> result = new JsonResService<List<PlanInfo>>();
             try
             {
-                string userID = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                string userID = HttpContext.Current.User.Identity.Name;
                 if (string.IsNullOrEmpty(userID))
                 {
                     result.AccessState = ResState.Failed;
@@ -103,7 +103,7 @@ namespace MinSheng_MIS.Controllers.API
             JsonResService<string> result = new JsonResService<string>();
             try
             {
-                string userID = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                string userID = HttpContext.Current.User.Identity.Name;
                 if (string.IsNullOrEmpty(userID))
                 {
                     result.AccessState = ResState.Failed;
@@ -137,7 +137,7 @@ namespace MinSheng_MIS.Controllers.API
             JsonResService<string> result = new JsonResService<string>();
             try
             {
-                string userID = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                string userID = HttpContext.Current.User.Identity.Name;
                 if (string.IsNullOrEmpty(userID))
                 {
                     result.AccessState = ResState.Failed;

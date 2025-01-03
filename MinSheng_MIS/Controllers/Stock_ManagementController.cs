@@ -165,8 +165,9 @@ namespace MinSheng_MIS.Controllers
 
 
         #region 編輯 庫存品項
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         [HttpPost]
@@ -260,8 +261,9 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 庫存品項 刪除
-        public ActionResult Delete()
+        public ActionResult Delete(string id)
         {
+            ViewBag.id = id;
             return View();
         }
         [HttpPost]
