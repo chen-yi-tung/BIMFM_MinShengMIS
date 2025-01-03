@@ -132,7 +132,8 @@ namespace MinSheng_MIS.Controllers
                     #endregion
 
                     result.AccessState = ResState.Success;
-                    result.ErrorMessage = $"新增入庫成功";
+                    result.ErrorMessage = "";
+                    result.Datas = "新增入庫成功";
                     return Content(JsonConvert.SerializeObject(result), "application/json");
                 }
                 catch (Exception ex)
@@ -193,6 +194,7 @@ namespace MinSheng_MIS.Controllers
 
             result.Datas = jo_item;
             result.AccessState = ResState.Success;
+            result.ErrorMessage = "";
             return Content(JsonConvert.SerializeObject(result), "application/json");
         }
 
@@ -367,7 +369,8 @@ namespace MinSheng_MIS.Controllers
 
                     transaction.Commit();
                     result.AccessState = ResState.Success;
-                    result.ErrorMessage = $"出庫成功";
+                    result.ErrorMessage = "";
+                    result.Datas = "出庫成功";
                     return Content(JsonConvert.SerializeObject(result), "application/json");
                 }
                 catch (Exception ex)
