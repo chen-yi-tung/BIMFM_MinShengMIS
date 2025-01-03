@@ -209,11 +209,11 @@ namespace MinSheng_MIS.Controllers
                     worksheet.Cells["C" + row].Value = item["ReportLevel"].ToString();
                     worksheet.Cells["D" + row].Value = item["ReportTime"].ToString();
                     worksheet.Cells["E" + row].Value = item["ReportContent"].ToString();
-                    worksheet.Cells["F" + row].Value = item["ASN"].ToString();
-                    worksheet.Cells["G" + row].Value = item["FSN"].ToString();
+                    worksheet.Cells["F" + row].Value = item["Area"].ToString();
+                    worksheet.Cells["G" + row].Value = item["FloorName"].ToString();
                     worksheet.Cells["H" + row].Value = item["EName"].ToString();
                     worksheet.Cells["I" + row].Value = item["NO"].ToString();
-                    worksheet.Cells["J" + row].Value = item["RepairUserName"].ToString();
+                    worksheet.Cells["J" + row].Value = item["RepairMyName"].ToString();
                     row++;
                 }
 
