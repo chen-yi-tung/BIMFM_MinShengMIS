@@ -92,6 +92,35 @@
           <Property Name="Apartment" Type="nvarchar" MaxLength="20" />
           <Property Name="Title" Type="nvarchar" MaxLength="20" />
         </EntityType>
+        <EntityType Name="BeaconData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Minor" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="MacAddress" Type="varchar" MaxLength="17" />
+          <Property Name="Major" Type="nvarchar(max)" />
+          <Property Name="UUID" Type="varchar" MaxLength="128" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="RSSI" Type="int" />
+          <Property Name="Distance" Type="float" />
+          <Property Name="Timestamp" Type="datetime" />
+          <Property Name="RecivedTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BeaconDevice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Minor" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="FSN" Type="nvarchar" MaxLength="5" />
+          <Property Name="GUID" Type="nvarchar" MaxLength="200" />
+          <Property Name="DBID" Type="int" />
+          <Property Name="ElementID" Type="nvarchar" MaxLength="200" />
+          <Property Name="Location_X" Type="decimal" Precision="19" Scale="11" />
+          <Property Name="Location_Y" Type="decimal" Precision="19" Scale="11" />
+          <Property Name="IsEnable" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="BIMData">
           <Key>
             <PropertyRef Name="GUID" />
@@ -668,6 +697,26 @@
           <Property Name="TimeStamp" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="UserHeartRhythmData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="HeartRhythm" Type="int" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserPositionData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
+          <Property Name="Location_X" Type="decimal" Precision="19" Scale="11" Nullable="false" />
+          <Property Name="Location_Y" Type="decimal" Precision="19" Scale="11" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="WarningMessage">
           <Key>
             <PropertyRef Name="WMSN" />
@@ -698,6 +747,18 @@
           <Property Name="WatchID" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="UserID" Type="nvarchar" MaxLength="256" Nullable="false" />
         </EntityType>
+        <Association Name="FK_BeaconDevice_Floor_Info">
+          <End Role="Floor_Info" Type="Self.Floor_Info" Multiplicity="0..1" />
+          <End Role="BeaconDevice" Type="Self.BeaconDevice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Floor_Info">
+              <PropertyRef Name="FSN" />
+            </Principal>
+            <Dependent Role="BeaconDevice">
+              <PropertyRef Name="FSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ComputationalStock_StockType">
           <End Role="StockType" Type="Self.StockType" Multiplicity="1" />
           <End Role="ComputationalStock" Type="Self.ComputationalStock" Multiplicity="*" />
@@ -1282,6 +1343,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_UserPositionData_Floor_Info">
+          <End Role="Floor_Info" Type="Self.Floor_Info" Multiplicity="1" />
+          <End Role="UserPositionData" Type="Self.UserPositionData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Floor_Info">
+              <PropertyRef Name="FSN" />
+            </Principal>
+            <Dependent Role="UserPositionData">
+              <PropertyRef Name="FSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_WarningMessageFillinRecord_WarningMessage">
           <End Role="WarningMessage" Type="Self.WarningMessage" Multiplicity="1" />
           <End Role="WarningMessageFillinRecord" Type="Self.WarningMessageFillinRecord" Multiplicity="*" />
@@ -1303,6 +1376,8 @@
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BeaconData" EntityType="Self.BeaconData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BeaconDevice" EntityType="Self.BeaconDevice" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BIMData" EntityType="Self.BIMData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ComputationalStock" EntityType="Self.ComputationalStock" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DailyInspectionSample" EntityType="Self.DailyInspectionSample" Schema="dbo" store:Type="Tables" />
@@ -1353,9 +1428,15 @@
           <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Self.TestingAndAnalysis_LabelName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Self.TestingAndAnalysisWorkflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tokens" EntityType="Self.Tokens" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserHeartRhythmData" EntityType="Self.UserHeartRhythmData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserPositionData" EntityType="Self.UserPositionData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessage" EntityType="Self.WarningMessage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessageFillinRecord" EntityType="Self.WarningMessageFillinRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WatchPairing" EntityType="Self.WatchPairing" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_BeaconDevice_Floor_Info" Association="Self.FK_BeaconDevice_Floor_Info">
+            <End Role="Floor_Info" EntitySet="Floor_Info" />
+            <End Role="BeaconDevice" EntitySet="BeaconDevice" />
+          </AssociationSet>
           <AssociationSet Name="FK_ComputationalStock_StockType" Association="Self.FK_ComputationalStock_StockType">
             <End Role="StockType" EntitySet="StockType" />
             <End Role="ComputationalStock" EntitySet="ComputationalStock" />
@@ -1548,6 +1629,10 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="Tokens" EntitySet="Tokens" />
           </AssociationSet>
+          <AssociationSet Name="FK_UserPositionData_Floor_Info" Association="Self.FK_UserPositionData_Floor_Info">
+            <End Role="Floor_Info" EntitySet="Floor_Info" />
+            <End Role="UserPositionData" EntitySet="UserPositionData" />
+          </AssociationSet>
           <AssociationSet Name="FK_WarningMessageFillinRecord_WarningMessage" Association="Self.FK_WarningMessageFillinRecord_WarningMessage">
             <End Role="WarningMessage" EntitySet="WarningMessage" />
             <End Role="WarningMessageFillinRecord" EntitySet="WarningMessageFillinRecord" />
@@ -1558,6 +1643,10 @@
     <edmx:ConceptualModels>
       <Schema Namespace="Bimfm_MinSheng_MISModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="Bimfm_MinSheng_MISEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="BeaconData" EntityType="Bimfm_MinSheng_MISModel.BeaconData" />
+          <EntitySet Name="BeaconDevice" EntityType="Bimfm_MinSheng_MISModel.BeaconDevice" />
+          <EntitySet Name="UserHeartRhythmData" EntityType="Bimfm_MinSheng_MISModel.UserHeartRhythmData" />
+          <EntitySet Name="UserPositionData" EntityType="Bimfm_MinSheng_MISModel.UserPositionData" />
           <EntitySet Name="C__MigrationHistory" EntityType="Bimfm_MinSheng_MISModel.C__MigrationHistory" />
           <EntitySet Name="AreaInfo" EntityType="Bimfm_MinSheng_MISModel.AreaInfo" />
           <EntitySet Name="AsBuiltDrawing" EntityType="Bimfm_MinSheng_MISModel.AsBuiltDrawing" />
@@ -1633,6 +1722,10 @@
           <AssociationSet Name="FK_Tokens_AspNetUsers" Association="Bimfm_MinSheng_MISModel.FK_Tokens_AspNetUsers">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="Tokens" EntitySet="Tokens" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BeaconDevice_Floor_Info" Association="Bimfm_MinSheng_MISModel.FK_BeaconDevice_Floor_Info">
+            <End Role="Floor_Info" EntitySet="Floor_Info" />
+            <End Role="BeaconDevice" EntitySet="BeaconDevice" />
           </AssociationSet>
           <AssociationSet Name="FK_ComputationalStock_StockType" Association="Bimfm_MinSheng_MISModel.FK_ComputationalStock_StockType">
             <End Role="StockType" EntitySet="StockType" />
@@ -1730,6 +1823,10 @@
             <End Role="Floor_Info" EntitySet="Floor_Info" />
             <End Role="RFID" EntitySet="RFID" />
           </AssociationSet>
+          <AssociationSet Name="FK_UserPositionData_Floor_Info" Association="Bimfm_MinSheng_MISModel.FK_UserPositionData_Floor_Info">
+            <End Role="Floor_Info" EntitySet="Floor_Info" />
+            <End Role="UserPositionData" EntitySet="UserPositionData" />
+          </AssociationSet>
           <AssociationSet Name="FK_InspectionDefaultOrder_InspectionDefaultOrder" Association="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionDefaultOrder">
             <End Role="RFID" EntitySet="RFID" />
             <End Role="InspectionDefaultOrder" EntitySet="InspectionDefaultOrder" />
@@ -1810,7 +1907,58 @@
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
           </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
+        <EntityType Name="BeaconData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Minor" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="MacAddress" Type="String" MaxLength="17" FixedLength="false" Unicode="false" />
+          <Property Name="Major" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UUID" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="RSSI" Type="Int32" />
+          <Property Name="Distance" Type="Double" />
+          <Property Name="Timestamp" Type="DateTime" Precision="3" />
+          <Property Name="RecivedTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="BeaconDevice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Minor" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="FSN" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="GUID" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="DBID" Type="Int32" />
+          <Property Name="ElementID" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Location_X" Type="Decimal" Precision="19" Scale="11" />
+          <Property Name="Location_Y" Type="Decimal" Precision="19" Scale="11" />
+          <Property Name="IsEnable" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_BeaconDevice_Floor_Info" FromRole="BeaconDevice" ToRole="Floor_Info" />
+        </EntityType>
+        <EntityType Name="UserHeartRhythmData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="HeartRhythm" Type="Int32" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="UserPositionData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="Location_X" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
+          <Property Name="Location_Y" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_UserPositionData_Floor_Info" FromRole="UserPositionData" ToRole="Floor_Info" />
+        </EntityType>
         <EntityType Name="C__MigrationHistory">
           <Key>
             <PropertyRef Name="MigrationId" />
@@ -2186,9 +2334,11 @@
           <Property Name="BeaconPath" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="ViewName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AreaInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo" FromRole="Floor_Info" ToRole="AreaInfo" />
+          <NavigationProperty Name="BeaconDevice" Relationship="Bimfm_MinSheng_MISModel.FK_BeaconDevice_Floor_Info" FromRole="Floor_Info" ToRole="BeaconDevice" />
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentInfo_Floor_Info" FromRole="Floor_Info" ToRole="EquipmentInfo" />
           <NavigationProperty Name="InspectionTrack" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionTrack_Floor_Info" FromRole="Floor_Info" ToRole="InspectionTrack" />
           <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_Floor_Info" FromRole="Floor_Info" ToRole="RFID" />
+          <NavigationProperty Name="UserPositionData" Relationship="Bimfm_MinSheng_MISModel.FK_UserPositionData_Floor_Info" FromRole="Floor_Info" ToRole="UserPositionData" />
         </EntityType>
         <EntityType Name="InspectionDefaultOrder">
           <Key>
@@ -2644,6 +2794,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_BeaconDevice_Floor_Info">
+          <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="0..1" />
+          <End Type="Bimfm_MinSheng_MISModel.BeaconDevice" Role="BeaconDevice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Floor_Info">
+              <PropertyRef Name="FSN" />
+            </Principal>
+            <Dependent Role="BeaconDevice">
+              <PropertyRef Name="FSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ComputationalStock_StockType">
           <End Type="Bimfm_MinSheng_MISModel.StockType" Role="StockType" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.ComputationalStock" Role="ComputationalStock" Multiplicity="*" />
@@ -2932,6 +3094,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_UserPositionData_Floor_Info">
+          <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.UserPositionData" Role="UserPositionData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Floor_Info">
+              <PropertyRef Name="FSN" />
+            </Principal>
+            <Dependent Role="UserPositionData">
+              <PropertyRef Name="FSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_InspectionDefaultOrder_InspectionDefaultOrder">
           <End Type="Bimfm_MinSheng_MISModel.RFID" Role="RFID" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.InspectionDefaultOrder" Role="InspectionDefaultOrder" Multiplicity="*" />
@@ -3170,6 +3344,59 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="Bimfm_MinSheng_MISModelStoreContainer" CdmEntityContainer="Bimfm_MinSheng_MISEntities">
+          <EntitySetMapping Name="BeaconData">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.BeaconData">
+              <MappingFragment StoreEntitySet="BeaconData">
+                <ScalarProperty Name="RecivedTime" ColumnName="RecivedTime" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Distance" ColumnName="Distance" />
+                <ScalarProperty Name="RSSI" ColumnName="RSSI" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UUID" ColumnName="UUID" />
+                <ScalarProperty Name="Major" ColumnName="Major" />
+                <ScalarProperty Name="MacAddress" ColumnName="MacAddress" />
+                <ScalarProperty Name="Minor" ColumnName="Minor" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BeaconDevice">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.BeaconDevice">
+              <MappingFragment StoreEntitySet="BeaconDevice">
+                <ScalarProperty Name="IsEnable" ColumnName="IsEnable" />
+                <ScalarProperty Name="Location_Y" ColumnName="Location_Y" />
+                <ScalarProperty Name="Location_X" ColumnName="Location_X" />
+                <ScalarProperty Name="ElementID" ColumnName="ElementID" />
+                <ScalarProperty Name="DBID" ColumnName="DBID" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="FSN" ColumnName="FSN" />
+                <ScalarProperty Name="Minor" ColumnName="Minor" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserHeartRhythmData">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.UserHeartRhythmData">
+              <MappingFragment StoreEntitySet="UserHeartRhythmData">
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="HeartRhythm" ColumnName="HeartRhythm" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserPositionData">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.UserPositionData">
+              <MappingFragment StoreEntitySet="UserPositionData">
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="Location_Y" ColumnName="Location_Y" />
+                <ScalarProperty Name="Location_X" ColumnName="Location_X" />
+                <ScalarProperty Name="FSN" ColumnName="FSN" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="C__MigrationHistory">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.C__MigrationHistory">
               <MappingFragment StoreEntitySet="__MigrationHistory">

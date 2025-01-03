@@ -9,6 +9,10 @@ using Newtonsoft.Json;
 using System.Data;
 using MinSheng_MIS.Models;
 using System.Linq.Expressions;
+using System.Web.Http;
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Web.Http.Results;
 
 namespace MinSheng_MIS.Services
 {
@@ -53,6 +57,23 @@ namespace MinSheng_MIS.Services
             }
         }
 
+        public static IHttpActionResult HandleInvalidModelState(ApiController controller, string field = null)
+        {
+            var errorMsg = string.IsNullOrEmpty(field) ?
+                string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).Distinct()) :
+                string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage).Distinct());
+
+            return new ResponseMessageResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ObjectContent<JsonResService<string>>(new JsonResService<string>
+                {
+                    AccessState = ResState.Failed,
+                    ErrorMessage = errorMsg,
+                    Datas = null,
+                }, new JsonMediaTypeFormatter())
+            });
+        }
+
         /// <summary>
         /// <see cref="MyCusResException"/>的錯誤訊息回傳
         /// </summary>
@@ -74,6 +95,19 @@ namespace MinSheng_MIS.Services
             };
         }
 
+        public static IHttpActionResult HandleMyCusResException(ApiController controller, MyCusResException error)
+        {
+            return new ResponseMessageResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ObjectContent<JsonResService<string>>(new JsonResService<string>
+                {
+                    AccessState = ResState.Failed,
+                    ErrorMessage = error.Message,
+                    Datas = null,
+                }, new JsonMediaTypeFormatter())
+            });
+        }
+
         /// <summary>
         /// <see cref="Exception"/>的錯誤訊息回傳
         /// </summary>
@@ -87,11 +121,24 @@ namespace MinSheng_MIS.Services
                 Content = JsonConvert.SerializeObject(new JsonResService<string>
                 {
                     AccessState = ResState.Failed,
-                    ErrorMessage = $"</br>系統異常！",
+                    ErrorMessage = $"系統異常！",
                     Datas = null
                 }),
                 ContentType = "application/json"
             };
+        }
+
+        public static IHttpActionResult HandleException(ApiController controller)
+        {
+            return new ResponseMessageResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ObjectContent<JsonResService<string>>(new JsonResService<string>
+                {
+                    AccessState = ResState.Failed,
+                    ErrorMessage = $"</br>系統異常！",
+                    Datas = null,
+                }, new JsonMediaTypeFormatter())
+            });
         }
 
         /// <summary>
