@@ -246,13 +246,6 @@ namespace MinSheng_MIS.Services
 
         public static ICollection<T> AddOrUpdateList<T, TSource>(
             IEnumerable<TSource> list,
-            Func<TSource, T> createInstance) where T : new()
-        {
-            return list.Select(x => createInstance(x)).ToList();
-        }
-
-        public static ICollection<T> AddOrUpdateList<T, TSource>(
-            IEnumerable<TSource> list,
             string esn,
             string initialLatestId,
             Func<string, string, string> generateIdFunc,
@@ -268,34 +261,6 @@ namespace MinSheng_MIS.Services
 
                 // 創建實例，傳遞當前 Id 和 Id 生成函數
                 var result = createInstance(item, esn, latestId, newId);
-                results.Add(result);
-
-                // 更新 latestId
-                latestId = newId;
-            }
-
-            return results;
-        }
-
-        public static ICollection<T> AddOrUpdateList<T, TSource>(
-            IEnumerable<TSource> list,
-            string sn,
-            string initialLatestId,
-            string format,
-            int emptySnLength,
-            Func<string, int, string, string, string> generateIdFunc,  // 修改為新的 generateIdFunc 簽名
-            Func<TSource, string, string, T> createInstance)
-        {
-            string latestId = initialLatestId;
-            var results = new List<T>();
-
-            foreach (var item in list)
-            {
-                // 生成Id，傳遞格式、空位長度、最新Id 和 SN
-                string newId = generateIdFunc(format, emptySnLength, latestId, sn);
-
-                // 創建實例，傳遞當前 Id 和 Id 生成函數
-                var result = createInstance(item, sn, newId);
                 results.Add(result);
 
                 // 更新 latestId

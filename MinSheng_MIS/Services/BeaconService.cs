@@ -8,7 +8,6 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Optimization;
 using System.Data.Entity;
 using System.Threading.Tasks;
-using System.Data.Entity.Migrations;
 using System.Web;
 
 namespace MinSheng_MIS.Services
@@ -67,13 +66,23 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 新增BeaconData紀錄
-        public void AddBeaconDatas(IEnumerable<IBeacon> beacons)
+        public async Task AddBeaconDatasAsync(IEnumerable<IBeacon> beacons, DateTime timestamp)
         {
             // 使用者名稱
             var userName = HttpContext.Current.User.Identity.Name;
+            var now = DateTime.Now;
 
             // 新增使用者定位資訊
-            
+            _db.BeaconData.AddRange(beacons.Select(x =>
+            {
+                var data = x.ToDto<IBeacon, BeaconData>();
+                data.UserName = userName;
+                data.Timestamp = timestamp;
+                data.RecivedTime = now;
+                return data;
+            }));
+
+            await _db.SaveChangesAsync();
         }
         #endregion
 
@@ -158,19 +167,6 @@ namespace MinSheng_MIS.Services
             });
 
             // 目標函數：根據每個信標的位置和距離計算誤差
-            //Func<Vector<double>, double> objective = position =>
-            //{
-            //    double sumSquaredErrors = 0;
-            //    foreach (var beacon in beacons)
-            //    {
-            //        double expectedDistance = Math.Sqrt(
-            //            Math.Pow(position[0] - beacon.X.Value, 2) +
-            //            Math.Pow(position[1] - beacon.Y.Value, 2)
-            //        );
-            //        sumSquaredErrors += Math.Pow(expectedDistance - beacon.Distance, 2);
-            //    }
-            //    return sumSquaredErrors;
-            //};
             Vector<double> residuals(Vector<double> parameters, Vector<double> observed)
             {
                 double x = parameters[0];
@@ -193,24 +189,6 @@ namespace MinSheng_MIS.Services
 
 
             // Jacobian 函數：每個信標對設備位置的偏導數
-            //Func<Vector<double>, Vector<double>> gradient = position =>
-            //{
-            //    var grad = Vector<double>.Build.Dense(2);
-            //    foreach (var beacon in beacons)
-            //    {
-            //        double dx = position[0] - beacon.X.Value;
-            //        double dy = position[1] - beacon.Y.Value;
-            //        double distance = Math.Sqrt(dx * dx + dy * dy);
-
-            //        if (distance > 0)
-            //        {
-            //            double factor = 2 * (distance - beacon.Distance) / distance;
-            //            grad[0] += factor * dx;
-            //            grad[1] += factor * dy;
-            //        }
-            //    }
-            //    return grad;
-            //};
             Matrix<double> jacobian(Vector<double> parameters, Vector<double> observed)
             {
                 double x = parameters[0];
