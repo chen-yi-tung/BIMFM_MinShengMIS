@@ -9,6 +9,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MinSheng_MIS.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -22,7 +24,7 @@ namespace MinSheng_MIS.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -34,9 +36,9 @@ namespace MinSheng_MIS.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -120,7 +122,7 @@ namespace MinSheng_MIS.Controllers
             // 如果使用者輸入不正確的代碼來表示一段指定的時間，則使用者帳戶 
             // 會有一段指定的時間遭到鎖定。 
             // 您可以在 IdentityConfig 中設定帳戶鎖定設定
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -155,8 +157,8 @@ namespace MinSheng_MIS.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
                     // 如需如何進行帳戶確認及密碼重設的詳細資訊，請前往 https://go.microsoft.com/fwlink/?LinkID=320771
                     // 傳送包含此連結的電子郵件
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -401,6 +403,36 @@ namespace MinSheng_MIS.Controllers
         public ActionResult ExternalLoginFailure()
         {
             return View();
+        }
+
+        [HttpGet]
+        public ActionResult UserAuthority()
+        {
+            JObject jo = new JObject()
+            {
+                { "State", "Success" },
+                { "ErrorMessage", "" },
+                { "Datas", "" }
+            };
+            try
+            {
+                string userName = HttpContext.User.Identity.Name;
+                var user = UserManager.FindByName(userName);
+                if (user == null)
+                {
+                    jo["ErrorMessage"] = "系統錯誤。";
+                }
+                else
+                {
+                    jo["Datas"] = new JObject() { { "Authority", user.Authority } };
+                }
+            }
+            catch (Exception ex)
+            {
+                jo["State"] = "Failed";
+                jo["ErrorMessage"] = ex.Message;
+            }
+            return Content(JsonConvert.SerializeObject(jo), "application/json;charset=utf-8");
         }
 
         protected override void Dispose(bool disposing)
