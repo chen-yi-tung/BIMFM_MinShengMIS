@@ -194,6 +194,11 @@ class ForgePin {
         if (!force && !this.visible) {
             return;
         }
+        if (!this.#position) {
+            this.hide();
+            console.error(`[ForgePin] The DBID: ${this.dbId}, Position is not set.`);
+            return;
+        }
         const current2Dpos = this.get2DPosition(this.#position);
         const ox = this.#formatAsPx(this.#offset[0]);
         const oy = this.#formatAsPx(this.#offset[1]);
