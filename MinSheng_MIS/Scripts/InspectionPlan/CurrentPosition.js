@@ -152,6 +152,14 @@ window.addEventListener('load', async () => {
         backgroundColor: "#fff",
         shadow: { color: "rgba(0, 0, 0, 0.25)", blur: 4, offset: { x: 0, y: 4 } }
     }
+    const emptyDoughnut = {
+        color: 'rgba(0,0,0,0.3)',
+        borderColor: 'rgba(0,0,0,0.2)',
+        font: {
+            family: 'Noto Sans TC',
+            size: 16,
+        },
+    }
     const calcPercentage = (data, labels, options = { maximumFractionDigits: 1 }) => {
         const d = data?.datasets?.[0]?.data;
         if (d?.length === 0) return "-";
@@ -288,13 +296,13 @@ window.addEventListener('load', async () => {
             })
         }
         console.log('PINS', pins)
-        downloadJson(pins,`BeaconPoint_${FSN}`)
+        downloadJson(pins, `BeaconPoint_${FSN}`)
 
     }
     // #endregion
 
     // #region chart function
-    //本日報修、維修及保養統計
+    //本日設備維修及保養統計
     function ChartInspectionEquipmentState(data) {
         const container = document.getElementById('ChartInspectionEquipmentState');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -306,7 +314,7 @@ window.addEventListener('load', async () => {
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '報修狀況',
+                    label: '本日設備維修及保養統計',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -316,7 +324,7 @@ window.addEventListener('load', async () => {
                 responsive: false,
                 layout: { padding: 4 },
                 plugins: {
-                    legend, tooltip, pieBackground,
+                    legend, tooltip, pieBackground, emptyDoughnut,
                     htmlLegend: {
                         statistics: {
                             value: (data) => data.reduce((t, e) => t + e, 0),
@@ -329,11 +337,12 @@ window.addEventListener('load', async () => {
             },
             plugins: [
                 chartPlugins.pieBackground,
-                chartPlugins.htmlLegend
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }
-    //本日巡檢計畫進度
+    //本日巡檢總計畫進度
     function ChartInspectionCompleteState(data) {
         const container = document.getElementById('ChartInspectionCompleteState');
         const ctx = getOrCreateElement(container, 'canvas')
@@ -345,7 +354,7 @@ window.addEventListener('load', async () => {
             data: {
                 labels: data.map(x => x.label),
                 datasets: [{
-                    label: '本日巡檢計畫進度',
+                    label: '本日巡檢總計畫進度',
                     data: data.map(x => x.value),
                     backgroundColor,
                     borderWidth: 0,
@@ -355,7 +364,7 @@ window.addEventListener('load', async () => {
                 responsive: false,
                 layout: { padding: 4 },
                 plugins: {
-                    legend, tooltip, pieBackground,
+                    legend, tooltip, pieBackground, emptyDoughnut,
                     htmlLegend: {
                         statistics: {
                             value: (data) => data.reduce((t, e) => t + e, 0),
@@ -368,7 +377,8 @@ window.addEventListener('load', async () => {
             },
             plugins: [
                 chartPlugins.pieBackground,
-                chartPlugins.htmlLegend
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }
@@ -422,7 +432,7 @@ window.addEventListener('load', async () => {
         container.replaceChildren();
         container.insertAdjacentHTML('beforeend', htmls.join(''));
     }
-    //巡檢異常狀態 等級占比
+    //本月緊急事件等級占比/處理狀況
     function ChartInspectionAberrantLevel(data) {
         const container = document.getElementById('ChartInspectionAberrantLevel');
         const ctx = getOrCreateElement(container, 'canvas')

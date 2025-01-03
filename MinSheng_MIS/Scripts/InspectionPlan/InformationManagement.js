@@ -500,7 +500,18 @@ window.addEventListener('load', async () => {
                     }
                 },
                 plugins: {
-                    legend, tooltip,
+                    legend,
+                    tooltip: {
+                        bodyFont: { family, size: 12 },
+                        callbacks: {
+                            title: () => '',
+                            label: (context) => {
+                                let label = context?.dataset?.label ?? '';
+                                let value = context.formattedValue ?? '';
+                                return ` ${label}：${value}`;
+                            }
+                        }
+                    },
                     htmlLegend: { value: false }
                 }
             },
