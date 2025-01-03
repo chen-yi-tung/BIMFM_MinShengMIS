@@ -32,16 +32,21 @@ namespace MinSheng_MIS.Controllers
             JObject jo = new JObject();
             DateTime StartDate = DateTime.Today;
             DateTime EndDate = DateTime.Today.AddDays(1);
+            #region 當月
+            DateTime currentDate = DateTime.Now;
+            DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+            DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1);
+            #endregion
             try
             {
                 using (PlanInformationService ds = new PlanInformationService())
                 {
-                    jo["ChartInspectionCompleteState"] = ds.ChartInspectionCompleteState(StartDate, EndDate);
-                    jo["ChartInspectionEquipmentState"] = ds.ChartInspectionEquipmentState(StartDate, EndDate);
+                    jo["ChartInspectionCompleteState"] = ds.ChartInspectionCompleteState(StartDate, EndDate); //當日
+                    jo["ChartInspectionEquipmentState"] = ds.ChartInspectionEquipmentState(StartDate, EndDate); //當日
                     jo["EquipmentOperatingState"] = ds.EquipmentOperatingState(FSN);
                     jo["EnvironmentInfo"] = ds.EnvironmentInfo(FSN);
-                    jo["ChartInspectionAberrantLevel"] = ds.ChartInspectionAberrantLevel(StartDate, EndDate);
-                    jo["ChartInspectionAberrantResolve"] = ds.ChartInspectionAberrantResolve(StartDate, EndDate);
+                    jo["ChartInspectionAberrantLevel"] = ds.ChartInspectionAberrantLevel(firstDayOfMonth, lastDayOfMonth); //當月
+                    jo["ChartInspectionAberrantResolve"] = ds.ChartInspectionAberrantResolve(firstDayOfMonth, lastDayOfMonth); //當月
                     jo["InspectionCurrentPos"] = ds.InspectionCurrentPos(FSN);
                 }
                 return Content(JsonConvert.SerializeObject(jo), "application/json");
