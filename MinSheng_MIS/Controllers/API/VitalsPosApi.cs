@@ -137,7 +137,7 @@ namespace MinSheng_MIS.Controllers.API
         [System.Web.Http.HttpPost]
         public IHttpActionResult RecordUserVitalsAndPos(VitalsAndPosViewModel data)
         {
-
+            return Ok();
         }
         #endregion
     }
