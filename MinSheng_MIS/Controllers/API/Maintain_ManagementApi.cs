@@ -5,6 +5,7 @@ using MinSheng_MIS.Services;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -116,6 +117,7 @@ namespace MinSheng_MIS.Controllers.API
     #endregion
 
     #region 定期保養單 新增排程
+    [AllowAnonymous]
     public class MaintainCreateScheduleController : ApiController
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
@@ -126,20 +128,9 @@ namespace MinSheng_MIS.Controllers.API
             _db = new Bimfm_MinSheng_MISEntities();
             _maintainService = new Maintain_ManagementService(_db);
         }
-        public string Get()
+        public JsonResService<string> Get()
         {
-            string result = string.Empty;
-            try
-            {
-                int count = _maintainService.MaintainFormCreatingSchedule();
-                result = $"產生{count}筆保養單!";
-            }
-            catch (MyCusResException ex)
-            {
-            }
-            catch (Exception)
-            {
-            }
+            var result = _maintainService.MaintainForm_CreatingSchedule();
             return result;
         }
     }

@@ -285,24 +285,37 @@ namespace MinSheng_MIS.Services
 
         // 排程
         #region 定期保養單 新增排程
-        public int MaintainFormCreatingSchedule()
+        public JsonResService<string> MaintainForm_CreatingSchedule()
         {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
             int count = 0;
-
-            #region 查資料
-            var maindata = _db.Equipment_MaintainItemValue
-                .Where(x => CheckIfCreateMaintainForm(x));
             #endregion
-
-            #region 新增保養單
-            foreach (var item in maindata)
+            try
             {
-                CreateMaintainForm(item);
-                count++;
-            }
-            #endregion
+                #region 查資料
+                var maindata = _db.Equipment_MaintainItemValue.AsNoTracking().ToList().Where(x => CheckIfCreateMaintainForm(x));
+                #endregion
 
-            return count;
+                #region 新增保養單
+                foreach (var item in maindata)
+                {
+                    CreateMaintainForm(item);
+                    count++;
+                }
+                #endregion
+
+                res.AccessState = ResState.Success;
+                res.Datas = $"產生{count}筆保養單!";
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.Datas = $"產生{count}筆保養單!";
+                res.ErrorMessage = "系統異常!";
+                return res;
+            }
         }
         #endregion
 
@@ -311,7 +324,7 @@ namespace MinSheng_MIS.Services
         {
             if (!data.IsCreateForm) // 未產單
                 if (data.NextMaintainDate <= DateTime.Today.AddMonths(1)) // 下次保養日在一個月內
-                    if (data.EquipmentInfo.EState != "1") // 狀態非正常("報修中"或"停用")
+                    if (data.EquipmentInfo.EState == "1") // 狀態為正常(非"報修中"或"停用")
                             return true;
             return false;
         }
@@ -321,8 +334,12 @@ namespace MinSheng_MIS.Services
         private void CreateMaintainForm(Equipment_MaintainItemValue data)
         {
             string nextMaintainDate = data.NextMaintainDate?.ToString("yyMMdd");
-            var lastsn = _db.Equipment_MaintenanceForm.Where(x => x.EMFSN.StartsWith($"M{nextMaintainDate}"))
-                .OrderByDescending(x => x.EMFSN).Select(x => x.EMFSN).FirstOrDefault();
+            var a = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).ToList();
+            var b = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).Select(x => x.EMFSN).ToList();
+            var c = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).Select(x => x.EMFSN)
+                .Where(x => x.StartsWith("M" + nextMaintainDate)).ToList();
+            var lastsn = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).Select(x => x.EMFSN)
+                .Where(x => x.StartsWith("M" + nextMaintainDate)).FirstOrDefault();
             var newsn = ComFunc.CreateNextID($"M{nextMaintainDate}" + "%{6}", lastsn);
 
             // 新增設備保養單
