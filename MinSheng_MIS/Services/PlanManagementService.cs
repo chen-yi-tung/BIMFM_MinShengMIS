@@ -51,26 +51,26 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 建立巡檢時段及執行人員
-        public async Task CreateInspectionPlanContentAsync(IInspectionPlanTimeModifiableList data)
+        public void CreateInspectionPlanContent(IInspectionPlanTimeModifiableList data)
         {
             // 資料驗證
             InspectionPlanTimeDataAnnotation(data);
             _sampleScheduleService.InspectionSampleContentDataAnnotation(
-                new SampleContentModifiableListInstance 
-                { 
-                    DailyTemplateSN = null, 
-                    Contents = data.Inspections.Cast<InspectionSampleContent>() 
+                new SampleContentModifiableListInstance
+                {
+                    DailyTemplateSN = null,
+                    Contents = data.Inspections.Cast<InspectionSampleContent>()
                 });
 
             // 巡檢路線資訊
-            var tasks = data.Inspections.Select(async x =>
+            var test = data.Inspections.Select(x =>
             {
-                var temp = await _samplePathService.GetSamplePathAsync<InspectionPathSample>(x.PlanPathSN);
+                var temp = _samplePathService.GetSamplePath<InspectionPathSample>(x.PlanPathSN);
                 x.PathName = temp.PathName;
                 x.Frequency = temp.Frequency;
                 x.EquipmentCount = temp.DailyInspectionSampleContent.Count;
-            });
-            await Task.WhenAll(tasks);
+                return x;
+            }).ToList();
 
             // 批次建立 InspectionPlan_Time 及 InspectionPlan_Member
             AddRangeInspectionPlanTime(data);
@@ -140,6 +140,17 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 獲取巡檢執行人員
+        public List<string> GetInspectionPlanExecutors(string IPTSN)
+        {
+            var Excutors = _db.InspectionPlan_Member
+                .Where(x => x.IPTSN == IPTSN)
+                .Select(x => x.UserID)
+                .ToList();
+            return Excutors;
+        }
+        #endregion
+
         #region 獲取巡檢路線設備檢查項目
         public List<IInspectionPlanCheckItem> GetInspectionPlanCheckItems(string IPESN)
         {
@@ -172,12 +183,30 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 編輯工單
+        public async Task EditInspectionPlanAsync(string IPSN, IInspectionPlanModifiable data)
+        {
+                var Plan = await _db.InspectionPlan.FindAsync(IPSN);
+                Plan.IPName = data.IPName;
+                Plan.PlanDate = data.PlanDate;
+        }
+        #endregion
+
+        #region 編輯巡檢時段及執行人員
+        public async Task EditInspectionPlanContentAsync(IInspectionPlanTimeModifiableList data)
+        {
+            string IPSN = data.IPSN;
+            await DeleteInspectionPlanContentAsync(IPSN);
+            await _db.SaveChangesAsync();
+            CreateInspectionPlanContent(data);
+        }
+        #endregion
+
         #region 刪除工單
-        public JsonResService<string> DeleteInspectionPlan(string IPSN)
+        public async Task<JsonResService<string>> DeleteInspectionPlanAsync(string IPSN)
         {
             #region 變數
             JsonResService<string> res = new JsonResService<string>();
-            JObject jo_res = new JObject();
             #endregion
             try
             {
@@ -203,23 +232,9 @@ namespace MinSheng_MIS.Services
                     return res;
                 }
                 #endregion
-                var TimeRecords = _db.InspectionPlan_Time
-                    .Where(t => t.IPSN == IPSN)
-                    .ToList();
-                var IPTSN_List = TimeRecords
-                    .Select(x => x.IPTSN)
-                    .ToList();
-                var MemberRecords = _db.InspectionPlan_Member.Where(m => IPTSN_List.Contains(m.IPTSN)).ToList();
-                if(MemberRecords.Count > 0) 
-                {
-                    _db.InspectionPlan_Member.RemoveRange(MemberRecords);
-                }
-                if(TimeRecords.Count > 0)
-                {
-                    _db.InspectionPlan_Time.RemoveRange(TimeRecords);
-                }
+                await DeleteInspectionPlanContentAsync(IPSN);
                 _db.InspectionPlan.Remove(Plan);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
                 res.AccessState = ResState.Success;
                 return res;
@@ -229,6 +244,27 @@ namespace MinSheng_MIS.Services
                 res.AccessState = ResState.Failed;
                 res.ErrorMessage = ex.Message;
                 throw;
+            }
+        }
+        #endregion
+
+        #region 刪除巡檢時段及執行人員
+        public async Task DeleteInspectionPlanContentAsync(string IPSN)
+        {
+            var TimeRecords = await _db.InspectionPlan_Time
+            .Where(t => t.IPSN == IPSN)
+            .ToListAsync();
+            var IPTSN_List = TimeRecords
+                .Select(x => x.IPTSN)
+                .ToList();
+            var MemberRecords = await _db.InspectionPlan_Member.Where(m => IPTSN_List.Contains(m.IPTSN)).ToListAsync();
+            if (MemberRecords.Count > 0)
+            {
+                _db.InspectionPlan_Member.RemoveRange(MemberRecords);
+            }
+            if (TimeRecords.Count > 0)
+            {
+                _db.InspectionPlan_Time.RemoveRange(TimeRecords);
             }
         }
         #endregion

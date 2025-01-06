@@ -4,13 +4,14 @@ let DatagridEvent;
 
 let autoLinkDG_Controller
 
-async function addDropDownList(selector) {
+async function addDropDownList(selector, data = null) {
     console.log("selector", selector);
     await $(selector).tagbox({
         url: "/DropDownList/InspectionMember",
         method: "GET",
         textField: 'Text',
         valueField: 'Value',
+        value: data,
         hasDownArrow: true,
         limitToList: true,
         validateOnCreate: false,
