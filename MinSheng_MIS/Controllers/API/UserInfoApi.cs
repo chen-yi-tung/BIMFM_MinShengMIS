@@ -78,7 +78,7 @@ namespace MinSheng_MIS.Controllers.API
             // 建立 Token
             var token = new JwtSecurityToken(
                 expires: DateTime.UtcNow.AddMinutes(30),
-                claims: new[] { new Claim(nameof(ipAddress), ipAddress), new Claim(nameof(userName), userName) },
+                claims: new[] { new Claim(nameof(ipAddress), ipAddress), new Claim(ClaimTypes.Name, userName) },
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
@@ -118,7 +118,7 @@ namespace MinSheng_MIS.Controllers.API
                 {
                     jo["ErrorMessage"] = "新密碼與再次輸入新密碼不相符。";
                 }
-                var userName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                var userName = HttpContext.Current.User.Identity.Name;
                 var appUser = UserManager.Find(userName, user.OldPassword);
                 if (appUser != null && appUser.Authority == "4")
                 {
@@ -169,7 +169,7 @@ namespace MinSheng_MIS.Controllers.API
             };
             try
             {
-                var userName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                var userName = HttpContext.Current.User.Identity.Name;
                 var appUser = UserManager.FindByName(userName);
                 if (appUser != null)
                 {

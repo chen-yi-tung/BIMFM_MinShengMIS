@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Attributes;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -171,6 +172,66 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 刪除工單
+        public JsonResService<string> DeleteInspectionPlan(string IPSN)
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            JObject jo_res = new JObject();
+            #endregion
+            try
+            {
+                #region 資料檢查、狀態驗證
+                if(String.IsNullOrEmpty(IPSN)) 
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "未輸入單號";
+                    return res;
+                }
+                var Plan = _db.InspectionPlan.Find(IPSN);
+                if (Plan == null)
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "查無資料";
+                    return res;
+                }
+
+                if(Plan.PlanState != ((int)InspectionPlanState.ToDo).ToString())
+                {
+                    res.AccessState = ResState.Failed;
+                    res.ErrorMessage = "工單狀態不為待執行，無法刪除。";
+                    return res;
+                }
+                #endregion
+                var TimeRecords = _db.InspectionPlan_Time
+                    .Where(t => t.IPSN == IPSN)
+                    .ToList();
+                var IPTSN_List = TimeRecords
+                    .Select(x => x.IPTSN)
+                    .ToList();
+                var MemberRecords = _db.InspectionPlan_Member.Where(m => IPTSN_List.Contains(m.IPTSN)).ToList();
+                if(MemberRecords.Count > 0) 
+                {
+                    _db.InspectionPlan_Member.RemoveRange(MemberRecords);
+                }
+                if(TimeRecords.Count > 0)
+                {
+                    _db.InspectionPlan_Time.RemoveRange(TimeRecords);
+                }
+                _db.InspectionPlan.Remove(Plan);
+                _db.SaveChanges();
+
+                res.AccessState = ResState.Success;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                throw;
+            }
+        }
+        #endregion
         //-----資料驗證
         #region InspectionPlan_Time 資料驗證
         private void InspectionPlanTimeDataAnnotation(IInspectionPlanTimeModifiableList data)

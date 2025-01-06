@@ -350,13 +350,18 @@
                 history.back();
             });
             $("#delete").click(function () {
-                let IPSN = $("#IPSN").val();
                 createDeleteDialog({
-                    url: '@Url.Action("DeletePlanManagement")?IPSN=' + IPSN,
-                    data: IPSN,
-                    onSuccess() {
-                        let url = '@Url.Action("Index")';
-                        window.location.href = url;
+                    url: '@Url.Action("DeleteInspectionPlan")?IPSN=' + IPSN,
+                    onSuccess(res) {
+                        console.log(res);
+                        if (!res.ErrorMessage) {
+                            window.location.href = '@Url.Action("Index")';
+                        } else {
+                            createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` + `${res?.ErrorMessage || ""}` })
+                        }
+                    },
+                    onError(ex) {
+                        createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
                     }
                 })
             });

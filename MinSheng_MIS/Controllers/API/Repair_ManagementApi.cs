@@ -91,7 +91,7 @@ namespace MinSheng_MIS.Controllers.API
                     ESN = form["ESN"],
                     ReportLevel = form["ReportLevel"],
                     ReportContent = form["ReportContent"],
-                    UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length)
+                    UserName = HttpContext.Current.User.Identity.Name
                 };
                 item.ReportImg = HttpContext.Current.Request.Files[0];
                 using (Repair_ManagementService ds = new Repair_ManagementService())
@@ -149,7 +149,7 @@ namespace MinSheng_MIS.Controllers.API
                 using (Repair_ManagementService ds = new Repair_ManagementService())
                 {
                     if (item == null) item = new Repair_ManagementRepairListFilterViewModel();
-                    item.UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                    item.UserName = HttpContext.Current.User.Identity.Name;
                     jo["Datas"] = ds.RepairList(item);
                 }
             }
@@ -208,7 +208,7 @@ namespace MinSheng_MIS.Controllers.API
                     RSN = form["RSN"],
                     ReportLevel = form["ReportLevel"],
                     ReportContent = form["ReportContent"],
-                    UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length)
+                    UserName = HttpContext.Current.User.Identity.Name
                 };
                 if (HttpContext.Current.Request.Files.Count > 0)
                     item.ReportImg = HttpContext.Current.Request.Files[0];
@@ -294,7 +294,7 @@ namespace MinSheng_MIS.Controllers.API
             {
                 using (Repair_ManagementService ds = new Repair_ManagementService())
                 {
-                    item.UserName = ((ClaimsIdentity)HttpContext.Current.User.Identity).FindFirst("userName").ToString().Substring("userName: ".Length);
+                    item.UserName = HttpContext.Current.User.Identity.Name;
                     jo["Datas"] = ds.RepairWorkList(item);
                 }
             }
