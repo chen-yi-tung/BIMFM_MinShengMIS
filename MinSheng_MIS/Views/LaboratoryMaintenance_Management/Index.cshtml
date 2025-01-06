@@ -59,14 +59,26 @@
                 UploadDateTime: "2023/11/11 12:01:01"
             }
         ]
-
-        $(async function () {
+        let authority;
+            $(async function () {
+            //取得權限
+            (async () => {
+                try {
+                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
+                    console.log("權限", authority);
+                } catch (error) {
+                    console.error("權限回傳失敗", error);
+                }
+            })();
             await formDropdown.pushSelect({ id: "MType", url: '@Url.Action("FormMType", "DropDownList")' });
-            Initialize_DataGrid(getGridJSON);
+            Initialize_DataGrid(getGridJSON, authority);
             addSearchAreaClickEvent();
+            if (authority === "3") {
+                document.getElementById('create').classList.add('d-none');
+            }
         });
 
-        function Initialize_DataGrid(getGridJSON) {
+        function Initialize_DataGrid(getGridJSON, authority) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -78,7 +90,7 @@
                 remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: authority === "3" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('LMSN'),
@@ -100,7 +112,7 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-            
+
 
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());

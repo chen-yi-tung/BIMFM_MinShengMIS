@@ -60,13 +60,25 @@
                 EDDate: "2023/5/22"
             }
         ]
-
-        $(async function () {
-            Initialize_DataGrid(getGridJSON);
+        let authority;
+         $(async function () {
+            //取得權限
+            (async () => {
+                try {
+                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
+                    console.log("權限", authority);
+                } catch (error) {
+                    console.error("權限回傳失敗", error);
+                }
+            })();
+            Initialize_DataGrid(getGridJSON, authority);
             addSearchAreaClickEvent();
+            if (authority === "3") {
+                document.getElementById('create').classList.add('d-none');
+            }
         });
 
-        function Initialize_DataGrid(getGridJSON) {
+        function Initialize_DataGrid(getGridJSON, authority) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -77,7 +89,7 @@
                 //sortName: 'EDRSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: authority === "3" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('EDRSN'),

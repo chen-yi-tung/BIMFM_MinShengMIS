@@ -12,40 +12,28 @@
     <button type="button" class="btn btn-create" id="create">新增設計圖</button>
     <div class="search-area">
         <form class="form" method="post" action="">
-
             <div class="form-group">
                 <label for="ImgNum">圖名</label>
                 <input class="form-control" id="ImgName" name="ImgName" type="text" />
             </div>
-            @*<div>
-                <input class="form-control" id="Area" name="Area" type="text" hidden />
-            </div>*@
-
             <div class="form-group">
                 <label for="ImgType">圖說種類</label>
                 <select class="form-select" name="ImgType" id="ImgType">
                     <option value="">請選擇</option>
                 </select>
             </div>
-            @*<div>
-                <input class="form-control" id="Floor" name="Floor" type="text" hidden />
-            </div>*@
-
             <div class="form-group">
                 <label for="DateStart">上傳日期(起)</label>
                 <input class="form-control" id="DateStart" name="DateStart" type="date" />
             </div>
-
             <div class="form-group">
                 <label for="DateEnd">上傳日期(迄)</label>
                 <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
             </div>
-
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
                 <button type="reset" class="btn btn-clear" id="clear">清除</button>
             </div>
-
         </form>
     </div>
 
@@ -71,14 +59,26 @@
 
             }
         ]
-
+        let authority;
         $(async function () {
+            //取得權限
+            (async () => {
+                try {
+                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
+                    console.log("權限", authority);
+                } catch (error) {
+                    console.error("權限回傳失敗", error);
+                }
+            })();
             await formDropdown.pushSelect({ id: "ImgType", url: '@Url.Action("ImgType", "DropDownList")' });
-            Initialize_DataGrid(getGridJSON);
+            Initialize_DataGrid(getGridJSON, authority);
             addSearchAreaClickEvent();
+            if (authority === "3") {
+                document.getElementById('create').classList.add('d-none');
+            }
         });
 
-        function Initialize_DataGrid(getGridJSON) {
+        function Initialize_DataGrid(getGridJSON, authority) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -90,8 +90,8 @@
                 remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: authority === "3" })),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { disabled: authority != "1",className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('DDSN'),
