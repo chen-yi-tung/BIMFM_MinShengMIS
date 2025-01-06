@@ -352,17 +352,10 @@
             $("#delete").click(function () {
                 createDeleteDialog({
                     url: '@Url.Action("DeleteInspectionPlan")?IPSN=' + IPSN,
-                    onSuccess(res) {
-                        console.log(res);
-                        if (!res.ErrorMessage) {
-                            window.location.href = '@Url.Action("Index")';
-                        } else {
-                            createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` + `${res?.ErrorMessage || ""}` })
-                        }
+                    onSuccess() {
+                        let url = '@Url.Action("Index")';
+                        window.location.href = url;
                     },
-                    onError(ex) {
-                        createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！` })
-                    }
                 })
             });
         }
