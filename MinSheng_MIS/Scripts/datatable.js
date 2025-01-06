@@ -894,7 +894,7 @@ function createDeleteDialog(options) {
             createDialogModal({
                 id: "DialogModal-Success",
                 inner: "刪除成功！",
-                onHide: options.onSuccess(res)
+                onHide: options.onSuccess
             })
         }
 

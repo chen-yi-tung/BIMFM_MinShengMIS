@@ -112,12 +112,12 @@ namespace MinSheng_MIS.Controllers
             return View();
         }
 
-        public async Task<ActionResult> ReadBody(string id)
+        public ActionResult ReadBody(string id)
         {
             try
             {
                 // 獲取一機一卡詳情
-                SamplePathDetailViewModel sample = await _samplePathService.GetSamplePathAsync<SamplePathDetailViewModel>(id);
+                SamplePathDetailViewModel sample = _samplePathService.GetSamplePath<SamplePathDetailViewModel>(id);
                 // 獲取增設基本資料欄位
                 sample.Equipments = _samplePathService.GetDefaultOrderRFIDInfoList(id);
 
