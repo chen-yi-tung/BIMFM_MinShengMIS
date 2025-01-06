@@ -36,18 +36,21 @@
 
                     <div class="form-group col-3fr required">
                         <label for="AuditReason">審核意見</label>
-                        <textarea class="form-control" id="AuditReason" name="AuditReason" rows="3" cols="50" required></textarea>
+                        <textarea class="form-control" id="AuditReason" name="AuditReason" rows="3" cols="50"
+                            required></textarea>
                     </div>
 
                     <div class="form-group radio-group required">
                         <label for="AuditResult">審核結果</label>
                         <div class="d-flex gap-4">
                             <label class="" for="AuditResult_1">
-                                <input type="radio" class="form-check-input" id="AuditResult_1" name="AuditResult" value="true">
+                                <input type="radio" class="form-check-input" id="AuditResult_1" name="AuditResult"
+                                    value="true">
                                 通過
                             </label>
                             <label class="" for="AuditResult_2">
-                                <input type="radio" class="form-check-input" id="AuditResult_2" name="AuditResult" value="false">
+                                <input type="radio" class="form-check-input" id="AuditResult_2" name="AuditResult"
+                                    value="false">
                                 不通過
                             </label>
                         </div>
@@ -66,12 +69,10 @@
 
 @section scripts {
     <script>
-        @*const EMFSN = '@ViewBag.EMFSN';*@
         const UserName = '@ViewBag.MyName';
         const url = window.location.search;
         const EMFSN = new URLSearchParams(url).get('EMFSN');
         let apiUrl = '@Url.Action("ReadBody", "Maintain_Management")?emfsn=' + `${EMFSN}`;
-        //let apiUrl = null;
 
         const fakeData = {
             Datas: {
@@ -97,33 +98,6 @@
             readData(apiUrl);
         })
 
-        const MaintainDetailItem = [
-            { text: "保養單號", value: "EMFSN" },
-            { text: "保養單狀態", value: "Status" },
-            { text: "保養項目", value: "MaintainName" },
-            { text: "執行人員", value: "Maintainer" },
-            { text: "設備名稱", value: "EName" },
-            { text: "設備狀態", value: "EState" },
-            { text: "設備編號", value: "NO" },
-            { text: "所在地點", value: "Location" },
-            {
-                text: "設備屬性", value: "EMFSN", formatter: (val) => {
-                    return val ? `<button class="btn btn-search" onclick="window.open('/EquipmentInfo_Management/Detail?EMFSN=${val}', '_blank')">設備資料</button>` : "-"
-                }
-            },
-            { text: "保養週期", value: "Period" },
-            { text: "上次保養日", value: "LastMaintainDate" },
-            { text: "最近應保養日", value: "NextMaintainDate" },
-        ]
-
-        const ReportDetailItem = [
-            { text: "填報者", value: "ReportId" },
-            { text: "填報時間", value: "ReportTime" },
-            { text: "保養填報", value: "ReportContent" },
-        ]
-
-
-
         function readData(url = null) {
 
             url == null ? onSuccess(apiUrl) :
@@ -139,11 +113,34 @@
 
             function onSuccess(res) {
                 console.log(res);
+                const data = res.Datas
                 document.getElementById('AuditId').value = UserName;
-                $("#MaintainDetail").append(createTableInner(res.Datas, MaintainDetailItem));
-                $("#ReportDetail").append(createTableInner(res.Datas, ReportDetailItem));
-
-                ImageDisplay(".datatable-img-item>img");
+                DT.createTableInner("#MaintainDetail", data, [
+                    { title: "保養單號", id: "EMFSN" },
+                    { title: "保養單狀態", id: "Status" },
+                    { title: "保養項目", id: "MaintainName" },
+                    { title: "執行人員", id: "Maintainer" },
+                    { title: "設備名稱", id: "EName" },
+                    { title: "設備狀態", id: "EState" },
+                    { title: "設備編號", id: "NO" },
+                    { title: "所在地點", id: "Location" },
+                    {
+                        title: "設備屬性", id: "ESN", type: "btn", nullable: true, button: {
+                            text: "設備資料",
+                            onClick(e, v) {
+                                window.open(`/EquipmentInfo_Management/Detail/${v}`, '_blank')
+                            }
+                        }
+                    },
+                    { title: "保養週期", id: "Period" },
+                    { title: "上次保養日", id: "LastMaintainDate" },
+                    { title: "最近應保養日", id: "NextMaintainDate" },
+                ])
+                DT.createTableInner("#ReportDetail", data, [
+                    { title: "填報者", id: "ReportId" },
+                    { title: "填報時間", id: "ReportTime" },
+                    { title: "保養填報", id: "ReportContent" },
+                ])
             }
             function onError(res) {
                 console.log(res);

@@ -501,10 +501,22 @@
             }
             case "btn": {
                 const bos = Array.isArray(options.button) ? options.button : [options.button];
+                const nullable = this.toValue(options.nullable, value, data, index);
+                if (nullable) {
+                    if (value === DataTable.nullString) {
+                        cell.textContent = DataTable.nullString;
+                        return;
+                    }
+                }
+
                 bos.forEach((bo) => {
                     const btnText = this.toValue(bo.text, value, data) ?? null;
                     const btnClassName = this.toValue(bo.className, value, data) ?? "btn btn-search";
                     const btnIcon = this.toValue(bo.icon, value, data, index) ?? null;
+                    const disabled = this.toValue(bo.disabled, value, data, index);
+                    
+
+                    
                     const btn = document.createElement("button");
                     btn.type = "button";
                     if (btnIcon) {
@@ -517,6 +529,7 @@
                     btn.onclick = (event) => {
                         bo.onClick(event, value, data);
                     };
+                    btn.disabled = disabled;
                     cell.appendChild(btn);
                 })
                 break;
@@ -538,7 +551,7 @@
      * @returns {string} - The HTML string for the images.
      */
     setImageCellContent(cell, imgs) {
-        if (!imgs) return DataTable.nullString;
+        if (!imgs) { cell.textContent = DataTable.nullString; return; }
         if (!Array.isArray(imgs)) {
             imgs = [imgs];
         }
@@ -552,7 +565,7 @@
      * @returns {string} - The HTML string for the file links.
      */
     setFileCellContent(cell, urls) {
-        if (!urls) return DataTable.nullString;
+        if (!urls) { cell.textContent = DataTable.nullString; return; }
         if (!Array.isArray(urls)) {
             urls = [urls];
         }
