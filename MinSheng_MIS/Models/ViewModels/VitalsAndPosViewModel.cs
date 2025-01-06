@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
-    #region 獲取Beacons位置
+    #region Beacons
     public class BeaconsPosInfoRequestModel
     {
         [Required]
@@ -19,15 +19,6 @@ namespace MinSheng_MIS.Models.ViewModels
         public IEnumerable<IEnumerable<IBeaconPosition>> BeaconSubset { get; set; }
         public string FSN { get; set; } // 樓層
         public DateTime Timestamp { get; set; }
-    }
-    #endregion
-
-    public class VitalsAndPosViewModel : IVitals
-    {
-        [Required]
-        public int? HeartRhythm { get; set; }
-        [Required]
-        public DateTime? Timestamp { get; set; }
     }
 
     public class BeaconPosition : IBeaconPosition
@@ -63,11 +54,6 @@ namespace MinSheng_MIS.Models.ViewModels
         double Distance { get; set; } // 與目標物距離
     }
 
-    public interface IVitals
-    {
-        int? HeartRhythm { get; set; }
-    }
-
     public class Beacon : IBeacon
     {
         public string MacAddress { get; set; } // 媒體存取控制位置(唯一)
@@ -89,4 +75,34 @@ namespace MinSheng_MIS.Models.ViewModels
         int? RSSI { get; set; } // 目標接收到Beacon的信號強度
         double? Distance { get; set; } // 目標和Beacon的距離
     }
+    #endregion
+
+    #region 使用者生理狀態及定位
+    public class VitalsAndPosViewModel : IUserVitals, IUserPos
+    {
+        [Required]
+        public int HeartRhythm { get; set; }
+        [Required]
+        public string FSN { get; set; }
+        [Required]
+        public double X { get; set; }
+        [Required]
+        public double Y { get; set; }
+        [Required]
+        public DateTime Timestamp { get; set; }
+    }
+
+    public interface IUserVitals
+    {
+        int HeartRhythm { get; set; }
+    }
+
+    public interface IUserPos
+    {
+        string FSN { get; set; }
+        double X { get; set; }
+        double Y { get; set; }
+    }
+    #endregion
+
 }

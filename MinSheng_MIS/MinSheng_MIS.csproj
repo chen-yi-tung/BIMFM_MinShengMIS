@@ -264,6 +264,7 @@
     <Compile Include="Controllers\API\UserInfoApi.cs" />
     <Compile Include="Controllers\API\VitalsPosApi.cs" />
     <Compile Include="Controllers\AsBuiltDrawing_ManagementController.cs" />
+    <Compile Include="Controllers\BeaconController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
     <Compile Include="Controllers\BIMController.cs" />
     <Compile Include="Controllers\DatagridController.cs" />
@@ -1909,6 +1910,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BimModels\" />
+    <Folder Include="Views\Beacon\" />
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
   </ItemGroup>

@@ -1,16 +1,11 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
-using System.Web.Mvc;
-using RouteAttribute = System.Web.Http.RouteAttribute;
-using RoutePrefixAttribute = System.Web.Http.RoutePrefixAttribute;
 
 namespace MinSheng_MIS.Controllers.API
 {
@@ -26,6 +21,8 @@ namespace MinSheng_MIS.Controllers.API
             _beaconService = new BeaconService(_db);
         }
 
+        #region 取得Beacon位置X、Y軸並組合成Subset
+        //[AllowAnonymous]
         [Route("GetBeaconsPosInfo")]
         [System.Web.Http.HttpPost]
         public async Task<IHttpActionResult> GetBeaconsPosInfo(BeaconsPosInfoRequestModel data)
@@ -47,7 +44,7 @@ namespace MinSheng_MIS.Controllers.API
                 // 將有效Beacon組合成子集合
                 var subsets = BeaconService.GenerateSubsets(beacons, 3)?
                     .Concat(BeaconService.GenerateSubsets(beacons, 4));
-                if (subsets?.Count() < 3)
+                if (subsets?.Any() != true)
                     throw new MyCusResException("未偵測到至少三個有效Beacon，無法進行定位計算！");
 
                 return Ok(new JsonResService<BeaconsPosInfoResultModel>
@@ -71,7 +68,9 @@ namespace MinSheng_MIS.Controllers.API
                 return Helper.HandleException(this);
             }
         }
+        #endregion
 
+        #region [X不準確]以Beacon距離計算使用者定位(至少3個Beacon)
         [Route("GetUserPos")]
         [System.Web.Http.HttpPost]
         public async Task<IHttpActionResult> GetUserPos(BeaconsPosInfoRequestModel data)
@@ -80,8 +79,6 @@ namespace MinSheng_MIS.Controllers.API
             {
                 // Data Annotation
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
-
-                var userName = HttpContext.Current.User.Identity.Name;
 
                 // 紀錄BeaconData
                 await _beaconService.AddBeaconDatasAsync(data.Beacons, data.Timestamp.Value);
@@ -95,7 +92,7 @@ namespace MinSheng_MIS.Controllers.API
                 // 將有效Beacon組合成子集合
                 var subsets = BeaconService.GenerateSubsets(beacons, 3)?
                     .Concat(BeaconService.GenerateSubsets(beacons, 4));
-                if (subsets?.Count() < 3)
+                if (subsets?.Any() != true)
                     throw new MyCusResException("未偵測到至少三個有效Beacon，無法進行定位計算！");
 
                 // 計算子集合的中心座標
@@ -130,55 +127,18 @@ namespace MinSheng_MIS.Controllers.API
                 return Helper.HandleException(this);
             }
         }
-    }
 
+        #endregion
 
-    public class BeaconController : Controller
-    {
-        private readonly Bimfm_MinSheng_MISEntities _db;
-        private readonly BeaconService _beaconService;
-
-        public BeaconController()
+        #region 紀錄使用者生理狀態及定位
+        // 心律是否正常
+        // 是否停留過久：以偵測到的beacon作為判斷(app抓取最近的3個beacon作為定位計算，若beacon每5公尺布置一個，則移動約2.5公尺抓取的beacon會不一樣)
+        [Route("RecordUserVitalsAndPos")]
+        [System.Web.Http.HttpPost]
+        public IHttpActionResult RecordUserVitalsAndPos(VitalsAndPosViewModel data)
         {
-            _db = new Bimfm_MinSheng_MISEntities();
-            _beaconService = new BeaconService(_db);
-        }
 
-        public ActionResult GetFloorBeacons(string FSN)
-        {
-            try
-            {
-                var beacons = _beaconService.GetBeaconsBimInfo<BeaconBimInfo>(FSN);
-
-                return Content(JsonConvert.SerializeObject(new JsonResService<IEnumerable<BeaconBimInfo>>
-                {
-                    AccessState = ResState.Success,
-                    ErrorMessage = null,
-                    Datas = beacons,
-                }), "application/json");
-            }
-            catch (MyCusResException ex)
-            {
-                return Helper.HandleMyCusResException(this, ex);
-            }
-            catch (Exception)
-            {
-                return Helper.HandleException(this);
-            }
         }
-
-        private class BeaconBimInfo
-        {
-            public string GUID { get; set; }
-            public int? DBID { get; set; }
-            public string ElementID { get; set; }
-            public string DeviceName
-            {
-                get => Minor;
-                set => Minor = value;
-            } // 將 Minor 映射到 DeviceName
-            [JsonIgnore]
-            public string Minor { get; set; }
-        }
+        #endregion
     }
 }
