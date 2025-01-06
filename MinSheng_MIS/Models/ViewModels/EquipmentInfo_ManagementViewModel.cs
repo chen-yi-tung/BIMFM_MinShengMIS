@@ -90,6 +90,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         public string FilePath { get; set; } // 設備照片路徑
         public string FileName { get; set; } // 設備照片名稱
+        public string EState { get; set; } // 設備狀態
         public string ASN { get; set; } // 棟別
         public string AreaName { get; set; } // 棟別名稱
         public string FloorName { get; set; } // 樓層名稱
@@ -100,6 +101,7 @@ namespace MinSheng_MIS.Models.ViewModels
         string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         string FilePath { get; set; } // 設備照片路徑
         string FileName { get; set; } // 設備照片名稱
+        string EState { get; set; } // 設備狀態
         string ASN { get; set; } // 棟別
         string AreaName { get; set; } // 棟別名稱
         string FloorName { get; set; } // 樓層名稱

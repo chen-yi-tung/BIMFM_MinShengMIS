@@ -117,6 +117,7 @@ namespace MinSheng_MIS.Services
             T dest = equipment.ToDto<EquipmentInfo, T>();
             if (dest is IEquipmentInfoDetail info)
             {
+                info.EState = ConvertStringToEnum<EState>(equipment.EState).GetLabel();
                 info.ASN = equipment.Floor_Info.ASN.ToString();
                 info.AreaName = equipment.Floor_Info.AreaInfo.Area;
                 info.FloorName = equipment.Floor_Info.FloorName;
