@@ -37,32 +37,6 @@
             bim = new UpViewer(document.getElementById("BIM"));
         })
         //每日巡檢時程模板 詳情
-        const SerializedName = [
-            { text: "巡檢路線名稱", value: "PathName" },
-            { text: "巡檢頻率", value: "Frequency" },
-        ]
-        const GridOptions = {
-            thead: true,
-            columns: [
-                { id: "Index", title: "" },
-                { id: "InternalCode", title: "RFID內碼" },
-                { id: "ExternalCode", title: "RFID外碼" },
-                { id: "RFIDName", title: "RFID名稱" },
-                { id: "RFIDArea", title: "RFID棟別" },
-                { id: "RFIDFloor", title: "RFID樓層" },
-                { id: "RFIDMemo", title: "RFID備註" },
-                { id: "EName", title: "設備名稱" },
-                { id: "NO", title: "設備編號" },
-                { id: "Brand", title: "廠牌" },
-                { id: "Model", title: "型號" },
-                { id: "Frequency", title: "巡檢頻率" },
-                {
-                    id: "Btn", title: "", formatter: (v, row, i) => {
-                        return `<button type="button" class="btn btn-location" data-btn-type="location" data-row-index="${i}"><i class="fa-solid fa-location-dot"></i></button>`
-                    }
-                },
-            ]
-        }
         let fakeData = {
             PName: "前處理機房巡檢",
             PFrequency: "每3小時",
@@ -121,33 +95,50 @@
             function onSuccess(res) {
                 console.log("res", res);
                 if (res.Datas) res = res.Datas
-                res.Frequency = `每${res.Frequency}小時`
-                $("#PlanDetail").append(createTableInner(res, SerializedName));
-                res.Equipments ?
-                    $("#PlanRecord").append(createTableGrid(
-                        createIndexToArrayData(res.Equipments), GridOptions)) :
-                    $("#PlanRecord").parents(".datatable").remove();
+                DT.createTableInner("#PlanDetail", res, [
+                    { id: "PathName", title: "巡檢路線名稱" },
+                    { id: "Frequency", title: "巡檢頻率", formatter: (v) => `每${v}小時` },
+                ])
 
-                $("#PlanRecord").on('click', `[data-btn-type="location"]`, (event) => {
-                    const button = event.currentTarget;
-                    const index = button.getAttribute('data-row-index')
-                    console.log(button, index)
-                    const row = res.Equipments[+(index)];
-                    createMapModal(row);
-                })
+                if (res.Equipments) {
+                    DT.createTableGrid(
+                        "#PlanRecord",
+                        res.Equipments,
+                        {
+                            thead: true,
+                            rownumbers: true,
+                            columns: [
+                                { id: "InternalCode", title: "RFID內碼" },
+                                { id: "ExternalCode", title: "RFID外碼" },
+                                { id: "RFIDName", title: "RFID名稱" },
+                                { id: "RFIDArea", title: "RFID棟別" },
+                                { id: "RFIDFloor", title: "RFID樓層" },
+                                { id: "RFIDMemo", title: "RFID備註" },
+                                { id: "EName", title: "設備名稱" },
+                                { id: "NO", title: "設備編號" },
+                                { id: "Brand", title: "廠牌" },
+                                { id: "Model", title: "型號" },
+                                { id: "Frequency", title: "巡檢頻率" },
+                                {
+                                    id: "Btn", title: "", type: 'btn', button: {
+                                        className: "btn btn-location",
+                                        icon: "fa-solid fa-location-dot",
+                                        onClick(event, v, row, i) {
+                                            DT.createMapModal(row);
+                                        }
+                                    }
+                                },
+                            ]
+                        }
+                    )
+                }
+                else {
+                    document.querySelector("#PlanRecord").closest('.datatable').remove()
+                }
             }
 
             function onError(res) {
                 console.log(res);
-            }
-            //在每列加上次序
-            function createIndexToArrayData(arr) {
-                return arr.map((e, i) => {
-                    return {
-                        Index: i + 1,
-                        ...e,
-                    }
-                })
             }
         }
     </script>
