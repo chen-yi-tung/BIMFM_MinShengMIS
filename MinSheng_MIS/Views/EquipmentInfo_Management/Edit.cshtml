@@ -408,7 +408,6 @@
 
                 //監聽掃描按鈕
                 document.getElementById('scan').addEventListener('click', function () {
-                    //showRFIDPopup(fakeData_RFID.RFIDInternalCode);
                     let url = null
                     url == null ? onSuccess(fakeData_RFID) :
                         $.ajax({
@@ -732,6 +731,10 @@
             const inputs = container.querySelectorAll("input");
             const selects = container.querySelectorAll("select");
             const textarea = container.querySelector("textarea");
+
+            const closestDatagrid = $('#RFIDZone').closest('.datatable');
+            closestDatagrid.removeClass('d-none');
+            document.getElementById('RFIDZone').style.display = 'table';
 
             //取RFID 彈跳視窗裡的設備資料
             const values = {};
