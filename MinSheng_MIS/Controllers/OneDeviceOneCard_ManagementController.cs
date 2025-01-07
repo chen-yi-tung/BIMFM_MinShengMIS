@@ -19,8 +19,8 @@ namespace MinSheng_MIS.Controllers
         public OneDeviceOneCard_ManagementController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
-            _dCardService = new OneDeviceOneCard_ManagementService(_db);
-            _eMgmtService = new EquipmentInfo_ManagementService(_db);
+            _dCardService = new OneDeviceOneCard_ManagementService(_db, Server);
+            _eMgmtService = new EquipmentInfo_ManagementService(_db, Server);
         }
 
         #region 一機一卡模板 管理

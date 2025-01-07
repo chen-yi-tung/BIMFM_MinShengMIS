@@ -50,7 +50,7 @@ th.datatable-header,
     background: var(--datatable-header-bg);
     color: var(--datatable-header-color);
     text-align: center;
-    padding: 6px;
+    padding: 12px;
     border-color: var(--datatable-border-color);
     border-style: solid;
     border-width: 0;
@@ -83,7 +83,7 @@ th.datatable-header,
 }
 
 .datatable-table td {
-    padding: 6px;
+    padding: 6px 12px;
     word-break: break-word;
 }
 
