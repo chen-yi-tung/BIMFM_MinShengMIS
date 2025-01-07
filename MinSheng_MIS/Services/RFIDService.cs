@@ -121,5 +121,15 @@ namespace MinSheng_MIS.Services
             #endregion
         }
         #endregion
+
+        #region 檢查RFID內碼是否重複
+        public async Task CheckRFIDInternalCode(string RFIDInternalCode)
+        {
+
+            // 不可重複: RFID內碼
+            if (await _db.RFID.AnyAsync(x => x.RFIDInternalCode == RFIDInternalCode))
+                throw new MyCusResException("RFID內碼已存在！");
+        }
+        #endregion
     }
 }
