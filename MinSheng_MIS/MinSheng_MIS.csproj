@@ -279,6 +279,7 @@
     <Compile Include="Controllers\OneDeviceOneCard_ManagementController.cs" />
     <Compile Include="Controllers\PlanManagementController.cs" />
     <Compile Include="Controllers\Repair_ManagementController.cs" />
+    <Compile Include="Controllers\RFIDController.cs" />
     <Compile Include="Controllers\SamplePath_ManagementController.cs" />
     <Compile Include="Controllers\SampleSchedule_ManagementController.cs" />
     <Compile Include="Controllers\EquipmentOperatingManualController.cs" />
@@ -1916,6 +1917,7 @@
     <Folder Include="Views\Beacon\" />
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />
+    <Folder Include="Views\RFID\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

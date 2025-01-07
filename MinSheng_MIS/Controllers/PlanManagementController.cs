@@ -165,6 +165,7 @@ namespace MinSheng_MIS.Controllers
                     {
                         inspection.Executors = _inspectionPlanService.GetInspectionPlanExecutors(inspection.IPTSN);
                     }
+
                     plan.Inspections.Add(inspection as InspectionPlanContentDetail 
                         ?? throw new InvalidCastException("Invalid inspection type."));
                 }

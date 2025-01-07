@@ -1,7 +1,7 @@
-﻿using MinSheng_MIS.Attributes;
+﻿using Microsoft.Ajax.Utilities;
+using MinSheng_MIS.Attributes;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -63,14 +63,13 @@ namespace MinSheng_MIS.Services
                 });
 
             // 巡檢路線資訊
-            var test = data.Inspections.Select(x =>
+            data.Inspections.ForEach(x =>
             {
                 var temp = _samplePathService.GetSamplePath<InspectionPathSample>(x.PlanPathSN);
                 x.PathName = temp.PathName;
                 x.Frequency = temp.Frequency;
                 x.EquipmentCount = temp.DailyInspectionSampleContent.Count;
-                return x;
-            }).ToList();
+            });
 
             // 批次建立 InspectionPlan_Time 及 InspectionPlan_Member
             AddRangeInspectionPlanTime(data);
@@ -268,6 +267,7 @@ namespace MinSheng_MIS.Services
             }
         }
         #endregion
+
         //-----資料驗證
         #region InspectionPlan_Time 資料驗證
         private void InspectionPlanTimeDataAnnotation(IInspectionPlanTimeModifiableList data)
