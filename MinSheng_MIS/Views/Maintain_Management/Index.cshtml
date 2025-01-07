@@ -11,7 +11,7 @@
 
 <div class="dg-tool-bar">
     <div class="search-area">
-        <form class="form" method="post" action="">
+        <form class="form" method="post" action="" id="form">
             <div class="form-group">
                 <label for="Status">保養單狀態</label>
                 <select class="form-select" name="Status" id="Status"></select>
@@ -202,8 +202,17 @@
                 Maintainer: "王大明、李泰順",
             },
         ]
-
+        let authority ;
         $(async function () {
+            //取得權限
+            (async () => {
+                try {
+                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
+                    console.log("權限", authority);
+                } catch (error) {
+                    console.error("權限回傳失敗", error);
+                }
+            })();
             await formDropdown.ASN()
             await pushSelect("Status", '@Url.Action("MaintainStatus", "DropDownList")');
             await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
@@ -211,11 +220,15 @@
             await pushSelect("Member", '@Url.Action("MaintainUserName", "DropDownList")');
             await addDropDownList();
             await addButtonEvent();
-            Initialize_DataGrid(getGridJSON);
+            Initialize_DataGrid(getGridJSON, authority);
             addSearchAreaClickEvent();
+            if (authority === "3") {
+                document.getElementById('multiAssign').classList.add('d-none');
+            }
         });
 
-        function Initialize_DataGrid(getGridJSON) {
+        function Initialize_DataGrid(getGridJSON, authority) {
+            console.log("authority", authority);
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -227,8 +240,8 @@
                 frozenColumns: [[
                     { field: 'ck', checkbox: true }, // 新增 checkbox
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_review', (v, row, i) => dg.eventButton(i, "審核", "review", { disabled: row.Status != "待審核" })),
-                    dg.frozenColumn('_assign', (v, row, i) => dg.eventButton(i, "派工", "assign", { disabled: row.Status != "待派工", className: "btn btn-datagrid btn-other", dataTitle: "定期保養單 派工" })),
+                    dg.frozenColumn('_review', (v, row, i) => dg.eventButton(i, "審核", "review", { disabled: row.Status != "待審核" || authority != "1"})),
+                    dg.frozenColumn('_assign', (v, row, i) => dg.eventButton(i, "派工", "assign", { disabled: row.Status != "待派工" || authority === "3", className: "btn btn-datagrid btn-other", dataTitle: "定期保養單 派工" })),
                 ]],
                 onLoadSuccess: function (data) {
                     const rows = data.rows;
@@ -246,7 +259,7 @@
                     dg.column('ReportTime', '實際保養時間', 160),
                     dg.column('EState', '設備狀態', 150),
                     dg.column('Area', '棟別', 200),
-                    dg.column('Floor', '樓層', 200),
+                    dg.column('FloorName', '樓層', 200),
                     dg.column('EName', '設備名稱', 300),
                     dg.column('ESN', '設備編號', 150),
                     dg.column('MaintainName', '保養項目', 200),
@@ -306,7 +319,36 @@
 
         //點擊 匯出btn
         $("#export").click(function () {
-
+            const fd = new FormData();
+            for (const [key, value] of Object.entries(getQueryParams('#form'))) {
+                fd.append(key, value);
+            }
+            @*$.ajax({
+                url: "@Url.Action("ExportToExcel", "Maintain_Management")",
+                data: fd,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: onSuccess,
+                error: onError,
+                xhrFields: {
+                    responseType: 'blob'  //指定響應類型為blob
+                },
+            })*@
+            function onSuccess(res) {
+                console.log("onSuccess res:", res);
+                let a = document.createElement('a');
+                let url = window.URL.createObjectURL(res);
+                a.href = url;
+                a.download = `定期保養單.xlsx`;
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            }
+            function onError(res) {
+                console.log(res);
+                createDialogModal({ id: "DialogModal-Error", inner: `匯出失敗！` + `${res?.responseText || ""}` })
+            }
         })
 
         //search area onClick Function
