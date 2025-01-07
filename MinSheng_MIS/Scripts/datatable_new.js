@@ -188,12 +188,14 @@
 
     /**
      * @typedef {object} TableOptions
-     * @property {string?} className - use to datatable custom class
-     * @property {string?} title - use to datatable-header
      * @property {string} id - use to set datatable-table id
-     * @property {string} inner - TableInner from createTableInner
-     * @property {string} data - The data for the table.
-     * @property {TableInnerOptions[]} items - The items to populate the table.
+     * @property {object[]} data - The data for the table.
+     * @property {string?} className - use to datatable custom class
+     * @property {string?} bodyClassName - use to datatable-body custom class
+     * @property {string?} title - use to datatable-header
+     * @property {string?} type - The type for the table.
+     * @property {string?} inner - TableInner from createTableInner
+     * @property {TableInnerOptions[]|TableGridOptions} items - The items to populate the table.
      *
      * @param {string} selector - The selector
      * @param {TableOptions} options
@@ -203,34 +205,36 @@
         const container = this.getContainer(selector);
         const id = this.toValue(options.id) ?? "";
         const className = this.toValue(options.className) ?? "";
+        const bodyClassName = this.toValue(options.bodyClassName) ?? "";
         const title = this.toValue(options.title) ?? "";
 
         container.insertAdjacentHTML(
             "beforeend",
-            `<div class="datatable ${className}">
+            `<div class="datatable ${className}" id="${id}">
             ${title ? `<div class="datatable-header">${title}</div>` : ""}
-            <div class="datatable-body">
-                <table class="datatable-table" id="${id}"></table>
+            <div class="datatable-body ${bodyClassName}">
+                <table class="datatable-table" id="table-${id}"></table>
             </div>
         </div>`
         );
+
         switch (options.type) {
             case "custom": {
-                const table = container.querySelector(`table#${id}`);
+                const table = container.querySelector(`#table-${id}`);
                 const inner = this.toValue(options.inner, options.data, options.items);
                 table.insertAdjacentHTML("beforeend", inner);
                 break;
             }
             case "grid": {
-                const table = container.querySelector(`table#${id}`);
+                const table = container.querySelector(`#table-${id}`);
                 this.createTableGrid(table, options.data, options.items);
                 break;
             }
             case "table":
             default: {
-                const table = container.querySelector(`table#${id}`);
+                const table = container.querySelector(`#table-${id}`);
                 table.insertAdjacentHTML("beforeend", `<tbody></tbody>`);
-                const tbody = container.querySelector(`table#${id} tbody`);
+                const tbody = container.querySelector(`#table-${id} tbody`);
                 this.createTableInner(tbody, options.data, options.items);
                 break;
             }
@@ -396,6 +400,7 @@
      * @property {TableGridColumnsOptions} columns - use to datatable-header
      * @property {boolean?} rownumbers - if true that show row index
      * @property {boolean?} thead - if true that have th
+     * @property {string?} metaKey - The meta key for the table
      *
      * @param {string} selector - The selector
      * @param {*[]} data - the data need show
@@ -405,15 +410,14 @@
     createTableGrid(selector, data, options) {
         const self = this;
         const container = this.getContainer(selector);
-        const columns = options.columns;
-        const rownumbers = options.rownumbers;
+        const { columns, rownumbers, metaKey } = options;
 
         container.insertAdjacentHTML("beforeend", `${options.thead == true ? `<thead><tr></tr></thead>` : ""}<tbody id="item-area"></tbody>`);
         const thead = container.querySelector("thead tr");
         const tbody = container.querySelector("tbody");
 
         createThs(thead, columns);
-        createTrs(tbody, columns, data);
+        createTrs(tbody, columns);
 
         function createThs(thead, op) {
             if (rownumbers) {
@@ -444,22 +448,34 @@
             });
         }
 
-        function createTrs(tbody, op, ds) {
-            ds.forEach((d, i) => {
+        function createTrs(tbody, op) {
+            data.forEach((d, i) => {
                 const tr = document.createElement("tr");
                 tr.id = i;
+                if (metaKey) {
+                    tr.dataset[camelCase(metaKey)] = d[metaKey];
+                }
                 if (rownumbers) {
                     const td = document.createElement("td");
                     td.textContent = `${i + 1}`;
                     tr.appendChild(td);
                 }
-                tr.append(...createTds(op, d, i));
+                tr.append(...createTds(op, i));
                 tbody.appendChild(tr);
             });
+
+            // Function to convert into camel Case
+            function camelCase(str) {
+                // Using replace method with regEx
+                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+                    return index == 0 ? word.toLowerCase() : word.toUpperCase();
+                }).replace(/\s+/g, '');
+            }
         }
 
-        function createTds(op, d, i) {
+        function createTds(op, i) {
             return op.map((o) => {
+                const d = data[i];
                 const value = d[o.id] ?? DataTable.nullString;
                 const style = self.toValue(o.style, value, d, i) ?? "";
                 const width = o.width ? self.toPx(o.width, d) : null;
@@ -514,9 +530,6 @@
                     const btnClassName = this.toValue(bo.className, value, data) ?? "btn btn-search";
                     const btnIcon = this.toValue(bo.icon, value, data, index) ?? null;
                     const disabled = this.toValue(bo.disabled, value, data, index);
-                    
-
-                    
                     const btn = document.createElement("button");
                     btn.type = "button";
                     if (btnIcon) {
@@ -890,5 +903,59 @@
                 }
             })
         })
+    }
+
+    setupFormTab(defaultTabName) {
+        if (!defaultTabName) {
+            const c = document.querySelector(".tab-btn.tab-checked")
+            defaultTabName = c?.dataset?.tabName;
+        }
+        if (!defaultTabName) {
+            const c = document.querySelector(".tab-btn")
+            defaultTabName = c?.dataset?.tabName;
+        }
+        if (!defaultTabName) {
+            console.error("No default tab found, please set 'data-tab-name' attribute on tab buttons")
+            return;
+        }
+        const self = {
+            currentTab: defaultTabName,
+            links: Array.from(document.querySelectorAll(".tab-btn")),
+            contents: Array.from(document.querySelectorAll("[data-tab-content]")),
+            container: document.querySelector("[data-tab-container]"),
+            openTab,
+            getCurrentTabLink,
+            getCurrentTabContent,
+        }
+        self.links.forEach((tablink) => {
+            tablink.onclick = (evt) => {
+                openTab(evt.currentTarget.dataset.tabName)
+            }
+        })
+        openTab(self.currentTab)
+
+        return self;
+
+        function openTab(tabName) {
+            self.currentTab = tabName;
+            const tablink = self.getCurrentTabLink();
+            const tabContent = self.getCurrentTabContent();
+
+            self.links.forEach((e) => {
+                e.classList.remove("tab-checked");
+            });
+            self.contents.forEach((e) => {
+                e.remove()
+            });
+            tablink.classList.add("tab-checked");
+            self.container.appendChild(tabContent)
+        }
+
+        function getCurrentTabLink() {
+            return self.links.find((x) => x.dataset.tabName === self.currentTab);
+        }
+        function getCurrentTabContent() {
+            return self.contents.find((x) => x.dataset.tabContent === self.currentTab);
+        }
     }
 }
