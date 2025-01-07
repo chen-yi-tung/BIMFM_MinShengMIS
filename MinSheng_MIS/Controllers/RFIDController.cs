@@ -16,18 +16,17 @@ namespace MinSheng_MIS.Controllers
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly RFIDService _rfidService;
-        private readonly DatagridService _datagridService;
 
         public RFIDController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
             _rfidService = new RFIDService(_db);
         }
+
         #region 檢查RFID內碼是否有使用過
         [HttpGet]
         public async Task<ActionResult> CheckIsRFIDInternalCodeDuplicate(string id)
         {
-            JsonResService<string> result = new JsonResService<string>();
             try
             {
                 await _rfidService.CheckRFIDInternalCode(id);

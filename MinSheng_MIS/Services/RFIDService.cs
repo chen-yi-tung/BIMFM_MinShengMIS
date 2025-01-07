@@ -8,7 +8,6 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using static MinSheng_MIS.Services.UniParams;
 
 namespace MinSheng_MIS.Services
 {
@@ -102,8 +101,8 @@ namespace MinSheng_MIS.Services
             if (await _db.RFID.AnyAsync(x => x.RFIDInternalCode == data.InternalCode))
                 throw new MyCusResException("RFID內碼已存在！");
             // 不可重複: RFID外碼
-            if (await _db.RFID.AnyAsync(x => x.RFIDExternalCode == data.ExternalCode))
-                throw new MyCusResException("RFID外碼已存在！");
+            //if (await _db.RFID.AnyAsync(x => x.RFIDExternalCode == data.ExternalCode))
+            //    throw new MyCusResException("RFID外碼已存在！");
             // 關聯性PK是否存在: 樓層
             if (!floorSNList.Contains(data.FSN))
                 throw new MyCusResException("樓層不存在！");

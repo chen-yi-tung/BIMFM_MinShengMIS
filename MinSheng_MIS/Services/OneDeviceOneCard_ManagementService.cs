@@ -6,6 +6,7 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace MinSheng_MIS.Services
 {
@@ -15,10 +16,10 @@ namespace MinSheng_MIS.Services
         private readonly EquipmentInfo_ManagementService _eMgmtService;
         //private readonly SamplePath_ManagementService _pSamplePathService;
 
-        public OneDeviceOneCard_ManagementService(Bimfm_MinSheng_MISEntities db)
+        public OneDeviceOneCard_ManagementService(Bimfm_MinSheng_MISEntities db, HttpServerUtilityBase ser)
         {
             _db = db;
-            _eMgmtService = new EquipmentInfo_ManagementService(_db);
+            _eMgmtService = new EquipmentInfo_ManagementService(_db, ser);
             //_pSamplePathService = new SamplePath_ManagementService(_db);
         }
 

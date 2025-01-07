@@ -11,7 +11,7 @@ namespace MinSheng_MIS.Controllers
 {
     public class EquipmentInfo_ManagementController : Controller
     {
-        private readonly string _photoPath = "Files/EquipmentInfo";
+        
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly EquipmentInfo_ManagementService _eMgmtService;
         private readonly OneDeviceOneCard_ManagementService _dCardService;
@@ -20,8 +20,8 @@ namespace MinSheng_MIS.Controllers
         public EquipmentInfo_ManagementController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
-            _eMgmtService = new EquipmentInfo_ManagementService(_db);
-            _dCardService = new OneDeviceOneCard_ManagementService(_db);
+            _eMgmtService = new EquipmentInfo_ManagementService(_db, Server);
+            _dCardService = new OneDeviceOneCard_ManagementService(_db, Server);
             _rfidService = new RFIDService(_db);
         }
 
@@ -74,8 +74,7 @@ namespace MinSheng_MIS.Controllers
                 }
 
                 // 檔案上傳
-                if (!ComFunc.UploadFile(data.EPhoto, Server.MapPath($"~/{_photoPath}/"), esn))
-                    throw new MyCusResException("檔案上傳過程出錯！");
+                _eMgmtService.UploadPhoto(data.EPhoto, esn);
 
                 await _db.SaveChangesAsync();
 
@@ -102,6 +101,48 @@ namespace MinSheng_MIS.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public async Task<ActionResult> EditEquipment(EquipmentInfoEditViewModel data)
+        {
+            try
+            {
+                // Data Annotation
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
+
+                // 更新設備資訊
+                await _eMgmtService.UpdateEquipmentInfoAsync(data);
+
+                // 更新一機一卡模板資料
+                if (data.TSN != null)
+                {
+                    // 更新 Equipment_AddFieldValue (非必填)
+                    if (data.AddFieldList != null && data.AddFieldList.Any())
+                        await _eMgmtService.UpdateEquipmentAdditionalFieldsValueAsync(data);
+
+                    // 更新 Equipment_MaintainItemValue (非必填)
+                    if (data.MaintainItemList != null && data.MaintainItemList.Any())
+                        await _eMgmtService.UpdateEquipmentMaintainItemsValue(data);
+                }
+
+                await _db.SaveChangesAsync();
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
+        }
         #endregion
 
         #region 設備 詳情
@@ -117,8 +158,6 @@ namespace MinSheng_MIS.Controllers
             {
                 // 獲取設備詳情
                 var equipment = await _eMgmtService.GetEquipmentInfoAsync<EquipmentInfoDetailViewModel>(id);
-                // 檔案路徑
-                equipment.FilePath = $"/{_photoPath}/{equipment.FileName}";
                 // 獲取增設基本資料欄位
                 equipment.AddFieldList = _eMgmtService.GetAddFieldList(id);
                 // 獲取保養項目
@@ -132,7 +171,6 @@ namespace MinSheng_MIS.Controllers
                     equipment.CheckItemList = await _dCardService.GetCheckItemDetailListAsync(equipment.TSN);
                     // 獲取填報項目名稱/單位
                     equipment.ReportItemList = await _dCardService.GetReportItemDetailListAsync(equipment.TSN);
-
                 }
 
                 return Content(JsonConvert.SerializeObject(new JsonResService<EquipmentInfoDetailViewModel>
