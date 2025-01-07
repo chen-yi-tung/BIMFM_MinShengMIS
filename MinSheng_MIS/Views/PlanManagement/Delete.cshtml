@@ -3,7 +3,6 @@
 }
 @section styles {
     @Html.Partial("DataGridScripts")
-    <script src="/Scripts/datatable_new.js" defer></script>
     <script src="/Scripts/ImageDisplay.js" defer></script>
 }
 
@@ -41,13 +40,6 @@
             addButtonEvent();
             readData(apiUrl);
         })
-
-        const SerializedName = [
-            { text: "工單編號", value: "IPSN" },
-            { text: "工單狀態", value: "PlanState" },
-            { text: "工單名稱", value: "IPName" },
-            { text: "工單日期", value: "PlanDate" },
-        ]
 
         const fakeData = {
             PSN: "P336448226",
@@ -283,9 +275,14 @@
             function onSuccess(res) {
                 const data = res.Datas;
                 console.log(data);
-                $("#PlanDetail").append(createTableInner(data, SerializedName));
+                DT.createTableInner("#PlanDetail", data, [
+                    { title: "工單編號", id: "IPSN" },
+                    { title: "工單狀態", id: "PlanState" },
+                    { title: "工單名稱", id: "IPName" },
+                    { title: "工單日期", id: "PlanDate" },
+                ])
 
-                const inner = createAccordion(data.Inspections, {
+                DT.createAccordion("#PlanRecord", data.Inspections, {
                     id: "Inspections",
                     title(data) {
                         return `${data.PathName} (${data.StartTime}~${data.EndTime})`
@@ -294,25 +291,25 @@
                     iconStyle: 'color: #2C5984',
                     iconClass: 'me-2',
                     items: [
-                        { text: "巡檢狀態", value: "InspectionState" },
-                        { text: "巡檢頻率", value: "Frequency" },
-                        { text: "巡檢數量", value: "EquipmentCount" },
+                        { title: "巡檢狀態", id: "InspectionState" },
+                        { title: "巡檢頻率", id: "Frequency" },
+                        { title: "巡檢數量", id: "EquipmentCount" },
                         {
-                            type: "accordion", value: "Equipments", options: {
+                            type: "accordion", id: "Equipments", options: {
                                 id: "Equipments",
                                 title(data) {
                                     return `${data.EName} ${data.NO}`
                                 },
                                 className: 'subDatatable',
                                 items: [
-                                    { text: "所在位置", value: "Location" },
-                                    { text: "最新填報者", value: "ReportUserName" },
-                                    { text: "最新填報時間", value: "FillinTime" },
+                                    { title: "所在位置", id: "Location" },
+                                    { title: "最新填報者", id: "ReportUserName" },
+                                    { title: "最新填報時間", id: "FillinTime" },
                                     {
-                                        type: "items", text: "檢查項目", value: "CheckItems", items: [
-                                            { value: "Item" },
+                                        type: "items", title: "檢查項目", id: "CheckItems", items: [
+                                            { id: "Item" },
                                             {
-                                                value: "Result",
+                                                id: "Result",
                                                 style(v, row, i) {
                                                     if (v === '異常') return 'color: red;'
                                                     return ''
@@ -321,10 +318,10 @@
                                         ]
                                     },
                                     {
-                                        type: "items", text: "填報列表", value: "RportItems", items: [
-                                            { value: "Item" },
+                                        type: "items", title: "填報列表", id: "RportItems", items: [
+                                            { id: "Item" },
                                             {
-                                                value: "Value",
+                                                id: "Value",
                                                 formatter(v, row, i) {
                                                     return `${v} ${row.Unit}`
                                                 },
@@ -336,9 +333,6 @@
                         },
                     ]
                 })
-
-                $("#PlanRecord").append(inner);
-                ImageDisplay(".datatable-img-item>img");
             }
             function onError(res) {
                 console.log(res);
@@ -350,12 +344,19 @@
                 history.back();
             });
             $("#delete").click(function () {
-                createDeleteDialog({
+                DT.createDeleteDialog({
                     url: '@Url.Action("DeleteInspectionPlan")?IPSN=' + IPSN,
-                    onSuccess() {
-                        let url = '@Url.Action("Index")';
-                        window.location.href = url;
+                    onSuccess(res) {
+                        console.log(res);
+                        if (!res.ErrorMessage) {
+                            window.location.href = '@Url.Action("Index")';
+                        } else {
+                            DT.createDialogModal(`刪除失敗！` + `${res?.ErrorMessage || ""}`)
+                        }
                     },
+                    onError(ex) {
+                        DT.createDialogModal("刪除失敗！")
+                    }
                 })
             });
         }

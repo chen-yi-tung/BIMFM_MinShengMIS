@@ -11,30 +11,14 @@
 <button class="btn btn-create" id="create">新增</button>
 <div class="search-area">
     <form class="form" method="post" action="">
-
-        @*<div class="form-group">
-            <label for="System">系統別</label>
-            <select class="form-select" name="System" id="System">
-                <option value="">請選擇</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="SubSystem">子系統別</label>
-            <select class="form-select" name="SubSystem" id="SubSystem">
-                <option value="">請選擇</option>
-            </select>
-        </div>*@
-
         <div class="form-group">
             <label for="EName">設備名稱</label>
             <input class="form-control" id="EName" name="EName" type="text" />
         </div>
-
         <div class="form-group">
             <label for="Brand">廠牌</label>
             <input class="form-control" id="Brand" name="Brand" type="text" />
         </div>
-
         <div class="form-group">
             <label for="Model">型號</label>
             <input class="form-control" id="Model" name="Model" type="text" />
@@ -43,7 +27,6 @@
             <button type="button" class="btn btn-search" id="search">查詢</button>
             <button type="reset" class="btn btn-clear" id="clear">清除</button>
         </div>
-
     </form>
 </div>
 
@@ -55,7 +38,7 @@
     <script>
         var getGridJSON = '@Url.Action("EquipmentOperatingManual", "Datagrid")';
         var DataGrid;
-        
+
 
         const fakedata = [
             {
@@ -73,20 +56,24 @@
                 Model: "HT-6356",
             }
         ]
-
+        let authority;
         $(async function () {
-            ////await pushSelect("System", '@Url.Action("System", "DropDownList")');
-
-            @*const Systems = document.getElementById('System')
-            Systems.addEventListener("change", function () {
-                pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-            });*@
-
-            Initialize_DataGrid(getGridJSON);
+            (async () => {
+                try {
+                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
+                    console.log("權限", authority);
+                } catch (error) {
+                    console.error("權限回傳失敗", error);
+                }
+            })();
+            Initialize_DataGrid(getGridJSON, authority);
             addSearchAreaClickEvent();
+            if (authority === "3") {
+                document.getElementById('create').classList.add('d-none');
+            }
         });
 
-        function Initialize_DataGrid(getGridJSON) {
+        function Initialize_DataGrid(getGridJSON, authority) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -98,8 +85,8 @@
                 remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" }))
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: authority === "3" })),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { disabled: authority != "1",className: "btn btn-datagrid btn-delete" }))
                 ]],
                 columns: [[
                     dg.hiddenColumn('EOMSN'),
