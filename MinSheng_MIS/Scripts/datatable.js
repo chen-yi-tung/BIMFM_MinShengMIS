@@ -38,10 +38,8 @@ function createTableOuter(options) {
  * @returns {string} TableInner
  */
 function createTableInner(data, sn) {
-    console.log("data2", data)
     const nullString = "-";
     return sn.map((e, i) => {
-        console.log("sn", e)
         let html = "";
         let colspan = getColspan(e.colspan)
         if (e.formatter) {
@@ -124,7 +122,6 @@ function createTableInner(data, sn) {
                     break;
                 //內容：兩格
                 case "DualCol": {
-                    console.log("dualcol", data[e.value])
                     const rows = data[e.value]?.length || 0;
                     if (rows === 0) {
                         html = '';
@@ -141,10 +138,10 @@ function createTableInner(data, sn) {
                         return `<tr>
                                     <td class="datatable-table-td datatable-table-sort">${i + 1}</td>
                                     <td class="datatable-table-td text-start ps-2">
-                                        <div>${item.Item}</div>
+                                        <div>${item.Value}</div>
                                     </td>
                                     <td class="datatable-table-td" style="width: 160px;">
-                                        <div class="${isDanger ? 'text-danger' : ''}">${item.Value ? item.Value : ""}${item.Unit ? item.Unit : ""}</div>
+                                        <div class="${isDanger ? 'text-danger' : ''}">${item.Unit ? item.Unit : ""}</div>
                                     </td>
                                 </tr>
                                 `}).join('')}
@@ -316,12 +313,15 @@ function createTableGrid(data, options, tableZoneID, appendOnly) {
     function createTds(op, d, i) {
         let tds = op.map((o) => {
             let width = ""
+            let w = typeof o.width == "string" ? o.width : o.width + "px";
+            width = `style="${o.width ? `width:${w}` : ''}"`;
+            let className = ""
+            className = `class="${o.className} ? ${o.className} : ""}"`;
+
             if (options.thead == false) {
-                let w = typeof o.width == "string" ? o.width : o.width + "px";
-                width = `style="${o.width ? `width:${w}` : ''}"`;
             }
             if (o.formatter) {
-                return `<td id="d-${o.id}" ${width}>${o.formatter(d[o.id], d, i)}</td>`;
+                return `<td id="d-${o.id}" ${width} ${className}>${o.formatter(d[o.id], d, i)}</td>`;
             }
             else {
                 return `<td id="d-${o.id}" ${width}>${d[o.id] ?? nullString}</td>`;
@@ -334,26 +334,26 @@ function createTableGrid(data, options, tableZoneID, appendOnly) {
     }
 }
 
-function delTemplateItem(delBtn, tableZoneID) {
-    if (!delBtn || !(delBtn instanceof HTMLElement)) {
-        console.error("無效的按鈕元素:", delBtn);
-        return;
-    }
+//function delTemplateItem(delBtn, tableZoneID) {
+//    if (!delBtn || !(delBtn instanceof HTMLElement)) {
+//        console.error("無效的按鈕元素:", delBtn);
+//        return;
+//    }
 
-    let tr = delBtn.closest('tr');
-    if (tr) {
-        tr.remove();
-        checkTableEmpty(tableZoneID);
-    }
-}
+//    let tr = delBtn.closest('tr');
+//    if (tr) {
+//        tr.remove();
+//        checkTableEmpty(tableZoneID);
+//    }
+//    function checkTableEmpty(tableZoneID) {
+//        const tbody = document.getElementById('item-area');
+//        const datatable = document.getElementById(tableZoneID);
+//        if (tbody.children.length === 0 && datatable) {
+//            datatable.style.display = 'none';
+//        }
+//    }
+//}
 
-function checkTableEmpty(tableZoneID) {
-    const tbody = document.getElementById('item-area');
-    const datatable = document.getElementById(tableZoneID);
-    if (tbody.children.length === 0 && datatable) {
-        datatable.style.display = 'none';
-    }
-}
 
 
 
@@ -424,10 +424,11 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
     ];
 
     MaintainItemList.forEach((field, i) => {
-        console.log("field", field);
         const div = document.createElement("div");
         div.className = "edit-item-init"
         div.style = "background: #E3EBF3;"
+        div.dataset.missn = field.MISSN;
+
 
         if (equipmentData) {
             const ESNDisplay = document.createElement("div");
@@ -437,6 +438,7 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
             div.appendChild(ESNDisplay);
         }
 
+        //其他頁整理後可以刪除
         const SN = document.createElement("input");
         SN.type = "text";
         SN.id = `addField_SN-${i + 1}`;
@@ -451,11 +453,11 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
         maintainName.value = field.Value;
         maintainName.disabled = true;
 
-
         const period = document.createElement("select");
         period.className = "form-select"
         period.name = `period-${i}`;
         period.required = true;
+        period.dataset.name = "Period";
 
         //await pushSelect(`period-${i}`, '@Url.Action("MaintainPeriod", "DropDownList")');
         optionsData.forEach(optionData => {
@@ -470,6 +472,7 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
         nextMaintainDate.name = `nextMaintainDate-${i}`;
         nextMaintainDate.type = "date";
         nextMaintainDate.required = true;
+        nextMaintainDate.dataset.name = "NextMaintainDate";
 
         div.appendChild(SN);
         div.appendChild(maintainName);
