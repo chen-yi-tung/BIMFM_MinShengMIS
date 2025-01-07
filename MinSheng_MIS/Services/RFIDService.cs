@@ -7,16 +7,21 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace MinSheng_MIS.Services
 {
     public class RFIDService
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly IPAddress _clientIP;
+
         public RFIDService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
+            _clientIP = IPAddress.Parse(HttpContext.Current.Request.UserHostAddress);
         }
 
         #region 查詢設備的所有RFID
