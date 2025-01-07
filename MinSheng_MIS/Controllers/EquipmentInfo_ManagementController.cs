@@ -97,8 +97,9 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         #region 編輯 設備
-        public ActionResult Edit()
+        public ActionResult Edit(string id)
         {
+            ViewBag.id = id;
             return View();
         }
 
