@@ -121,6 +121,7 @@ namespace MinSheng_MIS.Services
                 info.ASN = equipment.Floor_Info.ASN.ToString();
                 info.AreaName = equipment.Floor_Info.AreaInfo.Area;
                 info.FloorName = equipment.Floor_Info.FloorName;
+                info.FileName = equipment.EPhoto;
 
                 dest = (T)info;
             }

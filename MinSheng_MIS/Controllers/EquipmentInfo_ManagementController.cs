@@ -117,6 +117,8 @@ namespace MinSheng_MIS.Controllers
             {
                 // 獲取設備詳情
                 var equipment = await _eMgmtService.GetEquipmentInfoAsync<EquipmentInfoDetailViewModel>(id);
+                // 檔案路徑
+                equipment.FilePath = $"/{_photoPath}/{equipment.FileName}";
                 // 獲取增設基本資料欄位
                 equipment.AddFieldList = _eMgmtService.GetAddFieldList(id);
                 // 獲取保養項目
