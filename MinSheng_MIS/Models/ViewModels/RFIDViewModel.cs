@@ -41,7 +41,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class EquipRFID : IRFIDInfo
     {
         [Required]
-        [StringLength(24, ErrorMessage = "{0} 的長度最多24個字元。")]
+        [StringLength(150, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         [Display(Name = "RFID內碼")]
         public string InternalCode { get; set; } // RFID內碼
         [Required]
