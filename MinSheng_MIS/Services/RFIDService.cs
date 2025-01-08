@@ -1,22 +1,39 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using MinSheng_MIS.Surfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using System.Net;
+using System.Net.Sockets;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace MinSheng_MIS.Services
 {
     public class RFIDService
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly IPAddress _clientIP;
+        private readonly string _clientIP_IP;
+        private readonly int _clientIP_Port;
+
         public RFIDService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
+            _clientIP = IPAddress.Parse(HttpContext.Current.Request.UserHostAddress);
+            var bytes = _clientIP.GetAddressBytes();
+            _clientIP_IP = $"{bytes[12]}.{bytes[13]}.{bytes[14]}.{bytes[15]}"; //本機測試改成自己的IP
+            //_clientIP_IP = _clientIP.MapToIPv4().ToString(); //本機測試改成自己的IP
+            _clientIP_Port = 5000;
         }
 
         #region 查詢設備的所有RFID
@@ -128,6 +145,111 @@ namespace MinSheng_MIS.Services
             // 不可重複: RFID內碼
             if (await _db.RFID.AnyAsync(x => x.RFIDInternalCode == RFIDInternalCode))
                 throw new MyCusResException("RFID內碼已存在！");
+        }
+        #endregion
+
+        //------掃描
+        #region 掃描RFID
+        public JsonResService<string> CheckRFID()
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            JsonObject data = new JsonObject();
+            #endregion
+
+            try
+            {
+                if (string.IsNullOrEmpty(_clientIP.ToString()))
+                {
+                    //return Json(new { RFIDInternalCode = (string)null, ErrorMessage = "1" });
+                    throw new MyCusResException("找不到設備IP位址");
+                }
+
+                // Combine all steps into a single command to the local server
+                string command = "GET";
+
+                // Send the combined command to the local server
+                string response = SendCommandToLocalServer(command);
+
+                // Parse the response
+                if (string.IsNullOrEmpty(response))
+                {
+                    //return Json(new { RFIDInternalCode = (string)null, ErrorMessage = "1" });
+                    throw new MyCusResException("掃描不到RFID");
+                }
+
+                try
+                {
+                    // Deserialize the JSON response
+                    var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
+
+                    if (jsonResponse != null && jsonResponse.ContainsKey("InternalCode") && jsonResponse.ContainsKey("ErrorMessage"))
+                    {
+                        res.ErrorMessage = jsonResponse["ErrorMessage"]?.ToString();
+                        res.Datas = jsonResponse["InternalCode"]?.ToString();
+                        // Check if RFIDInternalCode is empty and ErrorMessage is null
+                        if (string.IsNullOrEmpty(res.Datas) && string.IsNullOrEmpty(res.ErrorMessage))
+                        {
+                            //return Json(new { RFIDInternalCode = (string)null, ErrorMessage = "No EPC found." });
+                            throw new MyCusResException("掃描不到RFID");
+                        }
+                        else if(!string.IsNullOrEmpty(res.Datas) && string.IsNullOrEmpty(res.ErrorMessage))
+                        {
+                            //檢查RFID是否重複
+                            CheckRFIDInternalCode(res.Datas);
+                            return res;
+                        }
+                        else
+                        {
+                            throw new MyCusResException(res.ErrorMessage);
+                        }
+                    }
+                    else
+                    {
+                        //return Json(new { RFIDInternalCode = (string)null, ErrorMessage = "Unexpected response format from the local server." });
+                        throw new MyCusResException("掃描格式錯誤");
+                    }
+                }
+                catch (JsonReaderException ex)
+                {
+                    //return Json(new { RFIDInternalCode = (string)null, ErrorMessage = $"Error parsing server response: {ex.Message}" });
+                    throw new MyCusResException($"{ex.Message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                //return Json(new { RFIDInternalCode = (string)null, ErrorMessage = ex.Message });
+                throw new MyCusResException($"{ex.Message}");
+            }
+
+            res.AccessState = ResState.Success;
+            return res;
+        }
+        private string SendCommandToLocalServer(string command)
+        {
+            try
+            {
+                Debug.WriteLine($"Attempting to connect to {_clientIP_IP}:{_clientIP_Port}");
+                using (var client = new TcpClient(_clientIP_IP, _clientIP_Port))
+                using (var stream = client.GetStream())
+                using (var writer = new StreamWriter(stream) { AutoFlush = true })
+                using (var reader = new StreamReader(stream))
+                {
+                    // Send command to the local server
+                    writer.WriteLine(command);
+
+                    // Read and return the response from the local server
+                    string response = reader.ReadLine();
+                    //Debug.WriteLine($"Received response: {response}");
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                //Debug.WriteLine($"Error communicating with the local server: {ex.Message}");
+                //throw new Exception("Failed to communicate with the local server.", ex);
+                throw new MyCusResException($"Error communicating with the local server: {ex.Message}");
+            }
         }
         #endregion
     }

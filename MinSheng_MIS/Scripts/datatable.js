@@ -409,21 +409,13 @@ function createInspectionTable(options) {
 }
 
 //新增 保養項目/週期/下次保養日期 欄位
-function createMaintainItem(MaintainItemList, containerId, equipmentData) {
+function createMaintainItem(options, containerId,  equipmentData) {
     const MaintainEditZone = document.getElementById(containerId);
     if (!MaintainEditZone) {
         return;
     }
 
-    const optionsData = [
-        { value: "", text: "請選擇週期" },
-        { value: "1", text: "每日" },
-        { value: "2", text: "每月" },
-        { value: "3", text: "每季" },
-        { value: "4", text: "每年" },
-    ];
-
-    MaintainItemList.forEach((field, i) => {
+    options.forEach((field, i) => {
         const div = document.createElement("div");
         div.className = "edit-item-init"
         div.style = "background: #E3EBF3;"
@@ -456,16 +448,9 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
         const period = document.createElement("select");
         period.className = "form-select"
         period.name = `period-${i}`;
+        period.id = `period-${i}`;
         period.required = true;
         period.dataset.name = "Period";
-
-        //await pushSelect(`period-${i}`, '@Url.Action("MaintainPeriod", "DropDownList")');
-        optionsData.forEach(optionData => {
-            const option = document.createElement("option");
-            option.value = optionData.value;
-            option.textContent = optionData.text;
-            period.appendChild(option);
-        });
 
         const nextMaintainDate = document.createElement("input");
         nextMaintainDate.className = "form-control";
@@ -479,6 +464,19 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
         div.appendChild(period);
         div.appendChild(nextMaintainDate);
         MaintainEditZone.appendChild(div);
+
+        $.getJSON("/DropDownList/MaintainPeriod", function (res) {
+            let name = "Text";
+            let value = "Value";
+            const selects = document.querySelectorAll(`#${containerId} [name^="period"]`);
+            selects.forEach(element => {
+                $(element).empty();
+                $(element).append(`<option value="">請選擇週期</option>`);
+                $.each(res, function (i, e) {
+                    $(element).append('<option value="' + e[value] + '">' + e[name] + '</option>')
+                })
+            });
+        });
     })
 }
 
