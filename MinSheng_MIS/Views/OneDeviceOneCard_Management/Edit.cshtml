@@ -194,6 +194,7 @@
                 },
             ]
         }
+
         let fakeEquipmentData=[
             {
                 ESN: "E000123",
@@ -627,13 +628,11 @@
                 }))
 
                 let addMaintainItemList = []
-                console.log("這邊是甚麼設備明細", EquipmentData);
                 // 有顯示 補充設備保養項目設定 Modal 的情況下會有資料
                 if (EquipmentData.length > 0) {
                     maintainItemList = maintainItemList.filter(item => item.MISSN && item.MISSN.trim() !== "");
 
                     if (this.EquipmentZone.length) {
-                        console.log("看這邊", EquipmentData);
                         addMaintainItemList = EquipmentData.map((equipment, index) => {
                             return this.EquipmentZone.find(`#MaintainEditZone_${index} .edit-item-init`).toArray().map(e => ({
                                 ESN: equipment.ESN,

@@ -65,6 +65,7 @@
             console.error('Error fetching data:', error);
             formDropdown.reset(select, placeholder)
         }
+        return select;
     }
     static async postPushSelect({ id, url, data, name = "Text", value = "Value", placeholder = "請選擇", useFormData = false, filter } = {}) {
         const select = formDropdown.getSelect(id);
@@ -111,11 +112,12 @@
             console.error('Error fetching data:', error);
             formDropdown.reset(select, placeholder)
         }
+
+        return select;
     }
 
     static async ASN({ id = "ASN", fsnId = "FSN", value, placeholder = "請選擇" } = {}) {
-        await formDropdown.pushSelect({ id, url: "/DropDownList/Area", placeholder });
-        const asn = formDropdown.getSelect(id);
+        const asn = await formDropdown.pushSelect({ id, url: "/DropDownList/Area", placeholder });
         const fsn = formDropdown.getSelect(fsnId);
         if (fsn) {
             await formDropdown.FSN({ id: fsnId });
@@ -128,9 +130,11 @@
             })
         }
         formDropdown.setValue(id, value)
+        return asn;
     };
     static async FSN({ id = "FSN", data, value, placeholder = "請先選擇棟別" } = {}) {
-        await formDropdown.pushSelect({ id, url: `/DropDownList/Floor?ASN=${data}`, placeholder });
+        const fsn = await formDropdown.pushSelect({ id, url: `/DropDownList/Floor?ASN=${data}`, placeholder });
         formDropdown.setValue(id, value)
+        return fsn;
     };
 }
