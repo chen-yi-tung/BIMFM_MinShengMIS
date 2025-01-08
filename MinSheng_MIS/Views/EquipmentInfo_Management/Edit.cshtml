@@ -96,7 +96,7 @@
             <div class="d-flex flex-column gap-4">
                 <div class="form-group w-100">
                     <label for="SampleName">模板名稱</label>
-                    <select class="form-select" name="SampleName" id="SampleName">
+                    <select class="form-select" name="SampleName" id="SampleName" disabled>
                         <option value="">請選擇</option>
                     </select>
                 </div>
@@ -381,7 +381,6 @@
                 const sampleContent = document.getElementById('sampleContent');
                 if (data.TSN) {
                     sampleContent.style.display = 'flex';
-
                     await $.ajax({
                         url: "@Url.Action("ReadBody", "OneDeviceOneCard_Management")" + `/${data.TSN}`,
                         type: "GET",
@@ -426,40 +425,40 @@
                     }
                 })
 
+                //監聽 模板名稱，有選擇就顯示模板資訊內容
+                @*document.getElementById('SampleName').addEventListener('change', function () {
+                    //先清空，防止舊資料疊加
+                    document.getElementById("addItemZone").innerHTML = "";
+                    document.getElementById("MaintainZone").innerHTML = "";
+                    document.getElementById("InspectionRecord").innerHTML = "";
+
+                    const selectedValue = this.value;
+
+                    if (selectedValue !== "") {
+                        $.ajax({
+                            url: "@Url.Action("ReadBody", "OneDeviceOneCard_Management")" + `/${selectedValue}`,
+                            type: "GET",
+                            contentType: "application/json",
+                            processData: false,
+                            success: onSuccess,
+                            error: onError
+                        })
+                    }
+                    function onSuccess(res) {
+                        showSampleContent(res.Datas, data);
+                        if (selectedValue === Origin_TSN) {
+                            pushSampleContent(Origin_TSN_Info)
+                        }
+                    }
+                    function onError(res) {
+                        console.log("拿取模板名稱失敗");
+                    }
+                });*@
+
             }
             function onError(res) {
                 console.log(res);
             }
-
-            //監聽 模板名稱，有選擇就顯示模板資訊內容
-            document.getElementById('SampleName').addEventListener('change', function () {
-                //先清空，防止舊資料疊加
-                document.getElementById("addItemZone").innerHTML = "";
-                document.getElementById("MaintainZone").innerHTML = "";
-                document.getElementById("InspectionRecord").innerHTML = "";
-
-                const selectedValue = this.value;
-
-                if (selectedValue !== "") {
-                    $.ajax({
-                        url: "@Url.Action("ReadBody", "OneDeviceOneCard_Management")" + `/${selectedValue}`,
-                        type: "GET",
-                        contentType: "application/json",
-                        processData: false,
-                        success: onSuccess,
-                        error: onError
-                    })
-                }
-                function onSuccess(res) {
-                    showSampleContent(res.Datas, data);
-                    if (selectedValue === Origin_TSN) {
-                        pushSampleContent(Origin_TSN_Info)
-                    }
-                }
-                function onError(res) {
-                    console.log("拿取模板名稱失敗");
-                }
-            });
         }
 
         function save() {
@@ -653,10 +652,6 @@
                     case '3': unit = 'quarter'; break;
                     case '4': unit = 'year'; break;
                 }
-                console.log("上次保養日期", LastMaintainDate);
-                console.log("週期", period);
-                console.log("下次保養日期", NextMaintainDate.value);
-                console.log("unit", unit);
 
                 if (LastMaintainDate && LastMaintainDate !== null) {
                     let date = null;
