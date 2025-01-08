@@ -156,7 +156,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        [HttpPost]
+        [HttpGet]
         public ActionResult CheckRFID()
         {
             var res = new JsonResService<string>();
