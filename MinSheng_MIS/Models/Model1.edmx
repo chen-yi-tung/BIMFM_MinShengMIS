@@ -383,7 +383,7 @@
           </Key>
           <Property Name="DefaultOrder" Type="char" MaxLength="14" Nullable="false" />
           <Property Name="PlanPathSN" Type="char" MaxLength="9" Nullable="false" />
-          <Property Name="RFIDInternalCode" Type="varchar" MaxLength="24" Nullable="false" />
+          <Property Name="RFIDInternalCode" Type="varchar" MaxLength="150" Nullable="false" />
         </EntityType>
         <EntityType Name="InspectionPathSample">
           <Key>
@@ -448,7 +448,7 @@
           <Property Name="InspectionOrder" Type="char" MaxLength="18" Nullable="false" />
           <Property Name="IPTSN" Type="char" MaxLength="13" Nullable="false" />
           <Property Name="IPESN" Type="char" MaxLength="25" Nullable="false" />
-          <Property Name="RFIDInternalCode" Type="varchar" MaxLength="24" Nullable="false" />
+          <Property Name="RFIDInternalCode" Type="varchar" MaxLength="150" Nullable="false" />
           <Property Name="Status" Type="char" MaxLength="1" Nullable="false" />
         </EntityType>
         <EntityType Name="InspectionPlan_Time">
@@ -543,7 +543,7 @@
           <Key>
             <PropertyRef Name="RFIDInternalCode" />
           </Key>
-          <Property Name="RFIDInternalCode" Type="varchar" MaxLength="24" Nullable="false" />
+          <Property Name="RFIDInternalCode" Type="varchar" MaxLength="150" Nullable="false" />
           <Property Name="SARSN" Type="char" MaxLength="13" />
           <Property Name="ESN" Type="char" MaxLength="12" />
           <Property Name="RFIDExternalCode" Type="varchar(max)" Nullable="false" />
@@ -2346,7 +2346,7 @@
           </Key>
           <Property Name="DefaultOrder" Type="String" Nullable="false" MaxLength="14" FixedLength="true" Unicode="false" />
           <Property Name="PlanPathSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
-          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="false" />
+          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionDefaultOrder" FromRole="InspectionDefaultOrder" ToRole="RFID" />
           <NavigationProperty Name="InspectionPathSample" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionPathSample" FromRole="InspectionDefaultOrder" ToRole="InspectionPathSample" />
         </EntityType>
@@ -2424,7 +2424,7 @@
           <Property Name="InspectionOrder" Type="String" Nullable="false" MaxLength="18" FixedLength="true" Unicode="false" />
           <Property Name="IPTSN" Type="String" Nullable="false" MaxLength="13" FixedLength="true" Unicode="false" />
           <Property Name="IPESN" Type="String" Nullable="false" MaxLength="25" FixedLength="true" Unicode="false" />
-          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="false" />
+          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <NavigationProperty Name="InspectionPlan_Equipment" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_InspectionPlan_Equipment" FromRole="InspectionPlan_RFIDOrder" ToRole="InspectionPlan_Equipment" />
           <NavigationProperty Name="InspectionPlan_Time" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_InspectionPlan_Time" FromRole="InspectionPlan_RFIDOrder" ToRole="InspectionPlan_Time" />
@@ -2527,7 +2527,7 @@
           <Key>
             <PropertyRef Name="RFIDInternalCode" />
           </Key>
-          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="false" />
+          <Property Name="RFIDInternalCode" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="SARSN" Type="String" MaxLength="13" FixedLength="true" Unicode="false" />
           <Property Name="ESN" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
           <Property Name="RFIDExternalCode" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -4144,7 +4144,7 @@
               <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
-        </EntityContainerMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
