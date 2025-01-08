@@ -18,20 +18,22 @@
 
     const RFIDModal = await init_RFIDModal()
     const RFIDGrid = await init_RFIDGrid()
-    function checkRFID() {
-        //TODO: 後端取得RFID內碼
-        const fakeRFID = Math.random().toString(36).slice(2, 10 + 2);
-        console.log('checkRFID', fakeRFID)
-
-        if (false) {
-            DT.createDialogModal(`取得RFID資訊失敗！`)
+    async function checkRFID() {
+        const btnIcon = document.querySelector("#rfid .scan-icon")
+        btnIcon.className = "spinner-border spinner-border-sm";
+        const res = await $.getJSON(`/RFID/CheckRFID`).catch(ex => {
+            DT.createDialogModal("掃描失敗！" + ex.responseText)
+        })
+        btnIcon.className = "scan-icon";
+        if (res.ErrorMessage) {
+            DT.createDialogModal("掃描失敗！" + res.ErrorMessage)
+            return;
         }
-
+        console.log('checkRFID', res.Datas)
         RFIDModal.setData({
-            InternalCode: fakeRFID,
+            InternalCode: res.Datas,
         });
         RFIDModal.show()
-
     }
 
     async function init_RFIDModal() {
@@ -273,7 +275,7 @@
             },
             error(res) {
                 console.log(res);
-                DT.createDialogModal(`新增失敗！${res?.ErrorMessage || ""}`)
+                DT.createDialogModal(`新增失敗！${res?.responseText || ""}`)
             }
         })
     }

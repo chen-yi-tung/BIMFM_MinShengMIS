@@ -1,21 +1,21 @@
-﻿using MinSheng_MIS.Models.ViewModels;
+﻿using J_RFID;
 using MinSheng_MIS.Models;
+using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Threading.Tasks;
-using J_RFID;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
-using System.Net;
 using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http.Results;
+using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -157,12 +157,12 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         [HttpGet]
-        public ActionResult CheckRFID()
+        public async Task<ActionResult> CheckRFID()
         {
             var res = new JsonResService<string>();
             try
             {
-                res = _rfidService.CheckRFID();
+                res = await _rfidService.CheckRFID();
                 return Content(JsonConvert.SerializeObject(res), "application/json");
             }
             catch (MyCusResException ex)
@@ -175,7 +175,7 @@ namespace MinSheng_MIS.Controllers
             }
         }
 
-        
+
         private string DiscoverCentralRegistry()
         {
             // Attempt to discover the Central Registry dynamically

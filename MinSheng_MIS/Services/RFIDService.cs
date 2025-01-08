@@ -31,7 +31,7 @@ namespace MinSheng_MIS.Services
             _db = db;
             _clientIP = IPAddress.Parse(HttpContext.Current.Request.UserHostAddress);
             var bytes = _clientIP.GetAddressBytes();
-            _clientIP_IP = $"{bytes[12]}.{bytes[13]}.{bytes[14]}.{bytes[15]}"; //本機測試改成自己的IP
+            _clientIP_IP = "192.168.0.147"; //本機測試改成自己的IP
             //_clientIP_IP = _clientIP.MapToIPv4().ToString(); //本機測試改成自己的IP
             _clientIP_Port = 5000;
         }
@@ -44,7 +44,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 查詢符合Dto的RFID資訊
-        public IQueryable<T> GetRFIDQueryByDto<T>(Expression<Func<RFID, bool>> filter = null) 
+        public IQueryable<T> GetRFIDQueryByDto<T>(Expression<Func<RFID, bool>> filter = null)
             where T : new()
         {
             // 基本查詢
@@ -150,7 +150,7 @@ namespace MinSheng_MIS.Services
 
         //------掃描
         #region 掃描RFID
-        public JsonResService<string> CheckRFID()
+        public async Task<JsonResService<string>> CheckRFID()
         {
             #region 變數
             JsonResService<string> res = new JsonResService<string>();
@@ -193,10 +193,10 @@ namespace MinSheng_MIS.Services
                             //return Json(new { RFIDInternalCode = (string)null, ErrorMessage = "No EPC found." });
                             throw new MyCusResException("掃描不到RFID");
                         }
-                        else if(!string.IsNullOrEmpty(res.Datas) && string.IsNullOrEmpty(res.ErrorMessage))
+                        else if (!string.IsNullOrEmpty(res.Datas) && string.IsNullOrEmpty(res.ErrorMessage))
                         {
                             //檢查RFID是否重複
-                            CheckRFIDInternalCode(res.Datas);
+                            await CheckRFIDInternalCode(res.Datas);
                             return res;
                         }
                         else

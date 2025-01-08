@@ -52,7 +52,7 @@ namespace MinSheng_MIS.Controllers
                     if (StockInRFID != null)
                     {
                         result.AccessState = ResState.Failed;
-                        result.ErrorMessage = $"已有此RFID内碼，不可重複入庫";
+                        result.ErrorMessage = $"已有此RFID內碼，不可重複入庫";
                         return Content(JsonConvert.SerializeObject(result), "application/json");
                     }
 
@@ -70,7 +70,7 @@ namespace MinSheng_MIS.Controllers
                     if (InStock == null)
                     {
                         result.AccessState = ResState.Failed;
-                        result.ErrorMessage = $"查無此庫存記錄";
+                        result.ErrorMessage = $"查無此庫存紀錄";
                         return Content(JsonConvert.SerializeObject(result), "application/json");
                     }
 

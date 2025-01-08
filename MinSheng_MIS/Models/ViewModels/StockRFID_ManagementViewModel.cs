@@ -12,7 +12,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         [Required]
         [StringLength(24, ErrorMessage = "{0} 的長度最多24個字元。", MinimumLength = 1)]
-        [Display(Name = "RFID内碼")]
+        [Display(Name = "RFID內碼")]
         public string RFIDInternalCode { get; set; }
 
         [Required]
