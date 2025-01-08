@@ -32,6 +32,10 @@ namespace MinSheng_MIS.Models.ViewModels
 
         [FileSizeLimit(20)] // Limit file size to 20 MB
         public HttpPostedFileBase[] PurchaseOrder { get; set; } //採購單
+
+        [StringLength(250, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "備註")]
+        public string Memo { get; set; } //備註
     }
 
     public class SORFID_ViewModel
@@ -42,6 +46,10 @@ namespace MinSheng_MIS.Models.ViewModels
 
         [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
         public string Recipient { get; set; }
+
+        [StringLength(250, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "備註")]
+        public string Memo { get; set; } //備註
     }
 
     public class SISNCount

@@ -112,7 +112,8 @@ namespace MinSheng_MIS.Controllers
                         CurrentInventory = InStock.StockAmount,
                         Registrar = User.Identity.Name,
                         ChangeTime = DateTime.Now,
-                        PurchaseOrder = purchaseOrderFileName
+                        PurchaseOrder = purchaseOrderFileName,
+                        Memo = StockItem.Memo
                     };
 
                     _db.StockChangesRecord.Add(stockChangesRecord);
@@ -301,7 +302,8 @@ namespace MinSheng_MIS.Controllers
                                 CurrentInventory = computationalStock.StockAmount - sisnCount.Count,
                                 Registrar = User.Identity.Name,
                                 ChangeTime = DateTime.Now,
-                                Recipient = soViewModel.Recipient
+                                Recipient = soViewModel.Recipient,
+                                Memo = soViewModel.Memo
                             };
 
                             _db.StockChangesRecord.Add(stockChangesRecord);

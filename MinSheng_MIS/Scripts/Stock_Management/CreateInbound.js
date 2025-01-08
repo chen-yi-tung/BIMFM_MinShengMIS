@@ -220,7 +220,7 @@
         const RFID = await $.getJSON(`/RFID/CheckRFID`)
             .then((res) => {
                 if (res.ErrorMessage) {
-                    DT.createDialogModal("掃描失敗！" + res.ErrorMessage);
+                    DT.createDialogModal("掃描失敗！<br>" + res.ErrorMessage);
                     return null;
                 }
                 return res.Datas.trim();
