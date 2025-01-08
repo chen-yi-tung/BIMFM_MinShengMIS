@@ -30,9 +30,7 @@ namespace MinSheng_MIS.Services
         {
             _db = db;
             _clientIP = IPAddress.Parse(HttpContext.Current.Request.UserHostAddress);
-            var bytes = _clientIP.GetAddressBytes();
-            _clientIP_IP = "192.168.0.147"; //本機測試改成自己的IP
-            //_clientIP_IP = _clientIP.MapToIPv4().ToString(); //本機測試改成自己的IP
+            _clientIP_IP = _clientIP.MapToIPv4().ToString(); //本機測試改成自己的IP
             _clientIP_Port = 5000;
         }
 
