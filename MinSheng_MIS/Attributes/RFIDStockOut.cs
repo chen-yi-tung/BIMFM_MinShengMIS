@@ -17,9 +17,9 @@ public class RFIDInternalCodesValidationAttribute : ValidationAttribute
 
         foreach (var code in codes)
         {
-            if (code.Length > 24)
+            if (code.Length > 150)
             {
-                return new ValidationResult("超過24碼之RFID内碼不存在");
+                return new ValidationResult("超過150碼之RFID內碼不存在");
             }
         }
 

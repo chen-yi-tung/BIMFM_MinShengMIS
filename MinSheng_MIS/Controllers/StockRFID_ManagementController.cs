@@ -162,10 +162,10 @@ namespace MinSheng_MIS.Controllers
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
 
-            if (RFIDInternalCode.Length > 24)
+            if (RFIDInternalCode.Length > 150)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = $"RFID內碼應不超過24碼";
+                result.ErrorMessage = $"RFID內碼應不超過150碼";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
             #endregion

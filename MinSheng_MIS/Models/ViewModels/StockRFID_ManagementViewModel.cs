@@ -11,7 +11,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class SIRFID_ViewModel
     {
         [Required]
-        [StringLength(24, ErrorMessage = "{0} 的長度最多24個字元。", MinimumLength = 1)]
+        [StringLength(150, ErrorMessage = "{0} 的長度最多{1}個字元。", MinimumLength = 1)]
         [Display(Name = "RFID內碼")]
         public string RFIDInternalCode { get; set; }
 
@@ -40,8 +40,7 @@ namespace MinSheng_MIS.Models.ViewModels
         [RFIDInternalCodesValidation]
         public string[] RFIDInternalCodes { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元，且取用人必填。", MinimumLength = 1)]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
         public string Recipient { get; set; }
     }
 
