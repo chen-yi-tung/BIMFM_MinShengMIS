@@ -220,12 +220,12 @@ namespace MinSheng_MIS.Controllers
                         var StockInRFID = await _db.RFID.Where(x => x.RFIDInternalCode == code).FirstOrDefaultAsync();
                         if (StockInRFID == null)
                         {
-                            ErrorMessageList.Add($"RFID内碼 {code} 不存在");
+                            ErrorMessageList.Add($"RFID內碼 {code} 不存在");
                         }
 
                         if (!seenCodes.Add(code))
                         {
-                            ErrorMessageList.Add($"RFID内碼 {code} 重複");
+                            ErrorMessageList.Add($"RFID內碼 {code} 重複");
                         }
 
                         if (ErrorMessageList.Count != 0)

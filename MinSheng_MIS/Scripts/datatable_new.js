@@ -6,14 +6,18 @@
             DataTable.instance = this;
         }
         window.DT = DataTable.instance;
-        window.addEventListener('load', () => {
-            this.setupFormTooltip();
-        }, { once: true })
+        window.addEventListener(
+            "load",
+            () => {
+                this.setupFormTooltip();
+            },
+            { once: true }
+        );
     }
     /**
      * Retrieves a DOM element based on the provided selector.
-     * 
-     * @param {string|HTMLElement} selector - The selector to identify the element. 
+     *
+     * @param {string|HTMLElement} selector - The selector to identify the element.
      *                                        Can be a string (ID or CSS selector) or an HTMLElement.
      * @returns {HTMLElement|null} The found DOM element, or null if not found or an error occurs.
      */
@@ -29,13 +33,13 @@
 
     /**
      * Retrieves an array of DOM elements based on the provided selector.
-     * 
+     *
      * @param {string|HTMLElement[]} selector - The selector to identify the elements.
      *                                          Can be a string (CSS selector) or an array of HTMLElements.
      * @returns {HTMLElement[]} An array of found DOM elements. Returns an empty array if no elements are found or if the input is invalid.
      */
     getContainers(selector) {
-        if (typeof selector === 'string') {
+        if (typeof selector === "string") {
             return Array.from(document.querySelectorAll(selector));
         }
         if (selector.every((e) => e instanceof HTMLElement)) {
@@ -73,13 +77,13 @@
      * @property {Function|string?} iconClass
      * @property {Function|string?} iconStyle
      * @property {AccordionItemOptions[]} items
-     * 
+     *
      * @typedef AccordionItemOptions
      * @property {string?} type - Type of accordion item, defaults is "tr"
      * @property {string?} id
      * @property {TableInnerOptions?} items - When type is tr, need this options to create tr items
      * @property {AccordionOptions?} options - When type is accordion, need this options to create accordion
-     * 
+     *
      * Creates an accordion component with nested items.
      * @param {string} selector - The selector
      * @param {Object[]} data - The data to populate the accordion.
@@ -453,7 +457,7 @@
                 const tr = document.createElement("tr");
                 tr.id = i;
                 if (metaKey) {
-                    tr.dataset[camelCase(metaKey)] = d[metaKey];
+                    tr.dataset.metaKey = d[metaKey];
                 }
                 if (rownumbers) {
                     const td = document.createElement("td");
@@ -463,14 +467,6 @@
                 tr.append(...createTds(op, i));
                 tbody.appendChild(tr);
             });
-
-            // Function to convert into camel Case
-            function camelCase(str) {
-                // Using replace method with regEx
-                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
-                    return index == 0 ? word.toLowerCase() : word.toUpperCase();
-                }).replace(/\s+/g, '');
-            }
         }
 
         function createTds(op, i) {
@@ -490,9 +486,9 @@
                 if (width) {
                     td.style.width = width;
                 }
-                self.setCellContent(td, d, o, i)
+                self.setCellContent(td, d, o, i);
                 return td;
-            })
+            });
         }
     }
     /**
@@ -533,7 +529,7 @@
                     const btn = document.createElement("button");
                     btn.type = "button";
                     if (btnIcon) {
-                        btn.innerHTML = `<i class="${btnIcon}"></i>${btnText ?? ''}`;
+                        btn.innerHTML = `<i class="${btnIcon}"></i>${btnText ?? ""}`;
                     }
                     if (btnText) {
                         btn.textContent = btnText;
@@ -544,7 +540,7 @@
                     };
                     btn.disabled = disabled;
                     cell.appendChild(btn);
-                })
+                });
                 break;
             }
             case "pre": {
@@ -564,11 +560,17 @@
      * @returns {string} - The HTML string for the images.
      */
     setImageCellContent(cell, imgs) {
-        if (!imgs) { cell.textContent = DataTable.nullString; return; }
+        if (!imgs) {
+            cell.textContent = DataTable.nullString;
+            return;
+        }
         if (!Array.isArray(imgs)) {
             imgs = [imgs];
         }
-        cell.insertAdjacentHTML('beforeend', `<div class="datatable-img-area">${imgs.map((img) => `<div class="datatable-img-item"><img src="${img}"/></div>`).join("")}</div>`)
+        cell.insertAdjacentHTML(
+            "beforeend",
+            `<div class="datatable-img-area">${imgs.map((img) => `<div class="datatable-img-item"><img src="${img}"/></div>`).join("")}</div>`
+        );
     }
 
     /**
@@ -578,11 +580,14 @@
      * @returns {string} - The HTML string for the file links.
      */
     setFileCellContent(cell, urls) {
-        if (!urls) { cell.textContent = DataTable.nullString; return; }
+        if (!urls) {
+            cell.textContent = DataTable.nullString;
+            return;
+        }
         if (!Array.isArray(urls)) {
             urls = [urls];
         }
-        cell.insertAdjacentHTML('beforeend', urls.map((url) => `<a href="${url}" target="_blank">${url.split("/").at(-1)}</a>`).join("<br>"))
+        cell.insertAdjacentHTML("beforeend", urls.map((url) => `<a href="${url}" target="_blank">${url.split("/").at(-1)}</a>`).join("<br>"));
     }
 
     /**
@@ -605,7 +610,7 @@
      * @returns {void} This function does not return a value.
      */
     createImageDisplay(selector) {
-        const elements = this.getContainers(selector)
+        const elements = this.getContainers(selector);
         elements.forEach((element) => {
             element.addEventListener("click", function () {
                 const img = this.src;
@@ -628,13 +633,13 @@
     }
 
     /**
-     * 
+     *
      * @typedef {object} DialogModalButtonOptions
      * @property {string?} className - use to custom class, default is 'btn btn-search'
      * @property {boolean?} cancel - if true add 'data-bs-dismiss="modal"', can click to close the modal
      * @property {string} text - use to show button inner text
      * @property {function?} onClick - use to add click event
-     * 
+     *
      * @typedef {object} DialogModalOptions
      * @property {string?} className - use to custom class
      * @property {string?} title - use to modal-header
@@ -645,14 +650,14 @@
      * @property {function?} onShown - when "shown.bs.modal" event trigger
      * @property {function?} onHide - when "hide.bs.modal" event trigger
      * @property {function?} onHidden - when "hidden.bs.modal" event trigger
-     * 
+     *
      * @param {DialogModalOptions|string} opt - if type is string, it will be passed to inner option.
-     * 
+     *
      * @example
      * ```js
      * createDialogModal("This is inner.")
      * ```
-     * 
+     *
      * @example
      * ```js
      * createDialogModal({
@@ -669,43 +674,45 @@
         const options = {};
         if (typeof opt !== "object") {
             options.inner = opt;
-        }
-        else {
+        } else {
             Object.assign(options, opt);
         }
 
         //if inner is html then use the html title tag text content
-        const htmlTitle = options.inner?.match(/(?<=<title>)([\s\S]+)(?=<\/title>)/g)?.[0]
+        const htmlTitle = options.inner?.match(/(?<=<title>)([\s\S]+)(?=<\/title>)/g)?.[0];
         const modalTemplate = `
-            <div class="modal fade modal-delete ${options.className ?? ''}" id="${options.id ?? ''}" tabindex="-1">
+            <div class="modal fade modal-delete ${options.className ?? ""}" id="${options.id ?? ""}" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        ${options.title ? `
+                        ${
+                            options.title
+                                ? `
                         <div class="modal-header">
                             <h5 class="modal-title">${options.title}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>` : ''}
+                        </div>`
+                                : ""
+                        }
                         <div class="modal-body text-center pb-2">
-                            ${htmlTitle ?? options.inner ?? ''}
+                            ${htmlTitle ?? options.inner ?? ""}
                         </div>
                         <div class="modal-footer justify-content-center pb-4"></div>
                     </div>
                 </div>
             </div>`;
-        const template = document.createElement('template');
+        const template = document.createElement("template");
         template.innerHTML = modalTemplate.trim();
         const modal = template.content.firstChild;
         const footer = modal.querySelector(".modal-footer");
 
         if (options.button === undefined) {
             footer.appendChild(createButton({ className: "btn btn-delete", cancel: true, text: "確定" }));
+        } else if (options.button !== null || options.button !== false) {
+            options.button.length !== 0 &&
+                options.button.forEach((b) => {
+                    footer.appendChild(createButton(b));
+                });
         }
-        else if (options.button !== null || options.button !== false) {
-            options.button.length !== 0 && options.button.forEach((b) => {
-                footer.appendChild(createButton(b));
-            })
-        }
-
 
         const myModal = bootstrap.Modal.getOrCreateInstance(modal);
         myModal.show();
@@ -720,20 +727,20 @@
             options.onHidden && options.onHidden();
             myModal.dispose();
             modal.remove();
-        })
+        });
 
         return myModal;
 
         function createButton(options) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = options.className ?? 'btn btn-search';
-            btn.textContent = options.text ?? '取消';
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = options.className ?? "btn btn-search";
+            btn.textContent = options.text ?? "取消";
             if (options.cancel) {
-                btn.setAttribute('data-bs-dismiss', 'modal');
+                btn.setAttribute("data-bs-dismiss", "modal");
             }
             if (options.onClick) {
-                btn.addEventListener('click', options.onClick);
+                btn.addEventListener("click", options.onClick);
             }
             return btn;
         }
@@ -745,8 +752,8 @@
      * @property {string} url onDelete URL
      * @property {string} data ajax data to post
      * @property {string} onSuccess
-     * 
-     * @param {DeleteDialogOptions} options 
+     *
+     * @param {DeleteDialogOptions} options
      */
     createDeleteDialog(options) {
         const self = this;
@@ -754,18 +761,14 @@
             id: "DialogModal-Delete",
             inner: `
             <div class="d-flex justify-content-center align-items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                    class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
-                    <path
-                        d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-                </svg>
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 24px;"></i>
                 確認是否刪除？
             </div>`,
             button: [
-                { className: "btn btn-cancel", cancel: true, text: "取消", },
+                { className: "btn btn-cancel", cancel: true, text: "取消" },
                 { className: "btn btn-delete", text: "確定刪除", onClick: onDelete },
-            ]
-        })
+            ],
+        });
 
         function onDelete(e) {
             const spinner = ` <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
@@ -778,9 +781,8 @@
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 success: onSuccess,
-                error: onError
-            })
-
+                error: onError,
+            });
 
             function onSuccess(res) {
                 console.log(res);
@@ -788,14 +790,14 @@
                 self.createDialogModal({
                     id: "DialogModal-Success",
                     inner: "刪除成功！",
-                    onHide: options.onSuccess(res)
-                })
+                    onHide: options.onSuccess(res),
+                });
             }
 
             function onError(res) {
                 console.log(res.responseText);
                 modal.hide();
-                self.createDialogModal("刪除失敗！")
+                self.createDialogModal("刪除失敗！");
             }
         }
     }
@@ -806,18 +808,20 @@
      * @returns
      */
     createMapModal(data) {
-        if (typeof UpViewer === 'undefined') {
-            console.warn([
-                "請先載入以下資源：",
-                "https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css",
-                "/Content/loading.css",
-                "/Content/bim.css",
-                "https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js",
-                "/Scripts/Forge/Viewer.Loading.js",
-                "/Scripts/Forge/Viewer.Toolkit.js",
-                "/Scripts/Forge/ForgePin.js",
-                "/Scripts/Forge/UpViewer.js"
-            ].join('\n'))
+        if (typeof UpViewer === "undefined") {
+            console.warn(
+                [
+                    "請先載入以下資源：",
+                    "https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css",
+                    "/Content/loading.css",
+                    "/Content/bim.css",
+                    "https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js",
+                    "/Scripts/Forge/Viewer.Loading.js",
+                    "/Scripts/Forge/Viewer.Toolkit.js",
+                    "/Scripts/Forge/ForgePin.js",
+                    "/Scripts/Forge/UpViewer.js",
+                ].join("\n")
+            );
             return;
         }
 
@@ -836,7 +840,7 @@
                 </div>
             </div>
         </div>`;
-        const template = document.createElement('template');
+        const template = document.createElement("template");
         template.innerHTML = modalTemplate.trim();
         const modal = template.content.firstChild;
 
@@ -847,19 +851,19 @@
             myModal.dispose();
             modal.remove();
             document.body.focus();
-        })
+        });
 
-        modal.addEventListener('shown.bs.modal', async function (event) {
+        modal.addEventListener("shown.bs.modal", async function (event) {
             if (bim.equipmentPoint) {
                 bim.equipmentPoint.hide();
             }
-            await bim.init()
-            await bim.loadModels(bim.getModelsUrl(data.RFIDViewName))
-            const position = new THREE.Vector3(data.Location_X, data.Location_Y, 0)
-            console.log('position', position)
-            const tool = bim.activateEquipmentPointTool(position, false)
-            tool.setPosition(position)
-        })
+            await bim.init();
+            await bim.loadModels(bim.getModelsUrl(data.RFIDViewName));
+            const position = new THREE.Vector3(data.Location_X, data.Location_Y, 0);
+            console.log("position", position);
+            const tool = bim.activateEquipmentPointTool(position, false);
+            tool.setPosition(position);
+        });
 
         myModal.show();
 
@@ -868,29 +872,28 @@
 
     /**
      * setup form-tooltip-toggle
-     * @param {string?} selector 
+     * @param {string?} selector
      */
     setupFormTooltip(selector = ".form-tooltip-toggle") {
-        const elements = this.getContainers(selector)
+        const elements = this.getContainers(selector);
         elements.forEach((el) => {
             new bootstrap.Tooltip(el, {
                 boundary: document.body,
-                customClass: 'form-tooltip',
+                customClass: "form-tooltip",
                 offset: [0, 0],
                 //trigger: 'click',
                 popperConfig(defaultBsPopperConfig) {
-                    const newPopperConfig = { ...defaultBsPopperConfig }
-                    const placement = el.getAttribute('data-bs-placement')
-                    console.log('placement', placement);
+                    const newPopperConfig = { ...defaultBsPopperConfig };
+                    const placement = el.getAttribute("data-bs-placement");
+                    console.log("placement", placement);
 
-
-                    if (placement === 'auto') return defaultBsPopperConfig;
+                    if (placement === "auto") return defaultBsPopperConfig;
 
                     newPopperConfig.placement = placement;
 
-                    if (placement === 'top-start') {
-                        const modifier_arrow = defaultBsPopperConfig.modifiers.find(x => x.name === 'arrow');
-                        const modifier_offset = defaultBsPopperConfig.modifiers.find(x => x.name === 'offset');
+                    if (placement === "top-start") {
+                        const modifier_arrow = defaultBsPopperConfig.modifiers.find((x) => x.name === "arrow");
+                        const modifier_offset = defaultBsPopperConfig.modifiers.find((x) => x.name === "offset");
 
                         if (modifier_arrow) {
                             modifier_arrow.options.padding = 24;
@@ -899,63 +902,87 @@
                             modifier_offset.options.offset = [-24, 0];
                         }
                     }
-                    return newPopperConfig
-                }
-            })
-        })
+                    return newPopperConfig;
+                },
+            });
+        });
     }
 
-    setupFormTab(defaultTabName) {
+    setupFormTab(defaultTabName, { onTabChange = null } = {}) {
+        // Determine the default tab if not provided
         if (!defaultTabName) {
-            const c = document.querySelector(".tab-btn.tab-checked")
-            defaultTabName = c?.dataset?.tabName;
+            defaultTabName = document.querySelector(".tab-btn.tab-checked")?.dataset?.tabName || document.querySelector(".tab-btn")?.dataset?.tabName;
         }
+
         if (!defaultTabName) {
-            const c = document.querySelector(".tab-btn")
-            defaultTabName = c?.dataset?.tabName;
+            console.error("Error: No default tab found. Ensure tab buttons have a 'data-tab-name' attribute.");
+            return null;
         }
-        if (!defaultTabName) {
-            console.error("No default tab found, please set 'data-tab-name' attribute on tab buttons")
-            return;
-        }
-        const self = {
+
+        const tabManager = {
             currentTab: defaultTabName,
             links: Array.from(document.querySelectorAll(".tab-btn")),
             contents: Array.from(document.querySelectorAll("[data-tab-content]")),
-            container: document.querySelector("[data-tab-container]"),
+            comments: [],
             openTab,
             getCurrentTabLink,
             getCurrentTabContent,
-        }
-        self.links.forEach((tablink) => {
-            tablink.onclick = (evt) => {
-                openTab(evt.currentTarget.dataset.tabName)
-            }
-        })
-        openTab(self.currentTab)
+        };
+        // Pre-generate comment nodes for content placeholders
+        tabManager.comments = tabManager.contents.map((content) => {
+            const comment = document.createComment(" ");
+            comment.tabName = content.dataset.tabContent;
+            return comment;
+        });
+        // Set up click event listeners for tab links
+        tabManager.links.forEach((link) => {
+            link.addEventListener("click", () => openTab(link.dataset.tabName));
+        });
+        openTab(tabManager.currentTab);
 
-        return self;
+        return tabManager;
 
+        // Function to open a tab
         function openTab(tabName) {
-            self.currentTab = tabName;
-            const tablink = self.getCurrentTabLink();
-            const tabContent = self.getCurrentTabContent();
+            if (!tabName) return;
 
-            self.links.forEach((e) => {
-                e.classList.remove("tab-checked");
+            const previousTab = tabManager.currentTab;
+            tabManager.currentTab = tabName;
+
+            // Update tab link styles
+            tabManager.links.forEach((link) => link.classList.toggle("tab-checked", link.dataset.tabName === tabName));
+
+            // Update tab contents
+            tabManager.contents.forEach((content) => {
+                if (content.dataset.tabContent === tabName) {
+                    getComment(tabName).replaceWith(content);
+                    return;
+                }
+                content.replaceWith(getComment(content.dataset.tabContent));
             });
-            self.contents.forEach((e) => {
-                e.remove()
-            });
-            tablink.classList.add("tab-checked");
-            self.container.appendChild(tabContent)
+
+            // Trigger the onTabChange callback if provided
+            if (typeof onTabChange === "function") {
+                onTabChange({
+                    previousTab,
+                    currentTab: tabName,
+                });
+            }
         }
 
+        // Get the current active tab link
         function getCurrentTabLink() {
-            return self.links.find((x) => x.dataset.tabName === self.currentTab);
+            return tabManager.links.find((link) => link.dataset.tabName === tabManager.currentTab);
         }
+
+        // Get the current active tab content
         function getCurrentTabContent() {
-            return self.contents.find((x) => x.dataset.tabContent === self.currentTab);
+            return tabManager.contents.find((content) => content.dataset.tabContent === tabManager.currentTab);
+        }
+
+        // Get the corresponding comment placeholder for a tab
+        function getComment(tabName) {
+            return tabManager.comments.find((comment) => comment.tabName === tabName);
         }
     }
 }

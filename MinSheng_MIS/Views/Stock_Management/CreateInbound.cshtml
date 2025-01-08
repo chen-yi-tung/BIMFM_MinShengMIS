@@ -18,35 +18,33 @@
         <form class="form d-lg-contents tab-content">
             @Html.AntiForgeryToken()
             <div class="form-group-zone">
-                <div class="d-contents" data-tab-container>
-                    <div class="d-contents" data-tab-content="Normal">
-                        <div class="form-group required" id="TypeContainer">
-                            <label for="StockTypeSN">類別</label>
-                            <select class="form-select" name="StockTypeSN" id="StockTypeSN" required></select>
-                        </div>
-                        <div class="form-group required" id="SNameContainer">
-                            <label for="SISN">品項名稱</label>
-                            <select class="form-select" name="SISN" id="SISN" required></select>
-                        </div>
-                        <div class="form-group input-wrapper required" id="NumContainer">
-                            <label for="NumberOfChanges">入庫數量</label>
-                            <input class="form-control" id="NumberOfChanges" name="NumberOfChanges" type="number"
-                                min="1" required />
-                            <span class="unit">個</span>
-                        </div>
+                <div class="d-contents" data-tab-content="Normal">
+                    <div class="form-group required" id="TypeContainer">
+                        <label for="StockTypeSN">類別</label>
+                        <select class="form-select" name="StockTypeSN" id="StockTypeSN" required></select>
                     </div>
-                    <div class="d-contents" data-tab-content="RFID">
-                        <div class="form-group">
-                            <label for="Other" class="d-flex gap-1">
-                                <span class="form-tooltip-toggle" data-bs-placement="top-start"
-                                    title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
-                                RFID
-                            </label>
-                            <button type="button"
-                                class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1"
-                                id="rfid">掃描<i class="scan-icon"></i>
-                            </button>
-                        </div>
+                    <div class="form-group required" id="SNameContainer">
+                        <label for="SISN">品項名稱</label>
+                        <select class="form-select" name="SISN" id="SISN" required></select>
+                    </div>
+                    <div class="form-group input-wrapper required" id="NumContainer">
+                        <label for="NumberOfChanges">入庫數量</label>
+                        <input class="form-control" id="NumberOfChanges" name="NumberOfChanges" type="number" min="1"
+                            required />
+                        <span class="unit">個</span>
+                    </div>
+                </div>
+                <div class="d-contents" data-tab-content="RFID">
+                    <div class="form-group required">
+                        <label for="Other" class="d-flex gap-1">
+                            <span class="form-tooltip-toggle" data-bs-placement="top-start"
+                                title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
+                            RFID
+                        </label>
+                        <button type="button"
+                            class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1"
+                            id="rfid">掃描<i class="scan-icon"></i>
+                        </button>
                     </div>
                 </div>
                 <div id="FileUploader"></div>

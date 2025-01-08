@@ -17,17 +17,17 @@
     }
     static reset(select, placeholder) {
         // 清空下拉選單
-        select.innerHTML = '';
+        select.innerHTML = "";
         if (!placeholder) return;
         // 添加默認選項
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
         defaultOption.textContent = placeholder;
         select.appendChild(defaultOption);
     }
 
     static addResetEvent(select, callback = () => { }) {
-        const form = select.closest('form');
+        const form = select.closest("form");
         if (!form) {
             console.warn(`[formDropdown.addResetEvent] not found form element closest select "${select}".`);
             return;
@@ -36,7 +36,7 @@
         const resetButton = form.querySelector('[type="reset"]');
 
         if (resetButton) {
-            resetButton.addEventListener('click', callback);
+            resetButton.addEventListener("click", callback);
         }
     }
 
@@ -50,20 +50,23 @@
         try {
             const response = await fetch(url);
             let res = await response.json();
-            if (filter) { res = filter(res) }
-            else { res = res.Datas || res; }
-            formDropdown.reset(select, placeholder)
+            if (filter) {
+                res = filter(res);
+            } else {
+                res = res.Datas || res;
+            }
+            formDropdown.reset(select, placeholder);
 
             // 動態添加其他選項
-            res.forEach(item => {
-                const option = document.createElement('option');
+            res.forEach((item) => {
+                const option = document.createElement("option");
                 option.value = item[value];
                 option.textContent = item[name];
                 select.appendChild(option);
             });
         } catch (error) {
-            console.error('Error fetching data:', error);
-            formDropdown.reset(select, placeholder)
+            console.error("Error fetching data:", error);
+            formDropdown.reset(select, placeholder);
         }
         return select;
     }
@@ -78,63 +81,87 @@
             let res = null;
             if (useFormData && data) {
                 const formData = new FormData();
-                Object.keys(data).forEach(key => {
+                Object.keys(data).forEach((key) => {
                     formData.append(key, data[key]);
                 });
                 res = await fetch(url, {
                     method: "POST",
                     body: formData,
-                }).then(res => res.json());
-            }
-            else {
+                }).then((res) => res.json());
+            } else {
                 res = await fetch(url, {
                     method: "POST",
                     body: JSON.stringify(data),
                     headers: new Headers({
                         "Content-Type": "application/json",
                     }),
-                }).then(res => res.json());
+                }).then((res) => res.json());
             }
             // data filter
-            if (filter) { res = filter(res) }
-            else { res = res.Datas || res; }
+            if (filter) {
+                res = filter(res);
+            } else {
+                res = res.Datas || res;
+            }
 
-            formDropdown.reset(select, placeholder)
+            formDropdown.reset(select, placeholder);
 
             // 動態添加其他選項
-            res.forEach(item => {
-                const option = document.createElement('option');
+            res.forEach((item) => {
+                const option = document.createElement("option");
                 option.value = item[value];
                 option.textContent = item[name];
                 select.appendChild(option);
             });
         } catch (error) {
-            console.error('Error fetching data:', error);
-            formDropdown.reset(select, placeholder)
+            console.error("Error fetching data:", error);
+            formDropdown.reset(select, placeholder);
         }
 
         return select;
     }
 
-    static async ASN({ id = "ASN", fsnId = "FSN", value, placeholder = "請選擇" } = {}) {
+    static async ASN({ id = "ASN", fsnId = "FSN", value = null, fsnValue = null, placeholder = "請選擇" } = {}) {
         const asn = await formDropdown.pushSelect({ id, url: "/DropDownList/Area", placeholder });
         const fsn = formDropdown.getSelect(fsnId);
         if (fsn) {
-            await formDropdown.FSN({ id: fsnId });
-            asn.addEventListener('change', async function (e) {
+            await formDropdown.FSN({ id: fsnId, data: value, value: fsnValue });
+            asn.addEventListener("change", async function (e) {
                 await formDropdown.FSN({ id: fsnId, data: asn.value, placeholder: asn.value ? placeholder : void 0 });
             });
 
             formDropdown.addResetEvent(asn, async () => {
                 await formDropdown.FSN({ id: fsnId, data: null });
-            })
+            });
         }
-        formDropdown.setValue(id, value)
+        formDropdown.setValue(id, value);
         return asn;
-    };
+    }
     static async FSN({ id = "FSN", data, value, placeholder = "請先選擇棟別" } = {}) {
         const fsn = await formDropdown.pushSelect({ id, url: `/DropDownList/Floor?ASN=${data}`, placeholder });
-        formDropdown.setValue(id, value)
+        formDropdown.setValue(id, value);
         return fsn;
-    };
+    }
+
+    static async StockTypeSN({ id = "StockTypeSN", sisnId = "SISN", value = null, sisnValue = null, placeholder = "請選擇" } = {}) {
+        const sysn = await formDropdown.pushSelect({ id, url: "/DropDownList/StockType", placeholder });
+        const sisn = formDropdown.getSelect(sisnId);
+        if (sisn) {
+            await formDropdown.SISN({ id: sisnId, data: value, value: sisnValue });
+            sysn.addEventListener("change", async function (e) {
+                await formDropdown.SISN({ id: sisnId, data: sysn.value, placeholder: sysn.value ? placeholder : void 0 });
+            });
+
+            formDropdown.addResetEvent(sysn, async () => {
+                await formDropdown.SISN({ id: sisnId, data: null });
+            });
+        }
+        formDropdown.setValue(id, value);
+        return sysn;
+    }
+    static async SISN({ id = "FSN", data, value = null, placeholder = "請先選擇類別" } = {}) {
+        const sisn = await formDropdown.pushSelect({ id, url: `/DropDownList/StockName?StockTypeSN=${data}`, placeholder });
+        formDropdown.setValue(id, value);
+        return sisn;
+    }
 }
