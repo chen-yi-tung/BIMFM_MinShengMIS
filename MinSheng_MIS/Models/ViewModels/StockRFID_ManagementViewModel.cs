@@ -11,8 +11,8 @@ namespace MinSheng_MIS.Models.ViewModels
     public class SIRFID_ViewModel
     {
         [Required]
-        [StringLength(24, ErrorMessage = "{0} 的長度最多24個字元。", MinimumLength = 1)]
-        [Display(Name = "RFID内碼")]
+        [StringLength(150, ErrorMessage = "{0} 的長度最多{1}個字元。", MinimumLength = 1)]
+        [Display(Name = "RFID內碼")]
         public string RFIDInternalCode { get; set; }
 
         [Required]
@@ -32,6 +32,10 @@ namespace MinSheng_MIS.Models.ViewModels
 
         [FileSizeLimit(20)] // Limit file size to 20 MB
         public HttpPostedFileBase[] PurchaseOrder { get; set; } //採購單
+
+        [StringLength(250, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "備註")]
+        public string Memo { get; set; } //備註
     }
 
     public class SORFID_ViewModel
@@ -40,9 +44,12 @@ namespace MinSheng_MIS.Models.ViewModels
         [RFIDInternalCodesValidation]
         public string[] RFIDInternalCodes { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元，且取用人必填。", MinimumLength = 1)]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
         public string Recipient { get; set; }
+
+        [StringLength(250, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "備註")]
+        public string Memo { get; set; } //備註
     }
 
     public class SISNCount

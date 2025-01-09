@@ -9,6 +9,10 @@ using Newtonsoft.Json;
 using System.Data;
 using MinSheng_MIS.Models;
 using System.Linq.Expressions;
+using System.Web.Http;
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Web.Http.Results;
 
 namespace MinSheng_MIS.Services
 {
@@ -53,6 +57,23 @@ namespace MinSheng_MIS.Services
             }
         }
 
+        public static IHttpActionResult HandleInvalidModelState(ApiController controller, string field = null)
+        {
+            var errorMsg = string.IsNullOrEmpty(field) ?
+                string.Join(Environment.NewLine, controller.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).Distinct()) :
+                string.Join(Environment.NewLine, controller.ModelState[field].Errors.Select(e => e.ErrorMessage).Distinct());
+
+            return new ResponseMessageResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ObjectContent<JsonResService<string>>(new JsonResService<string>
+                {
+                    AccessState = ResState.Failed,
+                    ErrorMessage = errorMsg,
+                    Datas = null,
+                }, new JsonMediaTypeFormatter())
+            });
+        }
+
         /// <summary>
         /// <see cref="MyCusResException"/>的錯誤訊息回傳
         /// </summary>
@@ -74,6 +95,19 @@ namespace MinSheng_MIS.Services
             };
         }
 
+        public static IHttpActionResult HandleMyCusResException(ApiController controller, MyCusResException error)
+        {
+            return new ResponseMessageResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ObjectContent<JsonResService<string>>(new JsonResService<string>
+                {
+                    AccessState = ResState.Failed,
+                    ErrorMessage = error.Message,
+                    Datas = null,
+                }, new JsonMediaTypeFormatter())
+            });
+        }
+
         /// <summary>
         /// <see cref="Exception"/>的錯誤訊息回傳
         /// </summary>
@@ -87,11 +121,24 @@ namespace MinSheng_MIS.Services
                 Content = JsonConvert.SerializeObject(new JsonResService<string>
                 {
                     AccessState = ResState.Failed,
-                    ErrorMessage = $"</br>系統異常！",
+                    ErrorMessage = $"系統異常！",
                     Datas = null
                 }),
                 ContentType = "application/json"
             };
+        }
+
+        public static IHttpActionResult HandleException(ApiController controller)
+        {
+            return new ResponseMessageResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ObjectContent<JsonResService<string>>(new JsonResService<string>
+                {
+                    AccessState = ResState.Failed,
+                    ErrorMessage = $"</br>系統異常！",
+                    Datas = null,
+                }, new JsonMediaTypeFormatter())
+            });
         }
 
         /// <summary>
@@ -199,13 +246,6 @@ namespace MinSheng_MIS.Services
 
         public static ICollection<T> AddOrUpdateList<T, TSource>(
             IEnumerable<TSource> list,
-            Func<TSource, T> createInstance) where T : new()
-        {
-            return list.Select(x => createInstance(x)).ToList();
-        }
-
-        public static ICollection<T> AddOrUpdateList<T, TSource>(
-            IEnumerable<TSource> list,
             string esn,
             string initialLatestId,
             Func<string, string, string> generateIdFunc,
@@ -221,34 +261,6 @@ namespace MinSheng_MIS.Services
 
                 // 創建實例，傳遞當前 Id 和 Id 生成函數
                 var result = createInstance(item, esn, latestId, newId);
-                results.Add(result);
-
-                // 更新 latestId
-                latestId = newId;
-            }
-
-            return results;
-        }
-
-        public static ICollection<T> AddOrUpdateList<T, TSource>(
-            IEnumerable<TSource> list,
-            string sn,
-            string initialLatestId,
-            string format,
-            int emptySnLength,
-            Func<string, int, string, string, string> generateIdFunc,  // 修改為新的 generateIdFunc 簽名
-            Func<TSource, string, string, T> createInstance)
-        {
-            string latestId = initialLatestId;
-            var results = new List<T>();
-
-            foreach (var item in list)
-            {
-                // 生成Id，傳遞格式、空位長度、最新Id 和 SN
-                string newId = generateIdFunc(format, emptySnLength, latestId, sn);
-
-                // 創建實例，傳遞當前 Id 和 Id 生成函數
-                var result = createInstance(item, sn, newId);
                 results.Add(result);
 
                 // 更新 latestId

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Web;
 using static MinSheng_MIS.Services.UniParams;
 
 
@@ -17,14 +18,25 @@ namespace MinSheng_MIS.Services
 {
     public class EquipmentInfo_ManagementService
     {
+        private readonly string _photoPath = "Files/EquipmentInfo";
         private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly HttpServerUtilityBase _ser;
         private readonly RFIDService _rfidService;
 
-        public EquipmentInfo_ManagementService(Bimfm_MinSheng_MISEntities db)
+        public EquipmentInfo_ManagementService(Bimfm_MinSheng_MISEntities db, HttpServerUtilityBase ser)
         {
             _db = db;
+            _ser = ser;
             _rfidService = new RFIDService(_db);
         }
+
+        #region 上傳照片
+        public void UploadPhoto(HttpPostedFileBase file, string esn)
+        {
+            if (!ComFunc.UploadFile(file, _ser.MapPath($"~/{_photoPath}/"), esn))
+                throw new MyCusResException("檔案上傳過程出錯！");
+        }
+        #endregion
 
         #region 查詢符合Dto的EquipmentInfo資訊
         public IQueryable<T> GetEquipmentInfoQueryByDto<T>(Expression<Func<EquipmentInfo, bool>> filter = null) 
@@ -95,8 +107,13 @@ namespace MinSheng_MIS.Services
             var origin = await _db.EquipmentInfo.FindAsync(data.ESN);
 
             // 更新 EquipmentInfo
-            EquipmentInfo update = (data as UpdateEquipmentInfoInstance)
-                .ToDto<UpdateEquipmentInfoInstance, EquipmentInfo>();
+            EquipmentInfo update = data.ToDto<IUpdateEquipmentInfo, EquipmentInfo>();
+            if (data.EState == null)
+                update.EState = origin.EState;
+            if (data.EPhoto?.ContentLength > 0)
+                update.EPhoto = $"{data.ESN}{Path.GetExtension(data.EPhoto.FileName)}";
+            else
+                update.EPhoto = origin.EPhoto;
 
             // 維持不變
             update.DBID = origin.DBID;
@@ -105,6 +122,28 @@ namespace MinSheng_MIS.Services
             update.IsDelete = origin.IsDelete;
 
             _db.EquipmentInfo.AddOrUpdate(update);
+        }
+        #endregion
+
+        #region 更新設備所有增設欄位值
+        public async Task UpdateEquipmentAdditionalFieldsValueAsync(IUpdateAddFieldValue data)
+        {
+            // 資料驗證
+            await AddFieldValueDataAnnotationAsync(data);
+
+            // 批次更新 Equipment_AddFieldValue
+            UpdateRangeAddField(data);
+        }
+        #endregion
+
+        #region 更新設備所有保養資訊
+        public async Task UpdateEquipmentMaintainItemsValue(IUpdateMaintainItemValue data)
+        {
+            // 資料驗證
+            await MaintainItemValueDataAnnotationAsync(data, false);
+
+            // 批次建立 Equipment_MaintainItemValue
+            UpdateRangeMaintainItemValue(data);
         }
         #endregion
 
@@ -117,9 +156,12 @@ namespace MinSheng_MIS.Services
             T dest = equipment.ToDto<EquipmentInfo, T>();
             if (dest is IEquipmentInfoDetail info)
             {
+                info.EState = ConvertStringToEnum<EState>(equipment.EState).GetLabel();
                 info.ASN = equipment.Floor_Info.ASN.ToString();
                 info.AreaName = equipment.Floor_Info.AreaInfo.Area;
                 info.FloorName = equipment.Floor_Info.FloorName;
+                info.FileName = equipment.EPhoto;
+                info.FilePath = $"/{_photoPath}/{equipment.EPhoto}";
 
                 dest = (T)info;
             }
@@ -163,6 +205,7 @@ namespace MinSheng_MIS.Services
                     Text = x.Template_MaintainItemSetting != null ? x.Template_MaintainItemSetting.MaintainName : "-",
                     Period = x.Period,
                     PeriodText = ConvertStringToEnum<MaintainPeriod>(x.Period).GetLabel(),
+                    LastMaintainDate = x.lastMaintainDate?.ToString("yyyy-MM-dd"),
                     NextMaintainDate = x.NextMaintainDate?.ToString("yyyy-MM-dd"),
                 });
 
@@ -250,7 +293,7 @@ namespace MinSheng_MIS.Services
             if (!floorSNList.Contains(data.FSN))
                 throw new MyCusResException("樓層不存在！");
             // 照片驗證
-            if (data.EPhoto != null && data.EPhoto.ContentLength > 0)
+            if (!(data is IEditEquipmentInfo) && data.EPhoto?.ContentLength > 0)
             {
                 string extension = Path.GetExtension(data.EPhoto.FileName); // 檔案副檔名
                 if (!ComFunc.IsConformedForImage(data.EPhoto.ContentType, extension)
@@ -351,5 +394,59 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 批次更新 Equipment_AddFieldValue
+        /// <summary>
+        /// 批次更新設備一機一卡基本資料欄位填值資料
+        /// </summary>
+        /// <param name="data">包含一機一卡基本資料欄位填值資料列表(AddFieldList)及設備資料編碼(ESN)</param>
+        /// <returns>無回傳</returns>
+        private void UpdateRangeAddField(IUpdateAddFieldValue data)
+        {
+            var targetList = data.AddFieldList?.Any() == true ?
+                Helper.AddOrUpdateList(data.AddFieldList, data.ESN, (x, e) => new Equipment_AddFieldValue
+                {
+                    EAFVSN = $"{e}{x.AFSN}",
+                    ESN = e,
+                    AFSN = x.AFSN,
+                    Value = x.Value
+                }) :
+                new List<Equipment_AddFieldValue>();
+
+            foreach (var item in targetList)
+                _db.Equipment_AddFieldValue.AddOrUpdate(item);
+        }
+        #endregion
+
+        #region 批次更新 Equipment_MaintainItemValue
+        /// <summary>
+        /// 批次更新設備一機一卡保養項目填值資料
+        /// </summary>
+        /// <param name="data">包含一機一卡保養項目填值資料列表(MaintainItemList)及設備資料編碼(ESN)</param>
+        /// <returns>無回傳</returns>
+        private void UpdateRangeMaintainItemValue(IUpdateMaintainItemValue data)
+        {
+            var targetList = data.MaintainItemList?.Any() == true ?
+                Helper.AddOrUpdateList(data.MaintainItemList, data.ESN, (x, e) => new Equipment_MaintainItemValue
+                {
+                    EMIVSN = $"{e}{x.MISSN}",
+                    ESN = e,
+                    MISSN = x.MISSN,
+                    Period = x.Period,
+                    lastMaintainDate = null,
+                    NextMaintainDate = x.NextMaintainDate,
+                    IsCreateForm = false
+                }) :
+                new List<Equipment_MaintainItemValue>();
+
+            foreach (var item in targetList)
+            {
+                var field = _db.Equipment_MaintainItemValue.Find(item.EMIVSN) 
+                    ?? throw new MyCusResException("MISSN不存在！");
+                item.lastMaintainDate = field.lastMaintainDate;
+                item.IsCreateForm = field.IsCreateForm;
+                _db.Equipment_MaintainItemValue.AddOrUpdate(item);
+            }
+        }
+        #endregion
     }
 }

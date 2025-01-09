@@ -89,7 +89,7 @@
 }
 
 @media (min-width: 992px) {
-    .edit-area .form .textbox{
+    /*.edit-area .form .textbox{
         width: 250px !important;
-    }
+    }*/
 }

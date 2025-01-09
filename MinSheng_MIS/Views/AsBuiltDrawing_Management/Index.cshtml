@@ -12,71 +12,54 @@
     <button class="btn btn-create" id="create">新增竣工圖</button>
     <div class="search-area">
         <form class="form" method="post" action="">
-
             <div class="form-group">
                 <label for="ASN">棟別</label>
                 <select class="form-select" name="ASN" id="ASN">
                     <option value="">請選擇</option>
                 </select>
             </div>
-            @*<div>
-                <input class="form-control" id="Area" name="Area" type="text" hidden />
-            </div>*@
-
             <div class="form-group">
                 <label for="FSN">樓層</label>
                 <select class="form-select" name="FSN" id="FSN">
                     <option value="">請選擇</option>
                 </select>
             </div>
-            @*<div>
-                <input class="form-control" id="Floor" name="Floor" type="text" hidden />
-            </div>*@
-
             <div class="form-group">
                 <label for="DSystemID">系統別</label>
                 <select class="form-select" name="DSystemID" id="DSystemID">
                     <option value="">請選擇</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="DSubSystemID">子系統別</label>
                 <select class="form-select" name="DSubSystemID" id="DSubSystemID">
                     <option value="">請選擇</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="ImgNum">圖號</label>
                 <input class="form-control" id="ImgNum" name="ImgNum" type="text" />
             </div>
-
             <div class="form-group">
                 <label for="ImgName">圖名</label>
                 <input class="form-control" id="ImgName" name="ImgName" type="text" />
             </div>
-
             <div class="form-group">
                 <label for="ImgVersion">版本</label>
                 <input class="form-control" id="ImgVersion" name="ImgVersion" type="text" />
             </div>
-
             <div class="form-group">
                 <label for="DateFrom">日期(起)</label>
                 <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
             </div>
-
             <div class="form-group">
                 <label for="DateTo">日期(迄)</label>
                 <input class="form-control" id="DateTo" name="DateTo" type="date" />
             </div>
-
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
                 <button type="reset" class="btn btn-clear" id="clear">清除</button>
             </div>
-
         </form>
     </div>
 
@@ -105,20 +88,32 @@
                 ImgPath: "2023-03-30_B.png",
             }
         ]
-
-        $(async function () {
+        let authority;
+            $(async function () {
+            //取得權限
+            (async () => {
+                try {
+                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
+                    console.log("權限", authority);
+                } catch (error) {
+                    console.error("權限回傳失敗", error);
+                }
+            })();
             await formDropdown.ASN();
             await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
-            Initialize_DataGrid(getGridJSON);
+            Initialize_DataGrid(getGridJSON, authority);
             addSearchAreaClickEvent();
 
             const Systems = document.getElementById('DSystemID')
             Systems.addEventListener("change", function () {
                 pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?DSystemID=${$('#DSystemID').val()}`);
             });
+            if (authority === "3") {
+                document.getElementById('create').classList.add('d-none');
+            }
         });
 
-        function Initialize_DataGrid(getGridJSON) {
+            function Initialize_DataGrid(getGridJSON, authority) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -130,8 +125,8 @@
                 remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_view', (v, row, i) => dg.eventButton(i, "檢視", "view")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
-                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: authority != "3" })),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { disabled: authority != "1",className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('ADSN', 'ADSN', 130),

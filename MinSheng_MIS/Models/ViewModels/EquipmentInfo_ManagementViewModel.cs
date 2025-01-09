@@ -11,7 +11,8 @@ namespace MinSheng_MIS.Models.ViewModels
     /// <summary>
     /// 新增設備DTO
     /// </summary>
-    public class EquipmentInfoCreateViewModel : EquipInfo, ICreateEquipmentInfo, ICreateAddFieldValueList, ICreateMaintainItemValueList
+    public class EquipmentInfoCreateViewModel : EquipInfo, 
+        ICreateEquipmentInfo, ICreateAddFieldValueList, ICreateMaintainItemValueList
     {
         public string TSN { get; set; } // 一機一卡模板編號
         [FileSizeLimit(10)] // 限制大小為 10 MB
@@ -90,6 +91,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         public string FilePath { get; set; } // 設備照片路徑
         public string FileName { get; set; } // 設備照片名稱
+        public string EState { get; set; } // 設備狀態
         public string ASN { get; set; } // 棟別
         public string AreaName { get; set; } // 棟別名稱
         public string FloorName { get; set; } // 樓層名稱
@@ -100,6 +102,7 @@ namespace MinSheng_MIS.Models.ViewModels
         string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         string FilePath { get; set; } // 設備照片路徑
         string FileName { get; set; } // 設備照片名稱
+        string EState { get; set; } // 設備狀態
         string ASN { get; set; } // 棟別
         string AreaName { get; set; } // 棟別名稱
         string FloorName { get; set; } // 樓層名稱
@@ -119,6 +122,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         public string Text { get; set; } // 保養項目名稱
         public string PeriodText { get; set; } // 週期名稱
+        public string LastMaintainDate { get; set; } // 上次保養日期
         public new string NextMaintainDate { get; set; } // 下次保養日期
     }
 
@@ -126,11 +130,50 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         string Text { get; set; } // 保養項目名稱
         string PeriodText { get; set; } // 週期名稱
+        string LastMaintainDate { get; set; } // 上次保養日期
     }
     #endregion
 
-    #region 設備-編輯 TODO
+    #region 設備-編輯
+    /// <summary>
+    /// 編輯設備DTO
+    /// </summary>
+    public class EquipmentInfoEditViewModel : EquipInfo,
+        IEditEquipmentInfo, IEditAddFieldValueList, IEditMaintainItemValueList
+    {
+        string IUpdateEquipmentInfo.EState { get; set; } // 設備狀態
+        [Required]
+        [StringLength(12, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "設備資料編號")]
+        public string ESN { get; set; } // 設備資料(EquipmentInfo)編號
+        public string TSN { get; set; } // 一機一卡模板編號
+        [FileSizeLimit(10)] // 限制大小為 10 MB
+        public HttpPostedFileBase EPhoto { get; set; } //新增的照片
+        public string FileName { get; set; } // 設備原照片名稱
+        public List<EquipRFID> RFIDList { get; set; } // RFID
+        public List<AddFieldValueModel> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位
+        public List<MaintainItemValueModel> MaintainItemList { get; set; } // 一機一卡模板資料：保養項目設定
+    }
 
+    /// <summary>
+    /// 編輯設備資料所需資訊
+    /// </summary>
+    public interface IEditEquipmentInfo : ICreateEquipmentInfo, IUpdateEquipmentInfo
+    {
+        string FileName { get; set; } // 設備原照片名稱
+    }
+
+    /// <summary>
+    /// 使用者變更設備中一機一卡增設欄位值所需資訊
+    /// </summary>
+    public interface IEditAddFieldValueList : 
+        IUpdateAddFieldValue, ICreateAddFieldValueList { }
+
+    /// <summary>
+    /// 使用者新增設備中一機一卡保養資訊的週期及下次保養日期所需資訊
+    /// </summary>
+    public interface IEditMaintainItemValueList : 
+        IUpdateMaintainItemValue, ICreateMaintainItemValueList { }
     #endregion
 
     #region 設備-刪除 TODO
@@ -322,6 +365,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string EState { get; set; }
         public HttpPostedFileBase EPhoto { get; set; } //新增的照片
     }
+
     public class UpdateAddFieldValueInstance : IUpdateAddFieldValue
     {
         public string ESN { get; set; }

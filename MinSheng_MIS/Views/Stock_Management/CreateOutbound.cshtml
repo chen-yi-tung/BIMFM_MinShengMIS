@@ -4,8 +4,7 @@
 @section styles {
     @Html.Partial("DataGridScripts")
     <link rel="stylesheet" href="/Content/StockManagement.css">
-    <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
-    <script src="/Scripts/dataTable/RFIDResultModal.js" defer></script>
+    <script src="/Scripts/Stock_Management/CreateOutbound.js" defer></script>
 }
 
 <h2>@ViewBag.Title</h2>
@@ -13,45 +12,50 @@
 <section>
     <div class="edit-area edit-area-lg flex-wrap flex-md-row justify-content-lg-between gap-0">
         <div class="tab-btn-bar">
-            <button class=" tab-btn tab-checked" onclick="openTab(event,'Normal')">一般</button>
-            <button class=" tab-btn" onclick="openTab(event,'RFID')">RFID</button>
+            <button class=" tab-btn tab-checked" data-tab-name="Normal">一般</button>
+            <button class=" tab-btn" data-tab-name="RFID">RFID</button>
         </div>
-        <form class="form d-lg-contents tab-content" id="Normal">
+        <form class="form d-lg-contents tab-content">
+            @Html.AntiForgeryToken()
             <div class="form-group-zone">
-                <div class="form-group required" id="TypeContainer">
-                    <label for="StockTypeSN">類別</label>
-                    <select class="form-select" name="StockTypeSN" id="StockTypeSN" required>
-                        <option value="null">請選擇</option>
-                    </select>
-                </div>
-                <div class="form-group required" id="SNameContainer">
-                    <label for="SISN">品項名稱</label>
-                    <select class="form-select" name="SISN" id="SISN" required>
-                        <option value="null">請選擇</option>
-                    </select>
-                </div>
-                <div class="form-group input-wrapper required" id="NumContainer">
-                    <label for="NumberOfChanges">出庫數量</label>
-                    <input class="form-control" id="NumberOfChanges" name="NumberOfChanges" type="number" min="1" required />
-                    <span class="unit">個</span>
+                <div class="d-contents" data-tab-content="Normal">
+                    <div class="form-group required">
+                        <label for="StockTypeSN">類別</label>
+                        <select class="form-select" name="StockTypeSN" id="StockTypeSN" required>
+                            <option value="null">請選擇</option>
+                        </select>
+                    </div>
+                    <div class="form-group required">
+                        <label for="SISN">品項名稱</label>
+                        <select class="form-select" name="SISN" id="SISN" required>
+                            <option value="null">請選擇</option>
+                        </select>
+                    </div>
+                    <div class="form-group input-wrapper required">
+                        <label for="NumberOfChanges">出庫數量</label>
+                        <input class="form-control" id="NumberOfChanges" name="NumberOfChanges" type="number" min="1"
+                            required />
+                        <span class="unit">個</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="Recipient">取用人</label>
                     <input class="form-control" id="Recipient" name="Recipient" type="text" />
                 </div>
-                <div class="form-group required" style="display: none; grid-row-start: 2;" id="RFIDContainer">
-                    <label for="Other" class="d-flex gap-1">
-                        <span class="form-tooltip-toggle" data-bs-placement="top-start"
-                            title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
-                        RFID
-                    </label>
-                    <button type="button"
-                        class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1"
-                        onclick="RFIDResultModal(RFIDResult, GridOptions, 'RFIDZone')">
-                        掃描<i class="scan-icon"></i>
-                    </button>
+                <div class="d-contents" data-tab-content="RFID">
+                    <div class="form-group required" style="grid-row-start: 2;">
+                        <label for="Other" class="d-flex gap-1">
+                            <span class="form-tooltip-toggle" data-bs-placement="top-start"
+                                title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
+                            RFID
+                        </label>
+                        <button type="button"
+                            class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1"
+                            id="rfid">
+                            掃描<i class="scan-icon"></i>
+                        </button>
+                    </div>
                 </div>
-                @*<div class="datatable datatable-grid form-group col-3fr" style="display: none;" id="RFIDZone">*@
                 <div class="form-group col-3fr">
                     <label for="Memo">備註</label>
                     <textarea class="form-control" id="Memo" name="Memo" rows="3" cols="50" maxlength="250"></textarea>
@@ -61,248 +65,30 @@
     </div>
 </section>
 
-@*RFID 設備資訊POP UP*@
-<div class="modal fade datagrid-modal" tabindex="-1" id="RFIDEquipmentInfo">
-    <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h2>RFID 設備資訊</h2>
-                <form class="form w-100 p-0">
-                    <div class="form-group-zone">
-                        <div class="form-group">
-                            <label for="InterCode">RFID內碼</label>
-                            <input type="text" class="form-control" name="InterCode" id="InterCode" maxlength="20"
-                                disabled>
-                        </div>
-                        <div class="form-group required">
-                            <label for="ExterCode">RFID外碼</label>
-                            <input type="text" class="form-control" name="ExterCode" id="ExterCode" maxlength="20"
-                                required>
-                        </div>
-                        <div class="form-group required">
-                            <label for="StockTypeSN">類別</label>
-                            <select class="form-select" name="StockTypeSN" id="StockTypeSN" required></select>
-                        </div>
-                        <div class="form-group required">
-                            <label for="StockName">品項名稱</label>
-                            <select class="form-select" name="StockName" id="StockName" required></select>
-                        </div>
-                        <div class="form-group input-wrapper2" id="NumContainer">
-                            <label for="NumberOfChanges">出庫數量</label>
-                            <input class="form-control" id="NumberOfChanges" name="NumberOfChanges" type="text" disabled />
-                            <span class="unit">個</span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                <button type="button" class="btn btn-export" id="add-row">確定</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
+<template id="RFIDModal">
+    <div class="modal fade data-detail-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title w-100 text-center">RFID掃描資訊</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="datatable-table" id="RFID-DataTable"></table>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                    <button type="button" class="btn btn-export" id="add-row">確定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
 @section scripts {
-    <script>
-        let apiUrl = null;
-        let submitUrl = "";
-        let currentTab = "Normal";
-
-        $(async function () {
-            await pushSelect("StockTypeSN", '@Url.Action("StockType", "DropDownList")');
-            readData(apiUrl);
-            $("#StockTypeSN").change(async() => {
-                /*console.log($("#StockTypeSN").val());*/
-                let StockTypeSN = $("#StockTypeSN").val()
-                if (StockTypeSN) {
-                    await pushSelect("SISN", '@Url.Action("StockName", "DropDownList")' + `?stockTypeSN=${StockTypeSN}`);
-                } else {
-                    $("#SISN").empty();
-                    $("#SISN").append(`<option value="">請選擇</option>`)
-                    $("#SISN").val("");
-                }
-            })
-            //await formDropdown.ASN();
-            addButtonEvent();
-        });
-
-        //掃描完RFID接收到的假資料
-        window.RFIDResult = {
-            result: true,
-            info: {
-                InterCode: "125533FFFF",
-                ExterCode: "A101",
-                Type: "備料",
-                SName: "測試品項",
-                Num: "7",
-                Init: "個"
-            }
-        }
-
-        window.GridOptions = {
-            thead: true,
-            delBtn: true,
-            columns: [
-                { id: "InterCode", title: "RFID內碼" },
-                { id: "ExterCode", title: "RFID外碼" },
-                { id: "Type", title: "類別" },
-                { id: "SName", title: "品項名稱" },
-                { id: "Num", title: "領取數量" },
-                { id: "Init", title: "單位" },
-            ]
-        }
-
-        const fakeData = {
-            PSN: "P336448226",
-            RFIDItem: [
-                {
-                    InterCode: "XSCXCZS1",
-                    ExterCode: "A0001",
-                    Type: "潤滑劑",
-                    SName: "軸承潤滑劑",
-                    Num: "1",
-                    Init: "罐"
-                },
-                {
-                    InterCode: "XSCXCZS2",
-                    ExterCode: "A0002",
-                    Type: "潤滑劑2",
-                    SName: "軸承潤滑劑2",
-                    Num: "2",
-                    Init: "罐"
-                },
-                {
-                    InterCode: "XSCXCZS3",
-                    ExterCode: "A0003",
-                    Type: "潤滑劑3",
-                    SName: "軸承潤滑劑3",
-                    Num: "3",
-                    Init: "罐"
-                },
-            ]
-        }
-
-        function save() {
-            let isValidity = false;
-            let fd = new FormData();
-            switch (currentTab) {
-                case 'Normal':
-                    submitUrl = '@Url.Action("CreateNormalComputationalStockOut", "Stock_Management")';
-                    let NormalForm = document.getElementById("Normal");
-                    isValidity = NormalForm.reportValidity();
-                    console.log("todo save():", isValidity)
-                    fd.append("NumberOfChanges", $("#NumberOfChanges").val())
-                    fd.append("SISN", $("#SISN").val())
-                    break
-                case 'RFID':
-                    alert("RFID");
-                    break
-            }
-
-            fd.append("Recipient", $("#Recipient").val())
-            fd.append("Memo", $("#Memo").val())
-            console.log(Object.fromEntries(fd.entries()));
-            if (!fd) return;
-            if (!isValidity) return;
-
-            $.ajax({
-                url: submitUrl,
-                data: fd,
-                type: "POST",
-                contentType: false,
-                processData: false,
-                success: onSuccess,
-                error: onError
-            })
-
-            function onSuccess(res) {
-                console.log(res);
-                if (!res.ErrorMessage) {
-                    createDialogModal({
-                        id: "DialogModal-Success", inner: "新增成功！",
-                        onHide: () => { window.location.href = "/Stock_Management/Index"; }
-                    });
-                } else {
-                    createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.ErrorMessage || ""}` })
-                }
-            }
-            function onError(res) {
-                console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.ErrorMessage || ""}` })
-            }
-        }
-
-        function readData(url = null) {
-            url == null ? onSuccess(fakeData) :
-                console.log("fakeData", fakeData);
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                success: onSuccess,
-                error: onError
-            })
-            function onSuccess(res) {
-                console.log("res", res);
-                res.RFIDItem ?
-                    $("#RFIDForm").append(createTableGrid(res.RFIDItem, GridOptions, "RFIDZone")) : ""
-                /*$("#RFIDForm").parents(".datatable").remove();*/
-
-            }
-            function onError(res) {
-                console.log(res);
-            }
-
-        }
-
-        function openTab(evt, tabName) {
-            var i, tablinks;
-            tablinks = document.getElementsByClassName("tab-btn");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" tab-checked", "");
-            }
-            evt.currentTarget.className += " tab-checked";
-            currentTab = tabName;
-            var showRFID = tabName === "RFID"; // 點選 "RFID" 時顯示 #Type
-            var showElements = tabName === "Normal"; // 如果是 "一般"，顯示這些元素
-
-            document.getElementById("TypeContainer").style.display = showElements ? "block" : "none";
-            document.getElementById("SNameContainer").style.display = showElements ? "block" : "none";
-            document.getElementById("NumContainer").style.display = showElements ? "block" : "none";
-            document.getElementById("RFIDContainer").style.display = showRFID ? "block" : "none";
-        }
-
-        function addButtonEvent() {
-            $("#back").click(function () {
-                history.back();
-            })
-            $("#submit").click(function () {
-                createDialogModal({
-                    id: "DialogModal-CreateStock",
-                    inner: `
-                                <div class="d-flex justify-content-center align-items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                        class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
-                                        <path
-                                            d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-                                    </svg>
-                                    新增後無法更改，確認是否新增入庫?？
-                                </div>
-                            `,
-                    button: [
-                        { className: "btn btn-cancel", text: "取消", cancel: true, },
-                        { className: "btn btn-delete", text: "確定新增", cancel: true, onClick: save, },
-                    ]
-                })
-            });
-        }
-    </script>
+    <script>$(() => init_CreateOutbound());</script>
 }

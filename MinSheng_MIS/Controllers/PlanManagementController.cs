@@ -4,7 +4,9 @@ using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Http.Results;
 using System.Web.Mvc;
 using static MinSheng_MIS.Services.UniParams;
@@ -52,7 +54,7 @@ namespace MinSheng_MIS.Controllers
                 string ipsn = await _inspectionPlanService.CreateInspectionPlanAsync(data);
 
                 // 建立 InspectionPlan_Time
-                await _inspectionPlanService.CreateInspectionPlanContentAsync(new InspectionPlanTimeModifiableListInstance(ipsn, data));
+                _inspectionPlanService.CreateInspectionPlanContent(new InspectionPlanTimeModifiableListInstance(ipsn, data));
 
                 await _db.SaveChangesAsync();
 
@@ -80,6 +82,52 @@ namespace MinSheng_MIS.Controllers
             ViewBag.id = id;
             return View();
         }
+
+        /// <summary>
+        /// 編輯工單
+        /// </summary>
+        /// <param name="data">使用者input</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult> EditInspectionPlan(InspectionPlanEditViewModel data)
+        {
+            try
+            {
+                // Data Annotation
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
+
+                // 建立 InspectionPlan
+                string ipsn = data.IPSN;
+                using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    // 編輯 InspectionPlan
+                    await _inspectionPlanService.EditInspectionPlanAsync(ipsn, data);
+                    // 刪除&建立 InspectionPlanContent
+                    await _inspectionPlanService.EditInspectionPlanContentAsync(new InspectionPlanTimeModifiableListInstance(ipsn, data));
+
+                    await _db.SaveChangesAsync();
+
+                    trans.Complete();
+                }
+                
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
+        }
+
         #endregion
 
         #region 工單詳情
@@ -108,10 +156,16 @@ namespace MinSheng_MIS.Controllers
                             item.CheckItems = _inspectionPlanService.GetInspectionPlanCheckItems(item.IPESN);
                             // 獲取巡檢路線設備填報項目
                             item.RportItems = _inspectionPlanService.GetInspectionPlanRportItems(item.IPESN);
-
                             inspection.Equipments.Add(item);
                         }
+                        
                     }
+                    // 獲取巡檢執行人員
+                    else
+                    {
+                        inspection.Executors = _inspectionPlanService.GetInspectionPlanExecutors(inspection.IPTSN);
+                    }
+
                     plan.Inspections.Add(inspection as InspectionPlanContentDetail 
                         ?? throw new InvalidCastException("Invalid inspection type."));
                 }
@@ -134,7 +188,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 工單 刪除
+        #region 刪除工單
         public ActionResult Delete(string id)
         {
             ViewBag.id = id;
@@ -146,13 +200,13 @@ namespace MinSheng_MIS.Controllers
         /// <param name="data">使用者input</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteInspectionPlan(string IPSN)
+        public async Task<ActionResult> DeleteInspectionPlan(string IPSN)
         {
             JsonResService<string> result = new JsonResService<string>();
             try
             {
                 // 刪除工單
-                result = _inspectionPlanService.DeleteInspectionPlan(IPSN);
+                result = await _inspectionPlanService.DeleteInspectionPlanAsync(IPSN);
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
             catch (MyCusResException ex)

@@ -52,7 +52,7 @@ namespace MinSheng_MIS.Controllers
                     if (StockInRFID != null)
                     {
                         result.AccessState = ResState.Failed;
-                        result.ErrorMessage = $"已有此RFID内碼，不可重複入庫";
+                        result.ErrorMessage = $"已有此RFID內碼，不可重複入庫";
                         return Content(JsonConvert.SerializeObject(result), "application/json");
                     }
 
@@ -70,7 +70,7 @@ namespace MinSheng_MIS.Controllers
                     if (InStock == null)
                     {
                         result.AccessState = ResState.Failed;
-                        result.ErrorMessage = $"查無此庫存記錄";
+                        result.ErrorMessage = $"查無此庫存紀錄";
                         return Content(JsonConvert.SerializeObject(result), "application/json");
                     }
 
@@ -112,7 +112,8 @@ namespace MinSheng_MIS.Controllers
                         CurrentInventory = InStock.StockAmount,
                         Registrar = User.Identity.Name,
                         ChangeTime = DateTime.Now,
-                        PurchaseOrder = purchaseOrderFileName
+                        PurchaseOrder = purchaseOrderFileName,
+                        Memo = StockItem.Memo
                     };
 
                     _db.StockChangesRecord.Add(stockChangesRecord);
@@ -162,10 +163,10 @@ namespace MinSheng_MIS.Controllers
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
 
-            if (RFIDInternalCode.Length > 24)
+            if (RFIDInternalCode.Length > 150)
             {
                 result.AccessState = ResState.Failed;
-                result.ErrorMessage = $"RFID內碼應不超過24碼";
+                result.ErrorMessage = $"RFID內碼應不超過150碼";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
             #endregion
@@ -220,12 +221,12 @@ namespace MinSheng_MIS.Controllers
                         var StockInRFID = await _db.RFID.Where(x => x.RFIDInternalCode == code).FirstOrDefaultAsync();
                         if (StockInRFID == null)
                         {
-                            ErrorMessageList.Add($"RFID内碼 {code} 不存在");
+                            ErrorMessageList.Add($"RFID內碼 {code} 不存在");
                         }
 
                         if (!seenCodes.Add(code))
                         {
-                            ErrorMessageList.Add($"RFID内碼 {code} 重複");
+                            ErrorMessageList.Add($"RFID內碼 {code} 重複");
                         }
 
                         if (ErrorMessageList.Count != 0)
@@ -301,7 +302,8 @@ namespace MinSheng_MIS.Controllers
                                 CurrentInventory = computationalStock.StockAmount - sisnCount.Count,
                                 Registrar = User.Identity.Name,
                                 ChangeTime = DateTime.Now,
-                                Recipient = soViewModel.Recipient
+                                Recipient = soViewModel.Recipient,
+                                Memo = soViewModel.Memo
                             };
 
                             _db.StockChangesRecord.Add(stockChangesRecord);

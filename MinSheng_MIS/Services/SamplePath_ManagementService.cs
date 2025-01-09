@@ -140,9 +140,9 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 獲取巡檢路線模板
-        public async Task<T> GetSamplePathAsync<T>(string planPathSN) where T : class, new()
+        public T GetSamplePath<T>(string planPathSN) where T : class, new()
         {
-            var sample = await _db.InspectionPathSample.FindAsync(planPathSN)
+            var sample = _db.InspectionPathSample.Find(planPathSN)
                 ?? throw new MyCusResException("查無資料！");
 
             return sample.ToDto<InspectionPathSample, T>();

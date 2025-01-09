@@ -93,8 +93,17 @@
                 MyName: "王OO"
             }
         ]
-
+        let authority;
         $(async function () {
+            //取得權限
+            (async () => {
+                try {
+                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
+                    console.log("權限", authority);
+                } catch (error) {
+                    console.error("權限回傳失敗", error);
+                }
+            })();
             await formDropdown.ASN();
             await formDropdown.pushSelect({ id: "WMType", url: '@Url.Action("WMType", "DropDownList")' });
             await formDropdown.pushSelect({ id: "WMState", url: '@Url.Action("WMState", "DropDownList")' });
@@ -103,11 +112,11 @@
                 params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
             }
 
-            Initialize_DataGrid(getGridJSON);
+            Initialize_DataGrid(getGridJSON, authority);
             addSearchAreaClickEvent();
         });
 
-        function Initialize_DataGrid(getGridJSON) {
+        function Initialize_DataGrid(getGridJSON, authority) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -118,7 +127,7 @@
                 //sortName: 'IAWSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "填報", "edit", { disabled: row.WMState == "處理完成" })),
+                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "填報", "edit", { disabled: row.WMState == "處理完成" || authority === "3" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('WMSN'),

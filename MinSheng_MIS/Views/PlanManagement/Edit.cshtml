@@ -153,7 +153,7 @@
         const IPSN = '@ViewBag.id';
         let pathApiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
         let templateApiUrl = '@Url.Action("ReadBody", "SampleSchedule_Management")';
-        let SubmitUrl = '@Url.Action("CreateInspectionPlan", "PlanManagement")';
+        let SubmitUrl = '@Url.Action("EditInspectionPlan", "PlanManagement")';
         let sampleTr = SampleTr();
         let sortableController = null;
 
@@ -330,6 +330,7 @@
         }
         function save(data) {
             if (!data) return;
+            data.IPSN = IPSN;
             $.ajax({
                 url: SubmitUrl,
                 data: JSON.stringify(data),
@@ -415,7 +416,11 @@
                     item.find("#Frequency").text(data.Frequency);
                 }
                 this.list.append(item);
-                addDropDownList("#UserID" + this.count);
+                if (data) {
+                    addDropDownList("#UserID" + this.count, data.Executors);
+                } else {
+                    addDropDownList("#UserID" + this.count);
+                }
             }
             this.calc = function () {
                 return this.list.children().toArray().map((e) => {

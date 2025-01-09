@@ -56,31 +56,13 @@
 
 @section scripts {
     <script>
-        let DailyTemplateSN = location.href.split('/').pop();
-        let templateApiUrl = '@Url.Action("ReadBody")';
-        let pathApiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
+        const SN = location.href.split('/').pop();
+        const apiUrl = '@Url.Action("ReadBody")?id=' + SN;
+        const pathApiUrl = '@Url.Action("ReadBody", "SamplePath_Management")';
 
-        $(async function () {
-            console.log('DailyTemplateSN', DailyTemplateSN);
-            updateTemplate(await readData(templateApiUrl, 'sample', DailyTemplateSN))
-            addButtonEvent();
-        })
+        
         let tempData = {};
         //每日巡檢時程模板 詳情
-        const SerializedName_Sample = [
-            { text: "巡檢模板名稱", value: "TemplateName" },
-        ]
-        const GridOptions_Sample = {
-            thead: true,
-            columns: [
-                { id: "Index", title: "" },
-                { id: "PTime", title: "巡檢時間" },
-                { id: "PathName", title: "巡檢路線名稱" },
-                { id: "Frequency", title: "巡檢頻率" },
-                { id: "EquipmentCount", title: "巡檢數量" },
-                { id: "Btn", title: "" },
-            ]
-        }
         let fakeData_Sample = {
             TemplateName: "前處理機房巡檢",
             Contents: [
@@ -110,29 +92,7 @@
                 },
             ]
         }
-
         //巡檢路線資訊
-        const SerializedName_Path = [
-            { text: "巡檢路線名稱", value: "PathName" },
-            { text: "巡檢時間", value: "PTime" },
-        ]
-        const GridOptions_Path = {
-            thead: true,
-            columns: [
-                { id: "Index", title: "" },
-                { id: "InternalCode", title: "RFID內碼" },
-                { id: "ExternalCode", title: "RFID外碼" },
-                { id: "RFIDName", title: "RFID名稱" },
-                { id: "RFIDArea", title: "RFID棟別" },
-                { id: "RFIDFloor", title: "RFID樓層" },
-                { id: "RFIDMemo", title: "RFID備註" },
-                { id: "EName", title: "設備名稱" },
-                { id: "NO", title: "設備編號" },
-                { id: "Brand", title: "廠牌" },
-                { id: "Model", title: "型號" },
-                { id: "Frequency", title: "巡檢頻率" },
-            ]
-        }
         let fakeData_Path = {
             PlanPathSN: "1120301001",
             PathName: "前處理機房巡檢",
@@ -180,103 +140,110 @@
                 },
             ]
         }
-        function updateTemplate(res) {
-            $("#PlanDetail").append(createTableInner(res, SerializedName_Sample));
-            res.Contents ?
-                $("#PlanRecord").append(createTableGrid(createIndexToArrayData(res.Contents, res.PlanPathSN), GridOptions_Sample)) :
-                $("#PlanRecord").parents(".datatable").remove();
-        }
-        async function updatePath(SN) {
-            if (!tempData[SN]) {
+
+        $(async function () {
+            addButtonEvent();
+            const res = await readData(apiUrl)
+            DT.createTableInner("#PlanDetail", res, [
+                { title: "巡檢模板名稱", id: "TemplateName" },
+            ])
+            if (res.Contents) {
+                DT.createTableGrid("#PlanRecord", res.Contents, {
+                    thead: true,
+                    rownumbers: true,
+                    columns: [
+                        { id: "PTime", title: "巡檢時間", formatter(v, row) { return `${row.StartTime}~${row.EndTime}` } },
+                        { id: "PathName", title: "巡檢路線名稱" },
+                        { id: "Frequency", title: "巡檢頻率" },
+                        { id: "EquipmentCount", title: "巡檢數量" },
+                        {
+                            id: "Btn", title: "", type: 'btn', button: {
+                                className: "btn btn-datagrid",
+                                text: "巡檢路線資訊",
+                                onClick(event, v, row, i) {
+                                    //open modal
+                                    openPathModal(row)
+                                }
+                            }
+                        },
+                    ]
+                })
+            }
+            else {
+                document.querySelector("#PlanRecord").closest('.datatable').remove()
+            }
+        })
+
+        async function openPathModal(row) {
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('PlanInfo'))
+            const sn = row.PlanPathSN;
+            if (!tempData[sn]) {
                 console.log('first time store')
-                tempData[SN] = await readData(pathApiUrl, 'path', SN);
+                tempData[sn] = await readData(`${pathApiUrl}?id=${sn}`);
             }
 
+            const data = tempData[sn];
             $("#PathDetail").empty();
             $("#EInfo").empty();
-            $("#PathDetail").append(createTableInner(tempData[SN], SerializedName_Path));
-            tempData[SN].Equipments ?
-                $("#EInfo").append(createTableGrid(createIndexToArrayData(tempData[SN].Equipments), GridOptions_Path)) :
-                $("#EInfo").parents(".datatable").remove();
-        }
-        function readData(url = null, type, SN) {
-            let apiUrl;
-            switch (type) {
-                case 'sample':
-                    apiUrl = `${url}/?id=${SN}`
-                    break
-                case 'path':
-                    apiUrl = `${url}/?id=${SN}`
-                    break
+
+            DT.createTableInner("#PathDetail", data, [
+                { title: "巡檢路線名稱", id: "PathName" },
+                { title: "巡檢時間", id: "PTime", formatter() { return `${row.StartTime}~${row.EndTime}` } },
+            ])
+            if (data.Equipments) {
+                DT.createTableGrid("#EInfo", data.Equipments, {
+                    thead: true,
+                    rownumbers: true,
+                    columns: [
+                        { id: "InternalCode", title: "RFID內碼" },
+                        { id: "ExternalCode", title: "RFID外碼" },
+                        { id: "RFIDName", title: "RFID名稱" },
+                        { id: "RFIDArea", title: "RFID棟別" },
+                        { id: "RFIDFloor", title: "RFID樓層" },
+                        { id: "RFIDMemo", title: "RFID備註" },
+                        { id: "EName", title: "設備名稱" },
+                        { id: "NO", title: "設備編號" },
+                        { id: "Brand", title: "廠牌" },
+                        { id: "Model", title: "型號" },
+                        { id: "Frequency", title: "巡檢頻率" },
+                    ]
+                })
             }
+            else {
+                document.querySelector("#EInfo").closest('.datatable').remove()
+            }
+
+            modal.show()
+        }
+
+        function readData(url = null) {
             return new Promise((resolve, reject) => {
                 $.ajax({
-                    url: apiUrl,
+                    url,
                     type: "GET",
                     dataType: "json",
                     contentType: "application/json;charset=utf-8",
                     success: (res) => {
-                        resolve(onSuccess(res));
+                        if (res.ErrorMessage) { console.log(res.ErrorMessage); reject(null); }
+                        if (res.Datas) res = res.Datas
+                        resolve(res);
                     },
                     error: (ex) => {
-                        onError(ex);
+                        console.log(ex);
                         reject(null);
                     }
                 });
             });
-
-            function onSuccess(res) {
-                res = res.Datas
-                switch (type) {
-                    case 'sample':
-                        res.Contents.forEach(item => {
-                            item.PTime = `${item.StartTime}~${item.EndTime}`
-                            //item.Frequency = `每${item.Frequency}個小時`
-                        })
-                        break
-                    case 'path':
-                        res.PTime = `${res.StartTime}~${res.EndTime}`
-                        res.Equipments.forEach(item => {
-                            //item.Frequency = `每${item.Frequency}個小時`
-                        })
-                        break
-                }
-                console.log("res (after adjusting)", res);
-                return res
-            }
-
-            function onError(res) {
-                console.log(res);
-            }
-
         }
-
-        //在每列加上次序
-        function createIndexToArrayData(arr) {
-            return arr.map((e, i) => {
-                let returnObject = {
-                    Index: i + 1,
-                    ...e,
-                }
-                if (e.PlanPathSN) returnObject.Btn = `<button type="button" class="btn btn-datagrid" data-bs-toggle="modal" data-bs-target="#PlanInfo" onclick="updatePath('${e.PlanPathSN}')">巡檢路線資訊</button>`
-                return returnObject
-            })
-        }
-
-        // 監聽Modal關閉後移除表格
-        $('#PlanInfo').on('hide.bs.modal', function () {
-            $("#PathDetail").empty();
-            $("#EInfo").empty();
-        });
 
         function addButtonEvent() {
             $("#back").click(function () {
                 window.location.href = '@Url.Action("Index")';
             });
             $("#delete").click(function () {
-                createDeleteDialog({
-                    url: '@Url.Action("DeleteSampleSchedule")?DailyTemplateSN=' + DailyTemplateSN,
-                    data: DailyTemplateSN,
+                DT.createDeleteDialog({
+                    url: '@Url.Action("DeleteSampleSchedule")?DailyTemplateSN=' + SN,
+                    data: SN,
                     onSuccess() {
                         window.location.href = '@Url.Action("Index")';
                     }

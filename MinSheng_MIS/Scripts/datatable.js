@@ -38,10 +38,8 @@ function createTableOuter(options) {
  * @returns {string} TableInner
  */
 function createTableInner(data, sn) {
-    console.log("data2", data)
     const nullString = "-";
     return sn.map((e, i) => {
-        console.log("sn", e)
         let html = "";
         let colspan = getColspan(e.colspan)
         if (e.formatter) {
@@ -124,7 +122,6 @@ function createTableInner(data, sn) {
                     break;
                 //內容：兩格
                 case "DualCol": {
-                    console.log("dualcol", data[e.value])
                     const rows = data[e.value]?.length || 0;
                     if (rows === 0) {
                         html = '';
@@ -141,10 +138,10 @@ function createTableInner(data, sn) {
                         return `<tr>
                                     <td class="datatable-table-td datatable-table-sort">${i + 1}</td>
                                     <td class="datatable-table-td text-start ps-2">
-                                        <div>${item.Item}</div>
+                                        <div>${item.Value}</div>
                                     </td>
                                     <td class="datatable-table-td" style="width: 160px;">
-                                        <div class="${isDanger ? 'text-danger' : ''}">${item.Value ? item.Value : ""}${item.Unit ? item.Unit : ""}</div>
+                                        <div class="${isDanger ? 'text-danger' : ''}">${item.Unit ? item.Unit : ""}</div>
                                     </td>
                                 </tr>
                                 `}).join('')}
@@ -316,12 +313,15 @@ function createTableGrid(data, options, tableZoneID, appendOnly) {
     function createTds(op, d, i) {
         let tds = op.map((o) => {
             let width = ""
+            let w = typeof o.width == "string" ? o.width : o.width + "px";
+            width = `style="${o.width ? `width:${w}` : ''}"`;
+            let className = ""
+            className = `class="${o.className} ? ${o.className} : ""}"`;
+
             if (options.thead == false) {
-                let w = typeof o.width == "string" ? o.width : o.width + "px";
-                width = `style="${o.width ? `width:${w}` : ''}"`;
             }
             if (o.formatter) {
-                return `<td id="d-${o.id}" ${width}>${o.formatter(d[o.id], d, i)}</td>`;
+                return `<td id="d-${o.id}" ${width} ${className}>${o.formatter(d[o.id], d, i)}</td>`;
             }
             else {
                 return `<td id="d-${o.id}" ${width}>${d[o.id] ?? nullString}</td>`;
@@ -334,26 +334,26 @@ function createTableGrid(data, options, tableZoneID, appendOnly) {
     }
 }
 
-function delTemplateItem(delBtn, tableZoneID) {
-    if (!delBtn || !(delBtn instanceof HTMLElement)) {
-        console.error("無效的按鈕元素:", delBtn);
-        return;
-    }
+//function delTemplateItem(delBtn, tableZoneID) {
+//    if (!delBtn || !(delBtn instanceof HTMLElement)) {
+//        console.error("無效的按鈕元素:", delBtn);
+//        return;
+//    }
 
-    let tr = delBtn.closest('tr');
-    if (tr) {
-        tr.remove();
-        checkTableEmpty(tableZoneID);
-    }
-}
+//    let tr = delBtn.closest('tr');
+//    if (tr) {
+//        tr.remove();
+//        checkTableEmpty(tableZoneID);
+//    }
+//    function checkTableEmpty(tableZoneID) {
+//        const tbody = document.getElementById('item-area');
+//        const datatable = document.getElementById(tableZoneID);
+//        if (tbody.children.length === 0 && datatable) {
+//            datatable.style.display = 'none';
+//        }
+//    }
+//}
 
-function checkTableEmpty(tableZoneID) {
-    const tbody = document.getElementById('item-area');
-    const datatable = document.getElementById(tableZoneID);
-    if (tbody.children.length === 0 && datatable) {
-        datatable.style.display = 'none';
-    }
-}
 
 
 
@@ -409,25 +409,18 @@ function createInspectionTable(options) {
 }
 
 //新增 保養項目/週期/下次保養日期 欄位
-function createMaintainItem(MaintainItemList, containerId, equipmentData) {
+function createMaintainItem(options, containerId,  equipmentData) {
     const MaintainEditZone = document.getElementById(containerId);
     if (!MaintainEditZone) {
         return;
     }
 
-    const optionsData = [
-        { value: "", text: "請選擇週期" },
-        { value: "1", text: "每日" },
-        { value: "2", text: "每月" },
-        { value: "3", text: "每季" },
-        { value: "4", text: "每年" },
-    ];
-
-    MaintainItemList.forEach((field, i) => {
-        console.log("field", field);
+    options.forEach((field, i) => {
         const div = document.createElement("div");
         div.className = "edit-item-init"
         div.style = "background: #E3EBF3;"
+        div.dataset.missn = field.MISSN;
+
 
         if (equipmentData) {
             const ESNDisplay = document.createElement("div");
@@ -437,6 +430,7 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
             div.appendChild(ESNDisplay);
         }
 
+        //其他頁整理後可以刪除
         const SN = document.createElement("input");
         SN.type = "text";
         SN.id = `addField_SN-${i + 1}`;
@@ -451,31 +445,38 @@ function createMaintainItem(MaintainItemList, containerId, equipmentData) {
         maintainName.value = field.Value;
         maintainName.disabled = true;
 
-
         const period = document.createElement("select");
         period.className = "form-select"
         period.name = `period-${i}`;
+        period.id = `period-${i}`;
         period.required = true;
-
-        //await pushSelect(`period-${i}`, '@Url.Action("MaintainPeriod", "DropDownList")');
-        optionsData.forEach(optionData => {
-            const option = document.createElement("option");
-            option.value = optionData.value;
-            option.textContent = optionData.text;
-            period.appendChild(option);
-        });
+        period.dataset.name = "Period";
 
         const nextMaintainDate = document.createElement("input");
         nextMaintainDate.className = "form-control";
         nextMaintainDate.name = `nextMaintainDate-${i}`;
         nextMaintainDate.type = "date";
         nextMaintainDate.required = true;
+        nextMaintainDate.dataset.name = "NextMaintainDate";
 
         div.appendChild(SN);
         div.appendChild(maintainName);
         div.appendChild(period);
         div.appendChild(nextMaintainDate);
         MaintainEditZone.appendChild(div);
+
+        $.getJSON("/DropDownList/MaintainPeriod", function (res) {
+            let name = "Text";
+            let value = "Value";
+            const selects = document.querySelectorAll(`#${containerId} [name^="period"]`);
+            selects.forEach(element => {
+                $(element).empty();
+                $(element).append(`<option value="">請選擇週期</option>`);
+                $.each(res, function (i, e) {
+                    $(element).append('<option value="' + e[value] + '">' + e[name] + '</option>')
+                })
+            });
+        });
     })
 }
 
@@ -894,7 +895,7 @@ function createDeleteDialog(options) {
             createDialogModal({
                 id: "DialogModal-Success",
                 inner: "刪除成功！",
-                onHide: options.onSuccess(res)
+                onHide: options.onSuccess
             })
         }
 
@@ -906,45 +907,3 @@ function createDeleteDialog(options) {
         }
     }
 }
-
-// form-tooltip-toggle init
-window.addEventListener('load', () => {
-    Array.from(document.querySelectorAll('.form-tooltip-toggle')).forEach((el) => {
-        let aaa;
-        const t = new bootstrap.Tooltip(el, {
-            boundary: document.body,
-            customClass: 'form-tooltip',
-            offset: [0, 0],
-            trigger: 'click',
-            popperConfig(defaultBsPopperConfig) {
-                const newPopperConfig = { ...defaultBsPopperConfig }
-                aaa = newPopperConfig;
-                const placement = el.getAttribute('data-bs-placement')
-                console.log('placement', placement);
-
-
-                if (placement === 'auto') return defaultBsPopperConfig;
-
-                newPopperConfig.placement = placement;
-
-                if (placement === 'top-start') {
-                    const modifier_arrow = defaultBsPopperConfig.modifiers.find(x => x.name === 'arrow');
-                    const modifier_offset = defaultBsPopperConfig.modifiers.find(x => x.name === 'offset');
-
-                    if (modifier_arrow) {
-                        modifier_arrow.options.padding = 24;
-                    }
-                    if (modifier_offset) {
-                        modifier_offset.options.offset = [-24, 0];
-                    }
-                }
-                return newPopperConfig
-            }
-        })
-        console.log(t, aaa);
-        el.addEventListener('shown.bs.tooltip', () => {
-            console.log('shown.bs.tooltip', aaa);
-        })
-
-    })
-}, { once: true })

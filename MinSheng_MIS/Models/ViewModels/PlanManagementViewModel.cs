@@ -71,6 +71,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string PathName { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+        public List<string> Executors { get; set; } = new List<string> { };
         public string InspectionState { get; set; }
         public string Frequency { get; set; }
         public string EquipmentCount { get; set; }
@@ -85,6 +86,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         string IPTSN { get; set; } // 巡檢計畫時段編號
         string InspectionState { get; set; } // 巡檢狀態
+        List<string> Executors { get; set; }
         List<IInspectionPlanEquipment> Equipments { get; set; } // 巡檢設備列表
     }
 
@@ -147,6 +149,13 @@ namespace MinSheng_MIS.Models.ViewModels
     }
     #endregion
 
+    #region 工單-編輯
+    public class InspectionPlanEditViewModel : InspectionPlanCreateViewModel
+    {
+        [Required]
+        public string IPSN { get; set; }
+    }
+    #endregion
     public interface IInspectionPlanModifiable
     {
         string IPName { get; set; } // 工單名稱
