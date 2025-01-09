@@ -169,6 +169,8 @@ namespace MinSheng_MIS.Services
                     }
                     _db.InspectionPlan_RFIDOrder.AddOrUpdate(InspectionPlan_RFIDOrders.ToArray());
                     _db.SaveChanges();
+                    //將巡檢時段計畫與巡檢路線關聯刪除
+                    inspectionPlanTime.PlanPathSN = null;
                     //將巡檢時段計畫改為執行中
                     inspectionPlanTime.InspectionState = "2";
                     _db.InspectionPlan_Time.AddOrUpdate(inspectionPlanTime);
