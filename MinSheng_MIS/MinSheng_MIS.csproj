@@ -1726,6 +1726,7 @@
     <Content Include="Scripts\dataTable\RFIDInfoModal.js" />
     <Content Include="Scripts\dataTable\LocationModal.js" />
     <Content Include="Scripts\dataTable\PlanRecord.js" />
+    <Content Include="Scripts\EquipmentInfo_Management\Create.js" />
     <Content Include="Scripts\Forge\ForgePin.js" />
     <Content Include="Scripts\Forge\Viewer.Loading.js" />
     <Content Include="jsonSamples\pathRecord_test.json" />

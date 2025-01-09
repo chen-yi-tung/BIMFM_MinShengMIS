@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/dayjs.min.js" integrity="sha512-FwNWaxyfy2XlEINoSnZh1JQ5TRRtGow0D6XcmAWmYCRgvqOUTnzCxPc9uF35u5ZEpirk1uhlPVA19tflhvnW1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
     <script src="/Scripts/dataTable/RFIDInfoModal.js" defer></script>
+    <script src="/Scripts/EquipmentInfo_Management/Create.js" defer></script>
 }
 
 <style>
@@ -81,7 +82,7 @@
                         <span class="form-tooltip-toggle" data-bs-placement="top-start" title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
                         RFID
                     </label>
-                    <button type="button"id="scan" class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
+                    <button type="button" id="rfid" class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
                         掃描<i class="scan-icon"></i>
                     </button>
                 </div>
@@ -406,22 +407,21 @@
                 }
 
                 //監聽掃描按鈕
-                document.getElementById('scan').addEventListener('click', function () {
-                    let url = null
-                    url == null ? onSuccess(fakeData_RFID) :
-                        $.ajax({
-                            url: url,
-                            type: "GET",
-                            dataType: "json",
-                            contentType: "application/json;charset=utf-8",
-                            success: onSuccess,
-                            error: onError
-                        })
-                    function onSuccess(res) {
-                        showRFIDPopup(res.InternalCode);
-                    }
-                    function onError(res) {
-                        createDialogModal({ id: "DialogModal-Error", inner: res.ErrorMessage })
+                document.getElementById('rfid').addEventListener('click', async function () {
+                    const btn = document.getElementById("rfid");
+                    const icon = btn.querySelector(".scan-icon");
+                    setLoading(true);
+                    await checkRFID();
+                    setLoading(false);
+
+                    function setLoading(b) {
+                        if (b) {
+                            btn.disabled = true;
+                            icon.className = "spinner-border spinner-border-sm";
+                        } else {
+                            btn.disabled = false;
+                            icon.className = "scan-icon";
+                        }
                     }
                 })
 

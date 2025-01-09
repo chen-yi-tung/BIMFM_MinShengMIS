@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/Content/EquipmentInfoManagement.css">
     <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
     <script src="/Scripts/dataTable/RFIDInfoModal.js" defer></script>
+    <script src="/Scripts/EquipmentInfo_Management/Create.js" defer></script>
 }
 
 <style>
@@ -80,7 +81,7 @@
                         <span class="form-tooltip-toggle" data-bs-placement="top-start" title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
                         RFID
                     </label>
-                    <button type="button" id="scan" class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
+                    <button type="button" id="rfid" class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
                         掃描<i class="scan-icon"></i>
                     </button>
                 </div>
@@ -339,22 +340,21 @@
                 id: "File"
             })
             //監聽掃描按鈕
-            document.getElementById('scan').addEventListener('click', function () {
-                let url = null
-                url == null ? onSuccess(fakeData_RFID) :
-                    $.ajax({
-                        url: url,
-                        type: "GET",
-                        dataType: "json",
-                        contentType: "application/json;charset=utf-8",
-                        success: onSuccess,
-                        error: onError
-                    })
-                function onSuccess(res) {
-                    showRFIDPopup(res.InternalCode);
-                }
-                function onError(res) {
-                    createDialogModal({ id: "DialogModal-Error", inner: res.ErrorMessage })
+            document.getElementById('rfid').addEventListener('click', async function () {
+                const btn = document.getElementById("rfid");
+                const icon = btn.querySelector(".scan-icon");
+                setLoading(true);
+                await checkRFID();
+                setLoading(false);
+
+                function setLoading(b) {
+                    if (b) {
+                        btn.disabled = true;
+                        icon.className = "spinner-border spinner-border-sm";
+                    } else {
+                        btn.disabled = false;
+                        icon.className = "scan-icon";
+                    }
                 }
             })
 
@@ -380,7 +380,6 @@
 
                 function onSuccess(res) {
                     const data = res.Datas;
-                    console.log("模板資料", data);
 
                     if (data) {
                         if (data.AddItemList.length > 0) {
@@ -456,36 +455,6 @@
                 sampleContent.style.display = 'none';
             }
         })
-
-        //顯示 RFID彈跳視窗
-        async function showRFIDPopup(RFIDData, btn) {
-            $('#RFIDEquipmentInfo').find('input, select, textarea').val('');
-            const d = btn === 'edit' ? JSON.parse(decodeURIComponent(RFIDData)) : RFIDData;
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('RFIDEquipmentInfo'));
-
-            modal.show();
-            await formDropdown.pushSelect({ id: "Modal_ASN", url: "/DropDownList/Area" });
-            pushRFIDData(d, btn)
-        }
-
-        //塞值進 RFID表格
-        async function pushRFIDData(data, btn) {
-            if (btn === "edit") {
-                await formDropdown.ASN({ id: "Modal_ASN", fsnId: "Modal_FSN", value: data.ASN });
-                await formDropdown.FSN({ id: "Modal_FSN", data: data.ASN, value: data.FSN });
-                for (const key in data) {
-                    let element = document.querySelector(`#RFIDEquipmentInfo #${key}`)
-
-                    if (element) {
-                        element.value = data[key];
-                    }
-                }
-            } else {
-                await formDropdown.ASN({ id: "Modal_ASN", fsnId: "Modal_FSN" });
-                await formDropdown.FSN({ id: "Modal_FSN" });
-                $('#InternalCode').val(data);
-            }
-        }
 
         //更新 RFID資料
         function renewRFIDData() {
@@ -611,8 +580,6 @@
             const data = JSON.parse(decodeURIComponent(rowString));
             const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('LocationInfo'));
             modal.show();
-
-            console.log("RFIDLocationData", data);
 
             const sn = [,
                 { text: "名稱", value: "Name" },
