@@ -20,7 +20,7 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex flex-column w-100">
+        <div class="flex-column w-100" id="RFIDZone" style="display: none;">
             <div class="group-sb-title">
                 <i class="fa-solid fa-map-pin"></i>
                 <div>RFID</div>
@@ -281,6 +281,10 @@
                 ImageDisplay(".datatable-img-item>img");
                 EquipmentRFID("#EquipmentRFID", data);
 
+                //判斷是否有RFID
+                if (data.RFIDList.length > 0) {
+                    document.getElementById("RFIDZone").style.display = "flex";
+                }
                 //判斷是否有模板
                 if (data.SampleName) {
                     document.querySelector(".hr-default").style.display = "block";
