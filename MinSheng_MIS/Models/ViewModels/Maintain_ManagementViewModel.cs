@@ -7,6 +7,7 @@ using System.Web;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
+    // WEB
     #region 定期保養單 詳情
     public class Maintain_ManagementDetailViewModel
     {
@@ -50,6 +51,8 @@ namespace MinSheng_MIS.Models.ViewModels
     }
     #endregion
 
+    // APP
+    #region 定期保養單 列表
     public class MaintainManagementApp_ListViewModel
     {
         public string TotalNum {  get; set; }
@@ -70,7 +73,9 @@ namespace MinSheng_MIS.Models.ViewModels
             public string NextMaintainDate { get; set; }
         }
     }
+    #endregion
 
+    #region 定期保養單 填報詳情
     public class MaintainManagementApp_Detail
     {
         public string EMFSN { get; set; }
@@ -87,11 +92,29 @@ namespace MinSheng_MIS.Models.ViewModels
         public bool? IsAudited { get; set; }
         public string AuditReason { get; set; }
     }
+    #endregion
 
+    #region 定期保養單 填報
     public class MaintainManagementApp_Report
     {
         public string EMFSN { get; set; }
         public string ReportContent { get; set; }
     }
+    #endregion
 
+    #region 藍芽位置整理(借放)
+    public class BluetoothJson
+    {
+        public string FSN { get; set; }
+        public List<PIN> pins { get; set; }
+        public class PIN
+        {
+            public string GUID { get; set; }
+            public string DBID { get; set; }
+            public string ElementID { get; set; }
+            public string DeviceName { get; set; }
+            public List<double> position { get; set; }
+        }
+    }
+    #endregion
 }

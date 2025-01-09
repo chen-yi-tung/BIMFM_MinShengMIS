@@ -12,6 +12,14 @@ using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Ajax.Utilities;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
+using System.Web;
+using Newtonsoft.Json;
+using System.IO;
+using System.Web.UI.WebControls;
+using OfficeOpenXml;
+using System.Web.Mvc;
+using MiniExcelLibs;
+using System.Windows;
 
 namespace MinSheng_MIS.Services
 {
@@ -153,6 +161,57 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 定期保養單 匯出
+        public MemoryStream MaintainManagement_Export(FormCollection form)
+        {
+            form.Add("rows", _db.Equipment_MaintenanceForm.Count().ToString());
+
+            DatagridService datagridServ = new DatagridService();
+            JObject datagridjson = datagridServ.GetJsonForGrid_MaintainForm(form);
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("保養單管理");
+
+                worksheet.Cells["A1"].Value = "保養單狀態";
+                worksheet.Cells["B1"].Value = "保養單號";
+                worksheet.Cells["C1"].Value = "最近應保養日期";
+                worksheet.Cells["D1"].Value = "實際保養日期";
+                worksheet.Cells["E1"].Value = "設備狀態";
+                worksheet.Cells["F1"].Value = "棟別";
+                worksheet.Cells["G1"].Value = "樓層";
+                worksheet.Cells["H1"].Value = "設備名稱";
+                worksheet.Cells["I1"].Value = "設備編號";
+                worksheet.Cells["J1"].Value = "保養項目";
+                worksheet.Cells["K1"].Value = "保養週期";
+                worksheet.Cells["L1"].Value = "執行人員";
+
+                int row = 2;
+                foreach (var item in datagridjson["rows"])
+                {
+                    worksheet.Cells["A" + row].Value = item["Status"].ToString();
+                    worksheet.Cells["B" + row].Value = item["EMFSN"].ToString();
+                    worksheet.Cells["C" + row].Value = item["NextMaintainDate"].ToString();
+                    worksheet.Cells["D" + row].Value = item["ReportTime"].ToString();
+                    worksheet.Cells["E" + row].Value = item["EState"].ToString();
+                    worksheet.Cells["F" + row].Value = item["Area"].ToString();
+                    worksheet.Cells["G" + row].Value = item["FloorName"].ToString();
+                    worksheet.Cells["H" + row].Value = item["EName"].ToString();
+                    worksheet.Cells["I" + row].Value = item["ESN"].ToString();
+                    worksheet.Cells["J" + row].Value = item["MaintainName"].ToString();
+                    worksheet.Cells["K" + row].Value = item["Period"].ToString();
+                    worksheet.Cells["L" + row].Value = item["Maintainer"].ToString();
+                    row++;
+                }
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+                return stream;
+            }
+        }
+        #endregion
 
         // APP
         #region 定期保養單 列表
@@ -334,10 +393,6 @@ namespace MinSheng_MIS.Services
         private void CreateMaintainForm(Equipment_MaintainItemValue data)
         {
             string nextMaintainDate = data.NextMaintainDate?.ToString("yyMMdd");
-            var a = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).ToList();
-            var b = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).Select(x => x.EMFSN).ToList();
-            var c = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).Select(x => x.EMFSN)
-                .Where(x => x.StartsWith("M" + nextMaintainDate)).ToList();
             var lastsn = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).Select(x => x.EMFSN)
                 .Where(x => x.StartsWith("M" + nextMaintainDate)).FirstOrDefault();
             var newsn = ComFunc.CreateNextID($"M{nextMaintainDate}" + "%{6}", lastsn);
@@ -361,6 +416,60 @@ namespace MinSheng_MIS.Services
             _db.SaveChanges();
         }
         #endregion
-        
+
+        // 藍芽位置整理(借放)
+        #region 藍芽位置整理(借放)
+        public void BluetoothLocationJson()
+        {
+            #region 變數
+            JsonResService<string> res = new JsonResService<string>();
+            string folderPath = @"C:\Users\User\Downloads\BeaconPoint";
+            string outputFilePath = @"C:\Users\User\Desktop\bt.csv";
+
+            // 讀取GUID的csv或excel路徑
+            string readFilePath = @"C:\Users\User\Downloads\藍芽發射器ELEMENT ID列表.xlsx";
+            #endregion
+
+            #region json to csv
+            //if (!Directory.Exists(folderPath))
+            //{
+            //    throw new DirectoryNotFoundException($"資料夾不存在: {folderPath}");
+            //}
+            //var jsonFiles = Directory.GetFiles(folderPath, "*.json");
+            //foreach (var file in jsonFiles)
+            //{
+            //    // 讀取文件內容
+            //    var jsonContent = File.ReadAllText(file);
+
+            //    // 反序列化 JSON 為物件
+            //    var data = JsonConvert.DeserializeObject<BluetoothJson>(jsonContent);
+            //    if (data != null)
+            //    {
+            //        foreach (var item in data.pins)
+            //        {
+            //            //var maindata = _
+            //            using (StreamWriter writer = new StreamWriter(outputFilePath, true))
+            //            {
+            //                var position = item.position == null ? "" : string.Join(",", item.position.Select(n => n.ToString()));
+            //                writer.Write($"{data.FSN},{item.GUID},{item.DBID},{item.ElementID},{item.DeviceName},{position}\n");
+            //            }
+            //        }
+            //    }
+            //}
+            #endregion
+
+            //讀入資料
+            var rows = MiniExcel.Query<DBIDData>(readFilePath);
+            foreach (var row in rows)
+            {
+                //var maindata = _db.
+            }
+        }
+        public class DBIDData
+        {
+            public string GUID { get; set; }
+            public string DBID { get; set; }
+        }
+        #endregion
     }
 }

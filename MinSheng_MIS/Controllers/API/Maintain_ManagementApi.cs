@@ -16,6 +16,7 @@ using System.Web.Http.Results;
 
 namespace MinSheng_MIS.Controllers.API
 {
+    // APP
     #region 定期保養單 列表
     public class MaintainListController : ApiController
     {
@@ -116,6 +117,7 @@ namespace MinSheng_MIS.Controllers.API
     }
     #endregion
 
+    // 排程
     #region 定期保養單 新增排程
     [AllowAnonymous]
     public class MaintainCreateScheduleController : ApiController
@@ -131,6 +133,28 @@ namespace MinSheng_MIS.Controllers.API
         public JsonResService<string> Get()
         {
             var result = _maintainService.MaintainForm_CreatingSchedule();
+            return result;
+        }
+    }
+    #endregion
+
+    // 藍芽位置整理(借放)
+    #region
+    [AllowAnonymous]
+    public class BluetoothLocationJsonController : ApiController
+    {
+        private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly Maintain_ManagementService _maintainService;
+
+        public BluetoothLocationJsonController()
+        {
+            _db = new Bimfm_MinSheng_MISEntities();
+            _maintainService = new Maintain_ManagementService(_db);
+        }
+        public JsonResService<string> Post()
+        {
+            JsonResService<string> result = new JsonResService<string>();
+            _maintainService.BluetoothLocationJson();
             return result;
         }
     }

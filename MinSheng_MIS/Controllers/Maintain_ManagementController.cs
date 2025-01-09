@@ -8,6 +8,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Runtime.InteropServices.ComTypes;
+using OfficeOpenXml;
+using System.IO.Pipes;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -101,6 +105,32 @@ namespace MinSheng_MIS.Controllers
                 return Helper.HandleMyCusResException(this, ex);
             }
             catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
+        }
+        #endregion
+
+        #region 定期保養單 匯出
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult ExportToExcel(FormCollection datas)
+        {
+            try
+            {
+                var result = _maintainService.MaintainManagement_Export(datas);
+
+                string filename = $"定期保養單管理_{DateTime.Now.Ticks}.xlsx";
+
+                return File(result,
+                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                           filename);
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception ex)
             {
                 return Helper.HandleException(this);
             }

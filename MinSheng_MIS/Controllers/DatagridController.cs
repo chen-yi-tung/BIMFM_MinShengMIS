@@ -48,9 +48,8 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult MaintainForm_Management(FormCollection form)
         {
-
-            var a = _service.GetJsonForGrid_MaintainForm(form);
-            string result = JsonConvert.SerializeObject(a);
+            var jo = _service.GetJsonForGrid_MaintainForm(form);
+            string result = JsonConvert.SerializeObject(jo);
             return Content(result, "application/json");
         }
         #endregion
