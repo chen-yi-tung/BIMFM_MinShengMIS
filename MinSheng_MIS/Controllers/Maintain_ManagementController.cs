@@ -113,7 +113,6 @@ namespace MinSheng_MIS.Controllers
 
         #region 定期保養單 匯出
         [HttpPost]
-        [AllowAnonymous]
         public ActionResult ExportToExcel(FormCollection datas)
         {
             try
