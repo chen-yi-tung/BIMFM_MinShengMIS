@@ -14,11 +14,20 @@ namespace MinSheng_MIS.Models
     
     public partial class InspectionPlan
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public InspectionPlan()
+        {
+            this.InspectionPlan_Time = new HashSet<InspectionPlan_Time>();
+        }
+    
         public string IPSN { get; set; }
         public string IPName { get; set; }
         public System.DateTime PlanDate { get; set; }
         public string PlanState { get; set; }
         public string PlanCreateUserID { get; set; }
         public System.DateTime CreateTime { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<InspectionPlan_Time> InspectionPlan_Time { get; set; }
     }
 }

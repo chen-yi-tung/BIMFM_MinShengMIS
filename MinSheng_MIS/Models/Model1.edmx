@@ -1187,6 +1187,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_InspectionPlan_Time_InspectionPlan">
+          <End Role="InspectionPlan" Type="Self.InspectionPlan" Multiplicity="1" />
+          <End Role="InspectionPlan_Time" Type="Self.InspectionPlan_Time" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan">
+              <PropertyRef Name="IPSN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_Time">
+              <PropertyRef Name="IPSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_InspectionTrack_Floor_Info">
           <End Role="Floor_Info" Type="Self.Floor_Info" Multiplicity="1" />
           <End Role="InspectionTrack" Type="Self.InspectionTrack" Multiplicity="*" />
@@ -1577,6 +1589,10 @@
             <End Role="InspectionPathSample" EntitySet="InspectionPathSample" />
             <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
           </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_Time_InspectionPlan" Association="Self.FK_InspectionPlan_Time_InspectionPlan">
+            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
+            <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
+          </AssociationSet>
           <AssociationSet Name="FK_InspectionTrack_Floor_Info" Association="Self.FK_InspectionTrack_Floor_Info">
             <End Role="Floor_Info" EntitySet="Floor_Info" />
             <End Role="InspectionTrack" EntitySet="InspectionTrack" />
@@ -1837,6 +1853,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_InspectionPlan_Time_InspectionPathSample" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Time_InspectionPathSample">
             <End Role="InspectionPathSample" EntitySet="InspectionPathSample" />
+            <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InspectionPlan_Time_InspectionPlan" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Time_InspectionPlan">
+            <End Role="InspectionPlan" EntitySet="InspectionPlan" />
             <End Role="InspectionPlan_Time" EntitySet="InspectionPlan_Time" />
           </AssociationSet>
           <AssociationSet Name="FK_InspectionPlan_Equipment_InspectionPlan_Time" Association="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_InspectionPlan_Time">
@@ -2371,6 +2391,7 @@
           <Property Name="PlanState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="PlanCreateUserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="CreateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="InspectionPlan_Time" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Time_InspectionPlan" FromRole="InspectionPlan" ToRole="InspectionPlan_Time" />
         </EntityType>
         <EntityType Name="InspectionPlan_Equipment">
           <Key>
@@ -2444,6 +2465,7 @@
           <Property Name="Frequency" Type="Int32" Nullable="false" />
           <Property Name="InspectionState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <NavigationProperty Name="InspectionPathSample" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Time_InspectionPathSample" FromRole="InspectionPlan_Time" ToRole="InspectionPathSample" />
+          <NavigationProperty Name="InspectionPlan" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Time_InspectionPlan" FromRole="InspectionPlan_Time" ToRole="InspectionPlan" />
           <NavigationProperty Name="InspectionPlan_Equipment" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Equipment_InspectionPlan_Time" FromRole="InspectionPlan_Time" ToRole="InspectionPlan_Equipment" />
           <NavigationProperty Name="InspectionPlan_Member" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_Member_InspectionPlan_Time" FromRole="InspectionPlan_Time" ToRole="InspectionPlan_Member" />
           <NavigationProperty Name="InspectionPlan_RFIDOrder" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionPlan_RFIDOrder_InspectionPlan_Time" FromRole="InspectionPlan_Time" ToRole="InspectionPlan_RFIDOrder" />
@@ -3139,6 +3161,18 @@
             </Principal>
             <Dependent Role="InspectionPlan_Time">
               <PropertyRef Name="PlanPathSN" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InspectionPlan_Time_InspectionPlan">
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan" Role="InspectionPlan" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Time" Role="InspectionPlan_Time" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InspectionPlan">
+              <PropertyRef Name="IPSN" />
+            </Principal>
+            <Dependent Role="InspectionPlan_Time">
+              <PropertyRef Name="IPSN" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
