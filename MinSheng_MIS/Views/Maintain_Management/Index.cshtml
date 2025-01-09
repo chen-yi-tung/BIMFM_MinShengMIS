@@ -202,17 +202,14 @@
                 Maintainer: "王大明、李泰順",
             },
         ]
-        let authority ;
         $(async function () {
             //取得權限
-            (async () => {
-                try {
-                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
-                    console.log("權限", authority);
-                } catch (error) {
-                    console.error("權限回傳失敗", error);
-                }
-            })();
+            try {
+                await checkAuthority();
+                console.log("權限", __authority__);
+            } catch (error) {
+                console.log("無法取得權限", error);
+            }
             await formDropdown.ASN()
             await pushSelect("Status", '@Url.Action("MaintainStatus", "DropDownList")');
             await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
@@ -220,15 +217,14 @@
             await pushSelect("Member", '@Url.Action("MaintainUserName", "DropDownList")');
             await addDropDownList();
             await addButtonEvent();
-            Initialize_DataGrid(getGridJSON, authority);
+            Initialize_DataGrid(getGridJSON, __authority__);
             addSearchAreaClickEvent();
-            if (authority === "3") {
+            if (__authority__ === "3") {
                 document.getElementById('multiAssign').classList.add('d-none');
             }
         });
 
         function Initialize_DataGrid(getGridJSON, authority) {
-            console.log("authority", authority);
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,

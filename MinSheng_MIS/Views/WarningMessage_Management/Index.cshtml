@@ -93,17 +93,14 @@
                 MyName: "王OO"
             }
         ]
-        let authority;
         $(async function () {
             //取得權限
-            (async () => {
-                try {
-                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
-                    console.log("權限", authority);
-                } catch (error) {
-                    console.error("權限回傳失敗", error);
-                }
-            })();
+            try {
+                await checkAuthority();
+                console.log("權限", __authority__);
+            } catch (error) {
+                console.log("無法取得權限", error);
+            }
             await formDropdown.ASN();
             await formDropdown.pushSelect({ id: "WMType", url: '@Url.Action("WMType", "DropDownList")' });
             await formDropdown.pushSelect({ id: "WMState", url: '@Url.Action("WMState", "DropDownList")' });
@@ -112,7 +109,7 @@
                 params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
             }
 
-            Initialize_DataGrid(getGridJSON, authority);
+            Initialize_DataGrid(getGridJSON, __authority__);
             addSearchAreaClickEvent();
         });
 

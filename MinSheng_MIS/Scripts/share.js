@@ -8,11 +8,11 @@ function addButtonEvent() {
     })
 }
 
-async function checkAuthority(userAuthorityUrl) {
+async function checkAuthority() {
     try {
         const res = await new Promise((resolve, reject) => {
             $.ajax({
-                url: userAuthorityUrl,
+                url: '/Account/UserAuthority',
                 type: "GET",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
@@ -25,6 +25,7 @@ async function checkAuthority(userAuthorityUrl) {
             });
         });
         //console.log("權限", res);
+        window.__authority__ = res;
         return res;
     } catch (error) {
         console.error("權限回傳失敗", error);
