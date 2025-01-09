@@ -1618,7 +1618,6 @@
     <Content Include="Content\navbar.css" />
     <Content Include="Content\OneDeviceOneCardManagement.css" />
     <Content Include="Content\samplepath.css" />
-    <Content Include="Content\StockManagement.css" />
     <Content Include="Content\tagbox.css" />
     <Content Include="favicon.ico" />
     <Content Include="Files\AsBuiltDrawing\23070701.jpg" />

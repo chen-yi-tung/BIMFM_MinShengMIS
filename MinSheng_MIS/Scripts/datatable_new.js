@@ -231,7 +231,7 @@
             }
             case "grid": {
                 const table = container.querySelector(`#table-${id}`);
-                this.createTableGrid(table, options.data, options.items);
+                return this.createTableGrid(table, options.data, options.items);
                 break;
             }
             case "table":
@@ -421,7 +421,7 @@
         const tbody = container.querySelector("tbody");
 
         createThs(thead, columns);
-        createTrs(tbody, columns);
+        createTrs();
 
         function createThs(thead, op) {
             if (rownumbers) {
@@ -452,43 +452,130 @@
             });
         }
 
-        function createTrs(tbody, op) {
-            data.forEach((d, i) => {
-                const tr = document.createElement("tr");
-                tr.id = i;
-                if (metaKey) {
-                    tr.dataset.metaKey = d[metaKey];
-                }
-                if (rownumbers) {
-                    const td = document.createElement("td");
-                    td.textContent = `${i + 1}`;
-                    tr.appendChild(td);
-                }
-                tr.append(...createTds(op, i));
-                tbody.appendChild(tr);
-            });
+        function createTrs() {
+            data.forEach(createTr);
+        }
+
+        function createTr(d, i) {
+            const tr = document.createElement("tr");
+            tr.id = i;
+            if (metaKey) {
+                tr.dataset.metaKey = d[metaKey];
+            }
+            if (rownumbers) {
+                const td = document.createElement("td");
+                td.id = "d-_Index";
+                td.textContent = `${i + 1}`;
+                tr.appendChild(td);
+            }
+            tr.append(...createTds(columns, i));
+            tbody.appendChild(tr);
         }
 
         function createTds(op, i) {
-            return op.map((o) => {
-                const d = data[i];
-                const value = d[o.id] ?? DataTable.nullString;
-                const style = self.toValue(o.style, value, d, i) ?? "";
-                const width = o.width ? self.toPx(o.width, d) : null;
-                const className = self.toValue(o.tdClassName, value, d, i) ?? "";
-                const td = document.createElement("td");
-                td.id = `d-${o.id}`;
-                td.style.cssText = style;
-                if (width) {
-                    td.style.width = width;
+            return op.map((o) => createTd(o, i));
+        }
+
+        function createTd(o, i) {
+            const d = data[i];
+            const value = d[o.id] ?? DataTable.nullString;
+            const style = self.toValue(o.style, value, d, i) ?? "";
+            const width = o.width ? self.toPx(o.width, d) : null;
+            const className = self.toValue(o.tdClassName, value, d, i) ?? "";
+            const td = document.createElement("td");
+            td.id = `d-${o.id}`;
+            td.style.cssText = style;
+            if (width) {
+                td.style.width = width;
+            }
+            td.className = className;
+            if (width) {
+                td.style.width = width;
+            }
+            self.setCellContent(td, d, o, i);
+
+            if (typeof o.onAdd === "function") {
+                o.onAdd(value, d, i);
+            }
+            return td;
+        }
+
+        function getRow(key) {
+            return tbody.querySelector(`tr[data-meta-key="${key}"]`);
+        }
+        function getRowData(key) {
+            return data[getRowIndex(key)];
+        }
+        function getRowIndex(key) {
+            return data.findIndex((x) => x[metaKey] === key);
+        }
+        function add(row) {
+            data.push(row);
+            createTr(row, data.length - 1)
+            rownumbers && renderRownumber();
+            checkTableShow();
+        }
+        function edit(row) {
+            const index = getRowIndex(row[metaKey]);
+            if (index === -1) {
+                console.warn("[createTableGrid] Not Found row data.")
+                return;
+            }
+            const rowDOM = getRow(row[metaKey]);
+            const oldRowData = Object.assign({}, data[index]);
+            const newRowData = Object.assign(data[index], row);
+            columns.forEach((o) => {
+                if (newRowData[o.id] === oldRowData[o.id]) return;
+                const td = rowDOM.querySelector("#d-" + o.id);
+                if (typeof o.onEdit === "function") {
+                    return o.onEdit(newRowData, oldRowData, index);
                 }
-                td.className = className;
-                if (width) {
-                    td.style.width = width;
+                const ntd = createTd(o, index)
+                td.replaceWith(ntd)
+            })
+        }
+        function remove(row) {
+            const index = getRowIndex(row[metaKey]);
+            if (index === -1) {
+                console.warn("[createTableGrid] Not Found row data.")
+                return;
+            }
+            columns.forEach((o) => {
+                if (typeof o.onRemove === "function") {
+                    return o.onRemove(row, index);
                 }
-                self.setCellContent(td, d, o, i);
-                return td;
-            });
+            })
+            const rowDOM = getRow(row[metaKey]);
+            rowDOM.remove();
+            data.splice(index, 1);
+
+            rownumbers && renderRownumber();
+            checkTableShow();
+        }
+        function renderRownumber() {
+            Array.from(tbody.querySelectorAll('td#d-_Index'))
+                .forEach((td, i) => {
+                    td.textContent = i + 1;
+                });
+        }
+        function checkTableShow() {
+            if (data.length === 0) {
+                container.closest(".datatable").style.display = 'none';
+            }
+            else {
+                container.closest(".datatable").style.display = null;
+            }
+        }
+
+        return {
+            add,
+            edit,
+            remove,
+            getRow,
+            getRowData,
+            getRowIndex,
+            renderRownumber,
+            checkTableShow,
         }
     }
     /**
@@ -544,11 +631,23 @@
                 break;
             }
             case "pre": {
-                cell.innerHTML = `<pre>${formatter}</pre>`;
+                const pre = document.createElement("pre")
+                if (formatter instanceof HTMLElement) {
+                    pre.appendChild(formatter)
+                }
+                else {
+                    pre.textContent = formatter;
+                }
+                cell.appendChild(pre)
                 break;
             }
             default: {
-                cell.textContent = formatter;
+                if (formatter instanceof HTMLElement) {
+                    cell.appendChild(formatter)
+                }
+                else {
+                    cell.textContent = formatter;
+                }
                 break;
             }
         }
@@ -684,15 +783,14 @@
             <div class="modal fade modal-delete ${options.className ?? ""}" id="${options.id ?? ""}" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        ${
-                            options.title
-                                ? `
+                        ${options.title
+                ? `
                         <div class="modal-header">
                             <h5 class="modal-title">${options.title}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>`
-                                : ""
-                        }
+                : ""
+            }
                         <div class="modal-body text-center pb-2">
                             ${htmlTitle ?? options.inner ?? ""}
                         </div>
@@ -885,7 +983,7 @@
                 popperConfig(defaultBsPopperConfig) {
                     const newPopperConfig = { ...defaultBsPopperConfig };
                     const placement = el.getAttribute("data-bs-placement");
-                    console.log("placement", placement);
+                    //console.log("placement", placement);
 
                     if (placement === "auto") return defaultBsPopperConfig;
 
@@ -911,7 +1009,7 @@
     setupFormTab(defaultTabName, { onTabChange = null } = {}) {
         // Determine the default tab if not provided
         if (!defaultTabName) {
-            defaultTabName = document.querySelector(".tab-btn.tab-checked")?.dataset?.tabName || document.querySelector(".tab-btn")?.dataset?.tabName;
+            defaultTabName = document.querySelector(".form-tab-btn.active")?.dataset?.tabName || document.querySelector(".form-tab-btn")?.dataset?.tabName;
         }
 
         if (!defaultTabName) {
@@ -921,7 +1019,7 @@
 
         const tabManager = {
             currentTab: defaultTabName,
-            links: Array.from(document.querySelectorAll(".tab-btn")),
+            links: Array.from(document.querySelectorAll(".form-tab-btn")),
             contents: Array.from(document.querySelectorAll("[data-tab-content]")),
             comments: [],
             openTab,
@@ -950,7 +1048,7 @@
             tabManager.currentTab = tabName;
 
             // Update tab link styles
-            tabManager.links.forEach((link) => link.classList.toggle("tab-checked", link.dataset.tabName === tabName));
+            tabManager.links.forEach((link) => link.classList.toggle("active", link.dataset.tabName === tabName));
 
             // Update tab contents
             tabManager.contents.forEach((content) => {

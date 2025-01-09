@@ -2,7 +2,7 @@
     constructor() { }
 
     static getSelect(id) {
-        if (id instanceof HTMLSelectElement) return id;
+        if (id instanceof HTMLElement) return id;
         return document.getElementById(id) ?? document.querySelector(id);
     }
 
@@ -124,44 +124,64 @@
     static async ASN({ id = "ASN", fsnId = "FSN", value = null, fsnValue = null, placeholder = "請選擇" } = {}) {
         const asn = await formDropdown.pushSelect({ id, url: "/DropDownList/Area", placeholder });
         const fsn = formDropdown.getSelect(fsnId);
+        const initialized = asn.dataset?.fdInitialized;
+        formDropdown.setValue(asn, value);
         if (fsn) {
-            await formDropdown.FSN({ id: fsnId, data: value, value: fsnValue });
+            await formDropdown.FSN({ id: fsn, data: value, value: fsnValue });
+            if (!initialized) {
+                return asn;
+            }
+            asn.dataset.fdInitialized = true;
             asn.addEventListener("change", async function (e) {
-                await formDropdown.FSN({ id: fsnId, data: asn.value, placeholder: asn.value ? placeholder : void 0 });
+                await formDropdown.FSN({ id: fsn, data: asn.value, placeholder: asn.value ? placeholder : void 0 });
+            });
+            formDropdown.addResetEvent(asn, async () => {
+                await formDropdown.FSN({ id: fsn, data: null });
             });
 
-            formDropdown.addResetEvent(asn, async () => {
-                await formDropdown.FSN({ id: fsnId, data: null });
-            });
         }
-        formDropdown.setValue(id, value);
         return asn;
     }
     static async FSN({ id = "FSN", data, value, placeholder = "請先選擇棟別" } = {}) {
         const fsn = await formDropdown.pushSelect({ id, url: `/DropDownList/Floor?ASN=${data}`, placeholder });
-        formDropdown.setValue(id, value);
+        formDropdown.setValue(fsn, value);
         return fsn;
     }
 
-    static async StockTypeSN({ id = "StockTypeSN", sisnId = "SISN", value = null, sisnValue = null, placeholder = "請選擇" } = {}) {
+    static async StockTypeSN({ id = "StockTypeSN", sisnId = "SISN", unitId = null, value = null, sisnValue = null, placeholder = "請選擇" } = {}) {
         const sysn = await formDropdown.pushSelect({ id, url: "/DropDownList/StockType", placeholder });
         const sisn = formDropdown.getSelect(sisnId);
+        const unit = formDropdown.getSelect(unitId);
+        const initialized = sysn.dataset?.fdInitialized;
+        formDropdown.setValue(sysn, value);
         if (sisn) {
-            await formDropdown.SISN({ id: sisnId, data: value, value: sisnValue });
+            await formDropdown.SISN({ id: sisn, data: value, value: sisnValue });
+            if (initialized) {
+                return sysn;
+            }
+            sysn.dataset.fdInitialized = true;
             sysn.addEventListener("change", async function (e) {
-                await formDropdown.SISN({ id: sisnId, data: sysn.value, placeholder: sysn.value ? placeholder : void 0 });
+                await formDropdown.SISN({ id: sisn, data: sysn.value, placeholder: sysn.value ? placeholder : void 0 });
+            });
+            formDropdown.addResetEvent(sysn, async () => {
+                await formDropdown.SISN({ id: sisn, data: null });
             });
 
-            formDropdown.addResetEvent(sysn, async () => {
-                await formDropdown.SISN({ id: sisnId, data: null });
-            });
+            if (unit) {
+                sisn.addEventListener("change", async function (e) {
+                    const res = await fetch(`/Stock_Management/GetComputationalStockDetail?id=${sisn.value}`)
+                        .then(r => r.json())
+                        .then(r => r.Datas)
+                        .catch(err => null)
+                    unit.textContent = res?.Unit ?? "";
+                });
+            }
         }
-        formDropdown.setValue(id, value);
         return sysn;
     }
     static async SISN({ id = "FSN", data, value = null, placeholder = "請先選擇類別" } = {}) {
         const sisn = await formDropdown.pushSelect({ id, url: `/DropDownList/StockName?StockTypeSN=${data}`, placeholder });
-        formDropdown.setValue(id, value);
+        formDropdown.setValue(sisn, value);
         return sisn;
     }
 }

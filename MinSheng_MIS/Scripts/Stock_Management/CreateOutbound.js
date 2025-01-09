@@ -1,15 +1,17 @@
 ﻿async function init_CreateOutbound() {
     const MAX_ROW_SIZE = 100;
+    const DEBUG_TEST = false;
     document.getElementById("rfid").onclick = () => checkRFID();
     document.getElementById("back").onclick = () => history.back();
     document.getElementById("submit").onclick = () => checkSave();
     const RFIDScanBtn = await init_RFIDScanBtn();
-    const formTab = DT.setupFormTab();
-
-    await formDropdown.StockTypeSN();
-
     const RFIDModal = await init_RFIDModal();
     const RFIDGrid = await init_RFIDGrid();
+
+    const formTab = DT.setupFormTab();
+
+    await formDropdown.StockTypeSN({ unitId: document.querySelector("#NumberOfChanges+.form-unit") });
+
     async function init_RFIDScanBtn() {
         const btn = document.getElementById("rfid");
         const icon = btn.querySelector(".scan-icon");
@@ -27,8 +29,12 @@
                 icon.className = "scan-icon";
             }
         }
+        function setDisabled(b) {
+            btn.disabled = b;
+        }
         return {
             setLoading,
+            setDisabled,
         };
     }
     async function init_RFIDModal() {
@@ -109,61 +115,41 @@
                 ],
             },
         };
-        function getRow(key) {
-            return document.querySelector(`#${options.id} tr[data-meta-key="${key}"]`);
-        }
-        function getRowData(key) {
-            const index = getRowIndex(key);
-            return datas[index];
-        }
-        function getRowIndex(key) {
-            const index = datas.findIndex((x) => x[options.items.metaKey] === key);
-            if (index === -1) {
-                console.error("[RFIDGird.getRowData] Not found row");
-                return;
-            }
-            return index;
-        }
-        function add(d) {
-            datas.push(d);
-            document.getElementById(options.id)?.remove();
-            DT.createTable(`[data-tab-content="RFID"]`, options);
+        const grid = DT.createTable(`[data-tab-content="RFID"]`, options);
+        grid.checkTableShow();
+        function add(row) {
+            grid.add(row);
             checkMaxRowSize();
         }
         function remove(row) {
-            const rowDOM = getRow(row.InternalCode);
-            rowDOM.remove();
-
-            const index = getRowIndex(row.InternalCode);
-            if (index !== -1) {
-                datas.splice(index, 1);
-            }
-
-            if (datas.length === 0) {
-                document.getElementById(options.id).remove();
-            }
+            grid.remove(row);
             checkMaxRowSize();
         }
         function checkMaxRowSize(n = MAX_ROW_SIZE) {
-            const btn = document.getElementById("rfid");
-            if (datas.length >= n) {
-                btn.disabled = true;
-            } else {
-                btn.disabled = false;
-            }
+            RFIDScanBtn.setDisabled(datas.length >= n);
         }
         return {
             datas,
             options,
             add,
             remove,
-            getRow,
-            getRowData,
-            getRowIndex,
         };
     }
     async function checkRFID() {
         //後端取得RFID
+        if (DEBUG_TEST) {
+            const fakeRFID = Math.random().toString(36).slice(2, 33 - 2);
+            RFIDModal.setData({
+                InternalCode: fakeRFID,
+                ExternalCode: "test",
+                StockType: "設備",
+                StockName: "5mm螺絲",
+                NumberOfChanges: 1,
+                Unit: "個",
+            });
+            RFIDModal.show();
+            return;
+        }
         const RFID = await $.getJSON(`/RFID/CheckRFID`)
             .then((res) => {
                 if (res.ErrorMessage) {
@@ -257,6 +243,7 @@
         fd.append("__RequestVerificationToken", document.querySelector('[name="__RequestVerificationToken"]').value);
 
         console.log(Object.fromEntries(fd.entries()));
+        if (DEBUG_TEST) return;
         $.ajax({
             url: submitUrl,
             data: fd,

@@ -1,10 +1,13 @@
 ﻿async function init_CreateInbound() {
     const MAX_ROW_SIZE = 1; //只能有一筆RFID資料
-
+    const DEBUG_TEST = false;
     document.getElementById("back").onclick = () => history.back();
     document.getElementById("submit").onclick = () => checkSave();
 
     const RFIDScanBtn = await init_RFIDScanBtn();
+    const RFIDModal = await init_RFIDModal();
+    const RFIDGrid = await init_RFIDGrid();
+
     const formTab = DT.setupFormTab();
     const fileUploader = new FileUploader({
         container: "#FileUploader",
@@ -15,10 +18,9 @@
         id: "PurchaseOrder",
     });
 
-    await formDropdown.StockTypeSN();
+    await formDropdown.StockTypeSN({ unitId: document.querySelector("#NumberOfChanges+.form-unit") });
 
-    const RFIDModal = await init_RFIDModal();
-    const RFIDGrid = await init_RFIDGrid();
+
     async function init_RFIDScanBtn() {
         const btn = document.getElementById("rfid");
         const icon = btn.querySelector(".scan-icon");
@@ -36,8 +38,12 @@
                 icon.className = "scan-icon";
             }
         }
+        function setDisabled(b) {
+            btn.disabled = b;
+        }
         return {
             setLoading,
+            setDisabled,
         };
     }
     async function init_RFIDModal() {
@@ -45,7 +51,12 @@
         const modal = modalTemplate.content.cloneNode(true).firstElementChild;
         const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
         modalTemplate.remove();
-        await formDropdown.StockTypeSN({ id: modal.querySelector("#StockTypeSN"), sisnId: modal.querySelector("#SISN") });
+
+        await formDropdown.StockTypeSN({
+            id: modal.querySelector("#StockTypeSN"),
+            sisnId: modal.querySelector("#SISN"),
+            unitId: modal.querySelector("#NumberOfChanges+.form-unit")
+        });
 
         //隱藏時移除元素
         modal.addEventListener("hidden.bs.modal", () => {
@@ -70,15 +81,16 @@
         };
 
         //儲存時取得資料
-
         bsModal.getData = () => {
             const isEdit = modal.querySelector("#isEdit").value ?? false;
             const InternalCode = modal.querySelector("#InternalCode").value ?? null;
             const ExternalCode = modal.querySelector("#ExternalCode").value ?? null;
             const StockTypeSN = modal.querySelector("#StockTypeSN").value ?? null;
+            const StockType = modal.querySelector(`#StockTypeSN option[value="${StockTypeSN}"]`).textContent ?? null;
             const SISN = modal.querySelector("#SISN").value ?? null;
+            const StockName = modal.querySelector(`#SISN option[value="${SISN}"]`).textContent ?? null;
             const NumberOfChanges = modal.querySelector("#NumberOfChanges").value ?? null;
-            bsModal.data = { InternalCode, ExternalCode, StockTypeSN, SISN, NumberOfChanges, isEdit };
+            bsModal.data = { InternalCode, ExternalCode, StockTypeSN, StockType, SISN, StockName, NumberOfChanges, isEdit };
             return bsModal.data;
         };
 
@@ -90,12 +102,13 @@
             }
             bsModal.hide();
             const originData = bsModal.getData();
-            if (originData.isEdit === "true") {
-                RFIDGrid.edit(originData);
-                return;
-            }
             const res = await $.getJSON(`/Stock_Management/GetComputationalStockDetail?id=${originData.SISN}`).then((res) => res.Datas);
             const data = Object.assign(res, originData);
+
+            if (data.isEdit === "true") {
+                RFIDGrid.edit(data);
+                return;
+            }
             data.isEdit = true;
             RFIDGrid.add(data);
         });
@@ -150,72 +163,38 @@
                 ],
             },
         };
-        function getRow(key) {
-            return document.querySelector(`#${options.id} tr[data-meta-key="${key}"]`);
-        }
-        function getRowData(key) {
-            const index = getRowIndex(key);
-            return datas[index];
-        }
-        function getRowIndex(key) {
-            const index = datas.findIndex((x) => x[options.items.metaKey] === key);
-            if (index === -1) {
-                console.error("[RFIDGird.getRowData] Not found row");
-                return;
-            }
-            return index;
-        }
+        const grid = DT.createTable(`[data-tab-content="RFID"]`, options);
+        grid.checkTableShow();
         function add(row) {
-            datas.push(row);
-            document.getElementById(options.id)?.remove();
-            DT.createTable(`[data-tab-content="RFID"]`, options);
+            grid.add(row);
             checkMaxRowSize();
         }
         function edit(row) {
-            const rowData = getRowData(row.InternalCode);
-            Object.assign(rowData, row);
-            const rowDOM = getRow(row.InternalCode);
-            for (const [k, v] of Object.entries(row)) {
-                const td = rowDOM.querySelector("#d-" + k);
-                if (td) {
-                    td.textContent = v;
-                }
-            }
+            grid.edit(row);
         }
         function remove(row) {
-            const rowDOM = getRow(row.InternalCode);
-            rowDOM.remove();
-
-            const index = getRowIndex(row.InternalCode);
-            if (index !== -1) {
-                datas.splice(index, 1);
-            }
-
-            if (datas.length === 0) {
-                document.getElementById(options.id).remove();
-            }
-
+            grid.remove(row);
             checkMaxRowSize();
         }
         function checkMaxRowSize(n = MAX_ROW_SIZE) {
-            const btn = document.getElementById("rfid");
-            if (datas.length >= n) {
-                btn.disabled = true;
-            } else {
-                btn.disabled = false;
-            }
+            RFIDScanBtn.setDisabled(datas.length >= n);
         }
         return {
             datas,
             add,
             edit,
             remove,
-            getRow,
-            getRowData,
-            getRowIndex,
         };
     }
     async function checkRFID() {
+        if (DEBUG_TEST) {
+            const fakeRFID = Math.random().toString(36).slice(2, 33 - 2);
+            RFIDModal.setData({
+                InternalCode: fakeRFID,
+            });
+            RFIDModal.show();
+            return;
+        }
         //後端取得RFID
         const RFID = await $.getJSON(`/RFID/CheckRFID`)
             .then((res) => {
@@ -294,6 +273,7 @@
         fd.append("__RequestVerificationToken", document.querySelector('[name="__RequestVerificationToken"]').value);
 
         console.log(Object.fromEntries(fd.entries()));
+        if (DEBUG_TEST) return;
         $.ajax({
             url: submitUrl,
             data: fd,
