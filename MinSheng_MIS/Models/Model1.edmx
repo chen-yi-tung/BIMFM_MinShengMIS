@@ -459,7 +459,7 @@
           <Property Name="IPSN" Type="char" MaxLength="9" Nullable="false" />
           <Property Name="StartTime" Type="varchar" MaxLength="5" Nullable="false" />
           <Property Name="EndTime" Type="varchar" MaxLength="5" Nullable="false" />
-          <Property Name="PlanPathSN" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="PlanPathSN" Type="char" MaxLength="9" />
           <Property Name="PathName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="InspectionNum" Type="int" Nullable="false" />
           <Property Name="Frequency" Type="int" Nullable="false" />
@@ -1176,7 +1176,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionPlan_Time_InspectionPathSample">
-          <End Role="InspectionPathSample" Type="Self.InspectionPathSample" Multiplicity="1" />
+          <End Role="InspectionPathSample" Type="Self.InspectionPathSample" Multiplicity="0..1" />
           <End Role="InspectionPlan_Time" Type="Self.InspectionPlan_Time" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPathSample">
@@ -2438,7 +2438,7 @@
           <Property Name="IPSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
           <Property Name="StartTime" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
           <Property Name="EndTime" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
-          <Property Name="PlanPathSN" Type="String" Nullable="false" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="PlanPathSN" Type="String" MaxLength="9" FixedLength="true" Unicode="false" />
           <Property Name="PathName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="InspectionNum" Type="Int32" Nullable="false" />
           <Property Name="Frequency" Type="Int32" Nullable="false" />
@@ -3131,7 +3131,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionPlan_Time_InspectionPathSample">
-          <End Type="Bimfm_MinSheng_MISModel.InspectionPathSample" Role="InspectionPathSample" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.InspectionPathSample" Role="InspectionPathSample" Multiplicity="0..1" />
           <End Type="Bimfm_MinSheng_MISModel.InspectionPlan_Time" Role="InspectionPlan_Time" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InspectionPathSample">
