@@ -88,27 +88,24 @@
                 ImgPath: "2023-03-30_B.png",
             }
         ]
-        let authority;
             $(async function () {
             //取得權限
-            (async () => {
-                try {
-                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
-                    console.log("權限", authority);
-                } catch (error) {
-                    console.error("權限回傳失敗", error);
-                }
-            })();
+            try {
+                await checkAuthority();
+                console.log("權限", __authority__);
+            } catch (error) {
+                console.log("無法取得權限", error);
+            }
             await formDropdown.ASN();
             await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
-            Initialize_DataGrid(getGridJSON, authority);
+            Initialize_DataGrid(getGridJSON, __authority__);
             addSearchAreaClickEvent();
 
             const Systems = document.getElementById('DSystemID')
             Systems.addEventListener("change", function () {
                 pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?DSystemID=${$('#DSystemID').val()}`);
             });
-            if (authority === "3") {
+                if (__authority__ === "3") {
                 document.getElementById('create').classList.add('d-none');
             }
         });

@@ -109,23 +109,20 @@
             },
         ]
 
-        let authority;
         $(async function () {
             //取得權限
-            (async () => {
-                try {
-                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
-                    console.log("權限", authority);
-                } catch (error) {
-                    console.error("權限回傳失敗", error);
-                }
-            })();
+            try {
+                await checkAuthority();
+                console.log("權限", __authority__);
+            } catch (error) {
+                console.log("無法取得權限", error);
+            }
             await formDropdown.ASN();
             await formDropdown.pushSelect({ id: "EState", url: '@Url.Action("EState", "DropDownList")' });
-            Initialize_DataGrid(getGridJSON, authority);
+            Initialize_DataGrid(getGridJSON, __authority__);
             addSearchAreaClickEvent();
 
-            if (authority === "3") {
+            if (__authority__ === "3") {
                 document.getElementById('create').classList.add('d-none');
             }
         });
@@ -142,7 +139,7 @@
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.EState === "停用" || authority === "3" })),
                     dg.frozenColumn('_FilePath', "", 111, (v, row, i) => dg.eventButton(i, "操作手冊", "filePath", { disabled: !row.FilePath })),
-                    dg.frozenColumn('_deactivate', (v, row, i) => dg.eventButton(i, "停用", "deactivate", { className: "btn btn-datagrid btn-delete", disabled: row.EState !== "正常" ||  authority != "1" })),
+                    dg.frozenColumn('_deactivate', (v, row, i) => dg.eventButton(i, "停用", "deactivate", { className: "btn btn-datagrid btn-delete", disabled: row.EState !== "正常" || authority != "1" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('ESN'),

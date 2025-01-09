@@ -84,22 +84,19 @@
                 MyName: "王曉明、林陵",
             },
         ]
-        let authority;
         $(async function () {
             //取得權限
-            (async () => {
-                try {
-                    authority = await checkAuthority('@Url.Action("UserAuthority", "Account")');
-                    console.log("權限", authority);
-                } catch (error) {
-                    console.error("權限回傳失敗", error);
-                }
-            })();
+            try {
+                await checkAuthority();
+                console.log("權限", __authority__);
+            } catch (error) {
+                console.log("無法取得權限", error);
+            }
             await pushSelect("PlanState", '@Url.Action("PlanState", "DropDownList")');
             await pushSelect("Member", '@Url.Action("InspectionMember", "DropDownList")');
-            Initialize_DataGrid(getGridJSON, authority);
+            Initialize_DataGrid(getGridJSON, __authority__);
             addSearchAreaClickEvent();
-            if (authority === "3") {
+            if (__authority__ === "3") {
                 document.getElementById('create').classList.add('d-none');
             }
         });
