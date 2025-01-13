@@ -208,7 +208,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
     }
 
     //如果GUID不為空，不可編輯 棟別、樓層
-    if (data.GUID !== "") {
+    if (data.GUID !== "" && data.GUID !== null) {
         document.querySelectorAll('#ASN, #FSN').forEach(el => {
             el.setAttribute('disabled', true);
             el.removeAttribute('requierd');
@@ -296,7 +296,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
         console.log("最後傳出的資料為", Object.fromEntries(fd));
 
         if (DEBUG_TEST) return;
-        const submitUrl = edit ? "/EquipmentInfo_Management/Edit/Equipment" : "/EquipmentInfo_Management/CreateEquipment"
+        const submitUrl = edit ? "/EquipmentInfo_Management/EditEquipment" : "/EquipmentInfo_Management/CreateEquipment"
         const actionName = edit ? "編輯" : "新增";
         $.ajax({
             url: submitUrl,
