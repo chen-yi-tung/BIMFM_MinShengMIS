@@ -1,4 +1,5 @@
 ﻿using MinSheng_MIS.Attributes;
+using MinSheng_MIS.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,9 +16,10 @@ namespace MinSheng_MIS.Models.ViewModels
         ICreateEquipmentInfo, ICreateAddFieldValueList, ICreateMaintainItemValueList
     {
         public string TSN { get; set; } // 一機一卡模板編號
+        [Required]
         [FileSizeLimit(10)] // 限制大小為 10 MB
+        [Display(Name = "設備照片")]
         public HttpPostedFileBase EPhoto { get; set; } //新增的照片
-        public List<EquipRFID> RFIDList { get; set; } // RFID
         public List<AddFieldValueModel> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位
         public List<MaintainItemValueModel> MaintainItemList { get; set; } // 一機一卡模板資料：保養項目設定
 
@@ -79,7 +81,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string TSN { get; set; } // 一機一卡模板編號
         public string SampleName { get; set; } // 一機一卡模板名稱
         public int? Frequency { get; set; } // 巡檢頻率
-        public IEnumerable<IRFIDInfoDetail> RFIDList { get; set; } // RFID
+        public new IEnumerable<IRFIDInfoDetail> RFIDList { get; set; } // RFID
         public IEnumerable<IAddFieldValueDetail> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位
         public IEnumerable<IMaintainItemValueDetail> MaintainItemList { get; set; } // 一機一卡模板資料：保養項目設定
         public IEnumerable<ICheckItemDetail> CheckItemList { get; set; } // 一機一卡模板資料：檢查項目
@@ -88,6 +90,7 @@ namespace MinSheng_MIS.Models.ViewModels
 
     public class EquipmentInfoDetailModel : EquipInfo, IEquipmentInfoDetail
     {
+        public new string InstallDate { get; set; } // 安裝日期
         public string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         public string FilePath { get; set; } // 設備照片路徑
         public string FileName { get; set; } // 設備照片名稱
@@ -95,10 +98,13 @@ namespace MinSheng_MIS.Models.ViewModels
         public string ASN { get; set; } // 棟別
         public string AreaName { get; set; } // 棟別名稱
         public string FloorName { get; set; } // 樓層名稱
+        public string GUID { get; set; } // GUID
     }
 
     public interface IEquipmentInfoDetail : IEquipmentInfo
     {
+        new string InstallDate { get; set; } // 安裝日期
+
         string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         string FilePath { get; set; } // 設備照片路徑
         string FileName { get; set; } // 設備照片名稱
@@ -106,6 +112,7 @@ namespace MinSheng_MIS.Models.ViewModels
         string ASN { get; set; } // 棟別
         string AreaName { get; set; } // 棟別名稱
         string FloorName { get; set; } // 樓層名稱
+        string GUID { get; set; } // GUID
     }
 
     public class AddFieldValueDetail : AddFieldValueModel, IAddFieldValueDetail
@@ -148,9 +155,9 @@ namespace MinSheng_MIS.Models.ViewModels
         public string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         public string TSN { get; set; } // 一機一卡模板編號
         [FileSizeLimit(10)] // 限制大小為 10 MB
+        [Display(Name = "設備照片")]
         public HttpPostedFileBase EPhoto { get; set; } //新增的照片
         public string FileName { get; set; } // 設備原照片名稱
-        public List<EquipRFID> RFIDList { get; set; } // RFID
         public List<AddFieldValueModel> AddFieldList { get; set; } // 一機一卡模板資料：增設基本資料欄位
         public List<MaintainItemValueModel> MaintainItemList { get; set; } // 一機一卡模板資料：保養項目設定
     }
@@ -220,7 +227,6 @@ namespace MinSheng_MIS.Models.ViewModels
     /// </summary>
     public interface IEquipmentInfo : IEquipmentName
     {
-        //HttpPostedFileBase EPhoto { get; set; } //新增的設備照片
         DateTime? InstallDate { get; set; } // 安裝日期
         string FSN { get; set; } // 樓層編號
         string Brand { get; set; } // 設備廠牌
@@ -269,6 +275,21 @@ namespace MinSheng_MIS.Models.ViewModels
         [StringLength(200, ErrorMessage = "{0} 的長度最多200個字元。")]
         [Display(Name = "備註")]
         public string Memo { get; set; } // 備註
+        public List<CreateEquipRFID> RFIDList { get; set; } // 設備RFID
+
+        internal IUpdateRFID ConvertToUpdateRFID(string esn)
+        {
+            return new UpdateRFIDInstance
+            {
+                ESN = esn,
+                RFIDList = RFIDList.Select(x =>
+                {
+                    var temp = x.ToDto<CreateEquipRFID, EditEquipRFID>();
+                    temp.ESN = esn;
+                    return temp;
+                }).ToList()
+            };
+        }
     }
 
     /// <summary>
@@ -352,18 +373,21 @@ namespace MinSheng_MIS.Models.ViewModels
         string ESN { get; set; } // 設備資料(EquipmentInfo)編號
     }
 
-    #region Service需要的實例
-    public class CreateEquipmentInfoInstance : EquipInfo, ICreateEquipmentInfo
+    public interface IUpdateRFID
     {
-        public string TSN { get; set; }
-        public HttpPostedFileBase EPhoto { get; set; } //新增的照片
+        string ESN { get; set; } // 設備資料(EquipmentInfo)編號
+        List<EditEquipRFID> RFIDList { get; set; }
     }
+
+    #region Service需要的實例
     public class UpdateEquipmentInfoInstance : EquipInfo, IUpdateEquipmentInfo
     {
         public string ESN { get; set; }
         public string TSN { get; set; }
         public string EState { get; set; }
         public HttpPostedFileBase EPhoto { get; set; } //新增的照片
+
+        public new List<CreateEquipRFID> RFIDList { get; }
     }
 
     public class UpdateAddFieldValueInstance : IUpdateAddFieldValue
@@ -377,6 +401,12 @@ namespace MinSheng_MIS.Models.ViewModels
         public string ESN { get; set; }
         public string TSN { get; set; }
         public List<MaintainItemValueModel> MaintainItemList { get; set; }
+    }
+
+    public class UpdateRFIDInstance : IUpdateRFID
+    {
+        public string ESN { get; set; }
+        public List<EditEquipRFID> RFIDList { get; set; }
     }
     #endregion
 }

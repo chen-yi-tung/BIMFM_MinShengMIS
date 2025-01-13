@@ -168,13 +168,22 @@ namespace MinSheng_MIS.Services
         {
             var destination = new TDestination();  // 創建具體類型的實例
 
+            // 取得所有屬性，包括繼承介面的屬性
+            var sourceProperties = typeof(TSource)
+                .GetInterfaces() // 獲取所有繼承的介面
+                .Concat(new[] { typeof(TSource) }) // 加入當前型別
+                .SelectMany(t => t.GetProperties()) // 獲取所有屬性
+                .Distinct(); // 避免重複屬性
+
             // 遍歷源對象的屬性，並將它們映射到目標對象
-            foreach (var sourceProp in typeof(TSource).GetProperties())
+            foreach (var sourceProp in sourceProperties)
             {
-                var destProp = typeof(TDestination).GetProperty(sourceProp.Name);
+                var destProp = typeof(TDestination).GetProperties()
+                    .Where(x => x.Name == sourceProp.Name) // 同名屬性
+                    .FirstOrDefault(x => x.PropertyType == sourceProp.PropertyType); // 類型必須相同且可避免使用new產生的多個同名屬性
+
                 if (destProp != null
-                    && destProp.CanWrite
-                    && destProp.PropertyType == sourceProp.PropertyType) // 類型必須相同
+                    && destProp.CanWrite)
                 {
                     destProp.SetValue(destination, sourceProp.GetValue(source));
                 }

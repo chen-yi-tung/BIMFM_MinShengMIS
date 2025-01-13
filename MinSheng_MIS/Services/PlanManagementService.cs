@@ -5,6 +5,7 @@ using MinSheng_MIS.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -16,18 +17,15 @@ namespace MinSheng_MIS.Services
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly SampleSchedule_ManagementService _sampleScheduleService;
-        private readonly SamplePath_ManagementService _samplePathService;
-
 
         public PlanManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
             _sampleScheduleService = new SampleSchedule_ManagementService(db);
-            _samplePathService = new SamplePath_ManagementService(_db);
         }
 
         #region 新增工單
-        public async Task<string> CreateInspectionPlanAsync(IInspectionPlanModifiable data)
+        public async Task<string> CreateInspectionPlanAsync(IInspectionPlanCreate data)
         {
             // 無需要驗證的資料
 
@@ -65,7 +63,7 @@ namespace MinSheng_MIS.Services
             // 巡檢路線資訊
             data.Inspections.ForEach(x =>
             {
-                var temp = _samplePathService.GetSamplePath<InspectionPathSample>(x.PlanPathSN);
+                var temp = SamplePath_ManagementService.GetSamplePath<InspectionPathSample>(_db, x.PlanPathSN);
                 x.PathName = temp.PathName;
                 x.Frequency = temp.Frequency;
                 x.EquipmentCount = temp.DailyInspectionSampleContent.Count;
@@ -182,89 +180,62 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 編輯工單
-        public async Task EditInspectionPlanAsync(string IPSN, IInspectionPlanModifiable data)
+        #region 更新工單
+        public async Task EditInspectionPlanAsync(IInspectionPlanEdit data)
         {
-                var Plan = await _db.InspectionPlan.FindAsync(IPSN);
-                Plan.IPName = data.IPName;
-                Plan.PlanDate = data.PlanDate;
+            var plan = await _db.InspectionPlan
+                .SingleOrDefaultAsync(x => x.IPSN == data.IPSN)
+                ?? throw new MyCusResException("工單不存在！");
+
+            if (!IsEnumEqualToStr(plan.PlanState, InspectionPlanState.ToDo))
+                throw new MyCusResException("工單已開始執行，不可編輯！");
+
+            plan.IPName = data.IPName;
+            plan.PlanDate = data.PlanDate;
+
+            _db.InspectionPlan.AddOrUpdate(plan);
         }
         #endregion
 
-        #region 編輯巡檢時段及執行人員
+        #region 更新巡檢時段及執行人員
         public async Task EditInspectionPlanContentAsync(IInspectionPlanTimeModifiableList data)
         {
-            string IPSN = data.IPSN;
-            await DeleteInspectionPlanContentAsync(IPSN);
+            var plan = _db.InspectionPlan.Find(data.IPSN);
+
+            // 清空巡檢時段及執行人員
+            DeleteInspectionPlanContent(plan.InspectionPlan_Time);
             await _db.SaveChangesAsync();
+
+            // 建立巡檢時段及執行人員
             CreateInspectionPlanContent(data);
         }
         #endregion
 
         #region 刪除工單
-        public async Task<JsonResService<string>> DeleteInspectionPlanAsync(string IPSN)
+        public void DeleteInspectionPlan(InspectionPlan data)
         {
-            #region 變數
-            JsonResService<string> res = new JsonResService<string>();
-            #endregion
-            try
-            {
-                #region 資料檢查、狀態驗證
-                if(String.IsNullOrEmpty(IPSN)) 
-                {
-                    res.AccessState = ResState.Failed;
-                    res.ErrorMessage = "未輸入單號";
-                    return res;
-                }
-                var Plan = _db.InspectionPlan.Find(IPSN);
-                if (Plan == null)
-                {
-                    res.AccessState = ResState.Failed;
-                    res.ErrorMessage = "查無資料";
-                    return res;
-                }
+            if (!IsEnumEqualToStr(data.PlanState, InspectionPlanState.ToDo))
+                throw new MyCusResException("工單已開始執行，不可刪除！");
 
-                if(Plan.PlanState != ((int)InspectionPlanState.ToDo).ToString())
-                {
-                    res.AccessState = ResState.Failed;
-                    res.ErrorMessage = "工單狀態不為待執行，無法刪除。";
-                    return res;
-                }
-                #endregion
-                await DeleteInspectionPlanContentAsync(IPSN);
-                _db.InspectionPlan.Remove(Plan);
-                await _db.SaveChangesAsync();
+            // 刪除巡檢時段及執行人員
+            DeleteInspectionPlanContent(data.InspectionPlan_Time);
 
-                res.AccessState = ResState.Success;
-                return res;
-            }
-            catch (Exception ex)
-            {
-                res.AccessState = ResState.Failed;
-                res.ErrorMessage = ex.Message;
-                throw;
-            }
+            // 刪除工單
+            _db.InspectionPlan.Remove(data);
         }
         #endregion
 
         #region 刪除巡檢時段及執行人員
-        public async Task DeleteInspectionPlanContentAsync(string IPSN)
+        public void DeleteInspectionPlanContent(IEnumerable<InspectionPlan_Time> data)
         {
-            var TimeRecords = await _db.InspectionPlan_Time
-            .Where(t => t.IPSN == IPSN)
-            .ToListAsync();
-            var IPTSN_List = TimeRecords
-                .Select(x => x.IPTSN)
-                .ToList();
-            var MemberRecords = await _db.InspectionPlan_Member.Where(m => IPTSN_List.Contains(m.IPTSN)).ToListAsync();
-            if (MemberRecords.Count > 0)
-            {
-                _db.InspectionPlan_Member.RemoveRange(MemberRecords);
-            }
-            if (TimeRecords.Count > 0)
-            {
-                _db.InspectionPlan_Time.RemoveRange(TimeRecords);
-            }
+            if (data?.Any() != true)
+                return;
+
+            // 刪除執行人員
+            if (data.Any(x => x.InspectionPlan_Member?.Count > 0))
+                _db.InspectionPlan_Member.RemoveRange(data.SelectMany(x => x.InspectionPlan_Member));
+            // 刪除巡檢時段
+            _db.InspectionPlan_Time.RemoveRange(data);
         }
         #endregion
 

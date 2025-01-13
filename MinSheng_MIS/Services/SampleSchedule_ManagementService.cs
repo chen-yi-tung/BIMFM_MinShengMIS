@@ -1,8 +1,10 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace MinSheng_MIS.Services
@@ -74,6 +76,25 @@ namespace MinSheng_MIS.Services
                 });
 
             return result.Cast<ISampleScheduleContentDetail>().ToList();
+        }
+        #endregion
+
+        #region 刪除每日巡檢時程安排模板
+        public void DeleteInspectionSample(DailyInspectionSample data)
+        {
+            DeleteSampleScheduleContents(data.DailyInspectionSampleContent);
+
+            _db.DailyInspectionSample.Remove(data);
+        }
+        #endregion
+
+        #region 刪除每日巡檢時程安排模板內容
+        public void DeleteSampleScheduleContents(IEnumerable<DailyInspectionSampleContent> data)
+        {
+            if (data?.Any() != true)
+                return;
+
+            _db.DailyInspectionSampleContent.RemoveRange(data);
         }
         #endregion
 

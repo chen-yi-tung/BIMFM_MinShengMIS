@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
-    public class EquipRFIDDetail : EquipRFID, IRFIDInfoDetail
+    public class EquipRFIDDetail : CreateEquipRFID, IRFIDInfoDetail
     {
         public string ASN { get; set; } // 棟別編號
         public string AreaName { get; set; } // 棟別名稱
@@ -38,8 +38,11 @@ namespace MinSheng_MIS.Models.ViewModels
         string RFIDViewName { get; set; } // RFID樓層模型名稱(定位用)
     }
 
-    public class EquipRFID : IRFIDInfo
+    public class CreateEquipRFID : IRFIDInfo
     {
+        string IRFIDInfo.SARSN { get; set; }
+        string IRFIDInfo.ESN { get; set; }
+
         [Required]
         [StringLength(150, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         [Display(Name = "RFID內碼")]
@@ -60,9 +63,16 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Memo { get; set; } // 備註
     }
 
+    public class EditEquipRFID : CreateEquipRFID, IRFIDInfo
+    {
+        public string ESN { get; set; } // 設備資料(EquipmentInfo)編號
+    }
+
     public interface IRFIDInfo
     {
         string InternalCode { get; set; } // RFID內碼
+        string SARSN { get; set; } // 庫存異動紀錄編號
+        string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         string ExternalCode { get; set; } // RFID外碼
         string FSN { get; set; } // 樓層編號
         string Name { get; set; } // 名稱

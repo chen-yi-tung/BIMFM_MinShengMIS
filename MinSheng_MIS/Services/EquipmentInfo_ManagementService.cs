@@ -1,4 +1,5 @@
-﻿using MinSheng_MIS.Attributes;
+﻿using MathNet.Numerics;
+using MinSheng_MIS.Attributes;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Surfaces;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web;
+
 using static MinSheng_MIS.Services.UniParams;
 
 
@@ -18,16 +20,25 @@ namespace MinSheng_MIS.Services
 {
     public class EquipmentInfo_ManagementService
     {
-        private readonly string _photoPath = "Files/EquipmentInfo";
-        private readonly Bimfm_MinSheng_MISEntities _db;
-        private readonly HttpServerUtilityBase _ser;
-        private readonly RFIDService _rfidService;
+        private HttpServerUtilityBase _ser;
 
-        public EquipmentInfo_ManagementService(Bimfm_MinSheng_MISEntities db, HttpServerUtilityBase ser)
+        private readonly string _photoPath = "Files/EquipmentInfo";
+        private readonly Bimfm_MinSheng_MISEntities _db;  
+        private readonly RFIDService _rfidService;
+        private readonly Maintain_ManagementService _maintainService;
+        private readonly SamplePath_ManagementService _samplePathService;
+
+        public EquipmentInfo_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
-            _ser = ser;
             _rfidService = new RFIDService(_db);
+            _maintainService = new Maintain_ManagementService(_db);
+            _samplePathService = new SamplePath_ManagementService(_db);
+        }
+
+        public void SetServer(HttpServerUtilityBase server)
+        {
+            _ser = server;  // 在這裡賦值
         }
 
         #region 上傳照片
@@ -35,6 +46,13 @@ namespace MinSheng_MIS.Services
         {
             if (!ComFunc.UploadFile(file, _ser.MapPath($"~/{_photoPath}/"), esn))
                 throw new MyCusResException("檔案上傳過程出錯！");
+        }
+        #endregion
+
+        #region 刪除照片
+        public void DeletePhoto(string esn)
+        {
+            ComFunc.DeleteFile(_ser.MapPath($"~/{_photoPath}/"), esn, "*");
         }
         #endregion
 
@@ -50,9 +68,30 @@ namespace MinSheng_MIS.Services
                 query = query.Where(filter);
 
             // 映射到目標類型
-            return query.Select(Helper.MapDatabaseToQuery<EquipmentInfo, T>());
+            if (typeof(T) == typeof(EquipmentInfo))
+                return (IQueryable<T>)query;
+            else
+                return query.Select(Helper.MapDatabaseToQuery<EquipmentInfo, T>());
         }
+        #endregion
 
+        #region 查詢符合Dto的Equipment_MaintainItemValue資訊
+        public IQueryable<T> GetMaintainItemValueQueryByDto<T>(Expression<Func<Equipment_MaintainItemValue, bool>> filter = null)
+            where T : new()
+        {
+            // 初始查詢
+            var query = _db.Equipment_MaintainItemValue.AsQueryable();
+
+            // 如果提供了過濾條件，應用過濾
+            if (filter != null)
+                query = query.Where(filter);
+
+            // 映射到目標類型
+            if (typeof(T) == typeof(Equipment_MaintainItemValue))
+                return (IQueryable<T>)query;
+            else
+                return query.Select(Helper.MapDatabaseToQuery<Equipment_MaintainItemValue, T>());
+        }
         #endregion
 
         #region 新增設備資訊
@@ -93,7 +132,22 @@ namespace MinSheng_MIS.Services
             await MaintainItemValueDataAnnotationAsync(data, templateChange);
 
             // 批次建立 Equipment_MaintainItemValue
-            AddRangeMaintainItemValue(data);
+            AddRangeMaintainItemValue(data, out var newItems);
+
+            // 建立保養單
+            newItems.ForEach(item =>
+            {
+                if (_maintainService.CheckIfCreateMaintainForm(item))
+                    _maintainService.CreateMaintainForm(item);
+            });
+        }
+        #endregion
+
+        #region 建立設備RFID
+        public async Task CreateRFIDAsync(IUpdateRFID data)
+        {
+            foreach (var item in data.RFIDList)
+                await _rfidService.CreateEquipRFIDAsync(item, data.ESN); // 新增單個RFID
         }
         #endregion
 
@@ -101,7 +155,7 @@ namespace MinSheng_MIS.Services
         public async Task UpdateEquipmentInfoAsync(IUpdateEquipmentInfo data)
         {
             // 資料驗證
-            await EquipmentInfoDataAnnotationAsync(data);
+            await EquipmentInfoDataAnnotationAsync(data, false);
 
             // Origin data
             var origin = await _db.EquipmentInfo.FindAsync(data.ESN);
@@ -143,7 +197,80 @@ namespace MinSheng_MIS.Services
             await MaintainItemValueDataAnnotationAsync(data, false);
 
             // 批次建立 Equipment_MaintainItemValue
-            UpdateRangeMaintainItemValue(data);
+            UpdateRangeMaintainItemValue(data, out var updateItems);
+
+            await _db.SaveChangesAsync();
+
+            // 更新相關保養單
+            foreach (var item in updateItems)
+            {
+                if (item.IsCreateForm)
+                {
+                    // 嘗試取得已存在的保養單
+                    var form = await _maintainService
+                        .GetMaintenanceFormQueryByDto<Equipment_MaintenanceForm>(x => x.ESN == item.ESN && x.MISSN == item.MISSN)
+                        .SingleOrDefaultAsync()
+                        ?? throw new InvalidOperationException($"無法找到對應的保養單，ESN: {item.ESN}, MISSN: {item.MISSN}。");
+
+                    if (IsEnumEqualToStr(form.Status, MaintenanceFormStatus.ToAssign))
+                    {
+                        // 刪除保養單
+                        _maintainService.DeleteMaintainForm(form);
+                        item.IsCreateForm = false;
+                        _db.Equipment_MaintainItemValue.AddOrUpdate(item);
+                    }
+                    else
+                    {
+                        // 更新週期和下次保養日期
+                        form.Period = item.Period;
+                        form.NextMaintainDate = item.NextMaintainDate.Value;
+                        _maintainService.UpdateMaintainForm(form);
+                        continue;
+                    }
+                }
+
+                // 檢查是否產單
+                if (!item.IsCreateForm && _maintainService.CheckIfCreateMaintainForm(item, true))
+                {
+                    var maintainItem = await GetMaintainItemValueQueryByDto<Equipment_MaintainItemValue>(x => x.EMIVSN == item.EMIVSN)
+                        .SingleOrDefaultAsync();
+                    _maintainService.CreateMaintainForm(maintainItem);
+                }
+            }
+        }
+        #endregion
+
+        #region 更新設備RFID
+        public async Task UpdateRFIDAsync(IUpdateRFID data)
+        {
+            if (data.RFIDList == null) 
+                data.RFIDList = new List<EditEquipRFID>();
+
+            // 新增/編輯 RFID
+            foreach (var item in data.RFIDList)
+                await _rfidService.UpdateEquipRFIDAsync(item);
+
+            #region 刪除RFID及相關表格
+            // 應刪除的RFID
+            var delRFID = _rfidService.GetRFIDQueryByDto<RFID>(x => x.ESN == data.ESN)
+                .AsEnumerable()
+                .Where(x => !data.RFIDList.Any(d => d.InternalCode == x.RFIDInternalCode))
+                .ToList();
+            // 應刪除的巡檢路線模板(InspectionDefaultOrder) : 刪除RFID後無其他
+            var delPath = delRFID
+                .Where(x => x.InspectionDefaultOrder != null && !x.InspectionDefaultOrder.Any(i => !delRFID.Select(r => r.RFIDInternalCode).Contains(i.RFIDInternalCode)))
+                .SelectMany(x => x.InspectionDefaultOrder)
+                .Select(x => x.InspectionPathSample)
+                .Distinct()
+                .ToList();
+
+            // 刪除巡檢預設順序 : 使用應刪除的RFID
+            _samplePathService.DeleteInspectionDefaultOrder(delRFID.SelectMany(x => x.InspectionDefaultOrder));
+            // 刪除巡檢路線模板
+            delPath.ForEach(async x => await _samplePathService.DeleteInspectionPathSampleAsync(x));
+            // 刪除RFID
+            delRFID.ForEach(x => _rfidService.DeleteRFID(x));
+            #endregion
         }
         #endregion
 
@@ -156,6 +283,7 @@ namespace MinSheng_MIS.Services
             T dest = equipment.ToDto<EquipmentInfo, T>();
             if (dest is IEquipmentInfoDetail info)
             {
+                info.InstallDate = equipment.InstallDate?.ToString("yyyy-MM-dd");
                 info.EState = ConvertStringToEnum<EState>(equipment.EState).GetLabel();
                 info.ASN = equipment.Floor_Info.ASN.ToString();
                 info.AreaName = equipment.Floor_Info.AreaInfo.Area;
@@ -282,12 +410,12 @@ namespace MinSheng_MIS.Services
 
         //-----資料驗證
         #region EquipmentInfo資料驗證
-        private async Task EquipmentInfoDataAnnotationAsync(ICreateEquipmentInfo data)
+        private async Task EquipmentInfoDataAnnotationAsync(ICreateEquipmentInfo data, bool isCreate = true)
         {
             var floorSNList = await _db.Floor_Info.Select(x => x.FSN).ToListAsync(); // 取得所有樓層SN列表
 
             // 不可重複: 設備編號
-            if (await _db.EquipmentInfo.Where(x => x.NO == data.NO).AnyAsync())
+            if (isCreate && await _db.EquipmentInfo.Where(x => x.NO == data.NO).AnyAsync())
                 throw new MyCusResException("設備編號已被使用！");
             // 關聯性PK是否存在: 樓層
             if (!floorSNList.Contains(data.FSN))
@@ -379,9 +507,9 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡保養項目填值資料列表(MaintainItemList)及設備資料編碼(ESN)</param>
         /// <returns>無回傳</returns>
-        private void AddRangeMaintainItemValue(IUpdateMaintainItemValue data)
+        private void AddRangeMaintainItemValue(IUpdateMaintainItemValue data, out List<Equipment_MaintainItemValue> newItems)
         {
-            _db.Equipment_MaintainItemValue.AddRange(Helper.AddOrUpdateList(data.MaintainItemList, data.ESN, (x, e) => new Equipment_MaintainItemValue
+            newItems = Helper.AddOrUpdateList(data.MaintainItemList, data.ESN, (x, e) => new Equipment_MaintainItemValue
             {
                 EMIVSN = $"{e}{x.MISSN}",
                 ESN = e,
@@ -390,7 +518,9 @@ namespace MinSheng_MIS.Services
                 lastMaintainDate = null,
                 NextMaintainDate = x.NextMaintainDate,
                 IsCreateForm = false
-            }));
+            }).ToList();
+
+            _db.Equipment_MaintainItemValue.AddRange(newItems);
         }
         #endregion
 
@@ -423,8 +553,10 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡保養項目填值資料列表(MaintainItemList)及設備資料編碼(ESN)</param>
         /// <returns>無回傳</returns>
-        private void UpdateRangeMaintainItemValue(IUpdateMaintainItemValue data)
+        private void UpdateRangeMaintainItemValue(IUpdateMaintainItemValue data, out List<Equipment_MaintainItemValue> updateItems)
         {
+            updateItems = new List<Equipment_MaintainItemValue>();
+
             var targetList = data.MaintainItemList?.Any() == true ?
                 Helper.AddOrUpdateList(data.MaintainItemList, data.ESN, (x, e) => new Equipment_MaintainItemValue
                 {
@@ -442,6 +574,12 @@ namespace MinSheng_MIS.Services
             {
                 var field = _db.Equipment_MaintainItemValue.Find(item.EMIVSN) 
                     ?? throw new MyCusResException("MISSN不存在！");
+
+                // 將有變更的保養項目儲存
+                if (!item.Period.Equals(field.Period) || !item.NextMaintainDate.Equals(field.NextMaintainDate))
+                    updateItems.Add(item);
+
+                // 保留上次保養日期及是否產單
                 item.lastMaintainDate = field.lastMaintainDate;
                 item.IsCreateForm = field.IsCreateForm;
                 _db.Equipment_MaintainItemValue.AddOrUpdate(item);

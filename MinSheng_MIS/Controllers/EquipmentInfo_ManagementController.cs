@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
@@ -15,14 +16,19 @@ namespace MinSheng_MIS.Controllers
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly EquipmentInfo_ManagementService _eMgmtService;
         private readonly OneDeviceOneCard_ManagementService _dCardService;
-        private readonly RFIDService _rfidService;
 
         public EquipmentInfo_ManagementController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
-            _eMgmtService = new EquipmentInfo_ManagementService(_db, Server);
-            _dCardService = new OneDeviceOneCard_ManagementService(_db, Server);
-            _rfidService = new RFIDService(_db);
+            _eMgmtService = new EquipmentInfo_ManagementService(_db);
+            _dCardService = new OneDeviceOneCard_ManagementService(_db);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            base.OnActionExecuting(filterContext);
+            _eMgmtService.SetServer(Server);  // 將 Server 傳遞給服務層
+            _dCardService.SetServer(Server);  // 將 Server 傳遞給服務層
         }
 
         #region 資產管理
@@ -56,10 +62,7 @@ namespace MinSheng_MIS.Controllers
 
                 // 建立 RFID
                 if (data.RFIDList != null && data.RFIDList.Any())
-                {
-                    foreach (var item in data.RFIDList)
-                        await _rfidService.AddEquipRFIDAsync(item, esn); // 新增單個RFID
-                }
+                    await _eMgmtService.CreateRFIDAsync(data.ConvertToUpdateRFID(esn));
 
                 // 建立一機一卡模板資料 (非必填)
                 if (data.TSN != null)
@@ -73,8 +76,9 @@ namespace MinSheng_MIS.Controllers
                         await _eMgmtService.CreateEquipmentMaintainItemsValue(data.ConvertToUpdateMaintainItemValue(esn));
                 }
 
-                // 檔案上傳
-                _eMgmtService.UploadPhoto(data.EPhoto, esn);
+                // 照片上傳
+                if (data.EPhoto?.ContentLength > 0)
+                    _eMgmtService.UploadPhoto(data.EPhoto, esn);
 
                 await _db.SaveChangesAsync();
 
@@ -110,23 +114,39 @@ namespace MinSheng_MIS.Controllers
             {
                 // Data Annotation
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
-
-                // 更新設備資訊
-                await _eMgmtService.UpdateEquipmentInfoAsync(data);
-
-                // 更新一機一卡模板資料
-                if (data.TSN != null)
+                
+                using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    // 更新 Equipment_AddFieldValue (非必填)
-                    if (data.AddFieldList != null && data.AddFieldList.Any())
-                        await _eMgmtService.UpdateEquipmentAdditionalFieldsValueAsync(data);
+                    // 更新設備資訊
+                    await _eMgmtService.UpdateEquipmentInfoAsync(data);
 
-                    // 更新 Equipment_MaintainItemValue (非必填)
-                    if (data.MaintainItemList != null && data.MaintainItemList.Any())
-                        await _eMgmtService.UpdateEquipmentMaintainItemsValue(data);
+                    // 更新RFID
+                    await _eMgmtService.UpdateRFIDAsync(data.ConvertToUpdateRFID(data.ESN));
+
+                    // 更新一機一卡模板資料
+                    if (data.TSN != null)
+                    {
+                        // 更新 Equipment_AddFieldValue (非必填)
+                        if (data.AddFieldList != null && data.AddFieldList.Any())
+                            await _eMgmtService.UpdateEquipmentAdditionalFieldsValueAsync(data);
+
+                        // 更新 Equipment_MaintainItemValue (非必填)
+                        if (data.MaintainItemList != null && data.MaintainItemList.Any())
+                            await _eMgmtService.UpdateEquipmentMaintainItemsValue(data);
+                    }
+
+                    // 照片刪除
+                    if (string.IsNullOrEmpty(data.FileName))
+                        _eMgmtService.DeletePhoto(data.ESN);
+
+                    // 照片上傳
+                    if (data.EPhoto?.ContentLength > 0)
+                        _eMgmtService.UploadPhoto(data.EPhoto, data.ESN);
+
+                    await _db.SaveChangesAsync();
+
+                    trans.Complete();
                 }
-
-                await _db.SaveChangesAsync();
 
                 return Content(JsonConvert.SerializeObject(new JsonResService<string>
                 {

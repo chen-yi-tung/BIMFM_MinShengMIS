@@ -4,6 +4,7 @@ using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
+using System.Data.Entity;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -96,20 +97,17 @@ namespace MinSheng_MIS.Controllers
                 // Data Annotation
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
 
-                // 建立 InspectionPlan
-                string ipsn = data.IPSN;
                 using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    // 編輯 InspectionPlan
-                    await _inspectionPlanService.EditInspectionPlanAsync(ipsn, data);
-                    // 刪除&建立 InspectionPlanContent
-                    await _inspectionPlanService.EditInspectionPlanContentAsync(new InspectionPlanTimeModifiableListInstance(ipsn, data));
+                    // 更新 InspectionPlan
+                    await _inspectionPlanService.EditInspectionPlanAsync(data);
+                    // 更新 InspectionPlanContent
+                    await _inspectionPlanService.EditInspectionPlanContentAsync(new InspectionPlanTimeModifiableListInstance(data.IPSN, data));
 
                     await _db.SaveChangesAsync();
 
                     trans.Complete();
                 }
-                
 
                 return Content(JsonConvert.SerializeObject(new JsonResService<string>
                 {
@@ -194,6 +192,7 @@ namespace MinSheng_MIS.Controllers
             ViewBag.id = id;
             return View();
         }
+
         /// <summary>
         /// 刪除工單
         /// </summary>
@@ -202,24 +201,29 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> DeleteInspectionPlan(string IPSN)
         {
-            JsonResService<string> result = new JsonResService<string>();
             try
             {
-                // 刪除工單
-                result = await _inspectionPlanService.DeleteInspectionPlanAsync(IPSN);
-                return Content(JsonConvert.SerializeObject(result), "application/json");
+                var plan = await _db.InspectionPlan.SingleOrDefaultAsync(x => x.IPSN == IPSN)
+                    ?? throw new MyCusResException("工單不存在！");
+
+                _inspectionPlanService.DeleteInspectionPlan(plan);
+
+                await _db.SaveChangesAsync();
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
             }
             catch (MyCusResException ex)
             {
-                result.AccessState = ResState.Failed;
-                result.ErrorMessage = $"</br>{ex.Message}";
-                return Content(JsonConvert.SerializeObject(result), "application/json");
+                return Helper.HandleMyCusResException(this, ex);
             }
             catch (Exception)
             {
-                result.AccessState = ResState.Failed;
-                result.ErrorMessage = "</br>系統異常！";
-                return Content(JsonConvert.SerializeObject(result), "application/json");
+                return Helper.HandleException(this);
             }
         }
         #endregion

@@ -364,7 +364,7 @@
                 formDropdown.setValue("SampleName", data.TSN)
 
                 //如果GUID不為空，不可編輯 棟別、樓層
-                if (data.GUID !== "") {
+                if (data.GUID !== "" && data.GUID !== null) {
                     document.querySelectorAll('#ASN, #FSN').forEach(el => {
                         el.setAttribute('disabled', true);
                         el.removeAttribute('requierd');
@@ -510,11 +510,12 @@
                 }
             })
 
+            fd.append(`ESN`, ESN)
 
             console.log("最後傳出的資料為", fd);
 
             $.ajax({
-                url: "/EquipmentInfo_Management/Index",
+                url: "/EquipmentInfo_Management/EditEquipment",
                 data: fd,
                 type: "POST",
                 contentType: false,

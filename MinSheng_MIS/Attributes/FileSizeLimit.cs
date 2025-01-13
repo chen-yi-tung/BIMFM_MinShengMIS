@@ -17,7 +17,7 @@ namespace MinSheng_MIS.Attributes
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if (value is HttpPostedFileBase file && file.ContentLength > _maxSize)
+            if (value is HttpPostedFileBase file && file?.ContentLength > _maxSize)
             {
                 // 使用 Display Name（若未設定，則使用屬性名稱）
                 var displayName = validationContext.DisplayName ?? validationContext.MemberName;

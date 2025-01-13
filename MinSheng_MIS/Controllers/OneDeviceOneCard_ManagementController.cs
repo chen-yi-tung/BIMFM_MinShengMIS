@@ -3,6 +3,7 @@ using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -19,8 +20,15 @@ namespace MinSheng_MIS.Controllers
         public OneDeviceOneCard_ManagementController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
-            _dCardService = new OneDeviceOneCard_ManagementService(_db, Server);
-            _eMgmtService = new EquipmentInfo_ManagementService(_db, Server);
+            _dCardService = new OneDeviceOneCard_ManagementService(_db);
+            _eMgmtService = new EquipmentInfo_ManagementService(_db);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            base.OnActionExecuting(filterContext);
+            _eMgmtService.SetServer(Server);  // 將 Server 傳遞給服務層
+            _dCardService.SetServer(Server);  // 將 Server 傳遞給服務層
         }
 
         #region 一機一卡模板 管理
@@ -220,7 +228,8 @@ namespace MinSheng_MIS.Controllers
         {
             try
             {
-                var template = await _db.Template_OneDeviceOneCard.FindAsync(id);
+                var template = await _db.Template_OneDeviceOneCard.SingleOrDefaultAsync(x => x.TSN == id)
+                    ?? throw new MyCusResException("模板不存在！");
 
                 // 刪除增設基本資料欄位 : Equipment_AddField
                 // 刪除關聯的 Equipment_AddFieldValue

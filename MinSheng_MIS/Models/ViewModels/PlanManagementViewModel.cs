@@ -20,7 +20,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public IEnumerable<InspectionPlanContent> Inspections { get; set; } // 工單巡檢內容
     }
 
-    public interface ICreateInspectionPlan : IInspectionPlanModifiable
+    public interface ICreateInspectionPlan : IInspectionPlanCreate
     {
         IEnumerable<InspectionPlanContent> Inspections { get; set; } // 工單巡檢內容
     }
@@ -150,16 +150,22 @@ namespace MinSheng_MIS.Models.ViewModels
     #endregion
 
     #region 工單-編輯
-    public class InspectionPlanEditViewModel : InspectionPlanCreateViewModel
+    public class InspectionPlanEditViewModel : InspectionPlanCreateViewModel, IInspectionPlanEdit
     {
         [Required]
         public string IPSN { get; set; }
     }
     #endregion
-    public interface IInspectionPlanModifiable
+
+    public interface IInspectionPlanCreate
     {
         string IPName { get; set; } // 工單名稱
         DateTime PlanDate { get; set; } // 工單日期
+    }
+
+    public interface IInspectionPlanEdit : IInspectionPlanCreate
+    {
+        string IPSN { get; set; } // 工單單號
     }
 
     public interface IInspectionPlanTime : ISamplePathInfo, IInspectionSampleContent { }

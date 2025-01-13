@@ -1,4 +1,5 @@
-﻿using MinSheng_MIS.Models;
+﻿using MathNet.Numerics;
+using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -16,11 +17,16 @@ namespace MinSheng_MIS.Services
         private readonly EquipmentInfo_ManagementService _eMgmtService;
         //private readonly SamplePath_ManagementService _pSamplePathService;
 
-        public OneDeviceOneCard_ManagementService(Bimfm_MinSheng_MISEntities db, HttpServerUtilityBase ser)
+        public OneDeviceOneCard_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
-            _eMgmtService = new EquipmentInfo_ManagementService(_db, ser);
+            _eMgmtService = new EquipmentInfo_ManagementService(_db);
             //_pSamplePathService = new SamplePath_ManagementService(_db);
+        }
+
+        public void SetServer(HttpServerUtilityBase server)
+        {
+            _eMgmtService.SetServer(server);  // 將 Server 傳遞給服務層
         }
 
         #region 新增一機一卡模板
@@ -86,6 +92,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        // TODO
         #region 更新一機一卡模板
         public async Task UpdateOneDeviceOneCardAsync(IUpdateDeviceCard data)
         {
@@ -99,6 +106,8 @@ namespace MinSheng_MIS.Services
             // 更新 Template_OneDeviceOneCard
             Template_OneDeviceOneCard update = (data as DeviceCardEditViewModel)
                 .ToDto<DeviceCardEditViewModel, Template_OneDeviceOneCard>();
+
+            // TODO : 若巡檢頻率變更，需刪除使用該設備RFID的InspectionPathSample及InspectionPlan_Time
 
             _db.Template_OneDeviceOneCard.AddOrUpdate(update);
         }
@@ -131,6 +140,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        // TODO
         #region 更新保養項目設定
         /// <summary>
         /// 更新保養項目設定及相關資料表
@@ -192,6 +202,8 @@ namespace MinSheng_MIS.Services
                     ?? Enumerable.Empty<UpdateMaintainItemValueInstance>();
                     foreach (var value in valueTargetList)
                         await _eMgmtService.CreateEquipmentMaintainItemsValue(value, true);
+
+                    // TODO : 建立30天內的保養單
                 }
             }
             #endregion
@@ -320,21 +332,21 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        // TODO
         #region 刪除一機一卡模板 Not Done
-        public async Task DeleteOneDeviceOneCardAsync(Template_OneDeviceOneCard card)
+        public async Task DeleteOneDeviceOneCardAsync(Template_OneDeviceOneCard data)
         {
-            var equipments = card.EquipmentInfo;
+            var equipments = data.EquipmentInfo;
             // 刪除模板與設備的關聯
             foreach (var e in equipments)
                 await _eMgmtService.UpdateEquipmentInfoAsync(e.ToDto<EquipmentInfo, UpdateEquipmentInfoInstance>());
-            // 刪除使用該模板之設備待執行工單 TODO
-            // (使用ESN關聯)
-
             // 刪除使用該模板之巡檢預設順序 TODO
             // (使用ESN->RFID進行關聯)
 
+            // 刪除使用該模板之設備待執行工單 TODO
+
             // 刪除模板
-            _db.Template_OneDeviceOneCard.Remove(card);
+            _db.Template_OneDeviceOneCard.Remove(data);
         }
         #endregion
 

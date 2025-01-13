@@ -20,6 +20,8 @@ using OfficeOpenXml;
 using System.Web.Mvc;
 using MiniExcelLibs;
 using System.Windows;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace MinSheng_MIS.Services
 {
@@ -332,16 +334,6 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region function GetMyNameByUserNameOrEmpty
-        private string GetMyNameByUserNameOrEmpty (string userName)
-        {
-            if (string.IsNullOrEmpty (userName))
-                return "-";
-            else 
-                return _db.AspNetUsers.Where(x => x.UserName == userName).First().MyName;
-        }
-        #endregion
-
         // 排程
         #region 定期保養單 新增排程
         public JsonResService<string> MaintainForm_CreatingSchedule()
@@ -378,19 +370,30 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region function 是否產生保養單
-        private bool CheckIfCreateMaintainForm(Equipment_MaintainItemValue data)
+        // Functions
+        #region GetMyNameByUserNameOrEmpty
+        private string GetMyNameByUserNameOrEmpty(string userName)
+        {
+            if (string.IsNullOrEmpty(userName))
+                return "-";
+            else
+                return _db.AspNetUsers.Where(x => x.UserName == userName).First().MyName;
+        }
+        #endregion
+
+        #region 是否產生保養單
+        public bool CheckIfCreateMaintainForm(Equipment_MaintainItemValue data, bool isNew = false)
         {
             if (!data.IsCreateForm) // 未產單
                 if (data.NextMaintainDate <= DateTime.Today.AddMonths(1)) // 下次保養日在一個月內
-                    if (data.EquipmentInfo.EState == "1") // 狀態為正常(非"報修中"或"停用")
+                    if (isNew || data.EquipmentInfo.EState == "1") // 狀態為正常(非"報修中"或"停用")
                             return true;
             return false;
         }
         #endregion
 
-        #region function 新增單一保養單
-        private void CreateMaintainForm(Equipment_MaintainItemValue data)
+        #region 新增單一保養單
+        public void CreateMaintainForm(Equipment_MaintainItemValue data)
         {
             string nextMaintainDate = data.NextMaintainDate?.ToString("yyMMdd");
             var lastsn = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).Select(x => x.EMFSN)
@@ -414,6 +417,52 @@ namespace MinSheng_MIS.Services
             _db.Equipment_MaintainItemValue.AddOrUpdate(data);
 
             _db.SaveChanges();
+        }
+        #endregion
+
+        #region 更新設備保養單資訊
+        public void UpdateMaintainForm(Equipment_MaintenanceForm data)
+        {
+            if (_db.Equipment_MaintenanceForm?.Any(x => x.EMFSN == data.EMFSN) != true)
+                throw new MyCusResException("查無資料！");
+
+            _db.Equipment_MaintenanceForm.AddOrUpdate(data);
+        }
+        #endregion
+
+        #region 刪除設備保養單資訊
+        public void DeleteMaintainForm(Equipment_MaintenanceForm data)
+        {
+            if (_db.Equipment_MaintenanceForm?.Any(x => x.EMFSN == data.EMFSN) != true)
+                throw new MyCusResException("查無資料！");
+
+            _db.Equipment_MaintenanceForm.Remove(data);
+        }
+        #endregion
+
+        #region 查詢符合Dto的設備保養單資訊
+        /// <summary>
+        /// 依據條件查詢Equipment_MaintenanceForm後，以指定資料型別回傳
+        /// </summary>
+        /// <typeparam name="T">回傳之資料型別</typeparam>
+        /// <param name="filter">查詢條件</param>
+        /// <returns>The IQueryable of <see cref="T"/></returns>
+        public IQueryable<T> GetMaintenanceFormQueryByDto<T>(Expression<Func<Equipment_MaintenanceForm, bool>> filter = null)
+            where T : new()
+        {
+            // 基本查詢
+            var query = _db.Equipment_MaintenanceForm.AsQueryable();
+
+            // 如果有過濾條件，應用過濾
+            if (filter != null)
+                query = query.Where(filter);
+
+
+            // 映射到目標類型
+            if (typeof(T) == typeof(Equipment_MaintenanceForm))
+                return (IQueryable<T>)query;
+            else
+                return query.Select(Helper.MapDatabaseToQuery<Equipment_MaintenanceForm, T>());
         }
         #endregion
 

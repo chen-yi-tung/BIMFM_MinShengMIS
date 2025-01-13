@@ -5,6 +5,7 @@ using System.Linq;
 using MinSheng_MIS.Models.ViewModels;
 using System.Threading.Tasks;
 using System.Data.Entity;
+using Microsoft.Ajax.Utilities;
 
 namespace MinSheng_MIS.Services
 {
@@ -12,12 +13,33 @@ namespace MinSheng_MIS.Services
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly RFIDService _rfidService;
+        private readonly SampleSchedule_ManagementService _sampleScheduleService;
+        private readonly PlanManagementService _planService;
 
         public SamplePath_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
             _rfidService = new RFIDService(_db);
+            _sampleScheduleService = new SampleSchedule_ManagementService(_db);
+            _planService = new PlanManagementService(_db);
         }
+
+        #region 獲取巡檢路線模板
+        public static T GetSamplePath<T>(Bimfm_MinSheng_MISEntities db, string planPathSN) 
+            where T : class, new()
+        {
+            var sample = db.InspectionPathSample.Find(planPathSN)
+                ?? throw new MyCusResException("查無資料！");
+
+            return sample.ToDto<InspectionPathSample, T>();
+        }
+
+        public T GetSamplePath<T>(string planPathSN)
+            where T : class, new()
+        {
+            return GetSamplePath<T>(_db, planPathSN);
+        }
+        #endregion
 
         #region 可新增之巡檢設備RFID
         public GridResult<InspectionRFIDsViewModel> GetJsonForGrid_EquipmentRFIDs(EquipmentRFIDSearchParamViewModel data)
@@ -139,16 +161,6 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 獲取巡檢路線模板
-        public T GetSamplePath<T>(string planPathSN) where T : class, new()
-        {
-            var sample = _db.InspectionPathSample.Find(planPathSN)
-                ?? throw new MyCusResException("查無資料！");
-
-            return sample.ToDto<InspectionPathSample, T>();
-        }
-        #endregion
-
         #region 獲取巡檢設備順序
         public List<IInspectionRFIDs> GetDefaultOrderRFIDInfoList(string planPathSN)
         {
@@ -180,19 +192,62 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 批次刪除巡檢預設順序 InspectionDefaultOrder
-        /// <summary>
-        /// 批次刪除巡檢預設順序內的特定設備
-        /// </summary>
-        /// <param name="esn">特定設備列表</param>
-        public void DeleteEquipmentInInspectionPathSample(IEnumerable<string> esnList)
+        #region 刪除巡檢路線模板
+        public async Task DeleteInspectionPathSampleAsync(InspectionPathSample data)
         {
-            var inspectItems = esnList
-                .SelectMany(e => _rfidService.GetRFIDsByEsn(e))
-                .SelectMany(x => x.InspectionDefaultOrder)
-                .Distinct();
+            if (data != null)
+                return;
 
-            _db.InspectionDefaultOrder.RemoveRange(inspectItems);
+            // 刪除巡檢預設順序
+            _db.InspectionDefaultOrder.RemoveRange(data.InspectionDefaultOrder);
+
+            var DailyInspection = data.DailyInspectionSampleContent
+                ?.Select(x => x.DailyInspectionSample)
+                ?.Distinct();
+            if (DailyInspection != null)
+            {
+                // 刪除使用路線的巡檢時程安排模板內容
+                _sampleScheduleService.DeleteSampleScheduleContents
+                    (data.DailyInspectionSampleContent);
+                await _db.SaveChangesAsync();
+                // 刪除巡檢時程安排模板
+                DailyInspection.Where(x => x.DailyInspectionSampleContent?.Any() != true)
+                    .ForEach(x => _sampleScheduleService.DeleteInspectionSample(x));
+            }
+
+            var plan = data.InspectionPlan_Time
+                ?.Select(x => x.InspectionPlan)
+                ?.Distinct();
+            if (plan != null)
+            {
+                // 刪除使用路線的工單巡檢時段及執行人員
+                _planService.DeleteInspectionPlanContent(plan.SelectMany(x => x.InspectionPlan_Time));
+                await _db.SaveChangesAsync();
+                // 刪除工單
+                plan.Where(x => x.InspectionPlan_Time?.Any() != true)
+                    .ForEach(x =>
+                    {
+                        try { _planService.DeleteInspectionPlan(x);}
+                        catch { }
+                    });
+            }
+
+            // 刪除模板
+            _db.InspectionPathSample.Remove(data);
+        }
+        #endregion
+
+        #region 刪除巡檢預設順序 InspectionDefaultOrder
+        /// <summary>
+        /// 刪除巡檢預設順序
+        /// </summary>
+        /// <param name="data">IEnumerable of <see cref="InspectionDefaultOrder"/></param>
+        public void DeleteInspectionDefaultOrder(IEnumerable<InspectionDefaultOrder> data)
+        {
+            if (data?.Any() != true)
+                return;
+
+            _db.InspectionDefaultOrder.RemoveRange(data);
         }
         #endregion
 
