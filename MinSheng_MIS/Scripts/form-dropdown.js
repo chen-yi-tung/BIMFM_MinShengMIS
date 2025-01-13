@@ -128,7 +128,7 @@
         formDropdown.setValue(asn, value);
         if (fsn) {
             await formDropdown.FSN({ id: fsn, data: value, value: fsnValue });
-            if (!initialized) {
+            if (initialized) {
                 return asn;
             }
             asn.dataset.fdInitialized = true;

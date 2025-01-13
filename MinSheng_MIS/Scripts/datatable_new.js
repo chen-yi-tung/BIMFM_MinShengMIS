@@ -374,17 +374,20 @@
                 const style = self.toValue(e.style, value, data, index) ?? "";
                 const className = self.toValue(e.className, value, data, index) ?? "";
                 const colspan = maxColspan > items.length + 1 ? getColspan(e.colspan, maxColspan - items.length) : null;
-
+                const width = e.width ? self.toPx(e.width, value) : null;
                 const td = document.createElement("td");
                 td.classList.add("datatable-table-td");
+                td.style.cssText = style;
                 if (className) {
                     td.classList.add(...className.split(" "));
                 }
                 if (colspan) {
                     td.colSpan = colspan;
                 }
-                td.id = `d-${e.value}`;
-                td.style.cssText = style;
+                if (width) {
+                    td.style.width = width;
+                }
+                td.id = `d-${e.id}`;
                 self.setCellContent(td, data, e, index);
                 return td;
             });
@@ -601,16 +604,22 @@
             case "btn": {
                 const bos = Array.isArray(options.button) ? options.button : [options.button];
                 const nullable = this.toValue(options.nullable, value, data, index);
+
                 if (nullable) {
                     if (value === DataTable.nullString) {
                         cell.textContent = DataTable.nullString;
                         return;
                     }
                 }
+                const btnClassName = this.toValue(options.btnClassName);
+                const btnStyle = this.toValue(options.btnStyle);
+                const container = document.createElement('div');
+                container.className = btnClassName;
+                container.style.cssText = btnStyle;
 
                 bos.forEach((bo) => {
                     const btnText = this.toValue(bo.text, value, data) ?? null;
-                    const btnClassName = this.toValue(bo.className, value, data) ?? "btn btn-search";
+                    const className = this.toValue(bo.className, value, data) ?? "btn btn-search";
                     const btnIcon = this.toValue(bo.icon, value, data, index) ?? null;
                     const disabled = this.toValue(bo.disabled, value, data, index);
                     const btn = document.createElement("button");
@@ -621,13 +630,15 @@
                     if (btnText) {
                         btn.textContent = btnText;
                     }
-                    btn.className = btnClassName;
+                    btn.className = className;
                     btn.onclick = (event) => {
                         bo.onClick(event, value, data);
                     };
                     btn.disabled = disabled;
-                    cell.appendChild(btn);
+                    container.appendChild(btn);
                 });
+
+                cell.appendChild(container);
                 break;
             }
             case "pre": {

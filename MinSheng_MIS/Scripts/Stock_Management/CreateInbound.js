@@ -1,126 +1,89 @@
-﻿async function init_CreateInbound() {
-    const MAX_ROW_SIZE = 1; //只能有一筆RFID資料
-    const DEBUG_TEST = false;
+﻿const DEBUG_TEST = false;
+async function init_CreateInbound() {
     document.getElementById("back").onclick = () => history.back();
     document.getElementById("submit").onclick = () => checkSave();
 
-    const RFIDScanBtn = await init_RFIDScanBtn();
-    const RFIDModal = await init_RFIDModal();
-    const RFIDGrid = await init_RFIDGrid();
-
-    const formTab = DT.setupFormTab();
-    const fileUploader = new FileUploader({
-        container: "#FileUploader",
-        className: "form-group col-3fr",
-        required: false,
-        accept: [".jpg", ".jpeg", ".png", ".pdf"],
-        label: "採購單據",
-        id: "PurchaseOrder",
-    });
-
-    await formDropdown.StockTypeSN({ unitId: document.querySelector("#NumberOfChanges+.form-unit") });
-
-
-    async function init_RFIDScanBtn() {
-        const btn = document.getElementById("rfid");
-        const icon = btn.querySelector(".scan-icon");
-        btn.onclick = async () => {
-            setLoading(true);
-            await checkRFID();
-            setLoading(false);
-        };
-        function setLoading(b) {
-            if (b) {
-                btn.disabled = true;
-                icon.className = "spinner-border spinner-border-sm";
-            } else {
-                btn.disabled = false;
-                icon.className = "scan-icon";
+    const RFIDScanBtn = new RFID_ScanButton({
+        id: "rfid",
+        fake: DEBUG_TEST,
+        onScanEnd: (RFID) => {
+            //檢查有無重複
+            const exist = RFIDGrid.grid.getRowIndex(RFID);
+            if (exist !== -1) {
+                DT.createDialogModal("此RFID已存在！");
+                return;
             }
+
+            //放入資料，顯示表單
+            RFIDModal.setData({
+                InternalCode: RFID,
+            });
+            RFIDModal.show();
         }
-        function setDisabled(b) {
-            btn.disabled = b;
-        }
-        return {
-            setLoading,
-            setDisabled,
-        };
-    }
-    async function init_RFIDModal() {
-        const modalTemplate = document.getElementById("RFIDModal");
-        const modal = modalTemplate.content.cloneNode(true).firstElementChild;
-        const bsModal = bootstrap.Modal.getOrCreateInstance(modal);
-        modalTemplate.remove();
-
-        await formDropdown.StockTypeSN({
-            id: modal.querySelector("#StockTypeSN"),
-            sisnId: modal.querySelector("#SISN"),
-            unitId: modal.querySelector("#NumberOfChanges+.form-unit")
-        });
-
-        //隱藏時移除元素
-        modal.addEventListener("hidden.bs.modal", () => {
-            modal.remove();
-        });
-
-        bsModal.data = null;
-        //編輯時設定資料
-        bsModal.setData = (data = {}) => {
-            modal.querySelector("#isEdit").value = data.isEdit ?? false;
-            modal.querySelector("#InternalCode").value = data.InternalCode ?? "";
-            modal.querySelector("#ExternalCode").value = data.ExternalCode ?? "";
-            modal.querySelector("#StockTypeSN").value = data.StockTypeSN ?? "";
+    });
+    const RFIDModal = new RFID_Modal({
+        template: document.getElementById("RFIDModal"),
+        submitButtonSelector: "#add-row",
+        init() {
             formDropdown.StockTypeSN({
-                id: modal.querySelector("#StockTypeSN"),
-                sisnId: modal.querySelector("#SISN"),
+                id: this.modal.querySelector("#StockTypeSN"),
+                sisnId: this.modal.querySelector("#SISN"),
+                unitId: this.modal.querySelector("#NumberOfChanges+.form-unit"),
+            });
+        },
+        setData(data = {}) {
+            this.modal.querySelector("#isEdit").value = data.isEdit ?? false;
+            this.modal.querySelector("#InternalCode").value = data.InternalCode ?? "";
+            this.modal.querySelector("#ExternalCode").value = data.ExternalCode ?? "";
+            this.modal.querySelector("#StockTypeSN").value = data.StockTypeSN ?? "";
+            formDropdown.StockTypeSN({
+                id: this.modal.querySelector("#StockTypeSN"),
+                sisnId: this.modal.querySelector("#SISN"),
                 value: data.StockTypeSN,
                 sisnValue: data.SISN,
             });
-            modal.querySelector("#NumberOfChanges").value = data.NumberOfChanges ?? 1;
-            bsModal.data = data;
-        };
-
-        //儲存時取得資料
-        bsModal.getData = () => {
-            const isEdit = modal.querySelector("#isEdit").value ?? false;
-            const InternalCode = modal.querySelector("#InternalCode").value ?? null;
-            const ExternalCode = modal.querySelector("#ExternalCode").value ?? null;
-            const StockTypeSN = modal.querySelector("#StockTypeSN").value ?? null;
-            const StockType = modal.querySelector(`#StockTypeSN option[value="${StockTypeSN}"]`).textContent ?? null;
-            const SISN = modal.querySelector("#SISN").value ?? null;
-            const StockName = modal.querySelector(`#SISN option[value="${SISN}"]`).textContent ?? null;
-            const NumberOfChanges = modal.querySelector("#NumberOfChanges").value ?? null;
-            bsModal.data = { InternalCode, ExternalCode, StockTypeSN, StockType, SISN, StockName, NumberOfChanges, isEdit };
-            return bsModal.data;
-        };
-
-        //儲存
-        modal.querySelector("#add-row").addEventListener("click", async () => {
-            const form = modal.querySelector("form");
+            this.modal.querySelector("#NumberOfChanges").value = data.NumberOfChanges ?? 1;
+        },
+        getData() {
+            const isEdit = this.modal.querySelector("#isEdit").value ?? false;
+            const InternalCode = this.modal.querySelector("#InternalCode").value ?? null;
+            const ExternalCode = this.modal.querySelector("#ExternalCode").value ?? null;
+            const StockTypeSN = this.modal.querySelector("#StockTypeSN").value ?? null;
+            const StockType = this.modal.querySelector(`#StockTypeSN option[value="${StockTypeSN}"]`).textContent ?? null;
+            const SISN = this.modal.querySelector("#SISN").value ?? null;
+            const StockName = this.modal.querySelector(`#SISN option[value="${SISN}"]`).textContent ?? null;
+            const NumberOfChanges = this.modal.querySelector("#NumberOfChanges").value ?? null;
+            const data = { InternalCode, ExternalCode, StockTypeSN, StockType, SISN, StockName, NumberOfChanges, isEdit };
+            return data;
+        },
+        async submit() {
+            const form = this.modal.querySelector("form");
             if (!form.reportValidity()) {
                 return;
             }
-            bsModal.hide();
-            const originData = bsModal.getData();
+            const originData = this.getData();
             const res = await $.getJSON(`/Stock_Management/GetComputationalStockDetail?id=${originData.SISN}`).then((res) => res.Datas);
             const data = Object.assign(res, originData);
 
             if (data.isEdit === "true") {
                 RFIDGrid.edit(data);
+                this.hide();
                 return;
             }
             data.isEdit = true;
             RFIDGrid.add(data);
-        });
-
-        return bsModal;
-    }
-    async function init_RFIDGrid() {
-        const datas = [];
-        const options = {
+            this.hide();
+        },
+        reset() {
+            this.setData();
+        }
+    });
+    const RFIDGrid = new RFID_Grid({
+        container: document.querySelector(`[data-tab-content="RFID"]`),
+        maxRowSize: 1, //只能有一筆RFID資料
+        grid: {
             id: "RFID_Gird",
             type: "grid",
-            data: datas,
             className: "datatable-grid form-group col-3fr mt-2 mt-md-0",
             bodyClassName: "h-100 overflow-auto",
             items: {
@@ -156,82 +119,41 @@
                         button: {
                             className: "btn-delete-item",
                             onClick(e, v, row) {
-                                remove(row);
+                                RFIDGrid.remove(row);
                             },
                         },
                     },
                 ],
             },
-        };
-        const grid = DT.createTable(`[data-tab-content="RFID"]`, options);
-        grid.checkTableShow();
-        function add(row) {
-            grid.add(row);
-            checkMaxRowSize();
+        },
+        onAdd() {
+            RFIDScanBtn.disabled = RFIDGrid.checkMaxRowSize()
+        },
+        onRemove() {
+            RFIDScanBtn.disabled = RFIDGrid.checkMaxRowSize()
         }
-        function edit(row) {
-            grid.edit(row);
-        }
-        function remove(row) {
-            grid.remove(row);
-            checkMaxRowSize();
-        }
-        function checkMaxRowSize(n = MAX_ROW_SIZE) {
-            RFIDScanBtn.setDisabled(datas.length >= n);
-        }
-        return {
-            datas,
-            add,
-            edit,
-            remove,
-        };
-    }
-    async function checkRFID() {
-        if (DEBUG_TEST) {
-            const fakeRFID = Math.random().toString(36).slice(2, 33 - 2);
-            RFIDModal.setData({
-                InternalCode: fakeRFID,
-            });
-            RFIDModal.show();
-            return;
-        }
-        //後端取得RFID
-        const RFID = await $.getJSON(`/RFID/CheckRFID`)
-            .then((res) => {
-                if (res.ErrorMessage) {
-                    DT.createDialogModal("掃描失敗！<br>" + res.ErrorMessage);
-                    return null;
-                }
-                return res.Datas.trim();
-            })
-            .catch((ex) => {
-                DT.createDialogModal("掃描失敗！" + ex.responseText);
-                return null;
-            });
-        if (!RFID) return;
+    });
+    RFIDModal.init();
+    
+    const formTab = DT.setupFormTab();
+    const fileUploader = new FileUploader({
+        container: "#FileUploader",
+        className: "form-group col-3fr",
+        required: false,
+        accept: [".jpg", ".jpeg", ".png", ".pdf"],
+        label: "採購單據",
+        id: "PurchaseOrder",
+    });
 
-        console.log("checkRFID", RFID);
+    await formDropdown.StockTypeSN({ unitId: document.querySelector("#NumberOfChanges+.form-unit") });
 
-        //檢查有無重複
-        const exist = RFIDGrid.datas.findIndex((d) => d.InternalCode === RFID);
-        if (exist !== -1) {
-            DT.createDialogModal("此RFID已存在！");
-            return;
-        }
-
-        //放入資料，顯示表單
-        RFIDModal.setData({
-            InternalCode: RFID,
-        });
-        RFIDModal.show();
-    }
     function checkSave() {
         //檢查required
         const form = document.querySelector("form.form");
         if (!form.reportValidity()) {
             return;
         }
-        if (!RFIDGrid.datas.length === 0) {
+        if (!RFIDGrid.data.length === 0) {
             DT.createDialogModal("請先掃描RFID！");
             return;
         }
@@ -259,7 +181,7 @@
                 break;
             case "RFID":
                 submitUrl = "/StockRFID_Management/CreateRFIDStockIn";
-                const d = RFIDGrid.datas[0];
+                const d = RFIDGrid.data[0];
                 fd.append("RFIDInternalCode", d.InternalCode);
                 fd.append("RFIDExternalCode", d.ExternalCode);
                 fd.append("StockName", d.SISN);

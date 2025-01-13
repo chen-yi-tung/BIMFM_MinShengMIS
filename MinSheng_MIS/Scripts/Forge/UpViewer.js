@@ -111,8 +111,8 @@
         this.viewer.loading.hide();
     }
     unloadModels() {
-        bim.models.forEach(({ model }) => {
-            bim.viewer.unloadModel(model)
+        this.models.forEach(({ model }) => {
+            this.viewer.unloadModel(model)
         })
         this.models = [];
     }
@@ -188,7 +188,7 @@
         });
     }
     addHomeToggle() {
-        this.viewer.container.insertAdjacentHTML("beforeend", `<div class="home-wrapper"><button class="home-toggle"></button></div>`);
+        this.viewer.container.insertAdjacentHTML("beforeend", `<div class="home-wrapper"><button type="button" class="home-toggle"></button></div>`);
         const toggle = this.viewer.container.querySelector(".home-toggle");
         toggle.onclick = () => {
             this.viewer.toolkit.autoFitModelsTop(this.viewer.getAllModels(), this.#scale, false);
@@ -291,6 +291,9 @@ class EquipmentPointTool {
             this.#dragging = false;
             this.handleSingleClick(e, this.#buttonNumber);
         }
+    }
+    getPosition() {
+        return this.pin.position.clone();
     }
     setPosition(v) {
         this.pin.position = v;

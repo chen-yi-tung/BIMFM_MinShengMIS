@@ -2,10 +2,10 @@
     ViewBag.Title = "新增 設備";
 }
 @section styles {
+    @Html.Partial("MapScripts")
     @Html.Partial("DataGridScripts")
     <link rel="stylesheet" href="/Content/EquipmentInfoManagement.css">
-    <script src="/Scripts/dataTable/RepairRecord.js" defer></script>
-    <script src="/Scripts/dataTable/RFIDInfoModal.js" defer></script>
+    <script src="/Scripts/RFID.js" defer></script>
     <script src="/Scripts/EquipmentInfo_Management/Create.js" defer></script>
 }
 
@@ -20,10 +20,10 @@
 
 <section>
     <div class="edit-area edit-area-lg flex-wrap flex-md-row justify-content-lg-between">
-        <form class="form d-lg-contents" id="EquitForm">
+        <form class="form d-lg-contents" id="EquipForm">
             <div class="group-title">基本資料</div>
             <div class="form-group-zone" id="basicZone">
-                <div id="FileUploader"></div>
+                <div id="FileUploader" class="form-group col-3fr"></div>
                 <div class="form-group required">
                     <label for="EName">設備名稱</label>
                     <input class="form-control" id="EName" name="EName" type="text" required />
@@ -78,18 +78,16 @@
                 </div>
                 <div class="form-group">
                     <label for="Other" class="d-flex gap-1">
-                        <span class="form-tooltip-toggle" data-bs-placement="top-start" title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
+                        <span class="form-tooltip-toggle" data-bs-placement="top-start"
+                            title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
                         RFID
                     </label>
-                    <button type="button" id="rfid" class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
+                    <button type="button" id="rfid"
+                        class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
                         掃描<i class="scan-icon"></i>
                     </button>
                 </div>
-                <div class="datatable datatable-grid w-100 mt-2 form-group col-3fr d-none">
-                    <div class="datatable-body overflow-auto">
-                        <table class="datatable-table" id="RFIDZone"></table>
-                    </div>
-                </div>
+                <div class="form-group col-3fr" id="RFIDGridContainer"></div>
             </div>
             <hr class="hr-default">
             <div class="group-title">一機一卡模板資訊</div>
@@ -128,561 +126,62 @@
     </div>
 </section>
 
-@*RFID 設備資訊POP UP*@
-<div class="modal fade datagrid-modal" tabindex="-1" id="RFIDEquipmentInfo">
-    <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h2>RFID 設備資訊</h2>
-                <form class="form w-100 p-0" id="RFIDForm">
-                    <div class="form-group-zone">
-                        <div class="form-group">
-                            <label for="InternalCode">RFID內碼</label>
-                            <input type="text" class="form-control" name="InternalCode" id="InternalCode" maxlength="20"
-                                   disabled>
-                        </div>
-                        <div class="form-group required">
-                            <label for="ExternalCode">RFID外碼</label>
-                            <input type="text" class="form-control" name="ExternalCode" id="ExternalCode" maxlength="20"
-                                   required>
-                        </div>
-                        <div class="form-group required">
-                            <label for="Name">名稱</label>
-                            <input type="text" class="form-control" name="Name" id="Name" maxlength="20"
-                                   required>
-                        </div>
-                        <div class="form-group required">
-                            <label for="Modal_ASN">棟別</label>
-                            <select class="form-select" name="Modal_ASN" id="Modal_ASN" required></select>
-                        </div>
-                        <div class="form-group required">
-                            <label for="Modal_FSN">樓層</label>
-                            <select class="form-select" name="Modal_FSN" id="Modal_FSN" required></select>
-                        </div>
-                        <div class="form-group col-3fr d-flex flex-column gap-2 bg-white p-4 align-items-end">
-                            <img src="~/Content/img/inner-map.jpg" class="align-items-end w-100" style="height: 400px; object-fit: contain;" />
-                        </div>
-                        <div class="form-group col-3fr">
-                            <label for="Memo">備註</label>
-                            <textarea class="form-control" id="Memo" name="Memo" rows="3" cols="50"></textarea>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
-                <button type="button" class="btn btn-export" onclick="renewRFIDData()">確定</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@*定位資訊POP UP*@
-<div class="modal fade data-detail-modal" tabindex="-1" id="LocationInfo">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title w-100 text-center">定位資訊</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <table class="datatable-table"></table>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
     <button class="btn btn-export" id="submit">新增</button>
 </div>
 
+@*RFID 設備資訊POP UP*@
+<template id="RFIDModal">
+    <div class="modal fade datagrid-modal" tabindex="-1">
+        <div class="modal-dialog modal-screen-md modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h2>RFID 設備資訊</h2>
+                    <form class="form w-100 p-0">
+                        <input type="hidden" id="isEdit" value="false">
+                        <div class="form-group-zone">
+                            <div class="form-group">
+                                <label for="InternalCode">RFID內碼</label>
+                                <input type="text" class="form-control" name="InternalCode" id="InternalCode"
+                                    maxlength="20" disabled>
+                            </div>
+                            <div class="form-group required">
+                                <label for="ExternalCode">RFID外碼</label>
+                                <input type="text" class="form-control" name="ExternalCode" id="ExternalCode"
+                                    maxlength="20" required>
+                            </div>
+                            <div class="form-group required">
+                                <label for="Name">名稱</label>
+                                <input type="text" class="form-control" name="Name" id="Name" maxlength="20" required>
+                            </div>
+                            <div class="form-group required">
+                                <label for="ASN">棟別</label>
+                                <select class="form-select" name="ASN" id="ASN" required></select>
+                            </div>
+                            <div class="form-group required">
+                                <label for="FSN">樓層</label>
+                                <select class="form-select" name="FSN" id="FSN" required></select>
+                            </div>
+                            <div class="form-group col-3fr d-flex flex-column gap-2 bg-white" style="height: 360px;">
+                                <div id="BIM"></div>
+                            </div>
+                            <div class="form-group col-3fr">
+                                <label for="Memo">備註</label>
+                                <textarea class="form-control" id="Memo" name="Memo" rows="3" cols="50"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">返回</button>
+                    <button type="button" class="btn btn-export" id="add-row">確定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
 @section scripts {
-    <script>
-        var fileUploader;
-        //let apiUrl = null;
-
-        var Origin_RFID = [];
-
-        const fakeData_RFID = {
-            InternalCode: "A107",
-            ErrorMessage: null,
-        }
-
-        const fakeData_url = {
-            RFIDName: "軸承潤滑劑",
-            ASN: "A棟",
-            FSN: "5F",
-            Location: "",
-        }
-
-        const fakeData_Sample = {
-            PSN: "P336448226",
-            AddField: [
-                {
-                    SN: "F0001",
-                    Text: "馬力數",
-                },
-                {
-                    SN: "F0002",
-                    Text: "起動方式",
-                },
-                {
-                    SN: "F0003",
-                    Text: "額定電流",
-                },
-                {
-                    SN: "F0004",
-                    Text: "油料編號",
-                },
-            ],
-            MaintainItems: [
-                {
-                    SN: "I0001",
-                    Text: "外部清潔與保養",
-                },
-                {
-                    SN: "I0002",
-                    Text: "各部螺絲鎖定",
-                },
-                {
-                    SN: "I0003",
-                    Text: "檢查管路是否通暢",
-                },
-                {
-                    SN: "I0004",
-                    Text: "軸承潤滑油添加",
-                },
-            ],
-            InspectionRecord: {
-                Ifrequency: "1小時",
-                InspectItems: [
-                    {
-                        SN: "000123",
-                        value: "馬達是否正常運轉"
-                    },
-                    {
-                        SN: "000124",
-                        value: "管線是否正常無漏液"
-                    },
-                    {
-                        SN: "000125",
-                        value: "出口端是否正常出藥"
-                    },
-                    {
-                        SN: "000126",
-                        value: "設備是否正常無漏水"
-                    },
-                ],
-                ReportItems: [
-                    {
-                        SN: "I0001",
-                        Item: "馬達電壓",
-                        Value: "v"
-                    },
-                    {
-                        SN: "I0002",
-                        Item: "電流",
-                        Value: "A"
-                    },
-                    {
-                        SN: "I0003",
-                        Item: "水壓",
-                        Value: "Pa"
-                    },
-                    {
-                        SN: "I0004",
-                        Item: "流量",
-                        Value: "CMH"
-                    },
-                ]
-            }
-        }
-
-        const GridOptions = {
-            thead: true,
-            delBtn: false,
-            columns: [
-                {
-                    id: "Btn_edit", title: "", width: "80x", className: "d-flex gap-2 justify-content-center", formatter: (v, row, i) => {
-                        const rowString = encodeURIComponent(JSON.stringify(row));
-                        return `<button type="button" class="btn btn-datagrid" onclick="showRFIDPopup('${rowString}', 'edit')">編輯</button>
-                <button type="button" class="btn btn-location" onclick="showLocationPopup('${rowString}')"><i class="fa-solid fa-location-dot"></i></button>`
-                    }
-                },
-                { id: "InternalCode", title: "RFID內碼" },
-                { id: "ExternalCode", title: "RFID外碼" },
-                { id: "Name", title: "名稱" },
-                {
-                    id: "AreaName", title: "棟別"
-                },
-                { id: "FloorName", title: "樓層" },
-                { id: "Memo", title: "備註" },
-                {
-                    id: "Btn_delete", title: "", width: "54px", formatter: (v, row, i) => {
-                        return `<button type="button" class="btn-delete-item" onclick="delTemplateItem(this, 'RFIDZone', '${row.InternalCode}')"></button>`
-                    }
-                },
-            ]
-        }
-
-
-        $(async function () {
-            await formDropdown.ASN();
-            await pushSelect("SampleName", "@Url.Action("OneDeviceOneCardTemplates", "DropDownList")");
-
-            fileUploader = new FileUploader({
-                container: "#FileUploader",
-                className: "form-group col-3fr required",
-                icon: "plus",
-                buttonText: "上傳照片",
-                label: "照片",
-                id: "File"
-            })
-            //監聽掃描按鈕
-            document.getElementById('rfid').addEventListener('click', async function () {
-                const btn = document.getElementById("rfid");
-                const icon = btn.querySelector(".scan-icon");
-                setLoading(true);
-                await checkRFID();
-                setLoading(false);
-
-                function setLoading(b) {
-                    if (b) {
-                        btn.disabled = true;
-                        icon.className = "spinner-border spinner-border-sm";
-                    } else {
-                        btn.disabled = false;
-                        icon.className = "scan-icon";
-                    }
-                }
-            })
-
-            //監聽 模板名稱，有選擇就顯示模板資訊內容
-            document.getElementById('SampleName').addEventListener('change', function () {
-                //先清空，防止舊資料疊加
-                document.getElementById("addItemZone").innerHTML = "";
-                document.getElementById("MaintainZone").innerHTML = "";
-                document.getElementById("InspectionRecord").innerHTML = "";
-
-                const selectedValue = this.value;
-
-                if (selectedValue !== "") {
-                    $.ajax({
-                        url: "@Url.Action("ReadBody", "OneDeviceOneCard_Management")" + `/${selectedValue}`,
-                        type: "GET",
-                        contentType: "application/json",
-                        processData: false,
-                        success: onSuccess,
-                        error: onError
-                    })
-                }
-
-                function onSuccess(res) {
-                    const data = res.Datas;
-
-                    if (data) {
-                        if (data.AddItemList.length > 0) {
-                            document.getElementById('addFieldSection').style.display = "block";
-                        } else {
-                            document.getElementById("addFieldSection").style.display = "none";
-                        }
-                        if (data.MaintainItemList.length > 0) {
-                            document.getElementById('maintainSection').style.display = "block";
-                        } else {
-                            document.getElementById("maintainSection").style.display = "none";
-                        }
-                        if (data.Frequency) {
-                            document.getElementById('inspectionInfoSection').style.display = "block";
-                        } else {
-                            document.getElementById("inspectionInfoSection").style.display = "none";
-                        }
-                        createAddItem(data);
-                        createMaintainItem(data.MaintainItemList, "MaintainZone");
-                        InspectionRecord("#InspectionRecord", data);
-
-                        const frequencyDiv = document.querySelector('#d-Frequency');
-                        if (frequencyDiv) {
-                            frequencyDiv.textContent += '小時';
-                        }
-                    }
-                }
-                function onError(res) {
-                    console.log("拿取模板名稱失敗");
-                }
-
-                //新增 增設基本資訊欄位
-                function createAddItem(data) {
-                    const addItemZone = document.getElementById("addItemZone");
-                    data.AddItemList.forEach((field, index) => {
-                        const div = document.createElement("div");
-                        div.className = "form-group";
-
-                        const label = document.createElement("label");
-                        label.setAttribute("for", `addField-${index + 1}`);
-                        label.textContent = field.Value;
-
-                        const input_SN = document.createElement("input");
-                        input_SN.type = "text";
-                        input_SN.id = `addField_SN-${index + 1}`;
-                        input_SN.name = `addField_SN-${index + 1}`;
-                        input_SN.value = field.AFSN;
-                        input_SN.hidden = true;
-
-
-                        const input_value = document.createElement("input");
-                        input_value.className = "form-control";
-                        input_value.type = "text";
-                        input_value.id = `addField_value-${index + 1}`;
-                        input_value.name = `addField_value-${index + 1}`;
-
-                        div.appendChild(label);
-                        div.appendChild(input_SN);
-                        div.appendChild(input_value);
-                        addItemZone.appendChild(div);
-                    });
-                }
-            });
-
-            addButtonEvent();
-        });
-
-        document.getElementById('SampleName').addEventListener('change', function () {
-            const sampleContent = document.getElementById('sampleContent');
-            if (this.value) {
-                sampleContent.style.display = 'flex';
-            } else {
-                sampleContent.style.display = 'none';
-            }
-        })
-
-        //更新 RFID資料
-        function renewRFIDData() {
-            const form = document.getElementById('RFIDForm');
-            let isValidity = [...form.elements].map(e => e.reportValidity()).every(e => e);
-            console.log("todo save():", isValidity)
-            if (!isValidity) {
-                console.log("驗證不通過");
-                return;
-            }
-
-            const container = document.getElementById('RFIDEquipmentInfo');
-            const inputs = container.querySelectorAll("input");
-            const selects = container.querySelectorAll("select");
-            const textarea = container.querySelector("textarea");
-            const closestDatagrid = $('#RFIDZone').closest('.datatable');
-            closestDatagrid.removeClass('d-none');
-            document.getElementById('RFIDZone').style.display = 'table';
-
-            //取RFID 彈跳視窗裡的設備資料
-            const values = {};
-            inputs.forEach(input => {
-                values[input.id] = input.value;
-            })
-            selects.forEach(select => {
-                values[select.id] = select.value;
-            })
-            const asnSelect = document.getElementById('Modal_ASN');
-            if (asnSelect) {
-                values.AreaName = asnSelect.options[asnSelect.selectedIndex].text;
-            }
-            const fsnSelect = document.getElementById('Modal_FSN');
-            if (fsnSelect) {
-                values.FloorName = fsnSelect.options[fsnSelect.selectedIndex].text;
-            }
-
-            values[textarea.id] = textarea.value;
-            if (Origin_RFID.length > 0) {
-                Origin_RFID.forEach((item) => {
-                    if (values.InternalCode === item.InternalCode) {
-                        for (const key in item) {
-                            if (key !== "InternalCode" && values[key] !== undefined) {
-                                item[key] = values[key];
-                            }
-                            if (key !== "ASN" && values.Modal_ASN !== undefined) {
-                                item.ASN = values.Modal_ASN;
-                            } else if (key !== "FSN" && values.Modal_FSN !== undefined) {
-                                item.FSN = values.Modal_FSN;
-                            }
-                        }
-                    }
-                })
-            } else {
-                for (const key in values) {
-                    if (key === "Modal_ASN") {
-                        Origin_RFID["ASN"] = values["Modal_ASN"];
-                    } else if (key === "Modal_FSN") {
-                        Origin_RFID["FSN"] = values["Modal_FSN"];
-                    } else {
-                        Origin_RFID[key] = values[key];
-                    }                   
-                }
-            }
-
-            //若為新增的RFID
-            if (!Origin_RFID.some(item => item.InternalCode === values.InternalCode)) {
-                const newRFID = {};
-                for (const key in values) {
-                    if (values[key] !== undefined) {
-                        if (key === "Modal_ASN") {
-                            newRFID["ASN"] = values["Modal_ASN"];
-                        } else if (key === "Modal_FSN") {
-                            newRFID["FSN"] = values["Modal_FSN"];
-                        } else {
-                            newRFID[key] = values[key];
-                        }
-                    }
-                }
-                Origin_RFID.push(newRFID);
-            }
-
-            console.log("Origin_RFID更新為", Origin_RFID);
-
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('RFIDEquipmentInfo'));
-            modal.hide();
-            //清除RFID舊表格，建立新表格
-            document.getElementById('RFIDZone').innerHTML = "";
-            $("#RFIDZone").append(createTableGrid(Origin_RFID, GridOptions));
-
-        }
-
-        //刪除 RFID表格內一項內容
-        function delTemplateItem(delBtn, tableZoneID, RFID) {
-            if (!delBtn || !(delBtn instanceof HTMLElement)) {
-                console.error("無效的按鈕元素:", delBtn);
-                return;
-            }
-            let tr = delBtn.closest('tr');
-            if (tr) {
-                tr.remove();
-                checkTableEmpty(tableZoneID);
-            }
-            function checkTableEmpty(tableZoneID) {
-                const tbody = document.getElementById('item-area');
-                const datatable = document.getElementById(tableZoneID);
-                if (tbody.children.length === 0 && datatable) {
-                    datatable.style.display = 'none';
-                }
-            }
-
-            Origin_RFID = Origin_RFID.filter(item => item.InternalCode !== RFID);
-            $("#RFIDZone").empty();
-            $("#RFIDZone").append(createTableGrid(Origin_RFID, GridOptions));
-            if (Origin_RFID.length === 0) {
-                const closestDatagrid = $('#RFIDZone').closest('.datatable');
-                closestDatagrid.addClass('d-none');
-            }
-        }
-
-        //顯示RFID定位資訊彈跳視窗，帶入相對應的值
-        function showLocationPopup(rowString) {
-            $('#LocationInfo table').html("");
-            const data = JSON.parse(decodeURIComponent(rowString));
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('LocationInfo'));
-            modal.show();
-
-            const sn = [,
-                { text: "名稱", value: "Name" },
-                { text: "棟別", value: "AreaName" },
-                { text: "樓層", value: "FloorName" },
-                { text: "定位", value: "Location" }
-            ]
-            $('#LocationInfo table').append(createTableInner(data, sn))
-        }
-
-        function save() {
-            //指定驗證的form
-            const form = document.getElementById('EquitForm');
-            let isValidity = [...form.elements].map(e => e.reportValidity()).every(e => e);
-            console.log("todo save():", isValidity)
-            if (!isValidity) {
-                console.log("驗證不通過");
-                return;
-            }
-            //if (!$("#LocationX").val() || !$("#LocationX").val()) return;
-
-
-            const TSN = document.getElementById('SampleName').value;
-            const SampleData = IntegrateSampleData(TSN);
-            const fd = new FormData();
-
-            //有選模板的話，才傳送模板資訊
-            if (TSN) {
-                fd.append("TSN", TSN);
-                SampleData.AddFieldList.forEach((item, i) => {
-                    for (const key in item) {
-                        fd.append(`AddFieldList[${i}][${key}]`, item[key]);
-                    }
-                })
-                SampleData.MaintainItemList.forEach((item, i) => {
-                    for (const key in item) {
-                        fd.append(`MaintainItemList[${i}][${key}]`, item[key]);
-                    }
-                })
-            }
-
-            if (fileUploader.hasFile()) {
-                fd.append("EPhoto", fileUploader.getFile());
-            }
-            document.querySelectorAll("#basicZone input, #basicZone select, #basicZone textarea").forEach(el => {
-                if (el.id && el.type !== "file" && el.type !== "checkbox" && el.id !== "ASN") {
-                    fd.append(el.id, el.value);
-                }
-            })
-
-            Origin_RFID.forEach((item, i) => {
-                for (const key in item) {
-                    fd.append(`RFIDList[${i}][${key}]`, item[key]);
-                }
-            })
-
-            console.log("最後傳出的資料為", fd);
-
-            $.ajax({
-                url: "/EquipmentInfo_Management/CreateEquipment",
-                data: fd,
-                type: "POST",
-                contentType: false,
-                processData: false,
-                success: onSuccess,
-                error: onError
-            })
-
-            function onSuccess(res) {
-                console.log(res);
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "新增成功！",
-                    onHide: () => { window.location.href = "/EquipmentInfo_Management/Index"; }
-                });
-
-                InspectionRecord("#InspectionRecord", res);
-            }
-            function onError(res) {
-                console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！` + `${res?.responseText || ""}` })
-            }
-
-            function IntegrateSampleData(TSN) {
-                if (TSN) {
-                    //整理 增設基本資料欄位
-                    const addItems = $('#addItemZone').children().toArray().map(e => ({
-                        AFSN: $(e).find("input[name^='addField_SN']").val(),
-                        Value: $(e).find("input[name^='addField_value']").val(),
-                    }));
-
-                    //整理 保養項目/週期/下次保養日期
-                    const maintainItems = $('#MaintainZone').children().toArray().map(e => ({
-                        MISSN: $(e).find("input[name^='addField_SN']").val(),
-                        Period: $(e).find("select[name^='period']").val(),
-                        NextMaintainDate: $(e).find("input[name^='nextMaintainDate']").val(),
-                    }));
-
-                    return {
-                        AddFieldList:addItems,
-                        MaintainItemList: maintainItems,
-                    }
-                }
-            }
-        }
-    </script>
+    <script>$(() => init_Create());</script>
 }
