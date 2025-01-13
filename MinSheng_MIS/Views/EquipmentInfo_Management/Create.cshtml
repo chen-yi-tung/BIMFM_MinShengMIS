@@ -6,7 +6,7 @@
     @Html.Partial("DataGridScripts")
     <link rel="stylesheet" href="/Content/EquipmentInfoManagement.css">
     <script src="/Scripts/RFID.js" defer></script>
-    <script src="/Scripts/EquipmentInfo_Management/Create.js" defer></script>
+    <script src="/Scripts/EquipmentInfo_Management/index.js" defer></script>
 }
 
 <style>
@@ -93,8 +93,8 @@
             <div class="group-title">一機一卡模板資訊</div>
             <div class="d-flex flex-column gap-4">
                 <div class="form-group w-100">
-                    <label for="SampleName">模板名稱</label>
-                    <select class="form-select" name="SampleName" id="SampleName">
+                    <label for="TSN">模板名稱</label>
+                    <select class="form-select" name="TSN" id="TSN">
                         <option value="">請選擇</option>
                     </select>
                 </div>
@@ -183,5 +183,7 @@
 </template>
 
 @section scripts {
-    <script>$(() => init_Create());</script>
+    <script>
+        $(() => { init_EquipmentInfo() });
+    </script>
 }
