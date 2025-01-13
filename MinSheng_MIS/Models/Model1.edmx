@@ -216,7 +216,7 @@
           </Key>
           <Property Name="EAFVSN" Type="char" MaxLength="23" Nullable="false" />
           <Property Name="ESN" Type="char" MaxLength="12" Nullable="false" />
-          <Property Name="AFSN" Type="char" MaxLength="11" />
+          <Property Name="AFSN" Type="char" MaxLength="11" Nullable="false" />
           <Property Name="Value" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Equipment_MaintainItemValue">
@@ -225,7 +225,7 @@
           </Key>
           <Property Name="EMIVSN" Type="char" MaxLength="23" Nullable="false" />
           <Property Name="ESN" Type="char" MaxLength="12" Nullable="false" />
-          <Property Name="MISSN" Type="char" MaxLength="11" />
+          <Property Name="MISSN" Type="char" MaxLength="11" Nullable="false" />
           <Property Name="Period" Type="char" MaxLength="1" />
           <Property Name="lastMaintainDate" Type="date" />
           <Property Name="NextMaintainDate" Type="date" />
@@ -876,7 +876,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Equipment_AddFieldValue_Template_AddField">
-          <End Role="Template_AddField" Type="Self.Template_AddField" Multiplicity="0..1" />
+          <End Role="Template_AddField" Type="Self.Template_AddField" Multiplicity="1" />
           <End Role="Equipment_AddFieldValue" Type="Self.Equipment_AddFieldValue" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Template_AddField">
@@ -900,7 +900,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Equipment_MaintainItemValue_Template_MaintainItemSetting">
-          <End Role="Template_MaintainItemSetting" Type="Self.Template_MaintainItemSetting" Multiplicity="0..1" />
+          <End Role="Template_MaintainItemSetting" Type="Self.Template_MaintainItemSetting" Multiplicity="1" />
           <End Role="Equipment_MaintainItemValue" Type="Self.Equipment_MaintainItemValue" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Template_MaintainItemSetting">
@@ -2168,7 +2168,7 @@
           </Key>
           <Property Name="EAFVSN" Type="String" Nullable="false" MaxLength="23" FixedLength="true" Unicode="false" />
           <Property Name="ESN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="false" />
-          <Property Name="AFSN" Type="String" MaxLength="11" FixedLength="true" Unicode="false" />
+          <Property Name="AFSN" Type="String" Nullable="false" MaxLength="11" FixedLength="true" Unicode="false" />
           <Property Name="Value" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_Equipment_AddFieldValue_EquipmentInfo" FromRole="Equipment_AddFieldValue" ToRole="EquipmentInfo" />
           <NavigationProperty Name="Template_AddField" Relationship="Bimfm_MinSheng_MISModel.FK_Equipment_AddFieldValue_Template_AddField" FromRole="Equipment_AddFieldValue" ToRole="Template_AddField" />
@@ -2179,7 +2179,7 @@
           </Key>
           <Property Name="EMIVSN" Type="String" Nullable="false" MaxLength="23" FixedLength="true" Unicode="false" />
           <Property Name="ESN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="false" />
-          <Property Name="MISSN" Type="String" MaxLength="11" FixedLength="true" Unicode="false" />
+          <Property Name="MISSN" Type="String" Nullable="false" MaxLength="11" FixedLength="true" Unicode="false" />
           <Property Name="Period" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="lastMaintainDate" Type="DateTime" Precision="0" />
           <Property Name="NextMaintainDate" Type="DateTime" Precision="0" />
@@ -2901,7 +2901,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Equipment_AddFieldValue_Template_AddField">
-          <End Type="Bimfm_MinSheng_MISModel.Template_AddField" Role="Template_AddField" Multiplicity="0..1" />
+          <End Type="Bimfm_MinSheng_MISModel.Template_AddField" Role="Template_AddField" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.Equipment_AddFieldValue" Role="Equipment_AddFieldValue" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Template_AddField">
@@ -2925,7 +2925,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Equipment_MaintainItemValue_Template_MaintainItemSetting">
-          <End Type="Bimfm_MinSheng_MISModel.Template_MaintainItemSetting" Role="Template_MaintainItemSetting" Multiplicity="0..1" />
+          <End Type="Bimfm_MinSheng_MISModel.Template_MaintainItemSetting" Role="Template_MaintainItemSetting" Multiplicity="1" />
           <End Type="Bimfm_MinSheng_MISModel.Equipment_MaintainItemValue" Role="Equipment_MaintainItemValue" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Template_MaintainItemSetting">
