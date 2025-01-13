@@ -188,7 +188,7 @@
         });
     }
     addHomeToggle() {
-        this.viewer.container.insertAdjacentHTML("beforeend", `<div class="home-wrapper"><button type="button" class="home-toggle"></button></div>`);
+        this.viewer.container.insertAdjacentHTML("beforeend", `<div class="home-wrapper"><button type="button" class="home-toggle"><i class="home-toggle-icon"></i>回到預設視角</button></div>`);
         const toggle = this.viewer.container.querySelector(".home-toggle");
         toggle.onclick = () => {
             this.viewer.toolkit.autoFitModelsTop(this.viewer.getAllModels(), this.#scale, false);
@@ -273,7 +273,7 @@ class EquipmentPointTool {
         }
         this.pin.position = hit.point;
         this.pin.show().update();
-        console.log("click: ", e, hit?.point);
+        //console.log("click: ", e, hit?.point);
     }
     handleButtonDown(e, b) {
         if (!this.#interactive) return;

@@ -115,17 +115,24 @@
             const rotation = v.toolkit.planeDirectionToRotation(this.viewer.toolkit.getWorldDirection());
             return { position, rotation };
         }
+        getModelsBoundingBox(models = []) {
+            if (!Array.isArray(models) || models.length == 0) {
+                models = this.viewer.getAllModels();
+            }
+            const box = new THREE.Box3();
+            models.forEach((model) => {
+                const b = model.getBoundingBox();
+                box.union(b);
+            });
+            return box;
+        }
         autoFitModelsTop(models = [], scale = 2, immediate = true, reorient = false) {
             return new Promise((resolve, reject) => {
                 if (!Array.isArray(models) || models.length == 0) {
                     reject();
                 }
 
-                const box = new THREE.Box3();
-                models.forEach((model) => {
-                    const b = model.getBoundingBox();
-                    box.union(b);
-                });
+                const box = this.getModelsBoundingBox(models);
 
                 const w = box.getCenter();
                 this.viewer.navigation.setView(new THREE.Vector3(w.x, w.y, w.z + box.getSize().z ** 2), new THREE.Vector3(w.x, w.y, 0));
@@ -161,7 +168,7 @@
             const handleClick = () => {
                 this.viewer.clearSelection()
             }
-            const checkCursor = ()=>{
+            const checkCursor = () => {
                 this.viewer.container.style.cursor = this.viewer.canvas.style.cursor;
             }
             if (v) {

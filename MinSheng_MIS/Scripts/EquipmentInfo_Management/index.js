@@ -45,7 +45,15 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
                         return;
                     }
                     await this.bim.loadModels(this.bim.getModelsUrl(viewName));
-                    this.bim.activateEquipmentPointTool(new THREE.Vector3(this.data?.LocationX ?? 0, this.data?.LocationY ?? 0, 0), true);
+
+                    if (this.data?.LocationX && this.data?.LocationY) {
+                        this.bim.activateEquipmentPointTool(new THREE.Vector3(this.data?.LocationX, this.data?.LocationY, 0), true);
+                    }
+                    else {
+                        const box = this.bim.viewer.toolkit.getModelsBoundingBox();
+                        const center = box.getCenter();
+                        this.bim.activateEquipmentPointTool(new THREE.Vector3(center.x, center.y, 0), true);
+                    }
                 });
             }
             await formDropdown.ASN({ id: asn, fsnId: fsn });
@@ -99,7 +107,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
             if (!form.reportValidity()) {
                 return;
             }
-            
+
             const data = this.getData();
 
             if (!(data.LocationX && data.LocationY)) {
@@ -215,7 +223,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
             el.parentElement.classList.remove('required');
         })
     }
-    
+
     if (data?.RFIDList) {
         data.RFIDList.forEach((d) => {
             const row = {
@@ -234,7 +242,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
         })
     }
 
-    
+
     function save() {
         //指定驗證的form
         const form = document.getElementById("EquipForm");
@@ -327,7 +335,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
             createDialogModal({ id: "DialogModal-Error", inner: `${actionName}失敗！${res?.responseText || ""}` });
         }
 
-        
+
     }
 }
 
@@ -339,7 +347,7 @@ async function init_SampleContent({ data = {} }) {
         id: "TSN",
         url: "/DropDownList/OneDeviceOneCardTemplates",
     });
-    
+
     if (this.originTSN) {
         formDropdown.setValue(this.select, this.originTSN)
         this.content.style.display = 'flex';
@@ -546,7 +554,7 @@ async function init_SampleContent({ data = {} }) {
     this.getData = getSampleData;
     function getSampleData() {
         if (!this.select.value) { return }
-        
+
         //整理 增設基本資料欄位
         const addItems = $("#addItemZone")
             .children()
