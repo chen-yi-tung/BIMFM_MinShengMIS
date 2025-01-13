@@ -183,38 +183,6 @@ namespace MinSheng_MIS.Models.ViewModels
         IUpdateMaintainItemValue, ICreateMaintainItemValueList { }
     #endregion
 
-    #region 設備-刪除 TODO
-    public class DeleteAddFieldValueList : IDeleteAddFieldValueList
-    {
-        public IEnumerable<string> EAFVSN { get; set; }
-
-        public DeleteAddFieldValueList(EquipmentInfo e)
-        {
-            EAFVSN = e.Equipment_AddFieldValue.Select(x => x.EAFVSN);
-        }
-
-        public DeleteAddFieldValueList(IEnumerable<string> eafvsn)
-        {
-            EAFVSN = eafvsn;
-        }
-    }
-
-    public class DeleteMaintainItemValueList : IDeleteMaintainItemValueList
-    {
-        public IEnumerable<string> EMIVSN { get; set; }
-
-        public DeleteMaintainItemValueList(EquipmentInfo e)
-        {
-            EMIVSN = e.Equipment_MaintainItemValue.Select(x => x.EMIVSN);
-        }
-
-        public DeleteMaintainItemValueList(IEnumerable<string> emivsn)
-        {
-            EMIVSN = emivsn;
-        }
-    }
-    #endregion
-
     #region Shared
     public interface IEquipmentName
     {
@@ -347,22 +315,12 @@ namespace MinSheng_MIS.Models.ViewModels
         string EState { get; set; } // 設備狀態
     }
 
-    public interface IDeleteAddFieldValueList
-    {
-        IEnumerable<string> EAFVSN { get; set; }
-    }
-
     /// <summary>
     /// 系統變更設備中一機一卡增設欄位值所需資訊
     /// </summary>
     public interface IUpdateAddFieldValue : ICreateAddFieldValueList
     {
         string ESN { get; set; } // 設備資料(EquipmentInfo)編號
-    }
-
-    public interface IDeleteMaintainItemValueList
-    {
-        IEnumerable<string> EMIVSN { get; set; }
     }
 
     /// <summary>

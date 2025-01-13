@@ -2,11 +2,14 @@
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Web.Mvc;
+using static MinSheng_MIS.Services.UniParams;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -216,6 +219,64 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Delete()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> DisableEquipment(string id)
+        {
+            try
+            {
+                using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var equipment = await _db.EquipmentInfo.SingleOrDefaultAsync(x => x.ESN == id)
+                        ?? throw new MyCusResException("設備不存在！");
+
+                    // EquipmentInfo : 停用設備資料, 停用模板
+                    _eMgmtService.DisableEquipment(equipment);
+                    // 刪除關聯的待派工 Equipment_MaintenanceForm
+                    equipment.Equipment_MaintenanceForm
+                        .Where(x => IsEnumEqualToStr(x.Status, MaintenanceFormStatus.ToAssign))
+                        .ToList()
+                        .ForEach(x => _db.Equipment_MaintenanceForm.Remove(x));
+                    // 刪除關聯的待派工 EquipmentReportForm
+                    equipment.EquipmentReportForm
+                        .Where(x => IsEnumEqualToStr(x.ReportState, ReportFormStatus.ToAssign))
+                        .ToList()
+                        .ForEach(x => _db.EquipmentReportForm.Remove(x));
+
+                    // 刪除 RFID 關聯的 InspectionPlan_RFIDOrder
+                    _db.InspectionPlan_RFIDOrder.RemoveRange(equipment.RFID.SelectMany(x => x.InspectionPlan_RFIDOrder));
+                    // 刪除 RFID 及 關聯的 InspectionDefaultOrder
+                    _eMgmtService.DeleteRFID(equipment.RFID.ToList());
+
+                    // Equipment_AddFieldValue : 全部刪除
+                    _eMgmtService.DeleteAddFieldValueList(
+                        equipment.Equipment_AddFieldValue.Select(x => x.EAFVSN));
+
+                    // Equipment_MaintainItemValue : 全部刪除
+                    _eMgmtService.DeleteMaintainItemValueList(
+                        equipment.Equipment_MaintainItemValue.Select(x => x.EMIVSN));
+
+                    await _db.SaveChangesAsync();
+
+                    trans.Complete();
+                }
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
         }
         #endregion
 

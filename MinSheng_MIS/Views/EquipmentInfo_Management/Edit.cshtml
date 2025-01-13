@@ -189,7 +189,8 @@
         const apiUrl = `@Url.Action("ReadBody", "EquipmentInfo_Management")/${ESN}`;
         $(async () => {
             const data = await readData(apiUrl);
-            console.log(data)
+            data.ESN = ESN;
+            console.log(data);
             init_EquipmentInfo({ data, edit: true });
         });
         async function readData(url) {

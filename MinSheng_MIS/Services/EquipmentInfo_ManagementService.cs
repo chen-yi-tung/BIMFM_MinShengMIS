@@ -1,5 +1,4 @@
-﻿using MathNet.Numerics;
-using MinSheng_MIS.Attributes;
+﻿using MinSheng_MIS.Attributes;
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Surfaces;
@@ -12,7 +11,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web;
-
 using static MinSheng_MIS.Services.UniParams;
 
 
@@ -134,10 +132,10 @@ namespace MinSheng_MIS.Services
             // 批次建立 Equipment_MaintainItemValue
             AddRangeMaintainItemValue(data, out var newItems);
 
-            // 建立保養單
+            // 建立30天內的保養單
             newItems.ForEach(item =>
             {
-                if (_maintainService.CheckIfCreateMaintainForm(item))
+                if (_maintainService.CheckIfCreateMaintainForm(item, true))
                     _maintainService.CreateMaintainForm(item);
             });
         }
@@ -215,7 +213,7 @@ namespace MinSheng_MIS.Services
                     if (IsEnumEqualToStr(form.Status, MaintenanceFormStatus.ToAssign))
                     {
                         // 刪除保養單
-                        _maintainService.DeleteMaintainForm(form);
+                        _db.Equipment_MaintenanceForm.Remove(form);
                         item.IsCreateForm = false;
                         _db.Equipment_MaintainItemValue.AddOrUpdate(item);
                     }
@@ -250,27 +248,13 @@ namespace MinSheng_MIS.Services
             foreach (var item in data.RFIDList)
                 await _rfidService.UpdateEquipRFIDAsync(item);
 
-            #region 刪除RFID及相關表格
             // 應刪除的RFID
             var delRFID = _rfidService.GetRFIDQueryByDto<RFID>(x => x.ESN == data.ESN)
                 .AsEnumerable()
                 .Where(x => !data.RFIDList.Any(d => d.InternalCode == x.RFIDInternalCode))
                 .ToList();
-            // 應刪除的巡檢路線模板(InspectionDefaultOrder) : 刪除RFID後無其他
-            var delPath = delRFID
-                .Where(x => x.InspectionDefaultOrder != null && !x.InspectionDefaultOrder.Any(i => !delRFID.Select(r => r.RFIDInternalCode).Contains(i.RFIDInternalCode)))
-                .SelectMany(x => x.InspectionDefaultOrder)
-                .Select(x => x.InspectionPathSample)
-                .Distinct()
-                .ToList();
-
-            // 刪除巡檢預設順序 : 使用應刪除的RFID
-            _samplePathService.DeleteInspectionDefaultOrder(delRFID.SelectMany(x => x.InspectionDefaultOrder));
-            // 刪除巡檢路線模板
-            delPath.ForEach(async x => await _samplePathService.DeleteInspectionPathSampleAsync(x));
-            // 刪除RFID
-            delRFID.ForEach(x => _rfidService.DeleteRFID(x));
-            #endregion
+            // 刪除RFID及相關表格
+            DeleteRFID(delRFID);
         }
         #endregion
 
@@ -358,13 +342,53 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 停用設備
+        public void DisableEquipment(EquipmentInfo data)
+        {
+            // 刪除模板與設備的關聯
+            data.TSN = null;
+            data.IsDelete = true;
+
+            _db.EquipmentInfo.AddOrUpdate(data);
+        }
+        #endregion
+
+        #region 批次刪除RFID資訊
+        public void DeleteRFID(List<RFID> data)
+        {
+            // 應刪除的巡檢路線模板(InspectionDefaultOrder) : 刪除RFID後無其他
+            var delPath = data
+                .Where(x =>
+                    x.InspectionDefaultOrder != null &&
+                    !x.InspectionDefaultOrder.Any(i =>
+                        !data.Select(r => r.RFIDInternalCode).Contains(i.RFIDInternalCode)
+                    )
+                )
+                .SelectMany(x => x.InspectionDefaultOrder)
+                .Select(x => x.InspectionPathSample)
+                .Distinct()
+                .ToList();
+
+            // 刪除巡檢預設順序 : 使用應刪除的RFID
+            _samplePathService.DeleteInspectionDefaultOrder(data.SelectMany(x => x.InspectionDefaultOrder));
+            // 刪除巡檢路線模板
+            delPath.ForEach(async x => await _samplePathService.DeleteInspectionPathSampleAsync(x));
+            // 刪除RFID
+            data.ForEach(x => _rfidService.DeleteRFID(x));
+        }
+        #endregion
+
         #region 批次刪除設備增設欄位值
-        public void DeleteAddFieldValueList(IDeleteAddFieldValueList data)
+        /// <summary>
+        /// 批次刪除設備增設欄位值
+        /// </summary>
+        /// <param name="data">要刪除的 EAFVSN 列表</param>
+        public void DeleteAddFieldValueList(IEnumerable<string> data)
         {
             if (data == null) return;
 
             var values = _db.Equipment_AddFieldValue
-                .Where(x => data.EAFVSN.Contains(x.EAFVSN))
+                .Where(x => data.Contains(x.EAFVSN))
                 .AsEnumerable();
 
             // 刪除關聯的 Equipment_AddFieldValue
@@ -373,12 +397,16 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 批次刪除設備保養資訊
-        public void DeleteMaintainItemValueList(IDeleteMaintainItemValueList data)
+        /// <summary>
+        /// 批次刪除設備保養資訊
+        /// </summary>
+        /// <param name="data">要刪除的 EMIVSN 列表</param>
+        public void DeleteMaintainItemValueList(IEnumerable<string> data)
         {
             if (data == null) return;
 
             var values = _db.Equipment_MaintainItemValue
-                .Where(x => data.EMIVSN.Contains(x.EMIVSN))
+                .Where(x => data.Contains(x.EMIVSN))
                 .AsEnumerable();
 
             // 刪除相關待派工及待執行的定期保養單

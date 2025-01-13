@@ -377,7 +377,7 @@ namespace MinSheng_MIS.Models.ViewModels
             MINameList = data.MaintainItemList?.Select(x => x.Value).AsEnumerable();
         }
 
-        public MaintainItemModifiableListInstance(in DeviceCardEditViewModel data, 
+        public MaintainItemModifiableListInstance(in IUpdateMaintainItemList data, 
             bool onlyEmptyMISSN = false, bool noEquipmentUsed = false, bool equipmentUsed = false)
         {
             TSN = data.TSN;

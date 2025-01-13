@@ -98,6 +98,37 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 報修單狀態
+        public enum ReportFormStatus
+        {
+            /// <summary>
+            /// 待派工
+            /// </summary>
+            [EnumLabel("待派工")]
+            ToAssign = 1,
+            /// <summary>
+            /// 待執行
+            /// </summary>
+            [EnumLabel("待執行")]
+            ToDo = 2,
+            /// <summary>
+            /// 待審核
+            /// </summary>
+            [EnumLabel("待審核")]
+            ToAduit = 3,
+            /// <summary>
+            /// 審核通過
+            /// </summary>
+            [EnumLabel("審核通過")]
+            Approved = 4,
+            /// <summary>
+            /// 審核未過
+            /// </summary>
+            [EnumLabel("審核未過")]
+            NotApproved = 5
+        }
+        #endregion
+
         #region 工單狀態
         public enum InspectionPlanState
         {

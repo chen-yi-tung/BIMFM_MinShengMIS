@@ -1,5 +1,4 @@
-﻿using MathNet.Numerics;
-using MinSheng_MIS.Models;
+﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -140,7 +139,6 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        // TODO
         #region 更新保養項目設定
         /// <summary>
         /// 更新保養項目設定及相關資料表
@@ -153,7 +151,7 @@ namespace MinSheng_MIS.Services
         public async Task UpdateMaintainItemListAsync(IUpdateMaintainItemList data)
         {
             // 資料驗證
-            MaintainItemDataAnnotation(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, noEquipmentUsed:true, equipmentUsed: true));
+            MaintainItemDataAnnotation(new MaintainItemModifiableListInstance(data, noEquipmentUsed:true, equipmentUsed: true));
 
             #region MaintainItemDetailModel 既有保養項目/未有設備使用之保養項目
             // 刪除 Template_MaintainItemSetting
@@ -172,7 +170,7 @@ namespace MinSheng_MIS.Services
             await _db.SaveChangesAsync();
 
             // 建立 Template_MaintainItemSetting
-            AddRangeMaintainItem(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, onlyEmptyMISSN: true, noEquipmentUsed: true), out _);
+            AddRangeMaintainItem(new MaintainItemModifiableListInstance(data, onlyEmptyMISSN: true, noEquipmentUsed: true), out _);
             #endregion
 
             #region AddEquipmentUsedMaintainItem 新增之保養項目及其於各設備值
@@ -180,11 +178,11 @@ namespace MinSheng_MIS.Services
             if (data.AddMaintainItemList?.Any() == true)
             {
                 // 建立 Template_MaintainItemSetting
-                AddRangeMaintainItem(new MaintainItemModifiableListInstance(data as DeviceCardEditViewModel, equipmentUsed: true), out var newItems);
+                AddRangeMaintainItem(new MaintainItemModifiableListInstance(data, equipmentUsed: true), out var newItems);
 
                 await _db.SaveChangesAsync();
 
-                // 建立 Equipment_MaintainItemValue
+                // 建立 Equipment_MaintainItemValue 及30天內的保養單
                 if (newItems != null && newItems.Any())
                 {
                     var valueTargetList = data.AddMaintainItemList?.GroupBy(x => x.ESN).Select(x =>
@@ -202,8 +200,6 @@ namespace MinSheng_MIS.Services
                     ?? Enumerable.Empty<UpdateMaintainItemValueInstance>();
                     foreach (var value in valueTargetList)
                         await _eMgmtService.CreateEquipmentMaintainItemsValue(value, true);
-
-                    // TODO : 建立30天內的保養單
                 }
             }
             #endregion
@@ -361,11 +357,9 @@ namespace MinSheng_MIS.Services
 
             // 刪除關聯的 Equipment_AddFieldValue
             _eMgmtService.DeleteAddFieldValueList(
-                new DeleteAddFieldValueList(
-                    fields.SelectMany(x => x.Equipment_AddFieldValue
-                        .Select(e => e.EAFVSN))
+                fields.SelectMany(x => x.Equipment_AddFieldValue
+                    .Select(e => e.EAFVSN))
                     .AsEnumerable()
-                )
             );
 
             // 刪除 Template_AddField
@@ -385,11 +379,9 @@ namespace MinSheng_MIS.Services
             // 刪除相關待派工及待執行的定期保養單
             // 刪除關聯的 Equipment_MaintainItemValue
             _eMgmtService.DeleteMaintainItemValueList(
-                new DeleteMaintainItemValueList(
-                    items.SelectMany(x => x.Equipment_MaintainItemValue
-                        .Select(e => e.EMIVSN))
+                items.SelectMany(x => x.Equipment_MaintainItemValue
+                    .Select(e => e.EMIVSN))
                     .AsEnumerable()
-                )
             );
 
             // 刪除 Template_MaintainItemSetting

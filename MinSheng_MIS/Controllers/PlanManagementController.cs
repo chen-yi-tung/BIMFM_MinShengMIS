@@ -5,10 +5,8 @@ using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
 using System.Data.Entity;
-using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using System.Transactions;
-using System.Web.Http.Results;
 using System.Web.Mvc;
 using static MinSheng_MIS.Services.UniParams;
 

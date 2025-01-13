@@ -6,6 +6,7 @@ using MinSheng_MIS.Models.ViewModels;
 using System.Threading.Tasks;
 using System.Data.Entity;
 using Microsoft.Ajax.Utilities;
+using System.Data.Entity.Migrations;
 
 namespace MinSheng_MIS.Services
 {
@@ -23,23 +24,6 @@ namespace MinSheng_MIS.Services
             _sampleScheduleService = new SampleSchedule_ManagementService(_db);
             _planService = new PlanManagementService(_db);
         }
-
-        #region 獲取巡檢路線模板
-        public static T GetSamplePath<T>(Bimfm_MinSheng_MISEntities db, string planPathSN) 
-            where T : class, new()
-        {
-            var sample = db.InspectionPathSample.Find(planPathSN)
-                ?? throw new MyCusResException("查無資料！");
-
-            return sample.ToDto<InspectionPathSample, T>();
-        }
-
-        public T GetSamplePath<T>(string planPathSN)
-            where T : class, new()
-        {
-            return GetSamplePath<T>(_db, planPathSN);
-        }
-        #endregion
 
         #region 可新增之巡檢設備RFID
         public GridResult<InspectionRFIDsViewModel> GetJsonForGrid_EquipmentRFIDs(EquipmentRFIDSearchParamViewModel data)
@@ -127,11 +111,11 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 新增巡檢路線模板
-        public async Task<string> CreateSamplePathAsync(ISamplePathModifiableList data)
+        #region 新增巡檢路線模板 InspectionPathSample
+        public async Task<string> CreateSamplePathAsync(ICreateSamplePathInfo data)
         {
             // 資料驗證
-            PathSampleDataAnnotation(data);
+            PathSampleDataAnnotation((IEditSamplePathInfo)data);
 
             // 前一筆資料
             var latest = await _db.InspectionPathSample.OrderByDescending(x => x.PlanPathSN).FirstOrDefaultAsync();
@@ -150,7 +134,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 建立巡檢設備順序
+        #region 建立巡檢設備順序 InspectionDefaultOrder
         public void CreateInspectionDefaultOrders(IDefaultOrderModifiableList data)
         {
             // 資料驗證
@@ -161,7 +145,24 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 獲取巡檢設備順序
+        #region 獲取巡檢路線模板 InspectionPathSample
+        public T GetSamplePath<T>(string planPathSN)
+            where T : class, new()
+        {
+            return GetSamplePath<T>(_db, planPathSN);
+        }
+
+        public static T GetSamplePath<T>(Bimfm_MinSheng_MISEntities db, string planPathSN)
+            where T : class, new()
+        {
+            var sample = db.InspectionPathSample.Find(planPathSN)
+                ?? throw new MyCusResException("查無資料！");
+
+            return sample.ToDto<InspectionPathSample, T>();
+        }
+        #endregion
+
+        #region 獲取巡檢設備順序 InspectionDefaultOrder
         public List<IInspectionRFIDs> GetDefaultOrderRFIDInfoList(string planPathSN)
         {
             var codes = _db.InspectionDefaultOrder.Where(x => x.PlanPathSN == planPathSN)
@@ -192,7 +193,40 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 刪除巡檢路線模板
+        #region 編輯巡檢路線模板 InspectionPathSample
+        public async Task EditSamplePathAsync(IEditSamplePathInfo data)
+        {
+            if (!await _db.InspectionPathSample.AnyAsync(x => x.PlanPathSN == data.PlanPathSN))
+                throw new MyCusResException("模板不存在！");
+
+            // 資料驗證
+            PathSampleDataAnnotation(data);
+
+            // 更新 InspectionPathSample
+            var path = data.ToDto<IEditSamplePathInfo, InspectionPathSample>();
+
+            _db.InspectionPathSample.AddOrUpdate(path);
+        }
+        #endregion
+
+        #region 編輯巡檢設備順序 InspectionDefaultOrder
+        public async Task EditInspectionDefaultOrdersAsync(IDefaultOrderModifiableList data)
+        {
+            // 資料驗證
+            DefaultOrderDataAnnotation(data);
+
+            // 清除 InspectionDefaultOrder
+            var orders = _db.InspectionDefaultOrder.Where(x => x.PlanPathSN == data.PlanPathSN);
+            DeleteInspectionDefaultOrder(orders);
+
+            await _db.SaveChangesAsync();
+
+            // 批次建立 InspectionDefaultOrder
+            AddRangeDefaultOrder(data);
+        }
+        #endregion
+
+        #region 刪除巡檢路線模板 InspectionPathSample
         public async Task DeleteInspectionPathSampleAsync(InspectionPathSample data)
         {
             if (data != null)
@@ -254,12 +288,12 @@ namespace MinSheng_MIS.Services
         //-----資料驗證
 
         #region InspectionPathSample 資料驗證
-        private void PathSampleDataAnnotation(ISamplePathModifiableList data, string planPathSN = null)
+        private void PathSampleDataAnnotation(IEditSamplePathInfo data)
         {
             // 不可重複：巡檢路線名稱
-            var sample = string.IsNullOrEmpty(planPathSN) ?
+            var sample = string.IsNullOrEmpty(data.PlanPathSN) ?
                 _db.InspectionPathSample :
-                _db.InspectionPathSample.Where(x => x.PlanPathSN != planPathSN);
+                _db.InspectionPathSample.Where(x => x.PlanPathSN != data.PlanPathSN);
 
             if (sample.Select(x => x.PathName).AsEnumerable().Contains(data.PathName))
                 throw new MyCusResException("巡檢路線名稱已被使用！");
@@ -276,12 +310,21 @@ namespace MinSheng_MIS.Services
                 throw new MyCusResException($"巡檢設備不可超過100000項！"); 
             // 不可重複：RFID內碼
             if (data.RFIDInternalCodes.Count() != data.RFIDInternalCodes.Distinct().Count())
-                throw new MyCusResException($"RFID內碼不可重複！");
+                throw new MyCusResException($"設備RFID不可重複！");
+            var equipmentRFID = _rfidService
+                .GetRFIDQueryByDto<RFID>(x => string.IsNullOrEmpty(x.SARSN))
+                .AsEnumerable();
             // 關聯性PK是否存在：RFID內碼
-            if (Helper.AreListsEqualIgnoreOrder(
-                data.RFIDInternalCodes, 
-                _db.RFID.Where(x => string.IsNullOrEmpty(x.SARSN)).Select(x => x.RFIDInternalCode)))
+            if (Helper.AreListsEqualIgnoreOrder(data.RFIDInternalCodes, equipmentRFID.Select(x => x.RFIDInternalCode)))
                 throw new MyCusResException("設備RFID不存在！");
+            // RFID的設備巡檢頻率是否與模板相同
+            if (equipmentRFID
+                .Where(x => data.RFIDInternalCodes.Contains(x.RFIDInternalCode))
+                .Any(x =>
+                    x.EquipmentInfo?.Template_OneDeviceOneCard?.Frequency.HasValue != true ||
+                    x.EquipmentInfo.Template_OneDeviceOneCard.Frequency != data.Frequency
+                ))
+                throw new MyCusResException("設備的巡檢頻率與模板不同，請確認後重新送出！");
         }
         #endregion
 

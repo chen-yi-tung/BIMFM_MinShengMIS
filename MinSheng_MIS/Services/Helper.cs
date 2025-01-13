@@ -140,25 +140,6 @@ namespace MinSheng_MIS.Services
                 }, new JsonMediaTypeFormatter())
             });
         }
-
-        /// <summary>
-        /// 將錯誤訊息清單改寫成html
-        /// </summary>
-        /// <param name="list">錯誤訊息清單</param>
-        /// <param name="errorTitle">錯誤訊息主題</param>
-        /// <returns></returns>
-        public static string HandleErrorMessageList(List<string> list, string errorTitle = null)
-        {
-            string result = string.Empty;
-            if (!string.IsNullOrEmpty(errorTitle)) result += "</br>" + errorTitle;
-            // html列表
-            if (!list.Any()) return null;
-            result += "<ul>";
-            foreach (string error in list)
-                result += $"<li>{error}</li>";
-            result += "</ul>";
-            return result;
-        }
         #endregion
 
         #region DTO轉換

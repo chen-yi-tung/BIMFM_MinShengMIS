@@ -1,4 +1,4 @@
-﻿const DEBUG_TEST = true;
+﻿const DEBUG_TEST = false;
 async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
     const fileUploader = new FileUploader({
         container: "#FileUploader",
@@ -276,6 +276,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
             } else {
                 fd.append("FileName", file.name);
             }
+            fd.append("ESN", data.ESN);
         }
         else if (fileUploader.hasFile()) {
             fd.append("EPhoto", fileUploader.getFile());

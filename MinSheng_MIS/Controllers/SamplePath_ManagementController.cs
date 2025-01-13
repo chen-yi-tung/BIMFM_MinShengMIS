@@ -4,6 +4,7 @@ using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
@@ -103,6 +104,48 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Edit()
         {
             return View();
+        }
+
+        /// <summary>
+        /// 編輯巡檢路線模板
+        /// </summary>
+        /// <param name="data">使用者input</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult> EditSamplePath(SamplePathEditViewModel data)
+        {
+            try
+            {
+                // Data Annotation
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
+
+                using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    // 更新 InspectionPathSample
+                    await _samplePathService.EditSamplePathAsync(data);
+                    // 更新 InspectionDefaultOrder
+                    await _samplePathService.EditInspectionDefaultOrdersAsync(data);
+
+                    await _db.SaveChangesAsync();
+
+                    trans.Complete();
+                }
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
         }
         #endregion
 

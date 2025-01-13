@@ -430,16 +430,6 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 刪除設備保養單資訊
-        public void DeleteMaintainForm(Equipment_MaintenanceForm data)
-        {
-            if (_db.Equipment_MaintenanceForm?.Any(x => x.EMFSN == data.EMFSN) != true)
-                throw new MyCusResException("查無資料！");
-
-            _db.Equipment_MaintenanceForm.Remove(data);
-        }
-        #endregion
-
         #region 查詢符合Dto的設備保養單資訊
         /// <summary>
         /// 依據條件查詢Equipment_MaintenanceForm後，以指定資料型別回傳
