@@ -21,6 +21,7 @@
         &[id^="pin_equipment"] {
             pointer-events: none;
             transform: translate(-50%, -100%);
+            filter: drop-shadow(2px 4px 6px rgb(0, 0, 0, 60%));
         }
 
         &[id^="pin_bluetooth-"] {

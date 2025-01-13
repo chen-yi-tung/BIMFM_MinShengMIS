@@ -1,5 +1,5 @@
-﻿const DEBUG_TEST = false;
-async function init_Create() {
+﻿const DEBUG_TEST = true;
+async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
     const fileUploader = new FileUploader({
         container: "#FileUploader",
         className: "form-group col-3fr required",
@@ -68,6 +68,7 @@ async function init_Create() {
                 value: data.ASN,
                 fsnValue: data.FSN,
             });
+            this.modal.querySelector("#Name").value = data.Name ?? "";
             this.modal.querySelector("#Memo").value = data.Memo ?? "";
             this.data = data;
         },
@@ -100,6 +101,11 @@ async function init_Create() {
             }
             
             const data = this.getData();
+
+            if (!(data.LocationX && data.LocationY)) {
+                DT.createDialogModal("請設定RFID座標")
+                return;
+            }
 
             if (data.isEdit === "true") {
                 RFIDGrid.edit(data);
@@ -181,16 +187,54 @@ async function init_Create() {
         },
     });
     const RFIDLocationModal = new RFID_Location_Modal();
+    const SampleContent = await init_SampleContent({ data });
     RFIDModal.init();
 
-    formDropdown.ASN();
-    formDropdown.pushSelect({
-        id: "SampleName",
-        url: "/DropDownList/OneDeviceOneCardTemplates",
+    formDropdown.ASN({
+        value: data?.ASN ?? null,
+        fsnValue: data?.FSN ?? null,
     });
 
-    init_SampleName();
+    if (!edit || !data) {
+        return;
+    }
+    for (const [k, v] of Object.entries(data)) {
+        if (k === 'FilePath') {
+            fileUploader.setFile(data.FilePath);
+        }
+        else {
+            $(`#${k}`).val(v);
+        }
+    }
 
+    //如果GUID不為空，不可編輯 棟別、樓層
+    if (data.GUID !== "") {
+        document.querySelectorAll('#ASN, #FSN').forEach(el => {
+            el.setAttribute('disabled', true);
+            el.removeAttribute('requierd');
+            el.parentElement.classList.remove('required');
+        })
+    }
+    
+    if (data?.RFIDList) {
+        data.RFIDList.forEach((d) => {
+            const row = {
+                InternalCode: d.InternalCode,
+                ExternalCode: d.ExternalCode,
+                ASN: d.ASN,
+                FSN: d.FSN,
+                Area: d.AreaName,
+                Floor: d.FloorName,
+                Name: d.Name,
+                Memo: d.Memo,
+                LocationX: d.Location_X,
+                LocationY: d.Location_Y
+            }
+            RFIDGrid.add(row);
+        })
+    }
+
+    
     function save() {
         //指定驗證的form
         const form = document.getElementById("EquipForm");
@@ -200,13 +244,12 @@ async function init_Create() {
             return;
         }
 
-        const TSN = document.getElementById("SampleName").value;
-        const SampleData = IntegrateSampleData(TSN);
+        const SampleData = SampleContent.getData();
         const fd = new FormData();
 
         //有選模板的話，才傳送模板資訊
-        if (TSN) {
-            fd.append("TSN", TSN);
+        if (SampleData) {
+            fd.append("TSN", SampleData.TSN);
             SampleData.AddFieldList.forEach((item, i) => {
                 for (const key in item) {
                     fd.append(`AddFieldList[${i}][${key}]`, item[key]);
@@ -218,10 +261,18 @@ async function init_Create() {
                 }
             });
         }
-
-        if (fileUploader.hasFile()) {
+        if (edit) {
+            const file = fileUploader.getFile();
+            if (file.size) {
+                fd.append("EPhoto", file);
+            } else {
+                fd.append("FileName", file.name);
+            }
+        }
+        else if (fileUploader.hasFile()) {
             fd.append("EPhoto", fileUploader.getFile());
         }
+
         document.querySelectorAll("#basicZone input, #basicZone select, #basicZone textarea").forEach((el) => {
             if (el.id && el.type !== "file" && el.type !== "checkbox" && el.id !== "ASN") {
                 fd.append(el.id, el.value);
@@ -245,9 +296,10 @@ async function init_Create() {
         console.log("最後傳出的資料為", Object.fromEntries(fd));
 
         if (DEBUG_TEST) return;
-
+        const submitUrl = edit ? "/EquipmentInfo_Management/Edit/Equipment" : "/EquipmentInfo_Management/CreateEquipment"
+        const actionName = edit ? "編輯" : "新增";
         $.ajax({
-            url: "/EquipmentInfo_Management/CreateEquipment",
+            url: submitUrl,
             data: fd,
             type: "POST",
             contentType: false,
@@ -259,12 +311,12 @@ async function init_Create() {
         function onSuccess(res) {
             console.log(res);
             if (res.ErrorMessage) {
-                createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！${res.ErrorMessage || ""}` });
+                createDialogModal({ id: "DialogModal-Error", inner: `${actionName}失敗！${res.ErrorMessage || ""}` });
                 return;
             }
             createDialogModal({
                 id: "DialogModal-Success",
-                inner: "新增成功！",
+                inner: `${actionName}成功！`,
                 onHide: () => {
                     window.location.href = "/EquipmentInfo_Management/Index";
                 },
@@ -272,76 +324,78 @@ async function init_Create() {
         }
         function onError(res) {
             console.log(res);
-            createDialogModal({ id: "DialogModal-Error", inner: `新增失敗！${res?.responseText || ""}` });
+            createDialogModal({ id: "DialogModal-Error", inner: `${actionName}失敗！${res?.responseText || ""}` });
         }
 
-        function IntegrateSampleData(TSN) {
-            if (TSN) {
-                //整理 增設基本資料欄位
-                const addItems = $("#addItemZone")
-                    .children()
-                    .toArray()
-                    .map((e) => ({
-                        AFSN: $(e).find("input[name^='addField_SN']").val(),
-                        Value: $(e).find("input[name^='addField_value']").val(),
-                    }));
-
-                //整理 保養項目/週期/下次保養日期
-                const maintainItems = $("#MaintainZone")
-                    .children()
-                    .toArray()
-                    .map((e) => ({
-                        MISSN: $(e).find("input[name^='addField_SN']").val(),
-                        Period: $(e).find("select[name^='period']").val(),
-                        NextMaintainDate: $(e).find("input[name^='nextMaintainDate']").val(),
-                    }));
-
-                return {
-                    AddFieldList: addItems,
-                    MaintainItemList: maintainItems,
-                };
-            }
-        }
+        
     }
 }
 
-function init_SampleName() {
-    //監聽 模板名稱，有選擇就顯示模板資訊內容
-    document.getElementById("SampleName").addEventListener("change", function () {
-        const sampleContent = document.getElementById("sampleContent");
-        if (this.value) {
-            sampleContent.style.display = "flex";
-        } else {
-            sampleContent.style.display = "none";
-        }
-
-        if (this.value !== "") {
-            $.ajax({
-                url: `/OneDeviceOneCard_Management/ReadBody/${this.value}`,
-                type: "GET",
-                contentType: "application/json",
-                processData: false,
-                success: onSuccess,
-                error: onError,
-            });
-        }
-
-        function onSuccess(res) {
-            const data = res.Datas;
-            if (!data) {
-                console.log("無模板資訊內容");
-                return;
+async function init_SampleContent({ data = {} }) {
+    this.originTSN = data?.TSN;
+    this.originData;
+    this.content = document.getElementById("sampleContent");
+    this.select = await formDropdown.pushSelect({
+        id: "TSN",
+        url: "/DropDownList/OneDeviceOneCardTemplates",
+    });
+    
+    if (this.originTSN) {
+        formDropdown.setValue(this.select, this.originTSN)
+        this.content.style.display = 'flex';
+        const res = await $.ajax({
+            url: `/OneDeviceOneCard_Management/ReadBody/${this.originTSN}`,
+            type: "GET",
+            contentType: "application/json",
+            processData: false,
+            error(ex) {
+                console.log(res);
             }
-            showSampleContent(data);
+        })
+        await showSampleContent(res.Datas, data);
+        this.originData = {
+            AddFieldList: data.AddFieldList,
+            MaintainItemList: data.MaintainItemList,
+        };
+        await pushSampleContent(this.originData);
+        console.log(this.select.options.selectedIndex)
+    } else {
+        this.content.style.display = 'none';
+    }
 
+    //監聽 模板名稱，有選擇就顯示模板資訊內容
+    this.select.addEventListener("change", async (e) => {
+        console.log(this.select.options.selectedIndex)
+        const selectedValue = this.select.value;
+        if (!selectedValue) {
+            this.content.style.display = "none";
+            return;
         }
-        function onError(res) {
-            console.log("拿取模板名稱失敗");
+        this.content.style.display = "flex";
+        const res = await $.ajax({
+            url: `/OneDeviceOneCard_Management/ReadBody/${selectedValue}`,
+            type: "GET",
+            contentType: "application/json",
+            processData: false,
+            error(ex) {
+                console.log("拿取模板名稱失敗");
+                console.log(ex);
+            },
+        });
+
+        const data = res.Datas;
+        if (!data) {
+            console.log("無模板資訊內容");
+            return;
+        }
+        showSampleContent(data);
+        if (selectedValue === this.originTSN) {
+            pushSampleContent(this.originData)
         }
     });
 
     //建立 模板內容
-    function showSampleContent(Sampledata, data) {
+    async function showSampleContent(Sampledata, data) {
         const addFieldSection = document.getElementById("addFieldSection");
         const maintainSection = document.getElementById("maintainSection");
         const inspectionInfoSection = document.getElementById("inspectionInfoSection");
@@ -359,7 +413,7 @@ function init_SampleName() {
         }
 
         if (Sampledata.MaintainItemList.length > 0) {
-            createMaintainItem(Sampledata.MaintainItemList, "MaintainZone", data?.MaintainItemList);
+            await createMaintainItem(Sampledata.MaintainItemList, "MaintainZone", data?.MaintainItemList);
             maintainSection.style.display = "block";
         } else {
             maintainSection.style.display = "none";
@@ -472,5 +526,52 @@ function init_SampleName() {
             }
         }
     }
+
+    //塞值進 模板
+    async function pushSampleContent(data) {
+        if (data.AddFieldList?.length > 0) {
+            data.AddFieldList.forEach((e) => {
+                $(`[data-afsn="${e.AFSN}"]`).val(e.Value)
+            })
+        }
+        if (data.MaintainItemList?.length > 0) {
+            data.MaintainItemList.forEach((e) => {
+                const div = $(`[data-missn="${e.MISSN}"]`)
+                div.find(`[data-name="Period"]`).val(e.Period)
+                div.find(`[data-name="NextMaintainDate"]`).val(e.NextMaintainDate.replace(/\//g, '-'))
+            })
+        }
+    }
+
+    this.getData = getSampleData;
+    function getSampleData() {
+        if (!this.select.value) { return }
+        
+        //整理 增設基本資料欄位
+        const addItems = $("#addItemZone")
+            .children()
+            .toArray()
+            .map((e) => ({
+                AFSN: $(e).find("input[name^='addField_SN']").val(),
+                Value: $(e).find("input[name^='addField_value']").val(),
+            }));
+
+        //整理 保養項目/週期/下次保養日期
+        const maintainItems = $("#MaintainZone")
+            .children()
+            .toArray()
+            .map((e) => ({
+                MISSN: $(e).find("input[name^='addField_SN']").val(),
+                Period: $(e).find("select[name^='period']").val(),
+                NextMaintainDate: $(e).find("input[name^='nextMaintainDate']").val(),
+            }));
+
+        return {
+            TSN: this.select.value,
+            AddFieldList: addItems,
+            MaintainItemList: maintainItems,
+        };
+    }
+    return this;
 }
 
