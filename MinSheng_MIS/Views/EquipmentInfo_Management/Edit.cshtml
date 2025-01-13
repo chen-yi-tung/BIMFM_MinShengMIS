@@ -390,8 +390,8 @@
                         success: onSuccess,
                         error: onError
                     })
-                    function onSuccess(res) {
-                        showSampleContent(res.Datas, data);
+                    async function onSuccess(res) {
+                        await showSampleContent(res.Datas, data);
                         Origin_TSN = data.TSN;
                         Origin_TSN_Info = {
                             AddFieldList: data.AddFieldList,
@@ -562,7 +562,7 @@
         }
 
         //建立 模板內容
-        function showSampleContent(Sampledata, data) {
+        async function showSampleContent(Sampledata, data) {
             if (Sampledata.AddItemList.length > 0) {
                 createAddItem(Sampledata);
                 addFieldSection.style.display = "block";
@@ -570,13 +570,14 @@
                 addFieldSection.style.display = "none";
             }
             if (Sampledata.MaintainItemList.length > 0) {
-                createMaintainItem(Sampledata.MaintainItemList, "MaintainZone");
+                await createMaintainItem(Sampledata.MaintainItemList, "MaintainZone");
                 maintainSection.style.display = "block";
             } else {
                 maintainSection.style.display = "none";
             }
             if (Sampledata.Frequency) {
                 InspectionRecord("#InspectionRecord", Sampledata);
+                $('#d-Frequency').append("小時");
                 inspectionInfoSection.style.display = "block";
             } else {
                 inspectionInfoSection.style.display = "none";

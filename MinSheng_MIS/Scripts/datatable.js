@@ -409,7 +409,7 @@ function createInspectionTable(options) {
 }
 
 //新增 保養項目/週期/下次保養日期 欄位
-function createMaintainItem(options, containerId,  equipmentData) {
+async function createMaintainItem(options, containerId,  equipmentData) {
     const MaintainEditZone = document.getElementById(containerId);
     if (!MaintainEditZone) {
         return;
@@ -449,8 +449,8 @@ function createMaintainItem(options, containerId,  equipmentData) {
         period.className = "form-select"
         period.name = `period-${i}`;
         period.id = `period-${i}`;
-        period.required = true;
         period.dataset.name = "Period";
+        period.required = true;
 
         const nextMaintainDate = document.createElement("input");
         nextMaintainDate.className = "form-control";
@@ -465,20 +465,22 @@ function createMaintainItem(options, containerId,  equipmentData) {
         div.appendChild(nextMaintainDate);
         MaintainEditZone.appendChild(div);
 
-        $.getJSON("/DropDownList/MaintainPeriod", function (res) {
-            let name = "Text";
-            let value = "Value";
-            const selects = document.querySelectorAll(`#${containerId} [name^="period"]`);
-            selects.forEach(element => {
-                $(element).empty();
-                $(element).append(`<option value="">請選擇週期</option>`);
-                $.each(res, function (i, e) {
-                    $(element).append('<option value="' + e[value] + '">' + e[name] + '</option>')
-                })
-            });
-        });
+        
     })
+    await $.getJSON("/DropDownList/MaintainPeriod", function (res) {
+        let name = "Text";
+        let value = "Value";
+        const selects = document.querySelectorAll(`#${containerId} [name^="period"]`);
+        selects.forEach(element => {
+            $(element).empty();
+            $(element).append(`<option value="">請選擇週期</option>`);
+            $.each(res, function (i, e) {
+                $(element).append('<option value="' + e[value] + '">' + e[name] + '</option>')
+            })
+        });
+    });
 }
+
 
 function createAccordion(options) {
     const finishStatusDefault = "未完成";
