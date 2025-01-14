@@ -148,8 +148,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="ModelFrequency">巡檢頻率</label>
-                            <select class="form-select" name="ModelFrequency" id="ModelFrequency" disabled></select>
+                            <label for="Frequency">巡檢頻率</label>
+                            <select class="form-select" name="Frequency" id="Frequency" disabled></select>
                         </div>
 
                         <div class="button-group">
@@ -187,8 +187,18 @@
             await addAreaFloorEvent();
             // 初始化模板
             await sampleTr.init();
-            await formDropdown.pushSelect({ id: "Frequency", url: '@Url.Action("Frequency", "DropDownList")' });
-            await formDropdown.pushSelect({ id: "ModelFrequency", url: '@Url.Action("Frequency", "DropDownList")' });
+            await $.getJSON("/DropDownList/Frequency", function (res) {
+                let name = "Text";
+                let value = "Value";
+                const selects = document.querySelectorAll('#Frequency');
+                selects.forEach(element => {
+                    $(element).empty();
+                    $(element).append(`<option value="">請選擇</option>`);
+                    $.each(res, function (i, e) {
+                        $(element).append('<option value="' + e[value] + '">' + e[name] + '</option>')
+                    })
+                });
+            });
             setSortableItem("#item-area");
             readData(apiUrl, PlanPathSN);
             $("#Frequency").on('change', () => {
