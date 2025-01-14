@@ -360,6 +360,7 @@
                 let item = this.sample.clone();
                 this.count++;
                 item.attr('id', `row_${this.count}`);
+                item.find("#d-Num").text(this.count)
                 if (data) {
                     item.find("#PlanPathSN").val(data.PlanPathSN);
                     item.find("#StartTime").val(data.StartTime);

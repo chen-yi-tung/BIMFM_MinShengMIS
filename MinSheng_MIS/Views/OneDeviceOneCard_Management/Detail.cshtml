@@ -181,7 +181,7 @@
                 InspectionInfo("#InspectionInfo", res.Datas);
                 const frequencyDiv = document.querySelector('#d-Frequency');
                 if (frequencyDiv) {
-                    frequencyDiv.textContent += '小時';
+                    frequencyDiv.textContent = '每' + frequencyDiv.textContent + '小時';
                 }
                 displaySections(res.Datas);
             }

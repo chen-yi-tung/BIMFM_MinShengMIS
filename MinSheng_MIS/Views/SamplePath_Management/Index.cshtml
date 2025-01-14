@@ -15,7 +15,10 @@
                 <label for="PathName">巡檢路線名稱</label>
                 <input class="form-control" id="PathName" name="PathName" type="text" />
             </div>
-
+            <div class="form-group">
+                <label for="Frequency">巡檢頻率</label>
+                <select class="form-select" name="Frequency" id="Frequency"></select>
+            </div>
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
                 <button type="reset" class="btn btn-clear" id="clear">清除</button>
@@ -51,6 +54,7 @@
             } catch (error) {
                 console.log("無法取得權限", error);
             }
+            await pushSelect("Frequency", '@Url.Action("Frequency", "DropDownList")');
             Initialize_DataGrid(getGridJSON, __authority__);
             addSearchAreaClickEvent();
             if (__authority__ === "3") {

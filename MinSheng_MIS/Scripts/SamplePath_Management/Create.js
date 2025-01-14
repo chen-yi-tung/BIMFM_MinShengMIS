@@ -54,7 +54,7 @@ function addButtonEvent() {
     })
     $("#submit").click(function () {
         console.log("onclick submit");
-        let data = getCreateSaveData(sampleTr);
+        let data = getCreateSaveData(sampleTr, PlanPathSN);
         if (data) save(data);
     })
     $("#clear").click(function () {
@@ -78,7 +78,7 @@ function addButtonEvent() {
             createDialogModal({ id: "DialogModal", inner: "請先選擇巡檢頻率", button: [{ className: "btn btn-export", cancel: true, text: "確定" }] })
             return
         }
-        $("#ModalForm #Frequency").val(feq);
+        $("#ModelFrequency").val(feq);
         let b = document.createElement("button");
         b.type = "button";
         b.setAttribute("data-bs-toggle", "modal");
@@ -93,7 +93,7 @@ function addButtonEvent() {
  * 檢查必填、其他限制並返回相對應資料
  * @returns
  */
-function getCreateSaveData(sampleTr) {
+function getCreateSaveData(sampleTr, sn) {
 
     let PathName = $("#InspectionForm #PathName").val(),
         Frequency = $("#InspectionForm #Frequency").val(),
@@ -106,7 +106,6 @@ function getCreateSaveData(sampleTr) {
     if (!Frequency) {
         dialogError("未選擇巡檢頻率！")
         return;
-
     }
     if (!sampleTr.checkValidity()) {
         dialogError("請至少新增一項巡檢設備！")
@@ -117,6 +116,10 @@ function getCreateSaveData(sampleTr) {
         PathName,
         Frequency,
         RFIDInternalCodes
+    }
+
+    if (sn) {
+        data.PlanPathSN = sn;
     }
 
     return data;
