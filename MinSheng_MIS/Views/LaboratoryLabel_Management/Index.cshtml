@@ -84,6 +84,7 @@
                 method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'ELSN',
+                remoteSort: true,
                 //sortName: 'ELSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),

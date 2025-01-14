@@ -121,6 +121,7 @@
                 method: 'POST',
                 queryParams: getQueryParams(),
                 idField: 'IAWSN',
+                remoteSort: true,
                 //sortName: 'IAWSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),

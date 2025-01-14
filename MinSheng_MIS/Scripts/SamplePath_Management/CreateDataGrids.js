@@ -13,7 +13,8 @@ const AEDGOptions = {
     sampleTr: sampleTr,
     datagridOptions: {
         idField: 'InternalCode',
-        remoteSort: false,
+        //remoteSort: false,
+        remoteSort: true,
         sortOrder: 'asc',
         singleSelect: true,
         selectOnCheck: false,

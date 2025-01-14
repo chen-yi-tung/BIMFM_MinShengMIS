@@ -98,11 +98,6 @@ function ShowEquipment(selector, data, addItems) {
             }
         });
     }
-    console.log("data", data)
-    console.log("addItems", addItems)
-    console.log('selector', $(selector));
-    console.log('data.IName', data.IName);
-
     $(selector).append(
         data ?
             createAccordion({

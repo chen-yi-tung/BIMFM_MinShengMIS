@@ -22,17 +22,7 @@
                 </div>
                 <div class="form-group required">
                     <label for="Frequency">巡檢頻率</label>
-                    <select class="form-select" name="Frequency" id="Frequency" required>
-                        <option value="">請選擇</option>
-                        <option value="1">1小時</option>
-                        <option value="2">2小時</option>
-                        <option value="3">3小時</option>
-                        <option value="4">4小時</option>
-                        <option value="5">6小時</option>
-                        <option value="6">8小時</option>
-                        <option value="7">12小時</option>
-                        <option value="8">24小時</option>
-                    </select>
+                    <select class="form-select" name="Frequency" id="Frequency" required></select>
                 </div>
             </div>
             <hr class="hr-default" />
@@ -158,18 +148,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="Frequency">巡檢頻率</label>
-                            <select class="form-select" name="Frequency" id="Frequency" disabled>
-                                <option value="">請選擇</option>
-                                <option value="1">1小時</option>
-                                <option value="2">2小時</option>
-                                <option value="3">3小時</option>
-                                <option value="4">4小時</option>
-                                <option value="5">6小時</option>
-                                <option value="6">8小時</option>
-                                <option value="7">12小時</option>
-                                <option value="8">24小時</option>
-                            </select>
+                            <label for="ModelFrequency">巡檢頻率</label>
+                            <select class="form-select" name="ModelFrequency" id="ModelFrequency" disabled></select>
                         </div>
 
                         <div class="button-group">
@@ -207,6 +187,8 @@
             await addAreaFloorEvent();
             // 初始化模板
             await sampleTr.init();
+            await formDropdown.pushSelect({ id: "Frequency", url: '@Url.Action("Frequency", "DropDownList")' });
+            await formDropdown.pushSelect({ id: "ModelFrequency", url: '@Url.Action("Frequency", "DropDownList")' });
             setSortableItem("#item-area");
             readData(apiUrl, PlanPathSN);
             $("#Frequency").on('change', () => {
