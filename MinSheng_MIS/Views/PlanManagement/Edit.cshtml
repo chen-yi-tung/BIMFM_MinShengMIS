@@ -318,7 +318,7 @@
             function onSuccess(res) {
                 res = res.Datas
                 if (convertFrequency) {
-                    const convertString = (v) => `每${v}個小時`
+                    const convertString = (v) => `每${v}小時`
                     res.Frequency = convertString(res.Frequency);
                 }
                 console.log("getPathDetail(after converting)", res);
