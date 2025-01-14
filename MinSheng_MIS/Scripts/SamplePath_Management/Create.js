@@ -78,7 +78,7 @@ function addButtonEvent() {
             createDialogModal({ id: "DialogModal", inner: "請先選擇巡檢頻率", button: [{ className: "btn btn-export", cancel: true, text: "確定" }] })
             return
         }
-        $("#ModelFrequency").val(feq);
+        $("#ModalForm #Frequency").val(feq);
         let b = document.createElement("button");
         b.type = "button";
         b.setAttribute("data-bs-toggle", "modal");
