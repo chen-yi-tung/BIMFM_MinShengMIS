@@ -3,6 +3,7 @@ using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
+using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Web.Mvc;
@@ -34,34 +35,6 @@ namespace MinSheng_MIS.Controllers
         }
 
         /// <summary>
-        /// 新增巡檢設備Grid
-        /// </summary>
-        /// <param name="data">查詢條件及Grid參數</param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult AddEquipmentRFIDsGrid(EquipmentRFIDSearchParamViewModel data)
-        {
-            try
-            {
-                var grid = _samplePathService.GetJsonForGrid_EquipmentRFIDs(data);
-                return Content(JsonConvert.SerializeObject(new JsonResService<GridResult<InspectionRFIDsViewModel>>
-                {
-                    AccessState = ResState.Success,
-                    ErrorMessage = null,
-                    Datas = grid,
-                }), "application/json");
-            }
-            catch (MyCusResException ex)
-            {
-                return Helper.HandleMyCusResException(this, ex);
-            }
-            catch (Exception)
-            {
-                return Helper.HandleException(this);
-            }
-        }
-
-        /// <summary>
         /// 新增巡檢路線模板
         /// </summary>
         /// <param name="data">使用者input</param>
@@ -75,10 +48,10 @@ namespace MinSheng_MIS.Controllers
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
 
                 // 建立 InspectionPathSample
-                string planPathSN = await _samplePathService.CreateSamplePathAsync(data);
+                data.SetPlanPathSN(await _samplePathService.CreateSamplePathAsync(data));
 
                 // 建立 InspectionDefaultOrder
-                _samplePathService.CreateInspectionDefaultOrders(new DefaultOrderModifiableListInstance(planPathSN, data));
+                _samplePathService.CreateInspectionDefaultOrders(data);
 
                 await _db.SaveChangesAsync();
 
@@ -159,9 +132,9 @@ namespace MinSheng_MIS.Controllers
         {
             try
             {
-                // 獲取一機一卡詳情
+                // 獲取巡檢路線模板詳情
                 SamplePathDetailViewModel sample = _samplePathService.GetSamplePath<SamplePathDetailViewModel>(id);
-                // 獲取增設基本資料欄位
+                // 獲取路線RFID順序
                 sample.Equipments = _samplePathService.GetDefaultOrderRFIDInfoList(id);
 
                 return Content(JsonConvert.SerializeObject(new JsonResService<SamplePathDetailViewModel>
@@ -186,6 +159,70 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Delete()
         {
             return View();
+        }
+
+        /// <summary>
+        /// 刪除巡檢路線模板
+        /// </summary>
+        /// <param name="id">巡檢路線模板編號</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult> DeleteSamplePath(string id)
+        {
+            try
+            {
+                var path = await _db.InspectionPathSample.SingleOrDefaultAsync(x => x.PlanPathSN == id)
+                    ?? throw new MyCusResException("巡檢路線模板不存在！");
+
+                await _samplePathService.DeleteInspectionPathSampleAsync(path);
+
+                await _db.SaveChangesAsync();
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
+        }
+        #endregion
+
+        #region 新增巡檢設備DataGrid
+        /// <summary>
+        /// 新增巡檢設備Grid
+        /// </summary>
+        /// <param name="data">查詢條件及Grid參數</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEquipmentRFIDsGrid(EquipmentRFIDSearchParamViewModel data)
+        {
+            try
+            {
+                var grid = _samplePathService.GetJsonForGrid_EquipmentRFIDs(data);
+                return Content(JsonConvert.SerializeObject(new JsonResService<GridResult<InspectionRFIDsViewModel>>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = grid,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
         }
         #endregion
 

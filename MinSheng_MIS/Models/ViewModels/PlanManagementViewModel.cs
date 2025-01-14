@@ -1,49 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
     #region 工單-新增
-    public class InspectionPlanCreateViewModel : ICreateInspectionPlan
-    {
-        [Required]
-        [StringLength(20, ErrorMessage = "{0} 的長度最多{1}個字元。")]
-        [Display(Name = "工單名稱")]
-        public string IPName { get; set; } // 工單名稱
-        [Required]
-        [Display(Name = "工單日期")]
-        public DateTime PlanDate { get; set; } // 工單日期
-        [Required]
-        [Display(Name = "工單巡檢內容")]
-        public IEnumerable<InspectionPlanContent> Inspections { get; set; } // 工單巡檢內容
-    }
+    public class InspectionPlanCreateViewModel :
+        InspectionPlanBase, ICreateInspectionPlan, IInspectionSampleContentModifiableList { }
 
-    public interface ICreateInspectionPlan : IInspectionPlanCreate
-    {
-        IEnumerable<InspectionPlanContent> Inspections { get; set; } // 工單巡檢內容
-    }
-
-    public class InspectionPlanContent : InspectionSampleContent, IInspectionPlanContent, ISamplePathInfo
-    {
-        string ISamplePathInfo.PathName { get; set; }
-        int ISamplePathInfo.Frequency { get; set; }
-        int ISamplePathInfo.EquipmentCount { get; set; }
-
-        [Required]
-        [Display(Name = "執行人員")]
-        public IEnumerable<string> Executors { get; set; } // 工單執行人員
-    }
-
-    public interface IInspectionPlanContent :
-        IInspectionPlanTime, IInspectionPlanExecutors
-    { }
+    public interface ICreateInspectionPlan : 
+        IInspectionPlanInfo, IInspectionPlanTimeModifiableList { }
     #endregion
 
     #region 工單-詳情
     public class InspectionPlanDetailViewModel : IInspectionPlanDetailViewModel
     {
+        DateTime IInspectionPlanInfo.PlanDate { get; set; }
+
         public string IPSN { get; set; } // 工單編號
         public string PlanState { get; set; } // 工單狀態
         public string IPName { get; set; } // 工單名稱
@@ -51,12 +26,11 @@ namespace MinSheng_MIS.Models.ViewModels
         public List<InspectionPlanContentDetail> Inspections { get; set; } = new List<InspectionPlanContentDetail>(); // 工單巡檢內容
     }
 
-    public interface IInspectionPlanDetailViewModel
+    public interface IInspectionPlanDetailViewModel : IInspectionPlanInfo
     {
         string IPSN { get; set; } // 工單編號
         string PlanState { get; set; } // 工單狀態
-        string IPName { get; set; } // 工單名稱
-        string PlanDate { get; set; } // 工單日期
+        new string PlanDate { get; set; } // 工單日期
     }
 
     /// <summary>
@@ -150,65 +124,108 @@ namespace MinSheng_MIS.Models.ViewModels
     #endregion
 
     #region 工單-編輯
-    public class InspectionPlanEditViewModel : InspectionPlanCreateViewModel, IInspectionPlanEdit
+    public class InspectionPlanEditViewModel : 
+        InspectionPlanCreateViewModel, IEditInspectionPlan
     {
         [Required]
-        public string IPSN { get; set; }
+        [StringLength(9, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "工單單號")]
+        public string IPSN { get; set; } // 工單單號
+    }
+
+    public interface IEditInspectionPlan : 
+        ICreateInspectionPlan, IUpdateInspectionPlan { }
+
+    public interface IUpdateInspectionPlan : IInspectionPlanInfo
+    {
+        string IPSN { get; set; } // 工單單號
     }
     #endregion
 
-    public interface IInspectionPlanCreate
+    #region Shared
+    public class InspectionPlanBase :
+        IInspectionPlanInfo, IInspectionPlanTimeModifiableList
+    {
+        string IInspectionPlanTimeModifiableList.IPSN { get; set; }
+        string IInspectionSampleContentModifiableList.DailyTemplateSN { get; set; }
+        IEnumerable<InspectionSampleContent> IInspectionSampleContentModifiableList.Contents { get; set; }
+
+        [Required]
+        [StringLength(20, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "工單名稱")]
+        public string IPName { get; set; } // 工單名稱
+        [Required]
+        [Display(Name = "工單日期")]
+        public DateTime PlanDate { get; set; } // 工單日期
+        [Required]
+        [Display(Name = "工單巡檢內容")]
+        public IEnumerable<InspectionPlanContent> Inspections { get; set; } // 工單巡檢內容
+        IEnumerable<IInspectionPlanContent> IInspectionPlanTimeModifiableList.Inspections
+        {
+            get => Inspections;
+            set => Inspections = value?.Cast<InspectionPlanContent>().ToList();
+        }
+
+        public void SetIPSN(string sn)
+        {
+            ((IInspectionPlanTimeModifiableList)this).IPSN = sn;
+        }
+
+        public void SetInspectionSampleContent()
+        {
+            ((IInspectionSampleContentModifiableList)this).Contents = 
+                Inspections.Cast<InspectionSampleContent>();
+        }
+    }
+
+    public class InspectionPlanContent :
+        InspectionSampleContent, IInspectionPlanContent, ISamplePathInfo, IInspectionPlanMemberModifiableList
+    {
+        string ISamplePathInfo.PathName { get; set; }
+        int ISamplePathInfo.Frequency { get; set; }
+        int ISamplePathInfo.EquipmentCount { get; set; }
+        string IInspectionPlanMemberModifiableList.IPTSN { get; set; }
+
+        [Required]
+        [Display(Name = "執行人員")]
+        public IEnumerable<string> Executors { get; set; } // 工單執行人員
+
+        internal void SetIPTSN(string sn)
+        {
+            ((IInspectionPlanMemberModifiableList)this).IPTSN = sn;
+        }
+    }
+
+    public interface IInspectionPlanInfo
     {
         string IPName { get; set; } // 工單名稱
         DateTime PlanDate { get; set; } // 工單日期
     }
 
-    public interface IInspectionPlanEdit : IInspectionPlanCreate
-    {
-        string IPSN { get; set; } // 工單單號
-    }
+    public interface IInspectionPlanTime :
+        ISamplePathInfo, IInspectionSampleContent { }
 
-    public interface IInspectionPlanTime : ISamplePathInfo, IInspectionSampleContent { }
+    public interface IInspectionPlanContent :
+        IInspectionPlanTime, IInspectionPlanExecutors { }
 
     public interface IInspectionPlanExecutors
     {
         IEnumerable<string> Executors { get; set; } // 工單執行人員
     }
+    #endregion
 
-    public interface IInspectionPlanTimeModifiableList
+    #region Service使用
+    public interface IInspectionPlanTimeModifiableList : IInspectionSampleContentModifiableList
     {
         string IPSN { get; set; } // 巡檢計畫編號
         IEnumerable<IInspectionPlanContent> Inspections { get; set; } // 工單巡檢內容
+
+        void SetInspectionSampleContent();
     }
 
     public interface IInspectionPlanMemberModifiableList : IInspectionPlanExecutors
     {
         string IPTSN { get; set; } // 巡檢計畫時段編號
-    }
-
-    #region Service使用
-    public class InspectionPlanTimeModifiableListInstance : IInspectionPlanTimeModifiableList
-    {
-        public string IPSN { get; set; } // 巡檢計畫編號
-        public IEnumerable<IInspectionPlanContent> Inspections { get; set; } // 工單巡檢內容
-
-        public InspectionPlanTimeModifiableListInstance(string sn, InspectionPlanCreateViewModel data)
-        {
-            IPSN = sn;
-            Inspections = data.Inspections;
-        }
-    }
-
-    public class InspectionPlanMemberModifiableListInstance : IInspectionPlanMemberModifiableList
-    {
-        public string IPTSN { get; set; } // 巡檢計畫時段編號
-        public IEnumerable<string> Executors { get; set; } // 工單執行人員
-
-        public InspectionPlanMemberModifiableListInstance(string sn, IInspectionPlanContent data)
-        {
-            IPTSN = sn;
-            Executors = data.Executors;
-        }
     }
     #endregion
 }

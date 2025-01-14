@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace MinSheng_MIS.Models.ViewModels
 {
@@ -21,6 +19,11 @@ namespace MinSheng_MIS.Models.ViewModels
         [Required]
         [Display(Name = "巡檢設備")]
         public IEnumerable<string> RFIDInternalCodes { get; set; } // 巡檢設備RFID清單
+
+        internal void SetPlanPathSN(string sn)
+        {
+            ((IDefaultOrderModifiableList)this).PlanPathSN = sn;
+        }
     }
 
     public interface ICreateSamplePath :
@@ -39,6 +42,36 @@ namespace MinSheng_MIS.Models.ViewModels
         public string PathName { get; set; } // 巡檢路線名稱
         public int Frequency { get; set; } // 巡檢頻率
         public IEnumerable<IInspectionRFIDs> Equipments { get; set; }
+    }
+
+    public interface ISamplePath
+    {
+        string PathName { get; set; } // 巡檢路線名稱
+        int Frequency { get; set; } // 巡檢頻率
+    }
+
+    public interface IDefaultOrder
+    {
+        IEnumerable<IInspectionRFIDs> Equipments { get; set; }
+    }
+
+    /// <summary>
+    /// 巡檢RFID及設備資料
+    /// </summary>
+    public interface IInspectionRFIDs : IInspectionRfidInfo, IInspectionEquipmentInfo { }
+
+    public interface IInspectionRfidInfo : IInspectionRfidSearch
+    {
+        string RFIDName { get; set; } // RFID名稱
+        string RFIDMemo { get; set; } // RFID備註
+    }
+
+    public interface IInspectionEquipmentInfo
+    {
+        string EName { get; set; } // 設備名稱
+        string NO { get; set; } // 設備編號
+        string Brand { get; set; } // 設備廠牌
+        string Model { get; set; } // 設備型號
     }
     #endregion
 
@@ -143,59 +176,12 @@ namespace MinSheng_MIS.Models.ViewModels
     }
     #endregion
 
-    //-----Interface
-    public interface ISamplePath
-    {
-        string PathName { get; set; } // 巡檢路線名稱
-        int Frequency { get; set; } // 巡檢頻率
-    }
-
-    public interface IDefaultOrder
-    {
-        IEnumerable<IInspectionRFIDs> Equipments { get; set; }
-    }
-
-    /// <summary>
-    /// 巡檢RFID及設備資料
-    /// </summary>
-    public interface IInspectionRFIDs : IInspectionRfidInfo, IInspectionEquipmentInfo { }
-
-    public interface IInspectionRfidInfo : IInspectionRfidSearch
-    {
-        string RFIDName { get; set; } // RFID名稱
-        string RFIDMemo { get; set; } // RFID備註
-    }
-
-    public interface IInspectionEquipmentInfo
-    {
-        string EName { get; set; } // 設備名稱
-        string NO { get; set; } // 設備編號
-        string Brand { get; set; } // 設備廠牌
-        string Model { get; set; } // 設備型號
-    }
-
-    
-
+    #region Service使用
     public interface IDefaultOrderModifiableList
     {
         string PlanPathSN { get; set; } // 巡檢路線編號
         int Frequency { get; set; } // 巡檢頻率
         IEnumerable<string> RFIDInternalCodes { get; set; } // 巡檢設備RFID清單
-    }
-
-    #region Service使用
-    public class DefaultOrderModifiableListInstance : IDefaultOrderModifiableList
-    {
-        public string PlanPathSN { get; set; } // 巡檢路線編號
-        public int Frequency { get; set; } // 巡檢頻率
-        public IEnumerable<string> RFIDInternalCodes { get; set; } // 巡檢設備RFID清單
-
-        public DefaultOrderModifiableListInstance(string sn, SamplePathCreateViewModel data)
-        {
-            PlanPathSN = sn;
-            Frequency = data.Frequency;
-            RFIDInternalCodes = data.RFIDInternalCodes;
-        }
     }
     #endregion
 }

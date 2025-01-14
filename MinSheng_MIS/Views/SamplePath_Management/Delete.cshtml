@@ -180,7 +180,7 @@
             });
             $("#delete").click(function () {
                 DT.createDeleteDialog({
-                    url: '@Url.Action("DeleteSamplePath")?PlanPathSN=' + PlanPathSN,
+                    url: '@Url.Action("DeleteSamplePath")?id=' + PlanPathSN,
                     data: PlanPathSN,
                     onSuccess() {
                         window.location.href = '@Url.Action("Index")';

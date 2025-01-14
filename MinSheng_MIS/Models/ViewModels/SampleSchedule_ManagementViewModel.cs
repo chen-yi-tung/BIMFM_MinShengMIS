@@ -5,8 +5,11 @@ using System.ComponentModel.DataAnnotations;
 namespace MinSheng_MIS.Models.ViewModels
 {
     #region 每日巡檢時程安排-新增
-    public class SampleScheduleCreateViewModel : ICreateSampleSchedule
+    public class SampleScheduleCreateViewModel : ICreateSampleSchedule, IEditInspectionSampleInfo
     {
+        string IInspectionSampleContentModifiableList.DailyTemplateSN { get; set; }
+        string IEditInspectionSampleInfo.DailyTemplateSN { get; set; }
+
         [Required]
         [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         [Display(Name = "巡檢模板名稱")]
@@ -14,7 +17,17 @@ namespace MinSheng_MIS.Models.ViewModels
         [Required]
         [Display(Name = "每日模板內容")]
         public IEnumerable<InspectionSampleContent> Contents { get; set; } // 每日模板內容
+
+        internal void SetDailyTemplateSN(string sn)
+        {
+            ((IInspectionSampleContentModifiableList)this).DailyTemplateSN = sn;
+        }
     }
+
+    public interface ICreateSampleSchedule : 
+        ICreateInspectionSampleInfo, IInspectionSampleContentModifiableList { }
+
+    public interface ICreateInspectionSampleInfo : IInspectionSampleInfo { }
     #endregion
 
     #region 每日巡檢時程安排-詳情
@@ -39,8 +52,40 @@ namespace MinSheng_MIS.Models.ViewModels
         public string EquipmentCount { get; set; } // 巡檢數量
         public string PlanPathSN { get; set; } // 巡檢路線編號
     }
+
+    public interface ISampleScheduleContentDetail : ISamplePathInfo, IInspectionSampleContent
+    {
+        new string Frequency { get; set; } // 巡檢頻率
+        new string EquipmentCount { get; set; } // 巡檢數量
+    }
     #endregion
 
+    #region 每日巡檢時程安排-編輯
+    public class SampleScheduleEditViewModel : IEditSampleSchedule
+    {
+        [Required]
+        [StringLength(9, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "每日模板編號")]
+        public string DailyTemplateSN { get; set; } // 每日模板編號
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "巡檢模板名稱")]
+        public string TemplateName { get; set; } // 巡檢模板名稱
+        [Required]
+        [Display(Name = "每日模板內容")]
+        public IEnumerable<InspectionSampleContent> Contents { get; set; } // 每日模板內容
+    }
+
+    public interface IEditSampleSchedule :
+        IEditInspectionSampleInfo, IInspectionSampleContentModifiableList { }
+
+    public interface IEditInspectionSampleInfo : ICreateInspectionSampleInfo
+    {
+        string DailyTemplateSN { get; set; } // 每日模板編號
+    }
+    #endregion
+
+    #region Shared
     public class InspectionSampleContent : IInspectionSampleContent
     {
         [Required]
@@ -66,15 +111,9 @@ namespace MinSheng_MIS.Models.ViewModels
         string PlanPathSN { get; set; } // 巡檢路線編號
     }
 
-    public interface ICreateSampleSchedule : IInspectionSampleInfoModifiable
+    public interface IInspectionSampleInfo
     {
-        IEnumerable<InspectionSampleContent> Contents { get; set; } // 每日模板內容
-    }
-
-    public interface ISampleScheduleContentDetail : ISamplePathInfo, IInspectionSampleContent
-    {
-        new string Frequency { get; set; } // 巡檢頻率
-        new string EquipmentCount { get; set; } // 巡檢數量
+        string TemplateName { get; set; } // 巡檢模板名稱
     }
 
     public interface ISamplePathInfo
@@ -84,30 +123,26 @@ namespace MinSheng_MIS.Models.ViewModels
         int EquipmentCount { get; set; } // 巡檢數量
     }
 
-    public interface IInspectionSampleInfoModifiable
-    {
-        string TemplateName { get; set; } // 巡檢模板名稱
-    }
-
     public interface IInspectionSampleContentModifiableList
     {
         string DailyTemplateSN { get; set; } // 每日模板編號
         IEnumerable<InspectionSampleContent> Contents { get; set; } // 每日模板內容
     }
+    #endregion
 
     #region Service使用
-    public class SampleContentModifiableListInstance : IInspectionSampleContentModifiableList
-    {
-        public string DailyTemplateSN { get; set; } // 每日模板編號
-        public IEnumerable<InspectionSampleContent> Contents { get; set; } // 每日模板內容
+    //public class SampleContentModifiableListInstance : IInspectionSampleContentModifiableList
+    //{
+    //    public string DailyTemplateSN { get; set; } // 每日模板編號
+    //    public IEnumerable<InspectionSampleContent> Contents { get; set; } // 每日模板內容
 
-        public SampleContentModifiableListInstance() { }
+    //    public SampleContentModifiableListInstance() { }
 
-        public SampleContentModifiableListInstance(string sn, SampleScheduleCreateViewModel data)
-        {
-            DailyTemplateSN = sn;
-            Contents = data.Contents;
-        }
-    }
+    //    public SampleContentModifiableListInstance(string sn, SampleScheduleCreateViewModel data)
+    //    {
+    //        DailyTemplateSN = sn;
+    //        Contents = data.Contents;
+    //    }
+    //}
     #endregion
 }

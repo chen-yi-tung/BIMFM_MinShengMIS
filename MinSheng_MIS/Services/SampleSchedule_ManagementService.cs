@@ -3,6 +3,7 @@ using MinSheng_MIS.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -18,11 +19,11 @@ namespace MinSheng_MIS.Services
             _db = db;
         }
 
-        #region 新增每日巡檢時程安排模板
-        public async Task<string> CreateInspectionSampleAsync(IInspectionSampleInfoModifiable data)
+        #region 新增每日巡檢時程安排模板 DailyInspectionSample
+        public async Task<string> CreateInspectionSampleAsync(ICreateInspectionSampleInfo data)
         {
             // 資料驗證
-            InspectionSampleDataAnnotation(data);
+            InspectionSampleDataAnnotation((IEditInspectionSampleInfo)data);
 
             // 前一筆資料
             var latest = await _db.DailyInspectionSample.OrderByDescending(x => x.DailyTemplateSN).FirstOrDefaultAsync();
@@ -39,7 +40,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 建立每日巡檢時程安排模板內容
+        #region 建立每日巡檢時程安排模板內容 DailyInspectionSampleContent
         public void CreateInspectionSampleContent(IInspectionSampleContentModifiableList data)
         {
             // 資料驗證
@@ -50,7 +51,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 獲取每日巡檢時程安排模板
+        #region 獲取每日巡檢時程安排模板 DailyInspectionSample
         public async Task<T> GetInspectionSampleAsync<T>(string dailyTemplateSN) where T : class, new()
         {
             var sample = await _db.DailyInspectionSample.FindAsync(dailyTemplateSN)
@@ -60,7 +61,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 獲取每日巡檢時程安排模板內容
+        #region 獲取每日巡檢時程安排模板內容 DailyInspectionSampleContent
         public List<ISampleScheduleContentDetail> GetSampleScheduleContentList(string dailyTemplateSN)
         {
             var result = _db.DailyInspectionSampleContent.Where(x => x.DailyTemplateSN == dailyTemplateSN)
@@ -79,7 +80,43 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 刪除每日巡檢時程安排模板
+        #region 編輯每日巡檢路線模板 DailyInspectionSample
+        public async Task EditInspectionSampleAsync(IEditInspectionSampleInfo data)
+        {
+            if (!await _db.DailyInspectionSample.AnyAsync(x => x.DailyTemplateSN == data.DailyTemplateSN))
+                throw new MyCusResException("模板不存在！");
+
+            // 資料驗證
+            InspectionSampleDataAnnotation(data);
+
+            // 更新 DailyInspectionSample
+            var sample = data.ToDto<IEditInspectionSampleInfo, DailyInspectionSample>();
+
+            _db.DailyInspectionSample.AddOrUpdate(sample);
+        }
+        #endregion
+
+        #region 編輯每日巡檢時程安排模板內容 DailyInspectionSampleContent
+        public async Task EditInspectionSampleContentAsync(IInspectionSampleContentModifiableList data)
+        {
+            var sample = await _db.DailyInspectionSample
+                .SingleOrDefaultAsync(x => x.DailyTemplateSN == data.DailyTemplateSN)
+                ?? throw new MyCusResException("模板不存在！");
+
+            // 資料驗證
+            InspectionSampleContentDataAnnotation(data);
+
+            // 清除 DailyInspectionSampleContent
+            DeleteSampleScheduleContents(sample.DailyInspectionSampleContent);
+
+            await _db.SaveChangesAsync();
+
+            // 批次建立 DailyInspectionSampleContent
+            AddRangeSampleContent(data);
+        }
+        #endregion
+
+        #region 刪除每日巡檢時程安排模板 DailyInspectionSample
         public void DeleteInspectionSample(DailyInspectionSample data)
         {
             DeleteSampleScheduleContents(data.DailyInspectionSampleContent);
@@ -88,7 +125,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 刪除每日巡檢時程安排模板內容
+        #region 刪除每日巡檢時程安排模板內容 DailyInspectionSampleContent
         public void DeleteSampleScheduleContents(IEnumerable<DailyInspectionSampleContent> data)
         {
             if (data?.Any() != true)
@@ -101,12 +138,12 @@ namespace MinSheng_MIS.Services
         //-----資料驗證
 
         #region DailyInspectionSample 資料驗證
-        private void InspectionSampleDataAnnotation(IInspectionSampleInfoModifiable data, string dailyTemplateSN = null)
+        private void InspectionSampleDataAnnotation(IEditInspectionSampleInfo data)
         {
             // 不可重複：巡檢模板名稱
-            var sample = string.IsNullOrEmpty(dailyTemplateSN) ?
+            var sample = string.IsNullOrEmpty(data.DailyTemplateSN) ?
                 _db.DailyInspectionSample :
-                _db.DailyInspectionSample.Where(x => x.DailyTemplateSN != dailyTemplateSN);
+                _db.DailyInspectionSample.Where(x => x.DailyTemplateSN != data.DailyTemplateSN);
 
             if (sample.Select(x => x.TemplateName).AsEnumerable().Contains(data.TemplateName))
                 throw new MyCusResException("巡檢模板名稱已被使用！");
@@ -122,9 +159,8 @@ namespace MinSheng_MIS.Services
             if (data.Contents.Count() >= 100000)
                 throw new MyCusResException($"巡檢路線不可超過100000項！");
             // 關聯性PK是否存在：巡檢路線編號
-            if (Helper.AreListsEqualIgnoreOrder(
-                data.Contents.Select(x => x.PlanPathSN),
-                _db.InspectionPathSample.Select(x => x.PlanPathSN)))
+            var samples = _db.InspectionPathSample.Select(x => x.PlanPathSN);
+            if (!data.Contents.All(x => samples.Contains(x.PlanPathSN)))
                 throw new MyCusResException("巡檢路線不存在！");
         }
         #endregion

@@ -242,7 +242,7 @@
             });
             $("#delete").click(function () {
                 DT.createDeleteDialog({
-                    url: '@Url.Action("DeleteSampleSchedule")?DailyTemplateSN=' + SN,
+                    url: '@Url.Action("DeleteSampleSchedule")?id=' + SN,
                     data: SN,
                     onSuccess() {
                         window.location.href = '@Url.Action("Index")';

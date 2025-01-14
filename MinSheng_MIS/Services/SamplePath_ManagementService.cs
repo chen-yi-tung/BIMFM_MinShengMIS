@@ -165,12 +165,11 @@ namespace MinSheng_MIS.Services
         #region 獲取巡檢設備順序 InspectionDefaultOrder
         public List<IInspectionRFIDs> GetDefaultOrderRFIDInfoList(string planPathSN)
         {
-            var codes = _db.InspectionDefaultOrder.Where(x => x.PlanPathSN == planPathSN)
-                .Select(x => x.RFIDInternalCode)
+            var rfids = _db.InspectionDefaultOrder.Where(x => x.PlanPathSN == planPathSN)
+                .Select(x => x.RFID)
                 .AsEnumerable();
 
-            var result = _rfidService.GetRFIDQueryByDto<RFIDServiceQueryModel>(x => codes.Contains(x.RFIDInternalCode))
-                .AsEnumerable()
+            var result = rfids
                 .Select(x => new InspectionRFIDsViewModel
                 {
                     InternalCode = x.RFIDInternalCode,
@@ -212,12 +211,15 @@ namespace MinSheng_MIS.Services
         #region 編輯巡檢設備順序 InspectionDefaultOrder
         public async Task EditInspectionDefaultOrdersAsync(IDefaultOrderModifiableList data)
         {
+            var sample = await _db.InspectionPathSample
+                .SingleOrDefaultAsync(x => x.PlanPathSN == data.PlanPathSN)
+                ?? throw new MyCusResException("模板不存在！");
+
             // 資料驗證
             DefaultOrderDataAnnotation(data);
 
             // 清除 InspectionDefaultOrder
-            var orders = _db.InspectionDefaultOrder.Where(x => x.PlanPathSN == data.PlanPathSN);
-            DeleteInspectionDefaultOrder(orders);
+            DeleteInspectionDefaultOrder(sample.InspectionDefaultOrder);
 
             await _db.SaveChangesAsync();
 
@@ -229,11 +231,12 @@ namespace MinSheng_MIS.Services
         #region 刪除巡檢路線模板 InspectionPathSample
         public async Task DeleteInspectionPathSampleAsync(InspectionPathSample data)
         {
-            if (data != null)
+            if (data == null)
                 return;
 
             // 刪除巡檢預設順序
-            _db.InspectionDefaultOrder.RemoveRange(data.InspectionDefaultOrder);
+            DeleteInspectionDefaultOrder(data.InspectionDefaultOrder);
+            //_db.InspectionDefaultOrder.RemoveRange(data.InspectionDefaultOrder);
 
             var DailyInspection = data.DailyInspectionSampleContent
                 ?.Select(x => x.DailyInspectionSample)
@@ -311,14 +314,15 @@ namespace MinSheng_MIS.Services
             // 不可重複：RFID內碼
             if (data.RFIDInternalCodes.Count() != data.RFIDInternalCodes.Distinct().Count())
                 throw new MyCusResException($"設備RFID不可重複！");
-            var equipmentRFID = _rfidService
+            var equipmentRFIDs = _rfidService
                 .GetRFIDQueryByDto<RFID>(x => string.IsNullOrEmpty(x.SARSN))
                 .AsEnumerable();
             // 關聯性PK是否存在：RFID內碼
-            if (Helper.AreListsEqualIgnoreOrder(data.RFIDInternalCodes, equipmentRFID.Select(x => x.RFIDInternalCode)))
+            var InternalCodes = equipmentRFIDs.Select(x => x.RFIDInternalCode);
+            if (!data.RFIDInternalCodes.All(x => InternalCodes.Contains(x)))
                 throw new MyCusResException("設備RFID不存在！");
             // RFID的設備巡檢頻率是否與模板相同
-            if (equipmentRFID
+            if (equipmentRFIDs
                 .Where(x => data.RFIDInternalCodes.Contains(x.RFIDInternalCode))
                 .Any(x =>
                     x.EquipmentInfo?.Template_OneDeviceOneCard?.Frequency.HasValue != true ||

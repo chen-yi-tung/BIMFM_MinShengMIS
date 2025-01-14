@@ -50,10 +50,10 @@ namespace MinSheng_MIS.Controllers
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
 
                 // 建立 InspectionPlan
-                string ipsn = await _inspectionPlanService.CreateInspectionPlanAsync(data);
+                data.SetIPSN(await _inspectionPlanService.CreateInspectionPlanAsync(data));
 
                 // 建立 InspectionPlan_Time
-                _inspectionPlanService.CreateInspectionPlanContent(new InspectionPlanTimeModifiableListInstance(ipsn, data));
+                _inspectionPlanService.CreateInspectionPlanContent(data);
 
                 await _db.SaveChangesAsync();
 
@@ -100,7 +100,7 @@ namespace MinSheng_MIS.Controllers
                     // 更新 InspectionPlan
                     await _inspectionPlanService.EditInspectionPlanAsync(data);
                     // 更新 InspectionPlanContent
-                    await _inspectionPlanService.EditInspectionPlanContentAsync(new InspectionPlanTimeModifiableListInstance(data.IPSN, data));
+                    await _inspectionPlanService.EditInspectionPlanContentAsync(data);
 
                     await _db.SaveChangesAsync();
 
@@ -194,7 +194,7 @@ namespace MinSheng_MIS.Controllers
         /// <summary>
         /// 刪除工單
         /// </summary>
-        /// <param name="data">使用者input</param>
+        /// <param name="IPSN">工單編號</param>
         /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult> DeleteInspectionPlan(string IPSN)

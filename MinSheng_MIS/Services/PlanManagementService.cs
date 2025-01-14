@@ -25,7 +25,7 @@ namespace MinSheng_MIS.Services
         }
 
         #region 新增工單
-        public async Task<string> CreateInspectionPlanAsync(IInspectionPlanCreate data)
+        public async Task<string> CreateInspectionPlanAsync(IInspectionPlanInfo data)
         {
             // 無需要驗證的資料
 
@@ -53,12 +53,6 @@ namespace MinSheng_MIS.Services
         {
             // 資料驗證
             InspectionPlanTimeDataAnnotation(data);
-            _sampleScheduleService.InspectionSampleContentDataAnnotation(
-                new SampleContentModifiableListInstance
-                {
-                    DailyTemplateSN = null,
-                    Contents = data.Inspections.Cast<InspectionSampleContent>()
-                });
 
             // 巡檢路線資訊
             data.Inspections.ForEach(x =>
@@ -180,8 +174,8 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 更新工單
-        public async Task EditInspectionPlanAsync(IInspectionPlanEdit data)
+        #region 編輯工單
+        public async Task EditInspectionPlanAsync(IUpdateInspectionPlan data)
         {
             var plan = await _db.InspectionPlan
                 .SingleOrDefaultAsync(x => x.IPSN == data.IPSN)
@@ -197,10 +191,15 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 更新巡檢時段及執行人員
+        #region 編輯巡檢時段及執行人員
         public async Task EditInspectionPlanContentAsync(IInspectionPlanTimeModifiableList data)
         {
-            var plan = _db.InspectionPlan.Find(data.IPSN);
+            var plan = await _db.InspectionPlan
+                .SingleOrDefaultAsync(x => x.IPSN == data.IPSN)
+                ?? throw new MyCusResException("工單不存在！");
+
+            // 資料驗證
+            InspectionPlanTimeDataAnnotation(data);
 
             // 清空巡檢時段及執行人員
             DeleteInspectionPlanContent(plan.InspectionPlan_Time);
@@ -243,16 +242,10 @@ namespace MinSheng_MIS.Services
         #region InspectionPlan_Time 資料驗證
         private void InspectionPlanTimeDataAnnotation(IInspectionPlanTimeModifiableList data)
         {
-            if (data.Inspections?.Any() != true)
-                throw new MyCusResException($"請新增至少一項巡檢路線！");
-            // 長度限制
-            if (data.Inspections.Count() >= 100000)
-                throw new MyCusResException($"巡檢路線不可超過100000項！");
-            // 關聯性PK是否存在：巡檢路線編號
-            if (Helper.AreListsEqualIgnoreOrder(
-                data.Inspections.Select(x => x.PlanPathSN),
-                _db.InspectionPathSample.Select(x => x.PlanPathSN)))
-                throw new MyCusResException("巡檢路線不存在！");
+            data.SetInspectionSampleContent();
+            // 巡檢路線資料驗證
+            _sampleScheduleService.InspectionSampleContentDataAnnotation(data);
+            // 執行人員資料驗證
             foreach (var item in data.Inspections)
                 InspectionPlanMemberDataAnnotation(item);
         }
@@ -267,9 +260,8 @@ namespace MinSheng_MIS.Services
             if (data.Executors.Count() >= 100)
                 throw new MyCusResException($"執行人員不可超過100位！");
             // 關聯性PK是否存在：人員帳號
-            if (Helper.AreListsEqualIgnoreOrder(
-                data.Executors,
-                _db.AspNetUsers.Select(x => x.Id)))
+            var users = _db.AspNetUsers.Where(x => x.IsEnabled).Select(x => x.UserName);
+            if (!data.Executors.All(x => users.Contains(x)))
                 throw new MyCusResException("執行人員不存在！");
         }
         #endregion

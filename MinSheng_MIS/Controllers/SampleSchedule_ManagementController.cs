@@ -3,11 +3,10 @@ using MinSheng_MIS.Models;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
+using System.Transactions;
+using System.Data.Entity;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -49,10 +48,10 @@ namespace MinSheng_MIS.Controllers
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
 
                 // 建立 DailyInspectionSample
-                string dailyTemplateSN = await _sampleScheduleService.CreateInspectionSampleAsync(data);
+                data.SetDailyTemplateSN(await _sampleScheduleService.CreateInspectionSampleAsync(data));
 
                 // 建立 DailyInspectionSampleContent
-                _sampleScheduleService.CreateInspectionSampleContent(new SampleContentModifiableListInstance(dailyTemplateSN, data));
+                _sampleScheduleService.CreateInspectionSampleContent(data);
 
                 await _db.SaveChangesAsync();
 
@@ -78,6 +77,48 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Edit()
         {
             return View();
+        }
+
+        /// <summary>
+        /// 編輯每日巡檢時程安排模板
+        /// </summary>
+        /// <param name="data">使用者input</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult> EditSampleSchedule(SampleScheduleEditViewModel data)
+        {
+            try
+            {
+                // Data Annotation
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
+
+                using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    // 更新 DailyInspectionSample
+                    await _sampleScheduleService.EditInspectionSampleAsync(data);
+                    // 更新 DailyInspectionSampleContent
+                    await _sampleScheduleService.EditInspectionSampleContentAsync(data);
+
+                    await _db.SaveChangesAsync();
+
+                    trans.Complete();
+                }
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
         }
         #endregion
 
@@ -118,6 +159,40 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Delete()
         {
             return View();
+        }
+
+        /// <summary>
+        /// 刪除每日巡檢時程模板
+        /// </summary>
+        /// <param name="id">每日巡檢時程模板編號</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult> DeleteSampleSchedule(string id)
+        {
+            try
+            {
+                var sample = await _db.DailyInspectionSample.SingleOrDefaultAsync(x => x.DailyTemplateSN == id)
+                    ?? throw new MyCusResException("每日巡檢時程模板不存在！");
+
+                _sampleScheduleService.DeleteInspectionSample(sample);
+
+                await _db.SaveChangesAsync();
+
+                return Content(JsonConvert.SerializeObject(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null,
+                }), "application/json");
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
         }
         #endregion
 
