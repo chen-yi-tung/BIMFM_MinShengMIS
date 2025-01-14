@@ -82,7 +82,7 @@
 
 <div class="edit-button-area">
     <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-export" id="submit">新增</button>
+    <button class="btn btn-export" id="submit">儲存</button>
 </div>
 
 @*巡檢路線資訊POP UP*@
@@ -270,7 +270,7 @@
             function onSuccess(res) {
                 res = res.Datas
                 if (convertFrequency) {
-                    const convertString = (v) => `每${v}個小時`
+                    const convertString = (v) => `每${v}小時`
                     res.Frequency = convertString(res.Frequency);
                 }
                 console.log("getPathDetail(after converting)", res);

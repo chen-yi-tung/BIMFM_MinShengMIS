@@ -2,16 +2,14 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.2em 0.3em;
-
-    padding: 0.2rem 0.3rem !important;
-    padding-right: 2.25rem !important;
+    padding: 0.15rem 2.25rem 0.2rem 0.3rem !important;
     border-radius: 0;
     border: 1px solid #ced4da;
     background-color: #fff;
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5em;
-    min-height: 2.375em;
+    min-height: 2em;
     width: 100% !important;
     color: #7E7E7E;
 }
@@ -44,7 +42,7 @@
 
 .tagbox-label {
     height: 100% !important;
-    min-height: 1.6em;
+    min-height: 1.7em;
     line-height: normal !important;
     background: #5480CA;
     color: #FFFFFF;
