@@ -31,6 +31,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class WarningMessageCreateModel
     {
         public string WMType { get; set; } //事件等級
+        public string WMClass { get; set; } //事件類別
         public string FSN { get; set; } //發生地點
         public string Message { get; set; } //事件內容
         public string UserName { get; set; } //警報來源

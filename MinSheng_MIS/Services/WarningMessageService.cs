@@ -46,7 +46,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
         #region 新增警示訊息
-        public void AddWarningMessage(WarningMessageCreateModel info) //新增警示訊息
+        public void AddWarningMessage(WarningMessageCreateModel info,string userName) //新增警示訊息
         {
             //編WMSN
             var newWMSN = "";
@@ -65,11 +65,12 @@ namespace MinSheng_MIS.Services
             var data = new WarningMessage();
             data.WMSN = newWMSN;
             data.WMType = info.WMType;
+            data.WMClass = info.WMClass;
             data.WMState = "1";
             data.TimeOfOccurrence = DateTime.Now;
             data.FSN = info.FSN;
             data.Message = info.Message;
-            data.UserName = info.UserName;
+            data.UserName = userName;
 
             db.WarningMessage.AddOrUpdate(data);
             db.SaveChanges();

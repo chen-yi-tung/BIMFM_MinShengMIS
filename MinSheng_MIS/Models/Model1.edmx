@@ -723,6 +723,7 @@
           </Key>
           <Property Name="WMSN" Type="char" MaxLength="10" Nullable="false" />
           <Property Name="WMType" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="WMClass" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="WMState" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="TimeOfOccurrence" Type="datetime" Nullable="false" />
           <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
@@ -2738,6 +2739,7 @@
           </Key>
           <Property Name="WMSN" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="false" />
           <Property Name="WMType" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="WMClass" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="WMState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="TimeOfOccurrence" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
@@ -4145,6 +4147,7 @@
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="TimeOfOccurrence" ColumnName="TimeOfOccurrence" />
                 <ScalarProperty Name="WMState" ColumnName="WMState" />
+                <ScalarProperty Name="WMClass" ColumnName="WMClass" />
                 <ScalarProperty Name="WMType" ColumnName="WMType" />
                 <ScalarProperty Name="WMSN" ColumnName="WMSN" />
               </MappingFragment>

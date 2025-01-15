@@ -22,6 +22,7 @@ namespace MinSheng_MIS.Models
     
         public string WMSN { get; set; }
         public string WMType { get; set; }
+        public string WMClass { get; set; }
         public string WMState { get; set; }
         public System.DateTime TimeOfOccurrence { get; set; }
         public string FSN { get; set; }

@@ -23,10 +23,17 @@ namespace MinSheng_MIS.Controllers
 		{
 			return View();
 		}
-		#endregion
+        [HttpPost]
+        public ActionResult AddWarningMessagen(WarningMessageCreateModel info)
+        {
+            WarningMessageService wms = new WarningMessageService();
+            wms.AddWarningMessage(info, User.Identity.Name);
+            return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+        }
+        #endregion
 
-		#region 警示訊息填報
-		public ActionResult Edit(string id)
+        #region 警示訊息填報
+        public ActionResult Edit(string id)
 		{
 			ViewBag.id = id;
 			return View();
