@@ -174,9 +174,14 @@ namespace MinSheng_MIS.Controllers
                 var path = await _db.InspectionPathSample.SingleOrDefaultAsync(x => x.PlanPathSN == id)
                     ?? throw new MyCusResException("巡檢路線模板不存在！");
 
-                await _samplePathService.DeleteInspectionPathSampleAsync(path);
+                using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    await _samplePathService.DeleteInspectionPathSampleAsync(path);
 
-                await _db.SaveChangesAsync();
+                    await _db.SaveChangesAsync();
+
+                    trans.Complete();
+                }
 
                 return Content(JsonConvert.SerializeObject(new JsonResService<string>
                 {

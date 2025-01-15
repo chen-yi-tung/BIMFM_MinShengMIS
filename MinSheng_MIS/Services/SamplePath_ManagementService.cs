@@ -258,7 +258,7 @@ namespace MinSheng_MIS.Services
             if (plan != null)
             {
                 // 刪除使用路線的工單巡檢時段及執行人員
-                _planService.DeleteInspectionPlanContent(plan.SelectMany(x => x.InspectionPlan_Time));
+                _planService.DeleteInspectionPlanContent(data.InspectionPlan_Time);
                 await _db.SaveChangesAsync();
                 // 刪除工單
                 plan.Where(x => x.InspectionPlan_Time?.Any() != true)
