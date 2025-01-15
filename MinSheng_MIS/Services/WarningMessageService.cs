@@ -55,7 +55,7 @@ namespace MinSheng_MIS.Services
             var WMSN = db.WarningMessage.Where(x => x.TimeOfOccurrence >= today && x.TimeOfOccurrence < tomorrow).OrderByDescending(x => x.WMSN).FirstOrDefault()?.WMSN.ToString();
             if (WMSN != null)
             {
-                newWMSN = (int.Parse(WMSN) + 1).ToString();
+                newWMSN = (long.Parse(WMSN) + 1).ToString();
             }
             else
             {
