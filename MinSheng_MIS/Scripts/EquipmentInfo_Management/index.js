@@ -298,7 +298,8 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
                 Memo: item.Memo,
             }
             for (const key in data) {
-                fd.append(`RFIDList[${i}][${key}]`, data[key]);
+                const value = data[key] !== null ? data[key] : "";
+                fd.append(`RFIDList[${i}][${key}]`, value);
             }
         });
 
