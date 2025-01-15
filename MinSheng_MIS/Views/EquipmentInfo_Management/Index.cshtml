@@ -179,15 +179,15 @@
             function onDeactivate(ESN) {
                 console.log("onDeactivate", ESN);
 
-                @*$.ajax({
-                    url: "/EquipmentInfo_Management/Edit",
-                    type: "GET",
-                    dataType: "json",
-                    data: ESN,
-                    contentType: "application/json;charset=utf-8",
+                $.ajax({
+                    url: "/EquipmentInfo_Management/DisableEquipment?id=" + ESN,
+                    type: "POST",
+                    //dataType: "json",
+                    //data: JSON.stringify({ id: ESN }),
+                    //contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
-                })*@
+                })
 
                 function onSuccess() {
                     window.location.reload();

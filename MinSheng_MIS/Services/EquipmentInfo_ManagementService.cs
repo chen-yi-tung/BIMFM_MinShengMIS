@@ -238,7 +238,7 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        #region 更新設備RFID
+        #region 更新設備RFID資訊
         public async Task UpdateRFIDAsync(IUpdateRFID data)
         {
             if (data.RFIDList == null) 
@@ -254,7 +254,7 @@ namespace MinSheng_MIS.Services
                 .Where(x => !data.RFIDList.Any(d => d.InternalCode == x.RFIDInternalCode))
                 .ToList();
             // 刪除RFID及相關表格
-            DeleteRFID(delRFID);
+            await DeleteRFIDAsync(delRFID);
         }
         #endregion
 
@@ -347,32 +347,34 @@ namespace MinSheng_MIS.Services
         {
             // 刪除模板與設備的關聯
             data.TSN = null;
+            // 模板停用
             data.IsDelete = true;
+            data.EState = ((int)EState.Disable).ToString();
 
             _db.EquipmentInfo.AddOrUpdate(data);
         }
         #endregion
 
         #region 批次刪除RFID資訊
-        public void DeleteRFID(List<RFID> data)
+        public async Task DeleteRFIDAsync(List<RFID> data)
         {
             // 應刪除的巡檢路線模板(InspectionDefaultOrder) : 刪除RFID後無其他
             var delPath = data
+                .SelectMany(x => x.InspectionDefaultOrder)
+                .Select(x => x.InspectionPathSample)
+                .Distinct()
                 .Where(x =>
                     x.InspectionDefaultOrder != null &&
                     !x.InspectionDefaultOrder.Any(i =>
                         !data.Select(r => r.RFIDInternalCode).Contains(i.RFIDInternalCode)
                     )
-                )
-                .SelectMany(x => x.InspectionDefaultOrder)
-                .Select(x => x.InspectionPathSample)
-                .Distinct()
-                .ToList();
+                ).ToList();
 
             // 刪除巡檢預設順序 : 使用應刪除的RFID
             _samplePathService.DeleteInspectionDefaultOrder(data.SelectMany(x => x.InspectionDefaultOrder));
             // 刪除巡檢路線模板
-            delPath.ForEach(async x => await _samplePathService.DeleteInspectionPathSampleAsync(x));
+            foreach (var item in delPath)
+                await _samplePathService.DeleteInspectionPathSampleAsync(item);
             // 刪除RFID
             data.ForEach(x => _rfidService.DeleteRFID(x));
         }
