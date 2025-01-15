@@ -63,7 +63,12 @@ namespace MinSheng_MIS.Services
             /// 報修中
             /// </summary>
             [EnumLabel("報修中")]
-            Repair = 2
+            Repair = 2,
+            /// <summary>
+            /// 停用
+            /// </summary>
+            [EnumLabel("停用")]
+            Disable = 3
         }
         #endregion
 

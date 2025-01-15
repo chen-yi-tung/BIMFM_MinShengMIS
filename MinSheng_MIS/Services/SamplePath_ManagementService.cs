@@ -236,11 +236,11 @@ namespace MinSheng_MIS.Services
 
             // 刪除巡檢預設順序
             DeleteInspectionDefaultOrder(data.InspectionDefaultOrder);
-            //_db.InspectionDefaultOrder.RemoveRange(data.InspectionDefaultOrder);
 
             var DailyInspection = data.DailyInspectionSampleContent
                 ?.Select(x => x.DailyInspectionSample)
-                ?.Distinct();
+                ?.Distinct()
+                .ToList();
             if (DailyInspection != null)
             {
                 // 刪除使用路線的巡檢時程安排模板內容
@@ -254,7 +254,8 @@ namespace MinSheng_MIS.Services
 
             var plan = data.InspectionPlan_Time
                 ?.Select(x => x.InspectionPlan)
-                ?.Distinct();
+                ?.Distinct()
+                .ToList();
             if (plan != null)
             {
                 // 刪除使用路線的工單巡檢時段及執行人員

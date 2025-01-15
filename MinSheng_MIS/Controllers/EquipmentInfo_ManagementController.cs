@@ -225,11 +225,15 @@ namespace MinSheng_MIS.Controllers
         {
             try
             {
+                var equipment = await _db.EquipmentInfo.SingleOrDefaultAsync(x => x.ESN == id)
+                        ?? throw new MyCusResException("設備不存在！");
+                if (IsEnumEqualToStr(equipment.EState, EState.Repair))
+                    throw new MyCusResException("設備報修中，不可停用！");
+                if (IsEnumEqualToStr(equipment.EState, EState.Disable))
+                    throw new MyCusResException("設備已停用！");
+
                 using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    var equipment = await _db.EquipmentInfo.SingleOrDefaultAsync(x => x.ESN == id)
-                        ?? throw new MyCusResException("設備不存在！");
-
                     // EquipmentInfo : 停用設備資料, 停用模板
                     _eMgmtService.DisableEquipment(equipment);
                     // 刪除關聯的待派工 Equipment_MaintenanceForm
@@ -246,7 +250,7 @@ namespace MinSheng_MIS.Controllers
                     // 刪除 RFID 關聯的 InspectionPlan_RFIDOrder
                     _db.InspectionPlan_RFIDOrder.RemoveRange(equipment.RFID.SelectMany(x => x.InspectionPlan_RFIDOrder));
                     // 刪除 RFID 及 關聯的 InspectionDefaultOrder
-                    _eMgmtService.DeleteRFID(equipment.RFID.ToList());
+                    await _eMgmtService.DeleteRFIDAsync(equipment.RFID.ToList());
 
                     // Equipment_AddFieldValue : 全部刪除
                     _eMgmtService.DeleteAddFieldValueList(
