@@ -247,33 +247,7 @@ window.addEventListener('load', async () => {
     }
     async function createBeaconPoint(FSN) {
         const data = { FSN };
-        const beaconPoint = [
-            {
-                DBID: 20132,
-                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389a20',
-                ElementID: 3709472,
-                DeviceName: "BT-20132",
-            },
-            {
-                DBID: 20133,
-                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f14',
-                ElementID: 3710740,
-                DeviceName: "BT-20133",
-            },
-            {
-                DBID: 20134,
-                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f2e',
-                ElementID: 3710766,
-                DeviceName: "BT-20134",
-            },
-            {
-                DBID: 20142,
-                GUID: 'f39fb506-457a-40e9-b4aa-3c6702d4fc1c-00389f67',
-                ElementID: 3710823,
-                DeviceName: "BT-20142",
-            },
-        ]
-        /* const beaconPoint = await $.ajax({
+        const beaconPoint = await $.ajax({
             url: "/Beacon/GetFloorBeacons",
             data,
             type: "GET",
@@ -283,7 +257,7 @@ window.addEventListener('load', async () => {
             if (res.ErrorMessage) throw new Error(res.ErrorMessage);
             if (res.Datas) return res.Datas;
             return res;
-        }) */
+        })
         console.log(beaconPoint);
         bim.createBeaconPoint(beaconPoint)
         const pins = {

@@ -82,7 +82,9 @@ class ForgePin {
             return new THREE.Vector3(v.x, v.y, v.z);
         }
         if (this.#options.dbId) {
-            return this.viewer.toolkit.getCenter(this.#options.dbId, this.#options.model);
+            const result = this.viewer.toolkit.getCenter(this.#options.dbId, this.#options.model);
+            if (!result) { console.error(`[ForgePin] The DBID: ${this.#options.dbId}, Position is not set.`); }
+            return result
         }
         return new THREE.Vector3(0, 0, 0);
     }
@@ -122,8 +124,8 @@ class ForgePin {
         this.element.classList.add('pin');
         this.element.classList.add(this.id);
         this.#position = this.#calcPosition();
-        console.log(this.#position);
-        
+        //console.log(this.#position);
+
         this.#offset = this.#options.offset;
         this.data = this.#options.data;
 
@@ -196,7 +198,6 @@ class ForgePin {
         }
         if (!this.#position) {
             this.hide();
-            console.error(`[ForgePin] The DBID: ${this.dbId}, Position is not set.`);
             return;
         }
         const current2Dpos = this.get2DPosition(this.#position);
