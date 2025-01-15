@@ -215,6 +215,7 @@ namespace MinSheng_MIS.Services
                     planRFIDInfo.EState = dic_eState[plan.EState];
                     planRFIDInfo.NO = plan.NO;
                     planRFIDInfo.Location = plan.Area + " " + plan.FloorName;
+                    planRFIDInfo.FSN = plan.FSN;
                     planRFIDInfo.RFIDInternalCode = plan.RFIDInternalCode;
                     planRFIDInfo.ESN = plan.ESN;
                     planRFIDInfo.InspectionOrder = plan.InspectionOrder;

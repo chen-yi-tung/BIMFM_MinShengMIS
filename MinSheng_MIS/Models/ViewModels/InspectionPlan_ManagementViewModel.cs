@@ -955,7 +955,8 @@ namespace MinSheng_MIS.Models.ViewModels
 			public string NO { get; set; } //設備編號
 
 			public string Location { get; set; } //地點
-			public string RFIDInternalCode { get; set; } //RFID編碼
+            public string FSN { get; set; } //地點
+            public string RFIDInternalCode { get; set; } //RFID編碼
 			public string ESN { get; set; } //取設備內容用
 			public string InspectionOrder { get; set; } //填報用
 		}
