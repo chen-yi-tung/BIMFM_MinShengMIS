@@ -23,6 +23,8 @@ namespace MinSheng_MIS.Services
         #region WEB
         public void CreateFromWeb(Repair_ManagementWebCreateViewModel item)
         {
+            if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "1"))
+                throw new Exception("此設備停用中");
             if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "2"))
                 throw new Exception("此設備已經報修中");
             EquipmentReportForm newForm = new EquipmentReportForm();
@@ -109,7 +111,7 @@ namespace MinSheng_MIS.Services
             {
                 dbItem.ReportState = "4";
                 EquipmentInfo equipment = _db.EquipmentInfo.Find(dbItem.ESN);
-                equipment.EState = "1";
+                if (equipment.EState == "2") equipment.EState = "1";
                 ResumeMaintenance(dbItem.ESN);
             }
             else
@@ -174,6 +176,8 @@ namespace MinSheng_MIS.Services
             //新增
             if (item.RSN == null)
             {
+                if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "1"))
+                    throw new Exception("此設備停用中");
                 if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "2"))
                     throw new Exception("此設備已經報修中");
                 newForm.RSN = GetNextRSN();
@@ -270,7 +274,7 @@ namespace MinSheng_MIS.Services
             if (!_db.EquipmentReportForm.Any(e => e.ESN == item.ESN && e.ReportState != "4"))
             {
                 EquipmentInfo equipment = _db.EquipmentInfo.Find(item.ESN);
-                equipment.EState = "1";
+                if (equipment.EState == "2") equipment.EState = "1";
             }
             var memberList = _db.Equipment_ReportFormMember.Where(e => e.RSN == item.RSN).ToList();
             _db.Equipment_ReportFormMember.RemoveRange(memberList);

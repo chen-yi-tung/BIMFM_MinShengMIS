@@ -255,6 +255,7 @@
     <Compile Include="Attributes\EnumLabel.cs" />
     <Compile Include="Attributes\FileSizeLimit.cs" />
     <Compile Include="Attributes\JWTAuthorizeAttribute.cs" />
+    <Compile Include="Attributes\MinShengAuthorizeAttribute.cs" />
     <Compile Include="Attributes\RFIDStockOut.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Account_ManagementController.cs" />
