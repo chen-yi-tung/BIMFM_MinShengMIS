@@ -398,7 +398,6 @@
                     document.getElementById("EquipmentZone").innerHTML = "";
                     EquipmentData = [];
                 }, { once: true })
-
                 ImageDisplay(".datatable-img-item>img");
                 //加入新項目
                 ShowEquipment("#EquipmentZone", equips, newAddValues)
@@ -429,8 +428,8 @@
                         console.log("失敗回傳", res);
                         return false;
                     })
-                    EquipmentData = data;
-                    return EquipmentData.Datas;
+                    EquipmentData = data.Datas;
+                    return EquipmentData;
                 }
                 return false;
             }
@@ -629,9 +628,9 @@
 
                 let addMaintainItemList = []
                 // 有顯示 補充設備保養項目設定 Modal 的情況下會有資料
-                if (EquipmentData.length > 0) {
-                    maintainItemList = maintainItemList.filter(item => item.MISSN && item.MISSN.trim() !== "");
-
+  
+                if (EquipmentData && EquipmentData.length > 0) {
+                    //maintainItemList = maintainItemList.filter(item => item.MISSN && item.MISSN.trim() !== "");
                     if (this.EquipmentZone.length) {
                         addMaintainItemList = EquipmentData.map((equipment, index) => {
                             return this.EquipmentZone.find(`#MaintainEditZone_${index} .edit-item-init`).toArray().map(e => ({
