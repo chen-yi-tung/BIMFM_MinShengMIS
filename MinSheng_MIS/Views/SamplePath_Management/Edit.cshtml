@@ -227,11 +227,11 @@
             if (options) Object.assign(defaultOptions, options);
             sortableController = Sortable.create(element, defaultOptions)
         }
-        // 新增
+        // 編輯
         function save(data) {
             console.log('requestData', data);
             if (!data) return;
-
+            data.PlanPathSN = PlanPathSN;
             $.ajax({
                 url: SubmitUrl,
                 data: JSON.stringify(data),
