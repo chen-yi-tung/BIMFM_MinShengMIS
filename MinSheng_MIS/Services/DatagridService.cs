@@ -996,7 +996,8 @@ namespace MinSheng_MIS.Services
                 x.SampleName,
                 AddItemsNum = x.Template_AddField.Count,
                 MaintainNum = x.Template_MaintainItemSetting.Count,
-                InspectNum = x.Template_CheckItem.Count + x.Template_ReportingItem.Count
+                InspectNum = x.Template_CheckItem.Count + x.Template_ReportingItem.Count,
+                Deletable = !x.EquipmentInfo.Any()
             });
             //模板名稱 (模糊查詢)
             if (!string.IsNullOrEmpty(SampleName))
@@ -1031,6 +1032,7 @@ namespace MinSheng_MIS.Services
                         { "AddItemsNum", item.AddItemsNum.ToString() },
                         { "MaintainNum", item.MaintainNum.ToString() },
                         { "InspectNum", item.InspectNum.ToString() },
+                        { "Deletable", item.Deletable },
                     };
 
                     ja.Add(itemObject);
