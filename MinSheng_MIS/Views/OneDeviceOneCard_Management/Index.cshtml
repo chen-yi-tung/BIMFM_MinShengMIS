@@ -87,7 +87,7 @@
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: authority === "3" })),
-                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { disabled: authority != "1",className: "btn btn-datagrid btn-delete"})),
+                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { disabled: authority != "1" || row.Deletable === false, className: "btn btn-datagrid btn-delete"})),
                 ]],
                 columns: [[
                     dg.column('SampleName', '模板名稱', 300),
