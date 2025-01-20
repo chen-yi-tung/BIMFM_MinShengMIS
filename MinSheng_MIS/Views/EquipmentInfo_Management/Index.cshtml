@@ -182,18 +182,21 @@
                 $.ajax({
                     url: "/EquipmentInfo_Management/DisableEquipment?id=" + ESN,
                     type: "POST",
-                    //dataType: "json",
-                    //data: JSON.stringify({ id: ESN }),
-                    //contentType: "application/json;charset=utf-8",
                     success: onSuccess,
                     error: onError
                 })
 
-                function onSuccess() {
+                function onSuccess(res) {
+                    if (res.ErrorMessage) {
+                        createDialogModal({
+                            id: "DialogModal-Error", inner: `停用失敗！${res?.ErrorMessage || ""}`,
+                        })
+                        return;
+                    }
                     window.location.reload();
                 }
-                function onError() {
-                    console.log("ErrorMessage", ErrorMessage);
+                function onError(res) {
+                    createDialogModal({ id: "DialogModal-Error", inner: `停用失敗！${res?.responseText || ""}` })
                 }
             }
         }
