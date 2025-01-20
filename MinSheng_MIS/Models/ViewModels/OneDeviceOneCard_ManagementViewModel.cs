@@ -130,7 +130,7 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             var temp = AddItemList.AsEnumerable();
             if (onlyEmptyAfsn) // 篩出新的增設欄位
-                temp = temp.Where(x => string.IsNullOrEmpty(x.AFSN));
+                temp = temp?.Where(x => string.IsNullOrEmpty(x.AFSN));
             ((IAddFieldModifiableList)this).AFNameList = temp?.Select(x => x.Value) ?? new List<string>();
         }
 
@@ -138,7 +138,7 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             var temp = MaintainItemList?.AsEnumerable();
             if (onlyEmptyMISSN) // 篩出新的保養項目
-                temp = temp.Where(x => string.IsNullOrEmpty(x.MISSN));
+                temp = temp?.Where(x => string.IsNullOrEmpty(x.MISSN));
             ((IMaintainItemModifiableList)this).MINameList = temp?.Select(x => x.Value) ?? new List<string>();
         }
 
@@ -146,7 +146,7 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             var temp = CheckItemList?.AsEnumerable();
             if (onlyEmptyCisn) // 篩出新的檢查項目
-                temp = temp.Where(x => string.IsNullOrEmpty(x.CISN));
+                temp = temp?.Where(x => string.IsNullOrEmpty(x.CISN));
             ((ICheckItemModifiableList)this).CINameList = temp?.Select(x => x.Value) ?? new List<string>();
         }
 
@@ -154,7 +154,7 @@ namespace MinSheng_MIS.Models.ViewModels
         {
             var temp = ReportItemList?.AsEnumerable();
             if (onlyEmptyRisn) // 篩出新的填報項目
-                temp = temp.Where(x => string.IsNullOrEmpty(x.RISN));
+                temp = temp?.Where(x => string.IsNullOrEmpty(x.RISN));
             ((IReportItemModifiableList)this).RIList = temp?.Select(x => new UpdateReportItemModel
                 {
                     RIName = x.Value,
