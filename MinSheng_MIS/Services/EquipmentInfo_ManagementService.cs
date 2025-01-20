@@ -246,11 +246,7 @@ namespace MinSheng_MIS.Services
 
             // 新增/編輯 RFID
             foreach (var item in data.RFIDList)
-            {
-                item.ESN = data.ESN;
                 await _rfidService.UpdateEquipRFIDAsync(item);
-            }
-                
 
             // 應刪除的RFID
             var delRFID = _rfidService.GetRFIDQueryByDto<RFID>(x => x.ESN == data.ESN)
@@ -337,10 +333,10 @@ namespace MinSheng_MIS.Services
             if (equipment?.RFID == null)
                 return null;
 
-            var result = equipment.RFID
-                .ToList();
-
-            result.ForEach(async x => await _rfidService.GetRfidAsync<EquipRFIDDetail>(x.RFIDInternalCode));
+            var result = await Task.WhenAll(
+                equipment.RFID 
+                .Select(x => _rfidService.GetRfidAsync<EquipRFIDDetail>(x.RFIDInternalCode)
+                ));
 
             return result.Cast<IRFIDInfoDetail>().ToList();
         }

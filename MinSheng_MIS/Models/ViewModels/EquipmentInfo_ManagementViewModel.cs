@@ -141,7 +141,7 @@ namespace MinSheng_MIS.Models.ViewModels
         [Required]
         [StringLength(12, ErrorMessage = "{0} 的長度最多{1}個字元。")]
         [Display(Name = "設備資料編號")]
-        public new string ESN { get; set; } // 設備資料(EquipmentInfo)編號
+        public override string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         public string TSN { get; set; } // 一機一卡模板編號
         [FileSizeLimit(10)] // 限制大小為 10 MB
         [Display(Name = "設備照片")]
@@ -197,7 +197,7 @@ namespace MinSheng_MIS.Models.ViewModels
 
     public abstract class EquipInfo : IEquipmentInfo, IUpdateRFID
     {
-        public string ESN { get; set; } // 設備資料(EquipmentInfo)編號
+        public virtual string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         [Required]
         [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
         [Display(Name = "設備名稱")]
