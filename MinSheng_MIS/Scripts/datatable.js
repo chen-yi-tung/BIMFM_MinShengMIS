@@ -894,6 +894,13 @@ function createDeleteDialog(options) {
         function onSuccess(res) {
             console.log(res);
             modal.hide();
+            if (res.ErrorMessage) {
+                createDialogModal({
+                    id: "DialogModal-Error", inner: `刪除失敗！${res?.ErrorMessage || ""}`,
+                })
+                return;
+            }
+            
             createDialogModal({
                 id: "DialogModal-Success",
                 inner: "刪除成功！",
@@ -905,7 +912,7 @@ function createDeleteDialog(options) {
             console.log(res.responseText);
             modal.hide();
 
-            createDialogModal({ id: "DialogModal-Error", inner: "刪除失敗！" })
+            createDialogModal({ id: "DialogModal-Error", inner: `刪除失敗！${res?.responseText || ""}` })
         }
     }
 }

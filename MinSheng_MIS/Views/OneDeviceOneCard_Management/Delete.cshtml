@@ -202,7 +202,6 @@
             $("#delete").click(function () {
                 createDeleteDialog({
                     url: '@Url.Action("DeleteDeviceCard", "OneDeviceOneCard_Management")' + `?id=${TSN}`,
-                    //data: { id: TSN } ,
                     onSuccess() {
                         let url = '@Url.Action("Index", "OneDeviceOneCard_Management")';
                         window.location.href = url;

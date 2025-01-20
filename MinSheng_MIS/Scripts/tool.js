@@ -192,16 +192,21 @@ function FileUploader({
         return this.items.length !== 0
     }
     this.setFile = (path, file = null) => {
+        
         if (!multiple) {
             this.clearAllFile()
         }
-        let container = $(temp_item())
-        list.append(container);
 
         if (file == null) {
+            if (path == null) {
+                return;
+            }
             file = { name: path.split("/").pop(), type: "image/" };
             //file = { name: path.split("/").at(-1) }
         }
+        let container = $(temp_item(file.name))
+        list.append(container);
+
         this.items.push({ container, file })
 
         let fileName = container.find("#FileName")
