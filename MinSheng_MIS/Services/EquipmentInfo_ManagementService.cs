@@ -358,9 +358,18 @@ namespace MinSheng_MIS.Services
         #region 批次刪除RFID資訊
         public async Task DeleteRFIDAsync(List<RFID> data)
         {
-            // 應刪除的巡檢路線模板(InspectionDefaultOrder) : 刪除RFID後無其他
+            // 刪除RFID相關巡檢路線
+            await DeleteRFIDInspectionOrderAsync(data.SelectMany(x => x.InspectionDefaultOrder));
+            // 刪除RFID
+            data.ForEach(x => _rfidService.DeleteRFID(x));
+        }
+        #endregion
+
+        #region 批次刪除RFID相關巡檢路線
+        public async Task DeleteRFIDInspectionOrderAsync(IEnumerable<InspectionDefaultOrder> data)
+        {
+            // 應刪除的巡檢路線模板(InspectionDefaultOrder)
             var delPath = data
-                .SelectMany(x => x.InspectionDefaultOrder)
                 .Select(x => x.InspectionPathSample)
                 .Distinct()
                 .Where(x =>
@@ -370,13 +379,11 @@ namespace MinSheng_MIS.Services
                     )
                 ).ToList();
 
-            // 刪除巡檢預設順序 : 使用應刪除的RFID
-            _samplePathService.DeleteInspectionDefaultOrder(data.SelectMany(x => x.InspectionDefaultOrder));
+            // 刪除巡檢預設順序
+            _samplePathService.DeleteInspectionDefaultOrder(data);
             // 刪除巡檢路線模板
             foreach (var item in delPath)
                 await _samplePathService.DeleteInspectionPathSampleAsync(item);
-            // 刪除RFID
-            data.ForEach(x => _rfidService.DeleteRFID(x));
         }
         #endregion
 
@@ -384,17 +391,14 @@ namespace MinSheng_MIS.Services
         /// <summary>
         /// 批次刪除設備增設欄位值
         /// </summary>
-        /// <param name="data">要刪除的 EAFVSN 列表</param>
-        public void DeleteAddFieldValueList(IEnumerable<string> data)
+        /// <param name="data">要刪除設備增設欄位值列表</param>
+        public void DeleteAddFieldValueList(IEnumerable<Equipment_AddFieldValue> data)
         {
-            if (data == null) return;
-
-            var values = _db.Equipment_AddFieldValue
-                .Where(x => data.Contains(x.EAFVSN))
-                .AsEnumerable();
+            if (data?.Any() != true)
+                return;
 
             // 刪除關聯的 Equipment_AddFieldValue
-            _db.Equipment_AddFieldValue.RemoveRange(values);
+            _db.Equipment_AddFieldValue.RemoveRange(data);
         }
         #endregion
 
@@ -402,38 +406,39 @@ namespace MinSheng_MIS.Services
         /// <summary>
         /// 批次刪除設備保養資訊
         /// </summary>
-        /// <param name="data">要刪除的 EMIVSN 列表</param>
-        public void DeleteMaintainItemValueList(IEnumerable<string> data)
+        /// <param name="data">要刪除的設備保養資訊列表</param>
+        public void DeleteMaintainItemValueList(IEnumerable<Equipment_MaintainItemValue> data)
         {
-            if (data == null) return;
+            if (data?.Any() != true)
+                return;
 
-            var values = _db.Equipment_MaintainItemValue
-                .Where(x => data.Contains(x.EMIVSN))
+            // 刪除相關待派工的定期保養單
+            var forms = data
+                .SelectMany(x => x.Template_MaintainItemSetting.Equipment_MaintenanceForm
+                    .Where(f => IsEnumEqualToStr(f.Status, MaintenanceFormStatus.ToAssign)))
                 .AsEnumerable();
 
-            // 刪除相關待派工及待執行的定期保養單
             DeletePendingMaintenanceFormList(
-                values.SelectMany(x => x.Template_MaintainItemSetting.Equipment_MaintenanceForm
-                    .Where(f => IsEnumEqualToStr(f.Status, MaintenanceFormStatus.ToAssign) || 
-                    IsEnumEqualToStr(f.Status, MaintenanceFormStatus.ToDo)))
+                data.SelectMany(x => x.Template_MaintainItemSetting.Equipment_MaintenanceForm
+                    .Where(f => IsEnumEqualToStr(f.Status, MaintenanceFormStatus.ToAssign)))
                 .AsEnumerable()
             );
 
             // 刪除關聯的 Equipment_AddFieldValue
-            _db.Equipment_MaintainItemValue.RemoveRange(values);
+            _db.Equipment_MaintainItemValue.RemoveRange(data);
         }
 
         /// <summary>
-        /// 刪除相關待派工及待執行的定期保養單
+        /// 刪除相關待派工的定期保養單
         /// </summary>
         /// <param name="forms">欲刪除定期保養單</param>
         private void DeletePendingMaintenanceFormList(IEnumerable<Equipment_MaintenanceForm> forms)
         {
             var members = forms.SelectMany(x => x.Equipment_MaintenanceFormMember).AsEnumerable();
 
-            // 刪除關聯且待派工及待執行的 Equipment_MaintenanceFormMember
+            // 刪除關聯的 Equipment_MaintenanceFormMember
             _db.Equipment_MaintenanceFormMember.RemoveRange(members);
-            // 刪除關聯且待派工及待執行的 Equipment_MaintenanceForm
+            // 刪除 Equipment_MaintenanceForm
             _db.Equipment_MaintenanceForm.RemoveRange(forms);
         }
         #endregion
@@ -603,7 +608,7 @@ namespace MinSheng_MIS.Services
             foreach (var item in targetList)
             {
                 var field = _db.Equipment_MaintainItemValue.Find(item.EMIVSN) 
-                    ?? throw new MyCusResException("MISSN不存在！");
+                    ?? throw new MyCusResException("EMIVSN不存在！");
 
                 // 將有變更的保養項目儲存
                 if (!item.Period.Equals(field.Period) || !item.NextMaintainDate.Equals(field.NextMaintainDate))

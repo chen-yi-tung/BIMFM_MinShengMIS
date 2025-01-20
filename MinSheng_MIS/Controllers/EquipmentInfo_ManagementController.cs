@@ -60,27 +60,31 @@ namespace MinSheng_MIS.Controllers
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat:true);  // Data Annotation未通過
 
                 // 建立 EquipmentInfo
-                string esn = await _eMgmtService.CreateEquipmentInfoAsync(data);
+                data.SetEsn(await _eMgmtService.CreateEquipmentInfoAsync(data));
 
                 // 建立 RFID
-                if (data.RFIDList != null && data.RFIDList.Any())
-                    await _eMgmtService.CreateRFIDAsync(data.ConvertToUpdateRFID(esn));
+                if (data.RFIDList?.Any() == true)
+                {
+                    data.SetRFIDListESN();
+                    await _eMgmtService.CreateRFIDAsync(data);
+                }
+                    
 
                 // 建立一機一卡模板資料 (非必填)
                 if (data.TSN != null)
                 {
                     // 建立 Equipment_AddFieldValue (非必填)
                     if (data.AddFieldList != null && data.AddFieldList.Any())
-                        await _eMgmtService.CreateEquipmentAdditionalFieldsValue(data.ConvertToUpdateAddFieldValue(esn));
+                        await _eMgmtService.CreateEquipmentAdditionalFieldsValue(data);
 
                     // 建立 Equipment_MaintainItemValue (非必填)
                     if (data.MaintainItemList != null && data.MaintainItemList.Any())
-                        await _eMgmtService.CreateEquipmentMaintainItemsValue(data.ConvertToUpdateMaintainItemValue(esn));
+                        await _eMgmtService.CreateEquipmentMaintainItemsValue(data);
                 }
 
                 // 照片上傳
                 if (data.EPhoto?.ContentLength > 0)
-                    _eMgmtService.UploadPhoto(data.EPhoto, esn);
+                    _eMgmtService.UploadPhoto(data.EPhoto, data.ESN);
 
                 await _db.SaveChangesAsync();
 
@@ -116,24 +120,51 @@ namespace MinSheng_MIS.Controllers
             {
                 // Data Annotation
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat: true);  // Data Annotation未通過
-                
+
+                var equipment = await _db.EquipmentInfo.SingleOrDefaultAsync(x => x.ESN == data.ESN)
+                    ?? throw new MyCusResException("設備不存在！");
+
                 using (var trans = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
+                    // 是否變更一機一卡模板
+                    bool changeTemplate = data.TSN != equipment.TSN;
+
                     // 更新設備資訊
                     await _eMgmtService.UpdateEquipmentInfoAsync(data);
 
                     // 更新RFID
-                    await _eMgmtService.UpdateRFIDAsync(data.ConvertToUpdateRFID(data.ESN));
+                    data.SetRFIDListESN();
+                    await _eMgmtService.UpdateRFIDAsync(data);
 
                     // 更新一機一卡模板資料
-                    if (data.TSN != null)
+                    if (changeTemplate)
+                    {
+                        // Equipment_AddFieldValue : 全部刪除
+                        _eMgmtService.DeleteAddFieldValueList(equipment.Equipment_AddFieldValue);
+
+                        // Equipment_MaintainItemValue : 全部刪除
+                        // 刪除關聯的待派工 Equipment_MaintenanceForm
+                        _eMgmtService.DeleteMaintainItemValueList(equipment.Equipment_MaintainItemValue);
+                    }
+
+                    if (data.TSN != null && changeTemplate)
+                    {
+                        // 建立 Equipment_AddFieldValue (非必填)
+                        if (data.AddFieldList?.Any() == true)
+                            await _eMgmtService.CreateEquipmentAdditionalFieldsValue(data);
+
+                        // 建立 Equipment_MaintainItemValue (非必填)
+                        if (data.MaintainItemList?.Any() == true)
+                            await _eMgmtService.CreateEquipmentMaintainItemsValue(data);
+                    }
+                    else if (data.TSN != null)
                     {
                         // 更新 Equipment_AddFieldValue (非必填)
-                        if (data.AddFieldList != null && data.AddFieldList.Any())
+                        if (data.AddFieldList?.Any() == true)
                             await _eMgmtService.UpdateEquipmentAdditionalFieldsValueAsync(data);
 
                         // 更新 Equipment_MaintainItemValue (非必填)
-                        if (data.MaintainItemList != null && data.MaintainItemList.Any())
+                        if (data.MaintainItemList?.Any() == true)
                             await _eMgmtService.UpdateEquipmentMaintainItemsValue(data);
                     }
 
@@ -214,7 +245,7 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
-        #region 刪除 設備
+        #region 停用 設備
         public ActionResult Delete()
         {
             return View();
@@ -236,11 +267,6 @@ namespace MinSheng_MIS.Controllers
                 {
                     // EquipmentInfo : 停用設備資料, 停用模板
                     _eMgmtService.DisableEquipment(equipment);
-                    // 刪除關聯的待派工 Equipment_MaintenanceForm
-                    equipment.Equipment_MaintenanceForm
-                        .Where(x => IsEnumEqualToStr(x.Status, MaintenanceFormStatus.ToAssign))
-                        .ToList()
-                        .ForEach(x => _db.Equipment_MaintenanceForm.Remove(x));
                     // 刪除關聯的待派工 EquipmentReportForm
                     equipment.EquipmentReportForm
                         .Where(x => IsEnumEqualToStr(x.ReportState, ReportFormStatus.ToAssign))
@@ -253,12 +279,11 @@ namespace MinSheng_MIS.Controllers
                     await _eMgmtService.DeleteRFIDAsync(equipment.RFID.ToList());
 
                     // Equipment_AddFieldValue : 全部刪除
-                    _eMgmtService.DeleteAddFieldValueList(
-                        equipment.Equipment_AddFieldValue.Select(x => x.EAFVSN));
+                    _eMgmtService.DeleteAddFieldValueList(equipment.Equipment_AddFieldValue);
 
                     // Equipment_MaintainItemValue : 全部刪除
-                    _eMgmtService.DeleteMaintainItemValueList(
-                        equipment.Equipment_MaintainItemValue.Select(x => x.EMIVSN));
+                    // 刪除關聯的待派工 Equipment_MaintenanceForm
+                    _eMgmtService.DeleteMaintainItemValueList(equipment.Equipment_MaintainItemValue);
 
                     await _db.SaveChangesAsync();
 

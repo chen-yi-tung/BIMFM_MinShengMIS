@@ -53,25 +53,27 @@ namespace MinSheng_MIS.Controllers
                 if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this, applyFormat:true);  // Data Annotation未通過
 
                 // 建立 Template_OneDeviceOneCard
-                string tsn = await _dCardService.CreateOneDeviceOneCardAsync(data);
+                data.SetTsn(await _dCardService.CreateOneDeviceOneCardAsync(data));
                 if (data.Frequency.HasValue && data.CheckItemList?.Any() != true && data.ReportItemList?.Any() != true)
                     throw new MyCusResException("請至少填入一筆檢查項目或填報項目！");
 
-                // 建立 Template_AddField (非必填)
+                data.SetServiceList();
+                // 建立 Template_AddField (非必填)   
                 if (data.AddItemList?.Any() == true)
-                    _dCardService.CreateAddFieldList(new AddFieldModifiableListInstance(tsn, data));
+                    _dCardService.CreateAddFieldList(data);
+
 
                 // 建立 Template_MaintainItemSetting (非必填)
                 if (data.MaintainItemList?.Any() == true)
-                    _dCardService.CreateMaintainItemList(new MaintainItemModifiableListInstance(tsn, data));
+                    _dCardService.CreateMaintainItemList(data);
 
                 // 建立 Template_CheckItem (非必填)
                 if (data.CheckItemList?.Any() == true)
-                    _dCardService.CreateCheckItemList(new CheckItemModifiableListInstance(tsn, data));
+                    _dCardService.CreateCheckItemList(data);
 
                 // 建立 Template_ReportingItem (非必填)
                 if (data.ReportItemList?.Any() == true)
-                    _dCardService.CreateReportItemList(new ReportItemModifiableListInstance(tsn, data));
+                    _dCardService.CreateReportItemList(data);
 
                 await _db.SaveChangesAsync();
 
@@ -230,26 +232,26 @@ namespace MinSheng_MIS.Controllers
             {
                 var template = await _db.Template_OneDeviceOneCard.SingleOrDefaultAsync(x => x.TSN == id)
                     ?? throw new MyCusResException("模板不存在！");
+                if (template.EquipmentInfo.Any())
+                    throw new MyCusResException("此模板正被其他設備使用，不可刪除！");
 
-                // 刪除增設基本資料欄位 : Equipment_AddField
+                // 刪除增設基本資料欄位 : Template_AddField
                 // 刪除關聯的 Equipment_AddFieldValue
-                _dCardService.DeleteAddFieldList(new DeleteAddFieldList(template));
+                _dCardService.DeleteAddFieldList(template.Template_AddField);
 
-                // 刪除保養項目設定 : Equipment_MaintainItem
-                // 刪除相關待派工及待執行的定期保養單 : Equipment_MaintenanceForm /Equipment_MaintenanceFormMember
+                // 刪除保養項目設定 : Template_MaintainItemSetting
+                // 刪除相關待派工定期保養單及其他狀態的定期保養單關聯 : Equipment_MaintenanceForm
                 // 刪除關聯的 Equipment_MaintainItemValue
-                _dCardService.DeleteMaintainItemList(new DeleteMaintainItemList(template));
+                _dCardService.DeleteMaintainItemList(template.Template_MaintainItemSetting);
 
                 // 刪除檢查項目 : Template_CheckItem
-                _dCardService.DeleteCheckItemList(new DeleteCheckItemList(template));
+                _dCardService.DeleteCheckItemList(template.Template_CheckItem);
 
                 // 刪除填報項目 : Template_ReportingItem
-                _dCardService.DeleteReportItemList(new DeleteReportItemList(template));
+                _dCardService.DeleteReportItemList(template.Template_ReportingItem);
 
                 // 刪除一機一卡模板
-                // 刪除模板與設備的關聯
-                // 刪除使用該模板之設備待執行工單 TODO
-                // 刪除使用該模板之巡檢預設順序 TODO
+                // 刪除使用該模板之巡檢預設順序及相關表單
                 await _dCardService.DeleteOneDeviceOneCardAsync(template);
 
                 await _db.SaveChangesAsync();

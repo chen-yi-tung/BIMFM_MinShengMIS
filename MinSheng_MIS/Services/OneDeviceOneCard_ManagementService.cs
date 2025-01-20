@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using System.Web;
+using static MinSheng_MIS.Services.UniParams;
 
 namespace MinSheng_MIS.Services
 {
@@ -14,13 +15,13 @@ namespace MinSheng_MIS.Services
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly EquipmentInfo_ManagementService _eMgmtService;
-        //private readonly SamplePath_ManagementService _pSamplePathService;
+        private readonly Maintain_ManagementService _maintainService;
 
         public OneDeviceOneCard_ManagementService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
             _eMgmtService = new EquipmentInfo_ManagementService(_db);
-            //_pSamplePathService = new SamplePath_ManagementService(_db);
+            _maintainService = new Maintain_ManagementService(_db);
         }
 
         public void SetServer(HttpServerUtilityBase server)
@@ -91,22 +92,29 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        // TODO
         #region 更新一機一卡模板
         public async Task UpdateOneDeviceOneCardAsync(IUpdateDeviceCard data)
         {
             // 是否模板存在
-            if (!await _db.Template_OneDeviceOneCard.AnyAsync(x => x.TSN == data.TSN))
-                throw new MyCusResException("模板不存在！");
+            var card = await _db.Template_OneDeviceOneCard.SingleOrDefaultAsync(x => x.TSN == data.TSN)
+                ?? throw new MyCusResException("模板不存在！");
 
             // 資料驗證
             DeviceCardDataAnnotation(data, data.TSN);
 
             // 更新 Template_OneDeviceOneCard
-            Template_OneDeviceOneCard update = (data as DeviceCardEditViewModel)
-                .ToDto<DeviceCardEditViewModel, Template_OneDeviceOneCard>();
+            var update = data.ToDto<IUpdateDeviceCard, Template_OneDeviceOneCard>();
 
-            // TODO : 若巡檢頻率變更，需刪除使用該設備RFID的InspectionPathSample及InspectionPlan_Time
+            // 若巡檢頻率變更，需刪除使用該設備RFID的InspectionPathSample
+            if (update.Frequency != card.Frequency)
+            {
+                // 應刪除的巡檢順序
+                var delOrder = card.EquipmentInfo
+                    .SelectMany(x => x.RFID)
+                    .SelectMany(x => x.InspectionDefaultOrder);
+                // 刪除RFID相關巡檢路線
+                await _eMgmtService.DeleteRFIDInspectionOrderAsync(delOrder);
+            }
 
             _db.Template_OneDeviceOneCard.AddOrUpdate(update);
         }
@@ -116,18 +124,13 @@ namespace MinSheng_MIS.Services
         public async Task UpdateAddFieldListAsync(IUpdateAddFieldList data)
         {
             // 資料驗證
-            AddFieldDataAnnotation(new AddFieldModifiableListInstance(data as DeviceCardEditViewModel));
+            data.SetAddFieldModifiableList();
+            AddFieldDataAnnotation(data);
 
             // 刪除 Template_AddField
             var afsnList = data.AddItemList?.Select(x => x.AFSN).ToList() ?? new List<string>();
-            DeleteAddFieldList delTarget = new DeleteAddFieldList
-            {
-                AFSN = _db.Template_AddField
-                    .Where(x => x.TSN == data.TSN && !afsnList.Contains(x.AFSN))
-                    .Select(x => x.AFSN)
-                    .ToList()
-            };
-            DeleteAddFieldList(delTarget);
+            DeleteAddFieldList(_db.Template_AddField
+                    .Where(x => x.TSN == data.TSN && !afsnList.Contains(x.AFSN)));
 
             // 更新 Template_AddField
             UpdateRangeAddField(data);
@@ -135,7 +138,8 @@ namespace MinSheng_MIS.Services
             await _db.SaveChangesAsync();
 
             // 建立 Template_AddField
-            AddRangeAddField(new AddFieldModifiableListInstance(data as DeviceCardEditViewModel, true));
+            data.SetAddFieldModifiableList(true);
+            AddRangeAddField(data);
         }
         #endregion
 
@@ -151,18 +155,14 @@ namespace MinSheng_MIS.Services
         public async Task UpdateMaintainItemListAsync(IUpdateMaintainItemList data)
         {
             // 資料驗證
-            MaintainItemDataAnnotation(new MaintainItemModifiableListInstance(data, noEquipmentUsed:true, equipmentUsed: true));
+            data.SetMaintainItemModifiableList();
+            MaintainItemDataAnnotation(data);
 
-            #region MaintainItemDetailModel 既有保養項目/未有設備使用之保養項目
+            #region 新增/編輯/刪除保養項目
             // 刪除 Template_MaintainItemSetting
             var missnList = data.MaintainItemList?.Select(x => x.MISSN).ToList() ?? new List<string>();
-            DeleteMaintainItemList(new DeleteMaintainItemList
-            {
-                MISSN = _db.Template_MaintainItemSetting
-                    .Where(x => x.TSN == data.TSN && !missnList.Contains(x.MISSN))
-                    .Select(x => x.MISSN)
-                    .ToList()
-            });
+            DeleteMaintainItemList(_db.Template_MaintainItemSetting
+                    .Where(x => x.TSN == data.TSN && !missnList.Contains(x.MISSN)));
 
             // 更新 Template_MaintainItemSetting
             UpdateRangeMaintainItemList(data);
@@ -170,34 +170,32 @@ namespace MinSheng_MIS.Services
             await _db.SaveChangesAsync();
 
             // 建立 Template_MaintainItemSetting
-            AddRangeMaintainItem(new MaintainItemModifiableListInstance(data, onlyEmptyMISSN: true, noEquipmentUsed: true), out _);
+            data.SetMaintainItemModifiableList(true);
+            AddRangeMaintainItem(data, out var newItems);
             #endregion
 
-            #region AddEquipmentUsedMaintainItem 新增之保養項目及其於各設備值
+            #region AddEquipmentUsedMaintainItem 新增之保養項目於各設備值
             // 具新增之保養項目
             if (data.AddMaintainItemList?.Any() == true)
             {
-                // 建立 Template_MaintainItemSetting
-                AddRangeMaintainItem(new MaintainItemModifiableListInstance(data, equipmentUsed: true), out var newItems);
-
                 await _db.SaveChangesAsync();
 
                 // 建立 Equipment_MaintainItemValue 及30天內的保養單
-                if (newItems != null && newItems.Any())
+                if (newItems?.Any() == true)
                 {
                     var valueTargetList = data.AddMaintainItemList?.GroupBy(x => x.ESN).Select(x =>
-                    new UpdateMaintainItemValueInstance
-                    {
-                        ESN = x.Key,
-                        TSN = data.TSN,
-                        MaintainItemList = x.Select(i => new MaintainItemValueModel
+                        new UpdateMaintainItemValueInstance
                         {
-                            MISSN = newItems.SingleOrDefault(n => n.MaintainName == i.MaintainName).MISSN,
-                            Period = i.Period,
-                            NextMaintainDate = i.NextMaintainDate,
-                        }).ToList()
-                    })
-                    ?? Enumerable.Empty<UpdateMaintainItemValueInstance>();
+                            ESN = x.Key,
+                            TSN = data.TSN,
+                            MaintainItemList = x.Select(i => new MaintainItemValueModel
+                            {
+                                MISSN = newItems.SingleOrDefault(n => n.MaintainName == i.MaintainName).MISSN,
+                                Period = i.Period,
+                                NextMaintainDate = i.NextMaintainDate,
+                            }).ToList()
+                        })
+                        ?? Enumerable.Empty<UpdateMaintainItemValueInstance>();
                     foreach (var value in valueTargetList)
                         await _eMgmtService.CreateEquipmentMaintainItemsValue(value, true);
                 }
@@ -211,18 +209,13 @@ namespace MinSheng_MIS.Services
         public async Task UpdateCheckItemListAsync(IUpdateCheckItemList data)
         {
             // 資料驗證
-            CheckItemDataAnnotation(new CheckItemModifiableListInstance(data as DeviceCardEditViewModel));
+            data.SetCheckItemModifiableList();
+            CheckItemDataAnnotation(data);
 
             // 刪除 Template_CheckItem
             var cisnList = data.CheckItemList?.Select(x => x.CISN).ToList() ?? new List<string>();
-            DeleteCheckItemList delTarget = new DeleteCheckItemList
-            {
-                CISN = _db.Template_CheckItem
-                    .Where(x => x.TSN == data.TSN && !cisnList.Contains(x.CISN))
-                    .Select(x => x.CISN)
-                    .ToList()
-            };
-            DeleteCheckItemList(delTarget);
+            var delItems = _db.Template_CheckItem.Where(x => x.TSN == data.TSN && !cisnList.Contains(x.CISN));
+            DeleteCheckItemList(delItems);
 
             // 更新 Template_CheckItem
             UpdateRangeCheckItemList(data);
@@ -230,7 +223,8 @@ namespace MinSheng_MIS.Services
             await _db.SaveChangesAsync();
 
             // 建立 Template_CheckItem
-            AddRangeCheckItem(new CheckItemModifiableListInstance(data as DeviceCardEditViewModel, true));
+            data.SetCheckItemModifiableList(true);
+            AddRangeCheckItem(data);
         }
         #endregion
 
@@ -238,18 +232,13 @@ namespace MinSheng_MIS.Services
         public async Task UpdateReportItemListAsync(IUpdateReportItemList data)
         {
             // 資料驗證
-            ReportItemDataAnnotation(new ReportItemModifiableListInstance(data as DeviceCardEditViewModel));
+            data.SetReportItemModifiableList();
+            ReportItemDataAnnotation(data);
 
             // 刪除 Template_ReportingItem
             var risnList = data.ReportItemList?.Select(x => x.RISN).ToList() ?? new List<string>();
-            DeleteReportItemList delTarget = new DeleteReportItemList
-            {
-                RISN = _db.Template_ReportingItem
-                    .Where(x => x.TSN == data.TSN && !risnList.Contains(x.RISN))
-                    .Select(x => x.RISN)
-                    .ToList()
-            };
-            DeleteReportItemList(delTarget);
+            var delItems = _db.Template_ReportingItem.Where(x => x.TSN == data.TSN && !risnList.Contains(x.RISN));
+            DeleteReportItemList(delItems);
 
             // 更新 Template_ReportingItem
             UpdateRangeReportItemList(data);
@@ -257,7 +246,8 @@ namespace MinSheng_MIS.Services
             await _db.SaveChangesAsync();
 
             // 建立 Template_ReportingItem
-            AddRangeReportItem(new ReportItemModifiableListInstance(data as DeviceCardEditViewModel, true));
+            data.SetReportItemModifiableList(true);
+            AddRangeReportItem(data);
         }
         #endregion
 
@@ -328,18 +318,15 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
-        // TODO
-        #region 刪除一機一卡模板 Not Done
+        #region 刪除一機一卡模板
         public async Task DeleteOneDeviceOneCardAsync(Template_OneDeviceOneCard data)
         {
-            var equipments = data.EquipmentInfo;
-            // 刪除模板與設備的關聯
-            foreach (var e in equipments)
-                await _eMgmtService.UpdateEquipmentInfoAsync(e.ToDto<EquipmentInfo, UpdateEquipmentInfoInstance>());
-            // 刪除使用該模板之巡檢預設順序 TODO
-            // (使用ESN->RFID進行關聯)
-
-            // 刪除使用該模板之設備待執行工單 TODO
+            // 刪除使用該模板之巡檢預設順序
+            var delOrder = data.EquipmentInfo
+                .SelectMany(x => x.RFID)
+                .SelectMany(x => x.InspectionDefaultOrder);
+            // 刪除RFID相關巡檢路線
+            await _eMgmtService.DeleteRFIDInspectionOrderAsync(delOrder);
 
             // 刪除模板
             _db.Template_OneDeviceOneCard.Remove(data);
@@ -347,73 +334,62 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 批次刪除增設基本資料欄位
-        public void DeleteAddFieldList(IDeleteAddFieldList data)
+        public void DeleteAddFieldList(IEnumerable<Template_AddField> data)
         {
-            if (data?.AFSN.Any() != true) return;
-
-            var fields = _db.Template_AddField
-                .Where(x => data.AFSN.Contains(x.AFSN))
-                .AsEnumerable();
+            if (data?.Any() != true)
+                return;
 
             // 刪除關聯的 Equipment_AddFieldValue
-            _eMgmtService.DeleteAddFieldValueList(
-                fields.SelectMany(x => x.Equipment_AddFieldValue
-                    .Select(e => e.EAFVSN))
-                    .AsEnumerable()
-            );
+            _eMgmtService.DeleteAddFieldValueList(data.SelectMany(x => x.Equipment_AddFieldValue));
 
             // 刪除 Template_AddField
-            _db.Template_AddField.RemoveRange(fields);
+            _db.Template_AddField.RemoveRange(data);
         }
         #endregion
 
         #region 批次刪除保養項目設定
-        public void DeleteMaintainItemList(IDeleteMaintainItemList data)
+        public void DeleteMaintainItemList(IEnumerable<Template_MaintainItemSetting> data)
         {
-            if (data?.MISSN.Any() != true) return;
+            if (data?.Any() != true) 
+                return;
 
-            var items = _db.Template_MaintainItemSetting
-                .Where(x => data.MISSN.Contains(x.MISSN))
-                .AsEnumerable();
+            // 刪除 1.關聯的 Equipment_MaintainItemValue 及 2.相關待派工的定期保養單
+            _eMgmtService.DeleteMaintainItemValueList(data.SelectMany(x => x.Equipment_MaintainItemValue));
 
-            // 刪除相關待派工及待執行的定期保養單
-            // 刪除關聯的 Equipment_MaintainItemValue
-            _eMgmtService.DeleteMaintainItemValueList(
-                items.SelectMany(x => x.Equipment_MaintainItemValue
-                    .Select(e => e.EMIVSN))
-                    .AsEnumerable()
-            );
+            // 移除已派工的定期保養單關聯
+            data.SelectMany(x => x.Equipment_MaintenanceForm)
+                .Where(x => !IsEnumEqualToStr(x.Status, MaintenanceFormStatus.ToDo))
+                .ToList()
+                .ForEach(x =>
+                {
+                    x.MISSN = null;
+                    _maintainService.UpdateMaintainForm(x);
+                });
 
             // 刪除 Template_MaintainItemSetting
-            _db.Template_MaintainItemSetting.RemoveRange(items);
+            _db.Template_MaintainItemSetting.RemoveRange(data);
         }
         #endregion
 
         #region 批次刪除檢查項目
-        public void DeleteCheckItemList(IDeleteCheckItemList data)
+        public void DeleteCheckItemList(IEnumerable<Template_CheckItem> data)
         {
-            if (data?.CISN.Any() != true) return;
-
-            var items = _db.Template_CheckItem
-                .Where(x => data.CISN.Contains(x.CISN))
-                .AsEnumerable();
+            if (data?.Any() != true) 
+                return;
 
             // 刪除 Template_CheckItem
-            _db.Template_CheckItem.RemoveRange(items);
+            _db.Template_CheckItem.RemoveRange(data);
         }
         #endregion
 
         #region 批次刪除填報項目
-        public void DeleteReportItemList(IDeleteReportItemList data)
+        public void DeleteReportItemList(IEnumerable<Template_ReportingItem> data)
         {
-            if (data?.RISN.Any() != true) return;
-
-            var items = _db.Template_ReportingItem
-                .Where(x => data.RISN.Contains(x.RISN))
-                .AsEnumerable();
+            if (data?.Any() != true) 
+                return;
 
             // 刪除 Template_ReportingItem
-            _db.Template_ReportingItem.RemoveRange(items);
+            _db.Template_ReportingItem.RemoveRange(data);
         }
         #endregion
 
@@ -661,11 +637,10 @@ namespace MinSheng_MIS.Services
         /// </summary>
         /// <param name="data">包含一機一卡檢查項目名稱列表及一機一卡模板編碼(TSN)</param>
         /// <returns>無回傳</returns>
-        private void UpdateRangeAddField(in IUpdateAddFieldList data, bool ignoreEmpty = true)
+        private void UpdateRangeAddField(IUpdateAddFieldList data)
         {
-            var targetList = data.AddItemList ?? new List<AddFieldDetailModel>();
-            if (ignoreEmpty)
-                targetList = targetList.Where(x => !string.IsNullOrEmpty(x.AFSN)).ToList();
+            var targetList = data?.AddItemList?.Where(x => !string.IsNullOrEmpty(x.AFSN))
+                ?? new List<AddFieldDetailModel>();
 
             foreach (var item in targetList)
             {

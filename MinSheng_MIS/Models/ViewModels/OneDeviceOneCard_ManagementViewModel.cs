@@ -6,7 +6,8 @@ using System.Linq;
 namespace MinSheng_MIS.Models.ViewModels
 {
     #region 一機一卡-新增
-    public class DeviceCardCreateViewModel : ICreateDeviceCard
+    public class DeviceCardCreateViewModel : ICreateDeviceCard,
+        ICreateAddFieldList, ICreateMaintainItemList, ICreateCheckItemList, ICreateReportItemList
     {
         [Required]
         [StringLength(50, ErrorMessage = "{0} 的長度最多{1}個字元。")]
@@ -17,15 +18,43 @@ namespace MinSheng_MIS.Models.ViewModels
         public List<MaintainItemNameModel> MaintainItemList { get; set; } // 保養項目
         public List<CheckItemNameModel> CheckItemList { get; set; } // 檢查項目
         public List<ReportItemModel> ReportItemList { get; set; } // 填報項目名稱/單位
+
+        private string TSN { get; set; }
+        string IAddFieldModifiableList.TSN { get => TSN; set => TSN = value; }
+        string IMaintainItemModifiableList.TSN { get => TSN; set => TSN = value; }
+        string ICheckItemModifiableList.TSN { get => TSN; set => TSN = value; }
+        string IReportItemModifiableList.TSN { get => TSN; set => TSN = value; }
+
+        IEnumerable<string> IAddFieldModifiableList.AFNameList { get; set; }
+        IEnumerable<string> IMaintainItemModifiableList.MINameList { get; set; }
+        IEnumerable<string> ICheckItemModifiableList.CINameList { get; set; }
+        IEnumerable<UpdateReportItemModel> IReportItemModifiableList.RIList { get; set; }
+
+        internal void SetTsn(string tsn)
+        {
+            TSN = tsn;
+        }
+
+        internal void SetServiceList()
+        {
+            ((IAddFieldModifiableList)this).AFNameList = AddItemList?.Select(x => x.Value).AsEnumerable();
+            ((IMaintainItemModifiableList)this).MINameList = MaintainItemList?.Select(x => x.Value).AsEnumerable();
+            ((ICheckItemModifiableList)this).CINameList = CheckItemList?.Select(x => x.Value).AsEnumerable();
+            ((IReportItemModifiableList)this).RIList = ReportItemList?
+                .Select(x => new UpdateReportItemModel
+                {
+                    RIName = x.Value,
+                    Unit = x.Unit,
+                })
+                .AsEnumerable();
+        }
     }
 
-    public class AddFieldNameModel : IAddFieldName
-    {
-        [Required]
-        [StringLength(20, ErrorMessage = "{0} 的長度最多{1}個字元。")]
-        [Display(Name = "增設基本資料欄位名稱")]
-        public string Value { get; set; } // 欄位名稱
-    }
+    public interface ICreateDeviceCard : IDeviceCard { }
+    public interface ICreateAddFieldList : IAddFieldModifiableList { }
+    public interface ICreateMaintainItemList : IMaintainItemModifiableList { }
+    public interface ICreateCheckItemList : ICheckItemModifiableList { }
+    public interface ICreateReportItemList : IReportItemModifiableList { }
 
     public class MaintainItemNameModel : IMaintainItemName
     {
@@ -67,38 +96,6 @@ namespace MinSheng_MIS.Models.ViewModels
         public List<ICheckItemDetail> CheckItemList { get; set; } // 檢查項目
         public List<IReportItemDetail> ReportItemList { get; set; } // 填報項目名稱/單位
     }
-
-    /// <summary>
-    /// 增設基本資料欄位
-    /// </summary>
-    public class AddFieldDetailModel : AddFieldNameModel, IAddFieldDetail
-    {
-        public string AFSN { get; set; } // 模板增設欄位編號
-    }
-
-    /// <summary>
-    /// 保養資訊
-    /// </summary>
-    public class MaintainItemDetailModel : MaintainItemNameModel, IMaintainItemDetail
-    {
-        public string MISSN { get; set; } // 模板保養編號
-    }
-
-    /// <summary>
-    /// 巡檢資訊-檢查項目
-    /// </summary>
-    public class CheckItemDetailModel : CheckItemNameModel, ICheckItemDetail
-    {
-        public string CISN { get; set; } // 模板檢查項目編號
-    }
-
-    /// <summary>
-    /// 巡檢資訊-填報項目
-    /// </summary>
-    public class ReportItemDetailModel : ReportItemModel, IReportItemDetail
-    {
-        public string RISN { get; set; } // 模板填報項目編號
-    }
     #endregion
 
     #region 一機一卡-編輯
@@ -123,6 +120,47 @@ namespace MinSheng_MIS.Models.ViewModels
         public List<AddEquipmentUsedMaintainItem> AddMaintainItemList { get; set; } // 新增之保養項目及其於各設備值
         public List<CheckItemDetailModel> CheckItemList { get; set; } // 檢查項目列表
         public List<ReportItemDetailModel> ReportItemList { get; set; } // 填報項目列表
+
+        IEnumerable<string> IAddFieldModifiableList.AFNameList { get; set; } // 增設基本資料欄位名稱列表
+        IEnumerable<string> IMaintainItemModifiableList.MINameList { get; set; } // 保養項目名稱列表
+        IEnumerable<string> ICheckItemModifiableList.CINameList { get; set; } // 檢查項目名稱列表
+        IEnumerable<UpdateReportItemModel> IReportItemModifiableList.RIList { get; set; } // 填報項目列表
+
+        public void SetAddFieldModifiableList(bool onlyEmptyAfsn = false)
+        {
+            var temp = AddItemList.AsEnumerable();
+            if (onlyEmptyAfsn) // 篩出新的增設欄位
+                temp = temp.Where(x => string.IsNullOrEmpty(x.AFSN));
+            ((IAddFieldModifiableList)this).AFNameList = temp?.Select(x => x.Value) ?? new List<string>();
+        }
+
+        public void SetMaintainItemModifiableList(bool onlyEmptyMISSN = false)
+        {
+            var temp = MaintainItemList?.AsEnumerable();
+            if (onlyEmptyMISSN) // 篩出新的保養項目
+                temp = temp.Where(x => string.IsNullOrEmpty(x.MISSN));
+            ((IMaintainItemModifiableList)this).MINameList = temp?.Select(x => x.Value) ?? new List<string>();
+        }
+
+        public void SetCheckItemModifiableList(bool onlyEmptyCisn = false)
+        {
+            var temp = CheckItemList?.AsEnumerable();
+            if (onlyEmptyCisn) // 篩出新的檢查項目
+                temp = temp.Where(x => string.IsNullOrEmpty(x.CISN));
+            ((ICheckItemModifiableList)this).CINameList = temp?.Select(x => x.Value) ?? new List<string>();
+        }
+
+        public void SetReportItemModifiableList(bool onlyEmptyRisn = false)
+        {
+            var temp = ReportItemList?.AsEnumerable();
+            if (onlyEmptyRisn) // 篩出新的填報項目
+                temp = temp.Where(x => string.IsNullOrEmpty(x.RISN));
+            ((IReportItemModifiableList)this).RIList = temp?.Select(x => new UpdateReportItemModel
+                {
+                    RIName = x.Value,
+                    Unit = x.Unit,
+                }) ?? new List<UpdateReportItemModel>();
+        }
     }
 
     public class AddEquipmentUsedMaintainItem
@@ -143,60 +181,41 @@ namespace MinSheng_MIS.Models.ViewModels
         [Display(Name = "下次保養日期")]
         public DateTime NextMaintainDate { get; set; } // 下次保養日期
     }
-    #endregion
 
-    #region 一機一卡-刪除
-    public class DeleteAddFieldList : IDeleteAddFieldList
+    public interface IUpdateDeviceCard : IDeviceCardDetail, ICreateDeviceCard { }
+
+    public interface IUpdateAddFieldList : ICreateAddFieldList
     {
-        public IEnumerable<string> AFSN { get; set; }
+        List<AddFieldDetailModel> AddItemList { get; set; }
 
-        public DeleteAddFieldList() { }
-
-        public DeleteAddFieldList(Template_OneDeviceOneCard temp)
-        {
-            AFSN = temp.Template_AddField.Select(x => x.AFSN);
-        }
+        void SetAddFieldModifiableList(bool onlyEmptyAfsn = false);
     }
 
-    public class DeleteMaintainItemList : IDeleteMaintainItemList
+    public interface IUpdateMaintainItemList : ICreateMaintainItemList
     {
-        public IEnumerable<string> MISSN { get; set; }
+        List<MaintainItemDetailModel> MaintainItemList { get; set; } // 既有保養項目/未有設備使用之保養項目
+        List<AddEquipmentUsedMaintainItem> AddMaintainItemList { get; set; } // 新增之保養項目及其於各設備值
 
-        public DeleteMaintainItemList() { }
-
-        public DeleteMaintainItemList(Template_OneDeviceOneCard temp)
-        {
-            MISSN = temp.Template_MaintainItemSetting.Select(x => x.MISSN);
-        }
+        void SetMaintainItemModifiableList(bool onlyEmptyMISSN = false);
     }
 
-    public class DeleteCheckItemList : IDeleteCheckItemList
+    public interface IUpdateCheckItemList : ICreateCheckItemList
     {
-        public IEnumerable<string> CISN { get; set; }
+        List<CheckItemDetailModel> CheckItemList { get; set; } // 檢查項目名稱列表
 
-        public DeleteCheckItemList() { }
-
-        public DeleteCheckItemList(Template_OneDeviceOneCard temp)
-        {
-            CISN = temp.Template_CheckItem.Select(x => x.CISN);
-        }
+        void SetCheckItemModifiableList(bool onlyEmptyCisn = false);
     }
 
-    public class DeleteReportItemList : IDeleteReportItemList
+    public interface IUpdateReportItemList : ICreateReportItemList
     {
-        public IEnumerable<string> RISN { get; set; }
+        List<ReportItemDetailModel> ReportItemList { get; set; } // 填報項目列表
 
-        public DeleteReportItemList() { }
-
-        public DeleteReportItemList(Template_OneDeviceOneCard temp)
-        {
-            RISN = temp.Template_ReportingItem.Select(x => x.RISN);
-        }
+        void SetReportItemModifiableList(bool onlyEmptyRisn = false);
     }
     #endregion
 
-    //-----Interface
-    #region OneDeviceOneCard 一機一卡
+    #region Shared
+    // ----- 一機一卡
     public interface IDeviceCard
     {
         string SampleName { get; set; } // 模板名稱
@@ -208,12 +227,20 @@ namespace MinSheng_MIS.Models.ViewModels
         string TSN { get; set; } // 一機一卡模板編號
     }
 
-    public interface ICreateDeviceCard : IDeviceCard { }
+    // ----- 增設基本資料欄位
+    public class AddFieldDetailModel : AddFieldNameModel, IAddFieldDetail
+    {
+        public string AFSN { get; set; } // 模板增設欄位編號
+    }
 
-    public interface IUpdateDeviceCard : IDeviceCardDetail, ICreateDeviceCard { }
-    #endregion
+    public class AddFieldNameModel : IAddFieldName
+    {
+        [Required]
+        [StringLength(20, ErrorMessage = "{0} 的長度最多{1}個字元。")]
+        [Display(Name = "增設基本資料欄位名稱")]
+        public string Value { get; set; } // 欄位名稱
+    }
 
-    #region AddField 增設基本資料欄位
     public interface IAddFieldName
     {
         string Value { get; set; } // 欄位名稱
@@ -224,21 +251,12 @@ namespace MinSheng_MIS.Models.ViewModels
         string AFSN { get; set; } // 模板增設欄位編號
     }
 
-    public interface ICreateAddFieldList : IAddFieldModifiableList { }
-
-    public interface IUpdateAddFieldList
+    // ----- 保養資訊
+    public class MaintainItemDetailModel : MaintainItemNameModel, IMaintainItemDetail
     {
-        string TSN { get; set; }
-        List<AddFieldDetailModel> AddItemList { get; set; }
+        public string MISSN { get; set; } // 模板保養編號
     }
-
-    public interface IDeleteAddFieldList
-    {
-        IEnumerable<string> AFSN { get; set; } // 模板增設欄位編號
-    }
-    #endregion
-
-    #region MaintainItem 保養項目
+    
     public interface IMaintainItemName
     {
         string Value { get; set; } // 保養項目名稱
@@ -249,22 +267,12 @@ namespace MinSheng_MIS.Models.ViewModels
         string MISSN { get; set; } // 模板保養編號
     }
 
-    public interface ICreateMaintainItemList : IMaintainItemModifiableList { }
-
-    public interface IUpdateMaintainItemList
+    // ----- 巡檢資訊-檢查項目
+    public class CheckItemDetailModel : CheckItemNameModel, ICheckItemDetail
     {
-        string TSN { get; set; }
-        List<MaintainItemDetailModel> MaintainItemList { get; set; } // 既有保養項目/未有設備使用之保養項目
-        List<AddEquipmentUsedMaintainItem> AddMaintainItemList { get; set; } // 新增之保養項目及其於各設備值
+        public string CISN { get; set; } // 模板檢查項目編號
     }
 
-    public interface IDeleteMaintainItemList
-    {
-        IEnumerable<string> MISSN { get; set; } // 模板保養編號
-    }
-    #endregion
-
-    #region CheckItem 檢查項目
     public interface ICheckItemName
     {
         string Value { get; set; } // 檢查項目名稱
@@ -275,22 +283,12 @@ namespace MinSheng_MIS.Models.ViewModels
         string CISN { get; set; } // 模板檢查項目編號
     }
 
-    public interface ICreateCheckItemList : ICheckItemModifiableList { }
-
-    public interface IUpdateCheckItemList
+    // ----- 巡檢資訊-填報項目
+    public class ReportItemDetailModel : ReportItemModel, IReportItemDetail
     {
-        string TSN { get; set; }
-        int? Frequency { get; set; } // 巡檢頻率
-        List<CheckItemDetailModel> CheckItemList { get; set; } // 檢查項目名稱列表
+        public string RISN { get; set; } // 模板填報項目編號
     }
 
-    public interface IDeleteCheckItemList
-    {
-        IEnumerable<string> CISN { get; set; } // 模板檢查項目編號
-    }
-    #endregion
-
-    #region ReportItem 填報項目
     public interface IReportItem
     {
         string Value { get; set; } // 填報項目名稱
@@ -300,27 +298,6 @@ namespace MinSheng_MIS.Models.ViewModels
     public interface IReportItemDetail : IReportItem
     {
         string RISN { get; set; } // 模板填報項目編號
-    }
-
-    public class UpdateReportItemModel
-    {
-        public string RIName { get; set; } // 填報項目名稱
-
-        public string Unit { get; set; } // 單位
-    }
-
-    public interface ICreateReportItemList : IReportItemModifiableList { }
-
-    public interface IUpdateReportItemList
-    {
-        string TSN { get; set; }
-        int? Frequency { get; set; } // 巡檢頻率
-        List<ReportItemDetailModel> ReportItemList { get; set; } // 填報項目列表
-    }
-
-    public interface IDeleteReportItemList
-    {
-        IEnumerable<string> RISN { get; set; } // 模板填報項目編號
     }
     #endregion
 
@@ -334,29 +311,6 @@ namespace MinSheng_MIS.Models.ViewModels
         IEnumerable<string> AFNameList { get; set; } // 增設基本資料欄位名稱列表
     }
 
-    public class AddFieldModifiableListInstance: IAddFieldModifiableList, ICreateAddFieldList
-    {
-        public string TSN { get; set; }
-        public IEnumerable<string> AFNameList { get; set; } // 增設基本資料欄位
-
-        public AddFieldModifiableListInstance(string tsn, DeviceCardCreateViewModel data)
-        {
-            TSN = tsn;
-            AFNameList = data.AddItemList?.Select(x => x.Value).AsEnumerable();
-        }
-
-        public AddFieldModifiableListInstance(in DeviceCardEditViewModel data, 
-            bool onlyEmptyAfsn = false)
-        {
-            var list = data.AddItemList?.ToList();
-            if (onlyEmptyAfsn)
-                list?.RemoveAll(x => !string.IsNullOrEmpty(x.AFSN));
-
-            TSN = data.TSN;
-            AFNameList = list?.Select(x => x.Value).AsEnumerable();
-        }
-    }
-
     /// <summary>
     /// 保養項目可變動資料
     /// </summary>
@@ -364,35 +318,6 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         string TSN { get; set; } // 一機一卡模板編號
         IEnumerable<string> MINameList { get; set; } // 保養項目名稱列表
-    }
-
-    public class MaintainItemModifiableListInstance : IMaintainItemModifiableList, ICreateMaintainItemList
-    {
-        public string TSN { get; set; }
-        public IEnumerable<string> MINameList { get; set; } // 保養項目名稱列表
-
-        public MaintainItemModifiableListInstance(string tsn, DeviceCardCreateViewModel data)
-        {
-            TSN = tsn;
-            MINameList = data.MaintainItemList?.Select(x => x.Value).AsEnumerable();
-        }
-
-        public MaintainItemModifiableListInstance(in IUpdateMaintainItemList data, 
-            bool onlyEmptyMISSN = false, bool noEquipmentUsed = false, bool equipmentUsed = false)
-        {
-            TSN = data.TSN;
-
-            var temp = new List<string>();
-            var list = data.MaintainItemList?.ToList();
-            if (onlyEmptyMISSN)
-                list?.RemoveAll(x => !string.IsNullOrEmpty(x.MISSN));
-            if (noEquipmentUsed)
-                temp = list?.Select(x => x.Value).ToList();
-            if (equipmentUsed && data.AddMaintainItemList != null)
-                temp.AddRange(data.AddMaintainItemList?.Select(x => x.MaintainName).Distinct());
-
-            MINameList = temp;
-        }
     }
 
     /// <summary>
@@ -405,32 +330,6 @@ namespace MinSheng_MIS.Models.ViewModels
         IEnumerable<string> CINameList { get; set; } // 檢查項目名稱列表
     }
 
-    public class CheckItemModifiableListInstance : ICheckItemModifiableList, ICreateCheckItemList
-    {
-        public string TSN { get; set; }
-        public int? Frequency { get; set; }
-        public IEnumerable<string> CINameList { get; set; } // 檢查項目名稱列表
-
-        public CheckItemModifiableListInstance(string tsn, DeviceCardCreateViewModel data)
-        {
-            TSN = tsn;
-            Frequency = data.Frequency;
-            CINameList = data.CheckItemList?.Select(x => x.Value).AsEnumerable();
-        }
-
-        public CheckItemModifiableListInstance(in DeviceCardEditViewModel data,
-            bool onlyEmptyCisn = false)
-        {
-            var list = data.CheckItemList?.ToList();
-            if (onlyEmptyCisn)
-                list?.RemoveAll(x => !string.IsNullOrEmpty(x.CISN));
-
-            TSN = data.TSN;
-            Frequency = data.Frequency;
-            CINameList = list?.Select(x => x.Value).AsEnumerable();
-        }
-    }
-
     /// <summary>
     /// 檢查項目可變動資料
     /// </summary>
@@ -440,37 +339,11 @@ namespace MinSheng_MIS.Models.ViewModels
         int? Frequency { get; set; } // 巡檢頻率
         IEnumerable<UpdateReportItemModel> RIList { get; set; } // 填報項目列表
     }
-    public class ReportItemModifiableListInstance : IReportItemModifiableList, ICreateReportItemList
+    public class UpdateReportItemModel
     {
-        public string TSN { get; set; }
-        public int? Frequency { get; set; }
-        public IEnumerable<UpdateReportItemModel> RIList { get; set; } // 填報項目列表
+        public string RIName { get; set; } // 填報項目名稱
 
-        public ReportItemModifiableListInstance(string tsn, DeviceCardCreateViewModel data)
-        {
-            TSN = tsn;
-            Frequency = data.Frequency;
-            RIList = data.ReportItemList?.Select(x => new UpdateReportItemModel {
-                RIName = x.Value,
-                Unit = x.Unit,
-            }).AsEnumerable();
-        }
-
-        public ReportItemModifiableListInstance(in DeviceCardEditViewModel data,
-            bool onlyEmptyRisn = false)
-        {
-            var list = data.ReportItemList?.ToList();
-            if (onlyEmptyRisn)
-                list?.RemoveAll(x => !string.IsNullOrEmpty(x.RISN));
-
-            TSN = data.TSN;
-            Frequency = data.Frequency;
-            RIList = list?.Select(x => new UpdateReportItemModel
-            {
-                RIName = x.Value,
-                Unit = x.Unit,
-            }).AsEnumerable();
-        }
+        public string Unit { get; set; } // 單位
     }
     #endregion
 }
