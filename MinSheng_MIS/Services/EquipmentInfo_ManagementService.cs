@@ -273,7 +273,7 @@ namespace MinSheng_MIS.Services
                 info.AreaName = equipment.Floor_Info.AreaInfo.Area;
                 info.FloorName = equipment.Floor_Info.FloorName;
                 info.FileName = equipment.EPhoto;
-                info.FilePath = $"/{_photoPath}/{equipment.EPhoto}";
+                info.FilePath = !string.IsNullOrEmpty(equipment?.EPhoto) ? $"/{_photoPath}/{equipment.EPhoto}" : null;
 
                 dest = (T)info;
             }
