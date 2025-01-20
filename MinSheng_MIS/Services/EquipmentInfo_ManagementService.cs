@@ -413,14 +413,9 @@ namespace MinSheng_MIS.Services
                 return;
 
             // 刪除相關待派工的定期保養單
-            var forms = data
-                .SelectMany(x => x.Template_MaintainItemSetting.Equipment_MaintenanceForm
-                    .Where(f => IsEnumEqualToStr(f.Status, MaintenanceFormStatus.ToAssign)))
-                .AsEnumerable();
-
             DeletePendingMaintenanceFormList(
                 data.SelectMany(x => x.Template_MaintainItemSetting.Equipment_MaintenanceForm
-                    .Where(f => IsEnumEqualToStr(f.Status, MaintenanceFormStatus.ToAssign)))
+                    .Where(f => f.ESN == x.ESN && IsEnumEqualToStr(f.Status, MaintenanceFormStatus.ToAssign)))
                 .AsEnumerable()
             );
 
