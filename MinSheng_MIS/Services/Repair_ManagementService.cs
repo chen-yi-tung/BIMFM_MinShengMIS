@@ -23,7 +23,7 @@ namespace MinSheng_MIS.Services
         #region WEB
         public void CreateFromWeb(Repair_ManagementWebCreateViewModel item)
         {
-            if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "1"))
+            if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "3"))
                 throw new Exception("此設備停用中");
             if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "2"))
                 throw new Exception("此設備已經報修中");
@@ -176,7 +176,7 @@ namespace MinSheng_MIS.Services
             //新增
             if (item.RSN == null)
             {
-                if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "1"))
+                if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "3"))
                     throw new Exception("此設備停用中");
                 if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "2"))
                     throw new Exception("此設備已經報修中");
