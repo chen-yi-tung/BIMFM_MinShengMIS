@@ -325,30 +325,15 @@ namespace MinSheng_MIS.Controllers
         public ActionResult InspectionMember()
         {
             List<JObject> list = new List<JObject>();
-            var members = db.InspectionPlan_Member.Select(x => x.UserID).Distinct().ToList();
-            if (members != null)
+            var members = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
+            foreach (var item in members)
             {
-                var mynamedatalist = from x1 in members
-                                     join x2 in db.AspNetUsers on x1 equals x2.UserName
-                                     select new { x2.UserName, x2.MyName };
-                foreach (var item in mynamedatalist)
+                JObject jo = new JObject
                 {
-                    JObject jo = new JObject();
-                    jo.Add("Text", item.MyName);
-                    jo.Add("Value", item.UserName);
-                    list.Add(jo);
-                }
-            }
-            else
-            {
-                var mynamedatalist = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
-                foreach (var item in mynamedatalist)
-                {
-                    JObject jo = new JObject();
-                    jo.Add("Text", item.MyName);
-                    jo.Add("Value", item.UserName);
-                    list.Add(jo);
-                }
+                    { "Text", item.MyName },
+                    { "Value", item.UserName }
+                };
+                list.Add(jo);
             }
 
             string text = JsonConvert.SerializeObject(list);
