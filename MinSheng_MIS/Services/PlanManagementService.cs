@@ -35,7 +35,7 @@ namespace MinSheng_MIS.Services
             // 建立 InspectionPlan
             var plan = new InspectionPlan
             {
-                IPSN = ComFunc.GenerateUniqueSn("P!{yyMMdd}%{2}", 9, latest.IPSN),
+                IPSN = ComFunc.GenerateUniqueSn("P!{yyMMdd}%{2}", 9, latest?.IPSN),
                 IPName = data.IPName,
                 PlanDate = data.PlanDate,
                 PlanState = ((int)InspectionPlanState.ToDo).ToString(),

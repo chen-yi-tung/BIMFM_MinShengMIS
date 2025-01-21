@@ -31,7 +31,7 @@ namespace MinSheng_MIS.Services
             // 建立 InspectionPathSample
             var sample = new DailyInspectionSample
             {
-                DailyTemplateSN = ComFunc.GenerateUniqueSn("!{yyMMdd}%{3}", 9, latest.DailyTemplateSN),
+                DailyTemplateSN = ComFunc.GenerateUniqueSn("!{yyMMdd}%{3}", 9, latest?.DailyTemplateSN),
                 TemplateName = data.TemplateName,
             };
             _db.DailyInspectionSample.Add(sample);

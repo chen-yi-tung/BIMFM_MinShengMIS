@@ -124,7 +124,7 @@ namespace MinSheng_MIS.Services
             var path = new InspectionPathSample
             {
                 //PlanPathSN = await GeneratePlanPathSnAsync(),
-                PlanPathSN = ComFunc.GenerateUniqueSn("!{yyMMdd}%{3}", 9, latest.PlanPathSN),
+                PlanPathSN = ComFunc.GenerateUniqueSn("!{yyMMdd}%{3}", 9, latest?.PlanPathSN),
                 PathName = data.PathName,
                 Frequency = data.Frequency
             };
