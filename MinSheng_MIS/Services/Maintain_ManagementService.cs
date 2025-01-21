@@ -247,7 +247,7 @@ namespace MinSheng_MIS.Services
             foreach (var maintainform in maindata)
             {
                 MaintainManagementApp_ListItem resdataitem = new MaintainManagementApp_ListItem();
-                resdataitem.RFIDList = _db.RFID.Where(x => x.ESN == maintainform.ESN).Select(x => x.RFIDExternalCode).AsNoTracking().ToList();
+                resdataitem.RFIDList = _db.RFID.Where(x => x.ESN == maintainform.ESN).Select(x => x.RFIDInternalCode).AsNoTracking().ToList();
                 resdataitem.EMFSN = maintainform.EMFSN;
                 resdataitem.Status = Surface.MaintainStatus()[maintainform.Status];
                 resdataitem.EName = maintainform.EquipmentInfo.EName;
