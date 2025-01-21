@@ -143,7 +143,7 @@ namespace MinSheng_MIS.Controllers
                 MTitle = maintenance.MTitle,
                 MContent = maintenance.MContent,
                 UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == maintenance.UploadUserName)?.Result.MyName,
-                UploadDateTime = maintenance.UploadDateTime?.ToString("yyyy/MM/dd HH:mm:ss"),
+                UploadDateTime = maintenance.UploadDateTime?.ToString("yyyy-MM-dd HH:mm:ss"),
                 FilePath = !string.IsNullOrEmpty(maintenance.MFile) ? ComFunc.UrlMaker(folderPath, maintenance.MFile) : null
             };
             return Content(JsonConvert.SerializeObject(model), "application/json");

@@ -162,7 +162,7 @@ namespace MinSheng_MIS.Controllers
                 ExperimentType = workflow.ExperimentType,
                 ExperimentName = workflow.ExperimentName,
                 UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == workflow.UploadUserName)?.Result.MyName,
-                UploadDateTime = workflow.UploadDateTime.ToString("yyyy/MM/dd HH:mm:ss"),
+                UploadDateTime = workflow.UploadDateTime.ToString("yyyy-MM-dd HH:mm:ss"),
                 FilePath = !string.IsNullOrEmpty(workflow.WorkflowFile) ? ComFunc.UrlMaker(folderPath, workflow.WorkflowFile) : null,
                 LabelNames = workflow.TestingAndAnalysis_LabelName.Select(x => new TA_Label { LNSN = x.LNSN, LabelName = x.LabelName})?.ToList(),
                 DataNames = workflow.TestingAndAnalysis_DataName.Select(x => new TA_Data { DNSN = x.DNSN, DataName = x.DataName})?.ToList()

@@ -161,7 +161,7 @@ namespace MinSheng_MIS.Controllers
             jo["MRSN"] = item.MRSN;
             jo["ReportTitle"] = item.ReportTitle;
             jo["UploadUserName"] = item.UploadUserName;
-            jo["UploadDateTime"] = item.UploadDateTime.ToString("yyyy/MM/dd"); ;
+            jo["UploadDateTime"] = item.UploadDateTime.ToString("yyyy-MM-dd"); ;
             jo["ReportContent"] = item.ReportContent;
             jo["YearMonth"] = item.Year + "-" + item.Month;
             jo["FilePath"] = string.IsNullOrEmpty(item.ReportFile) ? null : "/Files/MonthlyReport/" + item.ReportFile;

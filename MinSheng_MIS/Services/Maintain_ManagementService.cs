@@ -61,14 +61,14 @@ namespace MinSheng_MIS.Services
             datas.NO = maindata.EquipmentInfo.NO;
             datas.Location = $"{maindata.EquipmentInfo.Floor_Info.FloorName} {maindata.EquipmentInfo.Floor_Info.AreaInfo.Area}";
             datas.Period = Surface.MaintainPeriod()[maindata.Period];
-            datas.LastMaintainDate = maindata.lastMaintainDate?.ToString("yyyy/MM/dd") ?? "-";
-            datas.NextMaintainDate = maindata.NextMaintainDate.ToString("yyyy/MM/dd");
+            datas.LastMaintainDate = maindata.lastMaintainDate?.ToString("yyyy-MM-dd") ?? "-";
+            datas.NextMaintainDate = maindata.NextMaintainDate.ToString("yyyy-MM-dd");
             datas.ReportId = GetMyNameByUserNameOrEmpty(maindata.ReportId);
-            datas.ReportTime = maindata.ReportTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
+            datas.ReportTime = maindata.ReportTime?.ToString("yyyy-MM-dd HH:mm") ?? "-";
             datas.ReportContent = maindata.ReportContent;
             datas.AuditResult = maindata.AuditResult.ToString().ToLower();
             datas.AuditId = GetMyNameByUserNameOrEmpty(maindata.AuditId);
-            datas.AuditTime = maindata.AuditTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
+            datas.AuditTime = maindata.AuditTime?.ToString("yyyy-MM-dd HH:mm") ?? "-";
             datas.AuditReason = maindata.AuditReason;
             res.Datas = datas;
             #endregion
