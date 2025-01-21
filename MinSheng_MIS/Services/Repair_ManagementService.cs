@@ -23,7 +23,7 @@ namespace MinSheng_MIS.Services
         #region WEB
         public void CreateFromWeb(Repair_ManagementWebCreateViewModel item)
         {
-            if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "1"))
+            if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "3"))
                 throw new Exception("此設備停用中");
             if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "2"))
                 throw new Exception("此設備已經報修中");
@@ -72,7 +72,7 @@ namespace MinSheng_MIS.Services
             jo.Add("RSN", item.RSN);
             jo.Add("ReportState", Surface.ReportState()[item.ReportState]);
             jo.Add("ReportLevel", Surface.ReportLevel()[item.ReportLevel]);
-            jo.Add("ReportTime", item.ReportTime.ToString("yyyy/MM/dd HH:mm"));
+            jo.Add("ReportTime", item.ReportTime.ToString("yyyy-MM-dd HH:mm"));
             jo.Add("ReportContent", item.ReportContent);
             jo.Add("ReportImg", item.ReportImg);
             jo.Add("RepairUserName", "");
@@ -90,12 +90,12 @@ namespace MinSheng_MIS.Services
             jo.Add("ESN", item.EquipmentInfo.ESN);
             jo.Add("RepairResult", item.RepairtId != null ? "完成" : "未完成");
             jo.Add("RepairtId", item.RepairtId);
-            jo.Add("RepairTime", item.RepairTime?.ToString("yyyy/MM/dd HH:mm"));
+            jo.Add("RepairTime", item.RepairTime?.ToString("yyyy-MM-dd HH:mm"));
             jo.Add("RepairContent", item.RepairContent);
             jo.Add("RepairImg", item.RepairImg);
             jo.Add("AuditResult", item.AuditResult == null ? "" : (bool)item.AuditResult ? "通過" : "未通過");
             jo.Add("AuditId", item.AuditId);
-            jo.Add("AuditTime", item.AuditTime?.ToString("yyyy/MM/dd HH:mm"));
+            jo.Add("AuditTime", item.AuditTime?.ToString("yyyy-MM-dd HH:mm"));
             jo.Add("AuditReason", item.AuditReason);
             return jo;
         }
@@ -176,7 +176,7 @@ namespace MinSheng_MIS.Services
             //新增
             if (item.RSN == null)
             {
-                if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "1"))
+                if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "3"))
                     throw new Exception("此設備停用中");
                 if (_db.EquipmentInfo.Any(e => e.ESN == item.ESN && e.EState == "2"))
                     throw new Exception("此設備已經報修中");

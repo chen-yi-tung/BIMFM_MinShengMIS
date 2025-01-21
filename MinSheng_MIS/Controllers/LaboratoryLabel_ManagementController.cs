@@ -112,7 +112,7 @@ namespace MinSheng_MIS.Controllers
                 TAWSN = label.TAWSN,
                 EDate = label.EDate.ToString("yyyy-MM-dd"),
                 UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == label.UploadUserName)?.Result.MyName,
-                UploadDateTime = label.UploadDateTime.ToString("yyyy/MM/dd"),
+                UploadDateTime = label.UploadDateTime.ToString("yyyy-MM-dd"),
                 LaboratoryLabelItem = label.ExperimentalLabel_Item.Select(x => new EL_Item { ELISN = x.ELISN, LabelName = x.LabelName}).ToList()
             };
             return Content(JsonConvert.SerializeObject(model), "application/json");

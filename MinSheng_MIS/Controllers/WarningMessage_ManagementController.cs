@@ -67,7 +67,7 @@ namespace MinSheng_MIS.Controllers
 			warningMessage.WMSN = WMSN;
 			warningMessage.WMType = WMTypedic[messageinfo.WMType];
 			warningMessage.WMState = WMState[messageinfo.WMState];
-			warningMessage.TimeOfOccurrence = messageinfo.TimeOfOccurrence.ToString("yyyy/MM/dd HH:mm:ss");
+			warningMessage.TimeOfOccurrence = messageinfo.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss");
 			warningMessage.Location = Area + " " + FloorName;
 			warningMessage.Message = messageinfo.Message;
 
@@ -79,7 +79,7 @@ namespace MinSheng_MIS.Controllers
 				foreach (var record in records)
 				{
 					WarningMessageFillinRecordViewModel r = new WarningMessageFillinRecordViewModel();
-					r.FillinDateTime = record.FillinDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+					r.FillinDateTime = record.FillinDateTime.ToString("yyyy-MM-dd HH:mm:ss");
 					r.MyName = db.AspNetUsers.Where(x => x.UserName == record.FillinUserName).FirstOrDefault().MyName.ToString();
 					r.FillinState = WMState[record.FillinState];
 					r.Memo = record.Memo;
@@ -112,7 +112,7 @@ namespace MinSheng_MIS.Controllers
 				message.Add("Message", m.Message);
 				message.Add("WMType", m.WMType);
 				message.Add("WMState", m.WMState);
-				message.Add("TimeOfOccurrence", m.TimeOfOccurrence.ToString("yyyy/MM/dd HH:mm:ss"));
+				message.Add("TimeOfOccurrence", m.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss"));
 				messages.Add(message);
 			}
 
