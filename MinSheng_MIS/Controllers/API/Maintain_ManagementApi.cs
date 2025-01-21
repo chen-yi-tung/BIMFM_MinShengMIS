@@ -33,7 +33,8 @@ namespace MinSheng_MIS.Controllers.API
             JsonResService<MaintainManagementApp_ListViewModel> result = new JsonResService<MaintainManagementApp_ListViewModel>();
             try
             {
-                result = _maintainService.MaintainManagementApp_List(Status);
+                string userName = HttpContext.Current.User.Identity.Name;
+                result = _maintainService.MaintainManagementApp_List(Status, userName);
             }
             catch (MyCusResException ex)
             {
@@ -66,7 +67,8 @@ namespace MinSheng_MIS.Controllers.API
             JsonResService<MaintainManagementApp_Detail> result = new JsonResService<MaintainManagementApp_Detail>();
             try
             {
-                result = _maintainService.MaintainManagementApp_Detail(EMFSN);
+                string userName = HttpContext.Current.User.Identity.Name;
+                result = _maintainService.MaintainManagementApp_Detail(EMFSN, userName);
             }
             catch (MyCusResException ex)
             {
