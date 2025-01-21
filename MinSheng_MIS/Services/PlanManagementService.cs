@@ -124,6 +124,7 @@ namespace MinSheng_MIS.Services
                     temp.NO = x.EquipmentInfo.NO;
                     temp.Location = $"{x.EquipmentInfo.Floor_Info.AreaInfo.Area} {x.EquipmentInfo.Floor_Info.FloorName}";
                     temp.ReportUserName = x.ReportUserName != null ? userDic.TryGetValue(x.ReportUserName, out string name) ? name : "undefined" : "-";
+                    temp.FillinTime = x.FillinTime?.ToString("yyyy/MM/dd HH:mm");
                     return temp;
                 });
 
