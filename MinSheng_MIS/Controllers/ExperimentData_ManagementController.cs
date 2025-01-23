@@ -151,7 +151,7 @@ namespace MinSheng_MIS.Controllers
                 TAWSN = data.TAWSN,
                 EDate = data.EDate.ToString("yyyy-MM-dd"),
                 UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == data.UploadUserName)?.Result.MyName,
-                UploadDateTime = data.UploadDateTime.ToString("yyyy/MM/dd"),
+                UploadDateTime = data.UploadDateTime.ToString("yyyy-MM-dd"),
                 FilePath = !string.IsNullOrEmpty(data.EDFile) ? ComFunc.UrlMaker(folderPath, data.EDFile) : null,
                 ExperimentalDataItem = data.ExperimentalData.Select(x => new ED_Info { DataName = x.DataName, Data = x.Data }).ToList()
             };

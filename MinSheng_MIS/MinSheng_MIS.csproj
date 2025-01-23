@@ -265,6 +265,7 @@
     <Compile Include="Controllers\API\Repair_ManagementApi.cs" />
     <Compile Include="Controllers\API\UserInfoApi.cs" />
     <Compile Include="Controllers\API\VitalsPosApi.cs" />
+    <Compile Include="Controllers\API\WarningMessage_ManagementController.cs" />
     <Compile Include="Controllers\AsBuiltDrawing_ManagementController.cs" />
     <Compile Include="Controllers\BeaconController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
@@ -438,15 +439,6 @@
     <Compile Include="Models\StockType.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\SubSystemManagement.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\SystemLogs.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\SystemManagement.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Template_AddField.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -509,9 +501,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sysdiagrams.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\Maintain_ManagementViewModel.cs" />
     <Compile Include="Models\ViewModels\MeetingMinutes_ManagementViewModel.cs" />

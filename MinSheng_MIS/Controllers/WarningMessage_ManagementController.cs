@@ -16,18 +16,23 @@ namespace MinSheng_MIS.Controllers
 {
 	public class WarningMessage_ManagementController : Controller
 	{
-		Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+        private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly WarningMessageService _warningMessageService;
 
-		#region 警示訊息管理
-		public ActionResult Index()
+        public WarningMessage_ManagementController()
+        {
+            _db = new Bimfm_MinSheng_MISEntities();
+            _warningMessageService = new WarningMessageService(_db);
+        }
+        #region 警示訊息管理
+        public ActionResult Index()
 		{
 			return View();
 		}
         [HttpPost]
         public ActionResult AddWarningMessagen(WarningMessageCreateModel info)
         {
-            WarningMessageService wms = new WarningMessageService();
-            wms.AddWarningMessage(info, User.Identity.Name);
+            _warningMessageService.AddWarningMessage(info, User.Identity.Name);
             return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
         }
         #endregion
@@ -41,8 +46,7 @@ namespace MinSheng_MIS.Controllers
 		[HttpPost]
 		public ActionResult WarningMessageFillin(FillinInfo info)
 		{
-			WarningMessageService wms = new WarningMessageService();
-			wms.AddWarningMessageFillinRecord(info, User.Identity.Name);
+            _warningMessageService.AddWarningMessageFillinRecord(info, User.Identity.Name);
 			return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
 		}
 		#endregion
@@ -56,31 +60,31 @@ namespace MinSheng_MIS.Controllers
 		[HttpGet]
 		public ActionResult GetWarningMessageInfo(string WMSN)
 		{
-			var messageinfo = db.WarningMessage.Find(WMSN);
+			var messageinfo = _db.WarningMessage.Find(WMSN);
 			var WMTypedic = Surface.WMType(); //警示訊息事件等級對照
 			var WMState = Surface.WMState(); //警示訊息事件處理狀況對照
-			var FloorName = db.Floor_Info.Find(messageinfo.FSN).FloorName.ToString();
-			var Area = db.Floor_Info.Find(messageinfo.FSN).AreaInfo.Area.ToString();
+			var FloorName = _db.Floor_Info.Find(messageinfo.FSN).FloorName.ToString();
+			var Area = _db.Floor_Info.Find(messageinfo.FSN).AreaInfo.Area.ToString();
 
 			//取得警示訊息資訊
 			WarningMessageViewModel warningMessage = new WarningMessageViewModel();
 			warningMessage.WMSN = WMSN;
 			warningMessage.WMType = WMTypedic[messageinfo.WMType];
 			warningMessage.WMState = WMState[messageinfo.WMState];
-			warningMessage.TimeOfOccurrence = messageinfo.TimeOfOccurrence.ToString("yyyy/MM/dd HH:mm:ss");
+			warningMessage.TimeOfOccurrence = messageinfo.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss");
 			warningMessage.Location = Area + " " + FloorName;
 			warningMessage.Message = messageinfo.Message;
 
 			//取得填報紀錄
-			var records = db.WarningMessageFillinRecord.Where(x => x.WMSN == WMSN).ToList();
+			var records = _db.WarningMessageFillinRecord.Where(x => x.WMSN == WMSN).ToList();
 			if (records.Count() > 0)
 			{
 				List<WarningMessageFillinRecordViewModel> rlist = new List<WarningMessageFillinRecordViewModel>();
 				foreach (var record in records)
 				{
 					WarningMessageFillinRecordViewModel r = new WarningMessageFillinRecordViewModel();
-					r.FillinDateTime = record.FillinDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-					r.MyName = db.AspNetUsers.Where(x => x.UserName == record.FillinUserName).FirstOrDefault().MyName.ToString();
+					r.FillinDateTime = record.FillinDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+					r.MyName = _db.AspNetUsers.Where(x => x.UserName == record.FillinUserName).FirstOrDefault().MyName.ToString();
 					r.FillinState = WMState[record.FillinState];
 					r.Memo = record.Memo;
 					rlist.Add(r);
@@ -103,16 +107,16 @@ namespace MinSheng_MIS.Controllers
 		public ActionResult BellMessageInfo()
 		{
 			JArray messages = new JArray();
-			var messagelist = db.WarningMessage.Where(x=> x.WMState == "1"|| x.WMState == "2").OrderByDescending(x => x.TimeOfOccurrence).ToList();
+			var messagelist = _db.WarningMessage.Where(x=> x.WMState == "1"|| x.WMState == "2").OrderByDescending(x => x.TimeOfOccurrence).ToList();
 			foreach(var m in messagelist)
 			{
 				JObject message = new JObject();
 				message.Add("WMSN", m.WMSN);
-				message.Add("Location", db.Floor_Info.Find(m.FSN).AreaInfo.Area.ToString() + db.Floor_Info.Find(m.FSN).FloorName.ToString());
+				message.Add("Location", _db.Floor_Info.Find(m.FSN).AreaInfo.Area.ToString() + _db.Floor_Info.Find(m.FSN).FloorName.ToString());
 				message.Add("Message", m.Message);
 				message.Add("WMType", m.WMType);
 				message.Add("WMState", m.WMState);
-				message.Add("TimeOfOccurrence", m.TimeOfOccurrence.ToString("yyyy/MM/dd HH:mm:ss"));
+				message.Add("TimeOfOccurrence", m.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss"));
 				messages.Add(message);
 			}
 

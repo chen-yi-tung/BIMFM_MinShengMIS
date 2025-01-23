@@ -35,5 +35,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public string FSN { get; set; } //發生地點
         public string Message { get; set; } //事件內容
         public string UserName { get; set; } //警報來源
+        public decimal? Location_X { get; set; }
+        public decimal? Location_Y { get; set; }
     }
 }

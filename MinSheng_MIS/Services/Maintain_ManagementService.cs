@@ -61,14 +61,14 @@ namespace MinSheng_MIS.Services
             datas.NO = maindata.EquipmentInfo.NO;
             datas.Location = $"{maindata.EquipmentInfo.Floor_Info.FloorName} {maindata.EquipmentInfo.Floor_Info.AreaInfo.Area}";
             datas.Period = Surface.MaintainPeriod()[maindata.Period];
-            datas.LastMaintainDate = maindata.lastMaintainDate?.ToString("yyyy/MM/dd") ?? "-";
-            datas.NextMaintainDate = maindata.NextMaintainDate.ToString("yyyy/MM/dd");
+            datas.LastMaintainDate = maindata.lastMaintainDate?.ToString("yyyy-MM-dd") ?? "-";
+            datas.NextMaintainDate = maindata.NextMaintainDate.ToString("yyyy-MM-dd");
             datas.ReportId = GetMyNameByUserNameOrEmpty(maindata.ReportId);
-            datas.ReportTime = maindata.ReportTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
+            datas.ReportTime = maindata.ReportTime?.ToString("yyyy-MM-dd HH:mm") ?? "-";
             datas.ReportContent = maindata.ReportContent;
             datas.AuditResult = maindata.AuditResult.ToString().ToLower();
             datas.AuditId = GetMyNameByUserNameOrEmpty(maindata.AuditId);
-            datas.AuditTime = maindata.AuditTime?.ToString("yyyy/MM/dd HH:mm") ?? "-";
+            datas.AuditTime = maindata.AuditTime?.ToString("yyyy-MM-dd HH:mm") ?? "-";
             datas.AuditReason = maindata.AuditReason;
             res.Datas = datas;
             #endregion
@@ -217,7 +217,7 @@ namespace MinSheng_MIS.Services
 
         // APP
         #region 定期保養單 列表
-        public JsonResService<MaintainManagementApp_ListViewModel> MaintainManagementApp_List(string Status)
+        public JsonResService<MaintainManagementApp_ListViewModel> MaintainManagementApp_List(string Status, string userName)
         {
             #region 變數
             JsonResService<MaintainManagementApp_ListViewModel> res = new JsonResService<MaintainManagementApp_ListViewModel>();
@@ -226,7 +226,7 @@ namespace MinSheng_MIS.Services
             #endregion
 
             #region 查資料
-            var maindata = _db.Equipment_MaintenanceForm.Where(x => x.Status == "2" || x.Status == "5").AsNoTracking().ToList();
+            var maindata = _db.Equipment_MaintenanceForm.Where(x => x.Equipment_MaintenanceFormMember.Any(m => m.Maintainer == userName) && x.Status == "2" || x.Status == "5").AsNoTracking().ToList();
             int totalNum = maindata.Count; // 全部
             int pendingNum = maindata.Where(x => x.Status == "2").Count(); // 待執行
             int notApprovedNum = maindata.Where(x => x.Status == "5").Count(); // 審核未過
@@ -270,7 +270,7 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 定期保養單 填報詳情
-        public JsonResService<MaintainManagementApp_Detail> MaintainManagementApp_Detail(string EMFSN)
+        public JsonResService<MaintainManagementApp_Detail> MaintainManagementApp_Detail(string EMFSN, string userName)
         {
             #region 變數
             JsonResService<MaintainManagementApp_Detail> res = new JsonResService<MaintainManagementApp_Detail>();
@@ -279,7 +279,8 @@ namespace MinSheng_MIS.Services
 
             #region 塞資料
             var maindata = _db.Equipment_MaintenanceForm
-                .Where(x => (x.Status == "2" || x.Status == "5") && x.EMFSN == EMFSN).FirstOrDefault();
+                .Where(x => (x.Status == "2" || x.Status == "5") 
+                && x.Equipment_MaintenanceFormMember.Any(m => m.Maintainer == userName) && x.EMFSN == EMFSN).FirstOrDefault();
             if (maindata == null)
                 throw new MyCusResException("查無此設備保養單");
 
@@ -311,7 +312,8 @@ namespace MinSheng_MIS.Services
 
             #region 檢查資料
             var maindata = _db.Equipment_MaintenanceForm
-                .Where(x => x.EMFSN == datas.EMFSN && (x.Status == "2" || x.Status == "5")).FirstOrDefault();
+                .Where(x => x.Equipment_MaintenanceFormMember.Any(m => m.Maintainer == userName) 
+                && x.EMFSN == datas.EMFSN && (x.Status == "2" || x.Status == "5")).FirstOrDefault();
             if (maindata == null)
                 throw new MyCusResException("查無此設備保養單");
             if (string.IsNullOrEmpty(datas.ReportContent.Trim()))

@@ -131,7 +131,7 @@ namespace MinSheng_MIS.Services
                 //工單日期
                 if (item.PlanDate != DateTime.MinValue && item.PlanDate != null)
                 {
-                    itemObjects.Add("PlanDate", item.PlanDate.ToString("yyyy/MM/dd"));
+                    itemObjects.Add("PlanDate", item.PlanDate.ToString("yyyy-MM-dd"));
                 }
                 //工單名稱
                 if (!string.IsNullOrEmpty(item.IPName))
@@ -417,8 +417,8 @@ namespace MinSheng_MIS.Services
                     JObject itemObject = new JObject();
                     itemObject.Add("Status", Surface.MaintainStatus()[item.Status]); // 保養單狀態
                     itemObject.Add("EMFSN", item.EMFSN); // 保養單號
-                    itemObject.Add("NextMaintainDate", item.NextMaintainDate.ToString("yyyy/MM/dd")); // 最近應保養日期
-                    itemObject.Add("ReportTime", item.ReportTime?.ToString("yyyy/MM/dd") ?? "-"); // 實際保養日期
+                    itemObject.Add("NextMaintainDate", item.NextMaintainDate.ToString("yyyy-MM-dd")); // 最近應保養日期
+                    itemObject.Add("ReportTime", item.ReportTime?.ToString("yyyy-MM-dd") ?? "-"); // 實際保養日期
                     itemObject.Add("EState", Surface.EState()[item.EquipmentInfo.EState]); // 設備狀態
                     itemObject.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area); // 棟別 (區域)
                     itemObject.Add("FloorName", item.EquipmentInfo.Floor_Info.FloorName); // 樓層
@@ -540,7 +540,7 @@ namespace MinSheng_MIS.Services
                     itemObject.Add("ReportState", Surface.ReportState()[item.ReportState]);
                     itemObject.Add("RSN", item.RSN);
                     itemObject.Add("ReportLevel", Surface.ReportLevel()[item.ReportLevel]);
-                    itemObject.Add("ReportTime", item.ReportTime.ToString("yyyy/MM/dd HH:mm"));
+                    itemObject.Add("ReportTime", item.ReportTime.ToString("yyyy-MM-dd HH:mm"));
                     itemObject.Add("ReportContent", item.ReportContent);
                     itemObject.Add("Area", item.EquipmentInfo.Floor_Info.AreaInfo.Area);
                     itemObject.Add("FloorName", item.EquipmentInfo.Floor_Info.FloorName);
@@ -1177,7 +1177,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("SubSystem", item.DSubSystem);
                 itemObjects.Add("ImgNum", item.ImgNum);
                 itemObjects.Add("ImgName", item.ImgName);
-                itemObjects.Add("UploadDate", item.UploadDate.ToString("yyyy/MM/dd"));
+                itemObjects.Add("UploadDate", item.UploadDate.ToString("yyyy-MM-dd"));
                 itemObjects.Add("ImgVersion", item.ImgVersion);
                 itemObjects.Add("ImgPath", "/Files/AsBuiltDrawing" + item.ImgPath);
 
@@ -1281,7 +1281,7 @@ namespace MinSheng_MIS.Services
                 //上傳日期
                 if (item.UploadDate != DateTime.MinValue && item.UploadDate != null)
                 {
-                    itemObjects.Add("UploadDate", item.UploadDate.ToString("yyyy/MM/dd"));
+                    itemObjects.Add("UploadDate", item.UploadDate.ToString("yyyy-MM-dd"));
                 }
 
                 ja.Add(itemObjects);
@@ -1533,7 +1533,7 @@ namespace MinSheng_MIS.Services
                 foreach (var item in rpT)
                 {
                     var itemObject = new JObject();
-                    itemObject.Add("DateTime", item.ChangeTime.ToString("yyyy/MM/dd HH:mm:ss")); //日期時間
+                    itemObject.Add("DateTime", item.ChangeTime.ToString("yyyy-MM-dd HH:mm:ss")); //日期時間
                     itemObject.Add("Registrant", db.AspNetUsers.Where(x => x.UserName == item.Registrar).FirstOrDefault()?.MyName.ToString() ?? null); //登記人
                     if (item.ChangeType == "1")//出庫
                     {
@@ -1689,7 +1689,7 @@ namespace MinSheng_MIS.Services
                         { "ELSN", item.ELSN },
                         { "ExperimentType", item.ExperimentType },
                         { "ExperimentName", item.ExperimentName },
-                        { "EDate", item.EDate.ToString("yyyy/MM/dd") },
+                        { "EDate", item.EDate.ToString("yyyy-MM-dd") },
                     };
 
                     ja.Add(itemObject);
@@ -1766,7 +1766,7 @@ namespace MinSheng_MIS.Services
                         { "MTitle", item.MTitle },
                         { "MContent", item.MContent },
                         { "UploadUserName", item.UploadUserName },
-                        { "UploadDateTime", item.UploadDateTime?.ToString("yyyy/MM/dd HH:mm:ss") },
+                        { "UploadDateTime", item.UploadDateTime?.ToString("yyyy-MM-dd HH:mm:ss") },
                     };
 
                     ja.Add(itemObject);
@@ -1848,7 +1848,7 @@ namespace MinSheng_MIS.Services
                         { "EDRSN", item.EDRSN },
                         { "ExperimentType", item.ExperimentType },
                         { "ExperimentName", item.ExperimentName },
-                        { "EDDate", item.EDDate.ToString("yyyy/MM/dd") },
+                        { "EDDate", item.EDDate.ToString("yyyy-MM-dd") },
                     };
 
                     ja.Add(itemObject);
@@ -1985,7 +1985,7 @@ namespace MinSheng_MIS.Services
                         { "WMSN", item.WMSN },
                         { "WMType", WMTypedic[item.WMType] },
                         { "WMState", WMStatedic[item.WMState] },
-                        { "TimeOfOccurrence", item.TimeOfOccurrence.ToString("yyyy/MM/dd HH:mm:ss") },
+                        { "TimeOfOccurrence", item.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss") },
                         { "Location", item.Area + " " + item.FloorName },
                         { "Message", item.Message },
                         { "MyName", item.MyName },
@@ -2078,7 +2078,7 @@ namespace MinSheng_MIS.Services
                         { "UploadUserName", item.UploadUserName },
                         { "ReportContent", item.ReportContent },
                         { "YearMonth", item.YearMonth },
-                        { "UploadDateTime", (item.UploadDateTime != DateTime.MinValue && item.UploadDateTime != null) ? item.UploadDateTime.ToString("yyyy/MM/dd") : null }
+                        { "UploadDateTime", (item.UploadDateTime != DateTime.MinValue && item.UploadDateTime != null) ? item.UploadDateTime.ToString("yyyy-MM-dd") : null }
                     };
                 ja.Add(itemObjects);
             }
@@ -2165,7 +2165,7 @@ namespace MinSheng_MIS.Services
                 if (!string.IsNullOrEmpty(item.MMSN)) itemObject.Add("MMSN", item.MMSN);
                 if (!string.IsNullOrEmpty(item.MeetingTopic)) itemObject.Add("MeetingTopic", item.MeetingTopic);
 
-                itemObject.Add("MeetingDate", $"{item.MeetingDate:yyyy/MM/dd} {item.MeetingDateStart:hh:mm}-{item.MeetingDateEnd:hh:mm}");
+                itemObject.Add("MeetingDate", $"{item.MeetingDate:yyyy-MM-dd} {item.MeetingDateStart:hh:mm}-{item.MeetingDateEnd:hh:mm}");
 
                 if (!string.IsNullOrEmpty(item.MeetingVenue)) itemObject.Add("MeetingVenue", item.MeetingVenue);
                 if (!string.IsNullOrEmpty(item.Chairperson)) itemObject.Add("Chairperson", item.Chairperson);

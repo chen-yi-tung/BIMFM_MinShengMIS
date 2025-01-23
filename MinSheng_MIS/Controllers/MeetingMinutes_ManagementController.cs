@@ -170,7 +170,7 @@ namespace MinSheng_MIS.Controllers
 			{
 				{ "MMSN", item.MMSN },
 				{ "MeetingTopic", item.MeetingTopic },
-				{ "MeetingDate", $"{item.MeetingDate:yyyy/MM/dd}" },
+				{ "MeetingDate", $"{item.MeetingDate:yyyy-MM-dd}" },
 				{ "MeetingTime", $"{item.MeetingDateStart:hh:mm}-{item.MeetingDateEnd:hh:mm}" },
 				{ "MeetingVenue", item.MeetingVenue },
 				{ "Chairperson", item.Chairperson },

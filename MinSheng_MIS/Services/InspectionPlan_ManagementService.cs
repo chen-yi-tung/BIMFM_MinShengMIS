@@ -153,7 +153,7 @@ namespace MinSheng_MIS.Services
                                 where x1.PlanPathSN == PlanPathSN
                                 orderby x1.DefaultOrder
                                 join x2 in _db.RFID on x1.RFIDInternalCode equals x2.RFIDInternalCode
-                                select new { x1.RFIDInternalCode, x2.ESN };
+                                select new { x1.RFIDInternalCode, x2.ESN};
                     var InspectionPlan_RFIDOrders = new List<InspectionPlan_RFIDOrder>();
                     var lastInspectionOrder = _db.InspectionPlan_RFIDOrder.Where(x => x.IPTSN == IPTSN).OrderByDescending(x => x.InspectionOrder).FirstOrDefault()?.InspectionOrder ?? (IPTSN + "00000");
                     foreach (var RFID in RFIDs)
@@ -184,7 +184,7 @@ namespace MinSheng_MIS.Services
                         _db.SaveChanges();
                     }
                 }
-                
+
                 #endregion
 
                 #region 資料檢查
@@ -195,7 +195,7 @@ namespace MinSheng_MIS.Services
                            join x4 in _db.RFID on x1.RFIDInternalCode equals x4.RFIDInternalCode
                            join x5 in _db.Floor_Info on x4.FSN equals x5.FSN
                            join x6 in _db.AreaInfo on x5.ASN equals x6.ASN
-                           select new { x1.Status,x3.EName,x3.EState,x3.NO,x3.FSN, x1.RFIDInternalCode,x3.ESN, x5.FloorName, x6.Area, x1.InspectionOrder};
+                           select new { x1.Status, x3.EName, x3.EState, x3.NO, x3.FSN, x1.RFIDInternalCode, x3.ESN, x5.FloorName, x6.Area, x1.InspectionOrder, RFID_FSN = x4.FSN, RFID_Location_X = x4.Location_X, RFID_Location_Y = x4.Location_Y };
 
                 if (data == null)
                 {
@@ -219,6 +219,9 @@ namespace MinSheng_MIS.Services
                     planRFIDInfo.RFIDInternalCode = plan.RFIDInternalCode;
                     planRFIDInfo.ESN = plan.ESN;
                     planRFIDInfo.InspectionOrder = plan.InspectionOrder;
+                    planRFIDInfo.RFID_FSN = plan.RFID_FSN;
+                    planRFIDInfo.RFID_Location_X = plan.RFID_Location_X;
+                    planRFIDInfo.RFID_Location_Y = plan.RFID_Location_Y;
                     datas.Add(planRFIDInfo);
                 }
                 res.Datas = datas;

@@ -35,7 +35,7 @@ namespace MinSheng_MIS.Services
             // 建立 InspectionPlan
             var plan = new InspectionPlan
             {
-                IPSN = ComFunc.GenerateUniqueSn("P!{yyMMdd}%{2}", 9, latest.IPSN),
+                IPSN = ComFunc.GenerateUniqueSn("P!{yyMMdd}%{2}", 9, latest?.IPSN),
                 IPName = data.IPName,
                 PlanDate = data.PlanDate,
                 PlanState = ((int)InspectionPlanState.ToDo).ToString(),
@@ -124,6 +124,7 @@ namespace MinSheng_MIS.Services
                     temp.NO = x.EquipmentInfo.NO;
                     temp.Location = $"{x.EquipmentInfo.Floor_Info.AreaInfo.Area} {x.EquipmentInfo.Floor_Info.FloorName}";
                     temp.ReportUserName = x.ReportUserName != null ? userDic.TryGetValue(x.ReportUserName, out string name) ? name : "undefined" : "-";
+                    temp.FillinTime = x.FillinTime?.ToString("yyyy-MM-dd HH:mm");
                     return temp;
                 });
 

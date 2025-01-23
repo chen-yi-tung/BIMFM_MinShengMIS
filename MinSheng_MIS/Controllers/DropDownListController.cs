@@ -240,42 +240,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion 
 
-        #region 主系統/主系統
-        [System.Web.Http.HttpGet]
-        public ActionResult SystemName()
-        {
-            List<JObject> list = new List<JObject>();
-            var abc = db.SystemManagement.Where(x => x.SystemIsEnable == true).ToList();
-            foreach (var item in abc)
-            {
-                JObject jo = new JObject();
-                jo.Add("Text", item.System);//System
-                jo.Add("Value", item.System); // System
-                list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region 子系統/子系統
-        [System.Web.Http.HttpGet]
-        public ActionResult SubSystemName()
-        {
-            List<JObject> list = new List<JObject>();
-            var abc = db.SubSystemManagement.Where(x => x.SubSystemIsEnable == true).ToList();
-            foreach (var item in abc)
-            {
-                JObject jo = new JObject();
-                jo.Add("Text", item.SubSystem);//SubSystem
-                jo.Add("Value", item.SubSystem); //SubSystem
-                list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
         #region 設備狀態 下拉式選單
         [HttpGet]
         public ActionResult EState()
@@ -325,30 +289,15 @@ namespace MinSheng_MIS.Controllers
         public ActionResult InspectionMember()
         {
             List<JObject> list = new List<JObject>();
-            var members = db.InspectionPlan_Member.Select(x => x.UserID).Distinct().ToList();
-            if (members != null)
+            var members = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
+            foreach (var item in members)
             {
-                var mynamedatalist = from x1 in members
-                                     join x2 in db.AspNetUsers on x1 equals x2.UserName
-                                     select new { x2.UserName, x2.MyName };
-                foreach (var item in mynamedatalist)
+                JObject jo = new JObject
                 {
-                    JObject jo = new JObject();
-                    jo.Add("Text", item.MyName);
-                    jo.Add("Value", item.UserName);
-                    list.Add(jo);
-                }
-            }
-            else
-            {
-                var mynamedatalist = db.AspNetUsers.Where(x => x.Authority == "4").ToList();
-                foreach (var item in mynamedatalist)
-                {
-                    JObject jo = new JObject();
-                    jo.Add("Text", item.MyName);
-                    jo.Add("Value", item.UserName);
-                    list.Add(jo);
-                }
+                    { "Text", item.MyName },
+                    { "Value", item.UserName }
+                };
+                list.Add(jo);
             }
 
             string text = JsonConvert.SerializeObject(list);

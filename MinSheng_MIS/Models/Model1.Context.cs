@@ -73,10 +73,6 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<RFID> RFID { get; set; }
         public virtual DbSet<StockChangesRecord> StockChangesRecord { get; set; }
         public virtual DbSet<StockType> StockType { get; set; }
-        public virtual DbSet<SubSystemManagement> SubSystemManagement { get; set; }
-        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
-        public virtual DbSet<SystemLogs> SystemLogs { get; set; }
-        public virtual DbSet<SystemManagement> SystemManagement { get; set; }
         public virtual DbSet<Template_AddField> Template_AddField { get; set; }
         public virtual DbSet<Template_CheckItem> Template_CheckItem { get; set; }
         public virtual DbSet<Template_MaintainItemSetting> Template_MaintainItemSetting { get; set; }
