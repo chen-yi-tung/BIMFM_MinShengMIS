@@ -328,6 +328,7 @@ namespace MinSheng_MIS.Controllers.API
                     {
                         RSN = form["RSN"],
                         RepairContent = form["RepairContent"],
+                        RepairtId = HttpContext.Current.User.Identity.Name
                     };
                     if (HttpContext.Current.Request.Files.Count > 0)
                         item.RepairImg = HttpContext.Current.Request.Files[0];

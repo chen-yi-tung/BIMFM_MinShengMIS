@@ -342,6 +342,7 @@ namespace MinSheng_MIS.Services
         {
             var form = _db.EquipmentReportForm.Find(item.RSN);
             form.RepairContent = item.RepairContent;
+            form.RepairtId = item.RepairtId;
             if (item.RepairImg != null)
                 form.RepairImg = SaveImageFromHttpPostedFile($"{item.RSN}_Repair", item.RepairImg);
             form.RepairTime = DateTime.Now;
