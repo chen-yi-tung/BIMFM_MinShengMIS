@@ -76,6 +76,8 @@ namespace MinSheng_MIS.Services
             data.FSN = info.FSN;
             data.Message = info.Message;
             data.UserName = userName;
+            data.Location_X = info.Location_X;
+            data.Location_Y = info.Location_Y;
 
             _db.WarningMessage.AddOrUpdate(data);
             _db.SaveChanges();

@@ -576,48 +576,6 @@
           <Property Name="StockTypeSN" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="StockTypeName" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
-        <EntityType Name="SubSystemManagement">
-          <Key>
-            <PropertyRef Name="SubSystemID" />
-          </Key>
-          <Property Name="SubSystemID" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="SystemID" Type="int" Nullable="false" />
-          <Property Name="SubSystem" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="SubSystemIsEnable" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="principal_id" Type="int" Nullable="false" />
-          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="version" Type="int" />
-          <Property Name="definition" Type="varbinary(max)" />
-        </EntityType>
-        <EntityType Name="SystemLogs">
-          <Key>
-            <PropertyRef Name="LogId" />
-          </Key>
-          <Property Name="LogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="LogTime" Type="datetime2" Precision="7" />
-          <Property Name="UserId" Type="nvarchar" MaxLength="128" />
-          <Property Name="Client_IP" Type="varbinary" MaxLength="16" />
-          <Property Name="Request" Type="nvarchar(max)" />
-          <Property Name="HttpMethod" Type="nchar" MaxLength="10" />
-          <Property Name="Controller" Type="nvarchar(max)" />
-          <Property Name="Action" Type="nvarchar(max)" />
-          <Property Name="Result" Type="nvarchar(max)" />
-          <Property Name="Data" Type="nvarchar(max)" />
-        </EntityType>
-        <EntityType Name="SystemManagement">
-          <Key>
-            <PropertyRef Name="SystemID" />
-          </Key>
-          <Property Name="SystemID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="System" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="SystemIsEnable" Type="bit" Nullable="false" />
-        </EntityType>
         <EntityType Name="Template_AddField">
           <Key>
             <PropertyRef Name="AFSN" />
@@ -729,6 +687,8 @@
           <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
           <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="256" />
+          <Property Name="Location_X" Type="decimal" Precision="19" Scale="11" />
+          <Property Name="Location_Y" Type="decimal" Precision="19" Scale="11" />
         </EntityType>
         <EntityType Name="WarningMessageFillinRecord">
           <Key>
@@ -1260,18 +1220,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_SubSystemManagement_SystemManagement">
-          <End Role="SystemManagement" Type="Self.SystemManagement" Multiplicity="1" />
-          <End Role="SubSystemManagement" Type="Self.SubSystemManagement" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SystemManagement">
-              <PropertyRef Name="SystemID" />
-            </Principal>
-            <Dependent Role="SubSystemManagement">
-              <PropertyRef Name="SystemID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Template_AddField_Template_OneDeviceOneCard">
           <End Role="Template_OneDeviceOneCard" Type="Self.Template_OneDeviceOneCard" Multiplicity="1" />
           <End Role="Template_AddField" Type="Self.Template_AddField" Multiplicity="*" />
@@ -1428,10 +1376,6 @@
           <EntitySet Name="RFID" EntityType="Self.RFID" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StockChangesRecord" EntityType="Self.StockChangesRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StockType" EntityType="Self.StockType" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="SubSystemManagement" EntityType="Self.SubSystemManagement" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="SystemLogs" EntityType="Self.SystemLogs" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="SystemManagement" EntityType="Self.SystemManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Template_AddField" EntityType="Self.Template_AddField" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Template_CheckItem" EntityType="Self.Template_CheckItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Template_MaintainItemSetting" EntityType="Self.Template_MaintainItemSetting" Schema="dbo" store:Type="Tables" />
@@ -1614,10 +1558,6 @@
             <End Role="ComputationalStock" EntitySet="ComputationalStock" />
             <End Role="StockChangesRecord" EntitySet="StockChangesRecord" />
           </AssociationSet>
-          <AssociationSet Name="FK_SubSystemManagement_SystemManagement" Association="Self.FK_SubSystemManagement_SystemManagement">
-            <End Role="SystemManagement" EntitySet="SystemManagement" />
-            <End Role="SubSystemManagement" EntitySet="SubSystemManagement" />
-          </AssociationSet>
           <AssociationSet Name="FK_Template_AddField_Template_OneDeviceOneCard" Association="Self.FK_Template_AddField_Template_OneDeviceOneCard">
             <End Role="Template_OneDeviceOneCard" EntitySet="Template_OneDeviceOneCard" />
             <End Role="Template_AddField" EntitySet="Template_AddField" />
@@ -1708,10 +1648,6 @@
           <EntitySet Name="RFID" EntityType="Bimfm_MinSheng_MISModel.RFID" />
           <EntitySet Name="StockChangesRecord" EntityType="Bimfm_MinSheng_MISModel.StockChangesRecord" />
           <EntitySet Name="StockType" EntityType="Bimfm_MinSheng_MISModel.StockType" />
-          <EntitySet Name="SubSystemManagement" EntityType="Bimfm_MinSheng_MISModel.SubSystemManagement" />
-          <EntitySet Name="sysdiagrams" EntityType="Bimfm_MinSheng_MISModel.sysdiagrams" />
-          <EntitySet Name="SystemLogs" EntityType="Bimfm_MinSheng_MISModel.SystemLogs" />
-          <EntitySet Name="SystemManagement" EntityType="Bimfm_MinSheng_MISModel.SystemManagement" />
           <EntitySet Name="Template_AddField" EntityType="Bimfm_MinSheng_MISModel.Template_AddField" />
           <EntitySet Name="Template_CheckItem" EntityType="Bimfm_MinSheng_MISModel.Template_CheckItem" />
           <EntitySet Name="Template_MaintainItemSetting" EntityType="Bimfm_MinSheng_MISModel.Template_MaintainItemSetting" />
@@ -1891,10 +1827,6 @@
           <AssociationSet Name="FK_RFID_StockChangesRecord" Association="Bimfm_MinSheng_MISModel.FK_RFID_StockChangesRecord">
             <End Role="StockChangesRecord" EntitySet="StockChangesRecord" />
             <End Role="RFID" EntitySet="RFID" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SubSystemManagement_SystemManagement" Association="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement">
-            <End Role="SystemManagement" EntitySet="SystemManagement" />
-            <End Role="SubSystemManagement" EntitySet="SubSystemManagement" />
           </AssociationSet>
           <AssociationSet Name="FK_Template_AddField_Template_OneDeviceOneCard" Association="Bimfm_MinSheng_MISModel.FK_Template_AddField_Template_OneDeviceOneCard">
             <End Role="Template_OneDeviceOneCard" EntitySet="Template_OneDeviceOneCard" />
@@ -2591,50 +2523,6 @@
           <Property Name="StockTypeName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ComputationalStock" Relationship="Bimfm_MinSheng_MISModel.FK_ComputationalStock_StockType" FromRole="StockType" ToRole="ComputationalStock" />
         </EntityType>
-        <EntityType Name="SubSystemManagement">
-          <Key>
-            <PropertyRef Name="SubSystemID" />
-          </Key>
-          <Property Name="SubSystemID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="SystemID" Type="Int32" Nullable="false" />
-          <Property Name="SubSystem" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SubSystemIsEnable" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="SystemManagement" Relationship="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement" FromRole="SubSystemManagement" ToRole="SystemManagement" />
-        </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="principal_id" Type="Int32" Nullable="false" />
-          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="Int32" />
-          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
-        </EntityType>
-        <EntityType Name="SystemLogs">
-          <Key>
-            <PropertyRef Name="LogId" />
-          </Key>
-          <Property Name="LogId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="LogTime" Type="DateTime" Precision="7" />
-          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="Client_IP" Type="Binary" MaxLength="16" FixedLength="false" />
-          <Property Name="Request" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="HttpMethod" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Controller" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Action" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Result" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Data" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="SystemManagement">
-          <Key>
-            <PropertyRef Name="SystemID" />
-          </Key>
-          <Property Name="SystemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="System" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SystemIsEnable" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="SubSystemManagement" Relationship="Bimfm_MinSheng_MISModel.FK_SubSystemManagement_SystemManagement" FromRole="SystemManagement" ToRole="SubSystemManagement" />
-        </EntityType>
         <EntityType Name="Template_AddField">
           <Key>
             <PropertyRef Name="AFSN" />
@@ -2745,6 +2633,8 @@
           <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
           <Property Name="Message" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Location_X" Type="Decimal" Precision="19" Scale="11" />
+          <Property Name="Location_Y" Type="Decimal" Precision="19" Scale="11" />
           <NavigationProperty Name="WarningMessageFillinRecord" Relationship="Bimfm_MinSheng_MISModel.FK_WarningMessageFillinRecord_WarningMessage" FromRole="WarningMessage" ToRole="WarningMessageFillinRecord" />
         </EntityType>
         <EntityType Name="WarningMessageFillinRecord">
@@ -3271,18 +3161,6 @@
             </Principal>
             <Dependent Role="RFID">
               <PropertyRef Name="SARSN" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SubSystemManagement_SystemManagement">
-          <End Type="Bimfm_MinSheng_MISModel.SystemManagement" Role="SystemManagement" Multiplicity="1" />
-          <End Type="Bimfm_MinSheng_MISModel.SubSystemManagement" Role="SubSystemManagement" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SystemManagement">
-              <PropertyRef Name="SystemID" />
-            </Principal>
-            <Dependent Role="SubSystemManagement">
-              <PropertyRef Name="SystemID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4007,52 +3885,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="SubSystemManagement">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.SubSystemManagement">
-              <MappingFragment StoreEntitySet="SubSystemManagement">
-                <ScalarProperty Name="SubSystemIsEnable" ColumnName="SubSystemIsEnable" />
-                <ScalarProperty Name="SubSystem" ColumnName="SubSystem" />
-                <ScalarProperty Name="SystemID" ColumnName="SystemID" />
-                <ScalarProperty Name="SubSystemID" ColumnName="SubSystemID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.sysdiagrams">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="definition" ColumnName="definition" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SystemLogs">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.SystemLogs">
-              <MappingFragment StoreEntitySet="SystemLogs">
-                <ScalarProperty Name="Data" ColumnName="Data" />
-                <ScalarProperty Name="Result" ColumnName="Result" />
-                <ScalarProperty Name="Action" ColumnName="Action" />
-                <ScalarProperty Name="Controller" ColumnName="Controller" />
-                <ScalarProperty Name="HttpMethod" ColumnName="HttpMethod" />
-                <ScalarProperty Name="Request" ColumnName="Request" />
-                <ScalarProperty Name="Client_IP" ColumnName="Client_IP" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="LogTime" ColumnName="LogTime" />
-                <ScalarProperty Name="LogId" ColumnName="LogId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SystemManagement">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.SystemManagement">
-              <MappingFragment StoreEntitySet="SystemManagement">
-                <ScalarProperty Name="SystemIsEnable" ColumnName="SystemIsEnable" />
-                <ScalarProperty Name="System" ColumnName="System" />
-                <ScalarProperty Name="SystemID" ColumnName="SystemID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Template_AddField">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.Template_AddField">
               <MappingFragment StoreEntitySet="Template_AddField">
@@ -4142,6 +3974,8 @@
           <EntitySetMapping Name="WarningMessage">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.WarningMessage">
               <MappingFragment StoreEntitySet="WarningMessage">
+                <ScalarProperty Name="Location_Y" ColumnName="Location_Y" />
+                <ScalarProperty Name="Location_X" ColumnName="Location_X" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Message" ColumnName="Message" />
                 <ScalarProperty Name="FSN" ColumnName="FSN" />

@@ -240,42 +240,6 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion 
 
-        #region 主系統/主系統
-        [System.Web.Http.HttpGet]
-        public ActionResult SystemName()
-        {
-            List<JObject> list = new List<JObject>();
-            var abc = db.SystemManagement.Where(x => x.SystemIsEnable == true).ToList();
-            foreach (var item in abc)
-            {
-                JObject jo = new JObject();
-                jo.Add("Text", item.System);//System
-                jo.Add("Value", item.System); // System
-                list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
-        #region 子系統/子系統
-        [System.Web.Http.HttpGet]
-        public ActionResult SubSystemName()
-        {
-            List<JObject> list = new List<JObject>();
-            var abc = db.SubSystemManagement.Where(x => x.SubSystemIsEnable == true).ToList();
-            foreach (var item in abc)
-            {
-                JObject jo = new JObject();
-                jo.Add("Text", item.SubSystem);//SubSystem
-                jo.Add("Value", item.SubSystem); //SubSystem
-                list.Add(jo);
-            }
-            string text = JsonConvert.SerializeObject(list);
-            return Content(text, "application/json");
-        }
-        #endregion
-
         #region 設備狀態 下拉式選單
         [HttpGet]
         public ActionResult EState()
