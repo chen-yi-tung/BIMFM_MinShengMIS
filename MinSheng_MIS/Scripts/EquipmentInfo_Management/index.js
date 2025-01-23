@@ -244,6 +244,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
 
 
     function save() {
+        console.log("點擊save")
         //指定驗證的form
         const form = document.getElementById("EquipForm");
         let isValidity = [...form.elements].map((e) => e.reportValidity()).every((e) => e);
