@@ -265,6 +265,7 @@
     <Compile Include="Controllers\API\Repair_ManagementApi.cs" />
     <Compile Include="Controllers\API\UserInfoApi.cs" />
     <Compile Include="Controllers\API\VitalsPosApi.cs" />
+    <Compile Include="Controllers\API\WarningMessage_ManagementController.cs" />
     <Compile Include="Controllers\AsBuiltDrawing_ManagementController.cs" />
     <Compile Include="Controllers\BeaconController.cs" />
     <Compile Include="Controllers\BigScreenController.cs" />
