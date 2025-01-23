@@ -61,6 +61,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         public string RSN { get; set; }
         public string RepairContent { get; set; }
+        public string RepairtId { get; set; }
         public HttpPostedFile RepairImg { get; set; }
     }
 
