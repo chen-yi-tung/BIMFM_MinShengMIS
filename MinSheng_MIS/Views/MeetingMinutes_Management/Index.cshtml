@@ -106,7 +106,9 @@
                 columns: [[
                     dg.hiddenColumn('MMSN'),
                     dg.column('MeetingTopic', '會議主題', 250),
-                    dg.column('MeetingDate', '會議時間', 220),
+                    dg.column('MeetingDate', '會議時間', 220, (v, row, i) => {
+                        return dateTransform(v);
+                    }),
                     //dg.column('MeetingDateStart', '開始時間', 120),
                     //dg.column('MeetingDateEnd', '結束時間', 120),
                     dg.column('MeetingVenue', '會議地點', 250),

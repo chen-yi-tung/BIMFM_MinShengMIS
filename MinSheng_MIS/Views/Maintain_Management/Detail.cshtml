@@ -99,12 +99,12 @@
                         }
                     },
                     { title: "保養週期", id: "Period" },
-                    { title: "上次保養日", id: "LastMaintainDate" },
-                    { title: "最近應保養日", id: "NextMaintainDate" },
+                    { title: "上次保養日", id: "LastMaintainDate", type: "date" },
+                    { title: "最近應保養日", id: "NextMaintainDate", type: "date" },
                 ])
                 DT.createTableInner("#ReportDetail", data, [
                     { title: "填報者", id: "ReportId" },
-                    { title: "填報時間", id: "ReportTime" },
+                    { title: "填報時間", id: "ReportTime", type: "date" },
                     { title: "保養填報", id: "ReportContent" },
                 ])
                 DT.createTableInner("#ReviewDetail", data, [
@@ -117,7 +117,7 @@
                         }
                     },
                     { title: "審核者", id: "AuditId" },
-                    { title: "審核時間", id: "AuditTime" },
+                    { title: "審核時間", id: "AuditTime", type: "date" },
                     { title: "審核意見", id: "AuditReason" },
                 ])
                 displaySections(data.Status);

@@ -120,6 +120,13 @@ function createTableInner(data, sn) {
                             <td class="datatable-table-td" id="d-${e.value}">${data[e.value] != null ? putFile(data[e.value]) : nullString}</td>
                         </tr>`;
                     break;
+                case "Date":
+                    html = `
+                        <tr>
+                            <td class="datatable-table-th">${e.text}</td>
+                            <td class="datatable-table-td" id="d-${e.value}" ${colspan}>${data[e.value] ? dateTransform(data[e.value]) : nullString}</td>
+                        </tr>`;
+                    break;
                 //內容：兩格
                 case "DualCol": {
                     const rows = data[e.value]?.length || 0;

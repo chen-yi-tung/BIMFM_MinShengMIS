@@ -274,7 +274,7 @@
                     { title: "工單編號", id: "IPSN" },
                     { title: "工單狀態", id: "PlanState" },
                     { title: "工單名稱", id: "IPName" },
-                    { title: "工單日期", id: "PlanDate" },
+                    { title: "工單日期", id: "PlanDate", type: "date" },
                 ])
 
                 DT.createAccordion("#PlanRecord", data.Inspections, {
@@ -299,7 +299,7 @@
                                 items: [
                                     { title: "所在位置", id: "Location" },
                                     { title: "最新填報者", id: "ReportUserName" },
-                                    { title: "最新填報時間", id: "FillinTime" },
+                                    { title: "最新填報時間", id: "FillinTime", type: "date" },
                                     {
                                         type: "items", title: "檢查項目", id: "CheckItems", items: [
                                             { id: "Item" },

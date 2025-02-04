@@ -98,7 +98,9 @@
                     dg.column('YearMonth', '年月份', 200),
                     dg.column('ReportTitle', '月報名稱', 350),
                     dg.column('UploadUserName', '上傳者', 250),
-                    dg.column('UploadDateTime', '上傳日期', 250),
+                    dg.column('UploadDateTime', '上傳日期', 250, (v, row, i) => {
+                        return dateTransform(v);
+                    }),
                     //dg.column('ReportContent', '內容說明', 650)
                 ]]
             })

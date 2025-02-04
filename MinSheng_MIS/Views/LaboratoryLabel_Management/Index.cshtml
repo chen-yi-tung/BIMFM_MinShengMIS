@@ -94,7 +94,9 @@
                     dg.hiddenColumn('ELSN'),
                     dg.column('ExperimentType', '實驗類型', 300),
                     dg.column('ExperimentName', '實驗名稱', 500),
-                    dg.column('EDate', '標籤日期', 300),
+                    dg.column('EDate', '標籤日期', 300, (v, row, i) => {
+                        return dateTransform(v);
+                    }),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {

@@ -133,7 +133,9 @@
                     dg.column('SubSystem', '子系統別', 250),
                     dg.column('ImgNum', '圖號', 110),
                     dg.column('ImgName', '圖名', 200),
-                    dg.column('UploadDate', '上傳時間', 200),
+                    dg.column('UploadDate', '上傳時間', 200, (v, row, i) => {
+                        return dateTransform(v);
+                    }),
                     dg.column('ImgVersion', '版本', 110),
                 ]]
             })

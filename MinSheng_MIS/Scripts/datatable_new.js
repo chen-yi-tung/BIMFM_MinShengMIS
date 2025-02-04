@@ -641,6 +641,10 @@
                 cell.appendChild(container);
                 break;
             }
+            case "date": {
+                cell.textContent = dateTransform(formatter)
+                break;
+            }
             case "pre": {
                 const pre = document.createElement("pre")
                 if (formatter instanceof HTMLElement) {

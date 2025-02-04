@@ -118,7 +118,9 @@
                 columns: [[
                     dg.column('IPSN', '工單編號', 200),
                     dg.column('PlanState', '工單狀態', 200),
-                    dg.column('PlanDate', '工單日期', 200),
+                    dg.column('PlanDate', '工單日期', 200, (v, row, i) => {
+                        return dateTransform(v);
+                    }),
                     dg.column('IPName', '工單名稱', 300),
                     dg.column('Member', '巡檢人員', 600),
                 ]]
@@ -136,12 +138,9 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-
-
             $("#search").click(function () {
                 DataGrid.datagrid('load', getQueryParams());
             });
-
             $("#create").click(function () {
                 window.open(`${baseUrl}/Create`, "_self");
             });

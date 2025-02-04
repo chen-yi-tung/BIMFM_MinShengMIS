@@ -131,7 +131,9 @@
                     dg.hiddenColumn('WMSN'),
                     dg.column('WMType', '事件等級', 120),
                     dg.column('WMState', '事件處理狀況', 150),
-                    dg.column('TimeOfOccurrence', '發生時間', 200),
+                    dg.column('TimeOfOccurrence', '發生時間', 200, (v, row, i) => {
+                        return dateTransform(v);
+                    }),
                     dg.column('Location', '發生地點', 250),
                     dg.column('Message', '事件內容', 250),
                     dg.column('MyName', '人員姓名', 150),

@@ -95,7 +95,9 @@
                     dg.column('MTitle', '標題', 400),
                     dg.column('MContent', '說明', 500),
                     dg.column('UploadUserName', '上傳者', 150),
-                    dg.column('UploadDateTime', '上傳日期時間', 200),
+                    dg.column('UploadDateTime', '上傳日期時間', 200, (v, row, i) => {
+                        return dateTransform(v);
+                    }),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
