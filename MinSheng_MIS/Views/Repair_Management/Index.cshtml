@@ -114,7 +114,7 @@
     <script>
         var getGridJSON = '@Url.Action("ManagementDataGrid", "Repair_Management")';
         var DataGrid;
-        let currentRSN = "";
+        let checkedArray = [];
 
         const fakedata = [
             {
@@ -195,6 +195,14 @@
             await addButtonEvent();
             Initialize_DataGrid(getGridJSON, __authority__);
             addSearchAreaClickEvent();
+            //setDatepicker();
+            //$('.datepickerTW').datepickerTW({
+            //    changeYear: true,
+            //    changeMonth: true,
+            //    dateFormat: 'yy-mm-dd',
+            //    // yearRange: '-10:2018',
+            //    // defaultDate: '86-11-01',
+            //});
 
             if (__authority__ === "3") {
                 document.getElementById('multiAssign').classList.add('d-none');
@@ -206,34 +214,82 @@
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
-                //data: fakedata,
                 method: 'POST',
                 queryParams: getQueryParams(),
-                idField: 'RSN',
                 remoteSort: true,
                 singleSelect: false,
+                checkOnSelect: true,
                 frozenColumns: [[
                     { field: 'ck', checkbox: true }, // 新增 checkbox
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_review', (v, row, i) => dg.eventButton(i, "審核", "review", { disabled: row.ReportState != "待審核" || authority != "1" })),
                     dg.frozenColumn('_assign', (v, row, i) => dg.eventButton(i, "派工", "assign", { disabled: row.ReportState != "待派工" || authority === "3", className: "btn btn-datagrid btn-other", dataTitle: "報修單 派工" })),
-                    //dg.frozenColumn('_assign', (v, row, i) =>
-                    //    `<button onclick="dg.eventButton(${i}, '派工', '_assign')" ${row.ReportState !== "待派工" ? "disabled" : ""} class="btn btn-datagrid btn-other" data-bs-toggle="modal" data-bs-target="#addMultiAssign" data-title="報修單 派工">派工</button>`)
                 ]],
                 onLoadSuccess: function (data) {
-                    const rows = data.rows;
-                    rows.forEach((row, index) => {
+                    console.log("onLoad checkedArray:", checkedArray)
+                    data.rows.forEach((row, index) => {
                         if (row.ReportState !== "待派工") {
                             const checkbox = $('#DataGrid').datagrid('getPanel').find(`#DataGrid_datagrid-row-r1-1-${index} input[type="checkbox"]`);
                             checkbox.prop('disabled', true);
                         }
+                        if (checkedArray.includes(row.RSN)) {
+                            $('#DataGrid').datagrid('selectRow', index);
+                        }
                     });
+                    checkIfAllChecked(data);
+                },
+                onSelect: function (index, row) {
+                    if (!checkedArray.includes(row.RSN)) {
+                        checkedArray.push(row.RSN);
+                    }
+
+                    var currentData = $('#DataGrid').datagrid('getData');
+                    checkIfAllChecked(currentData);
+                    console.log("目前有", checkedArray);
+                },
+                onSelectAll: function (rows) {
+                    setTimeout(() => {
+                        rows.forEach((row) => {
+                            const index = $('#DataGrid').datagrid('getRowIndex', row);
+                            if (row.ReportState !== "待派工") {
+                                $('#DataGrid').datagrid('unselectRow', index); // 取消選取該行
+                                return;
+                            }
+                            if (!checkedArray.includes(row.RSN)) {
+                                checkedArray.push(row.RSN);
+                            }
+                            checkedArray = [...new Set(checkedArray)];
+                        })
+                        setTimeout(() => {
+                            const panel = $('#DataGrid').datagrid('getPanel');
+                            panel.find('.datagrid-header-check input[type="checkbox"]').prop('checked', true);
+                        }, 50);
+                    }, 10);
+                },
+                onUnselect: function (index, row) {
+                    checkedArray = checkedArray.filter(item => item !== row.RSN);
+
+                    var currentData = $('#DataGrid').datagrid('getData');
+                    checkIfAllChecked(currentData);
+                    console.log("onUnselect 目前有", checkedArray);
+                },
+                onUnselectAll: function (rows) {
+                    const currentArray = new Set(checkedArray);                    
+                    rows.forEach((row) => {
+                        if (currentArray.has(row.RSN)) {
+                            currentArray.delete(row.RSN);
+                        }
+                    })
+                    checkedArray = [...currentArray];
+                    console.log("取消勾選後，剩餘", checkedArray);  
                 },
                 columns: [[
                     dg.column('ReportState', '報修單狀態', 150),
                     dg.column('RSN', '報修單號', 150),
                     dg.column('ReportLevel', '報修等級', 150),
-                    dg.column('ReportTime', '報修時間', 200),
+                    dg.column('ReportTime', '報修時間', 200, (v, row, i) => {
+                        return dateTransform(v);
+                    }),
                     dg.column('ReportContent', '報修內容', 300),
                     dg.column('Area', '棟別', 200),
                     dg.column('FloorName', '樓層', 200),
@@ -243,14 +299,12 @@
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
-                console.log("row",row)
                 window.open(`${baseUrl}/Detail?RSN=${row.RSN}`, "_blank")
             })
             dg.addEvent("review", function (row, i) {
                 window.open(`${baseUrl}/Review?RSN=${row.RSN}`, "_self")
             })
             dg.addEvent("assign", function (row, i) {
-                currentRSN = row.RSN;
                 const modal = document.getElementById("addMultiAssign");
 
                 const modalTitle = modal.querySelector('#addMultiAssign h2');
@@ -269,8 +323,7 @@
 
         //點擊 批量派工btn
         document.getElementById("multiAssign").addEventListener("click", function () {
-            currentRSN = getCheckedRSN();
-            if (currentRSN.length > 0) {
+            if (checkedArray.length > 0) {
                 const modal = document.getElementById("addMultiAssign");
                 const modalTitle = modal.querySelector('#addMultiAssign h2');
                 if (modalTitle) {
@@ -343,6 +396,29 @@
             return rsnList;
         }
 
+        //判斷是否全選，全選的話將header checkbox勾選
+        function checkIfAllChecked(data) {
+            //計算可選取(非禁用)的列數 和 實際被選取的數量
+            var selectableCount = 0;
+            var selectedCount = 0;
+            for (var j = 0; j < data.rows.length; j++) {
+                if (data.rows[j].ReportState === "待派工") {
+                    selectableCount++;
+                    // 判斷此列是否已被選取
+                    if (checkedArray.indexOf(data.rows[j].RSN) !== -1) {
+                        selectedCount++;
+                    }
+                }
+            }
+
+            var panel = $('#DataGrid').datagrid('getPanel');
+            if (selectableCount > 0 && selectedCount === selectableCount) {
+                panel.find('.datagrid-header-check input[type="checkbox"]').prop('checked', true);
+            } else {
+                panel.find('.datagrid-header-check input[type="checkbox"]').prop('checked', false);
+            }
+        }
+
         function save() {
             const repairUserNameValue = $('#addMultiAssign #RepairUserName').tagbox('getValues');
             if (!repairUserNameValue?.length) {
@@ -355,7 +431,7 @@
             if (!isValidity) return;
 
             const sendData = {
-                RSN: currentRSN,
+                RSN: checkedArray,
                 DueDate: document.getElementById("DueDate").value,
                 RepairUserName: $('#addMultiAssign #RepairUserName').tagbox('getValues'),
             }
@@ -387,5 +463,7 @@
                 createDialogModal({ id: "DialogModal-Error", inner: `派工失敗！` + `${res?.responseText || ""}` })
             }
         }
+
+        
     </script>
 }
