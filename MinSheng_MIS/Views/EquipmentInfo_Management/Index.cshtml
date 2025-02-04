@@ -131,10 +131,8 @@
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
-                //data: getGridJSON,
                 method: 'POST',
                 queryParams: getQueryParams(),
-                idField: 'ESN',
                 remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),

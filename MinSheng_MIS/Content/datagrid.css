@@ -87,6 +87,11 @@
     color: var(--theme-datagrid-tbody-color) !important;
 }
 
+.datagrid-row-selected {
+    background: #fff7d2 !important;
+}
+
+
 /* check-input */
 .datagrid-header-check,
 .datagrid-cell-check {

@@ -2,11 +2,12 @@
 async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
     const fileUploader = new FileUploader({
         container: "#FileUploader",
-        className: "form-group col-3fr required",
+        className: "form-group col-3fr",
         icon: "plus",
         buttonText: "上傳照片",
         label: "照片",
         id: "EPhoto",
+        required: false,
     });
 
     document.getElementById("back").onclick = () => history.back();
