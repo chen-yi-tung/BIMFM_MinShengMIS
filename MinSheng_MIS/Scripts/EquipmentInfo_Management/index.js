@@ -273,10 +273,13 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
         }
         if (edit) {
             const file = fileUploader.getFile();
-            if (file.size) {
-                fd.append("EPhoto", file);
-            } else {
-                fd.append("FileName", file.name);
+            console.log("file", file);
+            if (file) {
+                if (file.size) {
+                    fd.append("EPhoto", file);
+                } else {
+                    fd.append("FileName", file.name);
+                }
             }
             fd.append("ESN", data.ESN);
         }
