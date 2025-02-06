@@ -96,7 +96,11 @@
                 ]],
                 columns: [[
                     dg.hiddenColumn('MRSN'),
-                    dg.column('YearMonth', '年月份', 200),
+                    dg.column('YearMonth', '年月份', 200, (v, row, i) => {
+                        const [rocYear, month] = v.split('-');
+                        const year = parseInt(rocYear) - 1911;
+                        return `${year}-${month}`;
+                    }),
                     dg.column('ReportTitle', '月報名稱', 350),
                     dg.column('UploadUserName', '上傳者', 250),
                     dg.column('UploadDateTime', '上傳日期', 250, (v, row, i) => {
@@ -119,12 +123,10 @@
 
         //search area onClick Function
         function addSearchAreaClickEvent() {
-
-
             $("#search").click(function () {
-                const yearFromVal = document.getElementById('YearFrom').value;
+                const yearFromVal = parseInt(document.getElementById('YearFrom').value) + 1911;
                 const monthFromVal = document.getElementById('MonthFrom').value;
-                const yearToVal = document.getElementById('YearTo').value;
+                const yearToVal = parseInt(document.getElementById('YearTo').value) + 1911;
                 const monthToVal = document.getElementById('MonthTo').value;
                 const QueryParams = {
                     ...getQueryParams(),

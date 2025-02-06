@@ -267,7 +267,6 @@
 
                     var currentData = $('#DataGrid').datagrid('getData');
                     checkIfAllChecked(currentData);
-                    console.log("目前有", checkedArray);
                 },
                 onSelectAll: function (rows) {
                     setTimeout(() => {
@@ -293,7 +292,6 @@
 
                     var currentData = $('#DataGrid').datagrid('getData');
                     checkIfAllChecked(currentData);
-                    console.log("onUnselect 目前有", checkedArray);
                 },
                 onUnselectAll: function (rows) {
                     const currentArray = new Set(checkedArray);
@@ -303,7 +301,6 @@
                         }
                     })
                     checkedArray = [...currentArray];
-                    console.log("取消勾選後，剩餘", checkedArray);
                 },
                 columns: [[
                     dg.column('Status', '保養單狀態', 150),
