@@ -14,7 +14,6 @@ namespace MinSheng_MIS.Models.ViewModels
         IUpdateAddFieldValue, IUpdateMaintainItemValue
     {
         public string TSN { get; set; } // 一機一卡模板編號
-        [Required]
         [FileSizeLimit(10)] // 限制大小為 10 MB
         [Display(Name = "設備照片")]
         public HttpPostedFileBase EPhoto { get; set; } //新增的照片
@@ -154,10 +153,7 @@ namespace MinSheng_MIS.Models.ViewModels
     /// <summary>
     /// 編輯設備資料所需資訊
     /// </summary>
-    public interface IEditEquipmentInfo : ICreateEquipmentInfo, IUpdateEquipmentInfo
-    {
-        string FileName { get; set; } // 設備原照片名稱
-    }
+    public interface IEditEquipmentInfo : ICreateEquipmentInfo, IUpdateEquipmentInfo { }
 
     /// <summary>
     /// 使用者變更設備中一機一卡增設欄位值所需資訊
@@ -293,6 +289,7 @@ namespace MinSheng_MIS.Models.ViewModels
     {
         string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         string EState { get; set; } // 設備狀態
+        string FileName { get; set; } // 設備原照片名稱
     }
 
     /// <summary>

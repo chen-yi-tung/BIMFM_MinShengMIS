@@ -104,7 +104,7 @@ namespace MinSheng_MIS.Services
             equipment.ESN = await GenerateEquipmentInfoSNAsync();
             equipment.EState = ((int)UniParams.EState.Normal).ToString();
             equipment.IsDelete = false;
-            equipment.EPhoto = $"{equipment.ESN}{Path.GetExtension(data.EPhoto.FileName)}";
+            equipment.EPhoto = data.EPhoto != null ? $"{equipment.ESN}{Path.GetExtension(data.EPhoto.FileName)}" : null;
 
             _db.EquipmentInfo.Add(equipment);
 
@@ -165,7 +165,7 @@ namespace MinSheng_MIS.Services
             if (data.EPhoto?.ContentLength > 0)
                 update.EPhoto = $"{data.ESN}{Path.GetExtension(data.EPhoto.FileName)}";
             else
-                update.EPhoto = origin.EPhoto;
+                update.EPhoto = data.FileName;
 
             // 維持不變
             update.DBID = origin.DBID;
