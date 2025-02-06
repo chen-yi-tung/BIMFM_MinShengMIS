@@ -30,7 +30,6 @@
                         <select class="yearSelect form-select" id="Year"></select>
                         <select class="monthSelect form-select" id="Month"></select>
                     </div>
-                    @*<input class="form-control" id="YearMonth" name="YearMonth" type="month" required>*@
                 </div>
 
                 <div class="form-group" style="grid-column: auto/span 2;">
@@ -59,10 +58,6 @@
                 label: "月報檔案",
                 id: "File"
             })
-
-            //預帶目前年月
-            //let d = new Date()
-            //$("#YearMonth").val(`${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}`)
         });
         $(document).ready(function () {
             createYearMonthSelect();
@@ -82,8 +77,7 @@
             var fd = new FormData();
             fd.append("ReportTitle", document.getElementById("ReportTitle").value);
             fd.append("ReportContent", document.getElementById("ReportContent").value);
-
-            const YearMonthValue = document.getElementById("Year").value + "-" + document.getElementById("Month").value
+            const YearMonthValue = (parseInt(document.getElementById("Year").value) + 1911) + "-" + document.getElementById("Month").value;
             fd.append("YearMonth", YearMonthValue);
             if (fileUploader.hasFile()) {
                 fd.append("ReportFile", fileUploader.getFile());

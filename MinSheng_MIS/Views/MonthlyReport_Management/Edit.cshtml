@@ -27,7 +27,10 @@
 
                 <div class="form-group required">
                     <label for="YearMonth">年月份</label>
-                    <input class="form-control" id="YearMonth" name="YearMonth" type="month">
+                    <div style="display: flex; gap: 8px;">
+                        <select class="yearSelect form-select" id="Year"></select>
+                        <select class="monthSelect form-select" id="Month"></select>
+                    </div>
                 </div>
 
                 <div class="form-group" style="grid-column: auto/span 2;">
@@ -71,6 +74,9 @@
             })
             readData(apiUrl);
         });
+        $(document).ready(function () {
+            createYearMonthSelect();
+        });
 
         function readData(url = null) {
             url == null ? onSuccess(fakeData) :   //res
@@ -85,7 +91,12 @@
 
             function onSuccess(res) {
                 console.log(res);
-                for (const [k, v] of Object.entries(res)) {
+                for (let [k, v] of Object.entries(res)) {
+                    if (k === "YearMonth") {
+                        const [ADYear, month] = v.split('-');
+                        document.getElementById('Year').value = parseInt(ADYear) - 1911;
+                        document.getElementById('Month').value = parseInt(month);
+                    }
                     $("#" + k).val(v);
                 }
                 fileUploader.setFile(res.FilePath)
@@ -110,7 +121,8 @@
             fd.append("MRSN", '@ViewBag.id');
             fd.append("ReportTitle", document.getElementById("ReportTitle").value);
             fd.append("ReportContent", document.getElementById("ReportContent").value);
-            fd.append("YearMonth", document.getElementById("YearMonth").value);
+            const YearMonthValue = (parseInt(document.getElementById("Year").value) + 1911) + "-" + document.getElementById("Month").value;
+            fd.append("YearMonth", YearMonthValue);
             if (fileUploader.hasFile()) {
                 let file = fileUploader.getFile()
                 if (file.size) {
@@ -157,6 +169,10 @@
             $("#submit").click(function () {
                 save();
             })
+        }
+        function createYearMonthSelect() {
+            generateYearSelect("Year");
+            generateMonthSelect("Month");
         }
         </script>
     }

@@ -36,10 +36,16 @@
         }
 
         const sn = [
-            { text: "年月份", value: "YearMonth" },
+            {
+                text: "年月份", value: "YearMonth", formatter: function (v) {
+                    const [ADYear, month] = v.split('-');
+                    const rocYear = parseInt(ADYear) - 1911;
+                    return rocYear + "-" + month;
+                }
+            },
             { text: "月報名稱", value: "ReportTitle" },
             { text: "上傳者", value: "UploadUserName" },
-            { text: "上傳日期", value: "UploadDateTime" },
+            { text: "上傳日期", value: "UploadDateTime", type: "Date" },
             { text: "內容說明", value: "ReportContent", pre: true },
             { text: "月報檔案", value: "FilePath", url: true },
         ]
