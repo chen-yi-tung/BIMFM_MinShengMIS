@@ -40,7 +40,7 @@ namespace MinSheng_MIS.Controllers
                 if (yearMonthParts.Length != 2) return Content("YearMonth ERROR", "application/json");
 
                 Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-                string lastMRSN = db.MonthlyReport.OrderByDescending(mr => mr.MRSN).FirstOrDefault().MRSN;
+                string lastMRSN = db.MonthlyReport.OrderByDescending(mr => mr.MRSN).FirstOrDefault()?.MRSN ?? "000000";
                 string lastMrDate = lastMRSN.Substring(0, 6);
                 string dateNow = DateTime.Now.ToString("yyMMdd");
                 int parsedValue = 1;
