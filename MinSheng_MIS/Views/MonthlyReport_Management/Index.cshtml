@@ -12,32 +12,32 @@
     <button class="btn btn-create" id="create">新增月報</button>
     <div class="search-area">
         <form class="form" method="post" action="">
-
             <div class="form-group">
                 <label for="ReportTitle">月報名稱</label>
                 <input class="form-control" id="ReportTitle" name="ReportTitle" type="text" />
             </div>
-
             <div class="form-group">
                 <label for="UploadUserName">上傳者</label>
                 <input class="form-control" id="UploadUserName" name="UploadUserName" type="text" />
             </div>
-
             <div class="form-group">
                 <label for="DateFrom">年月份(起)</label>
-                <input class="form-control" id="DateFrom" name="DateFrom" type="month" />
+                <div style="display: flex; gap: 8px;">
+                    <select class="yearSelect form-select" id="YearFrom"></select>
+                    <select class="monthSelect form-select" id="MonthFrom"></select>
+                </div>
             </div>
-
             <div class="form-group">
                 <label for="DateTo">年月份(迄)</label>
-                <input class="form-control" id="DateTo" name="DateTo" type="month" />
+                <div style="display: flex; gap: 8px;">
+                    <select class="yearSelect form-select" id="YearTo"></select>
+                    <select class="monthSelect form-select" id="MonthTo"></select>
+                </div>
             </div>
-
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
                 <button type="reset" class="btn btn-clear" id="clear">清除</button>
             </div>
-
         </form>
     </div>
 
@@ -46,8 +46,8 @@
     </div>
 </div>
 
-    @section scripts {
-        <script>
+@section scripts {
+    <script>
         var getGridJSON = '@Url.Action("MonthlyReport_Management", "Datagrid")';
         var DataGrid;
 
@@ -76,6 +76,7 @@
             if (__authority__ === "3") {
                 document.getElementById('create').classList.add('d-none');
             }
+            createYearMonthSelect();
         });
 
         function Initialize_DataGrid(getGridJSON, authority) {
@@ -121,12 +122,35 @@
 
 
             $("#search").click(function () {
-                DataGrid.datagrid('load', getQueryParams());
+                const yearFromVal = document.getElementById('YearFrom').value;
+                const monthFromVal = document.getElementById('MonthFrom').value;
+                const yearToVal = document.getElementById('YearTo').value;
+                const monthToVal = document.getElementById('MonthTo').value;
+                const QueryParams = {
+                    ...getQueryParams(),
+                    DateFrom: "",
+                    DateTo: ""
+                };
+
+                if (yearFromVal && monthFromVal) {
+                    QueryParams.DateFrom = `${yearFromVal}-${monthFromVal}`;
+                }
+                if (yearToVal && monthToVal) {
+                    QueryParams.DateTo = `${yearToVal}-${monthToVal}`;
+                }
+                DataGrid.datagrid('load', QueryParams);
             });
 
             $("#create").click(function () {
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-        </script>
-    }
+
+        function createYearMonthSelect() {
+            generateYearSelect("YearFrom");
+            generateYearSelect("YearTo");
+            generateMonthSelect("MonthFrom");
+            generateMonthSelect("MonthTo");
+        }
+    </script>
+}

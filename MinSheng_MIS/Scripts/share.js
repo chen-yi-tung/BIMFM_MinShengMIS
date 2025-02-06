@@ -33,219 +33,96 @@ async function checkAuthority() {
     }
 }
 
-//轉換日期格式(西元轉民國)
-function dateTransform(dateString) {
-    if (dateString === '-') {
-        return dateString;
-    }
-    const isDateTimeFormat = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(dateString); // 年-月-日 時:分
-    const isDateOnlyFormat = /^\d{4}-\d{2}-\d{2}$/.test(dateString); // 年-月-日
-
-    if (!isDateTimeFormat && !isDateOnlyFormat) {
-        throw new Error("Invalid date format. Expected 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm'.");
-
-    }
-
-    const date = new Date(dateString);
-    if (isNaN(date)) {
-        throw new Error("Invalid date value.");
+//轉換日期格式
+function dateTransform(data) {
+    // 民國轉西元
+    // 檢查是否為物件（但不是陣列）
+    if (typeof data === "object" && data !== null && !Array.isArray(data)) {
+        let newObj = { ...data };
+        for (let key in newObj) {
+            let d = newObj[key];
+            let datePattern = /^(\d{3})[\/-](\d{2})[\/-](\d{2})$/; // 民國年格式 YYY-MM-DD 或 YYY/MM/DD
+            if (datePattern.test(d)) {
+                newObj[key] = d.replace(datePattern, (_, year, month, day) => `${parseInt(year) + 1911}-${month}-${day}`);
+            }
+        }
+        return newObj;
     }
 
-    const year = date.getFullYear();
-    const taiwanYear = year - 1911; 
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // 月份（從 0 開始）
-    const day = String(date.getDate()).padStart(2, "0");
+    // 西元轉民國
+    // 檢查是否為字串
+    if (typeof data === "string") {
+        if (data === '-') {
+            return data;
+        }
+        const isDateTimeFormat = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/.test(data); // YYYY-MM-DD HH:mm
+        const isDateRangeFormat = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}-\d{2}:\d{2}$/.test(data); // YYYY-MM-DD HH:mm-HH:mm
+        const isDateOnlyFormat = /^\d{4}-\d{2}-\d{2}$/.test(data); // YYYY-MM-DD
 
-    if (isDateTimeFormat) {
-        const hours = date.getHours();
-        const minutes = String(date.getMinutes()).padStart(2, "0"); // 確保分鐘有兩位數
-        return `${taiwanYear}/${month}/${day} ${hours}:${minutes}`;
-    } else {
-        return `${taiwanYear}/${month}/${day}`;
+        if (!isDateTimeFormat && !isDateRangeFormat && !isDateOnlyFormat) {
+            throw new Error("Invalid date format. Expected 'YYYY-MM-DD', 'YYYY-MM-DD HH:mm', 'YYYY-MM-DD HH:mm:ss', or 'YYYY-MM-DD HH:mm-HH:mm'.");
+        }
+
+        const datePart = data.split(" ")[0]; // 只取 YYYY-MM-DD
+        const [year, month, day] = datePart.split("-").map(Number);
+        if (!year || !month || !day) {
+            throw new Error("Invalid date value.");
+        }
+        const taiwanYear = year - 1911;
+        const formattedDate = `${taiwanYear}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+        // 時間部分直接拼接回去
+        if (isDateTimeFormat) {
+            const time = data.split(" ")[1]; // 取時間部分
+            return `${formattedDate} ${time}`;
+        }
+
+        if (isDateRangeFormat) {
+            const timeRange = data.split(" ")[1]; // 取時間範圍
+            return `${formattedDate} ${timeRange}`;
+        }
+        return formattedDate;
+    }
+    return data;
+}
+
+
+// 生成年月份下拉選單（民國年）
+function generateYearSelect(yearSelectId) {
+    const startYear = 1912;
+    const currentYear = new Date().getFullYear();
+    const yearSelect = document.getElementById(yearSelectId);
+
+    const defaultOption = document.createElement('option');
+    defaultOption.value = "";
+    defaultOption.textContent = "請選擇";
+    yearSelect.appendChild(defaultOption);
+
+    for (let year = currentYear; year >= startYear; year--) {
+        const rocYear = year - 1911; // 轉換為民國年
+        const option = document.createElement('option');
+        option.value = rocYear; // 設定值為民國年份
+        option.textContent = `民國 ${rocYear} 年`; // 顯示民國年份
+        yearSelect.appendChild(option);
     }
 }
 
-//input民國年
-function setDatepicker() {
-    var dateNative = new Date(),
-        dateTW = new Date(
-            dateNative.getFullYear() - 1911,
-            dateNative.getMonth(),
-            dateNative.getDate()
-        );
+function generateMonthSelect(monthSelectId) {
+    const months = [
+        "1月", "2月", "3月", "4月", "5月", "6月",
+        "7月", "8月", "9月", "10月", "11月", "12月"
+    ];
+    const monthSelect = document.getElementById(monthSelectId);
 
+    const defaultOption = document.createElement('option');
+    defaultOption.value = "";
+    defaultOption.textContent = "請選擇";
+    monthSelect.appendChild(defaultOption);
 
-    function leftPad(val, length) {
-        var str = '' + val;
-        while (str.length < length) {
-            str = '0' + str;
-        }
-        return str;
-    }
-
-    // 應該有更好的做法
-    var funcColle = {
-        onSelect: {
-            basic: function (dateText, inst) {
-                /*
-                var yearNative = inst.selectedYear < 1911
-                    ? inst.selectedYear + 1911 : inst.selectedYear;*/
-                dateNative = new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay);
-
-                // 年分小於100會被補成19**, 要做例外處理
-                var yearTW = inst.selectedYear > 1911
-                    ? leftPad(inst.selectedYear - 1911, 4)
-                    : inst.selectedYear;
-                var monthTW = leftPad(inst.selectedMonth + 1, 2);
-                var dayTW = leftPad(inst.selectedDay, 2);
-                console.log(monthTW);
-                dateTW = new Date(
-                    yearTW + '-' +
-                    monthTW + '-' +
-                    dayTW + 'T00:00:00.000Z'
-                );
-                console.log(dateTW);
-                return $.datepicker.formatDate(twSettings.dateFormat, dateTW);
-            }
-        }
-    };
-
-    var twSettings = {
-        closeText: '關閉',
-        prevText: '上個月',
-        nextText: '下個月',
-        currentText: '今天',
-        monthNames: ['一月', '二月', '三月', '四月', '五月', '六月',
-            '七月', '八月', '九月', '十月', '十一月', '十二月'],
-        monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月',
-            '七月', '八月', '九月', '十月', '十一月', '十二月'],
-        dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
-        dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
-        dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
-        weekHeader: '周',
-        dateFormat: 'yy/mm/dd',
-        firstDay: 1,
-        isRTL: false,
-        showMonthAfterYear: true,
-        yearSuffix: '年',
-
-        onSelect: function (dateText, inst) {
-            $(this).val(funcColle.onSelect.basic(dateText, inst));
-            if (typeof funcColle.onSelect.newFunc === 'function') {
-                funcColle.onSelect.newFunc(dateText, inst);
-            }
-        }
-    };
-
-    // 把yearText換成民國
-    var replaceYearText = function () {
-        var $yearText = $('.ui-datepicker-year');
-
-        if (twSettings.changeYear !== true) {
-            $yearText.text('民國' + dateTW.getFullYear());
-        } else {
-            // 下拉選單
-            if ($yearText.prev('span.datepickerTW-yearPrefix').length === 0) {
-                $yearText.before("<span class='datepickerTW-yearPrefix'>民國</span>");
-            }
-            $yearText.children().each(function () {
-                if (parseInt($(this).text()) > 1911) {
-                    $(this).text(parseInt($(this).text()) - 1911);
-                }
-            });
-        }
-    };
-
-    $.fn.datepickerTW = function (options) {
-
-        // setting on init,
-        if (typeof options === 'object') {
-            //onSelect例外處理, 避免覆蓋
-            if (typeof options.onSelect === 'function') {
-                funcColle.onSelect.newFunc = options.onSelect;
-                options.onSelect = twSettings.onSelect;
-            }
-            // year range正規化成西元, 小於1911的數字都會被當成民國年
-            if (options.yearRange) {
-                var temp = options.yearRange.split(':');
-                for (var i = 0; i < temp.length; i += 1) {
-                    //民國前處理
-                    if (parseInt(temp[i]) < 1) {
-                        temp[i] = parseInt(temp[i]) + 1911;
-                    } else {
-                        temp[i] = parseInt(temp[i]) < 1911
-                            ? parseInt(temp[i]) + 1911
-                            : temp[i];
-                    }
-                }
-                options.yearRange = temp[0] + ':' + temp[1];
-            }
-            // if input val not empty
-            if ($(this).val() !== '') {
-                options.defaultDate = $(this).val();
-            }
-        }
-
-        // setting after init
-        if (arguments.length > 1) {
-            // 目前還沒想到正常的解法, 先用轉換成init setting obj的形式
-            if (arguments[0] === 'option') {
-                options = {};
-                options[arguments[1]] = arguments[2];
-            }
-        }
-
-        // override settings
-        $.extend(twSettings, options);
-
-        // init
-        $(this).datepicker(twSettings);
-
-        // beforeRender
-        $(this).click(function () {
-            var isFirstTime = ($(this).val() === '');
-
-            // year range and default date
-
-            if ((twSettings.defaultDate || twSettings.yearRange) && isFirstTime) {
-
-                if (twSettings.defaultDate) {
-                    $(this).datepicker('setDate', twSettings.defaultDate);
-                }
-
-                // 當有year range時, select初始化設成range的最末年
-                if (twSettings.yearRange) {
-                    var $yearSelect = $('.ui-datepicker-year'),
-                        nowYear = twSettings.defaultDate
-                            ? $(this).datepicker('getDate').getFullYear()
-                            : dateNative.getFullYear();
-
-                    $yearSelect.children(':selected').removeAttr('selected');
-                    if ($yearSelect.children('[value=' + nowYear + ']').length > 0) {
-                        $yearSelect.children('[value=' + nowYear + ']').attr('selected', 'selected');
-                    } else {
-                        $yearSelect.children().last().attr('selected', 'selected');
-                    }
-                }
-            } else {
-                $(this).datepicker('setDate', dateNative);
-            }
-            console.log(twSettings.dateFormat, $.datepicker.formatDate(twSettings.dateFormat, dateTW))
-            $(this).val($.datepicker.formatDate(twSettings.dateFormat, dateTW));
-
-            replaceYearText();
-
-            if (isFirstTime) {
-                $(this).val('');
-            }
-        });
-
-        // afterRender
-        $(this).focus(function () {
-            replaceYearText();
-        });
-
-        return this;
-    };
-
-};
+    months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index + 1;
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
+}

@@ -112,7 +112,13 @@ function getQueryParams(selector = null) {
         .map(e => $(e).attr("name"));
     //console.log(searchParams)
     let queryParams = searchParams.reduce((total, c) => {
-        total[c] = $(selector ? `${selector} #${c}` : `#${c}`).val()
+        let value = $(selector ? `${selector} #${c}` : `#${c}`).val();
+
+        let datePattern = /^(\d{3})([\/-]\d{2}[\/-]\d{2})$/;
+        if (datePattern.test(value)) {
+            value = value.replace(datePattern, (_, year, rest) => `${parseInt(year) + 1911}${rest}`);
+        }
+        total[c] = value;
         return total;
     }, {})
     console.log("queryParams", queryParams)

@@ -21,7 +21,9 @@
             <div class="form-group-zone">
                 <div class="form-group required">
                     <label for="EDate">實驗日期</label>
-                    <input class="form-control" id="EDate" name="EDate" type="date" required />
+                    <div style="position: relative; overflow: hidden;">
+                        <input class="form-control calendar-input" id="EDate" name="EDate" type="text" placeholder="年-月-日" required />
+                    </div>
                 </div>
                 <div class="form-group required">
                     <label for="ExperimentType">實驗類型</label>
@@ -88,7 +90,9 @@
 
             var form = new FormData();
             form.append("TAWSN", document.getElementById("TAWSN").value);
-            form.append("EDate", document.getElementById("EDate").value);
+
+            let EDateValue = dateTransform({ EDate: document.getElementById("EDate").value });
+            form.append("EDate", EDateValue.EDate);
 
             labelItems.calc().forEach((item, i) => {
                 form.append(`LabelName[${i}]`, item.LabelName);

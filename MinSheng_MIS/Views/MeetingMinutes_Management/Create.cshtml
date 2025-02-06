@@ -64,7 +64,9 @@
             </div>
             <div class="form-group g-col-6 required">
                 <label for="MeetingDate">會議日期</label>
-                <input class="form-control" id="MeetingDate" name="MeetingDate" type="date" required>
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="MeetingDate" name="MeetingDate" type="text" placeholder="年-月-日" required />
+                </div>
             </div>
             <div class="form-group g-col-6 required">
                 <label for="MeetingDateStart">會議時間</label>
@@ -148,7 +150,8 @@
 
             var fd = new FormData();
             fd.append("MeetingTopic", document.getElementById("MeetingTopic").value);
-            fd.append("MeetingDate", document.getElementById("MeetingDate").value);
+            const MeetingDateValue = dateTransform({ MeetingDate : document.getElementById("MeetingDate").value });
+            fd.append("MeetingDate", MeetingDateValue.MeetingDate);
 
             fd.append("MeetingDateStart", document.getElementById("MeetingDateStart").value);
             fd.append("MeetingDateEnd", document.getElementById("MeetingDateEnd").value);

@@ -30,7 +30,9 @@
                 </div>
                 <div class="form-group required">
                     <label for="PlanDate">工單日期</label>
-                    <input type="date" class="form-control" name="PlanDate" id="PlanDate" required>
+                    <div style="position: relative; overflow: hidden;">
+                        <input class="form-control calendar-input" id="PlanDate" name="PlanDate" type="text" placeholder="年-月-日" required />
+                    </div>
                 </div>
             </div>
             <hr class="hr-default" />
@@ -326,6 +328,8 @@
         }
         function save(data) {
             if (!data) return;
+            data = dateTransform(data);
+
             $.ajax({
                 url: SubmitUrl,
                 data: JSON.stringify(data),

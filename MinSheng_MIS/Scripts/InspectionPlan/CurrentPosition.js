@@ -78,7 +78,7 @@
                 heart: 110,
                 heartAlert: false,
                 location: '進流抽水站 B2F',
-                time: '2024/12/09 15:19',
+                time: '2024-12-09 15:19',
                 alert: [],
                 position: {
                     x: 100,
@@ -90,7 +90,7 @@
                 heart: 110,
                 heartAlert: false,
                 location: '進流抽水站 B2F',
-                time: '2024/12/09 15:19',
+                time: '2024-12-09 15:19',
                 alert: [],
                 position: {
                     x: 100,
@@ -104,7 +104,7 @@
                 heart: 110,
                 heartAlert: true,
                 location: '進流抽水站 B2F',
-                time: '2024/12/09 15:19',
+                time: '2024-12-09 15:19',
                 alert: [
                     { state: '1', type: '1', label: '心率異常' },
                     { state: '1', type: '2', label: '路線偏移' },
@@ -120,7 +120,7 @@
                 heart: 110,
                 heartAlert: false,
                 location: '進流抽水站 B2F',
-                time: '2024/12/09 15:19',
+                time: '2024-12-09 15:19',
                 alert: [],
                 position: {
                     x: 100,
@@ -540,8 +540,8 @@ window.addEventListener('load', async () => {
             return data.map((d) => {
                 return createPerson(d)
             })
-
             function createPerson(data) {
+                data.time = dateTransform(data.time);
                 return `<div class="plan-person ${isAlert(data) ? 'error' : ''}">
                     <div class="plan-person-icon"><i class="${getIcon(data)}"></i></div>
                     <div class="plan-person-content">

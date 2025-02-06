@@ -459,18 +459,31 @@ async function createMaintainItem(options, containerId,  equipmentData) {
         period.dataset.name = "Period";
         period.required = true;
 
-        const nextMaintainDate = document.createElement("input");
-        nextMaintainDate.className = "form-control";
-        nextMaintainDate.name = `nextMaintainDate-${i}`;
-        nextMaintainDate.type = "date";
-        nextMaintainDate.required = true;
-        nextMaintainDate.dataset.name = "NextMaintainDate";
+        const nextMaintainDateDiv = document.createElement("div");
+        nextMaintainDateDiv.className = "position-relative overflow-hidden";
+
+        const nextMaintainDateInput = document.createElement("input");
+        nextMaintainDateInput.className = "form-control calendar-input";
+        nextMaintainDateInput.name = `nextMaintainDate-${i}`;
+        nextMaintainDateInput.type = "text";
+        nextMaintainDateInput.required = true;
+        nextMaintainDateInput.placeholder = "年-月-日";
+        nextMaintainDateInput.dataset.name = "NextMaintainDate";
 
         div.appendChild(SN);
         div.appendChild(maintainName);
         div.appendChild(period);
-        div.appendChild(nextMaintainDate);
+        nextMaintainDateDiv.appendChild(nextMaintainDateInput);
+        div.appendChild(nextMaintainDateDiv);
         MaintainEditZone.appendChild(div);
+
+        jq(nextMaintainDateInput).datepick({
+            dateFormat: 'yymmdd',
+            showOn: 'button',
+            buttonImageOnly: true,
+            buttonImage: '/Content/img/calendar.png',
+            yearRange: 'c-2:c+10'
+        });
 
         
     })

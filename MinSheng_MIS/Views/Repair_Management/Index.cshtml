@@ -30,12 +30,16 @@
 
             <div class="form-group">
                 <label for="DateFrom">報修時間(起)</label>
-                <input class="form-control" id="DateFrom" name="DateFrom" type="date" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="DateFrom" name="DateFrom" type="text" placeholder="年-月-日" />
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="DateTo">報修時間(迄)</label>
-                <input class="form-control" id="DateTo" name="DateTo" type="date" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="DateTo" name="DateTo" type="text" placeholder="年-月-日" />
+                </div>
             </div>
 
             <div class="form-group">
@@ -93,7 +97,9 @@
                     <div class="form-group-zone">
                         <div class="form-group col-3fr required">
                             <label for="DueDate">預計維修日期</label>
-                            <input type="date" class="form-control" name="DueDate" id="DueDate" maxlength="20" required>
+                            <div style="position: relative; overflow: hidden;">
+                                <input class="form-control calendar-input" id="DueDate" name="DueDate" type="text" placeholder="年-月-日" maxlength="20" required />
+                            </div>
                         </div>
                         <div class="form-group col-3fr required">
                             <label for="RepairUserName">執行人員</label>
@@ -195,14 +201,6 @@
             await addButtonEvent();
             Initialize_DataGrid(getGridJSON, __authority__);
             addSearchAreaClickEvent();
-            //setDatepicker();
-            //$('.datepickerTW').datepickerTW({
-            //    changeYear: true,
-            //    changeMonth: true,
-            //    dateFormat: 'yy-mm-dd',
-            //    // yearRange: '-10:2018',
-            //    // defaultDate: '86-11-01',
-            //});
 
             if (__authority__ === "3") {
                 document.getElementById('multiAssign').classList.add('d-none');
@@ -245,7 +243,6 @@
 
                     var currentData = $('#DataGrid').datagrid('getData');
                     checkIfAllChecked(currentData);
-                    console.log("目前有", checkedArray);
                 },
                 onSelectAll: function (rows) {
                     setTimeout(() => {
@@ -271,17 +268,15 @@
 
                     var currentData = $('#DataGrid').datagrid('getData');
                     checkIfAllChecked(currentData);
-                    console.log("onUnselect 目前有", checkedArray);
                 },
                 onUnselectAll: function (rows) {
-                    const currentArray = new Set(checkedArray);                    
+                    const currentArray = new Set(checkedArray);
                     rows.forEach((row) => {
                         if (currentArray.has(row.RSN)) {
                             currentArray.delete(row.RSN);
                         }
                     })
                     checkedArray = [...currentArray];
-                    console.log("取消勾選後，剩餘", checkedArray);  
                 },
                 columns: [[
                     dg.column('ReportState', '報修單狀態', 150),
@@ -430,9 +425,15 @@
 
             if (!isValidity) return;
 
+            let d = document.getElementById("DueDate").value;
+            let datePattern = /^(\d{3})([\/-]\d{2}[\/-]\d{2})$/;
+            if (datePattern.test(d)) {
+                d = d.replace(datePattern, (_, year, rest) => `${parseInt(year) + 1911}${rest}`);
+            }
+
             const sendData = {
                 RSN: checkedArray,
-                DueDate: document.getElementById("DueDate").value,
+                DueDate: d,
                 RepairUserName: $('#addMultiAssign #RepairUserName').tagbox('getValues'),
             }
             console.log("傳送的資料", sendData);
@@ -464,6 +465,6 @@
             }
         }
 
-        
+
     </script>
 }

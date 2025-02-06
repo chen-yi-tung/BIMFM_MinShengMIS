@@ -24,11 +24,15 @@
             </div>
             <div class="form-group">
                 <label for="DateStart">上傳日期(起)</label>
-                <input class="form-control" id="DateStart" name="DateStart" type="date" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="DateStart" name="DateStart" type="text" placeholder="年-月-日" />
+                </div>
             </div>
             <div class="form-group">
                 <label for="DateEnd">上傳日期(迄)</label>
-                <input class="form-control" id="DateEnd" name="DateEnd" type="date" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="DateEnd" name="DateEnd" type="text" placeholder="年-月-日" />
+                </div>
             </div>
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>

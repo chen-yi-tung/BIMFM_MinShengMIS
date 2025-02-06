@@ -53,12 +53,16 @@
 
             <div class="form-group">
                 <label for="DateStart">發生時間(起)</label>
-                <input class="form-control" id="DateStart" name="DateStart" type="datetime-local" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="DateStart" name="DateStart" type="text" placeholder="年-月-日" />
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="DateEnd">發生時間(迄)</label>
-                <input class="form-control" id="DateEnd" name="DateEnd" type="datetime-local" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="DateEnd" name="DateEnd" type="text" placeholder="年-月-日" />
+                </div>
             </div>
 
             <div class="button-group">

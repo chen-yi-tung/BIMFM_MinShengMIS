@@ -24,22 +24,30 @@
 
             <div class="form-group">
                 <label for="NextMaintainDateFrom">最近應保養日期(起)</label>
-                <input class="form-control" id="NextMaintainDateFrom" name="NextMaintainDateFrom" type="date" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="NextMaintainDateFrom" name="NextMaintainDateFrom" type="text" placeholder="年-月-日" />
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="NextMaintainDateTo">最近應保養日期(迄)</label>
-                <input class="form-control" id="NextMaintainDateTo" name="NextMaintainDateTo" type="date" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="NextMaintainDateTo" name="NextMaintainDateTo" type="text" placeholder="年-月-日" />
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="ReportTimeFrom">實際保養日期(起)</label>
-                <input class="form-control" id="ReportTimeFrom" name="ReportTimeFrom" type="date" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="ReportTimeFrom" name="ReportTimeFrom" type="text" placeholder="年-月-日" />
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="ReportTimeTo">實際保養日期(迄)</label>
-                <input class="form-control" id="ReportTimeTo" name="ReportTimeTo" type="date" />
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="ReportTimeTo" name="ReportTimeTo" type="text" placeholder="年-月-日" />
+                </div>
             </div>
             <div class="form-group">
                 <label for="EState">設備狀態</label>
@@ -106,7 +114,9 @@
                     <div class="form-group-zone">
                         <div class="form-group col-3fr required">
                             <label for="NextMaintainDate">預計保養日期</label>
-                            <input type="date" class="form-control" name="NextMaintainDate" id="NextMaintainDate" maxlength="20" required>
+                            <div style="position: relative; overflow: hidden;">
+                                <input class="form-control calendar-input" id="NextMaintainDate" name="NextMaintainDate" type="text" placeholder="年-月-日" maxlength="20" required />
+                            </div>
                         </div>
                         <div class="form-group col-3fr required">
                             <label for="Maintainer">執行人員</label>
@@ -437,9 +447,15 @@
 
             if (!isValidity) return;
 
+            let d = document.getElementById("NextMaintainDate").value;
+            let datePattern = /^(\d{3})([\/-]\d{2}[\/-]\d{2})$/;
+            if (datePattern.test(d)) {
+                d = d.replace(datePattern, (_, year, rest) => `${parseInt(year) + 1911}${rest}`);
+            }
+
             const sendData = {
                 EMFSN: checkedArray,
-                NextMaintainDate: document.getElementById("NextMaintainDate").value,
+                NextMaintainDate: d,
                 Maintainer: $('#addMultiAssign #Maintainer').tagbox('getValues'),
             }
             console.log("傳送的資料", sendData);

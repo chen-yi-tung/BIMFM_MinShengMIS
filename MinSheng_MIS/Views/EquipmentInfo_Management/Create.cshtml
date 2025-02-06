@@ -6,6 +6,8 @@
     @Html.Partial("DataGridScripts")
     <link rel="stylesheet" href="/Content/EquipmentInfoManagement.css">
     <script src="/Scripts/RFID.js" defer></script>
+    <script src="/Scripts/jquery.datepick.js"></script>
+    <script src="/Scripts/jquery.datepick.tw.js"></script>
     <script src="/Scripts/EquipmentInfo_Management/index.js" defer></script>
 }
 
@@ -34,7 +36,9 @@
                 </div>
                 <div class="form-group">
                     <label for="InstallDate">安裝日期</label>
-                    <input class="form-control" id="InstallDate" name="InstallDate" type="date" />
+                    <div style="position: relative; overflow: hidden;">
+                        <input class="form-control calendar-input" id="InstallDate" name="InstallDate" type="text" placeholder="年-月-日" />
+                    </div>
                 </div>
                 <div class="form-group required">
                     <label for="ASN">棟別</label>
@@ -79,11 +83,11 @@
                 <div class="form-group">
                     <label for="Other" class="d-flex gap-1">
                         <span class="form-tooltip-toggle" data-bs-placement="top-start"
-                            title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
+                              title="請將RFID標籤放至讀取器上後，點選「掃描」"></span>
                         RFID
                     </label>
                     <button type="button" id="rfid"
-                        class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
+                            class="btn btn-search w-100 d-flex justify-content-center align-items-center gap-1">
                         掃描<i class="scan-icon"></i>
                     </button>
                 </div>
@@ -144,12 +148,12 @@
                             <div class="form-group">
                                 <label for="InternalCode">RFID內碼</label>
                                 <input type="text" class="form-control" name="InternalCode" id="InternalCode"
-                                    maxlength="20" disabled>
+                                       maxlength="20" disabled>
                             </div>
                             <div class="form-group required">
                                 <label for="ExternalCode">RFID外碼</label>
                                 <input type="text" class="form-control" name="ExternalCode" id="ExternalCode"
-                                    maxlength="20" required>
+                                       maxlength="20" required>
                             </div>
                             <div class="form-group required">
                                 <label for="Name">名稱</label>
@@ -183,6 +187,7 @@
 </template>
 
 @section scripts {
+
     <script>
         $(() => { init_EquipmentInfo() });
     </script>
