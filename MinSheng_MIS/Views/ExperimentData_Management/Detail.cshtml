@@ -58,7 +58,7 @@
         const sn = [
             { text: "實驗類型", value: "ExperimentType" },
             { text: "實驗名稱", value: "ExperimentName" },
-            { text: "實驗日期", value: "EDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
+            { text: "實驗日期", value: "EDate" },
             { text: "上傳者", value: "UploadUserName" },
             { text: "上傳時間", value: "UploadDateTime" },
             { text: "實驗數據", value: "FilePath", url: true },
@@ -82,6 +82,9 @@
                 })
 
             async function onSuccess(res) {
+                console.log(res);
+                res.EDate = dateTransform(res.EDate);
+                res.UploadDateTime = dateTransform(res.UploadDateTime);
                 console.log(res);
                 $("#FormInfo").append(createTableInner(res, sn))
 

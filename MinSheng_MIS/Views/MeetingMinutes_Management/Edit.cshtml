@@ -64,7 +64,9 @@
             </div>
             <div class="form-group g-col-6 required">
                 <label for="MeetingDate">會議日期</label>
-                <input class="form-control" id="MeetingDate" name="MeetingDate" type="date" readonly disabled>
+                <div style="position: relative; overflow: hidden;">
+                    <input class="form-control calendar-input" id="MeetingDate" name="MeetingDate" type="text" placeholder="年-月-日" readonly disabled />
+                </div>
             </div>
             <div class="form-group g-col-6 required">
                 <label for="MeetingDateStart">會議時間</label>
@@ -171,10 +173,12 @@
 
             function onSuccess(res) {
                 console.log(res);
+                res.MeetingDate = dateTransform(res.MeetingDate);
                 for (const [k, v] of Object.entries(res)) {
-                    $("#" + k).val(v)
+                    $("#" + k).val(v) 
                 }
                 res.FilePath ? fileUploader.setFile(res.FilePath) : void 0
+                document.querySelector('.datepick-trigger').style.display = "none";
             }
             function onError(res) {
                 console.log(res);
@@ -195,15 +199,15 @@
             var fd = new FormData();
             fd.append("MMSN", MMSN);
             fd.append("MeetingTopic", document.getElementById("MeetingTopic").value);
-            fd.append("MeetingDate", document.getElementById("MeetingDate").value);
 
+            let MeetingDateValue = dateTransform({ MeetingDate: document.getElementById("MeetingDate").value });
+            fd.append("MeetingDate", MeetingDateValue.MeetingDate);
             fd.append("MeetingDateStart", document.getElementById("MeetingDateStart").value);
             fd.append("MeetingDateEnd", document.getElementById("MeetingDateEnd").value);
 
             fd.append("MeetingVenue", document.getElementById("MeetingVenue").value);
             fd.append("Chairperson", document.getElementById("Chairperson").value);
             fd.append("Participant", document.getElementById("Participant").value);
-
             fd.append("ExpectedAttendence", document.getElementById("ExpectedAttendence").value);
             fd.append("ActualAttendence", document.getElementById("ActualAttendence").value);
             fd.append("AbsenteeList", document.getElementById("AbsenteeList").value);
@@ -211,7 +215,6 @@
             fd.append("TakeTheMinutes", document.getElementById("TakeTheMinutes").value);
             fd.append("Agenda", document.getElementById("Agenda").value);
             fd.append("MeetingContent", document.getElementById("MeetingContent").value);
-
             if (fileUploader.hasFile()) {
                 let file = fileUploader.getFile()
                 if (file?.size) {

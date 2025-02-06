@@ -51,7 +51,7 @@
             { text: "圖號", value: "ImgNum" },
             { text: "圖名", value: "ImgName" },
             { text: "版本", value: "ImgVersion" },
-            { text: "上傳日期時間", value: "UploadDate" },
+            { text: "上傳日期時間", value: "UploadDate", type: "Date" },
             {
                 text: "檔案", value: "ImgPath", formatter: (v) => {
                     if (v.split('.').at(-1).toLowerCase() === "pdf") {

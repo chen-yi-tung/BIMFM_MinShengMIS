@@ -37,7 +37,9 @@
                 </div>
                 <div class="form-group">
                     <label for="InstallDate">安裝日期</label>
-                    <input class="form-control" id="InstallDate" name="InstallDate" type="date" />
+                    <div style="position: relative; overflow: hidden;">
+                        <input class="form-control calendar-input" id="InstallDate" name="InstallDate" type="text" placeholder="年-月-日" maxlength="20" required />
+                    </div>
                 </div>
                 <div class="form-group required">
                     <label for="ASN">棟別</label>
@@ -190,6 +192,7 @@
         $(async () => {
             const data = await readData(apiUrl);
             data.ESN = ESN;
+            data.InstallDate = dateTransform(data.InstallDate);
             console.log(data);
             init_EquipmentInfo({ data, edit: true });
         });

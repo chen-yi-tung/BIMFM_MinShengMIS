@@ -34,9 +34,9 @@
         const SerializedName = [
             { text: "實驗類型", value: "ExperimentType" },
             { text: "實驗名稱", value: "ExperimentName" },
-            { text: "實驗日期", value: "EDate", formatter: (val) => val?.replaceAll("-", "/") || "-" },
+            { text: "實驗日期", value: "EDate", type: "Date" },
             { text: "上傳者", value: "UploadUserName" },
-            { text: "上傳日期時間", value: "UploadDateTime" },
+            { text: "上傳日期時間", value: "UploadDateTime", type: "Date" },
         ]
 
         const GridOptions = {

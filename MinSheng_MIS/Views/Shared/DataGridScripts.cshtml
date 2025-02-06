@@ -1,11 +1,11 @@
 ﻿@model Nullable<bool>
 @{
-	string ControllerName = ViewContext.RouteData.Values["controller"] as string;
-	bool defer = true;
-	if (Model.HasValue)
-	{
-		defer = (bool)Model;
-	}
+    string ControllerName = ViewContext.RouteData.Values["controller"] as string;
+    bool defer = true;
+    if (Model.HasValue)
+    {
+        defer = (bool)Model;
+    }
 }
 
 @Styles.Render("~/Content/easyui/themes/default/easyui.css")

@@ -36,7 +36,9 @@
             <div class="form-group-zone">
                 <div class="form-group required">
                     <label for="EDate">實驗日期</label>
-                    <input class="form-control" id="EDate" name="EDate" type="date" required />
+                    <div style="position: relative; overflow: hidden;">
+                        <input class="form-control calendar-input" id="EDate" name="EDate" type="text" placeholder="年-月-日" required />
+                    </div>
                 </div>
 
                 <div class="form-group required">
@@ -151,7 +153,8 @@
             async function onSuccess(res) {
                 console.log(res);
                 await pushSelect("TAWSN", `@Url.Action("FormExperimentName", "DropDownList")?ExperimentType=${res.ExperimentType}`);
-                for (const [k, v] of Object.entries(res)) {
+                for (let [k, v] of Object.entries(res)) {
+                    k === "EDate" ? v = dateTransform(v) : v;
                     $("#" + k).val(v)
                 }
                 fileUploader.setFile(res.FilePath)

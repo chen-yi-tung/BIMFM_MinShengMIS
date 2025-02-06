@@ -245,7 +245,6 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
 
 
     function save() {
-        console.log("點擊save")
         //指定驗證的form
         const form = document.getElementById("EquipForm");
         let isValidity = [...form.elements].map((e) => e.reportValidity()).every((e) => e);
@@ -267,6 +266,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
             });
             SampleData.MaintainItemList.forEach((item, i) => {
                 for (const key in item) {
+                    key === "NextMaintainDate" ? item[key] = dateTransform({ NextMaintainDate: item[key] }).NextMaintainDate : item[key];
                     fd.append(`MaintainItemList[${i}][${key}]`, item[key]);
                 }
             });
@@ -286,6 +286,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
 
         document.querySelectorAll("#basicZone input, #basicZone select, #basicZone textarea").forEach((el) => {
             if (el.id && el.type !== "file" && el.type !== "checkbox" && el.id !== "ASN") {
+                el.value = el.id === "InstallDate" ? dateTransform({ InstallDate: el.value }).InstallDate : el.value;
                 fd.append(el.id, el.value);
             }
         });

@@ -1592,7 +1592,7 @@
     <Content Include="Content\img\bg.png" />
     <Content Include="Content\img\bluetooth.svg" />
     <Content Include="Content\img\bs-logo.png" />
-    <Content Include="Content\img\equipment.svg" />
+    <Content Include="Content\img\calendar.png" />
     <Content Include="Content\img\gis-marker.png" />
     <Content Include="Content\img\heart.svg" />
     <Content Include="Content\img\inner-map.jpg" />
@@ -1608,6 +1608,7 @@
     <Content Include="Content\login.css" />
     <Content Include="Content\navbar.css" />
     <Content Include="Content\OneDeviceOneCardManagement.css" />
+    <Content Include="Content\redmond.datepick.css" />
     <Content Include="Content\samplepath.css" />
     <Content Include="Content\tagbox.css" />
     <Content Include="favicon.ico" />
@@ -1759,6 +1760,11 @@
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-migrate-1.4.1.min.js" />
+    <Content Include="Scripts\jquery-migrate-3.4.0.min.js" />
+    <Content Include="Scripts\jquery.datepick.js" />
+    <Content Include="Scripts\jquery.datepick.-config.js" />
+    <Content Include="Scripts\jquery.datepick.tw.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
