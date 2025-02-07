@@ -90,7 +90,7 @@ namespace MinSheng_MIS.Services
                 if (emfsndata == null)
                     throw new MyCusResException("查無此定期保養單");
 
-                emfsndata.NextMaintainDate = datas.NextMaintainDate;
+                emfsndata.NextMaintainDate = ToAD(datas.NextMaintainDate).Value;
                 emfsndata.Status = "2"; // 待執行
                 emfsndata.Dispatcher = userName;
                 emfsndata.DispatcherTime = DateTime.Now;
@@ -397,6 +397,9 @@ namespace MinSheng_MIS.Services
         #region 新增單一保養單
         public void CreateMaintainForm(Equipment_MaintainItemValue data)
         {
+            data.lastMaintainDate = ToAD(data.lastMaintainDate);
+            data.NextMaintainDate = ToAD(data.NextMaintainDate);
+
             string nextMaintainDate = data.NextMaintainDate?.ToString("yyMMdd");
             var lastsn = _db.Equipment_MaintenanceForm.OrderByDescending(x => x.EMFSN).Select(x => x.EMFSN)
                 .Where(x => x.StartsWith("M" + nextMaintainDate)).FirstOrDefault();
@@ -419,6 +422,22 @@ namespace MinSheng_MIS.Services
             _db.Equipment_MaintainItemValue.AddOrUpdate(data);
 
             _db.SaveChanges();
+        }
+        #endregion
+
+        #region 將DateTime.Year<=1500的年份轉為西元年
+        public DateTime? ToAD(DateTime? time)
+        {
+            if (time.HasValue)
+            {
+                DateTime result = time.Value;
+                int year = result.Year;
+                if (year <= 1500) // 年分小於 1500 視為民國
+                    year += 1911;
+
+                return new DateTime(year, result.Month, result.Day, result.Hour, result.Minute, result.Second);
+            }
+            else return null;
         }
         #endregion
 

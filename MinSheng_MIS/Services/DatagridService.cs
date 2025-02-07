@@ -10,6 +10,10 @@ using System.Linq.Dynamic.Core;
 using System.Globalization;
 using System.Web.Mvc;
 using WebGrease;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+using OfficeOpenXml.Style;
+using Newtonsoft.Json;
+using System.Dynamic;
 
 namespace MinSheng_MIS.Services
 {
@@ -384,28 +388,11 @@ namespace MinSheng_MIS.Services
                 }
                 #endregion
 
-                #region datagrid呼叫時的預設參數有 rows 跟 page
-                int page = 1;
-                if (!string.IsNullOrEmpty(form["page"]?.ToString()))
-                {
-                    page = short.Parse(form["page"].ToString());
-                }
-                int rows = 10;
-                if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
-                {
-                    rows = short.Parse(form["rows"]?.ToString());
-                }
-                #endregion
-
                 #region 塞回傳資料
-                maintenanceForms = maintenanceForms.OrderByDescending(x => x.NextMaintainDate);
-
                 // 回傳JSON陣列
                 JArray ja = new JArray();
                 // 總筆數
                 int total = maintenanceForms.Count();
-                // 回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
-                maintenanceForms = maintenanceForms.Skip((page - 1) * rows).Take(rows);
 
                 foreach (var item in maintenanceForms)
                 {
@@ -432,8 +419,32 @@ namespace MinSheng_MIS.Services
                 }
                 #endregion
 
+                #region datagrid 排序
+                var sort = form["sort"]?.ToString();
+                var order = form["order"]?.ToString();
+                var list = JsonConvert.DeserializeObject<List<ExpandoObject>>(ja.ToString()).AsQueryable();
+                if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order))
+                    list = list.OrderBy(x => ((IDictionary<string, object>)x)[sort]); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+                else list = list.OrderByDescending(x => ((IDictionary<string, object>)x)["EMFSN"]);
+                #endregion
+
+                #region datagrid 切頁
+                int page = 1;
+                if (!string.IsNullOrEmpty(form["page"]?.ToString()))
+                {
+                    page = short.Parse(form["page"].ToString());
+                }
+                int rows = 10;
+                if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
+                {
+                    rows = short.Parse(form["rows"]?.ToString());
+                }
+                // 回傳頁數內容處理: 回傳指定的分頁，並且可依據頁數大小設定回傳筆數
+                list = list.Skip((page - 1) * rows).Take(rows);
+                #endregion
+
                 JObject jo = new JObject();
-                jo.Add("rows", ja);
+                jo.Add("rows", JArray.FromObject(list));
                 jo.Add("total", total);
                 return jo;
             }
