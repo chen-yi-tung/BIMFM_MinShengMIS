@@ -109,7 +109,12 @@ namespace MinSheng_MIS.Services
             }
             #endregion
 
-            SourceTable = SourceTable.OrderByDescending(x => x.IPSN);
+            #region datagrid remoteSort 判斷有無 sort 跟 order
+            var sort = form["sort"]?.ToString();
+            var order = form["order"]?.ToString();
+            if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order)) SourceTable = SourceTable.OrderBy(sort + " " + order); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+            else SourceTable = SourceTable.OrderByDescending(x => x.IPSN);
+            #endregion
 
             //回傳JSON陣列
             JArray ja = new JArray();
@@ -539,6 +544,12 @@ namespace MinSheng_MIS.Services
                 if (!string.IsNullOrEmpty(form["rows"]?.ToString()))
                 {
                     rows = int.Parse(form["rows"]?.ToString());
+                }
+                if (!string.IsNullOrEmpty(form["sort"]?.ToString()) && !string.IsNullOrEmpty(form["order"]?.ToString()))
+                {
+                    string sort = form["sort"].ToString();
+                    string order = form["order"].ToString();
+                    equipmentReportFormTable = OrderByField(equipmentReportFormTable, sort, order == "asc");
                 }
 
                 int total = equipmentReportFormTable.Count();

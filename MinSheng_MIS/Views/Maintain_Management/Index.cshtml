@@ -241,7 +241,7 @@
                 queryParams: getQueryParams(),
                 remoteSort: true,
                 singleSelect: false,
-                checkOnSelect: true,
+                //checkOnSelect: true,
                 frozenColumns: [[
                     { field: 'ck', checkbox: true }, // 新增 checkbox
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
@@ -253,9 +253,10 @@
                         if (row.Status !== "待派工") {
                             const checkbox = $('#DataGrid').datagrid('getPanel').find(`#DataGrid_datagrid-row-r1-1-${index} input[type="checkbox"]`);
                             checkbox.prop('disabled', true);
+                            $('#DataGrid').datagrid('uncheckRow', index);
                         }
                         if (checkedArray.includes(row.EMFSN)) {
-                            $('#DataGrid').datagrid('selectRow', index);
+                            $('#DataGrid').datagrid('checkRow', index);
                         }
                     });
                     checkIfAllChecked(data);
@@ -268,13 +269,13 @@
                     var currentData = $('#DataGrid').datagrid('getData');
                     checkIfAllChecked(currentData);
                 },
-                onSelectAll: function (rows) {
+                onCheckAll: function (rows) {
                     setTimeout(() => {
                         rows.forEach((row) => {
                             const index = $('#DataGrid').datagrid('getRowIndex', row);
                             if (row.Status !== "待派工") {
-                                $('#DataGrid').datagrid('unselectRow', index); // 取消選取該行
-                                return;
+                                $('#DataGrid').datagrid('uncheckRow', index); // 取消選取該行
+                                //return;
                             }
                             if (!checkedArray.includes(row.EMFSN)) {
                                 checkedArray.push(row.EMFSN);
@@ -282,8 +283,9 @@
                             checkedArray = [...new Set(checkedArray)];
                         })
                         setTimeout(() => {
+                            const checkedRows = $('#DataGrid').datagrid('getChecked');
                             const panel = $('#DataGrid').datagrid('getPanel');
-                            panel.find('.datagrid-header-check input[type="checkbox"]').prop('checked', true);
+                            panel.find('.datagrid-header-check input[type="checkbox"]').prop('checked', checkedRows.length > 0);
                         }, 50);
                     }, 10);
                 }, 
