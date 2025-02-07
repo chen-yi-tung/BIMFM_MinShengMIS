@@ -529,6 +529,12 @@ namespace MinSheng_MIS.Services
                 {
                     rows = int.Parse(form["rows"]?.ToString());
                 }
+                if (!string.IsNullOrEmpty(form["sort"]?.ToString()) && !string.IsNullOrEmpty(form["order"]?.ToString()))
+                {
+                    string sort = form["sort"].ToString();
+                    string order = form["order"].ToString();
+                    equipmentReportFormTable = OrderByField(equipmentReportFormTable, sort, order == "asc");
+                }
 
                 int total = equipmentReportFormTable.Count();
                 List<EquipmentReportForm> equipmentReportFormList = equipmentReportFormTable.Skip((page - 1) * rows).Take(rows).ToList();
