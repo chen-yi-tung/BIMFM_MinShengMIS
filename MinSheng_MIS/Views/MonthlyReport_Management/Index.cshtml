@@ -125,9 +125,9 @@
         function addSearchAreaClickEvent() {
             $("#search").click(function () {
                 const yearFromVal = parseInt(document.getElementById('YearFrom').value) + 1911;
-                const monthFromVal = document.getElementById('MonthFrom').value;
+                const monthFromVal = document.getElementById('MonthFrom').value.padStart(2, '0');
                 const yearToVal = parseInt(document.getElementById('YearTo').value) + 1911;
-                const monthToVal = document.getElementById('MonthTo').value;
+                const monthToVal = document.getElementById('MonthTo').value.padStart(2, '0');
                 const QueryParams = {
                     ...getQueryParams(),
                     DateFrom: "",
