@@ -183,8 +183,28 @@ namespace MinSheng_MIS.Controllers
 
             #region 塞入細節資料
             var scrDetail = _db.StockChangesRecord.Where(x => x.SARSN == rfidDetail.SARSN).FirstOrDefault();
+            if (scrDetail == null)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = $"SARSN:{rfidDetail.SARSN}的StockChangesRecord不存在";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+
             var csDetail = _db.ComputationalStock.Where(x => x.SISN == scrDetail.SISN).FirstOrDefault();
+            if (csDetail == null)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = $"SISN:{scrDetail.SISN}的ComputationalStock不存在";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+
             var stockTSN = _db.StockType.Where(x => x.StockTypeSN == csDetail.StockTypeSN).FirstOrDefault();
+            if (stockTSN == null)
+            {
+                result.AccessState = ResState.Failed;
+                result.ErrorMessage = $"StockTypeSN:{csDetail.StockTypeSN}的StockType不存在";
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
 
             jo_item.Add("RFIDInternalCode", rfidDetail.RFIDInternalCode);
             jo_item.Add("RFIDExternalCode", rfidDetail.RFIDExternalCode);
