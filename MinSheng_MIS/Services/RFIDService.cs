@@ -172,7 +172,7 @@ namespace MinSheng_MIS.Services
                     if (jsonResponse != null && jsonResponse.ContainsKey("InternalCode") && jsonResponse.ContainsKey("ErrorMessage"))
                     {
                         res.ErrorMessage = jsonResponse["ErrorMessage"]?.ToString();
-                        res.Datas = jsonResponse["InternalCode"]?.ToString();
+                        res.Datas = jsonResponse["InternalCode"]?.ToString().Replace("\r\n", "");
                         // Check if RFIDInternalCode is empty and ErrorMessage is null
                         if (string.IsNullOrEmpty(res.Datas) && string.IsNullOrEmpty(res.ErrorMessage))
                         {
