@@ -125,18 +125,22 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 檢查RFID內碼是否重複
-        public async Task CheckRFIDInternalCode(string RFIDInternalCode)
+        public async Task CheckRFIDInternalCode(string RFIDInternalCode,string id)//1:設備掃描、2:入庫掃描、3:出庫掃描
         {
 
             // 不可重複: RFID內碼
-            if (await _db.RFID.AnyAsync(x => x.RFIDInternalCode == RFIDInternalCode))
-                throw new MyCusResException("RFID內碼已存在！");
+            if ((id == "1" || id == "2") && await _db.RFID.AnyAsync(x => x.RFIDInternalCode == RFIDInternalCode))
+                throw new MyCusResException("此RFID內碼已被使用！");
+            else if (id == "3" && await _db.RFID.AnyAsync(x => x.RFIDInternalCode == RFIDInternalCode && x.ESN != null))
+                throw new MyCusResException("此RFID內碼已被設備使用！");
+            else if (id == "3" && !(await _db.RFID.AnyAsync(x => x.RFIDInternalCode == RFIDInternalCode && x.ESN == null)))
+                throw new MyCusResException("RFID內碼不存在！");
         }
         #endregion
 
         //------掃描
         #region 掃描RFID
-        public async Task<JsonResService<string>> CheckRFID()
+        public async Task<JsonResService<string>> CheckRFID(string id) //1:設備掃描、2:入庫掃描、3:出庫掃描
         {
             #region 變數
             JsonResService<string> res = new JsonResService<string>();
@@ -172,7 +176,7 @@ namespace MinSheng_MIS.Services
                     if (jsonResponse != null && jsonResponse.ContainsKey("InternalCode") && jsonResponse.ContainsKey("ErrorMessage"))
                     {
                         res.ErrorMessage = jsonResponse["ErrorMessage"]?.ToString();
-                        res.Datas = jsonResponse["InternalCode"]?.ToString();
+                        res.Datas = jsonResponse["InternalCode"]?.ToString().Replace("\r\n", "");
                         // Check if RFIDInternalCode is empty and ErrorMessage is null
                         if (string.IsNullOrEmpty(res.Datas) && string.IsNullOrEmpty(res.ErrorMessage))
                         {
@@ -182,7 +186,7 @@ namespace MinSheng_MIS.Services
                         else if (!string.IsNullOrEmpty(res.Datas) && string.IsNullOrEmpty(res.ErrorMessage))
                         {
                             //檢查RFID是否重複
-                            await CheckRFIDInternalCode(res.Datas);
+                            await CheckRFIDInternalCode(res.Datas,id);
                             return res;
                         }
                         else
@@ -238,5 +242,7 @@ namespace MinSheng_MIS.Services
             }
         }
         #endregion
+
+
     }
 }
