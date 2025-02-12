@@ -130,7 +130,7 @@ namespace MinSheng_MIS.Services
 
             // 不可重複: RFID內碼
             if ((id == "1" || id == "2") && await _db.RFID.AnyAsync(x => x.RFIDInternalCode == RFIDInternalCode))
-                throw new MyCusResException("RFID內碼已存在！");
+                throw new MyCusResException("此RFID內碼已被使用！");
             else if (id == "3" && await _db.RFID.AnyAsync(x => x.RFIDInternalCode == RFIDInternalCode && x.ESN != null))
                 throw new MyCusResException("此RFID內碼已被設備使用！");
             else if (id == "3" && !(await _db.RFID.AnyAsync(x => x.RFIDInternalCode == RFIDInternalCode && x.ESN == null)))
