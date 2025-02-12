@@ -1,10 +1,11 @@
 class RFID_ScanButton {
     #loading = false;
     #disabled = false;
-    constructor({ id = "rfid", fake = false, onScanEnd = null, disabled = false } = {}) {
+    constructor({ id = "rfid", type, fake = false, onScanEnd = null, disabled = false } = {}) {
         this.onScanEnd = onScanEnd.bind(this);
         this.#disabled = disabled;
         this.fake = fake;
+        this.type = type;
         this.element = id instanceof HTMLElement ? id : document.getElementById(id) ?? document.querySelector(id);
         this.init();
     }
@@ -62,7 +63,10 @@ class RFID_ScanButton {
             return;
         }
         //後端取得RFID
-        const RFID = await $.getJSON(`/RFID/CheckRFID`)
+        //RFID_ScanButton.type = 1:設備掃描、2:入庫掃描、3:出庫掃描
+        const RFID = await $.get(`/RFID/CheckRFID`, {
+            id: this.type
+        })
             .then((res) => {
                 if (res.ErrorMessage) {
                     DT.createDialogModal("掃描失敗！<br>" + res.ErrorMessage);
@@ -90,11 +94,11 @@ class RFID_Modal {
     constructor({
         template,
         submitButtonSelector = "#add-row",
-        init = () => {},
-        setData = () => {},
-        getData = () => {},
-        submit = () => {},
-        reset = () => {},
+        init = () => { },
+        setData = () => { },
+        getData = () => { },
+        submit = () => { },
+        reset = () => { },
     } = {}) {
         const modalTemplate = template;
         this.modal = modalTemplate.content.cloneNode(true).firstElementChild;
@@ -128,7 +132,7 @@ class RFID_Modal {
 }
 
 class RFID_Grid {
-    constructor({ container, maxRowSize = 1, grid = {}, onAdd = () => {}, onEdit = () => {}, onRemove = () => {} } = {}) {
+    constructor({ container, maxRowSize = 1, grid = {}, onAdd = () => { }, onEdit = () => { }, onRemove = () => { } } = {}) {
         this.data = [];
         this.maxRowSize = maxRowSize;
         grid.data = this.data;

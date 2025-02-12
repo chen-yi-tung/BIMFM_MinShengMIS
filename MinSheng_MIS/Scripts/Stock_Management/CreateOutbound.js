@@ -4,6 +4,7 @@ async function init_CreateOutbound() {
     document.getElementById("submit").onclick = () => checkSave();
     const RFIDScanBtn = new RFID_ScanButton({
         id: "rfid",
+        type: "3",
         fake: DEBUG_TEST,
         onScanEnd: async (RFID) => {
             //檢查有無重複

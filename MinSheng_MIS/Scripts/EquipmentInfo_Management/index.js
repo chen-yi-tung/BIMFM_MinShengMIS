@@ -14,6 +14,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
     document.getElementById("submit").onclick = () => save();
     const RFIDScanBtn = new RFID_ScanButton({
         id: "rfid",
+        type: "1",
         fake: DEBUG_TEST,
         onScanEnd(RFID) {
             //檢查有無重複

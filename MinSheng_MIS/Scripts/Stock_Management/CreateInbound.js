@@ -5,6 +5,7 @@ async function init_CreateInbound() {
 
     const RFIDScanBtn = new RFID_ScanButton({
         id: "rfid",
+        type: "2",
         fake: DEBUG_TEST,
         onScanEnd: (RFID) => {
             //檢查有無重複
