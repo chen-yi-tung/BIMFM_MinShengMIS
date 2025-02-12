@@ -57,7 +57,7 @@ namespace MinSheng_MIS.Services
         public async Task CreateEquipRFIDAsync(IRFIDInfo data, string esn)
         {
             // 資料驗證
-            await CheckRFIDInternalCode(data.InternalCode);
+            await CheckRFIDInternalCode(data.InternalCode,"1");
             if (string.IsNullOrEmpty(esn))
                 throw new ArgumentNullException($"{nameof(esn)}不可為null！");
 

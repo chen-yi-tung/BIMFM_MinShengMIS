@@ -57,7 +57,7 @@ namespace MinSheng_MIS.Controllers
         {
             try
             {
-                await _rfidService.CheckRFIDInternalCode(id);
+                await _rfidService.CheckRFIDInternalCode(id,"1");
                 return Content(JsonConvert.SerializeObject(new JsonResService<string>
                 {
                     AccessState = ResState.Success,
@@ -157,12 +157,12 @@ namespace MinSheng_MIS.Controllers
         #endregion
 
         [HttpGet]
-        public async Task<ActionResult> CheckRFID()
+        public async Task<ActionResult> CheckRFID(string id)
         {
             var res = new JsonResService<string>();
             try
             {
-                res = await _rfidService.CheckRFID();
+                res = await _rfidService.CheckRFID(id);
                 return Content(JsonConvert.SerializeObject(res), "application/json");
             }
             catch (MyCusResException ex)
