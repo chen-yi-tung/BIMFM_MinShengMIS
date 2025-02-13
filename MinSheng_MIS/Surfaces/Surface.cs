@@ -57,6 +57,16 @@ namespace MinSheng_MIS.Surfaces
         }
         #endregion
 
+        #region CheckResult 檢查結果
+        public static Dictionary<string, string> CheckResult()
+        {
+            var ValueOption = new Dictionary<string, string>();
+            ValueOption.Add("1", "正常");
+            ValueOption.Add("2", "異常");
+            return ValueOption;
+        }
+        #endregion
+
         //保養相關狀態編碼對照
         #region EquipmentMaintainItemState 設備保養項目狀態
         public static Dictionary<string, string> EquipmentMaintainItemState()

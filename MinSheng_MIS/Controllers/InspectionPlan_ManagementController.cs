@@ -1,8 +1,10 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.SS.UserModel;
+using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
 using OfficeOpenXml;
 using System;
@@ -123,7 +125,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult GetInspectionExcel(string IPSN)
         {
             JObject jo = new JObject();
-
+            var CheckResult_Dic = Surface.CheckResult();
             try
             {
                 IWorkbook workbook = new XSSFWorkbook();
@@ -147,38 +149,48 @@ namespace MinSheng_MIS.Controllers
                     IFont font = workbook.CreateFont();
                     font.IsBold = true;
                     boldStyle.SetFont(font);
+                    boldStyle.WrapText = true;  // 開啟自動換行
 
+                    //設定內文格式
+                    ICellStyle WordStyle = workbook.CreateCellStyle();
+                    WordStyle.WrapText = true;  // 開啟自動換行
+                    WordStyle.Alignment = HorizontalAlignment.Center;   // 水平置中
+                    WordStyle.VerticalAlignment = VerticalAlignment.Center; // 垂直置中
+
+                    //建立標題列
                     IRow row1 = sheet.CreateRow(0);
-                    row1.CreateCell(0).SetCellValue("工單編號");                 
-                    row1.CreateCell(2).SetCellValue("工單名稱");                   
-                    row1.CreateCell(4).SetCellValue("工單日期");
-                    row1.CreateCell(6).SetCellValue("巡檢路線名稱");
+                    row1.CreateCell(0).SetCellValue("工單編號:");                 
+                    row1.CreateCell(2).SetCellValue("工單名稱:");                   
+                    row1.CreateCell(4).SetCellValue("工單日期:");
+                    row1.CreateCell(6).SetCellValue("巡檢路線名稱:");
+                    row1.Cells.ForEach(c => c.CellStyle = boldStyle); 
 
-                    row1.Cells.ForEach(c => c.CellStyle = boldStyle);
                     row1.CreateCell(1).SetCellValue(IPSN);
                     row1.CreateCell(3).SetCellValue(planInfo.IPName);
                     row1.CreateCell(5).SetCellValue(planInfo.PlanDate.ToString("yyyy/MM/dd"));
                     row1.CreateCell(7).SetCellValue(pathName);
+                    row1.Cells.ForEach(c => c.CellStyle = WordStyle);
+
+                    IRow row3 = sheet.CreateRow(2);
+                    ICell cellA3 = row3.CreateCell(0);
+                    cellA3.SetCellValue("設備名稱");
+                    sheet.AddMergedRegion(new CellRangeAddress(2, 3, 0, 0)); // 合併 A3:A4
+                    row3.CreateCell(1).SetCellValue("開始時間");
+                    IRow row4 = sheet.CreateRow(3);
+                    row4.CreateCell(1).SetCellValue("結束時間");
+                    
 
                     // 取得巡檢計畫資料
-                    var datas = db.InspectionPlan_Time.Where(x => x.PathName == pathName).ToList();
+                    var datas = db.InspectionPlan_Time.Where(x => x.PathName == pathName && x.IPSN == IPSN).ToList();
+                    var maxcell = 7;
                     if (datas.Count > 0)
                     {
                         var iptsn = datas[0].IPTSN;
 
-                        // 設定開始時間 & 結束時間
-                        int rowIndex = 2;
-                        foreach (var data in datas)
-                        {
-                            IRow row = sheet.CreateRow(rowIndex);
-                            row.CreateCell(1).SetCellValue(data.StartTime.ToString());
-                            row.CreateCell(1).SetCellValue(data.EndTime.ToString());
-                            rowIndex++;
-                        }
-
                         // 取得設備資料
                         var equipments = db.InspectionPlan_Equipment.Where(x => x.IPTSN == iptsn).ToList();
-                        rowIndex = 4;
+                        
+                        var rowIndex = 4;
                         foreach (var equipment in equipments)
                         {
                             var eq = db.EquipmentInfo.Find(equipment.ESN);
@@ -191,30 +203,103 @@ namespace MinSheng_MIS.Controllers
                             // 合併儲存格 & 設定設備名稱
                             if (count > 0)
                             {
-                                for (int i = rowIndex; i < rowIndex + count; i++)
+                                sheet.CreateRow(rowIndex).CreateCell(0).SetCellValue(eqName);
+                                var BrowIndex = rowIndex;
+                                //檢查項目
+                                foreach (var item in checkItems)
                                 {
-                                    sheet.CreateRow(i).CreateCell(0).SetCellValue(eqName);
+                                    if(BrowIndex == rowIndex)
+                                    {
+                                        sheet.GetRow(BrowIndex).CreateCell(1).SetCellValue(item.CheckItemName);
+                                    }
+                                    else
+                                    {
+                                        sheet.CreateRow(BrowIndex).CreateCell(1).SetCellValue(item.CheckItemName);
+                                    }
+                                    BrowIndex++;
+                                }
+                                foreach (var item in reportingItems)
+                                {
+                                    if(BrowIndex == rowIndex)
+                                    {
+                                        sheet.GetRow(BrowIndex).CreateCell(1).SetCellValue((item.ReportValue + "(" + item.Unit + ")"));
+                                    }
+                                    else
+                                    {
+                                        sheet.CreateRow(BrowIndex).CreateCell(1).SetCellValue((item.ReportValue + "(" + item.Unit + ")"));
+                                    }
+                                    BrowIndex++;
+                                }
+                                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count-1, 0, 0));
+                                rowIndex = rowIndex + count;
+                            }
+                        }
+                        sheet.CreateRow(rowIndex).CreateCell(1).SetCellValue("執行人員");
+                        //依時段填檢查項目/填報項目
+                        var recordColumnIndex = 2;
+                        foreach (var data in datas)
+                        {
+                            var reportrowIndex = 4;
+                            var eqs = db.InspectionPlan_Equipment.Where(x => x.IPTSN == data.IPTSN).ToList();
+                            foreach (var e in eqs)
+                            {
+                                var Checkitems = db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == e.IPESN).ToList();
+                                foreach (var item in Checkitems)
+                                {
+                                    if(item.CheckResult != null)
+                                    {
+                                        sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(CheckResult_Dic[item.CheckResult]);
+                                    }
+                                    reportrowIndex++;
+                                }
+                                var Reportingitems = db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == e.IPESN).ToList();
+                                foreach (var item in Reportingitems)
+                                {
+                                    sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(item.ReportContent);
+                                    reportrowIndex++;
                                 }
                             }
+                            //執行人員
+                            
+                            var members = (from x1 in db.InspectionPlan_Member
+                                           where x1.IPTSN == data.IPTSN
+                                          join x2 in db.AspNetUsers on x1.UserID equals x2.UserName
+                                          select new { x2.MyName}).ToList();
+                            var inspectionmembers = "";
+                            for(int i = 0;i < members.Count(); i++)
+                            {
+                                if (i != 0)
+                                {
+                                    inspectionmembers += "、";
+                                }
+                                inspectionmembers += members[i].MyName.ToString();
+                            }
 
-                            // 填入巡檢項目名稱
-                            foreach (var item in checkItems)
-                            {
-                                sheet.GetRow(rowIndex).CreateCell(1).SetCellValue(item.CheckItemName);
-                                rowIndex++;
-                            }
-                            foreach (var item in reportingItems)
-                            {
-                                sheet.GetRow(rowIndex).CreateCell(1).SetCellValue(item.ReportValue);
-                                rowIndex++;
-                            }
+                            sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(inspectionmembers);
+                            recordColumnIndex++;
+                        }
+                        if(maxcell< recordColumnIndex)
+                        {
+                            maxcell = recordColumnIndex;
+                        }
+                        // 設定開始時間 & 結束時間
+                        int columnIndex = 2;
+                        foreach (var data in datas)
+                        {
+                            row3.CreateCell(columnIndex).SetCellValue(data.StartTime.ToString());
+                            row4.CreateCell(columnIndex).SetCellValue(data.EndTime.ToString());
+                            sheet.SetColumnWidth(columnIndex, 20 * 256);
+                            columnIndex++;
                         }
                     }
 
-                    // 自動調整欄位寬度
-                    for (int col = 0; col < 7; col++)
+                    // 欄位寬度
+                    sheet.SetColumnWidth(0, 30 * 256);
+                    sheet.SetColumnWidth(1, 30 * 256);
+                    for (int col = 2; col <= maxcell; col++)
                     {
-                        sheet.AutoSizeColumn(col);
+                        sheet.SetColumnWidth(col, 25 * 256);
+
                     }
                 }
                 // **🔹 設定下載目標路徑**
