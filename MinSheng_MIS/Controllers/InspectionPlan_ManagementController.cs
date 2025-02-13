@@ -1,14 +1,20 @@
-﻿using MinSheng_MIS.Services;
+﻿using MinSheng_MIS.Models;
+using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using OfficeOpenXml;
 using System;
+using System.IO;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
 {
     public class InspectionPlan_ManagementController : Controller
     {
-
+        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
         #region 巡檢即時位置
         public ActionResult CurrentPosition()
         {
@@ -110,6 +116,131 @@ namespace MinSheng_MIS.Controllers
         }
         #endregion
 
+        #endregion
+
+        #region 取得巡檢結果
+        [HttpGet]
+        public ActionResult GetInspectionExcel(string IPSN)
+        {
+            JObject jo = new JObject();
+
+            try
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+
+                // 取得Plan資訊
+                var planInfo = db.InspectionPlan
+                    .Find(IPSN);
+                // 取得所有 PathName
+                var pathNames = db.InspectionPlan_Time
+                    .Where(x => x.IPSN == IPSN)
+                    .Select(x => x.PathName)
+                    .Distinct()
+                    .ToList();
+
+                foreach (var pathName in pathNames)
+                {
+                    ISheet sheet = workbook.CreateSheet(pathName);
+
+                    // 設定標題格式
+                    ICellStyle boldStyle = workbook.CreateCellStyle();
+                    IFont font = workbook.CreateFont();
+                    font.IsBold = true;
+                    boldStyle.SetFont(font);
+
+                    IRow row1 = sheet.CreateRow(0);
+                    row1.CreateCell(0).SetCellValue("工單編號");                 
+                    row1.CreateCell(2).SetCellValue("工單名稱");                   
+                    row1.CreateCell(4).SetCellValue("工單日期");
+                    row1.CreateCell(6).SetCellValue("巡檢路線名稱");
+
+                    row1.Cells.ForEach(c => c.CellStyle = boldStyle);
+                    row1.CreateCell(1).SetCellValue(IPSN);
+                    row1.CreateCell(3).SetCellValue(planInfo.IPName);
+                    row1.CreateCell(5).SetCellValue(planInfo.PlanDate.ToString("yyyy/MM/dd"));
+                    row1.CreateCell(7).SetCellValue(pathName);
+
+                    // 取得巡檢計畫資料
+                    var datas = db.InspectionPlan_Time.Where(x => x.PathName == pathName).ToList();
+                    if (datas.Count > 0)
+                    {
+                        var iptsn = datas[0].IPTSN;
+
+                        // 設定開始時間 & 結束時間
+                        int rowIndex = 2;
+                        foreach (var data in datas)
+                        {
+                            IRow row = sheet.CreateRow(rowIndex);
+                            row.CreateCell(1).SetCellValue(data.StartTime.ToString());
+                            row.CreateCell(1).SetCellValue(data.EndTime.ToString());
+                            rowIndex++;
+                        }
+
+                        // 取得設備資料
+                        var equipments = db.InspectionPlan_Equipment.Where(x => x.IPTSN == iptsn).ToList();
+                        rowIndex = 4;
+                        foreach (var equipment in equipments)
+                        {
+                            var eq = db.EquipmentInfo.Find(equipment.ESN);
+                            string eqName = eq.EName + eq.NO; // 設備名稱 + 編號
+
+                            var checkItems = db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == equipment.IPESN).ToList();
+                            var reportingItems = db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == equipment.IPESN).ToList();
+                            int count = checkItems.Count + reportingItems.Count;
+
+                            // 合併儲存格 & 設定設備名稱
+                            if (count > 0)
+                            {
+                                for (int i = rowIndex; i < rowIndex + count; i++)
+                                {
+                                    sheet.CreateRow(i).CreateCell(0).SetCellValue(eqName);
+                                }
+                            }
+
+                            // 填入巡檢項目名稱
+                            foreach (var item in checkItems)
+                            {
+                                sheet.GetRow(rowIndex).CreateCell(1).SetCellValue(item.CheckItemName);
+                                rowIndex++;
+                            }
+                            foreach (var item in reportingItems)
+                            {
+                                sheet.GetRow(rowIndex).CreateCell(1).SetCellValue(item.ReportValue);
+                                rowIndex++;
+                            }
+                        }
+                    }
+
+                    // 自動調整欄位寬度
+                    for (int col = 0; col < 7; col++)
+                    {
+                        sheet.AutoSizeColumn(col);
+                    }
+                }
+                // **🔹 設定下載目標路徑**
+                string folderPath = Server.MapPath("~/Downloads/");
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                string fileName = "巡檢結果.xlsx";
+                string filePath = Path.Combine(folderPath, fileName);
+
+                // **🔹 將 Excel 檔案存到本地**
+                using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    workbook.Write(stream);
+                }
+
+                // **🔹 讓使用者下載 Excel 檔案**
+                return File(filePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                return Content(JsonConvert.SerializeObject(jo), "application/json");
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
         #endregion
     }
 }
