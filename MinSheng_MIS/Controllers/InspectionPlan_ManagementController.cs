@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
 using BorderStyle = NPOI.SS.UserModel.BorderStyle;
 
 namespace MinSheng_MIS.Controllers
@@ -134,8 +135,8 @@ namespace MinSheng_MIS.Controllers
                 IWorkbook workbook = new XSSFWorkbook();
 
                 // 取得Plan資訊
-                var planInfo = db.InspectionPlan
-                    .Find(IPSN);
+                var planInfo = db.InspectionPlan.Find(IPSN);
+
                 // 取得所有 PathName
                 var pathNames = db.InspectionPlan_Time
                     .Where(x => x.IPSN == IPSN)
@@ -217,34 +218,24 @@ namespace MinSheng_MIS.Controllers
 
                     //建立標題列
                     IRow row1 = sheet.CreateRow(0);
-                    row1.CreateCell(0).SetCellValue("工單編號:");                 
-                    row1.CreateCell(2).SetCellValue("工單名稱:");                   
-                    row1.CreateCell(4).SetCellValue("工單日期:");
-                    row1.CreateCell(6).SetCellValue("巡檢路線名稱:");
-
-                    row1.CreateCell(1).SetCellValue(IPSN);
-                    row1.CreateCell(3).SetCellValue(planInfo.IPName);
-                    row1.CreateCell(5).SetCellValue(planInfo.PlanDate.ToString("yyyy/MM/dd"));
-                    row1.CreateCell(7).SetCellValue(pathName);
-
-                    row1.Cells
-                        .Where((c, index) => index % 2 == 0 && index < 7)
-                        .ToList()
-                        .ForEach(c => c.CellStyle = TitleStyle);
-
-                    row1.Cells
-                        .Where((c, index) => index % 2 == 1 && index < 8)
-                        .ToList()
-                        .ForEach(c => c.CellStyle = WordStyle);
+                    string[] titles = { "工單編號:", "工單名稱:", "工單日期:", "巡檢路線名稱:" };
+                    object[] values = { IPSN, planInfo.IPName, planInfo.PlanDate.ToString("yyyy/MM/dd"), pathName };
+                    for (int i = 0; i < titles.Length; i++)
+                    {
+                        row1.CreateCell(i * 2).SetCellValue(titles[i]);
+                        row1.GetCell(i * 2).CellStyle = TitleStyle;
+                        row1.CreateCell(i * 2 + 1).SetCellValue(values[i]?.ToString());
+                        row1.GetCell(i * 2 + 1).CellStyle = WordStyle;
+                    }
 
                     IRow row3 = sheet.CreateRow(2);
-                    ICell cellA3 = row3.CreateCell(0);
-                    cellA3.SetCellValue("設備名稱");
-                    cellA3.CellStyle = WordStyle;
+                    IRow row4 = sheet.CreateRow(3);
                     sheet.AddMergedRegion(new CellRangeAddress(2, 3, 0, 0)); // 合併 A3:A4
+
+                    row3.CreateCell(0).SetCellValue("設備名稱");
+                    row3.GetCell(0).CellStyle = WordStyle;
                     row3.CreateCell(1).SetCellValue("開始時間");
                     row3.GetCell(1).CellStyle = WordStyle;
-                    IRow row4 = sheet.CreateRow(3);
                     row4.CreateCell(1).SetCellValue("結束時間");
                     row4.GetCell(1).CellStyle = WordStyle;
                     
@@ -257,22 +248,25 @@ namespace MinSheng_MIS.Controllers
                         var iptsn = datas[0].IPTSN;
 
                         // 取得設備資料
-                        var equipments = db.InspectionPlan_Equipment.Where(x => x.IPTSN == iptsn).ToList();
-                        
+                        var equipments = (from x1 in db.InspectionPlan_Equipment
+                                         where x1.IPTSN == iptsn
+                                         join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
+                                         select new { x1.ESN, x1.IPESN, x2.EName, x2.NO }).ToList();
+
                         var rowIndex = 4;
                         foreach (var equipment in equipments)
                         {
-                            var eq = db.EquipmentInfo.Find(equipment.ESN);
-                            string eqName = eq.EName + eq.NO; // 設備名稱 + 編號
-
+                            string eqName = equipment.EName + " " + equipment.NO; // 設備名稱 + 編號
                             var checkItems = db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == equipment.IPESN).ToList();
                             var reportingItems = db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == equipment.IPESN).ToList();
                             int count = checkItems.Count + reportingItems.Count;
 
                             // 合併儲存格 & 設定設備名稱
-                            if (count > 0)
+                            if (checkItems.Any() || reportingItems.Any())
                             {
                                 sheet.CreateRow(rowIndex).CreateCell(0).SetCellValue(eqName);
+                                sheet.GetRow(rowIndex).GetCell(0).CellStyle = WordStyle;
+                                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count - 1, 0, 0));
                                 var BrowIndex = rowIndex;
                                 //檢查項目
                                 foreach (var item in checkItems)
@@ -296,8 +290,6 @@ namespace MinSheng_MIS.Controllers
                                     sheet.GetRow(BrowIndex).GetCell(1).CellStyle = WordStyle;
                                     BrowIndex++;
                                 }
-                                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count-1, 0, 0));
-                                sheet.GetRow(rowIndex).GetCell(0).CellStyle = WordStyle;
                                 rowIndex = rowIndex + count;
                             }
                         }
