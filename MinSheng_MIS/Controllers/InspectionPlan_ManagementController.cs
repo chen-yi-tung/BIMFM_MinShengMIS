@@ -159,6 +159,8 @@ namespace MinSheng_MIS.Controllers
                     //顏色
                     XSSFColor Primary200Color = new XSSFColor(new byte[] { 200, 224, 244 });
                     XSSFColor Gray50Color = new XSSFColor(new byte[] { 243, 243, 243 });
+
+                    //文字設定
                     IFont CreateFont(IWorkbook workbooki, bool isBold = false, bool isRed = false)
                     {
                         IFont font = workbook.CreateFont();
@@ -171,12 +173,12 @@ namespace MinSheng_MIS.Controllers
                         return font;
                     }
 
-                    // 創建樣式的方法
+                    // 創建樣式函式
                     ICellStyle CreateCellStyle(IWorkbook workbookj, IFont font, XSSFColor bgColor = null)
                     {
                         XSSFCellStyle style = (XSSFCellStyle)workbook.CreateCellStyle();
                         style.SetFont(font);
-                        style.WrapText = true;
+                        style.WrapText = true;//自動換行
                         style.Alignment = HorizontalAlignment.Center;
                         style.VerticalAlignment = VerticalAlignment.Center;
                         style.BorderTop = BorderStyle.Thin;
@@ -205,28 +207,29 @@ namespace MinSheng_MIS.Controllers
                     ICellStyle RedTextStyle = CreateCellStyle(workbook, redFont);//異常內容樣式
                     #endregion
 
+                    #region 巡檢基本資料
                     //建立標題列
-                    IRow row1 = sheet.CreateRow(0);
-                    string[] titles = { "工單編號:", "工單名稱:", "工單日期:", "巡檢路線名稱:" };
+                    string[] titles = { "工單編號", "工單名稱", "工單日期", "巡檢路線名稱" };
                     object[] values = { IPSN, planInfo.IPName, planInfo.PlanDate.ToString("yyyy/MM/dd"), pathName };
                     for (int i = 0; i < titles.Length; i++)
                     {
-                        row1.CreateCell(i * 2).SetCellValue(titles[i]);
-                        row1.GetCell(i * 2).CellStyle = TitleStyle;
-                        row1.CreateCell(i * 2 + 1).SetCellValue(values[i]?.ToString());
-                        row1.GetCell(i * 2 + 1).CellStyle = WordStyle;
+                        sheet.CreateRow(i).CreateCell(0).SetCellValue(titles[i]);
+                        sheet.GetRow(i).GetCell(0).CellStyle = TitleStyle;
+                        sheet.GetRow(i).CreateCell(1).SetCellValue(values[i].ToString());
+                        sheet.GetRow(i).GetCell(1).CellStyle = WordStyle;
                     }
+                    #endregion
 
-                    IRow row3 = sheet.CreateRow(2);
-                    IRow row4 = sheet.CreateRow(3);
-                    sheet.AddMergedRegion(new CellRangeAddress(2, 3, 0, 0)); // 合併 A3:A4
+                    IRow row5 = sheet.CreateRow(4);
+                    IRow row6 = sheet.CreateRow(5);
+                    sheet.AddMergedRegion(new CellRangeAddress(4, 5, 0, 0)); // 合併 A3:A4
 
-                    row3.CreateCell(0).SetCellValue("設備名稱");
-                    row3.GetCell(0).CellStyle = WordStyle;
-                    row3.CreateCell(1).SetCellValue("開始時間");
-                    row3.GetCell(1).CellStyle = WordStyle;
-                    row4.CreateCell(1).SetCellValue("結束時間");
-                    row4.GetCell(1).CellStyle = WordStyle;
+                    row5.CreateCell(0).SetCellValue("設備名稱");
+                    row5.GetCell(0).CellStyle = WordStyle;
+                    row5.CreateCell(1).SetCellValue("開始時間");
+                    row5.GetCell(1).CellStyle = WordStyle;
+                    row6.CreateCell(1).SetCellValue("結束時間");
+                    row6.GetCell(1).CellStyle = WordStyle;
                     
 
                     // 取得巡檢計畫資料
@@ -234,6 +237,7 @@ namespace MinSheng_MIS.Controllers
                     var maxcell = 7;
                     if (datas.Count > 0)
                     {
+                        #region 填入設備名稱+編號、填報項目 => A欄、B欄
                         var iptsn = db.InspectionPlan_Time.Where(x => x.PathName == pathName && x.IPSN == IPSN && x.InspectionState != "1").Select(x => x.IPTSN).FirstOrDefault().ToString();
 
                         // 取得設備資料
@@ -242,7 +246,7 @@ namespace MinSheng_MIS.Controllers
                                          join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
                                          select new { x1.ESN, x1.IPESN, x2.EName, x2.NO }).ToList();
                         int equipmentsCount = equipments.Count();
-                        var rowIndex = 4;
+                        var rowIndex = 6;
                         int totalCount = 0;
                         foreach (var equipment in equipments)
                         {
@@ -286,11 +290,13 @@ namespace MinSheng_MIS.Controllers
                         sheet.CreateRow(rowIndex).CreateCell(1).SetCellValue("執行人員");
                         sheet.GetRow(rowIndex).GetCell(1).CellStyle = WordStyle;
                         sheet.GetRow(rowIndex).CreateCell(0).CellStyle = WordStyle;
+                        #endregion
+
                         //依時段填檢查項目/填報項目
                         var recordColumnIndex = 2;
                         foreach (var data in datas)
                         {
-                            var reportrowIndex = 4;
+                            var reportrowIndex = 6;
                             //先畫好框框
                             for (int i = reportrowIndex; i < reportrowIndex + totalCount; i++)
                             {
@@ -342,11 +348,10 @@ namespace MinSheng_MIS.Controllers
                         int columnIndex = 2;
                         foreach (var data in datas)
                         {
-                            row3.CreateCell(columnIndex).SetCellValue(data.StartTime.ToString());
-                            row3.GetCell(columnIndex).CellStyle = WordStyle;
-                            row4.CreateCell(columnIndex).SetCellValue(data.EndTime.ToString());
-                            row4.GetCell(columnIndex).CellStyle = WordStyle;
-                            sheet.SetColumnWidth(columnIndex, 20 * 256);
+                            row5.CreateCell(columnIndex).SetCellValue(data.StartTime.ToString());
+                            row5.GetCell(columnIndex).CellStyle = WordStyle;
+                            row6.CreateCell(columnIndex).SetCellValue(data.EndTime.ToString());
+                            row6.GetCell(columnIndex).CellStyle = WordStyle;
                             columnIndex++;
                         }
                     }
@@ -356,7 +361,7 @@ namespace MinSheng_MIS.Controllers
                     sheet.SetColumnWidth(1, 30 * 256);
                     for (int col = 2; col <= maxcell; col++)
                     {
-                        sheet.SetColumnWidth(col, 25 * 256);
+                        sheet.SetColumnWidth(col, 10 * 256);
                     }
                 }
                 /*
