@@ -118,6 +118,7 @@
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
                     dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.PlanState != "待執行" || authority === "3" })),
                     dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete", disabled: row.PlanState != "待執行" || authority != "1" })),
+                    dg.frozenColumn('_download', (v, row, i) => dg.eventButton(i, "下載", "download", { disabled: row.PlanState == "待執行" })),
                 ]],
                 columns: [[
                     dg.column('IPSN', '工單編號', 200),
@@ -137,6 +138,13 @@
             })
             dg.addEvent("delete", function (row, i) {
                 window.open(`${baseUrl}/Delete/${row.IPSN}`, "_self")
+            })
+            dg.addEvent("download", function (row, i) {
+                $.getJSON(`/InspectionPlan_Management/GetInspectionExcel?IPSN=${row.IPSN}`).then((res)=>{
+                    const blob = base64ToBlob(res.fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    const file = new File([blob], res.fileName)
+                    downloadFile(res.fileName, file)
+                })
             })
         }
 

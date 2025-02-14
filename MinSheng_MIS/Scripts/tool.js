@@ -359,3 +359,41 @@ function FileUploader({
     this.init();
     return this
 }
+
+function base64ToBlob(str, type) {
+    // decode base64
+    var content = atob(str);
+  
+    // create an ArrayBuffer and a view (as unsigned 8-bit)
+    var buffer = new ArrayBuffer(content.length);
+    var view = new Uint8Array(buffer);
+  
+    // fill the view, using the decoded base64
+    for(var n = 0; n < content.length; n++) {
+      view[n] = content.charCodeAt(n);
+    }
+  
+    // convert ArrayBuffer to Blob
+    var blob = new Blob([buffer], { type: type });
+  
+    return blob;
+  }
+
+function downloadFile(name, file) {
+    const url = URL.createObjectURL(file);
+    download(name, url);
+    //保留此連結1分鐘，防止下載失敗
+    let timer = setTimeout(() => {
+        clearTimeout(timer);
+        URL.revokeObjectURL(url);
+    }, 60 * 1000);
+
+    function download(name, url) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', name);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    }
+}
