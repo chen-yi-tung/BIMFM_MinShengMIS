@@ -9,6 +9,7 @@ using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
 using OfficeOpenXml;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.IO;
 using System.Linq;
@@ -223,14 +224,14 @@ namespace MinSheng_MIS.Controllers
                     }
                     #endregion
 
-                    IRow row5 = sheet.CreateRow(4);
-                    IRow row6 = sheet.CreateRow(5);
+                    //IRow row5 = sheet.CreateRow(4);
+                    //IRow row6 = sheet.CreateRow(5);
+                    
+
+                    SetCellValueWithStyle(sheet, 4, 0, "設備名稱", SubTitleStyle);
+                    SetCellValueWithStyle(sheet, 4, 1, "開始時間", SubTitleStyle);
+                    SetCellValueWithStyle(sheet, 5, 1, "結束時間", SubTitleStyle);
                     sheet.AddMergedRegion(new CellRangeAddress(4, 5, 0, 0)); // 合併 A3:A4
-
-                    SetCellValueWithStyle(row5, 0, "設備名稱", SubTitleStyle);
-                    SetCellValueWithStyle(row5, 1, "開始時間", SubTitleStyle);
-                    SetCellValueWithStyle(row6, 1, "結束時間", SubTitleStyle);
-
 
                     // 取得巡檢計畫資料
                     var datas = db.InspectionPlan_Time.Where(x => x.PathName == pathName && x.IPSN == IPSN).ToList();
@@ -346,8 +347,8 @@ namespace MinSheng_MIS.Controllers
                         int columnIndex = 2;
                         foreach (var data in datas)
                         {
-                            SetCellValueWithStyle(row5, columnIndex, data.StartTime.ToString(), SubTitleStyle);
-                            SetCellValueWithStyle(row6, columnIndex, data.EndTime.ToString(), SubTitleStyle);
+                            SetCellValueWithStyle(sheet, 4, columnIndex, data.StartTime.ToString(), SubTitleStyle);
+                            SetCellValueWithStyle(sheet, 5, columnIndex, data.EndTime.ToString(), SubTitleStyle);
                             columnIndex++;
                         }
                         #endregion
@@ -404,9 +405,15 @@ namespace MinSheng_MIS.Controllers
             }
         }
         #endregion
-        void SetCellValueWithStyle(IRow row, int columnIndex, string value, ICellStyle style)
+        void SetCellValueWithStyle(ISheet sheet, int rowIndex, int columnIndex, string value, ICellStyle style)
         {
-            ICell cell = row.CreateCell(columnIndex);
+            // 取得或建立 Row
+            IRow row = sheet.GetRow(rowIndex) ?? sheet.CreateRow(rowIndex);
+
+            // 取得或建立 Cell
+            ICell cell = row.GetCell(columnIndex) ?? row.CreateCell(columnIndex);
+
+            // 設定值與樣式
             cell.SetCellValue(value);
             cell.CellStyle = style;
         }
