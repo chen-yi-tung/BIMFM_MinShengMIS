@@ -378,11 +378,12 @@ namespace MinSheng_MIS.Controllers
                 string fileName = "巡檢結果.xlsx";
                 string filePath = Path.Combine(folderPath, fileName);
 
+                /*
                 // **🔹 將 Excel 檔案存到本地**
                 using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
                     workbook.Write(stream);
-                }
+                }*/
 
                 // **🔹 讓使用者下載 Excel 檔案**
                 //return File(filePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
