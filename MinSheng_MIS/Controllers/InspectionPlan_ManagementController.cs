@@ -4,6 +4,7 @@ using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.HSSF.Util;
+using NPOI.POIFS.Crypt.Dsig;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
@@ -158,6 +159,7 @@ namespace MinSheng_MIS.Controllers
                     #region 樣式設定
                     //顏色
                     XSSFColor Primary200Color = new XSSFColor(new byte[] { 200, 224, 244 });
+                    XSSFColor Primary150Color = new XSSFColor(new byte[] { 222, 235, 246 });
                     XSSFColor Gray50Color = new XSSFColor(new byte[] { 243, 243, 243 });
 
                     //文字設定
@@ -202,6 +204,7 @@ namespace MinSheng_MIS.Controllers
 
                     // 創建樣式
                     ICellStyle TitleStyle = CreateCellStyle(workbook, boldFont, Primary200Color);//標題樣式
+                    ICellStyle SubTitleStyle = CreateCellStyle(workbook, boldFont, Primary150Color);//標題樣式
                     ICellStyle WordStyle = CreateCellStyle(workbook, boldFont, Gray50Color);//樣式
                     ICellStyle ContentStyle = CreateCellStyle(workbook, normalFont);//填報內容樣式
                     ICellStyle RedTextStyle = CreateCellStyle(workbook, redFont);//異常內容樣式
@@ -224,17 +227,13 @@ namespace MinSheng_MIS.Controllers
                     IRow row6 = sheet.CreateRow(5);
                     sheet.AddMergedRegion(new CellRangeAddress(4, 5, 0, 0)); // 合併 A3:A4
 
-                    row5.CreateCell(0).SetCellValue("設備名稱");
-                    row5.GetCell(0).CellStyle = WordStyle;
-                    row5.CreateCell(1).SetCellValue("開始時間");
-                    row5.GetCell(1).CellStyle = WordStyle;
-                    row6.CreateCell(1).SetCellValue("結束時間");
-                    row6.GetCell(1).CellStyle = WordStyle;
-                    
+                    SetCellValueWithStyle(row5, 0, "設備名稱", SubTitleStyle);
+                    SetCellValueWithStyle(row5, 1, "開始時間", SubTitleStyle);
+                    SetCellValueWithStyle(row6, 1, "結束時間", SubTitleStyle);
+
 
                     // 取得巡檢計畫資料
                     var datas = db.InspectionPlan_Time.Where(x => x.PathName == pathName && x.IPSN == IPSN).ToList();
-                    var maxcell = 7;
                     if (datas.Count > 0)
                     {
                         #region 填入設備名稱+編號、填報項目 => A欄、B欄
@@ -292,7 +291,7 @@ namespace MinSheng_MIS.Controllers
                         sheet.GetRow(rowIndex).CreateCell(0).CellStyle = WordStyle;
                         #endregion
 
-                        //依時段填檢查項目/填報項目
+                        #region 依時段填檢查項目、填報項目
                         var recordColumnIndex = 2;
                         foreach (var data in datas)
                         {
@@ -340,29 +339,30 @@ namespace MinSheng_MIS.Controllers
                             sheet.GetRow(rowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
                             recordColumnIndex++;
                         }
-                        if(maxcell< recordColumnIndex)
-                        {
-                            maxcell = recordColumnIndex;
-                        }
-                        // 設定開始時間 & 結束時間
+                        #endregion
+
+                        #region 開始時間、結束時間
+                        //設定開始時間 & 結束時間
                         int columnIndex = 2;
                         foreach (var data in datas)
                         {
-                            row5.CreateCell(columnIndex).SetCellValue(data.StartTime.ToString());
-                            row5.GetCell(columnIndex).CellStyle = WordStyle;
-                            row6.CreateCell(columnIndex).SetCellValue(data.EndTime.ToString());
-                            row6.GetCell(columnIndex).CellStyle = WordStyle;
+                            SetCellValueWithStyle(row5, columnIndex, data.StartTime.ToString(), SubTitleStyle);
+                            SetCellValueWithStyle(row6, columnIndex, data.EndTime.ToString(), SubTitleStyle);
                             columnIndex++;
                         }
+                        #endregion
                     }
-
-                    // 欄位寬度
-                    sheet.SetColumnWidth(0, 30 * 256);
-                    sheet.SetColumnWidth(1, 30 * 256);
-                    for (int col = 2; col <= maxcell; col++)
+                    #region 欄位寬度
+                    int[] wideColumns = { 0, 1 };
+                    foreach (int col in wideColumns)
+                    {
+                        sheet.SetColumnWidth(col, 30 * 256);
+                    }
+                    for (int col = 2; col <= datas.Count()+1; col++)
                     {
                         sheet.SetColumnWidth(col, 10 * 256);
                     }
+                    #endregion
                 }
                 /*
                 // **🔹 設定下載目標路徑**
@@ -404,5 +404,12 @@ namespace MinSheng_MIS.Controllers
             }
         }
         #endregion
+        void SetCellValueWithStyle(IRow row, int columnIndex, string value, ICellStyle style)
+        {
+            ICell cell = row.CreateCell(columnIndex);
+            cell.SetCellValue(value);
+            cell.CellStyle = style;
+        }
     }
+
 }
