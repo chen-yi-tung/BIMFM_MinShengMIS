@@ -124,7 +124,7 @@ namespace MinSheng_MIS.Controllers
 
         #endregion
 
-        #region 取得巡檢結果
+        #region 取得巡檢結果Excel
         [HttpGet]
         public ActionResult GetInspectionExcel(string IPSN)
         {
@@ -132,10 +132,17 @@ namespace MinSheng_MIS.Controllers
             var CheckResult_Dic = Surface.CheckResult();
             try
             {
-                IWorkbook workbook = new XSSFWorkbook();
-
                 // 取得Plan資訊
                 var planInfo = db.InspectionPlan.Find(IPSN);
+
+                //檢查工單是否有執行
+                if(planInfo.PlanState.ToString() == "1") //待執行則不可下載紀錄
+                {
+                    return Json(new { success = false, message = "此巡檢計畫(" + IPSN + ")尚未開始巡檢，因此無巡檢紀錄可以下載" }, JsonRequestBehavior.AllowGet);
+                }
+
+
+                IWorkbook workbook = new XSSFWorkbook();
 
                 // 取得所有 PathName
                 var pathNames = db.InspectionPlan_Time
@@ -150,70 +157,52 @@ namespace MinSheng_MIS.Controllers
 
                     #region 樣式設定
                     //顏色
-                    byte[] Primary200 = new byte[] { 200, 224, 244 };
-                    XSSFColor Primary200Color = new XSSFColor(Primary200);
-                    byte[] Gray50 = new byte[] { 243, 243, 243 };
-                    XSSFColor Gray50color = new XSSFColor(Gray50);
-                    //粗體
-                    IFont boldFont = workbook.CreateFont();
-                    boldFont.IsBold = true;
-                    boldFont.FontName = "Calibri"; // 設定字型
-                    //一般字體
-                    IFont font = workbook.CreateFont();
-                    font.FontName = "Calibri"; // 設定字型
-                    //紅色字體
-                    IFont redFont = workbook.CreateFont();
-                    redFont.FontName = "Calibri"; // 設定字型
-                    redFont.Color = IndexedColors.Red.Index;  // 設定字體為紅色
+                    XSSFColor Primary200Color = new XSSFColor(new byte[] { 200, 224, 244 });
+                    XSSFColor Gray50Color = new XSSFColor(new byte[] { 243, 243, 243 });
+                    IFont CreateFont(IWorkbook workbooki, bool isBold = false, bool isRed = false)
+                    {
+                        IFont font = workbook.CreateFont();
+                        font.FontName = "Calibri";
+                        font.IsBold = isBold;
+                        if (isRed)
+                        {
+                            font.Color = IndexedColors.Red.Index;
+                        }
+                        return font;
+                    }
 
-                    // 設定標題格式
-                    XSSFCellStyle TitleStyle = (XSSFCellStyle)workbook.CreateCellStyle();
-                    TitleStyle.SetFont(boldFont);
-                    TitleStyle.WrapText = true;  // 開啟自動換行
-                    TitleStyle.Alignment = HorizontalAlignment.Center;   // 水平置中
-                    TitleStyle.VerticalAlignment = VerticalAlignment.Center; // 垂直置中
-                    TitleStyle.BorderTop = BorderStyle.Thin;    // 上邊框
-                    TitleStyle.BorderBottom = BorderStyle.Thin; // 下邊框
-                    TitleStyle.BorderLeft = BorderStyle.Thin;   // 左邊框
-                    TitleStyle.BorderRight = BorderStyle.Thin;  // 右邊框
-                    TitleStyle.SetFillForegroundColor(Primary200Color);
-                    TitleStyle.FillPattern = FillPattern.SolidForeground; // 設定填充模式
+                    // 創建樣式的方法
+                    ICellStyle CreateCellStyle(IWorkbook workbookj, IFont font, XSSFColor bgColor = null)
+                    {
+                        XSSFCellStyle style = (XSSFCellStyle)workbook.CreateCellStyle();
+                        style.SetFont(font);
+                        style.WrapText = true;
+                        style.Alignment = HorizontalAlignment.Center;
+                        style.VerticalAlignment = VerticalAlignment.Center;
+                        style.BorderTop = BorderStyle.Thin;
+                        style.BorderBottom = BorderStyle.Thin;
+                        style.BorderLeft = BorderStyle.Thin;
+                        style.BorderRight = BorderStyle.Thin;
 
-                    //設定內文格式
-                    //ICellStyle WordStyle = workbook.CreateCellStyle();
-                    XSSFCellStyle WordStyle = (XSSFCellStyle)workbook.CreateCellStyle();
-                    WordStyle.SetFont(boldFont); //設定為粗體
-                    WordStyle.WrapText = true;  // 開啟自動換行
-                    WordStyle.Alignment = HorizontalAlignment.Center;   // 水平置中
-                    WordStyle.VerticalAlignment = VerticalAlignment.Center; // 垂直置中
-                    WordStyle.BorderTop = BorderStyle.Thin;    // 上邊框
-                    WordStyle.BorderBottom = BorderStyle.Thin; // 下邊框
-                    WordStyle.BorderLeft = BorderStyle.Thin;   // 左邊框
-                    WordStyle.BorderRight = BorderStyle.Thin;  // 右邊框
-                    WordStyle.SetFillForegroundColor(Gray50color);
-                    WordStyle.FillPattern = FillPattern.SolidForeground; // 設定填充模式
+                        if (bgColor != null)
+                        {
+                            style.SetFillForegroundColor(bgColor);
+                            style.FillPattern = FillPattern.SolidForeground;
+                        }
 
-                    //設定內容格式
-                    ICellStyle ContentStyle = workbook.CreateCellStyle();
-                    ContentStyle.SetFont(font);
-                    ContentStyle.WrapText = true;  // 開啟自動換行
-                    ContentStyle.Alignment = HorizontalAlignment.Center;   // 水平置中
-                    ContentStyle.VerticalAlignment = VerticalAlignment.Center; // 垂直置中
-                    ContentStyle.BorderTop = BorderStyle.Thin;    // 上邊框
-                    ContentStyle.BorderBottom = BorderStyle.Thin; // 下邊框
-                    ContentStyle.BorderLeft = BorderStyle.Thin;   // 左邊框
-                    ContentStyle.BorderRight = BorderStyle.Thin;  // 右邊框
+                        return style;
+                    }
 
-                    // 設定紅色字體的 Style
-                    ICellStyle redTextStyle = workbook.CreateCellStyle();
-                    redTextStyle.SetFont(redFont);
-                    redTextStyle.WrapText = true;  // 開啟自動換行
-                    redTextStyle.Alignment = HorizontalAlignment.Center;   // 水平置中
-                    redTextStyle.VerticalAlignment = VerticalAlignment.Center; // 垂直置中
-                    redTextStyle.BorderTop = BorderStyle.Thin;    // 上邊框
-                    redTextStyle.BorderBottom = BorderStyle.Thin; // 下邊框
-                    redTextStyle.BorderLeft = BorderStyle.Thin;   // 左邊框
-                    redTextStyle.BorderRight = BorderStyle.Thin;  // 右邊框
+                    // 創建字體
+                    IFont boldFont = CreateFont(workbook, isBold: true);
+                    IFont normalFont = CreateFont(workbook);
+                    IFont redFont = CreateFont(workbook, isRed: true);
+
+                    // 創建樣式
+                    ICellStyle TitleStyle = CreateCellStyle(workbook, boldFont, Primary200Color);//標題樣式
+                    ICellStyle WordStyle = CreateCellStyle(workbook, boldFont, Gray50Color);//樣式
+                    ICellStyle ContentStyle = CreateCellStyle(workbook, normalFont);//填報內容樣式
+                    ICellStyle RedTextStyle = CreateCellStyle(workbook, redFont);//異常內容樣式
                     #endregion
 
                     //建立標題列
@@ -319,7 +308,7 @@ namespace MinSheng_MIS.Controllers
                                         sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).SetCellValue(CheckResult_Dic[item.CheckResult]);
                                         if(item.CheckResult == "2") //異常
                                         {
-                                            sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = redTextStyle;
+                                            sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = RedTextStyle;
                                         }
                                     }
                                     else
