@@ -340,8 +340,8 @@ namespace MinSheng_MIS.Controllers
                                                           .Join(db.AspNetUsers, m => m.UserID, u => u.UserName, (m, u) => u.MyName)
                                                           .ToList());
 
-                            sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(inspectionMembers);
-                            sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
+                            sheet.GetRow(rowIndex).CreateCell(recordColumnIndex).SetCellValue(inspectionMembers);
+                            sheet.GetRow(rowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
                             recordColumnIndex++;
                         }
                         if(maxcell< recordColumnIndex)
