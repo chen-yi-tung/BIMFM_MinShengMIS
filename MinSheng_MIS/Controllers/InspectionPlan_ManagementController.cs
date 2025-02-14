@@ -245,7 +245,7 @@ namespace MinSheng_MIS.Controllers
                     var maxcell = 7;
                     if (datas.Count > 0)
                     {
-                        var iptsn = datas[0].IPTSN;
+                        var iptsn = db.InspectionPlan_Time.Where(x => x.PathName == pathName && x.IPSN == IPSN && x.InspectionState != "1").Select(x => x.IPTSN).FirstOrDefault().ToString();
 
                         // 取得設備資料
                         var equipments = (from x1 in db.InspectionPlan_Equipment
