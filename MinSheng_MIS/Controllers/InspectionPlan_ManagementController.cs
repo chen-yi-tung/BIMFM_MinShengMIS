@@ -252,15 +252,16 @@ namespace MinSheng_MIS.Controllers
                                          where x1.IPTSN == iptsn
                                          join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
                                          select new { x1.ESN, x1.IPESN, x2.EName, x2.NO }).ToList();
-
+                        int equipmentsCount = equipments.Count();
                         var rowIndex = 4;
+                        int totalCount = 0;
                         foreach (var equipment in equipments)
                         {
                             string eqName = equipment.EName + " " + equipment.NO; // 設備名稱 + 編號
                             var checkItems = db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == equipment.IPESN).ToList();
                             var reportingItems = db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == equipment.IPESN).ToList();
                             int count = checkItems.Count + reportingItems.Count;
-
+                            totalCount += count;
                             // 合併儲存格 & 設定設備名稱
                             if (checkItems.Any() || reportingItems.Any())
                             {
@@ -301,6 +302,12 @@ namespace MinSheng_MIS.Controllers
                         foreach (var data in datas)
                         {
                             var reportrowIndex = 4;
+                            //先畫好框框
+                            for (int i = reportrowIndex; i < reportrowIndex + totalCount; i++)
+                            {
+                                sheet.GetRow(i).CreateCell(recordColumnIndex).SetCellValue("");
+                                sheet.GetRow(i).GetCell(recordColumnIndex).CellStyle = ContentStyle;
+                            }
                             var eqs = db.InspectionPlan_Equipment.Where(x => x.IPTSN == data.IPTSN).ToList();
                             foreach (var e in eqs)
                             {
@@ -309,28 +316,22 @@ namespace MinSheng_MIS.Controllers
                                 {
                                     if(item.CheckResult != null)
                                     {
-                                        sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(CheckResult_Dic[item.CheckResult]);
+                                        sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).SetCellValue(CheckResult_Dic[item.CheckResult]);
                                         if(item.CheckResult == "2") //異常
                                         {
                                             sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = redTextStyle;
                                         }
-                                        else //正常
-                                        {
-                                            sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
-                                        }
                                     }
                                     else
                                     {
-                                        sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue("");
-                                        sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
+                                        sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).SetCellValue("");
                                     }
                                     reportrowIndex++;
                                 }
                                 var Reportingitems = db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == e.IPESN).ToList();
                                 foreach (var item in Reportingitems)
                                 {
-                                    sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(item.ReportContent);
-                                    sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
+                                    sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).SetCellValue(item.ReportContent);
                                     reportrowIndex++;
                                 }
                             }
