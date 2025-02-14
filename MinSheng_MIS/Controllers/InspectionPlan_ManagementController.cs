@@ -3,6 +3,7 @@ using MinSheng_MIS.Services;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
@@ -11,6 +12,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
+using BorderStyle = NPOI.SS.UserModel.BorderStyle;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -144,18 +147,73 @@ namespace MinSheng_MIS.Controllers
                 {
                     ISheet sheet = workbook.CreateSheet(pathName);
 
-                    // 設定標題格式
-                    ICellStyle boldStyle = workbook.CreateCellStyle();
+                    #region 樣式設定
+                    //顏色
+                    byte[] Primary200 = new byte[] { 200, 224, 244 };
+                    XSSFColor Primary200Color = new XSSFColor(Primary200);
+                    byte[] Gray50 = new byte[] { 243, 243, 243 };
+                    XSSFColor Gray50color = new XSSFColor(Gray50);
+                    //粗體
+                    IFont boldFont = workbook.CreateFont();
+                    boldFont.IsBold = true;
+                    boldFont.FontName = "Calibri"; // 設定字型
+                    //一般字體
                     IFont font = workbook.CreateFont();
-                    font.IsBold = true;
-                    boldStyle.SetFont(font);
-                    boldStyle.WrapText = true;  // 開啟自動換行
+                    font.FontName = "Calibri"; // 設定字型
+                    //紅色字體
+                    IFont redFont = workbook.CreateFont();
+                    redFont.FontName = "Calibri"; // 設定字型
+                    redFont.Color = IndexedColors.Red.Index;  // 設定字體為紅色
+
+                    // 設定標題格式
+                    XSSFCellStyle TitleStyle = (XSSFCellStyle)workbook.CreateCellStyle();
+                    TitleStyle.SetFont(boldFont);
+                    TitleStyle.WrapText = true;  // 開啟自動換行
+                    TitleStyle.Alignment = HorizontalAlignment.Center;   // 水平置中
+                    TitleStyle.VerticalAlignment = VerticalAlignment.Center; // 垂直置中
+                    TitleStyle.BorderTop = BorderStyle.Thin;    // 上邊框
+                    TitleStyle.BorderBottom = BorderStyle.Thin; // 下邊框
+                    TitleStyle.BorderLeft = BorderStyle.Thin;   // 左邊框
+                    TitleStyle.BorderRight = BorderStyle.Thin;  // 右邊框
+                    TitleStyle.SetFillForegroundColor(Primary200Color);
+                    TitleStyle.FillPattern = FillPattern.SolidForeground; // 設定填充模式
 
                     //設定內文格式
-                    ICellStyle WordStyle = workbook.CreateCellStyle();
+                    //ICellStyle WordStyle = workbook.CreateCellStyle();
+                    XSSFCellStyle WordStyle = (XSSFCellStyle)workbook.CreateCellStyle();
+                    WordStyle.SetFont(boldFont); //設定為粗體
                     WordStyle.WrapText = true;  // 開啟自動換行
                     WordStyle.Alignment = HorizontalAlignment.Center;   // 水平置中
                     WordStyle.VerticalAlignment = VerticalAlignment.Center; // 垂直置中
+                    WordStyle.BorderTop = BorderStyle.Thin;    // 上邊框
+                    WordStyle.BorderBottom = BorderStyle.Thin; // 下邊框
+                    WordStyle.BorderLeft = BorderStyle.Thin;   // 左邊框
+                    WordStyle.BorderRight = BorderStyle.Thin;  // 右邊框
+                    WordStyle.SetFillForegroundColor(Gray50color);
+                    WordStyle.FillPattern = FillPattern.SolidForeground; // 設定填充模式
+
+                    //設定內容格式
+                    ICellStyle ContentStyle = workbook.CreateCellStyle();
+                    ContentStyle.SetFont(font);
+                    ContentStyle.WrapText = true;  // 開啟自動換行
+                    ContentStyle.Alignment = HorizontalAlignment.Center;   // 水平置中
+                    ContentStyle.VerticalAlignment = VerticalAlignment.Center; // 垂直置中
+                    ContentStyle.BorderTop = BorderStyle.Thin;    // 上邊框
+                    ContentStyle.BorderBottom = BorderStyle.Thin; // 下邊框
+                    ContentStyle.BorderLeft = BorderStyle.Thin;   // 左邊框
+                    ContentStyle.BorderRight = BorderStyle.Thin;  // 右邊框
+
+                    // 設定紅色字體的 Style
+                    ICellStyle redTextStyle = workbook.CreateCellStyle();
+                    redTextStyle.SetFont(redFont);
+                    redTextStyle.WrapText = true;  // 開啟自動換行
+                    redTextStyle.Alignment = HorizontalAlignment.Center;   // 水平置中
+                    redTextStyle.VerticalAlignment = VerticalAlignment.Center; // 垂直置中
+                    redTextStyle.BorderTop = BorderStyle.Thin;    // 上邊框
+                    redTextStyle.BorderBottom = BorderStyle.Thin; // 下邊框
+                    redTextStyle.BorderLeft = BorderStyle.Thin;   // 左邊框
+                    redTextStyle.BorderRight = BorderStyle.Thin;  // 右邊框
+                    #endregion
 
                     //建立標題列
                     IRow row1 = sheet.CreateRow(0);
@@ -163,21 +221,32 @@ namespace MinSheng_MIS.Controllers
                     row1.CreateCell(2).SetCellValue("工單名稱:");                   
                     row1.CreateCell(4).SetCellValue("工單日期:");
                     row1.CreateCell(6).SetCellValue("巡檢路線名稱:");
-                    row1.Cells.ForEach(c => c.CellStyle = boldStyle); 
 
                     row1.CreateCell(1).SetCellValue(IPSN);
                     row1.CreateCell(3).SetCellValue(planInfo.IPName);
                     row1.CreateCell(5).SetCellValue(planInfo.PlanDate.ToString("yyyy/MM/dd"));
                     row1.CreateCell(7).SetCellValue(pathName);
-                    row1.Cells.ForEach(c => c.CellStyle = WordStyle);
+
+                    row1.Cells
+                        .Where((c, index) => index % 2 == 0 && index < 7)
+                        .ToList()
+                        .ForEach(c => c.CellStyle = TitleStyle);
+
+                    row1.Cells
+                        .Where((c, index) => index % 2 == 1 && index < 8)
+                        .ToList()
+                        .ForEach(c => c.CellStyle = WordStyle);
 
                     IRow row3 = sheet.CreateRow(2);
                     ICell cellA3 = row3.CreateCell(0);
                     cellA3.SetCellValue("設備名稱");
+                    cellA3.CellStyle = WordStyle;
                     sheet.AddMergedRegion(new CellRangeAddress(2, 3, 0, 0)); // 合併 A3:A4
                     row3.CreateCell(1).SetCellValue("開始時間");
+                    row3.GetCell(1).CellStyle = WordStyle;
                     IRow row4 = sheet.CreateRow(3);
                     row4.CreateCell(1).SetCellValue("結束時間");
+                    row4.GetCell(1).CellStyle = WordStyle;
                     
 
                     // 取得巡檢計畫資料
@@ -208,14 +277,10 @@ namespace MinSheng_MIS.Controllers
                                 //檢查項目
                                 foreach (var item in checkItems)
                                 {
-                                    if(BrowIndex == rowIndex)
-                                    {
-                                        sheet.GetRow(BrowIndex).CreateCell(1).SetCellValue(item.CheckItemName);
-                                    }
-                                    else
-                                    {
-                                        sheet.CreateRow(BrowIndex).CreateCell(1).SetCellValue(item.CheckItemName);
-                                    }
+                                    IRow currentRow = sheet.GetRow(BrowIndex) ?? sheet.CreateRow(BrowIndex);
+                                    currentRow.CreateCell(1).SetCellValue(item.CheckItemName);
+
+                                    sheet.GetRow(BrowIndex).GetCell(1).CellStyle = WordStyle;
                                     BrowIndex++;
                                 }
                                 foreach (var item in reportingItems)
@@ -228,13 +293,17 @@ namespace MinSheng_MIS.Controllers
                                     {
                                         sheet.CreateRow(BrowIndex).CreateCell(1).SetCellValue((item.ReportValue + "(" + item.Unit + ")"));
                                     }
+                                    sheet.GetRow(BrowIndex).GetCell(1).CellStyle = WordStyle;
                                     BrowIndex++;
                                 }
                                 sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count-1, 0, 0));
+                                sheet.GetRow(rowIndex).GetCell(0).CellStyle = WordStyle;
                                 rowIndex = rowIndex + count;
                             }
                         }
                         sheet.CreateRow(rowIndex).CreateCell(1).SetCellValue("執行人員");
+                        sheet.GetRow(rowIndex).GetCell(1).CellStyle = WordStyle;
+                        sheet.GetRow(rowIndex).CreateCell(0).CellStyle = WordStyle;
                         //依時段填檢查項目/填報項目
                         var recordColumnIndex = 2;
                         foreach (var data in datas)
@@ -249,6 +318,19 @@ namespace MinSheng_MIS.Controllers
                                     if(item.CheckResult != null)
                                     {
                                         sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(CheckResult_Dic[item.CheckResult]);
+                                        if(item.CheckResult == "2") //異常
+                                        {
+                                            sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = redTextStyle;
+                                        }
+                                        else //正常
+                                        {
+                                            sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue("");
+                                        sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
                                     }
                                     reportrowIndex++;
                                 }
@@ -256,26 +338,18 @@ namespace MinSheng_MIS.Controllers
                                 foreach (var item in Reportingitems)
                                 {
                                     sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(item.ReportContent);
+                                    sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
                                     reportrowIndex++;
                                 }
                             }
                             //執行人員
-                            
-                            var members = (from x1 in db.InspectionPlan_Member
-                                           where x1.IPTSN == data.IPTSN
-                                          join x2 in db.AspNetUsers on x1.UserID equals x2.UserName
-                                          select new { x2.MyName}).ToList();
-                            var inspectionmembers = "";
-                            for(int i = 0;i < members.Count(); i++)
-                            {
-                                if (i != 0)
-                                {
-                                    inspectionmembers += "、";
-                                }
-                                inspectionmembers += members[i].MyName.ToString();
-                            }
+                            var inspectionMembers = string.Join("、", db.InspectionPlan_Member
+                                                          .Where(x => x.IPTSN == data.IPTSN)
+                                                          .Join(db.AspNetUsers, m => m.UserID, u => u.UserName, (m, u) => u.MyName)
+                                                          .ToList());
 
-                            sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(inspectionmembers);
+                            sheet.GetRow(reportrowIndex).CreateCell(recordColumnIndex).SetCellValue(inspectionMembers);
+                            sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = ContentStyle;
                             recordColumnIndex++;
                         }
                         if(maxcell< recordColumnIndex)
@@ -287,7 +361,9 @@ namespace MinSheng_MIS.Controllers
                         foreach (var data in datas)
                         {
                             row3.CreateCell(columnIndex).SetCellValue(data.StartTime.ToString());
+                            row3.GetCell(columnIndex).CellStyle = WordStyle;
                             row4.CreateCell(columnIndex).SetCellValue(data.EndTime.ToString());
+                            row4.GetCell(columnIndex).CellStyle = WordStyle;
                             sheet.SetColumnWidth(columnIndex, 20 * 256);
                             columnIndex++;
                         }
@@ -299,11 +375,10 @@ namespace MinSheng_MIS.Controllers
                     for (int col = 2; col <= maxcell; col++)
                     {
                         sheet.SetColumnWidth(col, 25 * 256);
-
                     }
                 }
                 // **🔹 設定下載目標路徑**
-                string folderPath = Server.MapPath("~/Downloads/");
+                string folderPath = Path.Combine(Server.MapPath("~"), "Downloads");
                 if (!Directory.Exists(folderPath))
                 {
                     Directory.CreateDirectory(folderPath);
@@ -318,8 +393,22 @@ namespace MinSheng_MIS.Controllers
                 }
 
                 // **🔹 讓使用者下載 Excel 檔案**
-                return File(filePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
-                return Content(JsonConvert.SerializeObject(jo), "application/json");
+                //return File(filePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    workbook.Write(ms);
+                    byte[] fileBytes = ms.ToArray();
+                    string base64String = Convert.ToBase64String(fileBytes);
+
+                    // **🔹 回傳 JSON**
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Excel生成成功",
+                        fileName = IPSN+".xlsx",
+                        fileData = base64String
+                    }, JsonRequestBehavior.AllowGet);
+                }
             }
             catch (Exception ex)
             {
