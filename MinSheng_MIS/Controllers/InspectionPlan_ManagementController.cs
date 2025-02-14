@@ -369,6 +369,7 @@ namespace MinSheng_MIS.Controllers
                         sheet.SetColumnWidth(col, 25 * 256);
                     }
                 }
+                /*
                 // **🔹 設定下載目標路徑**
                 string folderPath = Path.Combine(Server.MapPath("~"), "Downloads");
                 if (!Directory.Exists(folderPath))
@@ -378,7 +379,6 @@ namespace MinSheng_MIS.Controllers
                 string fileName = "巡檢結果.xlsx";
                 string filePath = Path.Combine(folderPath, fileName);
 
-                /*
                 // **🔹 將 Excel 檔案存到本地**
                 using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
