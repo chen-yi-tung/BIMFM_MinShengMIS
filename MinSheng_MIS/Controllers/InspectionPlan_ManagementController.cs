@@ -224,10 +224,6 @@ namespace MinSheng_MIS.Controllers
                     }
                     #endregion
 
-                    //IRow row5 = sheet.CreateRow(4);
-                    //IRow row6 = sheet.CreateRow(5);
-                    
-
                     SetCellValueWithStyle(sheet, 4, 0, "設備名稱", SubTitleStyle);
                     SetCellValueWithStyle(sheet, 4, 1, "開始時間", SubTitleStyle);
                     SetCellValueWithStyle(sheet, 5, 1, "結束時間", SubTitleStyle);
