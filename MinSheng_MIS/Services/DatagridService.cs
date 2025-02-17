@@ -1195,8 +1195,8 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("ADSN", item.ADSN);
                 itemObjects.Add("Area", item.Area);
                 itemObjects.Add("Floor", item.FloorName);
-                itemObjects.Add("System", item.DSystem);
-                itemObjects.Add("SubSystem", item.DSubSystem);
+                itemObjects.Add("DSystem", item.DSystem);
+                itemObjects.Add("DSubSystem", item.DSubSystem);
                 itemObjects.Add("ImgNum", item.ImgNum);
                 itemObjects.Add("ImgName", item.ImgName);
                 itemObjects.Add("UploadDate", item.UploadDate.ToString("yyyy-MM-dd"));
