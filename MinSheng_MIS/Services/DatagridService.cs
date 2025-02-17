@@ -549,7 +549,42 @@ namespace MinSheng_MIS.Services
                 {
                     string sort = form["sort"].ToString();
                     string order = form["order"].ToString();
-                    equipmentReportFormTable = OrderByField(equipmentReportFormTable, sort, order == "asc");
+                    switch (sort)
+                    {
+                        case "Area":
+                            if (order == "asc")
+                                equipmentReportFormTable = equipmentReportFormTable.OrderBy(e => e.EquipmentInfo.Floor_Info.AreaInfo.Area);
+                            else
+                                equipmentReportFormTable = equipmentReportFormTable.OrderByDescending(e => e.EquipmentInfo.Floor_Info.AreaInfo.Area);                            
+                            break;
+                        case "FloorName":
+                            if (order == "asc")
+                                equipmentReportFormTable = equipmentReportFormTable.OrderBy(e => e.EquipmentInfo.Floor_Info.FloorName);
+                            else
+                                equipmentReportFormTable = equipmentReportFormTable.OrderByDescending(e => e.EquipmentInfo.Floor_Info.FloorName);
+                            break;
+                        case "EName":
+                            if (order == "asc")
+                                equipmentReportFormTable = equipmentReportFormTable.OrderBy(e => e.EquipmentInfo.EName);
+                            else
+                                equipmentReportFormTable = equipmentReportFormTable.OrderByDescending(e => e.EquipmentInfo.EName);
+                            break;
+                        case "NO":
+                            if (order == "asc")
+                                equipmentReportFormTable = equipmentReportFormTable.OrderBy(e => e.EquipmentInfo.NO);
+                            else
+                                equipmentReportFormTable = equipmentReportFormTable.OrderByDescending(e => e.EquipmentInfo.NO);
+                            break;
+                        case "RepairMyName":
+                            if (order == "asc")
+                                equipmentReportFormTable = equipmentReportFormTable.OrderBy(e => db.Equipment_ReportFormMember.FirstOrDefault(m => m.RSN == e.RSN).RepairUserName);
+                            else
+                                equipmentReportFormTable = equipmentReportFormTable.OrderByDescending(e => db.Equipment_ReportFormMember.FirstOrDefault(m => m.RSN == e.RSN).RepairUserName);
+                            break;
+                        default:
+                            equipmentReportFormTable = OrderByField(equipmentReportFormTable, sort, order == "asc");
+                            break;
+                    }
                 }
 
                 int total = equipmentReportFormTable.Count();
