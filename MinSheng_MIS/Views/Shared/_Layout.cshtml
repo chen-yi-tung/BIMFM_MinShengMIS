@@ -23,10 +23,16 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/Scripts/popper.min.js")
-    @Scripts.Render("~/Scripts/share.js")
     @Scripts.Render("~/Content/bootstrap-5.2.3-dist/js/bootstrap.min.js")
+    <script>
+        Object.defineProperty(window, "__authority__", {
+            value: '@Html.Raw(Session["Authority"])',
+            writable: false,
+        });
+        console.log("權限：", window.__authority__)
+    </script>
+    @Scripts.Render("~/Scripts/share.js")
     @RenderSection("styles", required: false)
-
 </head>
 
 <body>

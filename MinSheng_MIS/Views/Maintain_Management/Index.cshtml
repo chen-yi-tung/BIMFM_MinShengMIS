@@ -25,28 +25,32 @@
             <div class="form-group">
                 <label for="NextMaintainDateFrom">最近應保養日期(起)</label>
                 <div style="position: relative; overflow: hidden;">
-                    <input class="form-control calendar-input" id="NextMaintainDateFrom" name="NextMaintainDateFrom" type="text" placeholder="年-月-日" />
+                    <input class="form-control calendar-input" id="NextMaintainDateFrom" name="NextMaintainDateFrom"
+                        type="text" placeholder="年-月-日" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="NextMaintainDateTo">最近應保養日期(迄)</label>
                 <div style="position: relative; overflow: hidden;">
-                    <input class="form-control calendar-input" id="NextMaintainDateTo" name="NextMaintainDateTo" type="text" placeholder="年-月-日" />
+                    <input class="form-control calendar-input" id="NextMaintainDateTo" name="NextMaintainDateTo"
+                        type="text" placeholder="年-月-日" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="ReportTimeFrom">實際保養日期(起)</label>
                 <div style="position: relative; overflow: hidden;">
-                    <input class="form-control calendar-input" id="ReportTimeFrom" name="ReportTimeFrom" type="text" placeholder="年-月-日" />
+                    <input class="form-control calendar-input" id="ReportTimeFrom" name="ReportTimeFrom" type="text"
+                        placeholder="年-月-日" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="ReportTimeTo">實際保養日期(迄)</label>
                 <div style="position: relative; overflow: hidden;">
-                    <input class="form-control calendar-input" id="ReportTimeTo" name="ReportTimeTo" type="text" placeholder="年-月-日" />
+                    <input class="form-control calendar-input" id="ReportTimeTo" name="ReportTimeTo" type="text"
+                        placeholder="年-月-日" />
                 </div>
             </div>
             <div class="form-group">
@@ -115,12 +119,14 @@
                         <div class="form-group col-3fr required">
                             <label for="NextMaintainDate">預計保養日期</label>
                             <div style="position: relative; overflow: hidden;">
-                                <input class="form-control calendar-input" id="NextMaintainDate" name="NextMaintainDate" type="text" placeholder="年-月-日" maxlength="20" required />
+                                <input class="form-control calendar-input" id="NextMaintainDate" name="NextMaintainDate"
+                                    type="text" placeholder="年-月-日" maxlength="20" required />
                             </div>
                         </div>
                         <div class="form-group col-3fr required">
                             <label for="Maintainer">執行人員</label>
-                            <select type="text" class="form-select maintain-user-name" name="Maintainer" id="Maintainer"></select>
+                            <select type="text" class="form-select maintain-user-name" name="Maintainer"
+                                id="Maintainer"></select>
                         </div>
                     </div>
                 </form>
@@ -212,13 +218,10 @@
             },
         ]
         $(async function () {
-            //取得權限
-            try {
-                await checkAuthority();
-                console.log("權限", __authority__);
-            } catch (error) {
-                console.log("無法取得權限", error);
+            if (!isAuth("1", "2")) {
+                document.getElementById('multiAssign').remove();
             }
+
             await formDropdown.ASN()
             await pushSelect("Status", '@Url.Action("MaintainStatus", "DropDownList")');
             await pushSelect("EState", '@Url.Action("EState", "DropDownList")');
@@ -226,14 +229,11 @@
             await pushSelect("Member", '@Url.Action("MaintainUserName", "DropDownList")');
             await addDropDownList();
             await addButtonEvent();
-            Initialize_DataGrid(getGridJSON, __authority__);
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
-            if (__authority__ === "3") {
-                document.getElementById('multiAssign').classList.add('d-none');
-            }
         });
-        
-        function Initialize_DataGrid(getGridJSON, authority) {
+
+        function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -245,8 +245,8 @@
                 frozenColumns: [[
                     { field: 'ck', checkbox: true }, // 新增 checkbox
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_review', (v, row, i) => dg.eventButton(i, "審核", "review", { disabled: row.Status != "待審核" || authority != "1"})),
-                    dg.frozenColumn('_assign', (v, row, i) => dg.eventButton(i, "派工", "assign", { disabled: row.Status != "待派工" || authority === "3", className: "btn btn-datagrid btn-other", dataTitle: "定期保養單 派工" })),
+                    isAuth("1") && dg.frozenColumn('_review', (v, row, i) => dg.eventButton(i, "審核", "review", { disabled: row.Status != "待審核" })),
+                    isAuth("1", "2") && dg.frozenColumn('_assign', (v, row, i) => dg.eventButton(i, "派工", "assign", { disabled: row.Status != "待派工", className: "btn btn-datagrid btn-other", dataTitle: "定期保養單 派工" })),
                 ]],
                 onLoadSuccess: function (data) {
                     data.rows.forEach((row, index) => {
@@ -288,7 +288,7 @@
                             panel.find('.datagrid-header-check input[type="checkbox"]').prop('checked', checkedRows.length > 0);
                         }, 50);
                     }, 10);
-                }, 
+                },
                 onUnselect: function (index, row) {
                     checkedArray = checkedArray.filter(item => item !== row.EMFSN);
 

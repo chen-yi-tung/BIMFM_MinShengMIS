@@ -54,6 +54,7 @@
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
                 <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                <button type="button" class="btn btn-export" id="export">匯出</button>
             </div>
         </form>
     </div>
@@ -110,24 +111,19 @@
         ]
 
         $(async function () {
-            //取得權限
-            try {
-                await checkAuthority();
-                console.log("權限", __authority__);
-            } catch (error) {
-                console.log("無法取得權限", error);
+            if (!isAuth("1", "2")) {
+                document.getElementById('create').remove();
+                document.getElementById('export').remove();
             }
+
             await formDropdown.ASN();
             await formDropdown.pushSelect({ id: "EState", url: '@Url.Action("EState", "DropDownList")' });
-            Initialize_DataGrid(getGridJSON, __authority__);
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
 
-            if (__authority__ === "3") {
-                document.getElementById('create').classList.add('d-none');
-            }
         });
 
-        function Initialize_DataGrid(getGridJSON, authority) {
+        function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -136,9 +132,9 @@
                 remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.EState === "停用" || authority === "3" })),
+                    isAuth("1", "2") && dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: row.EState === "停用" })),
                     dg.frozenColumn('_FilePath', "", 111, (v, row, i) => dg.eventButton(i, "操作手冊", "filePath", { disabled: !row.FilePath })),
-                    dg.frozenColumn('_deactivate', (v, row, i) => dg.eventButton(i, "停用", "deactivate", { className: "btn btn-datagrid btn-delete", disabled: row.EState !== "正常" || authority != "1" })),
+                    isAuth("1") && dg.frozenColumn('_deactivate', (v, row, i) => dg.eventButton(i, "停用", "deactivate", { className: "btn btn-datagrid btn-delete", disabled: row.EState !== "正常" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('ESN'),
@@ -167,9 +163,11 @@
                     inner: "此操作無法回復，是否要停用設備?",
                     button: [
                         { className: "btn btn-cancel", cancel: true, text: "取消" },
-                        { className: "btn btn-delete", text: "確定停用", onClick: () => {
-                            onDeactivate(row.ESN)
-                        }},
+                        {
+                            className: "btn btn-delete", text: "確定停用", onClick: () => {
+                                onDeactivate(row.ESN)
+                            }
+                        },
                     ]
                 })
             })
@@ -210,6 +208,39 @@
             $("#create").click(function () {
                 window.open(`${baseUrl}/Create`, "_self");
             });
+            //點擊 匯出btn
+            $("#export").click(function () {
+                const fd = new FormData();
+                for (const [key, value] of Object.entries(getQueryParams('#form'))) {
+                    fd.append(key, value);
+                }
+                $.ajax({
+                    url: "@Url.Action("ExportToExcel", "EquipmentInfo_Management")",
+                    data: fd,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    success: onSuccess,
+                    error: onError,
+                    xhrFields: {
+                        responseType: 'blob'  //指定響應類型為blob
+                    },
+                })
+                function onSuccess(res) {
+                    console.log("onSuccess res:", res);
+                    let a = document.createElement('a');
+                    let url = window.URL.createObjectURL(res);
+                    a.href = url;
+                    a.download = `資產管理.xlsx`;
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                }
+                function onError(res) {
+                    console.log(res);
+                    createDialogModal({ id: "DialogModal-Error", inner: `匯出失敗！` + `${res?.responseText || ""}` })
+                }
+            })
         }
     </script>
 }

@@ -61,8 +61,8 @@
     </div>
 </div>
 
-    @section scripts {
-        <script>
+@section scripts {
+    <script>
 
         var getGridJSON = '@Url.Action("Account_Management", "Datagrid")';
         var DataGrid;
@@ -89,21 +89,15 @@
             },
         ]
         $(async function () {
-            //取得權限
-            try {
-                await checkAuthority();
-                console.log("權限", __authority__);
-            } catch (error) {
-                console.log("無法取得權限", error);
+            if (!isAuth("1")) {
+                document.getElementById('create').remove();
             }
-            Initialize_DataGrid(getGridJSON, __authority__);
+
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
-            if (__authority__ != "1") {
-                document.getElementById('create').classList.add('d-none');
-            }
         });
 
-        function Initialize_DataGrid(getGridJSON, authority) {
+        function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -114,8 +108,8 @@
                 //sortName: 'UserName',
                 remoteSort: true,
                 frozenColumns: [[
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: authority != "1" })),
-                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { disabled: authority != "1",className: "btn btn-datagrid btn-delete" })),
+                    isAuth("1") && dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    isAuth("1") && dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
                     dg.column('UserName', '帳號', 200),
@@ -147,5 +141,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-        </script>
-    }
+    </script>
+}

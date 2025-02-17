@@ -98,13 +98,7 @@
             }
         ]
         $(async function () {
-            //取得權限
-            try {
-                await checkAuthority();
-                console.log("權限", __authority__);
-            } catch (error) {
-                console.log("無法取得權限", error);
-            }
+            
             await formDropdown.ASN();
             await formDropdown.pushSelect({ id: "WMType", url: '@Url.Action("WMType", "DropDownList")' });
             await formDropdown.pushSelect({ id: "WMState", url: '@Url.Action("WMState", "DropDownList")' });
@@ -113,11 +107,11 @@
                 params.forEach((v, k) => { $(`.search-area #${k}`).val(v); })
             }
 
-            Initialize_DataGrid(getGridJSON, __authority__);
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
 
-        function Initialize_DataGrid(getGridJSON, authority) {
+        function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -129,7 +123,7 @@
                 //sortName: 'IAWSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "填報", "edit", { disabled: row.WMState == "處理完成" || authority === "3" })),
+                    isAuth("1", "2") && dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "填報", "edit", { disabled: row.WMState == "處理完成" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('WMSN'),

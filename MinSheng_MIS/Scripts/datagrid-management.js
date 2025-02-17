@@ -41,6 +41,12 @@ DG.prototype.init = function (selector, options) {
     const self = this;
     const $dg = $(selector);
     const op = Object.assign({}, this.Options, options);
+    if (op.frozenColumns) {
+        op.frozenColumns = op.frozenColumns.map(x => x.filter(x => x))
+    }
+    if (op.columns) {
+        op.columns = op.columns.map(x => x.filter(x => x))
+    }
     this.Options = op;
     $dg.datagrid(op);
     op.pagination && $($dg.datagrid('getPager')).pagination(this.PageOptions);

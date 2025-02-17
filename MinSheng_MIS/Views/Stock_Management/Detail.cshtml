@@ -16,8 +16,10 @@
         </div>
     </div>
 </section>
-
 <div class="datagrid-area">
+    <div class="button-group d-flex gap-2 mb-2">
+        <button type="button" class="btn btn-export" id="export">匯出</button>
+    </div>
     <table id="DataGrid"></table>
 </div>
 
@@ -30,8 +32,42 @@
         let apiUrl = '@Url.Action("GetComputationalStockDetail", "Stock_Management")' + `?id=${SISN}`;
 
         $(async function () {
+            if (!isAuth("1", "2")) {
+                document.querySelector('.button-group').remove();
+            }
             readData(apiUrl);
             Initialize_DataGrid(getGridJSON);
+
+            $("#export").click(function () {
+                const fd = new FormData();
+                fd.append("SISN", SISN)
+                $.ajax({
+                    url: "@Url.Action("ExportDetailToExcel", "Stock_Management")",
+                    data: fd,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    success: onSuccess,
+                    error: onError,
+                    xhrFields: {
+                        responseType: 'blob'  //指定響應類型為blob
+                    },
+                })
+                function onSuccess(res) {
+                    console.log("onSuccess res:", res);
+                    let a = document.createElement('a');
+                    let url = window.URL.createObjectURL(res);
+                    a.href = url;
+                    a.download = `庫存管理.xlsx`;
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                }
+                function onError(res) {
+                    console.log(res);
+                    createDialogModal({ id: "DialogModal-Error", inner: `匯出失敗！` + `${res?.responseText || ""}` })
+                }
+            })
         })
         const SerializedName = [
             { text: "類別", value: "StockType" },

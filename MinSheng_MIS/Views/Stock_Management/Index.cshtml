@@ -5,8 +5,8 @@
     @Html.Partial("DataGridScripts")
 }
 <style>
-    .isMinStock td[field='StockStatus'] > .datagrid-cell,
-    .isMinStock td[field='StockAmount'] > .datagrid-cell {
+    .isMinStock td[field='StockStatus']>.datagrid-cell,
+    .isMinStock td[field='StockAmount']>.datagrid-cell {
         color: rgb(229, 0, 0);
         font-weight: 500;
     }
@@ -39,6 +39,7 @@
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
                 <button type="reset" class="btn btn-clear" id="clear">清除</button>
+                <button type="button" class="btn btn-export" id="export">匯出</button>
             </div>
         </form>
     </div>
@@ -81,25 +82,20 @@
             },
         ]
         $(async function () {
-            //取得權限
-            try {
-                await checkAuthority();
-                console.log("權限", __authority__);
-            } catch (error) {
-                console.log("無法取得權限", error);
+            if (!isAuth("1", "2")) {
+                document.getElementById('create').remove();
+                document.getElementById('createInbound').remove();
+                document.getElementById('createOutbound').remove();
+                document.getElementById('export').remove();
             }
+
             await pushSelect("StockTypeSN", '@Url.Action("StockType", "DropDownList")');
             await pushSelect("StockStatus", '@Url.Action("StockStatus", "DropDownList")');
-            Initialize_DataGrid(getGridJSON, __authority__);
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
-            if (__authority__ === "3") {
-                document.getElementById('create').classList.add('d-none');
-                document.getElementById('createInbound').classList.add('d-none');
-                document.getElementById('createOutbound').classList.add('d-none');
-            }
         });
 
-        function Initialize_DataGrid(getGridJSON, authority) {
+        function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -110,8 +106,8 @@
                 remoteSort: true,
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: authority === "3" })),
-                    dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { disabled: row.CanDelete != true || authority != "1", className: "btn btn-datagrid btn-delete" })),
+                    isAuth("1", "2") && dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
+                    isAuth("1") && dg.frozenColumn('_delete', (v, row, i) => dg.eventButton(i, "刪除", "delete", { disabled: row.CanDelete != true, className: "btn btn-datagrid btn-delete" })),
                 ]],
                 columns: [[
                     dg.hiddenColumn('SISN'),
@@ -154,6 +150,39 @@
             $("#createOutbound").click(function () {
                 window.open(`${baseUrl}/CreateOutbound`, "_self");
             });
+            //點擊 匯出btn
+            $("#export").click(function () {
+                const fd = new FormData();
+                for (const [key, value] of Object.entries(getQueryParams('#form'))) {
+                    fd.append(key, value);
+                }
+                $.ajax({
+                    url: "@Url.Action("ExportToExcel", "Stock_Management")",
+                    data: fd,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    success: onSuccess,
+                    error: onError,
+                    xhrFields: {
+                        responseType: 'blob'  //指定響應類型為blob
+                    },
+                })
+                function onSuccess(res) {
+                    console.log("onSuccess res:", res);
+                    let a = document.createElement('a');
+                    let url = window.URL.createObjectURL(res);
+                    a.href = url;
+                    a.download = `庫存管理.xlsx`;
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                }
+                function onError(res) {
+                    console.log(res);
+                    createDialogModal({ id: "DialogModal-Error", inner: `匯出失敗！` + `${res?.responseText || ""}` })
+                }
+            })
         }
     </script>
 }

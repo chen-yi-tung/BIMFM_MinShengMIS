@@ -33,6 +33,10 @@ async function checkAuthority() {
     }
 }
 
+function isAuth(...args) {
+    return args.includes(window.__authority__);
+}
+
 //轉換日期格式
 function dateTransform(data) {
     // 民國轉西元

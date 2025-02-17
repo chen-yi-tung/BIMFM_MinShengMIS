@@ -26,14 +26,16 @@
             <div class="form-group">
                 <label for="EDateStart">實驗日期(起)</label>
                 <div style="position: relative; overflow: hidden;">
-                    <input class="form-control calendar-input" id="EDateStart" name="DateTo" type="text" placeholder="年-月-日" />
+                    <input class="form-control calendar-input" id="EDateStart" name="DateTo" type="text"
+                        placeholder="年-月-日" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="EDateEnd">實驗日期(迄)</label>
                 <div style="position: relative; overflow: hidden;">
-                    <input class="form-control calendar-input" id="EDateEnd" name="EDateEnd" type="text" placeholder="年-月-日" />
+                    <input class="form-control calendar-input" id="EDateEnd" name="EDateEnd" type="text"
+                        placeholder="年-月-日" />
                 </div>
             </div>
 
@@ -50,8 +52,8 @@
     </div>
 </div>
 
-    @section scripts {
-        <script>
+@section scripts {
+    <script>
         var getGridJSON = '@Url.Action("ExperimentData_Management", "Datagrid")';
         var DataGrid;
 
@@ -64,22 +66,16 @@
                 EDDate: "2023/5/22"
             }
         ]
-         $(async function () {
-            //取得權限
-            try {
-                await checkAuthority();
-                console.log("權限", __authority__);
-            } catch (error) {
-                console.log("無法取得權限", error);
+        $(async function () {
+            if (!isAuth("1", "2")) {
+                document.getElementById('create').remove();
             }
-            Initialize_DataGrid(getGridJSON, __authority__);
+
+            Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
-            if (__authority__ === "3") {
-                document.getElementById('create').classList.add('d-none');
-            }
         });
 
-        function Initialize_DataGrid(getGridJSON, authority) {
+        function Initialize_DataGrid(getGridJSON) {
             let dg = new DG();
             DataGrid = dg.init("#DataGrid", {
                 url: getGridJSON,
@@ -91,7 +87,7 @@
                 //sortName: 'EDRSN',
                 frozenColumns: [[
                     dg.frozenColumn('_detail', (v, row, i) => dg.eventButton(i, "詳情", "detail")),
-                    dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit", { disabled: authority === "3" })),
+                    isAuth("1") && dg.frozenColumn('_edit', (v, row, i) => dg.eventButton(i, "編輯", "edit")),
                 ]],
                 columns: [[
                     dg.hiddenColumn('EDRSN'),
@@ -123,5 +119,5 @@
                 window.open(`${baseUrl}/Create`, "_self");
             });
         }
-        </script>
-    }
+    </script>
+}

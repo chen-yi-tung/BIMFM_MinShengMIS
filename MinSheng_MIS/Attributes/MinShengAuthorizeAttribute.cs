@@ -25,7 +25,9 @@ namespace MinSheng_MIS.Attributes
                 using (Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities())
                 {
                     var controllerAction = httpContext.Request.RequestContext.RouteData.Values["controller"]?.ToString() + "/" + httpContext.Request.RequestContext.RouteData.Values["action"]?.ToString();
-                    switch (db.AspNetUsers.Find(userId).Authority)
+                    var Authority = db.AspNetUsers.Find(userId).Authority;
+                    httpContext.Session["Authority"] = Authority;
+                    switch (Authority)
                     {
                         case "1":
                             return true;
