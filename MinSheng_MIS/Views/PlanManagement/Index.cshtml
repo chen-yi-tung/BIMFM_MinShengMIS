@@ -138,8 +138,7 @@
             dg.addEvent("download", function (row, i) {
                 $.getJSON(`/InspectionPlan_Management/GetInspectionExcel?IPSN=${row.IPSN}`).then((res) => {
                     const blob = base64ToBlob(res.fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                    const file = new File([blob], res.fileName)
-                    downloadFile(res.fileName, file)
+                    downloadFile(res.fileName, blob)
                 })
             })
         }

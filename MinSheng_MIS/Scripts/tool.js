@@ -198,7 +198,7 @@ function FileUploader({
         return this.items.length !== 0
     }
     this.setFile = (path, file = null) => {
-        
+
         if (!multiple) {
             this.clearAllFile()
         }
@@ -286,7 +286,7 @@ function FileUploader({
     }
     this.setExtensionValidity = (validity = true) => {
         if (validity) this.input.get(0).setCustomValidity("")
-        else this.input.get(0).setCustomValidity("請上傳指定格式：\n"+accept.join(", "))
+        else this.input.get(0).setCustomValidity("請上傳指定格式：\n" + accept.join(", "))
     }
     this.init = () => {
         $(container).after(this.element);
@@ -363,21 +363,21 @@ function FileUploader({
 function base64ToBlob(str, type) {
     // decode base64
     var content = atob(str);
-  
+
     // create an ArrayBuffer and a view (as unsigned 8-bit)
     var buffer = new ArrayBuffer(content.length);
     var view = new Uint8Array(buffer);
-  
+
     // fill the view, using the decoded base64
-    for(var n = 0; n < content.length; n++) {
-      view[n] = content.charCodeAt(n);
+    for (var n = 0; n < content.length; n++) {
+        view[n] = content.charCodeAt(n);
     }
-  
+
     // convert ArrayBuffer to Blob
     var blob = new Blob([buffer], { type: type });
-  
+
     return blob;
-  }
+}
 
 function downloadFile(name, file) {
     const url = URL.createObjectURL(file);
@@ -395,5 +395,28 @@ function downloadFile(name, file) {
         document.body.appendChild(link);
         link.click();
         link.remove();
+    }
+}
+
+function ajaxExport({ url, data, name } = {}) {
+    $.ajax({
+        url,
+        data,
+        type: "POST",
+        contentType: false,
+        processData: false,
+        success: onSuccess,
+        error: onError,
+        xhrFields: {
+            responseType: 'blob'  //指定響應類型為blob
+        },
+    })
+    function onSuccess(res) {
+        console.log("[ajaxExport] success res:", res);
+        downloadFile(name, res)
+    }
+    function onError(res) {
+        console.log("[ajaxExport] error res:", res);
+        createDialogModal({ id: "DialogModal-Error", inner: `匯出失敗！${res?.responseText || ""}` })
     }
 }

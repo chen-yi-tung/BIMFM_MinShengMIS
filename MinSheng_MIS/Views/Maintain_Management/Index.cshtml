@@ -377,32 +377,11 @@
             for (const [key, value] of Object.entries(getQueryParams('#form'))) {
                 fd.append(key, value);
             }
-            $.ajax({
-                url: "@Url.Action("ExportToExcel", "Maintain_Management")",
+            ajaxExport({
+                url: "@Url.Action("ExportToExcel")",
                 data: fd,
-                type: "POST",
-                contentType: false,
-                processData: false,
-                success: onSuccess,
-                error: onError,
-                xhrFields: {
-                    responseType: 'blob'  //指定響應類型為blob
-                },
+                name: `定期保養單.xlsx`
             })
-            function onSuccess(res) {
-                console.log("onSuccess res:", res);
-                let a = document.createElement('a');
-                let url = window.URL.createObjectURL(res);
-                a.href = url;
-                a.download = `定期保養單.xlsx`;
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-            }
-            function onError(res) {
-                console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `匯出失敗！` + `${res?.responseText || ""}` })
-            }
         })
 
         //search area onClick Function
