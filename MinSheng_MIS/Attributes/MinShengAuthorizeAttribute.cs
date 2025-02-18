@@ -155,7 +155,7 @@ namespace MinSheng_MIS.Attributes
             #endregion
         };
 
-        //一般使用者權限
+        //一般使用者"禁止"權限
         readonly private List<string> GeneralDeniedPrivileges = new List<string>
         {
             #region 工單管理
@@ -166,6 +166,9 @@ namespace MinSheng_MIS.Attributes
             #region 編輯
             "PlanManagement/Edit",
             "PlanManagement/EditInspectionPlan",
+            #endregion
+            #region 下載
+            "InspectionPlan_Management/GetInspectionExcel",
             #endregion
             #endregion
 
@@ -216,8 +219,11 @@ namespace MinSheng_MIS.Attributes
             "EquipmentInfo_Management/Edit",
             "EquipmentInfo_Management/EditEquipment",
             #endregion
+            #region 匯出
+            "EquipmentInfo_Management/ExportToExcel",
             #endregion
-            
+            #endregion
+
             #region 一機一卡模板管理
             #region 新增模板
             "OneDeviceOneCard_Management/Create",
@@ -275,6 +281,12 @@ namespace MinSheng_MIS.Attributes
             #region 編輯
             "Stock_Management/Edit",
             "Stock_Management/EditComputationalStock",
+            #endregion            
+            #region 庫存管理匯出
+            "Stock_Management/ExportToExcel",
+            #endregion            
+            #region 庫存管理詳情匯出
+            "Stock_Management/DetailExportToExcel",
             #endregion
             #endregion
             
