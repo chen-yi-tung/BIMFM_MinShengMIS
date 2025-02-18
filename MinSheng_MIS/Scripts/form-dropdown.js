@@ -122,54 +122,54 @@
     }
 
     static async ASN({ id = "ASN", fsnId = "FSN", value = null, fsnValue = null, placeholder = "請選擇" } = {}) {
-        const asn = await formDropdown.pushSelect({ id, url: "/DropDownList/Area", placeholder });
-        const fsn = formDropdown.getSelect(fsnId);
-        const initialized = asn.dataset?.fdInitialized;
-        formDropdown.setValue(asn, value);
-        if (fsn) {
-            await formDropdown.FSN({ id: fsn, data: value, value: fsnValue });
+        const select = await formDropdown.pushSelect({ id, url: "/DropDownList/Area", placeholder });
+        const subSelect = formDropdown.getSelect(fsnId);
+        const initialized = select.dataset?.fdInitialized;
+        formDropdown.setValue(select, value);
+        if (subSelect) {
+            await formDropdown.FSN({ id: subSelect, data: value, value: fsnValue });
             if (initialized) {
-                return asn;
+                return select;
             }
-            asn.dataset.fdInitialized = true;
-            asn.addEventListener("change", async function (e) {
-                await formDropdown.FSN({ id: fsn, data: asn.value, placeholder: asn.value ? placeholder : void 0 });
+            select.dataset.fdInitialized = true;
+            select.addEventListener("change", async function (e) {
+                await formDropdown.FSN({ id: subSelect, data: select.value, placeholder: select.value ? placeholder : void 0 });
             });
-            formDropdown.addResetEvent(asn, async () => {
-                await formDropdown.FSN({ id: fsn, data: null });
+            formDropdown.addResetEvent(select, async () => {
+                await formDropdown.FSN({ id: subSelect, data: null });
             });
 
         }
-        return asn;
+        return select;
     }
     static async FSN({ id = "FSN", data, value, placeholder = "請先選擇棟別" } = {}) {
-        const fsn = await formDropdown.pushSelect({ id, url: `/DropDownList/Floor?ASN=${data}`, placeholder });
-        formDropdown.setValue(fsn, value);
-        return fsn;
+        const select = await formDropdown.pushSelect({ id, url: `/DropDownList/Floor?ASN=${data}`, placeholder });
+        formDropdown.setValue(select, value);
+        return select;
     }
 
     static async StockTypeSN({ id = "StockTypeSN", sisnId = "SISN", unitId = null, value = null, sisnValue = null, placeholder = "請選擇" } = {}) {
-        const sysn = await formDropdown.pushSelect({ id, url: "/DropDownList/StockType", placeholder });
-        const sisn = formDropdown.getSelect(sisnId);
+        const select = await formDropdown.pushSelect({ id, url: "/DropDownList/StockType", placeholder });
+        const subSelect = formDropdown.getSelect(sisnId);
         const unit = formDropdown.getSelect(unitId);
-        const initialized = sysn.dataset?.fdInitialized;
-        formDropdown.setValue(sysn, value);
-        if (sisn) {
-            await formDropdown.SISN({ id: sisn, data: value, value: sisnValue });
+        const initialized = select.dataset?.fdInitialized;
+        formDropdown.setValue(select, value);
+        if (subSelect) {
+            await formDropdown.SISN({ id: subSelect, data: value, value: sisnValue });
             if (initialized) {
-                return sysn;
+                return select;
             }
-            sysn.dataset.fdInitialized = true;
-            sysn.addEventListener("change", async function (e) {
-                await formDropdown.SISN({ id: sisn, data: sysn.value, placeholder: sysn.value ? placeholder : void 0 });
+            select.dataset.fdInitialized = true;
+            select.addEventListener("change", async function (e) {
+                await formDropdown.SISN({ id: subSelect, data: select.value, placeholder: select.value ? placeholder : void 0 });
             });
-            formDropdown.addResetEvent(sysn, async () => {
-                await formDropdown.SISN({ id: sisn, data: null });
+            formDropdown.addResetEvent(select, async () => {
+                await formDropdown.SISN({ id: subSelect, data: null });
             });
 
             if (unit) {
-                sisn.addEventListener("change", async function (e) {
-                    const res = await fetch(`/Stock_Management/GetComputationalStockDetail?id=${sisn.value}`)
+                subSelect.addEventListener("change", async function (e) {
+                    const res = await fetch(`/Stock_Management/GetComputationalStockDetail?id=${subSelect.value}`)
                         .then(r => r.json())
                         .then(r => r.Datas)
                         .catch(err => null)
@@ -177,11 +177,65 @@
                 });
             }
         }
-        return sysn;
+        return select;
     }
     static async SISN({ id = "FSN", data, value = null, placeholder = "請先選擇類別" } = {}) {
-        const sisn = await formDropdown.pushSelect({ id, url: `/DropDownList/StockName?StockTypeSN=${data}`, placeholder });
-        formDropdown.setValue(sisn, value);
-        return sisn;
+        const select = await formDropdown.pushSelect({ id, url: `/DropDownList/StockName?StockTypeSN=${data}`, placeholder });
+        formDropdown.setValue(select, value);
+        return select;
+    }
+
+    static async DSystemID({ id = "DSystemID", dssId = "DSubSystemID", value = null, dssValue = null, placeholder = "請選擇" } = {}) {
+        const select = await formDropdown.pushSelect({ id, url: "/DropDownList/DSystem", placeholder });
+        const subSelect = formDropdown.getSelect(dssId);
+        const initialized = select.dataset?.fdInitialized;
+        formDropdown.setValue(select, value);
+        if (subSelect) {
+            await formDropdown.DSubSystemID({ id: subSelect, data: value, value: dssValue });
+            if (initialized) {
+                return select;
+            }
+            select.dataset.fdInitialized = true;
+            select.addEventListener("change", async function (e) {
+                await formDropdown.DSubSystemID({ id: subSelect, data: select.value, placeholder: select.value ? placeholder : void 0 });
+            });
+            formDropdown.addResetEvent(select, async () => {
+                await formDropdown.DSubSystemID({ id: subSelect, data: null });
+            });
+        }
+        return select;
+
+    }
+    static async DSubSystemID({ id = "DSubSystemID", data, value = null, placeholder = "請先選擇系統別" } = {}) {
+        const select = await formDropdown.pushSelect({ id, url: `/DropDownList/DSubSystem?DSystemID=${data}`, placeholder });
+        formDropdown.setValue(select, value);
+        return select;
+    }
+
+    static async ExperimentType({ id = "ExperimentType", tawId = "TAWSN", value = null, tawValue = null, placeholder = "請選擇" } = {}) {
+        const select = await formDropdown.pushSelect({ id, url: "/DropDownList/FormExperimentType", placeholder });
+        const subSelect = formDropdown.getSelect(tawId);
+        const initialized = select.dataset?.fdInitialized;
+        formDropdown.setValue(select, value);
+        if (subSelect) {
+            await formDropdown.TAWSN({ id: subSelect, data: value, value: tawValue });
+            if (initialized) {
+                return select;
+            }
+            select.dataset.fdInitialized = true;
+            select.addEventListener("change", async function (e) {
+                await formDropdown.TAWSN({ id: subSelect, data: select.value, placeholder: select.value ? placeholder : void 0 });
+            });
+            formDropdown.addResetEvent(select, async () => {
+                await formDropdown.TAWSN({ id: subSelect, data: null });
+            });
+        }
+        return select;
+
+    }
+    static async TAWSN({ id = "TAWSN", data, value = null, placeholder = "請先選擇實驗類型" } = {}) {
+        const select = await formDropdown.pushSelect({ id, url: `/DropDownList/FormExperimentName?ExperimentType=${data}`, placeholder });
+        formDropdown.setValue(select, value);
+        return select;
     }
 }

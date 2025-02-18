@@ -2,52 +2,51 @@
     ViewBag.Title = "編輯設備操作手冊";
 }
 @section styles {
-    <script src="/Scripts/datatable.js" defer></script>
-    <script src="/Scripts/tool.js" defer></script>
+    @Html.Partial("DataGridScripts")
 
     <style>
-        @@media (min-width: 992px) {
-            .edit-area .form {
-                grid-template-columns: 250px 250px;
+        @@media(min - width: 992px) {
+                .edit-area .form {
+                    grid-template-columns: 250px 250px;
+                }
             }
-        }
-    </style>
-}
+        </style>
+    }
 
-<h2>@ViewBag.Title</h2>
+    <h2>@ViewBag.Title</h2>
 
-<section>
-    <div class="edit-area edit-area-xs flex-lg-row">
-        <form class="form">
-            <div class="form-group-zone">
-                <div class="form-group required" hidden>
-                    <label for="EOMSN">設備操作手冊編號</label>
-                    <input class="form-control" id="EOMSN" name="EOMSN" type="text" maxlength="50" required />
+    <section>
+        <div class="edit-area edit-area-xs flex-lg-row">
+            <form class="form">
+                <div class="form-group-zone">
+                    <div class="form-group required" hidden>
+                        <label for="EOMSN">設備操作手冊編號</label>
+                        <input class="form-control" id="EOMSN" name="EOMSN" type="text" maxlength="50" required />
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="EName">設備名稱</label>
+                        <select class="form-select" name="EName" id="EName" required>
+                            <option value="">請選擇</option>
+                        </select>
+                        <input class="form-control" id="EName" name="EName" type="text" hidden />
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="Brand">廠牌</label>
+                        <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" required />
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="Model">型號</label>
+                        <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required />
+                    </div>
+
+                    <div id="FileUploader"></div>
                 </div>
-
-                <div class="form-group required">
-                    <label for="EName">設備名稱</label>
-                    <select class="form-select" name="EName" id="EName" required>
-                        <option value="">請選擇</option>
-                    </select>
-                    <input class="form-control" id="EName" name="EName" type="text" hidden />
-                </div>
-
-                <div class="form-group required">
-                    <label for="Brand">廠牌</label>
-                    <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" required />
-                </div>
-
-                <div class="form-group required">
-                    <label for="Model">型號</label>
-                    <input class="form-control" id="Model" name="Model" type="text" maxlength="50" required />
-                </div>
-
-                <div id="FileUploader"></div>
-            </div>
-        </form>
-    </div>
-</section>
+            </form>
+        </div>
+    </section>
     <div class="edit-button-area">
         <button class="btn btn-back" id="back">返回</button>
         <button class="btn btn-export" id="submit">儲存</button>
@@ -56,137 +55,118 @@
     @section scripts {
         <script>
 
-        const EOMSN = '@ViewBag.id';
-        let apiUrl = '@Url.Action("ReadBody", "EquipmentOperatingManual")' + `/${EOMSN}`;
-        //let apiUrl = null;
+            const EOMSN = '@ViewBag.id';
+            let apiUrl = '@Url.Action("ReadBody", "EquipmentOperatingManual")' + `/${EOMSN}`;
+            //let apiUrl = null;
 
-        const fakeData = {
-            EName: "除霧皮帶輸送機",
-            Brand: "A廠牌",
-            Model: "HT-6356",
-            ManualFile: "2023-03-30_B.png",
-        }
+            const fakeData = {
+                EName: "除霧皮帶輸送機",
+                Brand: "A廠牌",
+                Model: "HT-6356",
+                ManualFile: "2023-03-30_B.png",
+            }
 
-        var fileUploader
-        $(async function () {
-            $("#_checkFilePath").prop("checked", true);
-            @*await pushSelect("System", '@Url.Action("System", "DropDownList")');*@
-            addButtonEvent();
+            var fileUploader
+            $(async function () {
+                $("#_checkFilePath").prop("checked", true);
+                addButtonEvent();
 
-            @*const Systems = document.getElementById('System')
-            Systems.addEventListener("change", function () {
-                pushSelect("SubSystem", `@Url.Action("SubSystem", "DropDownList")?System=${$('#System').val()}`);
-            });*@
+                fileUploader = new FileUploader({
+                    container: "#FileUploader",
+                    className: "form-group required",
+                    label: "設備操作手冊檔案",
+                    id: "DesignDiagrams",
+                    customValidityText: "請上傳設備操作手冊"
+                })
 
-            @*const SubSystems = document.getElementById('SubSystem')
-            SubSystems.addEventListener("change", function () {
-                pushSelect("EName", `@Url.Action("EName", "DropDownList")?System=${$('#System').val()}&SubSystem=${$('#SubSystem').val()}`);
-            });*@
-            pushSelect("EName", `@Url.Action("EName", "DropDownList")`);
+                readData(apiUrl);
+            });
 
-            fileUploader = new FileUploader({
-                container: "#FileUploader",
-                className: "form-group required",
-                label: "設備操作手冊檔案",
-                id: "DesignDiagrams",
-                customValidityText: "請上傳設備操作手冊"
-            })
+            function readData(url = null) {
 
-            readData(apiUrl);
-        });
+                url == null ? onSuccess(fakeData) :
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                        success: onSuccess,
+                        error: onError
+                    })
 
-        function readData(url = null) {
+                async function onSuccess(res) {
+                    console.log(res);
+                    await formDropdown.pushSelect({ id: "EName", url: '@Url.Action("EName", "DropDownList")' });
 
-            url == null ? onSuccess(fakeData) :
+                    for (const [k, v] of Object.entries(res)) {
+                        switch (k) {
+                            case "ManualFile":
+                                fileUploader.setFile(res.ManualFile);
+                                break;
+                            default:
+                                $(`#${k}`).val(v);
+                                break;
+                        }
+                    }
+                }
+                function onError(res) {
+                    console.log(res);
+                }
+            }
+
+            function save() {
+                //重置自訂驗證錯誤訊息
+                getAllParams().forEach((e) => {
+                    e.setCustomValidity('');
+                })
+                //自訂驗證錯誤
+                fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+                let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+                console.log("todo save():", isValidity)
+                if (!isValidity) return;
+
+                var form = new FormData();
+                form.append("EOMSN", document.getElementById("EOMSN").value);
+                form.append("EName", document.getElementById("EName").value);
+                form.append("Brand", document.getElementById("Brand").value);
+                form.append("Model", document.getElementById("Model").value);
+                if (fileUploader.hasFile()) {
+                    form.append("ManualFile", fileUploader.getFile());
+                }
+
+                console.log(Object.fromEntries(form.entries()));
+
                 $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
+                    url: "/EquipmentOperatingManual/Edit",
+                    data: form,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
                     success: onSuccess,
                     error: onError
                 })
 
-            async function onSuccess(res) {
-                console.log(res);
-
-                for (const [k, v] of Object.entries(res)) {
-                    switch (k) {
-                        @*case "SubSystem":
-                            await pushSelect("SubSystem", '@Url.Action("SubSystem", "DropDownList")?System=' + res.System);
-                            $(`#${k}`).val(v);
-                            break;*@
-                        case "EName":
-                            await pushSelect("EName", '@Url.Action("EName", "DropDownList")');
-                            $(`#${k}`).val(v);
-                            break;
-                        case "ManualFile":
-                            fileUploader.setFile(res.ManualFile);
-                            break;
-                        default:
-                            $(`#${k}`).val(v);
-                            break;
-                    }
+                function onSuccess(res) {
+                    console.log(res);
+                    createDialogModal({
+                        id: "DialogModal-Success", inner: "儲存成功！",
+                        onHide: () => { window.location.href = "/EquipmentOperatingManual/Index"; }
+                    });
+                }
+                function onError(res) {
+                    console.log(res);
+                    createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
                 }
             }
-            function onError(res) {
-                console.log(res);
+
+            function addButtonEvent() {
+                $("#back").click(function () {
+                    history.back();
+                })
+
+                $("#submit").click(function () {
+                    save();
+                })
             }
-        }
-
-        function save() {
-            //重置自訂驗證錯誤訊息
-            getAllParams().forEach((e) => {
-                e.setCustomValidity('');
-            })
-            //自訂驗證錯誤
-            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-            console.log("todo save():", isValidity)
-            if (!isValidity) return;
-
-            var form = new FormData();
-            form.append("EOMSN", document.getElementById("EOMSN").value);
-            form.append("EName", document.getElementById("EName").value);
-            form.append("Brand", document.getElementById("Brand").value);
-            form.append("Model", document.getElementById("Model").value);
-            if (fileUploader.hasFile()) {
-                form.append("ManualFile", fileUploader.getFile());
-            }
-
-            console.log(Object.fromEntries(form.entries()));
-
-            $.ajax({
-                url: "/EquipmentOperatingManual/Edit",
-                data: form,
-                type: "POST",
-                contentType: false,
-                processData: false,
-                success: onSuccess,
-                error: onError
-            })
-
-            function onSuccess(res) {
-                console.log(res);
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "儲存成功！",
-                    onHide: () => { window.location.href = "/EquipmentOperatingManual/Index"; }
-                });
-            }
-            function onError(res) {
-                console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
-            }
-        }
-
-        function addButtonEvent() {
-            $("#back").click(function () {
-                history.back();
-            })
-
-            $("#submit").click(function () {
-                save();
-            })
-        }
         </script>
     }

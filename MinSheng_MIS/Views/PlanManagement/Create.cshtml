@@ -168,7 +168,7 @@
 
         $(async function () {
             addButtonEvent();
-            await pushSelect("PlanPathSN", "/DropDownList/InspectionPathSample");
+            await formDropdown.pushSelect({ id: "PlanPathSN", url: '@Url.Action("InspectionPathSample", "DropDownList")' });
             autoLinkDG_Controller = new PIDG(ALDGOptions);
             sampleTr.init();
             sampleTr.create();
