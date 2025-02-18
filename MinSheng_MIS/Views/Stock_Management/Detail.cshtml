@@ -42,7 +42,7 @@
                 const fd = new FormData();
                 fd.append("SISN", SISN)
                 $.ajax({
-                    url: "@Url.Action("ExportDetailToExcel", "Stock_Management")",
+                    url: "@Url.Action("DetailExportToExcel", "Stock_Management")",
                     data: fd,
                     type: "POST",
                     contentType: false,
@@ -58,7 +58,7 @@
                     let a = document.createElement('a');
                     let url = window.URL.createObjectURL(res);
                     a.href = url;
-                    a.download = `庫存管理.xlsx`;
+                    a.download = `庫存品項_詳情.xlsx`;
                     a.click();
                     a.remove();
                     window.URL.revokeObjectURL(url);

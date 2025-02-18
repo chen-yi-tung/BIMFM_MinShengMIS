@@ -3,6 +3,7 @@ using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -291,6 +292,92 @@ namespace MinSheng_MIS.Controllers
                 result.ErrorMessage = "</br>系統異常！";
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
+        }
+        #endregion
+
+        #region 資產管理 匯出
+        public ActionResult ExportToExcel(FormCollection form)
+        {
+            JObject jo = new JObject();
+            DatagridService ds = new DatagridService();
+            form.Add("rows", short.MaxValue.ToString());
+            jo = ds.GetJsonForGrid_Stock_Management(form);
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("報修管理");
+
+                worksheet.Cells["A1"].Value = "類別";
+                worksheet.Cells["B1"].Value = "品項名稱";
+                worksheet.Cells["C1"].Value = "狀態";
+                worksheet.Cells["D1"].Value = "數量";
+                worksheet.Cells["E1"].Value = "單位";
+                worksheet.Cells["F1"].Value = "警戒值";
+
+                int row = 2;
+                foreach (var item in jo["rows"])
+                {
+                    worksheet.Cells["A" + row].Value = item["StockType"]?.ToString();
+                    worksheet.Cells["B" + row].Value = item["StockName"]?.ToString();
+                    worksheet.Cells["C" + row].Value = item["StockStatus"]?.ToString();
+                    worksheet.Cells["D" + row].Value = item["StockAmount"]?.ToString();
+                    worksheet.Cells["E" + row].Value = item["Unit"]?.ToString();
+                    worksheet.Cells["F" + row].Value = item["MinStockAmount"]?.ToString();
+                    row++;
+                }
+
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("content-disposition", $"attachment; filename=庫存管理{DateTime.Now.Ticks}.xlsx");
+                Response.BinaryWrite(package.GetAsByteArray());
+            }
+
+            return null;
+        }
+        #endregion
+
+        #region 資產管理 匯出
+        public ActionResult DetailExportToExcel(FormCollection form)
+        {
+            JObject jo = new JObject();
+            DatagridService ds = new DatagridService();
+            form.Add("rows", short.MaxValue.ToString());
+            jo = ds.GetJsonForGrid_StockChangeRecord(form);
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("報修管理");
+
+                worksheet.Cells["A1"].Value = "日期時間";
+                worksheet.Cells["B1"].Value = "入庫數量";
+                worksheet.Cells["C1"].Value = "出庫數量";
+                worksheet.Cells["D1"].Value = "庫存數量";
+                worksheet.Cells["E1"].Value = "登記人";
+                worksheet.Cells["F1"].Value = "採購單據";
+                worksheet.Cells["G1"].Value = "取用人";
+                worksheet.Cells["H1"].Value = "備註";
+
+                int row = 2;
+                foreach (var item in jo["rows"])
+                {
+                    worksheet.Cells["A" + row].Value = item["DateTime"]?.ToString();
+                    worksheet.Cells["B" + row].Value = item["InboundNum"]?.ToString();
+                    worksheet.Cells["C" + row].Value = item["OutboundNum"]?.ToString();
+                    worksheet.Cells["D" + row].Value = item["StockNum"]?.ToString();
+                    worksheet.Cells["E" + row].Value = item["Registrant"]?.ToString();
+                    worksheet.Cells["F" + row].Value = item["Document"]?.ToString();
+                    worksheet.Cells["G" + row].Value = item["Taker"]?.ToString();
+                    worksheet.Cells["H" + row].Value = item["Memo"]?.ToString();
+                    row++;
+                }
+
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("content-disposition", $"attachment; filename=庫存品項_詳情{DateTime.Now.Ticks}.xlsx");
+                Response.BinaryWrite(package.GetAsByteArray());
+            }
+
+            return null;
         }
         #endregion
     }
