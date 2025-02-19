@@ -94,9 +94,8 @@
             if (!isAuth("1", "2")) {
                 document.getElementById('create').remove();
             }
-
-            await pushSelect("PlanState", '@Url.Action("PlanState", "DropDownList")');
-            await pushSelect("Member", '@Url.Action("InspectionMember", "DropDownList")');
+            await formDropdown.pushSelect({ id: "PlanState", url: '@Url.Action("PlanState", "DropDownList")' });
+            await formDropdown.pushSelect({ id: "Member", url: '@Url.Action("InspectionMember", "DropDownList")' });
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
@@ -138,8 +137,7 @@
             dg.addEvent("download", function (row, i) {
                 $.getJSON(`/InspectionPlan_Management/GetInspectionExcel?IPSN=${row.IPSN}`).then((res) => {
                     const blob = base64ToBlob(res.fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                    const file = new File([blob], res.fileName)
-                    downloadFile(res.fileName, file)
+                    downloadFile(res.fileName, blob)
                 })
             })
         }

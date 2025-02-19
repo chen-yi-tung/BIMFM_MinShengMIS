@@ -113,7 +113,7 @@
 
         $(async function () {
             observeChildChanges();
-            await pushSelect("Frequency", '@Url.Action("Frequency", "DropDownList")');
+            await formDropdown.pushSelect({ id: "Frequency", url: '@Url.Action("Frequency", "DropDownList")' });
             readData(apiUrl);
         })
 

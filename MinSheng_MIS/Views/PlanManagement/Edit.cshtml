@@ -32,7 +32,8 @@
                     <label for="PlanDate">工單日期</label>
 
                     <div style="position: relative; overflow: hidden;">
-                        <input class="form-control calendar-input" id="PlanDate" name="PlanDate" type="text" placeholder="年/月/日" required />
+                        <input class="form-control calendar-input" id="PlanDate" name="PlanDate" type="text"
+                            placeholder="年/月/日" required />
                     </div>
                 </div>
             </div>
@@ -41,7 +42,8 @@
             <div class="datatable-easyui w-100 d-none">
                 <table id="Template-datagrid"></table>
             </div>
-            <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal" data-bs-target="#AutoLink">+ 自動代入每日巡檢模板</button>
+            <button type="button" class="btn btn-search align-self-start" id="create-item" data-bs-toggle="modal"
+                data-bs-target="#AutoLink">+ 自動代入每日巡檢模板</button>
 
             <div class="m-0 w-100 text-center">
                 <div class="datatable datatable-grid w-100 h-100">
@@ -70,10 +72,12 @@
                                         </button>
                                     </td>
                                     <td>
-                                        <input class="form-control" type="time" id="StartTime" name="StartTime" step="any" required />
+                                        <input class="form-control" type="time" id="StartTime" name="StartTime"
+                                            step="any" required />
                                     </td>
                                     <td>
-                                        <input class="form-control" type="time" id="EndTime" name="EndTime" step="any" required />
+                                        <input class="form-control" type="time" id="EndTime" name="EndTime" step="any"
+                                            required />
                                     </td>
                                     <td>
                                         <select class="form-select" id="PlanPathSN" name="PlanPathSN" required></select>
@@ -84,7 +88,8 @@
                                         <button type="button" class="btn btn-datagrid">巡檢路線資訊</button>
                                     </td>
                                     <td>
-                                        <select class="form-select operator-name" id="UserID" name="UserID" required></select>
+                                        <select class="form-select operator-name" id="UserID" name="UserID"
+                                            required></select>
                                     </td>
                                     <td id="d-_delete" class="p-1 pt-2">
                                         <button type="button" class="btn-delete-item"></button>
@@ -170,7 +175,7 @@
 
         $(async function () {
             addButtonEvent();
-            await pushSelect("PlanPathSN", "/DropDownList/InspectionPathSample");
+            await formDropdown.pushSelect({ id: "PlanPathSN", url: '@Url.Action("InspectionPathSample", "DropDownList")' });
             autoLinkDG_Controller = new PIDG(ALDGOptions);
             sampleTr.init();
             setSortableItem("#item-area");
@@ -245,7 +250,7 @@
         }
         let pathData = {};
         const setInspectionPlan = async (SN) => {
-            let data = await readData('@Url.Action("ReadBody")', IPSN, false);   
+            let data = await readData('@Url.Action("ReadBody")', IPSN, false);
             $("#PlanDate").val(dateTransform(data.PlanDate));
             $("#IPName").val(data.IPName);
             if (Array.isArray(data.Inspections)) {

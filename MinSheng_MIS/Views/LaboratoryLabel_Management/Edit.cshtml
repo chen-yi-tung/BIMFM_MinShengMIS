@@ -2,8 +2,7 @@
     ViewBag.Title = "編輯實驗標籤";
 }
 @section styles {
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/datatable.js" defer></script>
+    @Html.Partial("DataGridScripts")
     <style>
         .edit-title {
             font-size: 16px;
@@ -22,7 +21,8 @@
                 <div class="form-group required">
                     <label for="EDate">實驗日期</label>
                     <div style="position: relative; overflow: hidden;">
-                        <input class="form-control calendar-input" id="EDate" name="EDate" type="text" placeholder="年-月-日" required />
+                        <input class="form-control calendar-input" id="EDate" name="EDate" type="text"
+                            placeholder="年-月-日" required />
                     </div>
                 </div>
                 <div class="form-group required">
@@ -83,16 +83,9 @@
         var labelItems = new LabelItems()
         $(async function () {
             addButtonEvent();
-
-            await pushSelect("ExperimentType", '@Url.Action("FormExperimentType", "DropDownList")');
-
-            const ExperimentType = document.getElementById('ExperimentType')
-            const TAWSN = document.getElementById('TAWSN')
-            ExperimentType.addEventListener("change", function () {
-                pushSelect("TAWSN", `@Url.Action("FormExperimentName", "DropDownList")?ExperimentType=${ExperimentType.value}`);
-            });
-            TAWSN.addEventListener("change", function () {
-                $.getJSON(`@Url.Action("TestingAndAnalysis_LabelName", "TestingAndAnalysisWorkflow")?TAWSN=${TAWSN.value}`, (res) => {
+            formDropdown.getSelect('TAWSN').addEventListener("change", function () {
+                if (!this.value) return;
+                $.getJSON(`@Url.Action("TestingAndAnalysis_LabelName", "TestingAndAnalysisWorkflow")?TAWSN=${this.value}`, (res) => {
                     labelItems.list.children().remove()
                     res.forEach((item) => {
                         labelItems.create(item)
@@ -158,10 +151,10 @@
             this.count = 0
             const temp_item = (count) => {
                 return `<div class="d-flex w-100 gap-3" id="item-${count}">
-                    <input id="ELISN" name="ELISN" hidden>
-                    <input class="form-control" id="LabelName" name="LabelName" type="text" minlength="1" maxlength="200" required/>
-                    <button class="btn-delete-item align-self-center flex-shrink-0" onclick="labelItems.delete(${count})"></button>
-                </div>`
+                                <input id="ELISN" name="ELISN" hidden>
+                                <input class="form-control" id="LabelName" name="LabelName" type="text" minlength="1" maxlength="200" required/>
+                                <button class="btn-delete-item align-self-center flex-shrink-0" onclick="labelItems.delete(${count})"></button>
+                            </div>`
             }
             this.create = (data = null) => {
                 if ($("#TAWSN").val() == "") {
@@ -213,9 +206,7 @@
 
             async function onSuccess(res) {
                 console.log(res);
-                $("#ExperimentType").val(res.ExperimentType)
-                await pushSelect("TAWSN", `@Url.Action("FormExperimentName", "DropDownList")?ExperimentType=${$("#ExperimentType").val()}`);
-                $("#TAWSN").val(res.TAWSN)
+                await formDropdown.ExperimentType({ value: res.ExperimentType, tawValue: res.TAWSN })
                 $("#EDate").val(dateTransform(res.EDate))
 
                 res.LaboratoryLabelItem.forEach((item) => {

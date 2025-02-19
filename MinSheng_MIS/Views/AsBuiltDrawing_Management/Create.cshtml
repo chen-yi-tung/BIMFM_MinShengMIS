@@ -77,12 +77,7 @@
         var fileUploader
         $(async function () {
             await formDropdown.ASN();
-            await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
-
-            const Systems = document.getElementById('DSystemID')
-            Systems.addEventListener("change", function () {
-                pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?DSystemID=${$('#DSystemID').val()}`);
-            });
+            await formDropdown.DSystemID();
 
             addButtonEvent();
             fileUploader = new FileUploader({

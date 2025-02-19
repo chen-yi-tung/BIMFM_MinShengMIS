@@ -2,6 +2,8 @@
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OfficeOpenXml;
 using System;
 using System.Data.Entity;
 using System.Linq;
@@ -305,6 +307,51 @@ namespace MinSheng_MIS.Controllers
             {
                 return Helper.HandleException(this);
             }
+        }
+        #endregion
+
+        #region 資產管理 匯出
+        public ActionResult ExportToExcel(FormCollection form)
+        {
+            JObject jo = new JObject();
+            DatagridService ds = new DatagridService();
+            form.Add("rows", short.MaxValue.ToString());
+            jo = ds.GetJsonForGrid_EquipmentInfo(form);
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("報修管理");
+
+                worksheet.Cells["A1"].Value = "設備名稱";
+                worksheet.Cells["B1"].Value = "設備編號";
+                worksheet.Cells["C1"].Value = "設備狀態";
+                worksheet.Cells["D1"].Value = "棟別";
+                worksheet.Cells["E1"].Value = "樓層";
+                worksheet.Cells["F1"].Value = "設備廠牌";
+                worksheet.Cells["G1"].Value = "設備型號";
+                worksheet.Cells["H1"].Value = "設備廠商";
+
+                int row = 2;
+                foreach (var item in jo["rows"])
+                {
+                    worksheet.Cells["A" + row].Value = item["EName"]?.ToString();
+                    worksheet.Cells["B" + row].Value = item["NO"]?.ToString();
+                    worksheet.Cells["C" + row].Value = item["EState"]?.ToString();
+                    worksheet.Cells["D" + row].Value = item["Area"]?.ToString();
+                    worksheet.Cells["E" + row].Value = item["Floor"]?.ToString();
+                    worksheet.Cells["F" + row].Value = item["Brand"]?.ToString();
+                    worksheet.Cells["G" + row].Value = item["Model"]?.ToString();
+                    worksheet.Cells["H" + row].Value = item["Vendor"]?.ToString();
+                    row++;
+                }
+
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("content-disposition", $"attachment; filename=資產管理{DateTime.Now.Ticks}.xlsx");
+                Response.BinaryWrite(package.GetAsByteArray());
+            }
+
+            return null;
         }
         #endregion
 

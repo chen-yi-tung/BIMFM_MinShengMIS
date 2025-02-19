@@ -50,8 +50,7 @@
             if (!isAuth("1", "2")) {
                 document.getElementById('create').remove();
             }
-
-            await pushSelect("Frequency", '@Url.Action("Frequency", "DropDownList")');
+            await formDropdown.pushSelect({ id: "Frequency", url: '@Url.Action("Frequency", "DropDownList")' });
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
         });
