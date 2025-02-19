@@ -24,7 +24,7 @@ namespace MinSheng_MIS.Controllers.API
         #region 取得Beacon位置X、Y軸並組合成Subset
         //[AllowAnonymous]
         [Route("GetBeaconsPosInfo")]
-        [System.Web.Http.HttpPost]
+        [HttpPost]
         public async Task<IHttpActionResult> GetBeaconsPosInfo(BeaconsPosInfoRequestModel data)
         {
             try
@@ -134,10 +134,32 @@ namespace MinSheng_MIS.Controllers.API
         // 心律是否正常
         // 是否停留過久：以偵測到的beacon作為判斷(app抓取最近的3個beacon作為定位計算，若beacon每5公尺布置一個，則移動約2.5公尺抓取的beacon會不一樣)
         [Route("RecordUserVitalsAndPos")]
-        [System.Web.Http.HttpPost]
-        public IHttpActionResult RecordUserVitalsAndPos(VitalsAndPosViewModel data)
+        [HttpPost]
+        public async Task<IHttpActionResult> RecordUserVitalsAndPosAsync(VitalsAndPosViewModel data)
         {
-            return Ok();
+            try
+            {
+                // Data Annotation
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+                // 紀錄 InspectionTrack 軌跡紀錄
+                await _beaconService.AddInspectionTrackAsync(data);
+
+                return Ok(new JsonResService<string>
+                {
+                    AccessState = ResState.Success,
+                    ErrorMessage = null,
+                    Datas = null
+                });
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
         }
         #endregion
     }

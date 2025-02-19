@@ -86,6 +86,27 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 新增 InspectionTrack 軌跡紀錄
+        public async Task AddInspectionTrackAsync(IVitalsAndPos data)
+        {
+            // 使用者名稱
+            var userName = HttpContext.Current.User.Identity.Name;
+
+            // 新增使用者軌跡紀錄
+            _db.InspectionTrack.Add(new InspectionTrack
+            {
+                TrackTime = data.Timestamp,
+                UserName = userName,
+                FSN = data.FSN,
+                LocationX = data.X,
+                LocationY = data.Y,
+                Heartbeat = data.Heartbeat,
+            });
+
+            await _db.SaveChangesAsync();
+        }
+        #endregion
+
         #region 取得有效Beacon List
         /// <summary>
         /// 將Beacon List進行篩選，獲取有效Beacon
