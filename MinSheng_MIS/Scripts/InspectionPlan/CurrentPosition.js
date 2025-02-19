@@ -109,6 +109,7 @@
                     { state: '1', type: '1', label: '心率異常' },
                     { state: '1', type: '2', label: '路線偏移' },
                     { state: '2', type: '3', label: '停留過久' },
+                    { state: '2', type: '4', label: '緊急按鈕' },
                 ],
                 position: {
                     x: 100,
@@ -606,6 +607,7 @@ window.addEventListener('load', async () => {
                         case "1": return "fa-solid fa-heart-circle-exclamation";
                         case "2": return "fa-solid fa-shoe-prints";
                         case "3": return "fa-solid fa-user-clock";
+                        case "4": return "fa-solid fa-land-mine-on";
                         default: return "";
                     }
                 }
