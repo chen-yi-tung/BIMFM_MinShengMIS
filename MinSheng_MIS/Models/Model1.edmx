@@ -472,10 +472,10 @@
           </Key>
           <Property Name="TrackTime" Type="datetime" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
-          <Property Name="LocationX" Type="decimal" Precision="19" Scale="11" Nullable="false" />
-          <Property Name="LocationY" Type="decimal" Precision="19" Scale="11" Nullable="false" />
-          <Property Name="Heartbeat" Type="int" Nullable="false" />
+          <Property Name="FSN" Type="nvarchar" MaxLength="5" />
+          <Property Name="LocationX" Type="decimal" Precision="19" Scale="11" />
+          <Property Name="LocationY" Type="decimal" Precision="19" Scale="11" />
+          <Property Name="Heartbeat" Type="int" />
         </EntityType>
         <EntityType Name="LaboratoryMaintenance">
           <Key>
@@ -654,26 +654,6 @@
           <Property Name="Purpose" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="TimeStamp" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
-        </EntityType>
-        <EntityType Name="UserHeartRhythmData">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="HeartRhythm" Type="int" Nullable="false" />
-          <Property Name="Timestamp" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="UserPositionData">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
-          <Property Name="Location_X" Type="decimal" Precision="19" Scale="11" Nullable="false" />
-          <Property Name="Location_Y" Type="decimal" Precision="19" Scale="11" Nullable="false" />
-          <Property Name="Timestamp" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="WarningMessage">
           <Key>
@@ -1161,7 +1141,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionTrack_Floor_Info">
-          <End Role="Floor_Info" Type="Self.Floor_Info" Multiplicity="1" />
+          <End Role="Floor_Info" Type="Self.Floor_Info" Multiplicity="0..1" />
           <End Role="InspectionTrack" Type="Self.InspectionTrack" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Floor_Info">
@@ -1304,18 +1284,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserPositionData_Floor_Info">
-          <End Role="Floor_Info" Type="Self.Floor_Info" Multiplicity="1" />
-          <End Role="UserPositionData" Type="Self.UserPositionData" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Floor_Info">
-              <PropertyRef Name="FSN" />
-            </Principal>
-            <Dependent Role="UserPositionData">
-              <PropertyRef Name="FSN" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_WarningMessageFillinRecord_WarningMessage">
           <End Role="WarningMessage" Type="Self.WarningMessage" Multiplicity="1" />
           <End Role="WarningMessageFillinRecord" Type="Self.WarningMessageFillinRecord" Multiplicity="*" />
@@ -1385,8 +1353,6 @@
           <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Self.TestingAndAnalysis_LabelName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Self.TestingAndAnalysisWorkflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tokens" EntityType="Self.Tokens" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UserHeartRhythmData" EntityType="Self.UserHeartRhythmData" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UserPositionData" EntityType="Self.UserPositionData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessage" EntityType="Self.WarningMessage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessageFillinRecord" EntityType="Self.WarningMessageFillinRecord" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WatchPairing" EntityType="Self.WatchPairing" Schema="dbo" store:Type="Tables" />
@@ -1586,10 +1552,6 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="Tokens" EntitySet="Tokens" />
           </AssociationSet>
-          <AssociationSet Name="FK_UserPositionData_Floor_Info" Association="Self.FK_UserPositionData_Floor_Info">
-            <End Role="Floor_Info" EntitySet="Floor_Info" />
-            <End Role="UserPositionData" EntitySet="UserPositionData" />
-          </AssociationSet>
           <AssociationSet Name="FK_WarningMessageFillinRecord_WarningMessage" Association="Self.FK_WarningMessageFillinRecord_WarningMessage">
             <End Role="WarningMessage" EntitySet="WarningMessage" />
             <End Role="WarningMessageFillinRecord" EntitySet="WarningMessageFillinRecord" />
@@ -1602,8 +1564,6 @@
         <EntityContainer Name="Bimfm_MinSheng_MISEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="BeaconData" EntityType="Bimfm_MinSheng_MISModel.BeaconData" />
           <EntitySet Name="BeaconDevice" EntityType="Bimfm_MinSheng_MISModel.BeaconDevice" />
-          <EntitySet Name="UserHeartRhythmData" EntityType="Bimfm_MinSheng_MISModel.UserHeartRhythmData" />
-          <EntitySet Name="UserPositionData" EntityType="Bimfm_MinSheng_MISModel.UserPositionData" />
           <EntitySet Name="C__MigrationHistory" EntityType="Bimfm_MinSheng_MISModel.C__MigrationHistory" />
           <EntitySet Name="AreaInfo" EntityType="Bimfm_MinSheng_MISModel.AreaInfo" />
           <EntitySet Name="AsBuiltDrawing" EntityType="Bimfm_MinSheng_MISModel.AsBuiltDrawing" />
@@ -1776,10 +1736,6 @@
             <End Role="Floor_Info" EntitySet="Floor_Info" />
             <End Role="RFID" EntitySet="RFID" />
           </AssociationSet>
-          <AssociationSet Name="FK_UserPositionData_Floor_Info" Association="Bimfm_MinSheng_MISModel.FK_UserPositionData_Floor_Info">
-            <End Role="Floor_Info" EntitySet="Floor_Info" />
-            <End Role="UserPositionData" EntitySet="UserPositionData" />
-          </AssociationSet>
           <AssociationSet Name="FK_InspectionDefaultOrder_InspectionDefaultOrder" Association="Bimfm_MinSheng_MISModel.FK_InspectionDefaultOrder_InspectionDefaultOrder">
             <End Role="RFID" EntitySet="RFID" />
             <End Role="InspectionDefaultOrder" EntitySet="InspectionDefaultOrder" />
@@ -1890,27 +1846,6 @@
           <Property Name="Location_Y" Type="Decimal" Precision="19" Scale="11" />
           <Property Name="IsEnable" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_BeaconDevice_Floor_Info" FromRole="BeaconDevice" ToRole="Floor_Info" />
-        </EntityType>
-        <EntityType Name="UserHeartRhythmData">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="HeartRhythm" Type="Int32" Nullable="false" />
-          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
-        </EntityType>
-        <EntityType Name="UserPositionData">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
-          <Property Name="Location_X" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
-          <Property Name="Location_Y" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
-          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_UserPositionData_Floor_Info" FromRole="UserPositionData" ToRole="Floor_Info" />
         </EntityType>
         <EntityType Name="C__MigrationHistory">
           <Key>
@@ -2291,7 +2226,6 @@
           <NavigationProperty Name="EquipmentInfo" Relationship="Bimfm_MinSheng_MISModel.FK_EquipmentInfo_Floor_Info" FromRole="Floor_Info" ToRole="EquipmentInfo" />
           <NavigationProperty Name="InspectionTrack" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionTrack_Floor_Info" FromRole="Floor_Info" ToRole="InspectionTrack" />
           <NavigationProperty Name="RFID" Relationship="Bimfm_MinSheng_MISModel.FK_RFID_Floor_Info" FromRole="Floor_Info" ToRole="RFID" />
-          <NavigationProperty Name="UserPositionData" Relationship="Bimfm_MinSheng_MISModel.FK_UserPositionData_Floor_Info" FromRole="Floor_Info" ToRole="UserPositionData" />
         </EntityType>
         <EntityType Name="InspectionDefaultOrder">
           <Key>
@@ -2410,10 +2344,10 @@
           </Key>
           <Property Name="TrackTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
-          <Property Name="LocationX" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
-          <Property Name="LocationY" Type="Decimal" Nullable="false" Precision="19" Scale="11" />
-          <Property Name="Heartbeat" Type="Int32" Nullable="false" />
+          <Property Name="FSN" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="LocationX" Type="Decimal" Precision="19" Scale="11" />
+          <Property Name="LocationY" Type="Decimal" Precision="19" Scale="11" />
+          <Property Name="Heartbeat" Type="Int32" />
           <NavigationProperty Name="Floor_Info" Relationship="Bimfm_MinSheng_MISModel.FK_InspectionTrack_Floor_Info" FromRole="InspectionTrack" ToRole="Floor_Info" />
         </EntityType>
         <EntityType Name="LaboratoryMaintenance">
@@ -2985,7 +2919,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InspectionTrack_Floor_Info">
-          <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="1" />
+          <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="0..1" />
           <End Type="Bimfm_MinSheng_MISModel.InspectionTrack" Role="InspectionTrack" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Floor_Info">
@@ -3004,18 +2938,6 @@
               <PropertyRef Name="FSN" />
             </Principal>
             <Dependent Role="RFID">
-              <PropertyRef Name="FSN" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserPositionData_Floor_Info">
-          <End Type="Bimfm_MinSheng_MISModel.Floor_Info" Role="Floor_Info" Multiplicity="1" />
-          <End Type="Bimfm_MinSheng_MISModel.UserPositionData" Role="UserPositionData" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Floor_Info">
-              <PropertyRef Name="FSN" />
-            </Principal>
-            <Dependent Role="UserPositionData">
               <PropertyRef Name="FSN" />
             </Dependent>
           </ReferentialConstraint>
@@ -3285,28 +3207,6 @@
                 <ScalarProperty Name="GUID" ColumnName="GUID" />
                 <ScalarProperty Name="FSN" ColumnName="FSN" />
                 <ScalarProperty Name="Minor" ColumnName="Minor" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="UserHeartRhythmData">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.UserHeartRhythmData">
-              <MappingFragment StoreEntitySet="UserHeartRhythmData">
-                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
-                <ScalarProperty Name="HeartRhythm" ColumnName="HeartRhythm" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="UserPositionData">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.UserPositionData">
-              <MappingFragment StoreEntitySet="UserPositionData">
-                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
-                <ScalarProperty Name="Location_Y" ColumnName="Location_Y" />
-                <ScalarProperty Name="Location_X" ColumnName="Location_X" />
-                <ScalarProperty Name="FSN" ColumnName="FSN" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -68,14 +68,14 @@ namespace MinSheng_MIS.Services
             var userName = HttpContext.Current.User.Identity.Name;
 
             // 新增使用者定位資訊
-            _db.UserPositionData.AddOrUpdate(new UserPositionData
-            {
-                UserName = userName,
-                FSN = data.FSN,
-                Location_X = ((decimal)data.X),
-                Location_Y = ((decimal)data.Y),
-                Timestamp = DateTime.Now,
-            });
+            //_db.UserPositionData.AddOrUpdate(new UserPositionData
+            //{
+            //    UserName = userName,
+            //    FSN = data.FSN,
+            //    Location_X = ((decimal)data.X),
+            //    Location_Y = ((decimal)data.Y),
+            //    Timestamp = DateTime.Now,
+            //});
         }
         #endregion
 

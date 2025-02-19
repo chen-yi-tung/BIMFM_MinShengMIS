@@ -27,8 +27,6 @@ namespace MinSheng_MIS.Models
     
         public virtual DbSet<BeaconData> BeaconData { get; set; }
         public virtual DbSet<BeaconDevice> BeaconDevice { get; set; }
-        public virtual DbSet<UserHeartRhythmData> UserHeartRhythmData { get; set; }
-        public virtual DbSet<UserPositionData> UserPositionData { get; set; }
         public virtual DbSet<C__MigrationHistory> C__MigrationHistory { get; set; }
         public virtual DbSet<AreaInfo> AreaInfo { get; set; }
         public virtual DbSet<AsBuiltDrawing> AsBuiltDrawing { get; set; }
