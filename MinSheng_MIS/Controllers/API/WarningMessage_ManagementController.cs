@@ -27,7 +27,7 @@ namespace MinSheng_MIS.Controllers.API
                 _db = new Bimfm_MinSheng_MISEntities();
                 _warningMessageService = new WarningMessageService(_db);
             }
-            public async Task<JsonResService<string>> PostAsync(WarningMessageCreateModel info)
+            public async Task<JsonResService<string>> Post(WarningMessageCreateModel info)
             {
                 JsonResService<string> result = new JsonResService<string>();
                 try
