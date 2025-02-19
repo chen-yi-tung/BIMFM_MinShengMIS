@@ -41,7 +41,7 @@ namespace MinSheng_MIS.Models.ViewModels
         public decimal? Location_Y { get; set; } // 這裡儲存實際的 RFID Y軸
         [JsonIgnore]
         public string FSN { get; set; } // 所在樓層
-        [JsonIgnore]
+        //[JsonIgnore]
         public double Distance { get; set; }
     }
 
@@ -80,14 +80,14 @@ namespace MinSheng_MIS.Models.ViewModels
     #region 使用者生理狀態及定位
     public class VitalsAndPosViewModel : IVitalsAndPos
     {
-        [Required]
-        public int Heartbeat { get; set; }
-        [Required]
+        //[Required]
+        public int? Heartbeat { get; set; }
+        //[Required]
         public string FSN { get; set; }
-        [Required]
-        public decimal X { get; set; }
-        [Required]
-        public decimal Y { get; set; }
+        //[Required]
+        public decimal? X { get; set; }
+        //[Required]
+        public decimal? Y { get; set; }
         [Required]
         public DateTime Timestamp { get; set; }
     }
@@ -99,14 +99,14 @@ namespace MinSheng_MIS.Models.ViewModels
 
     public interface IUserVitals
     {
-        int Heartbeat { get; set; }
+        int? Heartbeat { get; set; }
     }
 
     public interface IUserPos
     {
         string FSN { get; set; }
-        decimal X { get; set; }
-        decimal Y { get; set; }
+        decimal? X { get; set; }
+        decimal? Y { get; set; }
     }
     #endregion
 

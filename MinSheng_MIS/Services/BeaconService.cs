@@ -9,6 +9,7 @@ using MathNet.Numerics.Optimization;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Web;
+using System.Reflection;
 
 namespace MinSheng_MIS.Services
 {
@@ -60,6 +61,13 @@ namespace MinSheng_MIS.Services
                 T item = x.ToDto<IBeacon, T>();
                 if (beaconDataLookup.TryGetValue(x.Minor, out var beaconData))
                     item = beaconData.ToDto<BeaconDevice, T>();
+                // 保留distance
+                PropertyInfo property = typeof(T).GetProperty("Distance");
+                if (property != null && property.CanWrite)
+                {
+                    // 設定屬性值
+                    property.SetValue(item, x.Distance);
+                }
                 return item;
             });
         }
@@ -81,27 +89,6 @@ namespace MinSheng_MIS.Services
                 data.RecivedTime = now;
                 return data;
             }));
-
-            await _db.SaveChangesAsync();
-        }
-        #endregion
-
-        #region 新增 InspectionTrack 軌跡紀錄
-        public async Task AddInspectionTrackAsync(IVitalsAndPos data)
-        {
-            // 使用者名稱
-            var userName = HttpContext.Current.User.Identity.Name;
-
-            // 新增使用者軌跡紀錄
-            _db.InspectionTrack.Add(new InspectionTrack
-            {
-                TrackTime = data.Timestamp,
-                UserName = userName,
-                FSN = data.FSN,
-                LocationX = data.X,
-                LocationY = data.Y,
-                Heartbeat = data.Heartbeat,
-            });
 
             await _db.SaveChangesAsync();
         }

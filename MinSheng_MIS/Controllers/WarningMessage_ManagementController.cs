@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -30,9 +31,9 @@ namespace MinSheng_MIS.Controllers
 			return View();
 		}
         [HttpPost]
-        public ActionResult AddWarningMessagen(WarningMessageCreateModel info)
+        public async Task<ActionResult> AddWarningMessagenAsync(WarningMessageCreateModel info)
         {
-            _warningMessageService.AddWarningMessage(info, User.Identity.Name);
+            await _warningMessageService.AddWarningMessageAsync(info);
             return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
         }
         #endregion
