@@ -3,6 +3,7 @@ using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -11,6 +12,9 @@ namespace MinSheng_MIS.Services
 {
     public class PlanInformationService : IDisposable
     {
+        private readonly int _rateLowerLimit = Convert.ToInt32(ConfigurationManager.AppSettings["HeartRateLowerLimit"]);
+        private readonly int _rateUpperLimit = Convert.ToInt32(ConfigurationManager.AppSettings["HeartRateUpperLimit"]);
+
         Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
         #region 巡檢資訊管理 Services
@@ -241,9 +245,47 @@ namespace MinSheng_MIS.Services
         #region 空間人員即時位置
         public JObject InspectionCurrentPos(string FSN)
         {
+            var today = DateTime.Today;
+            var users = db.InspectionTrack
+                .Where(x => x.TrackTime > today)
+                .OrderByDescending(x => x.TrackTime)
+                .ToList()
+                .GroupBy(x => x.UserName);
+
             JObject jo = new JObject();
-            jo["current"] = new JArray();
-            jo["another"] = new JArray();
+            
+            JArray jaCurrent = new JArray();
+            JArray jaAnother = new JArray();
+            foreach (var user in users)
+            {
+                var current = user.FirstOrDefault();
+                if (current == null)
+                    continue;
+
+                var jPos = new JObject
+                {
+                    {"x", current?.LocationX },
+                    {"y", current?.LocationY },
+                };
+                var jUser = new JObject
+                {
+                    {"name", db.AspNetUsers.Where(x => x.UserName == current.UserName).First().MyName },
+                    {"heart", current.Heartbeat },
+                    {"heartAlert", current.Heartbeat < _rateLowerLimit || current.Heartbeat > _rateUpperLimit },
+                    {"location", $"{current?.Floor_Info.AreaInfo.Area} {current?.Floor_Info.FloorName}" },
+                    {"time", current.TrackTime.ToString("yyyy-MM-dd HH:mm") },
+                    {"alert", new JArray() },
+                    {"position", jPos },
+                };
+                if (current.FSN == FSN)
+                    jaCurrent.Add(jUser);
+                else
+                    jaAnother.Add(jUser);
+            }
+
+            jo["current"] = jaCurrent;
+            jo["another"] = jaAnother;
+
             return jo;
         }
         #endregion

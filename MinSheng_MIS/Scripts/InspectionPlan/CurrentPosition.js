@@ -133,6 +133,8 @@
 }
 const bim = new UpViewer(document.getElementById('BIM'))
 const currentLocation = new CurrentLocation()
+
+const InspectionCurrentPos_Pins = [];
 window.addEventListener('load', async () => {
     // #region chart options
     const pieSize = 138
@@ -198,17 +200,17 @@ window.addEventListener('load', async () => {
         })
 
         // use fakeData
-        Object.entries(res).forEach(([k, v]) => {
-            if (v?.length === 0) {
-                res[k] = fakeData?.[k];
-            }
-        })
-        if (res['InspectionCurrentPos'].current?.length === 0) {
-            res['InspectionCurrentPos'].current = fakeData?.InspectionCurrentPos?.current;
-        }
-        if (res['InspectionCurrentPos'].another?.length === 0) {
-            res['InspectionCurrentPos'].another = fakeData?.InspectionCurrentPos?.another;
-        }
+        //Object.entries(res).forEach(([k, v]) => {
+        //    if (v?.length === 0) {
+        //        res[k] = fakeData?.[k];
+        //    }
+        //})
+        //if (res['InspectionCurrentPos'].current?.length === 0) {
+        //    res['InspectionCurrentPos'].current = fakeData?.InspectionCurrentPos?.current;
+        //}
+        //if (res['InspectionCurrentPos'].another?.length === 0) {
+        //    res['InspectionCurrentPos'].another = fakeData?.InspectionCurrentPos?.another;
+        //}
 
         console.log(res);
 
@@ -218,11 +220,11 @@ window.addEventListener('load', async () => {
         EnvironmentInfo(res?.EnvironmentInfo)
         ChartInspectionAberrantLevel(res?.ChartInspectionAberrantLevel)
         ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
-        InspectionCurrentPos(res?.InspectionCurrentPos)
 
         await bim.init()
         await bim.loadModels(bim.getModelsUrl(currentLocation.value))
         await createBeaconPoint(currentLocation.FSN);
+        InspectionCurrentPos(res?.InspectionCurrentPos)
         //bim.hideWall()
         //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
 
@@ -244,6 +246,12 @@ window.addEventListener('load', async () => {
             await bim.loadModels(bim.getModelsUrl(currentLocation.value))
             await createBeaconPoint(currentLocation.FSN)
             //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
+        })
+
+        bim.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
+            InspectionCurrentPos_Pins.forEach((pin) => {
+                pin.update()
+            })
         })
     }
     async function createBeaconPoint(FSN) {
@@ -513,12 +521,17 @@ window.addEventListener('load', async () => {
         })
     }
     //空間人員即時位置
+
     function InspectionCurrentPos(data) {
+        InspectionCurrentPos_Pins.forEach((pin) => {
+            pin.destroy()
+        })
+        InspectionCurrentPos_Pins.length = 0
         const infoBox = document.getElementById('box-InspectionCurrentPos');
         const container = document.getElementById('InspectionCurrentPos');
         const container_another = document.getElementById('InspectionAnotherPos');
 
-        const htmls = createPersons(data.current)
+        const htmls = createPersons(data.current, true)
         const htmls_another = createPersons(data.another)
         container.replaceChildren()
         container.insertAdjacentHTML('beforeend', htmls.join(''))
@@ -537,11 +550,13 @@ window.addEventListener('load', async () => {
             }
         })
 
-        function createPersons(data) {
+        function createPersons(data, needCreatePin = false) {
+            
             return data.map((d) => {
                 return createPerson(d)
             })
             function createPerson(data) {
+                needCreatePin && createPin(data)
                 data.time = dateTransform(data.time);
                 return `<div class="plan-person ${isAlert(data) ? 'error' : ''}">
                     <div class="plan-person-icon"><i class="${getIcon(data)}"></i></div>
@@ -577,6 +592,40 @@ window.addEventListener('load', async () => {
                         return "fa-solid fa-heart-circle-exclamation";
                     }
                     return "fa-solid fa-heart";
+                }
+
+                function createPin(d) {
+                    const pin = new ForgePin({
+                        viewer: bim.viewer,
+                        id: d.name,
+                        position: { x: d.x, y: d.y, z: 0 },
+                        img: "/Content/img/pin.svg", 
+                    })
+                    pin.addPopover({
+                        offset: ['0%', '140%'],
+                        html: `<div class="pin-popover">
+                            <div class="popover-header">
+                                <span class="num">Pt01</span><span class="name">${d.name}</span>
+                            </div>
+                            <div class="popover-body">
+                                <img src="/Content/img/heart.svg" height="14">
+                                <span class="label">心律：</span>
+                                <span class="value">${d.heart}</span>
+                                <span class="unit">下/分</span>
+                            </div>
+                        </div>`,
+                        setContent: function (data) {
+                            //the function to set html content
+                            //"this" is popover
+                            const $e = $(this.element);
+                            $e.find(".value").text(data.value);
+                        },
+                    })
+                    InspectionCurrentPos_Pins.push(pin)
+                    pin.show()
+                    pin.update()
+                    pin.popover.show()
+                    
                 }
             }
 

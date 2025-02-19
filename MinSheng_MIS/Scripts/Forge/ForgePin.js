@@ -146,14 +146,14 @@ class ForgePin {
         }
     }
     get visible() {
-        return this.element.style.display == "inline-block";
+        return this.element.dataset?.show;
     }
     set visible(v) {
         if (v) {
-            this.element.style.display = "inline-block";
+            this.element.dataset.show = true;
             this.update();
         } else {
-            this.element.style.display = "none";
+            delete this.element.dataset.show;
         }
     }
     get position() {
