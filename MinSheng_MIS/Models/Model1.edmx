@@ -489,6 +489,12 @@
           <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" />
           <Property Name="UploadDateTime" Type="datetime" />
         </EntityType>
+        <EntityType Name="LoginUserList">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
         <EntityType Name="ManufacturerInfo">
           <Key>
             <PropertyRef Name="MFRSN" />
@@ -680,13 +686,6 @@
           <Property Name="FillinUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="FillinState" Type="char" MaxLength="1" Nullable="false" />
           <Property Name="Memo" Type="nvarchar(max)" />
-        </EntityType>
-        <EntityType Name="WatchPairing">
-          <Key>
-            <PropertyRef Name="WatchID" />
-          </Key>
-          <Property Name="WatchID" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="UserID" Type="nvarchar" MaxLength="256" Nullable="false" />
         </EntityType>
         <Association Name="FK_BeaconDevice_Floor_Info">
           <End Role="Floor_Info" Type="Self.Floor_Info" Multiplicity="0..1" />
@@ -1338,6 +1337,7 @@
           <EntitySet Name="InspectionPlan_Time" EntityType="Self.InspectionPlan_Time" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InspectionTrack" EntityType="Self.InspectionTrack" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LaboratoryMaintenance" EntityType="Self.LaboratoryMaintenance" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LoginUserList" EntityType="Self.LoginUserList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ManufacturerInfo" EntityType="Self.ManufacturerInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MeetingMinutes" EntityType="Self.MeetingMinutes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MonthlyReport" EntityType="Self.MonthlyReport" Schema="dbo" store:Type="Tables" />
@@ -1355,7 +1355,6 @@
           <EntitySet Name="Tokens" EntityType="Self.Tokens" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessage" EntityType="Self.WarningMessage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessageFillinRecord" EntityType="Self.WarningMessageFillinRecord" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="WatchPairing" EntityType="Self.WatchPairing" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_BeaconDevice_Floor_Info" Association="Self.FK_BeaconDevice_Floor_Info">
             <End Role="Floor_Info" EntitySet="Floor_Info" />
             <End Role="BeaconDevice" EntitySet="BeaconDevice" />
@@ -1602,6 +1601,7 @@
           <EntitySet Name="InspectionPlan_Time" EntityType="Bimfm_MinSheng_MISModel.InspectionPlan_Time" />
           <EntitySet Name="InspectionTrack" EntityType="Bimfm_MinSheng_MISModel.InspectionTrack" />
           <EntitySet Name="LaboratoryMaintenance" EntityType="Bimfm_MinSheng_MISModel.LaboratoryMaintenance" />
+          <EntitySet Name="LoginUserList" EntityType="Bimfm_MinSheng_MISModel.LoginUserList" />
           <EntitySet Name="ManufacturerInfo" EntityType="Bimfm_MinSheng_MISModel.ManufacturerInfo" />
           <EntitySet Name="MeetingMinutes" EntityType="Bimfm_MinSheng_MISModel.MeetingMinutes" />
           <EntitySet Name="MonthlyReport" EntityType="Bimfm_MinSheng_MISModel.MonthlyReport" />
@@ -1619,7 +1619,6 @@
           <EntitySet Name="Tokens" EntityType="Bimfm_MinSheng_MISModel.Tokens" />
           <EntitySet Name="WarningMessage" EntityType="Bimfm_MinSheng_MISModel.WarningMessage" />
           <EntitySet Name="WarningMessageFillinRecord" EntityType="Bimfm_MinSheng_MISModel.WarningMessageFillinRecord" />
-          <EntitySet Name="WatchPairing" EntityType="Bimfm_MinSheng_MISModel.WatchPairing" />
           <AssociationSet Name="FK_Floor_Info_AreaInfo" Association="Bimfm_MinSheng_MISModel.FK_Floor_Info_AreaInfo">
             <End Role="AreaInfo" EntitySet="AreaInfo" />
             <End Role="Floor_Info" EntitySet="Floor_Info" />
@@ -2362,6 +2361,12 @@
           <Property Name="UploadUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="UploadDateTime" Type="DateTime" Precision="3" />
         </EntityType>
+        <EntityType Name="LoginUserList">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+        </EntityType>
         <EntityType Name="ManufacturerInfo">
           <Key>
             <PropertyRef Name="MFRSN" />
@@ -2582,13 +2587,6 @@
           <Property Name="FillinState" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="Memo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="WarningMessage" Relationship="Bimfm_MinSheng_MISModel.FK_WarningMessageFillinRecord_WarningMessage" FromRole="WarningMessageFillinRecord" ToRole="WarningMessage" />
-        </EntityType>
-        <EntityType Name="WatchPairing">
-          <Key>
-            <PropertyRef Name="WatchID" />
-          </Key>
-          <Property Name="WatchID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="UserID" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Floor_Info_AreaInfo">
           <End Type="Bimfm_MinSheng_MISModel.AreaInfo" Role="AreaInfo" Multiplicity="1" />
@@ -3692,6 +3690,13 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="LoginUserList">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.LoginUserList">
+              <MappingFragment StoreEntitySet="LoginUserList">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="ManufacturerInfo">
             <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.ManufacturerInfo">
               <MappingFragment StoreEntitySet="ManufacturerInfo">
@@ -3896,14 +3901,6 @@
                 <ScalarProperty Name="FillinDateTime" ColumnName="FillinDateTime" />
                 <ScalarProperty Name="WNFRSN" ColumnName="WNFRSN" />
                 <ScalarProperty Name="WMSN" ColumnName="WMSN" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="WatchPairing">
-            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.WatchPairing">
-              <MappingFragment StoreEntitySet="WatchPairing">
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="WatchID" ColumnName="WatchID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

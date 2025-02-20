@@ -12,9 +12,8 @@ namespace MinSheng_MIS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class WatchPairing
+    public partial class LoginUserList
     {
-        public string WatchID { get; set; }
         public string UserID { get; set; }
     }
 }
