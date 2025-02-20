@@ -276,6 +276,7 @@ namespace MinSheng_MIS.Services
                     {"time", current.TrackTime.ToString("yyyy-MM-dd HH:mm") },
                     {"alert", new JArray() },
                     {"position", jPos },
+                    {"ViewName", db.Floor_Info.Find(current.FSN).ViewName?.ToString() },
                 };
                 if (current.FSN == FSN)
                     jaCurrent.Add(jUser);
