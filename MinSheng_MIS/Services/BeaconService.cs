@@ -10,12 +10,14 @@ using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Web;
 using System.Reflection;
+using System.Configuration;
 
 namespace MinSheng_MIS.Services
 {
     public class BeaconService
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
+        private readonly int _beaconDistanceVector = Convert.ToInt32(ConfigurationManager.AppSettings["BeaconDistanceVector"]);
 
         public BeaconService(Bimfm_MinSheng_MISEntities db)
         {
@@ -66,7 +68,7 @@ namespace MinSheng_MIS.Services
                 if (property != null && property.CanWrite)
                 {
                     // 設定屬性值
-                    property.SetValue(item, x.Distance);
+                    property.SetValue(item, x.Distance * _beaconDistanceVector);
                 }
                 return item;
             });
