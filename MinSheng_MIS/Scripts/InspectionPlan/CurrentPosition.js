@@ -81,8 +81,8 @@
                 time: '2024-12-09 15:19',
                 alert: [],
                 position: {
-                    x: 100,
-                    y: 100
+                    x: 0,
+                    y: 0
                 },
             },
             {
@@ -93,8 +93,8 @@
                 time: '2024-12-09 15:19',
                 alert: [],
                 position: {
-                    x: 100,
-                    y: 100
+                    x: 42,
+                    y: 12
                 },
             },
         ],
@@ -200,17 +200,17 @@ window.addEventListener('load', async () => {
         })
 
         // use fakeData
-        //Object.entries(res).forEach(([k, v]) => {
+        // Object.entries(res).forEach(([k, v]) => {
         //    if (v?.length === 0) {
         //        res[k] = fakeData?.[k];
         //    }
-        //})
-        //if (res['InspectionCurrentPos'].current?.length === 0) {
+        // })
+        // if (res['InspectionCurrentPos'].current?.length === 0) {
         //    res['InspectionCurrentPos'].current = fakeData?.InspectionCurrentPos?.current;
-        //}
-        //if (res['InspectionCurrentPos'].another?.length === 0) {
+        // }
+        // if (res['InspectionCurrentPos'].another?.length === 0) {
         //    res['InspectionCurrentPos'].another = fakeData?.InspectionCurrentPos?.another;
-        //}
+        // }
 
         console.log(res);
 
@@ -269,6 +269,8 @@ window.addEventListener('load', async () => {
         })
         console.log(beaconPoint);
         bim.createBeaconPoint(beaconPoint)
+
+        // download beaconPoint
         const pins = {
             FSN,
             pins: bim.beaconPoint.map((pin) => {
@@ -547,6 +549,15 @@ window.addEventListener('load', async () => {
                     el.classList.remove('active')
                 })
                 target.classList.add('active')
+
+                InspectionCurrentPos_Pins.forEach((pin)=>{
+                    if (pin.data.name === target.dataset.name) {
+                        pin.popover.show()
+                    }
+                    else {
+                        pin.popover.hide()
+                    }
+                })
             }
         })
 
@@ -558,7 +569,7 @@ window.addEventListener('load', async () => {
             function createPerson(data) {
                 needCreatePin && createPin(data)
                 data.time = dateTransform(data.time);
-                return `<div class="plan-person ${isAlert(data) ? 'error' : ''}">
+                return `<div class="plan-person ${isAlert(data) ? 'error' : ''}" data-name="${data.name}">
                     <div class="plan-person-icon"><i class="${getIcon(data)}"></i></div>
                     <div class="plan-person-content">
                         <div class="plan-person-infos">
@@ -598,33 +609,28 @@ window.addEventListener('load', async () => {
                     const pin = new ForgePin({
                         viewer: bim.viewer,
                         id: d.name,
-                        position: { x: d.x, y: d.y, z: 0 },
+                        position: new THREE.Vector3(d.position.x, d.position.y, 0),
                         img: "/Content/img/pin.svg", 
+                        data: d,
                     })
                     pin.addPopover({
-                        offset: ['0%', '140%'],
+                        offset: ['50%', 'calc(-100% + 16px)'],
                         html: `<div class="pin-popover">
                             <div class="popover-header">
                                 <span class="num">Pt01</span><span class="name">${d.name}</span>
                             </div>
                             <div class="popover-body">
-                                <img src="/Content/img/heart.svg" height="14">
+                                <i class="${getHeartIcon(d.heartAlert)}"></i>
                                 <span class="label">心律：</span>
                                 <span class="value">${d.heart}</span>
                                 <span class="unit">下/分</span>
                             </div>
                         </div>`,
-                        setContent: function (data) {
-                            //the function to set html content
-                            //"this" is popover
-                            const $e = $(this.element);
-                            $e.find(".value").text(data.value);
-                        },
                     })
                     InspectionCurrentPos_Pins.push(pin)
                     pin.show()
                     pin.update()
-                    pin.popover.show()
+                    //pin.popover.show()
                     
                 }
             }
