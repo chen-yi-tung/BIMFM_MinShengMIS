@@ -716,7 +716,7 @@ window.addEventListener('load', async () => {
                             </div>
                             <div class="popover-body">
                                 <i class="${getHeartIcon(d.heartAlert)}"></i>
-                                <span class="label">心律：</span>
+                                <span class="label">心率：</span>
                                 <span class="value">${d.heart}</span>
                                 <span class="unit">下/分</span>
                             </div>
