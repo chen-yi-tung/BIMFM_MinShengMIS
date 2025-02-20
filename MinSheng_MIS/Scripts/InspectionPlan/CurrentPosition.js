@@ -191,8 +191,8 @@ window.addEventListener('load', async () => {
     const updateTime = 1000;
     let timer;
     init()
-    async function init() {
-        await currentLocation.init();
+
+    async function getData(useFake = false) {
         const res = await $.ajax({
             url: "/InspectionPlan_Management/GetCurrentPositionData",
             data: { FSN: currentLocation.FSN },
@@ -200,21 +200,26 @@ window.addEventListener('load', async () => {
             dataType: "json",
             contentType: "application/json;charset=utf-8",
         })
-
-        // use fakeData
-        // Object.entries(res).forEach(([k, v]) => {
-        //    if (v?.length === 0) {
-        //        res[k] = fakeData?.[k];
-        //    }
-        // })
-        // if (res['InspectionCurrentPos'].current?.length === 0) {
-        //    res['InspectionCurrentPos'].current = fakeData?.InspectionCurrentPos?.current;
-        // }
-        // if (res['InspectionCurrentPos'].another?.length === 0) {
-        //    res['InspectionCurrentPos'].another = fakeData?.InspectionCurrentPos?.another;
-        // }
-
         console.log(res);
+        // use fakeData
+        if (useFake) {
+            Object.entries(res).forEach(([k, v]) => {
+                if (v?.length === 0) {
+                    res[k] = fakeData?.[k];
+                }
+            })
+            if (res['InspectionCurrentPos'].current?.length === 0) {
+                res['InspectionCurrentPos'].current = fakeData?.InspectionCurrentPos?.current;
+            }
+            if (res['InspectionCurrentPos'].another?.length === 0) {
+                res['InspectionCurrentPos'].another = fakeData?.InspectionCurrentPos?.another;
+            }
+        }
+        return res
+    }
+    async function init() {
+        await currentLocation.init();
+        const res = await getData()
 
         ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
         ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
@@ -227,27 +232,14 @@ window.addEventListener('load', async () => {
         await bim.loadModels(bim.getModelsUrl(currentLocation.value))
         await createBeaconPoint(currentLocation.FSN);
         InspectionCurrentPos(res?.InspectionCurrentPos)
-        //bim.hideWall()
-        //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
-
-        /* bim.createSamplePath()
-        const pathRecord = await bim.createPathRecord()
-        document.body.addEventListener('keydown', (e) => {
-            console.log("keydown", e.code)
-            if (e.code === 'Space') {
-                pathRecord.start()
-            }
-        })
-        console.log("%c請按空白鍵開始動畫", "color:green;font-size: 2em;padding:0.5rem;") */
 
         currentLocation.addEventListener('change', async (e) => {
+            clearTimeout(timer);
+
             bim.destroyBeaconPoint()
             bim.unloadModels()
-            //bim.dispose()
-            //await bim.init()
             await bim.loadModels(bim.getModelsUrl(currentLocation.value))
             await createBeaconPoint(currentLocation.FSN)
-            //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
 
             update()
         })
@@ -258,18 +250,26 @@ window.addEventListener('load', async () => {
             })
         })
 
+        bim.viewer.loading.addEventListener('hide', () => {
+            InspectionCurrentPos_Pins.forEach((pin) => {
+                pin.hide()
+            })
+        })
+
+        bim.viewer.loading.addEventListener('show', () => {
+            InspectionCurrentPos_Pins.forEach((pin) => {
+                pin.show()
+                pin.update()
+            })
+        })
+
+
+
         timer = setTimeout(update, updateTime)
     }
     async function update() {
         clearTimeout(timer);
-        const res = await $.ajax({
-            url: "/InspectionPlan_Management/GetCurrentPositionData",
-            data: { FSN: currentLocation.FSN },
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json;charset=utf-8",
-        })
-        console.log(res);
+        const res = await getData()
 
         ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
         ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
@@ -596,14 +596,52 @@ window.addEventListener('load', async () => {
         container_another.replaceChildren()
         container_another.insertAdjacentHTML('beforeend', htmls_another.join(''))
 
+        if (container.dataset.activePerson) {
+            const activePerson = container.querySelector(`.plan-person[data-name="${container.dataset.activePerson}"]`)
+            if (activePerson) {
+                activePerson.classList.add('active');
+                InspectionCurrentPos_Pins.forEach((pin) => {
+                    if (pin.data.name === container.dataset.activePerson) {
+                        pin.popover.show()
+                    }
+                    else {
+                        pin.popover.hide()
+                    }
+                })
+            }
+        }
+
+        if (infoBox.dataset.initialized) {
+            return;
+        }
+
         infoBox.addEventListener('click', (e) => {
             const target = e.target;
             if (target && target.classList.contains('plan-person')) {
+                if (target.parentElement.id === 'InspectionAnotherPos') {
+                    const d = data.another.find(x => x.name === target.dataset.name);
+                    currentLocation.setViewName(d.ViewName);
+                    
+                    container.replaceChildren()
+                    container.appendChild(target)
+                    container_another.replaceChildren()
+                    return;
+                }
                 const activePersons = Array.from(document.querySelectorAll('.plan-person.active'))
                 activePersons.forEach((el) => {
                     el.classList.remove('active')
                 })
+
+                // remove current active persons
+                if (activePersons.findIndex(x => x === target) !== -1) {
+                    container.dataset.activePerson = '';
+                    InspectionCurrentPos_Pins.forEach((pin) => {
+                        pin.popover.hide()
+                    })
+                    return;
+                }
                 target.classList.add('active')
+                container.dataset.activePerson = target.dataset.name;
 
                 InspectionCurrentPos_Pins.forEach((pin) => {
                     if (pin.data.name === target.dataset.name) {
@@ -615,6 +653,8 @@ window.addEventListener('load', async () => {
                 })
             }
         })
+
+        infoBox.dataset.initialized = true;
 
         function createPersons(data, needCreatePin = false) {
 
@@ -683,9 +723,11 @@ window.addEventListener('load', async () => {
                         </div>`,
                     })
                     InspectionCurrentPos_Pins.push(pin)
-                    pin.show()
-                    pin.update()
-                    //pin.popover.show()
+
+                    if (!bim.viewer.loading.loading) {
+                        pin.show()
+                        pin.update()
+                    }
 
                 }
             }
@@ -742,7 +784,7 @@ function CurrentLocation() {
         menu.replaceChildren();
         const htmls = this.data.map((e, i) => {
             const active = this.activeIndex === i ? 'active' : '';
-            return `<li><a class="dropdown-item ${active}" data-index="${i}">${e.Text}</a></li>`
+            return `<li><a class="dropdown-item ${active}" data-index="${i}" data-value="${e.Value}">${e.Text}</a></li>`
         })
         menu.insertAdjacentHTML('beforeend', htmls.join(''));
         this.updateData()
@@ -775,6 +817,14 @@ function CurrentLocation() {
         console.log(items);
 
         menu.dispatchEvent(new Event('change'))
+    }
+    this.setViewName = (viewName) => {
+        const activeIndex = this.data.findIndex(x => x.Value === viewName);
+        if (activeIndex === -1) {
+            throw new Error('[CurrentLocation.setViewName] Invalid ViewName.')
+        }
+        this.activeIndex = activeIndex
+        this.updateData();
     }
     this.addEventListener = (eventType, callback) => {
         menu.addEventListener(eventType, callback.bind(this, this))

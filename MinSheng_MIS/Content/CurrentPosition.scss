@@ -509,6 +509,10 @@ body {
                 font-weight: 500;
             }
         }
+
+        &:not([data-show]) .pin-popover{
+            display: none;
+        }
     }
 
     .pin-popover {
