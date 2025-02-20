@@ -188,6 +188,8 @@ window.addEventListener('load', async () => {
     // #endregion
 
     // #region chart
+    const updateTime = 1000;
+    let timer;
     init()
     async function init() {
         await currentLocation.init();
@@ -246,6 +248,8 @@ window.addEventListener('load', async () => {
             await bim.loadModels(bim.getModelsUrl(currentLocation.value))
             await createBeaconPoint(currentLocation.FSN)
             //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
+
+            update()
         })
 
         bim.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
@@ -253,6 +257,29 @@ window.addEventListener('load', async () => {
                 pin.update()
             })
         })
+
+        timer = setTimeout(update, updateTime)
+    }
+    async function update() {
+        clearTimeout(timer);
+        const res = await $.ajax({
+            url: "/InspectionPlan_Management/GetCurrentPositionData",
+            data: { FSN: currentLocation.FSN },
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+        })
+        console.log(res);
+
+        ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
+        ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
+        EquipmentOperatingState(res?.EquipmentOperatingState)
+        EnvironmentInfo(res?.EnvironmentInfo)
+        ChartInspectionAberrantLevel(res?.ChartInspectionAberrantLevel)
+        ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
+        InspectionCurrentPos(res?.InspectionCurrentPos)
+
+        timer = setTimeout(update, updateTime)
     }
     async function createBeaconPoint(FSN) {
         const data = { FSN };
@@ -294,6 +321,13 @@ window.addEventListener('load', async () => {
         const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
         ctx.width = pieSize
         ctx.height = pieSize
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.labels = data.map(x => x.label);
+            chart.data.datasets[0].data = data.map(x => x.value);
+            chart.update();
+            return;
+        }
         new Chart(ctx, {
             type: 'pie',
             data: {
@@ -334,6 +368,13 @@ window.addEventListener('load', async () => {
         const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
         ctx.width = pieSize
         ctx.height = pieSize
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.labels = data.map(x => x.label);
+            chart.data.datasets[0].data = data.map(x => x.value);
+            chart.update();
+            return;
+        }
         new Chart(ctx, {
             type: 'pie',
             data: {
@@ -424,6 +465,13 @@ window.addEventListener('load', async () => {
         const backgroundColor = ["#2CB6F0", "#E77272"]
         ctx.width = pieSize
         ctx.height = pieSize
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.labels = data.map(x => x.label);
+            chart.data.datasets[0].data = data.map(x => x.value);
+            chart.update();
+            return;
+        }
         new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -474,6 +522,13 @@ window.addEventListener('load', async () => {
         const backgroundColor = ["#E77272", "#FFA54B", "#72E998"]
         ctx.width = pieSize
         ctx.height = pieSize
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.labels = data.map(x => x.label);
+            chart.data.datasets[0].data = data.map(x => x.value);
+            chart.update();
+            return;
+        }
         new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -550,7 +605,7 @@ window.addEventListener('load', async () => {
                 })
                 target.classList.add('active')
 
-                InspectionCurrentPos_Pins.forEach((pin)=>{
+                InspectionCurrentPos_Pins.forEach((pin) => {
                     if (pin.data.name === target.dataset.name) {
                         pin.popover.show()
                     }
@@ -562,7 +617,7 @@ window.addEventListener('load', async () => {
         })
 
         function createPersons(data, needCreatePin = false) {
-            
+
             return data.map((d) => {
                 return createPerson(d)
             })
@@ -610,7 +665,7 @@ window.addEventListener('load', async () => {
                         viewer: bim.viewer,
                         id: d.name,
                         position: new THREE.Vector3(d.position.x, d.position.y, 0),
-                        img: "/Content/img/pin.svg", 
+                        img: "/Content/img/pin.svg",
                         data: d,
                     })
                     pin.addPopover({
@@ -631,7 +686,7 @@ window.addEventListener('load', async () => {
                     pin.show()
                     pin.update()
                     //pin.popover.show()
-                    
+
                 }
             }
 
