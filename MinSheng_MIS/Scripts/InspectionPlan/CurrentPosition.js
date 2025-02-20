@@ -749,8 +749,8 @@ window.addEventListener('load', async () => {
 
                 function getState(s) {
                     switch (s) {
-                        case "1": return "red";
-                        case "2": return "orange";
+                        case "1": return "orange";
+                        case "2": return "red";
                         default: return "";
                     }
                 }
