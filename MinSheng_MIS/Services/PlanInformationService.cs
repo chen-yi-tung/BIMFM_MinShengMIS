@@ -1,12 +1,15 @@
-﻿using MinSheng_MIS.Models;
+﻿using MinSheng_MIS.Attributes;
+using MinSheng_MIS.Models;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Numerics;
 using System.Web;
 using System.Web.Mvc;
+using static MinSheng_MIS.Services.UniParams;
 
 namespace MinSheng_MIS.Services
 {
@@ -262,11 +265,34 @@ namespace MinSheng_MIS.Services
                 if (current == null)
                     continue;
 
+                // 告警訊息
+                var warnings = db.WarningMessage
+                    .Where(x => x.UserName == user.Key)
+                    .Where(x => x.WMState != ((int)WMState.Completed).ToString())
+                    .ToList()
+                    .GroupBy(x => x.WMType);
+
                 var jPos = new JObject
                 {
                     {"x", current?.LocationX },
                     {"y", current?.LocationY },
                 };
+
+                var jAlert = new JArray();
+                foreach (var item in warnings)
+                {
+                    if (!item.Any())
+                        continue;
+                    var msg = item.First();
+                    var jMsg = new JObject
+                    {
+                        {"state", msg.WMType },
+                        {"type", msg.WMClass },
+                        {"label", ConvertStringToEnum<WMClass>(msg.WMClass).GetLabel() },
+                    };
+                    jAlert.Add(jMsg);
+                }
+
                 var jUser = new JObject
                 {
                     {"name", db.AspNetUsers.Where(x => x.UserName == current.UserName).First().MyName },
@@ -274,7 +300,7 @@ namespace MinSheng_MIS.Services
                     {"heartAlert", current.Heartbeat < _rateLowerLimit || current.Heartbeat > _rateUpperLimit },
                     {"location", $"{current?.Floor_Info.AreaInfo.Area} {current?.Floor_Info.FloorName}" },
                     {"time", current.TrackTime.ToString("yyyy-MM-dd HH:mm") },
-                    {"alert", new JArray() },
+                    {"alert", jAlert },
                     {"position", jPos },
                     {"ViewName", db.Floor_Info.Find(current.FSN).ViewName?.ToString() },
                 };

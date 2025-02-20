@@ -161,7 +161,7 @@ namespace MinSheng_MIS.Controllers.API
             try
             {
                 // 1. 心率異常告警
-                if (!data.Heartbeat.HasValue || _service.IsHeartRateAbnormal(data.Heartbeat.Value))
+                if (!data.Heartbeat.HasValue || _service.AddHeartRateAbnormalWarning(data.Heartbeat.Value))
                     await _warningMsgService.AddWarningMessageAsync(new WarningMessageCreateModel
                     {
                         WMClass = UniParams.WMClass.AbnormalHeartRate,
@@ -171,7 +171,7 @@ namespace MinSheng_MIS.Controllers.API
                         Location_Y = data.Y,
                     }, data.Heartbeat?.ToString() ?? "未偵測到心率");
                 // 2. 停留過久告警
-                if (_service.IsExcessiveDwellTime(data.Timestamp))
+                if (_service.AddExcessiveDwellTimeWarning(data.Timestamp))
                 {
                     var floor = await _db.Floor_Info.FindAsync(data.FSN);
 
