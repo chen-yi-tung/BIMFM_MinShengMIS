@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using static MinSheng_MIS.Models.ViewModels.InspectionPlan_ManagementViewModel;
+using System.Threading.Tasks;
 
 namespace MinSheng_MIS.Controllers.API
 {
@@ -26,7 +27,7 @@ namespace MinSheng_MIS.Controllers.API
                 _db = new Bimfm_MinSheng_MISEntities();
                 _warningMessageService = new WarningMessageService(_db);
             }
-            public JsonResService<string> Post(WarningMessageCreateModel info)
+            public async Task<JsonResService<string>> Post(WarningMessageCreateModel info)
             {
                 JsonResService<string> result = new JsonResService<string>();
                 try
@@ -39,7 +40,8 @@ namespace MinSheng_MIS.Controllers.API
                     }
                     else
                     {
-                        _warningMessageService.AddWarningMessage(info, User.Identity.Name);
+                        info.UserName = userID;
+                        await _warningMessageService.AddWarningMessageAsync(info);
                         result.AccessState = ResState.Success;
                     }
                 }

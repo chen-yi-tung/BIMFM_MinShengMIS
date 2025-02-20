@@ -17,7 +17,8 @@
             <div class="form-group-zone">
                 <div class="form-group required">
                     <label for="TemplateName">巡檢模板名稱</label>
-                    <input type="text" class="form-control" name="TemplateName" id="TemplateName" maxlength="20" required>
+                    <input type="text" class="form-control" name="TemplateName" id="TemplateName" maxlength="20"
+                        required>
                 </div>
             </div>
             <hr class="hr-default" />
@@ -52,11 +53,13 @@
                                         </button>
                                     </td>
                                     <td>
-                                        <input class="form-control" type="time" id="StartTime" name="StartTime" step="any" required />
+                                        <input class="form-control" type="time" id="StartTime" name="StartTime"
+                                            step="any" required />
 
                                     </td>
                                     <td>
-                                        <input class="form-control" type="time" id="EndTime" name="EndTime" step="any" required />
+                                        <input class="form-control" type="time" id="EndTime" name="EndTime" step="any"
+                                            required />
                                     </td>
                                     <td>
                                         <select class="form-select" id="PlanPathSN" name="PlanPathSN" required></select>
@@ -120,7 +123,7 @@
         let sampleTr = SampleTr();
         let sortableController = null;
         $(async function () {
-            await pushSelect("PlanPathSN", "/DropDownList/InspectionPathSample");
+            await formDropdown.pushSelect({ id: "PlanPathSN", url: '@Url.Action("InspectionPathSample", "DropDownList")' });
             addButtonEvent();
             sampleTr.init();
             setSortableItem("#item-area");
@@ -314,7 +317,7 @@
             this.count = 0;
             this.list = $("#item-area")
             this.init = async function () {
-                await pushSelect("StockType", '@Url.Action("StockType", "DropDownList")');
+                await formDropdown.pushSelect({ id: "StockType", url: '@Url.Action("StockType", "DropDownList")' });
 
                 const observer = new ResizeObserver((entries) => {
                     for (const entry of entries) {

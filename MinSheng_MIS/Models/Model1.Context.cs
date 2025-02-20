@@ -27,8 +27,6 @@ namespace MinSheng_MIS.Models
     
         public virtual DbSet<BeaconData> BeaconData { get; set; }
         public virtual DbSet<BeaconDevice> BeaconDevice { get; set; }
-        public virtual DbSet<UserHeartRhythmData> UserHeartRhythmData { get; set; }
-        public virtual DbSet<UserPositionData> UserPositionData { get; set; }
         public virtual DbSet<C__MigrationHistory> C__MigrationHistory { get; set; }
         public virtual DbSet<AreaInfo> AreaInfo { get; set; }
         public virtual DbSet<AsBuiltDrawing> AsBuiltDrawing { get; set; }
@@ -67,6 +65,7 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<InspectionPlan_Time> InspectionPlan_Time { get; set; }
         public virtual DbSet<InspectionTrack> InspectionTrack { get; set; }
         public virtual DbSet<LaboratoryMaintenance> LaboratoryMaintenance { get; set; }
+        public virtual DbSet<LoginUserList> LoginUserList { get; set; }
         public virtual DbSet<ManufacturerInfo> ManufacturerInfo { get; set; }
         public virtual DbSet<MeetingMinutes> MeetingMinutes { get; set; }
         public virtual DbSet<MonthlyReport> MonthlyReport { get; set; }
@@ -84,6 +83,5 @@ namespace MinSheng_MIS.Models
         public virtual DbSet<Tokens> Tokens { get; set; }
         public virtual DbSet<WarningMessage> WarningMessage { get; set; }
         public virtual DbSet<WarningMessageFillinRecord> WarningMessageFillinRecord { get; set; }
-        public virtual DbSet<WatchPairing> WatchPairing { get; set; }
     }
 }

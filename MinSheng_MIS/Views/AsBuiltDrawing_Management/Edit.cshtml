@@ -99,13 +99,6 @@
         var fileUploader
         $(async function () {
             $("#_checkFilePath").prop("checked", true);
-            await formDropdown.ASN();
-            await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
-
-            const Systems = document.getElementById('DSystemID')
-            Systems.addEventListener("change", function () {
-                pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?System=${$('#System').val()}`);
-            });
             addButtonEvent();
             fileUploader = new FileUploader({
                 container: "#FileUploader",
@@ -135,14 +128,6 @@
 
                 for (const [k, v] of Object.entries(res)) {
                     switch (k) {
-                        case "FSN":
-                            await pushSelect("FSN", '@Url.Action("Floor", "DropDownList")?ASN=' + res.ASN);
-                            $(`#${k}`).val(v);
-                            break;
-                        case "DSubSystemID":
-                            await pushSelect("DSubSystemID", '@Url.Action("DSubSystem", "DropDownList")?DSystemID=' + res.DSystemID);
-                            $(`#${k}`).val(v);
-                            break;
                         case "ImgPath":
                             fileUploader.setFile(res.ImgPath)
                             break;
@@ -151,6 +136,9 @@
                             break;
                     }
                 }
+
+                await formDropdown.ASN({ value: res.ASN, fsnValue: res.FSN });
+                await formDropdown.DSystemID({ value: res.DSystemID, dssValue: res.DSubSystemID });
             }
             function onError(res) {
                 console.log(res);

@@ -14,17 +14,21 @@ namespace MinSheng_MIS.Controllers.API
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly BeaconService _beaconService;
+        private readonly WarningMessageService _warningMsgService;
+        private readonly UserVitalsAndPositionService _service;
 
         public VitalsPosApiController()
         {
             _db = new Bimfm_MinSheng_MISEntities();
             _beaconService = new BeaconService(_db);
+            _warningMsgService = new WarningMessageService(_db);
+            _service = new UserVitalsAndPositionService(_db);
         }
 
         #region 取得Beacon位置X、Y軸並組合成Subset
         //[AllowAnonymous]
         [Route("GetBeaconsPosInfo")]
-        [System.Web.Http.HttpPost]
+        [HttpPost]
         public async Task<IHttpActionResult> GetBeaconsPosInfo(BeaconsPosInfoRequestModel data)
         {
             try
@@ -134,10 +138,61 @@ namespace MinSheng_MIS.Controllers.API
         // 心律是否正常
         // 是否停留過久：以偵測到的beacon作為判斷(app抓取最近的3個beacon作為定位計算，若beacon每5公尺布置一個，則移動約2.5公尺抓取的beacon會不一樣)
         [Route("RecordUserVitalsAndPos")]
-        [System.Web.Http.HttpPost]
-        public IHttpActionResult RecordUserVitalsAndPos(VitalsAndPosViewModel data)
+        [HttpPost]
+        public async Task<IHttpActionResult> RecordUserVitalsAndPosAsync(VitalsAndPosViewModel data)
         {
-            return Ok();
+            try
+            {
+                // Data Annotation
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+
+                // 紀錄 InspectionTrack 軌跡紀錄
+                await _service.AddInspectionTrackAsync(data);
+            }
+            catch (MyCusResException ex)
+            {
+                return Helper.HandleMyCusResException(this, ex);
+            }
+            catch (Exception)
+            {
+                return Helper.HandleException(this);
+            }
+
+            try
+            {
+                // 1. 心率異常告警
+                if (!data.Heartbeat.HasValue || _service.IsHeartRateAbnormal(data.Heartbeat.Value))
+                    await _warningMsgService.AddWarningMessageAsync(new WarningMessageCreateModel
+                    {
+                        WMClass = UniParams.WMClass.AbnormalHeartRate,
+                        FSN = data.FSN,
+                        UserName = User.Identity.Name,
+                        Location_X = data.X,
+                        Location_Y = data.Y,
+                    }, data.Heartbeat?.ToString() ?? "未偵測到心率");
+                // 2. 停留過久告警
+                if (_service.IsExcessiveDwellTime(data.Timestamp))
+                {
+                    var floor = await _db.Floor_Info.FindAsync(data.FSN);
+
+                    await _warningMsgService.AddWarningMessageAsync(new WarningMessageCreateModel
+                    {
+                        WMClass = UniParams.WMClass.ProlongedStop,
+                        FSN = data.FSN,
+                        UserName = User.Identity.Name,
+                        Location_X = data.X,
+                        Location_Y = data.Y,
+                    }, $"{floor.AreaInfo.Area} {floor.FloorName}");
+                }
+            }
+            catch { }
+
+            return Ok(new JsonResService<string>
+            {
+                AccessState = ResState.Success,
+                ErrorMessage = null,
+                Datas = null
+            });
         }
         #endregion
     }

@@ -81,8 +81,8 @@
                 time: '2024-12-09 15:19',
                 alert: [],
                 position: {
-                    x: 100,
-                    y: 100
+                    x: 0,
+                    y: 0
                 },
             },
             {
@@ -93,8 +93,8 @@
                 time: '2024-12-09 15:19',
                 alert: [],
                 position: {
-                    x: 100,
-                    y: 100
+                    x: 42,
+                    y: 12
                 },
             },
         ],
@@ -109,6 +109,7 @@
                     { state: '1', type: '1', label: '心率異常' },
                     { state: '1', type: '2', label: '路線偏移' },
                     { state: '2', type: '3', label: '停留過久' },
+                    { state: '2', type: '4', label: '緊急按鈕' },
                 ],
                 position: {
                     x: 100,
@@ -132,6 +133,8 @@
 }
 const bim = new UpViewer(document.getElementById('BIM'))
 const currentLocation = new CurrentLocation()
+
+const InspectionCurrentPos_Pins = [];
 window.addEventListener('load', async () => {
     // #region chart options
     const pieSize = 138
@@ -185,9 +188,11 @@ window.addEventListener('load', async () => {
     // #endregion
 
     // #region chart
+    const updateTime = 1000;
+    let timer;
     init()
-    async function init() {
-        await currentLocation.init();
+
+    async function getData(useFake = false) {
         const res = await $.ajax({
             url: "/InspectionPlan_Management/GetCurrentPositionData",
             data: { FSN: currentLocation.FSN },
@@ -195,21 +200,76 @@ window.addEventListener('load', async () => {
             dataType: "json",
             contentType: "application/json;charset=utf-8",
         })
-
-        // use fakeData
-        Object.entries(res).forEach(([k, v]) => {
-            if (v?.length === 0) {
-                res[k] = fakeData?.[k];
-            }
-        })
-        if (res['InspectionCurrentPos'].current?.length === 0) {
-            res['InspectionCurrentPos'].current = fakeData?.InspectionCurrentPos?.current;
-        }
-        if (res['InspectionCurrentPos'].another?.length === 0) {
-            res['InspectionCurrentPos'].another = fakeData?.InspectionCurrentPos?.another;
-        }
-
         console.log(res);
+        // use fakeData
+        if (useFake) {
+            Object.entries(res).forEach(([k, v]) => {
+                if (v?.length === 0) {
+                    res[k] = fakeData?.[k];
+                }
+            })
+            if (res['InspectionCurrentPos'].current?.length === 0) {
+                res['InspectionCurrentPos'].current = fakeData?.InspectionCurrentPos?.current;
+            }
+            if (res['InspectionCurrentPos'].another?.length === 0) {
+                res['InspectionCurrentPos'].another = fakeData?.InspectionCurrentPos?.another;
+            }
+        }
+        return res
+    }
+    async function init() {
+        await currentLocation.init();
+        const res = await getData()
+
+        ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
+        ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
+        EquipmentOperatingState(res?.EquipmentOperatingState)
+        EnvironmentInfo(res?.EnvironmentInfo)
+        ChartInspectionAberrantLevel(res?.ChartInspectionAberrantLevel)
+        ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
+
+        await bim.init()
+        await bim.loadModels(bim.getModelsUrl(currentLocation.value))
+        await createBeaconPoint(currentLocation.FSN);
+        InspectionCurrentPos(res?.InspectionCurrentPos)
+
+        currentLocation.addEventListener('change', async (e) => {
+            clearTimeout(timer);
+
+            bim.destroyBeaconPoint()
+            bim.unloadModels()
+            await bim.loadModels(bim.getModelsUrl(currentLocation.value))
+            await createBeaconPoint(currentLocation.FSN)
+
+            update()
+        })
+
+        bim.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, () => {
+            InspectionCurrentPos_Pins.forEach((pin) => {
+                pin.update()
+            })
+        })
+
+        bim.viewer.loading.addEventListener('hide', () => {
+            InspectionCurrentPos_Pins.forEach((pin) => {
+                pin.hide()
+            })
+        })
+
+        bim.viewer.loading.addEventListener('show', () => {
+            InspectionCurrentPos_Pins.forEach((pin) => {
+                pin.show()
+                pin.update()
+            })
+        })
+
+
+
+        timer = setTimeout(update, updateTime)
+    }
+    async function update() {
+        clearTimeout(timer);
+        const res = await getData()
 
         ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
         ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
@@ -219,31 +279,7 @@ window.addEventListener('load', async () => {
         ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
         InspectionCurrentPos(res?.InspectionCurrentPos)
 
-        await bim.init()
-        await bim.loadModels(bim.getModelsUrl(currentLocation.value))
-        await createBeaconPoint(currentLocation.FSN);
-        //bim.hideWall()
-        //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
-
-        /* bim.createSamplePath()
-        const pathRecord = await bim.createPathRecord()
-        document.body.addEventListener('keydown', (e) => {
-            console.log("keydown", e.code)
-            if (e.code === 'Space') {
-                pathRecord.start()
-            }
-        })
-        console.log("%c請按空白鍵開始動畫", "color:green;font-size: 2em;padding:0.5rem;") */
-
-        currentLocation.addEventListener('change', async (e) => {
-            bim.destroyBeaconPoint()
-            bim.unloadModels()
-            //bim.dispose()
-            //await bim.init()
-            await bim.loadModels(bim.getModelsUrl(currentLocation.value))
-            await createBeaconPoint(currentLocation.FSN)
-            //bim.activateEquipmentPointTool(new THREE.Vector3(0, 0, 0), true);
-        })
+        timer = setTimeout(update, updateTime)
     }
     async function createBeaconPoint(FSN) {
         const data = { FSN };
@@ -260,6 +296,8 @@ window.addEventListener('load', async () => {
         })
         console.log(beaconPoint);
         bim.createBeaconPoint(beaconPoint)
+
+        // download beaconPoint
         const pins = {
             FSN,
             pins: bim.beaconPoint.map((pin) => {
@@ -283,6 +321,13 @@ window.addEventListener('load', async () => {
         const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
         ctx.width = pieSize
         ctx.height = pieSize
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.labels = data.map(x => x.label);
+            chart.data.datasets[0].data = data.map(x => x.value);
+            chart.update();
+            return;
+        }
         new Chart(ctx, {
             type: 'pie',
             data: {
@@ -323,6 +368,13 @@ window.addEventListener('load', async () => {
         const backgroundColor = ["#72E998", "#E9CD68", "#2CB6F0"]
         ctx.width = pieSize
         ctx.height = pieSize
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.labels = data.map(x => x.label);
+            chart.data.datasets[0].data = data.map(x => x.value);
+            chart.update();
+            return;
+        }
         new Chart(ctx, {
             type: 'pie',
             data: {
@@ -413,6 +465,13 @@ window.addEventListener('load', async () => {
         const backgroundColor = ["#2CB6F0", "#E77272"]
         ctx.width = pieSize
         ctx.height = pieSize
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.labels = data.map(x => x.label);
+            chart.data.datasets[0].data = data.map(x => x.value);
+            chart.update();
+            return;
+        }
         new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -463,6 +522,13 @@ window.addEventListener('load', async () => {
         const backgroundColor = ["#E77272", "#FFA54B", "#72E998"]
         ctx.width = pieSize
         ctx.height = pieSize
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.labels = data.map(x => x.label);
+            chart.data.datasets[0].data = data.map(x => x.value);
+            chart.update();
+            return;
+        }
         new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -512,12 +578,17 @@ window.addEventListener('load', async () => {
         })
     }
     //空間人員即時位置
+
     function InspectionCurrentPos(data) {
+        InspectionCurrentPos_Pins.forEach((pin) => {
+            pin.destroy()
+        })
+        InspectionCurrentPos_Pins.length = 0
         const infoBox = document.getElementById('box-InspectionCurrentPos');
         const container = document.getElementById('InspectionCurrentPos');
         const container_another = document.getElementById('InspectionAnotherPos');
 
-        const htmls = createPersons(data.current)
+        const htmls = createPersons(data.current, true)
         const htmls_another = createPersons(data.another)
         container.replaceChildren()
         container.insertAdjacentHTML('beforeend', htmls.join(''))
@@ -525,24 +596,75 @@ window.addEventListener('load', async () => {
         container_another.replaceChildren()
         container_another.insertAdjacentHTML('beforeend', htmls_another.join(''))
 
+        if (container.dataset.activePerson) {
+            const activePerson = container.querySelector(`.plan-person[data-name="${container.dataset.activePerson}"]`)
+            if (activePerson) {
+                activePerson.classList.add('active');
+                InspectionCurrentPos_Pins.forEach((pin) => {
+                    if (pin.data.name === container.dataset.activePerson) {
+                        pin.popover.show()
+                    }
+                    else {
+                        pin.popover.hide()
+                    }
+                })
+            }
+        }
+
+        if (infoBox.dataset.initialized) {
+            return;
+        }
+
         infoBox.addEventListener('click', (e) => {
             const target = e.target;
             if (target && target.classList.contains('plan-person')) {
+                if (target.parentElement.id === 'InspectionAnotherPos') {
+                    const d = data.another.find(x => x.name === target.dataset.name);
+                    currentLocation.setViewName(d.ViewName);
+                    
+                    container.replaceChildren()
+                    container.appendChild(target)
+                    container_another.replaceChildren()
+                    return;
+                }
                 const activePersons = Array.from(document.querySelectorAll('.plan-person.active'))
                 activePersons.forEach((el) => {
                     el.classList.remove('active')
                 })
+
+                // remove current active persons
+                if (activePersons.findIndex(x => x === target) !== -1) {
+                    container.dataset.activePerson = '';
+                    InspectionCurrentPos_Pins.forEach((pin) => {
+                        pin.popover.hide()
+                    })
+                    return;
+                }
                 target.classList.add('active')
+                container.dataset.activePerson = target.dataset.name;
+
+                InspectionCurrentPos_Pins.forEach((pin) => {
+                    if (pin.data.name === target.dataset.name) {
+                        pin.popover.show()
+                    }
+                    else {
+                        pin.popover.hide()
+                    }
+                })
             }
         })
 
-        function createPersons(data) {
+        infoBox.dataset.initialized = true;
+
+        function createPersons(data, needCreatePin = false) {
+
             return data.map((d) => {
                 return createPerson(d)
             })
             function createPerson(data) {
+                needCreatePin && createPin(data)
                 data.time = dateTransform(data.time);
-                return `<div class="plan-person ${isAlert(data) ? 'error' : ''}">
+                return `<div class="plan-person ${isAlert(data) ? 'error' : ''}" data-name="${data.name}">
                     <div class="plan-person-icon"><i class="${getIcon(data)}"></i></div>
                     <div class="plan-person-content">
                         <div class="plan-person-infos">
@@ -577,6 +699,37 @@ window.addEventListener('load', async () => {
                     }
                     return "fa-solid fa-heart";
                 }
+
+                function createPin(d) {
+                    const pin = new ForgePin({
+                        viewer: bim.viewer,
+                        id: d.name,
+                        position: new THREE.Vector3(d.position.x, d.position.y, 0),
+                        img: "/Content/img/pin.svg",
+                        data: d,
+                    })
+                    pin.addPopover({
+                        offset: ['50%', 'calc(-100% + 16px)'],
+                        html: `<div class="pin-popover">
+                            <div class="popover-header">
+                                <span class="num">Pt01</span><span class="name">${d.name}</span>
+                            </div>
+                            <div class="popover-body">
+                                <i class="${getHeartIcon(d.heartAlert)}"></i>
+                                <span class="label">心率：</span>
+                                <span class="value">${d.heart}</span>
+                                <span class="unit">下/分</span>
+                            </div>
+                        </div>`,
+                    })
+                    InspectionCurrentPos_Pins.push(pin)
+
+                    if (!bim.viewer.loading.loading) {
+                        pin.show()
+                        pin.update()
+                    }
+
+                }
             }
 
             function isAlert(d) {
@@ -596,8 +749,8 @@ window.addEventListener('load', async () => {
 
                 function getState(s) {
                     switch (s) {
-                        case "1": return "red";
-                        case "2": return "orange";
+                        case "1": return "orange";
+                        case "2": return "red";
                         default: return "";
                     }
                 }
@@ -606,6 +759,7 @@ window.addEventListener('load', async () => {
                         case "1": return "fa-solid fa-heart-circle-exclamation";
                         case "2": return "fa-solid fa-shoe-prints";
                         case "3": return "fa-solid fa-user-clock";
+                        case "4": return "fa-solid fa-land-mine-on";
                         default: return "";
                     }
                 }
@@ -630,7 +784,7 @@ function CurrentLocation() {
         menu.replaceChildren();
         const htmls = this.data.map((e, i) => {
             const active = this.activeIndex === i ? 'active' : '';
-            return `<li><a class="dropdown-item ${active}" data-index="${i}">${e.Text}</a></li>`
+            return `<li><a class="dropdown-item ${active}" data-index="${i}" data-value="${e.Value}">${e.Text}</a></li>`
         })
         menu.insertAdjacentHTML('beforeend', htmls.join(''));
         this.updateData()
@@ -663,6 +817,14 @@ function CurrentLocation() {
         console.log(items);
 
         menu.dispatchEvent(new Event('change'))
+    }
+    this.setViewName = (viewName) => {
+        const activeIndex = this.data.findIndex(x => x.Value === viewName);
+        if (activeIndex === -1) {
+            throw new Error('[CurrentLocation.setViewName] Invalid ViewName.')
+        }
+        this.activeIndex = activeIndex
+        this.updateData();
     }
     this.addEventListener = (eventType, callback) => {
         menu.addEventListener(eventType, callback.bind(this, this))

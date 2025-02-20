@@ -2,8 +2,7 @@
     ViewBag.Title = "編輯實驗數據紀錄";
 }
 @section styles {
-    <script src="/Scripts/tool.js" defer></script>
-    <script src="/Scripts/datatable.js" defer></script>
+    @Html.Partial("DataGridScripts")
     <style>
         .edit-title {
             font-size: 16px;
@@ -19,268 +18,256 @@
             background: #C6E1FF;
         }
 
-        @@media (max-width: 576px) {
-            .datatable-table tr {
-                display: flex;
-                flex-direction: column;
+        @@media(max - width: 576px) {
+                .datatable-table tr {
+                    display: flex;
+                    flex-direction: column;
+                }
             }
-        }
-    </style>
-}
+        </style>
+    }
 
-<h2>@ViewBag.Title</h2>
+    <h2>@ViewBag.Title</h2>
 
-<section>
-    <div class="edit-area edit-area-sm flex-lg-row">
-        <form class="form">
-            <div class="form-group-zone">
-                <div class="form-group required">
-                    <label for="EDate">實驗日期</label>
-                    <div style="position: relative; overflow: hidden;">
-                        <input class="form-control calendar-input" id="EDate" name="EDate" type="text" placeholder="年-月-日" required />
+    <section>
+        <div class="edit-area edit-area-sm flex-lg-row">
+            <form class="form">
+                <div class="form-group-zone">
+                    <div class="form-group required">
+                        <label for="EDate">實驗日期</label>
+                        <div style="position: relative; overflow: hidden;">
+                            <input class="form-control calendar-input" id="EDate" name="EDate" type="text"
+                                placeholder="年-月-日" required />
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group required">
-                    <label for="ExperimentType">實驗類型</label>
-                    <select class="form-select" name="ExperimentType" id="ExperimentType" required>
-                        <option value="">請選擇</option>
-                    </select>
-                </div>
+                    <div class="form-group required">
+                        <label for="ExperimentType">實驗類型</label>
+                        <select class="form-select" name="ExperimentType" id="ExperimentType" required>
+                            <option value="">請選擇</option>
+                        </select>
+                    </div>
 
-                <div class="form-group col-2fr required">
-                    <label for="TAWSN">實驗名稱</label>
-                    <select class="form-select" name="TAWSN" id="TAWSN" required>
-                        <option value="">請選擇</option>
-                    </select>
+                    <div class="form-group col-2fr required">
+                        <label for="TAWSN">實驗名稱</label>
+                        <select class="form-select" name="TAWSN" id="TAWSN" required>
+                            <option value="">請選擇</option>
+                        </select>
+                    </div>
+                    <div id="FileUploader"></div>
                 </div>
-                <div id="FileUploader"></div>
-            </div>
-            <hr class="hr-default">
-            <div class="form-group d-flex flex-column align-items-center">
-                <h3 class="edit-title w-100">數據填寫</h3>
-                <div class="edit-area flex-wrap w-100" style="gap: 1rem 2rem;">
-                    <div class="form-group d-flex flex-column align-items-center w-100 gap-2" id="item-list"></div>
+                <hr class="hr-default">
+                <div class="form-group d-flex flex-column align-items-center">
+                    <h3 class="edit-title w-100">數據填寫</h3>
+                    <div class="edit-area flex-wrap w-100" style="gap: 1rem 2rem;">
+                        <div class="form-group d-flex flex-column align-items-center w-100 gap-2" id="item-list"></div>
+                    </div>
+                    <button type="button" class="addItemBtn" id="create-item"><i class="fa-solid fa-plus"></i></button>
                 </div>
-                <button type="button" class="addItemBtn" id="create-item"><i class="fa-solid fa-plus"></i></button>
-            </div>
-        </form>
+            </form>
+        </div>
+    </section>
+
+    <div class="edit-button-area">
+        <button class="btn btn-back" id="back">返回</button>
+        <button class="btn btn-submit" id="submit">儲存</button>
     </div>
-</section>
-@*<section class="w-lg-532px m-auto">
-    <h3 class="edit-title">數據填寫</h3>
-    <div class="edit-area flex-wrap flex-md-row justify-content-lg-center mt-2 p-4" style="gap: 1rem 2rem;">
-        <form class="form d-lg-contents p-0" id="item-list"></form>
-        <button class="btn btn-create-item w-100" id="create-item">+新增</button>
-    </div>
-</section>*@
-
-<div class="edit-button-area">
-    <button class="btn btn-back" id="back">返回</button>
-    <button class="btn btn-submit" id="submit">儲存</button>
-</div>
 
 
-@section scripts {
-    <script>
-        const EDRSN = '@ViewBag.id';
-        let apiUrl = '@Url.Action("Read_Data", "ExperimentData_Management")' + `/${EDRSN}`;
-        //let apiUrl = null;
+    @section scripts {
+        <script>
+            const EDRSN = '@ViewBag.id';
+            let apiUrl = '@Url.Action("Read_Data", "ExperimentData_Management")' + `/${EDRSN}`;
+            //let apiUrl = null;
 
-        const fakeData = {
-            EDRSN: "1",
-            ExperimentType: "水質分析",
-            ExperimentName: "汙水管水質檢測分析實驗",
-            TAWSN: "1",
-            EDate: "2023-05-22",
-            FilePath: "/Files/ExperimentData/000001.pdf",
-            UploadUserName: "王大明",
-            UploadDateTime: "2023-12-18 12:10:33",
-            ExperimentalDataItem: [
-                {
-                    DataName: "LLLD1",
-                    Data: "10.1"
-                },
-                {
-                    DataName: "LLLD1",
-                    Data: "10.2"
-                },
-            ]
-        }
+            const fakeData = {
+                EDRSN: "1",
+                ExperimentType: "水質分析",
+                ExperimentName: "汙水管水質檢測分析實驗",
+                TAWSN: "1",
+                EDate: "2023-05-22",
+                FilePath: "/Files/ExperimentData/000001.pdf",
+                UploadUserName: "王大明",
+                UploadDateTime: "2023-12-18 12:10:33",
+                ExperimentalDataItem: [
+                    {
+                        DataName: "LLLD1",
+                        Data: "10.1"
+                    },
+                    {
+                        DataName: "LLLD1",
+                        Data: "10.2"
+                    },
+                ]
+            }
 
-        var fileUploader
-        var dataItems = new DataItems()
+            var fileUploader
+            var dataItems = new DataItems()
 
-        $(async function () {
-            addButtonEvent();
-            fileUploader = new FileUploader({
-                container: "#FileUploader",
-                className: "form-group col-2fr",
-                label: "實驗數據上傳",
-                id: "File",
-                required: false
-            })
-            await pushSelect("ExperimentType", '@Url.Action("FormExperimentType", "DropDownList")');
-
-            const ExperimentType = document.getElementById('ExperimentType')
-            const TAWSN = document.getElementById('TAWSN')
-            ExperimentType.addEventListener("change", function () {
-                pushSelect("TAWSN", `@Url.Action("FormExperimentName", "DropDownList")?ExperimentType=${ExperimentType.value}`);
-            });
-            TAWSN.addEventListener("change", function () {
-                $.getJSON(`@Url.Action("TestingAndAnalysis_DataName", "TestingAndAnalysisWorkflow")?TAWSN=${TAWSN.value}`, (res) => {
-                    dataItems.list.children().remove()
-                    res.forEach((item) => {
-                        dataItems.create(item)
+            $(async function () {
+                addButtonEvent();
+                fileUploader = new FileUploader({
+                    container: "#FileUploader",
+                    className: "form-group col-2fr",
+                    label: "實驗數據上傳",
+                    id: "File",
+                    required: false
+                })
+                formDropdown.getSelect('TAWSN').addEventListener("change", function () {
+                    if (!this.value) return;
+                    $.getJSON(`@Url.Action("TestingAndAnalysis_LabelName", "TestingAndAnalysisWorkflow")?TAWSN=${this.value}`, (res) => {
+                        dataItems.list.children().remove()
+                        res.forEach((item) => {
+                            dataItems.create(item)
+                        })
                     })
                 })
-            })
-            readData(apiUrl)
-        });
+                readData(apiUrl)
+            });
 
-        function readData(url = null) {
+            function readData(url = null) {
 
-            url == null ? onSuccess(fakeData) :
+                url == null ? onSuccess(fakeData) :
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                        success: onSuccess,
+                        error: onError
+                    })
+
+                async function onSuccess(res) {
+                    console.log(res);
+                    await formDropdown.ExperimentType({ value: res.ExperimentType, tawValue: res.TAWSN })
+                    for (let [k, v] of Object.entries(res)) {
+                        k === "EDate" ? v = dateTransform(v) : v;
+                        $("#" + k).val(v)
+                    }
+                    fileUploader.setFile(res.FilePath)
+                    res?.ExperimentalDataItem?.forEach((d) => {
+                        dataItems.create(d);
+                    })
+
+                }
+                function onError(res) {
+                    console.log(res);
+                }
+            }
+
+            function save() {
+                //重置自訂驗證錯誤訊息
+                getAllParams().forEach((e) => {
+                    e.setCustomValidity('');
+                })
+                //自訂驗證錯誤
+                fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
+                let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
+                console.log("isValidity():", isValidity)
+                if (!isValidity) return;
+
+                var form = new FormData();
+                form.append("EDRSN", EDRSN);
+                form.append("TAWSN", document.getElementById("TAWSN").value);
+                form.append("EDate", document.getElementById("EDate").value);
+                if (fileUploader.hasFile()) {
+                    let file = fileUploader.getFile()
+                    if (file?.size) {
+                        form.append("EDFile", file);
+                    }
+                    else {
+                        form.append("EDFile", file.name);
+                    }
+                }
+                dataItems.calc().forEach((item, i) => {
+                    form.append(`ExperimentalDataItem[${i}].DataName`, item.DataName);
+                    form.append(`ExperimentalDataItem[${i}].Data`, item.Data);
+                })
+
+                console.log(Object.fromEntries(form.entries()));
                 $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json",
-                    contentType: "application/json;charset=utf-8",
+                    url: '@Url.Action("EditExperimentData", "ExperimentData_Management")',
+                    data: form,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
                     success: onSuccess,
                     error: onError
                 })
-
-            async function onSuccess(res) {
-                console.log(res);
-                await pushSelect("TAWSN", `@Url.Action("FormExperimentName", "DropDownList")?ExperimentType=${res.ExperimentType}`);
-                for (let [k, v] of Object.entries(res)) {
-                    k === "EDate" ? v = dateTransform(v) : v;
-                    $("#" + k).val(v)
+                function onSuccess(res) {
+                    console.log(res);
+                    createDialogModal({
+                        id: "DialogModal-Success", inner: "儲存成功！",
+                        onHide: () => { window.location.href = "/ExperimentData_Management/Index"; }
+                    });
                 }
-                fileUploader.setFile(res.FilePath)
-                res?.ExperimentalDataItem?.forEach((d) => {
-                    dataItems.create(d);
+                function onError(res) {
+                    console.log(res);
+                    createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
+                }
+            }
+
+            function addButtonEvent() {
+                $("#back").click(function () {
+                    history.back();
                 })
 
+                $("#submit").click(function () {
+                    save();
+                })
             }
-            function onError(res) {
-                console.log(res);
-            }
-        }
 
-        function save() {
-            //重置自訂驗證錯誤訊息
-            getAllParams().forEach((e) => {
-                e.setCustomValidity('');
-            })
-            //自訂驗證錯誤
-            fileUploader.setExtensionValidity(fileUploader.checkAllExtension())
-            let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-            console.log("isValidity():", isValidity)
-            if (!isValidity) return;
-
-            var form = new FormData();
-            form.append("EDRSN", EDRSN);
-            form.append("TAWSN", document.getElementById("TAWSN").value);
-            form.append("EDate", document.getElementById("EDate").value);
-            if (fileUploader.hasFile()) {
-                let file = fileUploader.getFile()
-                if (file?.size) {
-                    form.append("EDFile", file);
+            function DataItems() {
+                this.list = $("#item-list")
+                this.count = 0
+                const temp_item = (count) => {
+                    return `<div class="d-flex w-100 gap-3" id="item-${count}">
+                                <input type="text" id="EDSN" name="EDSN" hidden>
+                                <table class="datatable datatable-body datatable-table">
+                                    <tbody>
+                                        <tr>
+                                            <td><input class="form-control" placeholder="數據標題" id="DataName" name="DataName" type="text" minlength="1" maxlength="200" required/></td>
+                                            <td><input class="form-control" placeholder="數據" id="Data" name="Data" type="text" minlength="1" required/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button class="btn-delete-item align-self-center flex-shrink-0" onclick="dataItems.delete(${count})"></button>
+                            </div>`
                 }
-                else {
-                    form.append("EDFile", file.name);
-                }
-            }
-            dataItems.calc().forEach((item, i) => {
-                form.append(`ExperimentalDataItem[${i}].DataName`, item.DataName);
-                form.append(`ExperimentalDataItem[${i}].Data`, item.Data);
-            })
-
-            console.log(Object.fromEntries(form.entries()));
-            $.ajax({
-                url: '@Url.Action("EditExperimentData", "ExperimentData_Management")',
-                data: form,
-                type: "POST",
-                contentType: false,
-                processData: false,
-                success: onSuccess,
-                error: onError
-            })
-            function onSuccess(res) {
-                console.log(res);
-                createDialogModal({
-                    id: "DialogModal-Success", inner: "儲存成功！",
-                    onHide: () => { window.location.href = "/ExperimentData_Management/Index"; }
-                });
-            }
-            function onError(res) {
-                console.log(res);
-                createDialogModal({ id: "DialogModal-Error", inner: `儲存失敗！` + `${res?.responseText || ""}` })
-            }
-        }
-
-        function addButtonEvent() {
-            $("#back").click(function () {
-                history.back();
-            })
-
-            $("#submit").click(function () {
-                save();
-            })
-        }
-
-        function DataItems() {
-            this.list = $("#item-list")
-            this.count = 0
-            const temp_item = (count) => {
-                return `<div class="d-flex w-100 gap-3" id="item-${count}">
-                        <input type="text" id="EDSN" name="EDSN" hidden>
-                        <table class="datatable datatable-body datatable-table">
-                            <tbody>
-                                <tr>
-                                    <td><input class="form-control" placeholder="數據標題" id="DataName" name="DataName" type="text" minlength="1" maxlength="200" required/></td>
-                                    <td><input class="form-control" placeholder="數據" id="Data" name="Data" type="text" minlength="1" required/></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button class="btn-delete-item align-self-center flex-shrink-0" onclick="dataItems.delete(${count})"></button>
-                    </div>`
-            }
-            this.create = (data = null) => {
-                if ($("#TAWSN").val() == "") {
-                    $("#TAWSN")[0].reportValidity()
-                    return;
-                }
-
-                let item = $(temp_item(this.count))
-                if (data) {
-                    item.find("#EDSN").val(data.EDSN)
-                    item.find("#DataName").val(data.DataName)
-                    item.find("#Data").val(data.Data)
-                }
-                this.list.append(item)
-                this.count++
-            }
-            this.delete = (count) => {
-                $(`#item-${count}`).remove()
-            }
-            this.calc = () => {
-                return this.list.children().toArray().map((e) => {
-                    return {
-                        EDSN: $(e).find("#EDSN").val(),
-                        DataName: $(e).find("#DataName").val(),
-                        Data: $(e).find("#Data").val()
+                this.create = (data = null) => {
+                    if ($("#TAWSN").val() == "") {
+                        $("#TAWSN")[0].reportValidity()
+                        return;
                     }
-                })
+
+                    let item = $(temp_item(this.count))
+                    if (data) {
+                        item.find("#EDSN").val(data.EDSN)
+                        item.find("#DataName").val(data.DataName)
+                        item.find("#Data").val(data.Data)
+                    }
+                    this.list.append(item)
+                    this.count++
+                }
+                this.delete = (count) => {
+                    $(`#item-${count}`).remove()
+                }
+                this.calc = () => {
+                    return this.list.children().toArray().map((e) => {
+                        return {
+                            EDSN: $(e).find("#EDSN").val(),
+                            DataName: $(e).find("#DataName").val(),
+                            Data: $(e).find("#Data").val()
+                        }
+                    })
+                }
+                this.init = () => {
+                    $("#create-item").click(() => {
+                        this.create()
+                    })
+                }
+                this.init()
+                return this
             }
-            this.init = () => {
-                $("#create-item").click(() => {
-                    this.create()
-                })
-            }
-            this.init()
-            return this
-        }
-    </script>
-}
+        </script>
+    }

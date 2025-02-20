@@ -509,9 +509,14 @@ body {
                 font-weight: 500;
             }
         }
+
+        &:not([data-show]) .pin-popover{
+            display: none;
+        }
     }
 
     .pin-popover {
+        font-family: "Noto Sans TC", sans-serif;
         position: absolute;
         transform: translate(-50%, -50%);
         width: max-content;
@@ -526,19 +531,40 @@ body {
         }
 
         .popover-header {
-            color: #454a5b;
-            font-size: 1.25rem;
+            color: #454A5B;
+            font-size: 20px;
             font-weight: 500;
-            padding: 0.5rem 0.75rem 0;
+            padding: 4px 8px 0;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 6px;
         }
 
         .popover-body {
-            width: 100%;
-            color: lightgray;
-            padding: 0 1rem 0.5rem;
+            color: #d3d3d3;
+            display: flex;
+            padding: 0 8px 4px;
+            gap: 4px;
+            align-items: center;
+
+            & > i {
+                width: 1.25rem;
+                text-align: center;
+                color: #db6565;
+            }
+
+            & > .label {
+                color: #909090;
+                font-weight: 500;
+                font-size: 12px;
+            }
+
+            & > .value,
+            & > .unit {
+                color: #606060;
+                font-weight: 500;
+                font-size: 14px;
+            }
         }
     }
 
@@ -571,7 +597,7 @@ body {
             position: absolute;
             top: 10px;
             right: 10px;
-            font-family: 'Noto Sans TC', sans-serif;
+            font-family: "Noto Sans TC", sans-serif;
             font-size: 16px;
 
             .home-toggle {
@@ -581,14 +607,14 @@ body {
                 align-items: center;
                 outline: none;
                 padding: 6px 8px;
-                background-color: #F3F8FF;
-                border: 1px solid #90A9C7;
+                background-color: #f3f8ff;
+                border: 1px solid #90a9c7;
                 border-radius: 5px;
                 cursor: pointer;
                 pointer-events: auto;
                 transition: background-color 0.425s;
                 &:hover {
-                    background-color: #E0F2FF;
+                    background-color: #e0f2ff;
                 }
             }
 
@@ -850,7 +876,7 @@ body {
 
         &.error {
             --inner-border: inset 0 0 0 1px #ff3737;
-            background-color: #FFEDED;
+            background-color: #ffeded;
 
             &.active {
                 --inner-border: inset 0 0 0 3px #ff3737;

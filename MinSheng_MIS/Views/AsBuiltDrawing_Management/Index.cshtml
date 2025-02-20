@@ -100,14 +100,9 @@
             }
 
             await formDropdown.ASN();
-            await pushSelect("DSystemID", '@Url.Action("DSystem", "DropDownList")');
+            await formDropdown.DSystemID();
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
-
-            const Systems = document.getElementById('DSystemID')
-            Systems.addEventListener("change", function () {
-                pushSelect("DSubSystemID", `@Url.Action("DSubSystem", "DropDownList")?DSystemID=${$('#DSystemID').val()}`);
-            });
         });
 
         function Initialize_DataGrid(getGridJSON) {

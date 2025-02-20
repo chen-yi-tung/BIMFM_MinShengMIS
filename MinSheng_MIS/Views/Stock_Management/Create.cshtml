@@ -27,7 +27,8 @@
                 </div>
                 <div class="form-group required">
                     <label for="MinStockAmount">警戒值</label>
-                    <input type="number" class="form-control" name="MinStockAmount" id="MinStockAmount" min="0" required>
+                    <input type="number" class="form-control" name="MinStockAmount" id="MinStockAmount" min="0"
+                        required>
                 </div>
 
             </div>
@@ -47,10 +48,9 @@
 
 @section scripts {
     <script>
-       let submitURL = '@Url.Action("CreateComputationalStock", "Stock_Management")'
+        let submitURL = '@Url.Action("CreateComputationalStock", "Stock_Management")'
         $(async function () {
-            pushSelect("StockTypeSN", `@Url.Action("StockType", "DropDownList")`);
-            //await formDropdown.ASN();
+            await formDropdown.pushSelect({ id: "StockTypeSN", url: '@Url.Action("StockType", "DropDownList")' });
             addButtonEvent();
         });
 
@@ -86,7 +86,6 @@
         function checkValidity() {
             getQueryParams("form");
             let isValidity = [...document.forms].map(e => e.reportValidity()).every(e => e);
-            //console.log("isValidity():", isValidity)
             return isValidity
         }
     </script>

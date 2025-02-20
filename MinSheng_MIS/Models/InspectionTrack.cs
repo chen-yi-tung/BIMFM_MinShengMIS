@@ -17,9 +17,9 @@ namespace MinSheng_MIS.Models
         public System.DateTime TrackTime { get; set; }
         public string UserName { get; set; }
         public string FSN { get; set; }
-        public decimal LocationX { get; set; }
-        public decimal LocationY { get; set; }
-        public int Heartbeat { get; set; }
+        public Nullable<decimal> LocationX { get; set; }
+        public Nullable<decimal> LocationY { get; set; }
+        public Nullable<int> Heartbeat { get; set; }
     
         public virtual Floor_Info Floor_Info { get; set; }
     }

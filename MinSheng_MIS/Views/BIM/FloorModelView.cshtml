@@ -2,6 +2,7 @@
     ViewBag.Title = "巡檢即時位置";
 }
 @section styles {
+    @Html.Partial("DataGridScripts")
     <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/style.min.css"
         type="text/css">
     <link rel="stylesheet" href="/Content/loading.css" type="text/css">
@@ -453,7 +454,7 @@
             sortRouteModal = new SortRouteModal({
                 onSave: updatePathDisplay
             });
-            await pushSelect("ViewName", '@Url.Action("ViewName", "DropDownList")');
+            await formDropdown.pushSelect({ id: "ViewName", url: '@Url.Action("ViewName", "DropDownList")' });
             $("#Submit").click(async () => {
                 //let res = await getDataAsync('@Url.Action("ReadBimPathDevices", "SamplePath_Management")' + "/" + $("#FSN").val())
                 if (viewer != null) {

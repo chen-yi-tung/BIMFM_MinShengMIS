@@ -143,7 +143,6 @@ namespace MinSheng_MIS.Controllers
                     return Json(new { success = false, message = "此巡檢計畫(" + IPSN + ")尚未開始巡檢，因此無巡檢紀錄可以下載" }, JsonRequestBehavior.AllowGet);
                 }
 
-
                 IWorkbook workbook = new XSSFWorkbook();
 
                 // 取得所有 PathName
@@ -234,58 +233,115 @@ namespace MinSheng_MIS.Controllers
                     if (datas.Count > 0)
                     {
                         #region 填入設備名稱+編號、填報項目 => A欄、B欄
-                        var iptsn = db.InspectionPlan_Time.Where(x => x.PathName == pathName && x.IPSN == IPSN && x.InspectionState != "1").Select(x => x.IPTSN).FirstOrDefault().ToString();
-
-                        // 取得設備資料
-                        var equipments = (from x1 in db.InspectionPlan_Equipment
-                                         where x1.IPTSN == iptsn
-                                         join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
-                                         select new { x1.ESN, x1.IPESN, x2.EName, x2.NO }).ToList();
-                        int equipmentsCount = equipments.Count();
+                        var iptsn = db.InspectionPlan_Time.Where(x => x.PathName == pathName && x.IPSN == IPSN && x.InspectionState != "1").Select(x => x.IPTSN).FirstOrDefault()?.ToString();
                         var rowIndex = 6;
                         int totalCount = 0;
-                        foreach (var equipment in equipments)
+                        if (iptsn == null) //該路線尚無任何一筆開始執行，需從模板那取得資料
                         {
-                            string eqName = equipment.EName + " " + equipment.NO; // 設備名稱 + 編號
-                            var checkItems = db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == equipment.IPESN).ToList();
-                            var reportingItems = db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == equipment.IPESN).ToList();
-                            int count = checkItems.Count + reportingItems.Count;
-                            totalCount += count;
-                            // 合併儲存格 & 設定設備名稱
-                            if (checkItems.Any() || reportingItems.Any())
+                            var planpathSN = db.InspectionPlan_Time.Where(x => x.PathName == pathName && x.IPSN == IPSN).Select(x => x.PlanPathSN).FirstOrDefault().ToString();
+                            //to do
+                            var e  = (from x1 in db.InspectionDefaultOrder
+                                     where x1.PlanPathSN == planpathSN
+                                     join x2 in db.RFID on x1.RFIDInternalCode equals x2.RFIDInternalCode
+                                     join x3 in db.EquipmentInfo on x2.ESN equals x3.ESN
+                                     select new { x3.ESN, x3.NO, x3.EName, x3.TSN}).Distinct().ToList();
+                            int eCount = e.Count();
+                            foreach (var equipment in e)
                             {
-                                sheet.CreateRow(rowIndex).CreateCell(0).SetCellValue(eqName);
-                                sheet.GetRow(rowIndex).GetCell(0).CellStyle = WordStyle;
-                                sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count - 1, 0, 0));
-                                var BrowIndex = rowIndex;
-                                //檢查項目
-                                foreach (var item in checkItems)
+                                string eqName = equipment.EName + " " + equipment.NO; // 設備名稱 + 編號
+                                var checkItems = db.Template_CheckItem.Where(x => x.TSN == equipment.TSN).ToList();
+                                var reportingItems = db.Template_ReportingItem.Where(x => x.TSN == equipment.TSN).ToList();
+                                int count = checkItems.Count + reportingItems.Count;
+                                totalCount += count;
+                                // 合併儲存格 & 設定設備名稱
+                                if (checkItems.Any() || reportingItems.Any())
                                 {
-                                    IRow currentRow = sheet.GetRow(BrowIndex) ?? sheet.CreateRow(BrowIndex);
-                                    currentRow.CreateCell(1).SetCellValue(item.CheckItemName);
+                                    sheet.CreateRow(rowIndex).CreateCell(0).SetCellValue(eqName);
+                                    sheet.GetRow(rowIndex).GetCell(0).CellStyle = WordStyle;
+                                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count - 1, 0, 0));
+                                    var BrowIndex = rowIndex;
+                                    //檢查項目
+                                    foreach (var item in checkItems)
+                                    {
+                                        IRow currentRow = sheet.GetRow(BrowIndex) ?? sheet.CreateRow(BrowIndex);
+                                        currentRow.CreateCell(1).SetCellValue(item.CheckItemName);
 
-                                    sheet.GetRow(BrowIndex).GetCell(1).CellStyle = WordStyle;
-                                    BrowIndex++;
-                                }
-                                foreach (var item in reportingItems)
-                                {
-                                    if(BrowIndex == rowIndex)
-                                    {
-                                        sheet.GetRow(BrowIndex).CreateCell(1).SetCellValue((item.ReportValue + "(" + item.Unit + ")"));
+                                        sheet.GetRow(BrowIndex).GetCell(1).CellStyle = WordStyle;
+                                        BrowIndex++;
                                     }
-                                    else
+                                    foreach (var item in reportingItems)
                                     {
-                                        sheet.CreateRow(BrowIndex).CreateCell(1).SetCellValue((item.ReportValue + "(" + item.Unit + ")"));
+                                        if (BrowIndex == rowIndex)
+                                        {
+                                            sheet.GetRow(BrowIndex).CreateCell(1).SetCellValue((item.ReportingItemName + "(" + item.Unit + ")"));
+                                        }
+                                        else
+                                        {
+                                            sheet.CreateRow(BrowIndex).CreateCell(1).SetCellValue((item.ReportingItemName + "(" + item.Unit + ")"));
+                                        }
+                                        sheet.GetRow(BrowIndex).GetCell(1).CellStyle = WordStyle;
+                                        BrowIndex++;
                                     }
-                                    sheet.GetRow(BrowIndex).GetCell(1).CellStyle = WordStyle;
-                                    BrowIndex++;
+                                    rowIndex = rowIndex + count;
                                 }
-                                rowIndex = rowIndex + count;
                             }
+                            sheet.CreateRow(rowIndex).CreateCell(1).SetCellValue("執行人員");
+                            sheet.GetRow(rowIndex).GetCell(1).CellStyle = WordStyle;
+                            sheet.GetRow(rowIndex).CreateCell(0).CellStyle = WordStyle;
                         }
-                        sheet.CreateRow(rowIndex).CreateCell(1).SetCellValue("執行人員");
-                        sheet.GetRow(rowIndex).GetCell(1).CellStyle = WordStyle;
-                        sheet.GetRow(rowIndex).CreateCell(0).CellStyle = WordStyle;
+                        else
+                        {
+                            //已有非待執行項目
+                            // 取得設備資料
+                            var equipments = (from x1 in db.InspectionPlan_Equipment
+                                              where x1.IPTSN == iptsn
+                                              join x2 in db.EquipmentInfo on x1.ESN equals x2.ESN
+                                              select new { x1.ESN, x1.IPESN, x2.EName, x2.NO }).ToList();
+                            int equipmentsCount = equipments.Count();
+                            foreach (var equipment in equipments)
+                            {
+                                string eqName = equipment.EName + " " + equipment.NO; // 設備名稱 + 編號
+                                var checkItems = db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == equipment.IPESN).ToList();
+                                var reportingItems = db.InspectionPlan_EquipmentReportingItem.Where(x => x.IPESN == equipment.IPESN).ToList();
+                                int count = checkItems.Count + reportingItems.Count;
+                                totalCount += count;
+                                // 合併儲存格 & 設定設備名稱
+                                if (checkItems.Any() || reportingItems.Any())
+                                {
+                                    sheet.CreateRow(rowIndex).CreateCell(0).SetCellValue(eqName);
+                                    sheet.GetRow(rowIndex).GetCell(0).CellStyle = WordStyle;
+                                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count - 1, 0, 0));
+                                    var BrowIndex = rowIndex;
+                                    //檢查項目
+                                    foreach (var item in checkItems)
+                                    {
+                                        IRow currentRow = sheet.GetRow(BrowIndex) ?? sheet.CreateRow(BrowIndex);
+                                        currentRow.CreateCell(1).SetCellValue(item.CheckItemName);
+
+                                        sheet.GetRow(BrowIndex).GetCell(1).CellStyle = WordStyle;
+                                        BrowIndex++;
+                                    }
+                                    foreach (var item in reportingItems)
+                                    {
+                                        if (BrowIndex == rowIndex)
+                                        {
+                                            sheet.GetRow(BrowIndex).CreateCell(1).SetCellValue((item.ReportValue + "(" + item.Unit + ")"));
+                                        }
+                                        else
+                                        {
+                                            sheet.CreateRow(BrowIndex).CreateCell(1).SetCellValue((item.ReportValue + "(" + item.Unit + ")"));
+                                        }
+                                        sheet.GetRow(BrowIndex).GetCell(1).CellStyle = WordStyle;
+                                        BrowIndex++;
+                                    }
+                                    rowIndex = rowIndex + count;
+                                }
+                            }
+                            sheet.CreateRow(rowIndex).CreateCell(1).SetCellValue("執行人員");
+                            sheet.GetRow(rowIndex).GetCell(1).CellStyle = WordStyle;
+                            sheet.GetRow(rowIndex).CreateCell(0).CellStyle = WordStyle;
+                        }
+                        
                         #endregion
 
                         #region 依時段填檢查項目、填報項目

@@ -192,6 +192,69 @@ namespace MinSheng_MIS.Services
         }
         #endregion
 
+        #region 警示訊息等級
+        public enum WMType
+        {
+            /// <summary>
+            /// 一般
+            /// </summary>
+            [EnumLabel("一般")]
+            General = 1,
+            /// <summary>
+            /// 緊急
+            /// </summary>
+            [EnumLabel("緊急")]
+            Emergency = 2,
+        }
+        #endregion
+
+        #region 警示訊息類別
+        public enum WMClass
+        {
+            /// <summary>
+            /// 心率異常
+            /// </summary>
+            [EnumLabel("心率異常")]
+            AbnormalHeartRate = 1,
+            /// <summary>
+            /// 路線偏移
+            /// </summary>
+            [EnumLabel("路線偏移")]
+            RouteDeviation = 2,
+            /// <summary>
+            /// 停留過久
+            /// </summary>
+            [EnumLabel("停留過久")]
+            ProlongedStop = 3,
+            /// <summary>
+            /// 緊急按鈕
+            /// </summary>
+            [EnumLabel("緊急按鈕")]
+            EmergencySituation = 4
+        }
+        #endregion
+
+        #region 警示訊息處理狀況
+        public enum WMState
+        {
+            /// <summary>
+            /// 待處理
+            /// </summary>
+            [EnumLabel("待處理")]
+            Pending = 1,
+            /// <summary>
+            /// 處理中
+            /// </summary>
+            [EnumLabel("處理中")]
+            InProgress = 2,
+            /// <summary>
+            /// 已處理
+            /// </summary>
+            [EnumLabel("已處理")]
+            Completed = 3,
+        }
+        #endregion
+
         /// <summary>
         /// 將字串視為列舉值轉為對應的列舉成員
         /// </summary>

@@ -1,12 +1,14 @@
-﻿using MinSheng_MIS.Models;
+﻿using MinSheng_MIS.Attributes;
+using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Web;
+using System.Threading.Tasks;
+using static MinSheng_MIS.Services.UniParams;
 
 namespace MinSheng_MIS.Services
 {
@@ -14,10 +16,27 @@ namespace MinSheng_MIS.Services
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
 
+        private readonly Dictionary<WMClass, string> _msgContentMapping = new Dictionary<WMClass, string>
+        {
+            { WMClass.AbnormalHeartRate, "{0} 心率異常 ({1})" },
+            { WMClass.RouteDeviation, "巡檢路線偏移" },
+            { WMClass.ProlongedStop, "{0} 停留過久 ({1})" },
+            { WMClass.EmergencySituation, "{0} 觸發緊急按鈕" },
+        };
+
+        private readonly Dictionary<WMClass, WMType> _waringTypeMapping = new Dictionary<WMClass, WMType>
+        {
+            { WMClass.AbnormalHeartRate, WMType.Emergency },
+            { WMClass.RouteDeviation, WMType.General },
+            { WMClass.ProlongedStop, WMType.Emergency },
+            { WMClass.EmergencySituation, WMType.Emergency },
+        };
+
         public WarningMessageService(Bimfm_MinSheng_MISEntities db)
         {
             _db = db;
         }
+
         #region 新增警示訊息填報紀錄
         public void AddWarningMessageFillinRecord(FillinInfo info,string UserName) //新增警示訊息填報紀錄
         {
@@ -50,37 +69,32 @@ namespace MinSheng_MIS.Services
             _db.SaveChanges();
         }
         #endregion
+
         #region 新增警示訊息
-        public void AddWarningMessage(WarningMessageCreateModel info,string userName) //新增警示訊息
+        public async Task AddWarningMessageAsync(ICreateWarningMessage info, string otherInfo = null)
         {
-            //編WMSN
-            var newWMSN = "";
-            var today = DateTime.Today;
-            var tomorrow = today.AddDays(1);
-            var WMSN = _db.WarningMessage.Where(x => x.TimeOfOccurrence >= today && x.TimeOfOccurrence < tomorrow).OrderByDescending(x => x.WMSN).FirstOrDefault()?.WMSN.ToString();
-            if (WMSN != null)
-            {
-                newWMSN = (long.Parse(WMSN) + 1).ToString();
-            }
-            else
-            {
-                newWMSN = DateTime.Today.ToString("yyMMdd") + "0001";
-            }
+            var latest = await _db.WarningMessage.OrderByDescending(x => x.WMSN).FirstOrDefaultAsync();
 
-            var data = new WarningMessage();
-            data.WMSN = newWMSN;
-            data.WMType = info.WMType;
-            data.WMClass = info.WMClass;
-            data.WMState = "1";
-            data.TimeOfOccurrence = DateTime.Now;
-            data.FSN = info.FSN;
-            data.Message = info.Message;
-            data.UserName = userName;
-            data.Location_X = info.Location_X;
-            data.Location_Y = info.Location_Y;
+            var warningMsg = new WarningMessage
+            {
+                WMSN = ComFunc.GenerateUniqueSn("!{yyMMdd}%{4}", 10, latest?.WMSN),
+                WMType = _waringTypeMapping.TryGetValue(info.WMClass, out var type) ? 
+                    ((int)type).ToString() : 
+                    ((int)WMType.General).ToString(),
+                WMClass = ((int)info.WMClass).ToString(),
+                WMState = ((int)WMState.Pending).ToString(),
+                TimeOfOccurrence = DateTime.Now,
+                FSN = info.FSN,
+                Message = _msgContentMapping.TryGetValue(info.WMClass, out var msg) ?
+                    string.Format(msg, info.UserName, otherInfo) :
+                    $"未知告警! ({info.WMClass.GetLabel()})",
+                UserName = info.UserName,
+                Location_X = info.Location_X,
+                Location_Y = info.Location_Y
+            };
 
-            _db.WarningMessage.AddOrUpdate(data);
-            _db.SaveChanges();
+            _db.WarningMessage.AddOrUpdate(warningMsg);
+            await _db.SaveChangesAsync();
         }
         #endregion
     }

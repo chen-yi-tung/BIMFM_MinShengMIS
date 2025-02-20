@@ -10,11 +10,16 @@
             this.show = () => {
                 this.loader.classList.add("show");
                 this.container.style.visibility = "hidden";
+                this.loader.dispatchEvent(new CustomEvent("show"));
             };
             this.hide = () => {
                 this.loader.classList.remove("show");
                 this.container.style.visibility = "visible";
+                this.loader.dispatchEvent(new CustomEvent("hide"));
             };
+        }
+        get loading() {
+            return this.loader.classList.contains("show");
         }
         load() {
             delete this.activate;
@@ -30,6 +35,9 @@
             this.loader.remove();
             this.loader = null;
             return true;
+        }
+        addEventListener(type, listener) {
+            this.loader.addEventListener(type, listener);
         }
     }
     Autodesk.Viewing.theExtensionManager.registerExtension("Viewer.Loading", Loading);
