@@ -60,7 +60,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
             }
             await formDropdown.ASN({ id: asn, fsnId: fsn });
 
-            this.modal.addEventListener("show.bs.modal", async () => {
+            this.modal.addEventListener("shown.bs.modal", async () => {
                 await this.bim.init();
                 fsn.dispatchEvent(new Event("change"));
             });
