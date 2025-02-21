@@ -103,7 +103,7 @@
                 name: '易施詩',
                 heart: 110,
                 heartAlert: true,
-                location: '進流抽水站 B2F',
+                location: '前處理機房 渠道操作層',
                 time: '2024-12-09 15:19',
                 alert: [
                     { state: '1', type: '1', label: '心率異常' },
@@ -262,8 +262,6 @@ window.addEventListener('load', async () => {
                 pin.update()
             })
         })
-
-
 
         timer = setTimeout(update, updateTime)
     }
