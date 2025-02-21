@@ -75,8 +75,8 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
             formDropdown.ASN({
                 id: this.modal.querySelector("#ASN"),
                 fsnId: this.modal.querySelector("#FSN"),
-                value: data.ASN,
-                fsnValue: data.FSN,
+                value: data.ASN ?? void 0,
+                fsnValue: data.FSN ?? void 0,
             });
             this.modal.querySelector("#Name").value = data.Name ?? "";
             this.modal.querySelector("#Memo").value = data.Memo ?? "";
