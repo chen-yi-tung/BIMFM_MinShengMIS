@@ -138,7 +138,7 @@ namespace MinSheng_MIS.Controllers
                 var planInfo = db.InspectionPlan.Find(IPSN);
 
                 //檢查工單是否有執行
-                if(planInfo.PlanState.ToString() == "1") //待執行則不可下載紀錄
+                if (planInfo.PlanState.ToString() == "1") //待執行則不可下載紀錄
                 {
                     return Json(new { success = false, message = "此巡檢計畫(" + IPSN + ")尚未開始巡檢，因此無巡檢紀錄可以下載" }, JsonRequestBehavior.AllowGet);
                 }
@@ -240,11 +240,11 @@ namespace MinSheng_MIS.Controllers
                         {
                             var planpathSN = db.InspectionPlan_Time.Where(x => x.PathName == pathName && x.IPSN == IPSN).Select(x => x.PlanPathSN).FirstOrDefault().ToString();
                             //to do
-                            var e  = (from x1 in db.InspectionDefaultOrder
+                            var e = (from x1 in db.InspectionDefaultOrder
                                      where x1.PlanPathSN == planpathSN
                                      join x2 in db.RFID on x1.RFIDInternalCode equals x2.RFIDInternalCode
                                      join x3 in db.EquipmentInfo on x2.ESN equals x3.ESN
-                                     select new { x3.ESN, x3.NO, x3.EName, x3.TSN}).Distinct().ToList();
+                                     select new { x3.ESN, x3.NO, x3.EName, x3.TSN }).Distinct().ToList();
                             int eCount = e.Count();
                             foreach (var equipment in e)
                             {
@@ -341,7 +341,7 @@ namespace MinSheng_MIS.Controllers
                             sheet.GetRow(rowIndex).GetCell(1).CellStyle = WordStyle;
                             sheet.GetRow(rowIndex).CreateCell(0).CellStyle = WordStyle;
                         }
-                        
+
                         #endregion
 
                         #region 依時段填檢查項目、填報項目
@@ -361,10 +361,10 @@ namespace MinSheng_MIS.Controllers
                                 var Checkitems = db.InspectionPlan_EquipmentCheckItem.Where(x => x.IPESN == e.IPESN).ToList();
                                 foreach (var item in Checkitems)
                                 {
-                                    if(item.CheckResult != null)
+                                    if (item.CheckResult != null)
                                     {
                                         sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).SetCellValue(CheckResult_Dic[item.CheckResult]);
-                                        if(item.CheckResult == "2") //異常
+                                        if (item.CheckResult == "2") //異常
                                         {
                                             sheet.GetRow(reportrowIndex).GetCell(recordColumnIndex).CellStyle = RedTextStyle;
                                         }
@@ -411,7 +411,7 @@ namespace MinSheng_MIS.Controllers
                     {
                         sheet.SetColumnWidth(col, 30 * 256);
                     }
-                    for (int col = 2; col <= datas.Count()+1; col++)
+                    for (int col = 2; col <= datas.Count() + 1; col++)
                     {
                         sheet.SetColumnWidth(col, 10 * 256);
                     }
@@ -446,7 +446,7 @@ namespace MinSheng_MIS.Controllers
                     {
                         success = true,
                         message = "Excel生成成功",
-                        fileName = IPSN+".xlsx",
+                        fileName = IPSN + ".xlsx",
                         fileData = base64String
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -470,5 +470,4 @@ namespace MinSheng_MIS.Controllers
             cell.CellStyle = style;
         }
     }
-
 }
