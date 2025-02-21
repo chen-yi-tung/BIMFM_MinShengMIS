@@ -39,8 +39,11 @@ namespace MinSheng_MIS.Services
                 .Where(x => x.UserName == userName)
                 .Where(x => x.WMState != ((int)WMState.Completed).ToString())
                 .ToList()
-                .GroupBy(x => x.WMType)
+                .GroupBy(x => x.WMClass)
                 .Where(x => x.Key == ((int)WMClass.AbnormalHeartRate).ToString());
+
+            var test1 = !warnings.Any();
+            var test2 = !warnings.Any();
 
             // 檢查心率是否低於下限或高於上限
             return !warnings.Any() && (rate < _rateLowerLimit || rate > _rateUpperLimit);
@@ -65,7 +68,7 @@ namespace MinSheng_MIS.Services
                 .Where(x => x.UserName == userName)
                 .Where(x => x.WMState != ((int)WMState.Completed).ToString())
                 .ToList()
-                .GroupBy(x => x.WMType)
+                .GroupBy(x => x.WMClass)
                 .Where(x => x.Key == ((int)WMClass.ProlongedStop).ToString());
             if (warnings.Any())
                 return false;
@@ -88,7 +91,7 @@ namespace MinSheng_MIS.Services
                 .AsEnumerable();
 
             // 每個時間點的Beacon標識是否都相同，是則表示定位不變；反之有變動。
-            return userPosBeacons.Count() >= 900 && userPosBeacons.All(x => x.Minors.Equals(userPosBeacons.First().Minors));
+            return userPosBeacons.Count() >= _maxInspectDwellTime*30 && userPosBeacons.All(x => x.Minors.Equals(userPosBeacons.First().Minors));
         }
 
         private class BeaconsAtTime

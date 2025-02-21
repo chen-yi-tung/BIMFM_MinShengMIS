@@ -249,11 +249,12 @@ namespace MinSheng_MIS.Services
         public JObject InspectionCurrentPos(string FSN)
         {
             var today = DateTime.Today;
-            var users = db.InspectionTrack
-                .Where(x => x.TrackTime > today)
-                .OrderByDescending(x => x.TrackTime)
-                .ToList()
-                .GroupBy(x => x.UserName);
+            var users = db.LoginUserList.Select(x => x.UserID).ToList();
+            //var users = db.InspectionTrack
+            //    .Where(x => x.TrackTime > today)
+            //    .OrderByDescending(x => x.TrackTime)
+            //    .ToList()
+            //    .GroupBy(x => x.UserName);
 
             JObject jo = new JObject();
             
@@ -261,14 +262,21 @@ namespace MinSheng_MIS.Services
             JArray jaAnother = new JArray();
             foreach (var user in users)
             {
-                var current = user.FirstOrDefault();
-                if (current == null)
+                var current = db.InspectionTrack
+                    .Where(x => x.UserName == user)
+                    .Where(x => x.TrackTime > today)
+                    .OrderByDescending(x => x.TrackTime)
+                    .FirstOrDefault();
+
+                //var current = user.FirstOrDefault();
+                if (current == null || current.TrackTime <= DateTime.Now.AddHours(-1))
                     continue;
 
                 // 告警訊息
                 var warnings = db.WarningMessage
-                    .Where(x => x.UserName == user.Key)
+                    .Where(x => x.UserName == user)
                     .Where(x => x.WMState != ((int)WMState.Completed).ToString())
+                    .OrderBy(x => x.WMType)
                     .ToList()
                     .GroupBy(x => x.WMType);
 
