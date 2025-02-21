@@ -510,7 +510,7 @@ body {
             }
         }
 
-        &:not([data-show]) .pin-popover{
+        &:not([data-show]) .pin-popover {
             display: none;
         }
     }
@@ -531,7 +531,7 @@ body {
         }
 
         .popover-header {
-            color: #454A5B;
+            color: #454a5b;
             font-size: 20px;
             font-weight: 500;
             padding: 4px 8px 0;
@@ -851,7 +851,6 @@ body {
     }
     .plan-person {
         --inner-border: 0 0 0 0 transparent;
-        height: 7.5rem;
         background-color: #ffffff;
         box-shadow: 0 4px 4px 0 #00000040, var(--inner-border);
         display: flex;
@@ -918,6 +917,8 @@ body {
         gap: 0.25rem;
         color: #606060;
         line-height: 1.4;
+        flex: 1;
+        width: 1px;
     }
     .plan-person-name {
         font-size: 1.25rem;
@@ -942,16 +943,18 @@ body {
     }
     .plan-person-locate {
         display: flex;
-        align-items: center;
+        align-items: start;
 
         & > i {
             width: 1.25rem;
             text-align: center;
             color: #4d86bc;
+            margin-top: 0.25em;
         }
         & > .value {
             font-size: 1rem;
             font-weight: 500;
+            text-wrap-style: balance;
         }
     }
     .plan-person-alert {
