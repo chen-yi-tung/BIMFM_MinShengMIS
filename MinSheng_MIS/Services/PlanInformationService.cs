@@ -276,9 +276,9 @@ namespace MinSheng_MIS.Services
                 var warnings = db.WarningMessage
                     .Where(x => x.UserName == user)
                     .Where(x => x.WMState != ((int)WMState.Completed).ToString())
-                    .OrderBy(x => x.WMType)
+                    .OrderBy(x => x.WMClass)
                     .ToList()
-                    .GroupBy(x => x.WMType);
+                    .GroupBy(x => x.WMClass);
 
                 var jPos = new JObject
                 {
