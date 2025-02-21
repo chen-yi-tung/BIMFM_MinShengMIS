@@ -310,7 +310,7 @@ namespace MinSheng_MIS.Services
                     {"time", current.TrackTime.ToString("yyyy-MM-dd HH:mm") },
                     {"alert", jAlert },
                     {"position", jPos },
-                    {"ViewName", db.Floor_Info.Find(current.FSN).ViewName?.ToString() },
+                    {"ViewName", current?.Floor_Info.ViewName },
                 };
                 if (current.FSN == FSN)
                     jaCurrent.Add(jUser);
