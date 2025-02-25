@@ -8,6 +8,7 @@ using System.Linq.Dynamic.Core;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static MinSheng_MIS.Services.UniParams;
 
 namespace MinSheng_MIS.Services
 {
@@ -24,10 +25,28 @@ namespace MinSheng_MIS.Services
         }
 
         #region 是否心率異常
-        public bool IsHeartRateAbnormal(int rate)
+        /// <summary>
+        /// 是否心率異常且尚未告警
+        /// </summary>
+        /// <param name="rate"></param>
+        /// <returns></returns>
+        public bool AddHeartRateAbnormalWarning(int rate)
         {
+            // 使用者名稱
+            var userName = HttpContext.Current.User.Identity.Name;
+
+            var warnings = _db.WarningMessage
+                .Where(x => x.UserName == userName)
+                .Where(x => x.WMState != ((int)WMState.Completed).ToString())
+                .ToList()
+                .GroupBy(x => x.WMClass)
+                .Where(x => x.Key == ((int)WMClass.AbnormalHeartRate).ToString());
+
+            var test1 = !warnings.Any();
+            var test2 = !warnings.Any();
+
             // 檢查心率是否低於下限或高於上限
-            return rate < _rateLowerLimit || rate > _rateUpperLimit;
+            return !warnings.Any() && (rate < _rateLowerLimit || rate > _rateUpperLimit);
         }
         #endregion
 
@@ -40,10 +59,20 @@ namespace MinSheng_MIS.Services
         /// <remarks>
         /// 以定位使用之Beacon進行判斷，若最大停留期間內用於定位的Beacon編號不變，表示使用者停留於原地。
         /// </remarks>
-        public bool IsExcessiveDwellTime(DateTime posTime)
+        public bool AddExcessiveDwellTimeWarning(DateTime posTime)
         {
             // 使用者名稱
             var userName = HttpContext.Current.User.Identity.Name;
+
+            var warnings = _db.WarningMessage
+                .Where(x => x.UserName == userName)
+                .Where(x => x.WMState != ((int)WMState.Completed).ToString())
+                .ToList()
+                .GroupBy(x => x.WMClass)
+                .Where(x => x.Key == ((int)WMClass.ProlongedStop).ToString());
+            if (warnings.Any())
+                return false;
+
             // 最大可停留之起始時間
             var startTime = posTime - TimeSpan.FromMinutes(_maxInspectDwellTime);
 
@@ -62,7 +91,7 @@ namespace MinSheng_MIS.Services
                 .AsEnumerable();
 
             // 每個時間點的Beacon標識是否都相同，是則表示定位不變；反之有變動。
-            return userPosBeacons.Count() >= 900 && userPosBeacons.All(x => x.Minors.Equals(userPosBeacons.First().Minors));
+            return userPosBeacons.Count() >= _maxInspectDwellTime*30 && userPosBeacons.All(x => x.Minors.Equals(userPosBeacons.First().Minors));
         }
 
         private class BeaconsAtTime

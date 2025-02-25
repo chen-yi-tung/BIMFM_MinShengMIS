@@ -18,7 +18,7 @@ namespace MinSheng_MIS.Services
 
         private readonly Dictionary<WMClass, string> _msgContentMapping = new Dictionary<WMClass, string>
         {
-            { WMClass.AbnormalHeartRate, "{0} 心率異常 ({1})" },
+            { WMClass.AbnormalHeartRate, "{0} 心率異常 ({1}下/分)" },
             { WMClass.RouteDeviation, "巡檢路線偏移" },
             { WMClass.ProlongedStop, "{0} 停留過久 ({1})" },
             { WMClass.EmergencySituation, "{0} 觸發緊急按鈕" },

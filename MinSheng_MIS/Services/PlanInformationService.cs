@@ -1,12 +1,15 @@
-﻿using MinSheng_MIS.Models;
+﻿using MinSheng_MIS.Attributes;
+using MinSheng_MIS.Models;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Numerics;
 using System.Web;
 using System.Web.Mvc;
+using static MinSheng_MIS.Services.UniParams;
 
 namespace MinSheng_MIS.Services
 {
@@ -246,11 +249,12 @@ namespace MinSheng_MIS.Services
         public JObject InspectionCurrentPos(string FSN)
         {
             var today = DateTime.Today;
-            var users = db.InspectionTrack
-                .Where(x => x.TrackTime > today)
-                .OrderByDescending(x => x.TrackTime)
-                .ToList()
-                .GroupBy(x => x.UserName);
+            var users = db.LoginUserList.Select(x => x.UserID).ToList();
+            //var users = db.InspectionTrack
+            //    .Where(x => x.TrackTime > today)
+            //    .OrderByDescending(x => x.TrackTime)
+            //    .ToList()
+            //    .GroupBy(x => x.UserName);
 
             JObject jo = new JObject();
             
@@ -258,15 +262,45 @@ namespace MinSheng_MIS.Services
             JArray jaAnother = new JArray();
             foreach (var user in users)
             {
-                var current = user.FirstOrDefault();
-                if (current == null)
+                var current = db.InspectionTrack
+                    .Where(x => x.UserName == user)
+                    .Where(x => x.TrackTime > today)
+                    .OrderByDescending(x => x.TrackTime)
+                    .FirstOrDefault();
+
+                //var current = user.FirstOrDefault();
+                if (current == null || current.TrackTime <= DateTime.Now.AddHours(-1))
                     continue;
+
+                // 告警訊息
+                var warnings = db.WarningMessage
+                    .Where(x => x.UserName == user)
+                    .Where(x => x.WMState != ((int)WMState.Completed).ToString())
+                    .OrderBy(x => x.WMClass)
+                    .ToList()
+                    .GroupBy(x => x.WMClass);
 
                 var jPos = new JObject
                 {
                     {"x", current?.LocationX },
                     {"y", current?.LocationY },
                 };
+
+                var jAlert = new JArray();
+                foreach (var item in warnings)
+                {
+                    if (!item.Any())
+                        continue;
+                    var msg = item.First();
+                    var jMsg = new JObject
+                    {
+                        {"state", msg.WMType },
+                        {"type", msg.WMClass },
+                        {"label", ConvertStringToEnum<WMClass>(msg.WMClass).GetLabel() },
+                    };
+                    jAlert.Add(jMsg);
+                }
+
                 var jUser = new JObject
                 {
                     {"name", db.AspNetUsers.Where(x => x.UserName == current.UserName).First().MyName },
@@ -274,9 +308,9 @@ namespace MinSheng_MIS.Services
                     {"heartAlert", current.Heartbeat < _rateLowerLimit || current.Heartbeat > _rateUpperLimit },
                     {"location", $"{current?.Floor_Info.AreaInfo.Area} {current?.Floor_Info.FloorName}" },
                     {"time", current.TrackTime.ToString("yyyy-MM-dd HH:mm") },
-                    {"alert", new JArray() },
+                    {"alert", jAlert },
                     {"position", jPos },
-                    {"ViewName", db.Floor_Info.Find(current.FSN).ViewName?.ToString() },
+                    {"ViewName", current?.Floor_Info.ViewName },
                 };
                 if (current.FSN == FSN)
                     jaCurrent.Add(jUser);

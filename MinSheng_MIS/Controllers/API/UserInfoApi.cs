@@ -9,14 +9,17 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 
 namespace MinSheng_MIS.Controllers.API
 {
-    public class LoginController : ApiController
+    [RoutePrefix("api")]
+    public class AccountController : ApiController
     {
         private ApplicationSignInManager _signInManager;
+        private readonly Bimfm_MinSheng_MISEntities _db;
 
         public ApplicationSignInManager SignInManager
         {
@@ -30,8 +33,14 @@ namespace MinSheng_MIS.Controllers.API
             }
         }
 
+        public AccountController()
+        {
+            _db = new Bimfm_MinSheng_MISEntities();
+        }
+
         [AllowAnonymous]
-        public JObject Post([FromBody] AppLoginViewModel user)
+        [Route("Login")]
+        public async Task<JObject> Login([FromBody] AppLoginViewModel user)
         {
             JObject jo = new JObject()
             {
@@ -46,6 +55,13 @@ namespace MinSheng_MIS.Controllers.API
                 if (result == SignInStatus.Success)
                 {
                     jo["Datas"] = JWTToken(user.Account);
+
+                    // 紀錄該使用者已登入
+                    if (!_db.LoginUserList.Any(x => x.UserID == user.Account))
+                    {
+                        _db.LoginUserList.Add(new LoginUserList { UserID = user.Account });
+                        await _db.SaveChangesAsync();
+                    }
                 }
                 else
                 {
@@ -85,6 +101,33 @@ namespace MinSheng_MIS.Controllers.API
             // 將 Token 轉換為字串格式
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
             return tokenString;
+        }
+
+        [Route("Logout")]
+        public async Task<JObject> Logout()
+        {
+            JObject jo = new JObject()
+            {
+                { "State", "Success" },
+                { "ErrorMessage", "" },
+                { "Datas", "" }
+            };
+            try
+            {
+                var userName = HttpContext.Current.User.Identity.Name;
+
+                // 刪除該使用者已登入紀錄
+                var user = _db.LoginUserList.FirstOrDefault(x => x.UserID == userName);
+                _db.LoginUserList.Remove(user);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                jo["State"] = "Failed";
+                jo["ErrorMessage"] = ex.Message;
+                jo["Datas"] = "登出失敗";
+            }
+            return jo;
         }
     }
 

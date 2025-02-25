@@ -49,7 +49,7 @@ namespace MinSheng_MIS.Controllers
                 //if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
                 // 建立庫存
-                result =  _stockService.Stock_Create(data);
+                result = _stockService.Stock_Create(data);
                 return Content(JsonConvert.SerializeObject(result), "application/json");
             }
             catch (MyCusResException ex)
@@ -108,7 +108,7 @@ namespace MinSheng_MIS.Controllers
                     string filefullpath = Path.Combine(FolderPath, Filename);
                     data.PurchaseOrder.SaveAs(filefullpath);
                 }
-                
+
                 #endregion
                 result = _stockService.NormalStockIn_Create(data, SARSN, User.Identity.Name, Filename);
                 return Content(JsonConvert.SerializeObject(result), "application/json");
@@ -364,7 +364,13 @@ namespace MinSheng_MIS.Controllers
                     worksheet.Cells["C" + row].Value = item["OutboundNum"]?.ToString();
                     worksheet.Cells["D" + row].Value = item["StockNum"]?.ToString();
                     worksheet.Cells["E" + row].Value = item["Registrant"]?.ToString();
-                    worksheet.Cells["F" + row].Value = item["Document"]?.ToString();
+                    if (!string.IsNullOrEmpty(item["Document"]?.ToString()))
+                    {
+                        worksheet.Cells["F" + row].Value = "採購單據";
+                        worksheet.Cells["F" + row].Style.Font.UnderLine = true;
+                        worksheet.Cells["F" + row].Style.Font.Color.SetColor(System.Drawing.Color.Blue);
+                        worksheet.Cells["F" + row].Hyperlink = new Uri(Request.Url.GetLeftPart(UriPartial.Authority) + item["Document"]?.ToString());
+                    }
                     worksheet.Cells["G" + row].Value = item["Taker"]?.ToString();
                     worksheet.Cells["H" + row].Value = item["Memo"]?.ToString();
                     row++;
