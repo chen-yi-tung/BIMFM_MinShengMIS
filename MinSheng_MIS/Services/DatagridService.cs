@@ -1948,11 +1948,13 @@ namespace MinSheng_MIS.Services
 
             var rpT = from x1 in db.WarningMessage
                       join x3 in db.Floor_Info
-                      on x1.FSN equals x3.FSN
+                      on x1.FSN  equals x3.FSN  into floorJoin
+                      from x3 in floorJoin.DefaultIfEmpty() //left join
                       join x4 in db.AspNetUsers
                       on x1.UserName equals x4.UserName
                       join x5 in db.AreaInfo
-                      on x3.ASN equals x5.ASN
+                      on x3.ASN equals x5.ASN into areaJoin
+                      from x5 in areaJoin.DefaultIfEmpty()
                       select new
                       {
                           x1.WMSN,
@@ -1961,11 +1963,13 @@ namespace MinSheng_MIS.Services
                           x1.TimeOfOccurrence,
                           x1.FSN,
                           x1.Message,
-                          x3.ASN,
-                          x3.FloorName,
+                          ASN = x3 != null ? x3.ASN.ToString() : null,
+                          FloorName = x3 != null ? x3.FloorName : null,
                           x4.MyName,
-                          x5.Area
+                          Area = x5 != null ? x5.Area : null
                       };
+            int Totalc = rpT.Count();
+
             //查詢事件等級
             if (!string.IsNullOrEmpty(WMType))
             {
@@ -1980,7 +1984,7 @@ namespace MinSheng_MIS.Services
             if (!string.IsNullOrEmpty(ASN))
             {
                 var numASN = Int32.Parse(ASN);
-                rpT = rpT.Where(x => x.ASN == numASN);
+                rpT = rpT.Where(x => x.ASN == numASN.ToString());
             }
             if (!string.IsNullOrEmpty(Area))
             {

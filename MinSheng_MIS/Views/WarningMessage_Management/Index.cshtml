@@ -132,9 +132,9 @@
                     dg.column('TimeOfOccurrence', '發生時間', 200, (v, row, i) => {
                         return dateTransform(v);
                     }),
-                    dg.column('Location', '發生地點', 250),
-                    dg.column('Message', '事件內容', 250),
-                    dg.column('MyName', '人員姓名', 150),
+                    dg.column('Location', '發生地點', 400),
+                    dg.column('Message', '事件內容', 500),
+                    dg.column('MyName', '人員姓名', 250),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {

@@ -64,8 +64,8 @@ namespace MinSheng_MIS.Controllers
 			var messageinfo = _db.WarningMessage.Find(WMSN);
 			var WMTypedic = Surface.WMType(); //警示訊息事件等級對照
 			var WMState = Surface.WMState(); //警示訊息事件處理狀況對照
-			var FloorName = _db.Floor_Info.Find(messageinfo.FSN).FloorName.ToString();
-			var Area = _db.Floor_Info.Find(messageinfo.FSN).AreaInfo.Area.ToString();
+			var FloorName = _db.Floor_Info.Find(messageinfo.FSN)?.FloorName.ToString();
+			var Area = _db.Floor_Info.Find(messageinfo.FSN)?.AreaInfo?.Area.ToString();
 
 			//取得警示訊息資訊
 			WarningMessageViewModel warningMessage = new WarningMessageViewModel();
