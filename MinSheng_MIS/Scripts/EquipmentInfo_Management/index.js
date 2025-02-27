@@ -407,7 +407,9 @@ async function init_SampleContent({ data = {} }) {
         }
         showSampleContent(data);
         if (selectedValue === this.originTSN) {
-            pushSampleContent(this.originData)
+            setTimeout(() => {
+                pushSampleContent(this.originData)
+            }, 500);
         }
     });
 
