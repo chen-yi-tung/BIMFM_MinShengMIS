@@ -67,10 +67,10 @@
             if (!isAuth("1", "2")) {
                 document.getElementById('create').remove();
             }
-
             Initialize_DataGrid(getGridJSON);
             addSearchAreaClickEvent();
             createYearMonthSelect();
+            setupYearMonthBinding();
         });
 
         function Initialize_DataGrid(getGridJSON) {
@@ -118,10 +118,23 @@
         //search area onClick Function
         function addSearchAreaClickEvent() {
             $("#search").click(function () {
-                const yearFromVal = parseInt(document.getElementById('YearFrom').value) + 1911;
-                const monthFromVal = document.getElementById('MonthFrom').value.padStart(2, '0');
-                const yearToVal = parseInt(document.getElementById('YearTo').value) + 1911;
-                const monthToVal = document.getElementById('MonthTo').value.padStart(2, '0');
+                let yearFromVal = document.getElementById('YearFrom').value;
+                let monthFromVal = document.getElementById('MonthFrom').value;
+                let yearToVal = document.getElementById('YearTo').value;
+                let monthToVal = document.getElementById('MonthTo').value;
+
+                //選了年份沒選月份的話，自動補上月份
+                if (yearFromVal !== "") {
+                    monthFromVal = "01";
+                    yearFromVal = parseInt(document.getElementById('YearFrom').value) + 1911;
+                    document.getElementById('MonthFrom').value = "1";
+                }
+                if (yearToVal !== "") {
+                    monthToVal = "12";
+                    yearToVal = parseInt(document.getElementById('YearTo').value) + 1911;
+                    document.getElementById('MonthTo').value = "12";
+                }
+
                 const QueryParams = {
                     ...getQueryParams(),
                     DateFrom: "",
@@ -147,6 +160,23 @@
             generateYearSelect("YearTo");
             generateMonthSelect("MonthFrom");
             generateMonthSelect("MonthTo");
+        }
+
+        function setupYearMonthBinding() {
+            const YearFrom = document.getElementById('YearFrom');
+            const MonthFrom = document.getElementById('MonthFrom');
+            const YearTo = document.getElementById('YearTo');
+            const MonthTo = document.getElementById('MonthTo');
+
+            // 通用函式：根據 Year 欄位是否為空，啟用或禁用 Month
+            const toggleMonthDisabled = (yearInput, monthInput) => {
+                monthInput.toggleAttribute('disabled', yearInput.value === "");
+            };
+            toggleMonthDisabled(YearFrom, MonthFrom);
+            toggleMonthDisabled(YearTo, MonthTo);
+
+            YearFrom.addEventListener('change', () => toggleMonthDisabled(YearFrom, MonthFrom));
+            YearTo.addEventListener('change', () => toggleMonthDisabled(YearTo, MonthTo));
         }
     </script>
 }

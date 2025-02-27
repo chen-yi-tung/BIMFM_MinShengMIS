@@ -2,6 +2,7 @@
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NPOI.OpenXmlFormats.Spreadsheet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -424,20 +425,17 @@ namespace MinSheng_MIS.Controllers
 
         #region 圖子系統下拉式選單
         [HttpGet]
-        public ActionResult DSubSystem(string DSystemID = "")
+        public ActionResult DSubSystem(string DSystemID)
         {
             List<JObject> list = new List<JObject>();
             var DSubSystemlist = new List<DrawingSubSystemManagement>();
+            int dsystemid = 0;
 
-            if (string.IsNullOrEmpty(DSystemID))
+            if (int.TryParse(DSystemID, out int result))
             {
-                //DSubSystemlist = db.DrawingSubSystemManagement.ToList();
+                dsystemid = Convert.ToInt32((result));
             }
-            else
-            {
-                var dsystemid = Convert.ToInt32(DSystemID);
-                DSubSystemlist = db.DrawingSubSystemManagement.Where(x => x.DSystemID == dsystemid).ToList();
-            }
+            DSubSystemlist = db.DrawingSubSystemManagement.Where(x => x.DSystemID == dsystemid).ToList();
 
             foreach (var item in DSubSystemlist)
             {
