@@ -39,6 +39,13 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateTestingAndAnalysisWorkflow(TA_Workflow ta_workflow)
 		{
+            #region 檢查是否有同實驗類型、同實驗名稱之採驗分析流程建立
+            var isExist = db.TestingAndAnalysisWorkflow.Count(x => x.ExperimentType == ta_workflow.ExperimentType && x.ExperimentName == ta_workflow.ExperimentName);
+            if(isExist > 0)
+            {
+                return Content("此採驗分析流程已存在", "application/json; charset=utf-8");
+            }
+            #endregion
             ModelState.Remove("TAWSN");
             if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
             else if (ta_workflow.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗標籤名稱 的長度最多200個字元。");
@@ -72,6 +79,10 @@ namespace MinSheng_MIS.Controllers
                     || ComFunc.IsConformedForPdf(File.ContentType, extension)
                     || ComFunc.IsConformedForImage(File.ContentType, extension)) // 檔案白名單檢查
                 {
+                    if(File.ContentLength > 10 * 1024 * 1024)
+                    {
+                        return Content("<br>檔案大小不得超過 10MB。", "application/json; charset=utf-8");
+                    }
                     // 檔案上傳
                     if (!ComFunc.UploadFile(File, Server.MapPath($"~/{folderPath}/"), workflow.TAWSN))
                         return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
@@ -100,6 +111,14 @@ namespace MinSheng_MIS.Controllers
         {
             if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
+            #region 檢查是否有同實驗類型、同實驗名稱之採驗分析流程建立
+            var isExist = db.TestingAndAnalysisWorkflow.Count(x => x.ExperimentType == ta_workflow.ExperimentType && x.ExperimentName == ta_workflow.ExperimentName && x.TAWSN != ta_workflow.TAWSN);
+            if (isExist > 0)
+            {
+                return Content("此採驗分析流程實驗類型及實驗名稱重複", "application/json; charset=utf-8");
+            }
+            #endregion
+
             var workflow = await db.TestingAndAnalysisWorkflow.FirstOrDefaultAsync(x => x.TAWSN == ta_workflow.TAWSN);
             if (workflow == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "TAWSN is Undefined.");
             else if (ta_workflow.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗標籤名稱 的長度最多200個字元。");
@@ -125,6 +144,10 @@ namespace MinSheng_MIS.Controllers
                     || ComFunc.IsConformedForPdf(newFile.ContentType, extension)
                     || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
+                    if (newFile.ContentLength > 10 * 1024 * 1024)
+                    {
+                        return Content("<br>檔案大小不得超過 10MB。", "application/json; charset=utf-8");
+                    }
                     // 舊檔案刪除
                     ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), workflow.WorkflowFile, null);
                     // 檔案上傳
