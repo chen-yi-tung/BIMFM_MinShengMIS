@@ -199,7 +199,7 @@ namespace MinSheng_MIS.Services
             #endregion
 
             #region 依據查詢字串檢索資料表
-            var SourceTable = db.InspectionPathSample.AsQueryable();
+            var SourceTable = db.InspectionPathSample.Select(x => new { x.PlanPathSN,x.PathName,x.Frequency,InspectionNum = db.InspectionDefaultOrder.Count(c => c.PlanPathSN == x.PlanPathSN) }).AsQueryable();
 
             if (!string.IsNullOrEmpty(PathName)) //查詢巡檢路線名稱模糊查詢
             {
@@ -234,7 +234,7 @@ namespace MinSheng_MIS.Services
                 itemObjects.Add("PlanPathSN", a.PlanPathSN);//巡檢路線編號
                 itemObjects.Add("PathName", a.PathName);//巡檢路線名稱
                 itemObjects.Add("Frequency", dic_frequency[a.Frequency.ToString()]);//巡檢頻率
-                itemObjects.Add("InspectionNum", db.InspectionDefaultOrder.Where(x => x.PlanPathSN == a.PlanPathSN).Count());//巡檢數量
+                itemObjects.Add("InspectionNum", a.InspectionNum);//巡檢數量
                 ja.Add(itemObjects);
             }
 
