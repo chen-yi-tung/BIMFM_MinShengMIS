@@ -483,8 +483,8 @@ namespace MinSheng_MIS.Services
         {
             #region 變數
             JsonResService<string> res = new JsonResService<string>();
-            string folderPath = @"C:\Users\User\Downloads\BeaconPoint";
-            string outputFilePath = @"C:\Users\User\Desktop\bt.csv";
+            string folderPath = @"C:\Users\User\Downloads\BeaconPoint_20250218";
+            string outputFilePath = @"C:\Users\User\Desktop\bt_20250218.csv";
 
             // 讀取GUID的csv或excel路徑
             string readFilePath = @"C:\Users\User\Downloads\藍芽發射器ELEMENT ID列表.xlsx";
@@ -519,16 +519,22 @@ namespace MinSheng_MIS.Services
             #endregion
 
             //讀入資料
-            var rows = MiniExcel.Query<DBIDData>(readFilePath);
+            var rows = MiniExcel.Query<DBIDData>(outputFilePath);
             foreach (var row in rows)
             {
-                //var maindata = _db.
+                var maindata = _db.BeaconDevice.Where(x => x.DBID == row.DBID).FirstOrDefault();
+                maindata.Location_X = Decimal.Parse(row.X);
+                maindata.Location_Y = Decimal.Parse(row.Y);
+                _db.BeaconDevice.AddOrUpdate(maindata);
             }
+            _db.SaveChanges();
         }
         public class DBIDData
         {
             public string GUID { get; set; }
-            public string DBID { get; set; }
+            public int DBID { get; set; }
+            public string X { get; set; }
+            public string Y { get; set; }
         }
         #endregion
     }

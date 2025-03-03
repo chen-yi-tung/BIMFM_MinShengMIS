@@ -445,7 +445,12 @@ namespace MinSheng_MIS.Services
                 var order = form["order"]?.ToString();
                 var list = JsonConvert.DeserializeObject<List<ExpandoObject>>(ja.ToString()).AsQueryable();
                 if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(order))
-                    list = list.OrderBy(x => ((IDictionary<string, object>)x)[sort]); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+                {
+                    if (order == "asc")
+                        list = list.OrderBy(x => ((IDictionary<string, object>)x)[sort]); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+                    else
+                        list = list.OrderByDescending(x => ((IDictionary<string, object>)x)[sort]); // 使用 System.Linq.Dynamic.Core 套件進行動態排序
+                } 
                 else list = list.OrderByDescending(x => ((IDictionary<string, object>)x)["EMFSN"]);
                 #endregion
 
