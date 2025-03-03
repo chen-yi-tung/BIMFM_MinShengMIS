@@ -1982,7 +1982,8 @@ namespace MinSheng_MIS.Services
                           ASN = x3 != null ? x3.ASN.ToString() : null,
                           FloorName = x3 != null ? x3.FloorName : null,
                           x4.MyName,
-                          Area = x5 != null ? x5.Area : null
+                          Area = x5 != null ? x5.Area : null,
+                          Location = (x5 != null ? x5.Area : null) + " " + (x3 != null ? x3.FloorName : null)
                       };
             int Totalc = rpT.Count();
 
