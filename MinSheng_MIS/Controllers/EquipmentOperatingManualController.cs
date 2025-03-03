@@ -40,31 +40,34 @@ namespace MinSheng_MIS.Controllers
             }
             #endregion
             #region 存設備操作手冊
-            string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
-            if (!Directory.Exists(Folder))
+            var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(eom.ManualFile);
+            if (!isValid)
             {
+                return Content(erroeMessage, "application/json");
+            }
+            else
+            {
+                string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
                 System.IO.Directory.CreateDirectory(Folder);
+                var lastEOMSN = db.EquipmentOperatingManual.OrderByDescending(x => x.EOMSN).FirstOrDefault();
+                var num = 1;
+                if (lastEOMSN != null)
+                {
+                    num = Convert.ToInt32(lastEOMSN.EOMSN) + 1;
+                }
+                var newEOMSN = num.ToString().PadLeft(6, '0');
+                string Filename = newEOMSN + Path.GetExtension(eom.ManualFile.FileName);
+                string filefullpath = Path.Combine(Folder, Filename);
+                eom.ManualFile.SaveAs(filefullpath);
+                #endregion
+                #region 新增設備操作手冊至資料庫
+                var addeom = new EquipmentOperatingManualService();
+                addeom.AddEquipmentOperatingManual(eom, newEOMSN, Filename);
+                #endregion
+                jo.Add("Succeed", true);
+                string result = JsonConvert.SerializeObject(jo);
+                return Content(result, "application/json");
             }
-            var lastEOMSN = db.EquipmentOperatingManual.OrderByDescending(x => x.EOMSN).FirstOrDefault();
-            var num = 1;
-            if (lastEOMSN != null)
-            {
-                num = Convert.ToInt32(lastEOMSN.EOMSN) + 1;
-            }
-            var newEOMSN = num.ToString().PadLeft(6, '0');
-            string FolderPath = Server.MapPath("~/Files/EquipmentOperatingManual");
-            string Filename = newEOMSN + Path.GetExtension(eom.ManualFile.FileName);
-            System.IO.Directory.CreateDirectory(FolderPath);
-            string filefullpath = Path.Combine(FolderPath, Filename);
-            eom.ManualFile.SaveAs(filefullpath);
-            #endregion
-            #region 新增設備操作手冊至資料庫
-            var addeom = new EquipmentOperatingManualService();
-            addeom.AddEquipmentOperatingManual(eom, newEOMSN, Filename);
-            #endregion
-            jo.Add("Succeed", true);
-            string result = JsonConvert.SerializeObject(jo);
-            return Content(result, "application/json");
         }
         #endregion
 
@@ -104,22 +107,25 @@ namespace MinSheng_MIS.Controllers
             #region 存設備操作手冊
             if (eom.ManualFile != null)
             {
-                string file = db.EquipmentOperatingManual.Find(eom.EOMSN).FilePath.ToString();
-                string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{file}");
-                if (System.IO.File.Exists(fillfullpath))
+                var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(eom.ManualFile);
+                if (!isValid)
                 {
-                    System.IO.File.Delete(fillfullpath);
+                    return Content(erroeMessage, "application/json");
                 }
-                string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
-                if (!Directory.Exists(Folder))
+                else
                 {
+                    string file = db.EquipmentOperatingManual.Find(eom.EOMSN).FilePath.ToString();
+                    string fillfullpath = Server.MapPath($"~/Files/EquipmentOperatingManual{file}");
+                    if (System.IO.File.Exists(fillfullpath))
+                    {
+                        System.IO.File.Delete(fillfullpath);
+                    }
+                    string Folder = Server.MapPath("~/Files/EquipmentOperatingManual");
                     System.IO.Directory.CreateDirectory(Folder);
-                }
-                string FolderPath = Server.MapPath("~/Files/EquipmentOperatingManual");
-                Filename = eom.EOMSN + Path.GetExtension(eom.ManualFile.FileName);
-                System.IO.Directory.CreateDirectory(FolderPath);
-                string filefullpath = Path.Combine(FolderPath, Filename);
-                eom.ManualFile.SaveAs(filefullpath);
+                    Filename = eom.EOMSN + Path.GetExtension(eom.ManualFile.FileName);
+                    string filefullpath = Path.Combine(Folder, Filename);
+                    eom.ManualFile.SaveAs(filefullpath);
+                } 
             }
 
             #endregion
