@@ -101,7 +101,7 @@ namespace MinSheng_MIS.Services
 
         private static readonly HashSet<string> AllowedPdfExtensions = new HashSet<string>
         {
-            ".PDF"
+            ".PDF",".pdf"
         };
 
         private static readonly HashSet<string> AllowedImageContentTypes = new HashSet<string>
@@ -127,6 +127,11 @@ namespace MinSheng_MIS.Services
         public static bool IsConformedForImage(string contentType, string extension)
         {
             return AllowedImageContentTypes.Contains(contentType) && AllowedImageExtensions.Contains(extension);
+        }
+        public static bool IsConformedForImageAndPdf(string contentType, string extension)
+        {
+            extension = extension.ToLower(); // 轉小寫，避免大小寫問題
+            return IsConformedForPdf(contentType, extension) || IsConformedForImage(contentType, extension);
         }
         #endregion
 

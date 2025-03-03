@@ -32,42 +32,57 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Create(AsBuiltDrawingViewModel info)
         {
-            #region 編訂ADSN
-            var newestADSN = db.AsBuiltDrawing.Where(x => x.UploadDate == DateTime.Today).OrderByDescending(x => x.ADSN).FirstOrDefault();
-            var ADSN = "";
-            if (newestADSN == null)
+            JObject jo = new JObject();
+            string result = "";
+            #region 存竣工圖至指定路徑
+            #region 檢查檔案格式
+            string fileContentType = info.ImgPath.ContentType; // 取得 MIME 類型
+            string fileExtension = Path.GetExtension(info.ImgPath.FileName).ToLower(); // 取得副檔名 (轉小寫)
+            int maxFileSize = 10 * 1024 * 1024; // 10MB
+            if (ComFunc.IsConformedForImageAndPdf(fileContentType, fileExtension) && info.ImgPath.ContentLength <= maxFileSize)
             {
-                ADSN = DateTime.Today.Date.ToString("yyMMdd") + "01";
+                #region 編訂ADSN
+                var newestADSN = db.AsBuiltDrawing.Where(x => x.UploadDate == DateTime.Today).OrderByDescending(x => x.ADSN).FirstOrDefault();
+                var ADSN = "";
+                if (newestADSN == null)
+                {
+                    ADSN = DateTime.Today.Date.ToString("yyMMdd") + "01";
+                }
+                else
+                {
+                    var intADSN = Convert.ToInt32(newestADSN.ADSN.ToString());
+                    ADSN = (intADSN + 1).ToString();
+                }
+                #endregion
+                string Folder = Server.MapPath("~/Files/AsBuiltDrawing");
+                System.IO.Directory.CreateDirectory(Folder);
+                string Filename = ADSN + Path.GetExtension(info.ImgPath.FileName);
+                string filefullpath = Path.Combine(Folder, Filename);
+                info.ImgPath.SaveAs(filefullpath);
+                #endregion
+
+                #region 存竣工圖資料進資料庫
+                var adddrawing = new AsBuiltDrawingService();
+                adddrawing.AddAsBuiltDrawing(info, ADSN, Filename);
+                #endregion
+
+                jo.Add("Succeed", true);
+                result = JsonConvert.SerializeObject(jo);
+                return Content(result, "application/json");
+            }
+            else if (ComFunc.IsConformedForImageAndPdf(fileContentType, fileExtension) && info.ImgPath.ContentLength > maxFileSize)
+            {
+                jo.Add("Succeed", false);
+                result = "檔案大小不得超過10MB。";
+                return Content(result, "application/json");
             }
             else
             {
-                var intADSN = Convert.ToInt32(newestADSN.ADSN.ToString());
-                ADSN = (intADSN + 1).ToString();
+                jo.Add("Succeed", false);
+                result = "檔案格式支援 .jpg、.jpeg、.png 或 .pdf。";
+                return Content(result, "application/json");
             }
             #endregion
-
-            #region 存竣工圖至指定路徑
-            string Folder = Server.MapPath("~/Files/AsBuiltDrawing");
-            if (!Directory.Exists(Folder))
-            {
-                System.IO.Directory.CreateDirectory(Folder);
-            }
-            string FolderPath = Server.MapPath("~/Files/AsBuiltDrawing");
-            string Filename = ADSN + Path.GetExtension(info.ImgPath.FileName);
-            System.IO.Directory.CreateDirectory(FolderPath);
-            string filefullpath = Path.Combine(FolderPath, Filename);
-            info.ImgPath.SaveAs(filefullpath);
-            #endregion
-
-            #region 存竣工圖資料進資料庫
-            var adddrawing = new AsBuiltDrawingService();
-            adddrawing.AddAsBuiltDrawing(info, ADSN, Filename);
-            #endregion
-
-            JObject jo = new JObject();
-            jo.Add("Succeed", true);
-            string result = JsonConvert.SerializeObject(jo);
-            return Content(result, "application/json");
         }
         #endregion
 
@@ -81,40 +96,53 @@ namespace MinSheng_MIS.Controllers
         public ActionResult Edit(AsBuiltDrawingViewModel drawing)
         {
             JObject jo = new JObject();
-
+            string result = "";
             string Filename = "";
             #region 存竣工圖
             if (drawing.ImgPath != null)
             {
-                string file = db.AsBuiltDrawing.Find(drawing.ADSN).ImgPath.ToString();
-                string fillfullpath = Server.MapPath($"~/Files/AsBuiltDrawing{file}");
-                if (System.IO.File.Exists(fillfullpath))
+                #region 檢查檔案格式
+                string fileContentType = drawing.ImgPath.ContentType; // 取得 MIME 類型
+                string fileExtension = Path.GetExtension(drawing.ImgPath.FileName).ToLower(); // 取得副檔名 (轉小寫)
+                int maxFileSize = 10 * 1024 * 1024; // 10MB
+                if (ComFunc.IsConformedForImageAndPdf(fileContentType, fileExtension) && drawing.ImgPath.ContentLength <= maxFileSize)
                 {
-                    System.IO.File.Delete(fillfullpath);
-                }
-                string Folder = Server.MapPath("~/Files/AsBuiltDrawing");
-                if (!Directory.Exists(Folder))
-                {
+                    string file = db.AsBuiltDrawing.Find(drawing.ADSN).ImgPath.ToString();
+                    string fillfullpath = Server.MapPath($"~/Files/AsBuiltDrawing{file}");
+                    if (System.IO.File.Exists(fillfullpath))
+                    {
+                        System.IO.File.Delete(fillfullpath);
+                    }
+                    string Folder = Server.MapPath("~/Files/AsBuiltDrawing");
                     System.IO.Directory.CreateDirectory(Folder);
+                    Filename = drawing.ADSN + Path.GetExtension(drawing.ImgPath.FileName);
+                    string filefullpath = Path.Combine(Folder, Filename);
+                    drawing.ImgPath.SaveAs(filefullpath);
                 }
-                string FolderPath = Server.MapPath("~/Files/AsBuiltDrawing");
-                Filename = drawing.ADSN + Path.GetExtension(drawing.ImgPath.FileName);
-                System.IO.Directory.CreateDirectory(FolderPath);
-                string filefullpath = Path.Combine(FolderPath, Filename);
-                drawing.ImgPath.SaveAs(filefullpath);
+                else if (ComFunc.IsConformedForImageAndPdf(fileContentType, fileExtension) && drawing.ImgPath.ContentLength > maxFileSize)
+                {
+                    jo.Add("Succeed", false);
+                    result = "檔案大小不得超過10MB。";
+                    return Content(result, "application/json");
+                }
+                else
+                {
+                    jo.Add("Succeed", false);
+                    result = "檔案格式支援 .jpg、.jpeg、.png 或 .pdf。";
+                    return Content(result, "application/json");
+                }
+                #endregion
             }
-
             #endregion
             #region 編輯設備操作手冊至資料庫
             var adddrawing = new AsBuiltDrawingService();
             adddrawing.EditAsBuiltDrawing(drawing, Filename);
             #endregion
             jo.Add("Succeed", true);
-            string result = JsonConvert.SerializeObject(jo);
+            result = JsonConvert.SerializeObject(jo);
             return Content(result, "application/json");
         }
         #endregion
-
 
         #region 刪除竣工圖
         public ActionResult Delete(string id)
