@@ -1009,7 +1009,7 @@ namespace MinSheng_MIS.Services
                 }
                 if (!string.IsNullOrEmpty(item.FloorName))
                 {
-                    itemObjects.Add("Floor", item.FloorName);
+                    itemObjects.Add("FloorName", item.FloorName);
                 }
 
                 if (!string.IsNullOrEmpty(item.Brand))
