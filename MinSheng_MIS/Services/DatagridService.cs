@@ -267,7 +267,7 @@ namespace MinSheng_MIS.Services
             #endregion
 
             #region 依據查詢字串檢索資料表
-            var SourceTable = db.DailyInspectionSample.AsQueryable();
+            var SourceTable = db.DailyInspectionSample.Select(x => new { x.DailyTemplateSN,x.TemplateName, InspectionNum = db.DailyInspectionSampleContent.Count(c => c.DailyTemplateSN == x.DailyTemplateSN) }).AsQueryable();
 
             if (!string.IsNullOrEmpty(TemplateName)) //查詢巡檢路線名稱模糊查詢
             {
@@ -301,7 +301,7 @@ namespace MinSheng_MIS.Services
                 var itemObjects = new JObject();
                 itemObjects.Add("DailyTemplateSN", a.DailyTemplateSN);//巡檢路線編號
                 itemObjects.Add("TemplateName", a.TemplateName);//巡檢模板名稱
-                itemObjects.Add("InspectionNum", db.DailyInspectionSampleContent.Where(x => x.DailyTemplateSN == a.DailyTemplateSN).Count());//巡檢路線數量
+                itemObjects.Add("InspectionNum", a.InspectionNum);//巡檢路線數量
                 ja.Add(itemObjects);
             }
 
