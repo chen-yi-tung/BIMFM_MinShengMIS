@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
@@ -32,17 +33,28 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Create(AsBuiltDrawingViewModel info)
         {
+            #region 檢查是否有同樓層&同子系統別&同圖號&同圖名&同板本
+            var isexist = db.AsBuiltDrawing.Where(x => x.FSN == info.FSN && x.DSubSystemID == info.DSubSystemID && x.ImgNum == info.ImgNum && x.ImgName == info.ImgName && x.ImgVersion == info.ImgVersion);
+            if (isexist.Count() > 0)
+            {
+                return Content("此竣工圖說已存在!", "application/json");
+            }
+            #endregion
+
             JObject jo = new JObject();
-            string result = "";
+           
             #region 存竣工圖至指定路徑
             #region 檢查檔案格式
-            string fileContentType = info.ImgPath.ContentType; // 取得 MIME 類型
-            string fileExtension = Path.GetExtension(info.ImgPath.FileName).ToLower(); // 取得副檔名 (轉小寫)
-            int maxFileSize = 10 * 1024 * 1024; // 10MB
-            if (ComFunc.IsConformedForImageAndPdf(fileContentType, fileExtension) && info.ImgPath.ContentLength <= maxFileSize)
+            var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(info.ImgPath);
+            if (!isValid)
+            {
+                return Content(erroeMessage, "application/json");
+            }
+            else
             {
                 #region 編訂ADSN
-                var newestADSN = db.AsBuiltDrawing.Where(x => x.UploadDate == DateTime.Today).OrderByDescending(x => x.ADSN).FirstOrDefault();
+                var todayPrefix = DateTime.Today.ToString("yyMMdd");
+                var newestADSN = db.AsBuiltDrawing.Where(x => x.ADSN.StartsWith(todayPrefix)).OrderByDescending(x => x.ADSN).FirstOrDefault();
                 var ADSN = "";
                 if (newestADSN == null)
                 {
@@ -65,21 +77,9 @@ namespace MinSheng_MIS.Controllers
                 var adddrawing = new AsBuiltDrawingService();
                 adddrawing.AddAsBuiltDrawing(info, ADSN, Filename);
                 #endregion
-
                 jo.Add("Succeed", true);
-                result = JsonConvert.SerializeObject(jo);
-                return Content(result, "application/json");
-            }
-            else if (ComFunc.IsConformedForImageAndPdf(fileContentType, fileExtension) && info.ImgPath.ContentLength > maxFileSize)
-            {
-                jo.Add("Succeed", false);
-                result = "檔案大小不得超過10MB。";
-                return Content(result, "application/json");
-            }
-            else
-            {
-                jo.Add("Succeed", false);
-                result = "檔案格式支援 .jpg、.jpeg、.png 或 .pdf。";
+                string result = JsonConvert.SerializeObject(jo);
+                
                 return Content(result, "application/json");
             }
             #endregion
@@ -95,6 +95,14 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult Edit(AsBuiltDrawingViewModel drawing)
         {
+            #region 檢查是否有同樓層&同子系統別&同圖號&同圖名&同板本
+            var isexist = db.AsBuiltDrawing.Where(x => x.FSN == drawing.FSN && x.DSubSystemID == drawing.DSubSystemID && x.ImgNum == drawing.ImgNum && x.ImgName == drawing.ImgName && x.ImgVersion == drawing.ImgVersion && x.ADSN != drawing.ADSN);
+            if (isexist.Count() > 0)
+            {
+                return Content("此竣工圖說已存在!", "application/json");
+            }
+            #endregion
+
             JObject jo = new JObject();
             string result = "";
             string Filename = "";
@@ -102,10 +110,12 @@ namespace MinSheng_MIS.Controllers
             if (drawing.ImgPath != null)
             {
                 #region 檢查檔案格式
-                string fileContentType = drawing.ImgPath.ContentType; // 取得 MIME 類型
-                string fileExtension = Path.GetExtension(drawing.ImgPath.FileName).ToLower(); // 取得副檔名 (轉小寫)
-                int maxFileSize = 10 * 1024 * 1024; // 10MB
-                if (ComFunc.IsConformedForImageAndPdf(fileContentType, fileExtension) && drawing.ImgPath.ContentLength <= maxFileSize)
+                var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(drawing.ImgPath);
+                if (!isValid)
+                {
+                    return Content(erroeMessage, "application/json");
+                }
+                else
                 {
                     string file = db.AsBuiltDrawing.Find(drawing.ADSN).ImgPath.ToString();
                     string fillfullpath = Server.MapPath($"~/Files/AsBuiltDrawing{file}");
@@ -119,18 +129,6 @@ namespace MinSheng_MIS.Controllers
                     string filefullpath = Path.Combine(Folder, Filename);
                     drawing.ImgPath.SaveAs(filefullpath);
                 }
-                else if (ComFunc.IsConformedForImageAndPdf(fileContentType, fileExtension) && drawing.ImgPath.ContentLength > maxFileSize)
-                {
-                    jo.Add("Succeed", false);
-                    result = "檔案大小不得超過10MB。";
-                    return Content(result, "application/json");
-                }
-                else
-                {
-                    jo.Add("Succeed", false);
-                    result = "檔案格式支援 .jpg、.jpeg、.png 或 .pdf。";
-                    return Content(result, "application/json");
-                }
                 #endregion
             }
             #endregion
@@ -138,7 +136,6 @@ namespace MinSheng_MIS.Controllers
             var adddrawing = new AsBuiltDrawingService();
             adddrawing.EditAsBuiltDrawing(drawing, Filename);
             #endregion
-            jo.Add("Succeed", true);
             result = JsonConvert.SerializeObject(jo);
             return Content(result, "application/json");
         }

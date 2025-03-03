@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using System.Data.Entity.Migrations;
 using MinSheng_MIS.Services;
 using MinSheng_MIS.Surfaces;
+using System.Windows.Media;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -46,34 +47,40 @@ namespace MinSheng_MIS.Controllers
             #endregion
 
             #region 存設計圖說
-            string Folder = Server.MapPath("~/Files/DesignDiagrams");
-            if (!Directory.Exists(Folder))
+            #region 檢查檔案格式
+            var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(ddvm.DesignDiagrams);
+            if (!isValid)
             {
+                return Content(erroeMessage,"application/json");
+            }
+            else
+            {
+                string Folder = Server.MapPath("~/Files/DesignDiagrams");
                 System.IO.Directory.CreateDirectory(Folder);
+                var todayPrefix = DateTime.Today.ToString("yyMMdd");
+                var lastDDSN = db.DesignDiagrams.Where(x => x.DDSN.StartsWith(todayPrefix)).OrderByDescending(x => x.DDSN).FirstOrDefault();
+                var num = 1;
+                if (lastDDSN != null)
+                {
+                    num = Convert.ToInt32(lastDDSN.DDSN) % 100 + 1;
+                }
+                var newDDSN = today.ToString("yyMMdd") + num.ToString().PadLeft(2, '0');
+                string Filename = newDDSN + Path.GetExtension(ddvm.DesignDiagrams.FileName);
+                System.IO.Directory.CreateDirectory(Folder);
+                string filefullpath = Path.Combine(Folder, Filename);
+                ddvm.DesignDiagrams.SaveAs(filefullpath);
+                #endregion
+
+                #region 新增設計圖說至資料庫
+                var addDD = new DesignDiagramsService();
+                addDD.AddDesignDiagrams(ddvm, newDDSN, Filename);
+                #endregion
+
+                jo.Add("Succeed", true);
+                string result = JsonConvert.SerializeObject(jo);
+                return Content(result, "application/json");
             }
-
-            var lastDDSN = db.DesignDiagrams.Where(x => x.UploadDate == today).OrderByDescending(x => x.DDSN).FirstOrDefault();
-            var num = 1;
-            if (lastDDSN != null)
-            {
-                num = Convert.ToInt32(lastDDSN.DDSN) % 100 + 1;
-            }
-            var newDDSN = today.ToString("yyMMdd") + num.ToString().PadLeft(2, '0');
-            string FolderPath = Server.MapPath("~/Files/DesignDiagrams");
-            string Filename = newDDSN + Path.GetExtension(ddvm.DesignDiagrams.FileName);
-            System.IO.Directory.CreateDirectory(FolderPath);
-            string filefullpath = Path.Combine(FolderPath, Filename);
-            ddvm.DesignDiagrams.SaveAs(filefullpath);
             #endregion
-
-            #region 新增設計圖說至資料庫
-            var addDD = new DesignDiagramsService();
-            addDD.AddDesignDiagrams(ddvm, newDDSN, Filename);
-            #endregion
-
-            jo.Add("Succeed", true);
-            string result = JsonConvert.SerializeObject(jo);
-            return Content(result, "application/json");
         }
         #endregion
 
@@ -136,22 +143,25 @@ namespace MinSheng_MIS.Controllers
             #region 存設計圖說
             if (ddvm.DesignDiagrams != null)
             {
-                string file = db.DesignDiagrams.Find(ddvm.DDSN).ImgPath.ToString();
-                string fileFullPath = Server.MapPath($"~/Files/DesignDiagrams{file}");
-                if (System.IO.File.Exists(fileFullPath))
+                var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(ddvm.DesignDiagrams);
+                if (!isValid)
                 {
-                    System.IO.File.Delete(fileFullPath);
+                    return Content(erroeMessage, "application/json");
                 }
-                string Folder = Server.MapPath("~/Files/DesignDiagrams");
-                if (!Directory.Exists(Folder))
+                else
                 {
+                    string file = db.DesignDiagrams.Find(ddvm.DDSN).ImgPath.ToString();
+                    string fileFullPath = Server.MapPath($"~/Files/DesignDiagrams{file}");
+                    if (System.IO.File.Exists(fileFullPath))
+                    {
+                        System.IO.File.Delete(fileFullPath);
+                    }
+                    string Folder = Server.MapPath("~/Files/DesignDiagrams");
                     System.IO.Directory.CreateDirectory(Folder);
+                    Filename = ddvm.DDSN + Path.GetExtension(ddvm.DesignDiagrams.FileName);
+                    string filefullpath = Path.Combine(Folder, Filename);
+                    ddvm.DesignDiagrams.SaveAs(filefullpath);
                 }
-                string FolderPath = Server.MapPath("~/Files/DesignDiagrams");
-                Filename = ddvm.DDSN + Path.GetExtension(ddvm.DesignDiagrams.FileName);
-                System.IO.Directory.CreateDirectory(FolderPath);
-                string filefullpath = Path.Combine(FolderPath, Filename);
-                ddvm.DesignDiagrams.SaveAs(filefullpath);
             }
 
             #endregion

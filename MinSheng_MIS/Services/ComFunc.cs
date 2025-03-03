@@ -128,10 +128,31 @@ namespace MinSheng_MIS.Services
         {
             return AllowedImageContentTypes.Contains(contentType) && AllowedImageExtensions.Contains(extension);
         }
-        public static bool IsConformedForImageAndPdf(string contentType, string extension)
+        public static (bool,string) IsConformedForImageAndPdf(HttpPostedFileBase file)
         {
-            extension = extension.ToLower(); // 轉小寫，避免大小寫問題
-            return IsConformedForPdf(contentType, extension) || IsConformedForImage(contentType, extension);
+            if (file == null)
+            {
+                return (false, "請選擇要上傳的檔案。");
+            }
+            string fileContentType = file.ContentType; // 取得 MIME 類型
+            string fileExtension = Path.GetExtension(file.FileName).ToLower(); // 取得副檔名
+            int maxFileSize = 10 * 1024 * 1024; // 10MB
+            if (!IsConformedForPdf(fileContentType, fileExtension) && !IsConformedForImage(fileContentType, fileExtension) && file.ContentLength > maxFileSize)
+            {
+                return (false, "檔案格式支援 .jpg、.jpeg、.png 或 .pdf，且檔案大小不得超過 10MB。");
+            }
+            else if (file.ContentLength > maxFileSize)
+            {
+                return (false, "檔案大小不得超過 10MB。");
+            }
+            else if (!IsConformedForPdf(fileContentType, fileExtension) && !IsConformedForImage(fileContentType, fileExtension))
+            {
+                return (false, "檔案格式支援 .jpg、.jpeg、.png 或 .pdf。");
+            }
+            else
+            {
+                return (true, "");
+            }
         }
         #endregion
 
