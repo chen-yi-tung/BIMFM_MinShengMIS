@@ -104,9 +104,9 @@ namespace MinSheng_MIS.Services
                                 }).AsQueryable();
 
             //工單編號
-            if (!string.IsNullOrEmpty(PlanState))
+            if (!string.IsNullOrEmpty(IPSN))
             {
-                SourceTable = SourceTable.Where(x => x.PlanState.Contains(PlanState));
+                SourceTable = SourceTable.Where(x => x.IPSN.Contains(IPSN));
             }
             //工單狀態
             if (!string.IsNullOrEmpty(PlanState))
