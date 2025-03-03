@@ -71,7 +71,37 @@ namespace MinSheng_MIS.Services
             #endregion
 
             #region 依據查詢字串檢索資料表
-            var SourceTable = db.InspectionPlan.AsQueryable();
+            var SourceTable = db.InspectionPlan
+                                .Select(x => new 
+                                {   x.IPSN,
+                                    x.IPName,
+                                    x.PlanDate,
+                                    x.PlanState,
+                                    x.PlanCreateUserID
+                                    ,x.CreateTime,
+                                    Member = db.InspectionPlan_Member
+                                        .Where(m => db.InspectionPlan_Time
+                                            .Where(t => t.IPSN == x.IPSN)
+                                            .Select(t => t.IPTSN)
+                                            .Contains(m.IPTSN))
+                                        .Join(db.AspNetUsers,
+                                             m => m.UserID,
+                                             u => u.UserName,
+                                             (m, u) => u.MyName)
+                                        .Distinct()
+                                        .ToList()
+                                })
+                                .AsEnumerable() // 轉換為記憶體操作
+                                .Select(x => new
+                                {
+                                    x.IPSN,
+                                    x.IPName,
+                                    x.PlanDate,
+                                    x.PlanState,
+                                    x.PlanCreateUserID,
+                                    x.CreateTime,
+                                    Member = string.Join("、", x.Member) // 轉換為字串
+                                }).AsQueryable();
 
             //工單編號
             if (!string.IsNullOrEmpty(PlanState))
@@ -148,24 +178,10 @@ namespace MinSheng_MIS.Services
                     itemObjects.Add("IPName", item.IPName);
                 }
                 //執行人員
-                var IPTSNlist = db.InspectionPlan_Time.Where(x => x.IPSN == item.IPSN).Select(x => x.IPTSN).ToList();
-                var IPUseridlist = db.InspectionPlan_Member.Where(x => IPTSNlist.Contains(x.IPTSN)).Select(x => x.UserID).Distinct().ToList();
-                var INSPNameList = "";
-                int a = 0;
-                foreach (var id in IPUseridlist)
+                if (!string.IsNullOrEmpty(item.Member))
                 {
-                    var myname = db.AspNetUsers.Where(x => x.UserName == id).Select(x => x.MyName).FirstOrDefault();
-                    if (myname != null)
-                    {
-                        if (a == 0)
-                            INSPNameList += myname;
-                        else
-                            INSPNameList += $"、{myname}";
-                    }
-                    a++;
+                    itemObjects.Add("Member", item.Member);
                 }
-                a = 0;
-                itemObjects.Add("Member", INSPNameList);
 
                 ja.Add(itemObjects);
             }
