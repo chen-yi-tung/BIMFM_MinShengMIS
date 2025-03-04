@@ -18,7 +18,7 @@
             background: #C6E1FF;
         }
 
-        @@media(max - width: 576px) {
+        @@media(max-width: 576px) {
                 .datatable-table tr {
                     display: flex;
                     flex-direction: column;
@@ -118,7 +118,7 @@
                     $.getJSON(`@Url.Action("TestingAndAnalysis_LabelName", "TestingAndAnalysisWorkflow")?TAWSN=${this.value}`, (res) => {
                         dataItems.list.children().remove()
                         res.forEach((item) => {
-                            dataItems.create(item)
+                            dataItems.create({ DataName: item.LabelName })
                         })
                     })
                 })
@@ -242,9 +242,9 @@
 
                     let item = $(temp_item(this.count))
                     if (data) {
-                        item.find("#EDSN").val(data.EDSN)
-                        item.find("#DataName").val(data.DataName)
-                        item.find("#Data").val(data.Data)
+                        if (data.EDSN) item.find("#EDSN").val(data.EDSN);
+                        if (data.DataName) item.find("#DataName").val(data.DataName);
+                        if (data.Data) item.find("#Data").val(data.Data);
                     }
                     this.list.append(item)
                     this.count++
