@@ -37,6 +37,14 @@ namespace MinSheng_MIS.Controllers
             ModelState.Remove("LMSN");
             if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
+            #region 檢查是否有同維護類型&同標題的實驗室維護
+            var isExist = db.LaboratoryMaintenance.Count(x => x.MType == lm_info.MType && x.MTitle == lm_info.MTitle);
+            if(isExist > 0)
+            {
+                return Content("此實驗室維護已存在", "application/json; charset=utf-8");
+            }
+            #endregion
+
             DateTime now = DateTime.Now;
             // 新增實驗室維護
             var count = await db.LaboratoryMaintenance.Where(x => x.UploadDateTime.HasValue && DbFunctions.TruncateTime(x.UploadDateTime.Value) == now.Date).CountAsync() + 1;  // 實驗室維護流水碼
@@ -58,6 +66,10 @@ namespace MinSheng_MIS.Controllers
                     || ComFunc.IsConformedForPdf(File.ContentType, extension)
                     || ComFunc.IsConformedForImage(File.ContentType, extension)) // 檔案白名單檢查
                 {
+                    if (File.ContentLength > 10 * 1024 * 1024)
+                    {
+                        return Content("<br>檔案大小不得超過 10MB。", "application/json; charset=utf-8");
+                    }
                     // 檔案上傳
                     if (!ComFunc.UploadFile(File, Server.MapPath($"~/{folderPath}/"), maintenance.LMSN))
                         return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
@@ -89,6 +101,14 @@ namespace MinSheng_MIS.Controllers
             var maintenance = await db.LaboratoryMaintenance.FirstOrDefaultAsync(x => x.LMSN == lm_info.LMSN);
             if (maintenance == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "LMSN is Undefined.");
 
+            #region 檢查是否有同維護類型&同標題的實驗室維護
+            var isExist = db.LaboratoryMaintenance.Count(x => x.MType == lm_info.MType && x.MTitle == lm_info.MTitle && x.LMSN != lm_info.LMSN);
+            if (isExist > 0)
+            {
+                return Content("此實驗室維護已存在", "application/json; charset=utf-8");
+            }
+            #endregion
+
             // 編輯實驗室維護資訊
             maintenance.MType = lm_info.MType;
             maintenance.MTitle = lm_info.MTitle;
@@ -107,6 +127,10 @@ namespace MinSheng_MIS.Controllers
                     || ComFunc.IsConformedForPdf(newFile.ContentType, extension)
                     || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
                 {
+                    if (newFile.ContentLength > 10 * 1024 * 1024)
+                    {
+                        return Content("<br>檔案大小不得超過 10MB。", "application/json; charset=utf-8");
+                    }
                     // 檔案上傳
                     if (!ComFunc.UploadFile(newFile, Server.MapPath($"~/{folderPath}/"), maintenance.LMSN))
                         return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");

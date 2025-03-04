@@ -37,7 +37,7 @@ namespace MinSheng_MIS.Controllers
             var isexist = db.AsBuiltDrawing.Where(x => x.FSN == info.FSN && x.DSubSystemID == info.DSubSystemID && x.ImgNum == info.ImgNum && x.ImgName == info.ImgName && x.ImgVersion == info.ImgVersion);
             if (isexist.Count() > 0)
             {
-                return Content("此竣工圖說已存在!", "application/json");
+                return Content("<br>此竣工圖說已存在!", "application/json");
             }
             #endregion
 
@@ -99,7 +99,7 @@ namespace MinSheng_MIS.Controllers
             var isexist = db.AsBuiltDrawing.Where(x => x.FSN == drawing.FSN && x.DSubSystemID == drawing.DSubSystemID && x.ImgNum == drawing.ImgNum && x.ImgName == drawing.ImgName && x.ImgVersion == drawing.ImgVersion && x.ADSN != drawing.ADSN);
             if (isexist.Count() > 0)
             {
-                return Content("此竣工圖說已存在!", "application/json");
+                return Content("<br>此竣工圖說已存在!", "application/json");
             }
             #endregion
 

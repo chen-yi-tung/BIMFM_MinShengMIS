@@ -42,7 +42,7 @@ namespace MinSheng_MIS.Controllers
             var isexist = db.DesignDiagrams.Where(x => x.ImgName == ddvm.ImgName && x.ImgType == ddvm.ImgType);
             if (isexist.Count() > 0)
             {
-                return Content("此設計圖說已存在!", "application/json");
+                return Content("<br>此設計圖說已存在!", "application/json");
             }
             #endregion
 
@@ -136,7 +136,7 @@ namespace MinSheng_MIS.Controllers
             var isexist = db.DesignDiagrams.Where(x => x.ImgName == ddvm.ImgName && x.ImgType == ddvm.ImgType && x.DDSN != ddvm.DDSN);
             if (isexist.Count() > 0)
             {
-                return Content("此設計圖說已存在!", "application/json");
+                return Content("<br>此設計圖說已存在!", "application/json");
             }
             #endregion
             string Filename = "";
