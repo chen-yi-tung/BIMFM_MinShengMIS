@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MinSheng_MIS.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -52,6 +53,8 @@ namespace MinSheng_MIS.Models.ViewModels
         public string Agenda { get; set; } //議題順序
         [Display(Name = "會議內容")]
         public string MeetingContent { get; set; } //會議內容
+        [Display(Name = "會議資料")]
+        [FileSizeLimit(10)] // 限制大小為 10 MB
         public HttpPostedFileBase MeetingFile { get; set; } //會議記錄文件
         public string MeetingFileName { get; set; }
     }

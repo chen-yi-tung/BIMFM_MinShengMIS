@@ -2040,8 +2040,8 @@ namespace MinSheng_MIS.Services
             //查詢發生時間(迄)
             if (!string.IsNullOrEmpty(DateEnd) && DateTime.Parse(DateEnd) != DateTime.MinValue)
             {
-                DateTime end = DateTime.Parse(DateEnd); //轉為DateTime
-                rpT = rpT.Where(x => x.TimeOfOccurrence <= end);
+                DateTime end = DateTime.Parse(DateEnd).AddDays(1); //轉為DateTime
+                rpT = rpT.Where(x => x.TimeOfOccurrence < end);
             }
 
             // 確認 sort 和 order 不為空才進行排序
