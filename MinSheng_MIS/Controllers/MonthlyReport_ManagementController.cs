@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using MinSheng_MIS.Models;
 using System.IO;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Attributes;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -36,9 +37,17 @@ namespace MinSheng_MIS.Controllers
         {
             try
             {
+                #region 檢查格式
+                // Data Annotation
+                if (!ModelState.IsValid) return Content("<br>檔案大小不可超過10MB。", "application/json");  // Data Annotation未通過
+                var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(createData.ReportFile);
+                if (!isValid)
+                {
+                    return Content(erroeMessage, "application/json");
+                }
                 string[] yearMonthParts = createData.YearMonth.Split('-');
                 if (yearMonthParts.Length != 2) return Content("YearMonth ERROR", "application/json");
-
+                #endregion
                 Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
                 string lastMRSN = db.MonthlyReport.OrderByDescending(mr => mr.MRSN).FirstOrDefault()?.MRSN ?? "000000";
                 string lastMrDate = lastMRSN.Substring(0, 6);
@@ -88,7 +97,13 @@ namespace MinSheng_MIS.Controllers
         {
             if (string.IsNullOrEmpty(createData.YearMonth)) return Json(new { success = false, message = "Item not found" });
             string[] parts = createData.YearMonth.Split('-');
-
+            // Data Annotation
+            if (!ModelState.IsValid) return Content("<br>檔案大小不可超過10MB。","application/json");  // Data Annotation未通過
+            var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(createData.ReportFile);
+            if (!isValid)
+            {
+                return Content(erroeMessage, "application/json");
+            }
             Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
             var item = db.MonthlyReport.Find(createData.MRSN);
             if (item != null)
@@ -184,6 +199,7 @@ namespace MinSheng_MIS.Controllers
             public string ReportTitle { get; set; }
             public string YearMonth { get; set; }
             public string ReportContent { get; set; }
+            [FileSizeLimit(10)] // 限制大小為 10 MB
             public HttpPostedFileBase ReportFile { get; set; }
             public string ReportFileStr { get; set; }
             public string MRSN { get; set; }
