@@ -21,7 +21,7 @@ namespace MinSheng_MIS.Attributes
             {
                 // 使用 Display Name（若未設定，則使用屬性名稱）
                 var displayName = validationContext.DisplayName ?? validationContext.MemberName;
-                return new ValidationResult($"{displayName} 檔案大小超過 {_maxSize} MB！");
+                return new ValidationResult($"{displayName} 檔案大小超過 {_maxSize/1024/1024} MB！");
             }
 
             return ValidationResult.Success;
