@@ -115,7 +115,6 @@
 
         }
 
-        //search area onClick Function
         function addSearchAreaClickEvent() {
             $("#search").click(function () {
                 let yearFromVal = document.getElementById('YearFrom').value;
@@ -123,15 +122,16 @@
                 let yearToVal = document.getElementById('YearTo').value;
                 let monthToVal = document.getElementById('MonthTo').value;
 
+                yearFromVal = parseInt(document.getElementById('YearFrom').value) + 1911;
+                yearToVal = parseInt(document.getElementById('YearTo').value) + 1911;
+
                 //選了年份沒選月份的話，自動補上月份
-                if (yearFromVal !== "") {
+                if (yearFromVal !== "" && monthFromVal === "") {
                     monthFromVal = "01";
-                    yearFromVal = parseInt(document.getElementById('YearFrom').value) + 1911;
                     document.getElementById('MonthFrom').value = "1";
                 }
-                if (yearToVal !== "") {
+                if (yearToVal !== "" && monthToVal === "") {
                     monthToVal = "12";
-                    yearToVal = parseInt(document.getElementById('YearTo').value) + 1911;
                     document.getElementById('MonthTo').value = "12";
                 }
 
