@@ -305,21 +305,21 @@
                     checkedArray = [...currentArray];
                 },
                 columns: [[
-                    dg.column('Status', '保養單狀態', 150),
-                    dg.column('EMFSN', '保養單號', 150),
-                    dg.column('NextMaintainDate', '最近應保養日期', 180, (v, row, i) => {
+                    dg.column('Status', '保養單狀態', 130),
+                    dg.column('EMFSN', '保養單號', 160),
+                    dg.column('NextMaintainDate', '最近應保養日期', 160, (v, row, i) => {
                         return dateTransform(v);
                     }),
                     dg.column('ReportTime', '實際保養日期', 160, (v, row, i) => {
                         return dateTransform(v);
                     }),
-                    dg.column('EState', '設備狀態', 150),
-                    dg.column('Area', '棟別', 200),
-                    dg.column('FloorName', '樓層', 200),
-                    dg.column('EName', '設備名稱', 300),
+                    dg.column('EState', '設備狀態', 130),
+                    dg.column('Area', '棟別', 150),
+                    dg.column('FloorName', '樓層', 150),
+                    dg.column('EName', '設備名稱', 250),
                     dg.column('ESN', '設備編號', 150),
-                    dg.column('MaintainName', '保養項目', 200),
-                    dg.column('Period', '保養週期', 150),
+                    dg.column('MaintainName', '保養項目', 250),
+                    dg.column('Period', '保養週期', 120),
                     dg.column('Maintainer', '執行人員', 300),
                 ]]
             })
