@@ -22,15 +22,10 @@
             </div>
 
             <div class="form-group">
-                <label for="IPName">工單名稱</label>
-                <input class="form-control" id="IPName" name="IPName" type="text" />
-            </div>
-
-            <div class="form-group">
                 <label for="PlanDateFrom">工單日期(起)</label>
                 <div style="position: relative; overflow: hidden;">
                     <input class="form-control calendar-input" id="PlanDateFrom" name="PlanDateFrom" type="text"
-                        placeholder="年-月-日" />
+                           placeholder="年-月-日" />
                 </div>
             </div>
 
@@ -38,8 +33,13 @@
                 <label for="PlanDateTo">工單日期(迄)</label>
                 <div style="position: relative; overflow: hidden;">
                     <input class="form-control calendar-input" id="PlanDateTo" name="PlanDateTo" type="text"
-                        placeholder="年-月-日" />
+                           placeholder="年-月-日" />
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="IPName">工單名稱</label>
+                <input class="form-control" id="IPName" name="IPName" type="text" />
             </div>
 
             <div class="form-group">
@@ -116,13 +116,13 @@
                     isAuth("1", "2") && dg.frozenColumn('_download', (v, row, i) => dg.eventButton(i, "下載", "download", { disabled: row.PlanState == "待執行" })),
                 ]],
                 columns: [[
-                    dg.column('IPSN', '工單編號', 200),
-                    dg.column('PlanState', '工單狀態', 200),
-                    dg.column('PlanDate', '工單日期', 200, (v, row, i) => {
+                    dg.column('IPSN', '工單編號', 150),
+                    dg.column('PlanState', '工單狀態', 150),
+                    dg.column('PlanDate', '工單日期', 150, (v, row, i) => {
                         return dateTransform(v);
                     }),
-                    dg.column('IPName', '工單名稱', 300),
-                    dg.column('Member', '巡檢人員', 600),
+                    dg.column('IPName', '工單名稱', 350),
+                    dg.column('Member', '巡檢人員', 730),
                 ]]
             })
             dg.addEvent("detail", function (row, i) {
