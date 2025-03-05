@@ -277,16 +277,16 @@
                     checkedArray = [...currentArray];
                 },
                 columns: [[
-                    dg.column('ReportState', '報修單狀態', 150),
-                    dg.column('RSN', '報修單號', 150),
-                    dg.column('ReportLevel', '報修等級', 150),
-                    dg.column('ReportTime', '報修時間', 200, (v, row, i) => {
+                    dg.column('ReportState', '報修單狀態', 130),
+                    dg.column('RSN', '報修單號', 160),
+                    dg.column('ReportLevel', '報修等級', 120),
+                    dg.column('ReportTime', '報修時間', 170, (v, row, i) => {
                         return dateTransform(v);
                     }),
                     dg.column('ReportContent', '報修內容', 300),
-                    dg.column('Area', '棟別', 200),
-                    dg.column('FloorName', '樓層', 200),
-                    dg.column('EName', '設備名稱', 300),
+                    dg.column('Area', '棟別', 150),
+                    dg.column('FloorName', '樓層', 150),
+                    dg.column('EName', '設備名稱', 250),
                     dg.column('NO', '設備編號', 150),
                     dg.column('RepairMyName', '執行人員', 300),
                 ]]
