@@ -13,14 +13,6 @@
     <div class="search-area">
         <form class="form" method="post" action="">
             <div class="form-group">
-                <label for="ReportTitle">月報名稱</label>
-                <input class="form-control" id="ReportTitle" name="ReportTitle" type="text" />
-            </div>
-            <div class="form-group">
-                <label for="UploadUserName">上傳者</label>
-                <input class="form-control" id="UploadUserName" name="UploadUserName" type="text" />
-            </div>
-            <div class="form-group">
                 <label for="DateFrom">年月份(起)</label>
                 <div style="display: flex; gap: 8px;">
                     <select class="yearSelect form-select" id="YearFrom"></select>
@@ -33,6 +25,14 @@
                     <select class="yearSelect form-select" id="YearTo"></select>
                     <select class="monthSelect form-select" id="MonthTo"></select>
                 </div>
+            </div>
+            <div class="form-group">
+                <label for="ReportTitle">月報名稱</label>
+                <input class="form-control" id="ReportTitle" name="ReportTitle" type="text" />
+            </div>
+            <div class="form-group">
+                <label for="UploadUserName">上傳者</label>
+                <input class="form-control" id="UploadUserName" name="UploadUserName" type="text" />
             </div>
             <div class="button-group">
                 <button type="button" class="btn btn-search" id="search">查詢</button>
