@@ -153,6 +153,16 @@
             $("#create").click(function () {
                 window.open(`${baseUrl}/Create`, "_self");
             });
+
+            $("#clear").click(function () {
+                document.getElementById('YearFrom').value = "";
+                document.getElementById('MonthFrom').value = "";
+                document.getElementById('YearTo').value = "";
+                document.getElementById('MonthTo').value = "";
+
+                document.getElementById('YearFrom').dispatchEvent(new Event('change'));
+                document.getElementById('YearTo').dispatchEvent(new Event('change'));
+            });
         }
 
         function createYearMonthSelect() {
