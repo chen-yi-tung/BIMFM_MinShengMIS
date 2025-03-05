@@ -126,11 +126,11 @@
                 yearToVal = parseInt(document.getElementById('YearTo').value) + 1911;
 
                 //選了年份沒選月份的話，自動補上月份
-                if (yearFromVal !== "" && monthFromVal === "") {
+                if (!isNaN(yearFromVal) && yearFromVal !== "" && monthFromVal === "") {
                     monthFromVal = "01";
                     document.getElementById('MonthFrom').value = "1";
                 }
-                if (yearToVal !== "" && monthToVal === "") {
+                if (!isNaN(yearToVal) && yearToVal !== "" && monthToVal === "") {
                     monthToVal = "12";
                     document.getElementById('MonthTo').value = "12";
                 }
@@ -142,10 +142,10 @@
                 };
 
                 if (yearFromVal && monthFromVal) {
-                    QueryParams.DateFrom = `${yearFromVal}-${monthFromVal}`;
+                    QueryParams.DateFrom = `${yearFromVal}-${String(monthFromVal).padStart(2, '0')}`;
                 }
                 if (yearToVal && monthToVal) {
-                    QueryParams.DateTo = `${yearToVal}-${monthToVal}`;
+                    QueryParams.DateTo = `${yearToVal}-${String(monthToVal).padStart(2, '0')}`;
                 }
                 DataGrid.datagrid('load', QueryParams);
             });
