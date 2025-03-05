@@ -99,10 +99,14 @@ namespace MinSheng_MIS.Controllers
             string[] parts = createData.YearMonth.Split('-');
             // Data Annotation
             if (!ModelState.IsValid) return Content("<br>檔案大小不可超過10MB。","application/json");  // Data Annotation未通過
-            var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(createData.ReportFile);
-            if (!isValid)
+
+            if (createData.ReportFile != null)
             {
-                return Content(erroeMessage, "application/json");
+                var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(createData.ReportFile);
+                if (!isValid)
+                {
+                    return Content(erroeMessage, "application/json");
+                }
             }
             Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
             var item = db.MonthlyReport.Find(createData.MRSN);
