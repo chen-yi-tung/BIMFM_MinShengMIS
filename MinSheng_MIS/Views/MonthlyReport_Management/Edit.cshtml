@@ -121,7 +121,7 @@
             fd.append("MRSN", '@ViewBag.id');
             fd.append("ReportTitle", document.getElementById("ReportTitle").value);
             fd.append("ReportContent", document.getElementById("ReportContent").value);
-            const YearMonthValue = (parseInt(document.getElementById("Year").value) + 1911) + "-" + document.getElementById("Month").value;
+            const YearMonthValue = (parseInt(document.getElementById("Year").value) + 1911) + "-" + String(document.getElementById("Month").value).padStart(2, '0');
             fd.append("YearMonth", YearMonthValue);
             if (fileUploader.hasFile()) {
                 let file = fileUploader.getFile()
