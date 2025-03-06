@@ -85,8 +85,11 @@
             return b.getCenter();
         }
         isCameraView(v) {
-            const vector = new THREE.Vector3(v.x, v.y, v.z);
             const camera = this.viewer.getCamera();
+            if (camera.isOrthographicCamera && camera.up.z === 0) {
+                return true;
+            }
+            const vector = new THREE.Vector3(v.x, v.y, v.z);
             const frustum = new THREE.Frustum();
             frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
             return frustum.containsPoint(vector);
