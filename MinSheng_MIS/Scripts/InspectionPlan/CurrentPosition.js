@@ -200,7 +200,7 @@ window.addEventListener('load', async () => {
             dataType: "json",
             contentType: "application/json;charset=utf-8",
         })
-        console.log(res);
+        console.log("getData", res);
         // use fakeData
         if (useFake) {
             Object.entries(res).forEach(([k, v]) => {
@@ -812,7 +812,7 @@ function CurrentLocation() {
             }
             e.classList.remove('active')
         })
-        console.log(items);
+        console.log("update CurrentLocation Data", d);
 
         menu.dispatchEvent(new Event('change'))
     }
