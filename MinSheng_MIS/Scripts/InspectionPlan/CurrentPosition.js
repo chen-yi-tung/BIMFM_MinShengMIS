@@ -134,6 +134,7 @@
 const bim = new UpViewer(document.getElementById('BIM'))
 const currentLocation = new CurrentLocation()
 
+const InspectionCurrentPos_Data = { current: [], another: [] };
 const InspectionCurrentPos_Pins = [];
 window.addEventListener('load', async () => {
     // #region chart options
@@ -581,13 +582,15 @@ window.addEventListener('load', async () => {
         InspectionCurrentPos_Pins.forEach((pin) => {
             pin.destroy()
         })
-        InspectionCurrentPos_Pins.length = 0
+        InspectionCurrentPos_Pins.length = 0;
+        InspectionCurrentPos_Data.current = data.current;
+        InspectionCurrentPos_Data.another = data.another;
         const infoBox = document.getElementById('box-InspectionCurrentPos');
         const container = document.getElementById('InspectionCurrentPos');
         const container_another = document.getElementById('InspectionAnotherPos');
 
-        const htmls = createPersons(data.current, true)
-        const htmls_another = createPersons(data.another)
+        const htmls = createPersons(InspectionCurrentPos_Data.current, true)
+        const htmls_another = createPersons(InspectionCurrentPos_Data.another)
         container.replaceChildren()
         container.insertAdjacentHTML('beforeend', htmls.join(''))
 
@@ -617,7 +620,8 @@ window.addEventListener('load', async () => {
             const target = e.target;
             if (target && target.classList.contains('plan-person')) {
                 if (target.parentElement.id === 'InspectionAnotherPos') {
-                    const d = data.another.find(x => x.name === target.dataset.name);
+                    const d = InspectionCurrentPos_Data.another.find(x => x.name === target.dataset.name);
+                    console.log("InspectionAnotherPos Select:", d)
                     currentLocation.setViewName(d.ViewName);
                     
                     container.replaceChildren()
