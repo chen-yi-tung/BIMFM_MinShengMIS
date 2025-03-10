@@ -15,8 +15,8 @@ using System.Web.Mvc;
 
 namespace MinSheng_MIS.Controllers
 {
-	public class WarningMessage_ManagementController : Controller
-	{
+    public class WarningMessage_ManagementController : Controller
+    {
         private readonly Bimfm_MinSheng_MISEntities _db;
         private readonly WarningMessageService _warningMessageService;
 
@@ -27,9 +27,9 @@ namespace MinSheng_MIS.Controllers
         }
         #region 警示訊息管理
         public ActionResult Index()
-		{
-			return View();
-		}
+        {
+            return View();
+        }
         [HttpPost]
         public async Task<ActionResult> AddWarningMessagenAsync(WarningMessageCreateModel info)
         {
@@ -40,166 +40,175 @@ namespace MinSheng_MIS.Controllers
 
         #region 警示訊息填報
         public ActionResult Edit(string id)
-		{
-			ViewBag.id = id;
-			return View();
-		}
-		[HttpPost]
-		public ActionResult WarningMessageFillin(FillinInfo info)
-		{
+        {
+            ViewBag.id = id;
+            return View();
+        }
+        [HttpPost]
+        public ActionResult WarningMessageFillin(FillinInfo info)
+        {
             _warningMessageService.AddWarningMessageFillinRecord(info, User.Identity.Name);
-			return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
-		}
-		#endregion
+            return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+        }
+        #endregion
 
-		#region 警示訊息詳情
-		public ActionResult Detail(string id)
-		{
-			ViewBag.id = id;
-			return View();
-		}
-		[HttpGet]
-		public ActionResult GetWarningMessageInfo(string WMSN)
-		{
-			var messageinfo = _db.WarningMessage.Find(WMSN);
-			var WMTypedic = Surface.WMType(); //警示訊息事件等級對照
-			var WMState = Surface.WMState(); //警示訊息事件處理狀況對照
-			var FloorName = _db.Floor_Info.Find(messageinfo.FSN)?.FloorName.ToString();
-			var Area = _db.Floor_Info.Find(messageinfo.FSN)?.AreaInfo?.Area.ToString();
+        #region 警示訊息詳情
+        public ActionResult Detail(string id)
+        {
+            ViewBag.id = id;
+            return View();
+        }
+        [HttpGet]
+        public ActionResult GetWarningMessageInfo(string WMSN)
+        {
+            var messageinfo = _db.WarningMessage.Find(WMSN);
+            var WMTypedic = Surface.WMType(); //警示訊息事件等級對照
+            var WMState = Surface.WMState(); //警示訊息事件處理狀況對照
+            var FloorName = _db.Floor_Info.Find(messageinfo.FSN)?.FloorName.ToString();
+            var Area = _db.Floor_Info.Find(messageinfo.FSN)?.AreaInfo?.Area.ToString();
 
-			//取得警示訊息資訊
-			WarningMessageViewModel warningMessage = new WarningMessageViewModel();
-			warningMessage.WMSN = WMSN;
-			warningMessage.WMType = WMTypedic[messageinfo.WMType];
-			warningMessage.WMState = WMState[messageinfo.WMState];
-			warningMessage.TimeOfOccurrence = messageinfo.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss");
-			warningMessage.Location = Area + " " + FloorName;
-			warningMessage.Message = messageinfo.Message;
+            //取得警示訊息資訊
+            WarningMessageViewModel warningMessage = new WarningMessageViewModel();
+            warningMessage.WMSN = WMSN;
+            warningMessage.WMType = WMTypedic[messageinfo.WMType];
+            warningMessage.WMState = WMState[messageinfo.WMState];
+            warningMessage.TimeOfOccurrence = messageinfo.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss");
+            warningMessage.Location = Area + " " + FloorName;
+            warningMessage.Message = messageinfo.Message;
 
-			//取得填報紀錄
-			var records = _db.WarningMessageFillinRecord.Where(x => x.WMSN == WMSN).ToList();
-			if (records.Count() > 0)
-			{
-				List<WarningMessageFillinRecordViewModel> rlist = new List<WarningMessageFillinRecordViewModel>();
-				foreach (var record in records)
-				{
-					WarningMessageFillinRecordViewModel r = new WarningMessageFillinRecordViewModel();
-					r.FillinDateTime = record.FillinDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-					r.MyName = _db.AspNetUsers.Where(x => x.UserName == record.FillinUserName).FirstOrDefault().MyName.ToString();
-					r.FillinState = WMState[record.FillinState];
-					r.Memo = record.Memo;
-					rlist.Add(r);
-				}
-				warningMessage.WarningMessageFillinRecord = rlist;
-			}
-			else
-			{
-				warningMessage.WarningMessageFillinRecord = null;
-			}
+            //取得填報紀錄
+            var records = _db.WarningMessageFillinRecord.Where(x => x.WMSN == WMSN).ToList();
+            if (records.Count() > 0)
+            {
+                List<WarningMessageFillinRecordViewModel> rlist = new List<WarningMessageFillinRecordViewModel>();
+                foreach (var record in records)
+                {
+                    WarningMessageFillinRecordViewModel r = new WarningMessageFillinRecordViewModel();
+                    r.FillinDateTime = record.FillinDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+                    r.MyName = _db.AspNetUsers.Where(x => x.UserName == record.FillinUserName).FirstOrDefault().MyName.ToString();
+                    r.FillinState = WMState[record.FillinState];
+                    r.Memo = record.Memo;
+                    rlist.Add(r);
+                }
+                warningMessage.WarningMessageFillinRecord = rlist;
+            }
+            else
+            {
+                warningMessage.WarningMessageFillinRecord = null;
+            }
 
-			string result = JsonConvert.SerializeObject(warningMessage);
-			return Content(result, "application/json");
-		}
-		#endregion
+            string result = JsonConvert.SerializeObject(warningMessage);
+            return Content(result, "application/json");
+        }
+        #endregion
 
-		#region 小鈴鐺警示訊息
-		[AllowAnonymous]
-		[HttpGet]
-		public ActionResult BellMessageInfo()
-		{
-			JArray messages = new JArray();
-			var messagelist = _db.WarningMessage.Where(x=> x.WMState == "1"|| x.WMState == "2").OrderByDescending(x => x.TimeOfOccurrence).ToList();
-			foreach(var m in messagelist)
-			{
-				JObject message = new JObject();
-				message.Add("WMSN", m.WMSN);
-				message.Add("Location", _db.Floor_Info.Find(m.FSN).AreaInfo.Area.ToString() + _db.Floor_Info.Find(m.FSN).FloorName.ToString());
-				message.Add("Message", m.Message);
-				message.Add("WMType", m.WMType);
-				message.Add("WMState", m.WMState);
-				message.Add("TimeOfOccurrence", m.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss"));
-				messages.Add(message);
-			}
+        #region 小鈴鐺警示訊息
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult BellMessageInfo()
+        {
+            JArray messages = new JArray();
+            var messagelist = _db.WarningMessage.Where(x => x.WMState == "1" || x.WMState == "2").OrderByDescending(x => x.TimeOfOccurrence).ToList();
+            foreach (var m in messagelist)
+            {
+                JObject message = new JObject();
+                Floor_Info floor = _db.Floor_Info.Find(m.FSN);
 
-			return Content(JsonConvert.SerializeObject(messages), "application/json");
-		}
-		#endregion
+                message.Add("WMSN", m.WMSN);
+                if (floor != null)
+                {
+                    message.Add("Location", floor.AreaInfo.Area + floor.FloorName);
+                }
+                message.Add("Message", m.Message);
+                message.Add("WMType", m.WMType);
+                message.Add("WMState", m.WMState);
+                message.Add("TimeOfOccurrence", m.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss"));
+                messages.Add(message);
+            }
 
-		#region 小鈴鐺已讀列表 - 讀取
-		[HttpGet]
-		public ActionResult GetHaveReadMessage()
-		{
-			try
-			{
-				string folderPath = Server.MapPath("~/Files/HaveReadMessage");
-				if (!Directory.Exists(folderPath))
-				{
-					Directory.CreateDirectory(folderPath);
-				}
+            return Content(JsonConvert.SerializeObject(messages), "application/json");
+        }
+        #endregion
 
-				string fileName = Server.MapPath($"~/Files/HaveReadMessage/{User.Identity.GetUserId()}.json");
-				if (!System.IO.File.Exists(fileName)) {
-					System.IO.File.WriteAllText(fileName, "[]");
-				}
+        #region 小鈴鐺已讀列表 - 讀取
+        [HttpGet]
+        public ActionResult GetHaveReadMessage()
+        {
+            JsonResService<JArray> res = new JsonResService<JArray>();
+            try
+            {
+                string folderPath = Server.MapPath("~/Files/HaveReadMessage");
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
 
-				string jsonContent = System.IO.File.ReadAllText(fileName);
-				return Json(
-					new
-					{
-						Success = true,
-						Data = jsonContent
-					},
-					JsonRequestBehavior.AllowGet
-				);
-			}
-			catch
-			{
-				return Json(new { Error = true }, JsonRequestBehavior.AllowGet);
-			}
-		}
-		#endregion
+                string fileName = Server.MapPath($"~/Files/HaveReadMessage/{User.Identity.GetUserId()}.json");
+                if (!System.IO.File.Exists(fileName))
+                {
+                    System.IO.File.WriteAllText(fileName, "[]");
+                }
 
-		#region 小鈴鐺已讀列表 - 增加
-		[HttpPost]
-		public ActionResult PostHaveReadMessage(List<string> WMSNs)
-		{
-			try
-			{
-				string folderPath = Server.MapPath("~/Files/HaveReadMessage");
-				if (!Directory.Exists(folderPath))
-				{
-					Directory.CreateDirectory(folderPath);
-				}
+                string jsonContent = System.IO.File.ReadAllText(fileName);
+                res.AccessState = ResState.Success;
+                res.Datas = JsonConvert.DeserializeObject<JArray>(jsonContent);
+                return Content(JsonConvert.SerializeObject(res), "application/json");
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                return Content(JsonConvert.SerializeObject(res), "application/json");
+            }
+        }
+        #endregion
 
-				string fileName = Server.MapPath($"~/Files/HaveReadMessage/{User.Identity.GetUserId()}.json");
-				if (!System.IO.File.Exists(fileName)) {
-					System.IO.File.WriteAllText(fileName, "[]");
-				}
+        #region 小鈴鐺已讀列表 - 增加
+        [HttpPost]
+        public ActionResult PostHaveReadMessage(List<string> WMSNs)
+        {
+            JsonResService<JArray> res = new JsonResService<JArray>();
+            try
+            {
+                string folderPath = Server.MapPath("~/Files/HaveReadMessage");
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
 
-				string jsonContent = System.IO.File.ReadAllText(fileName);
-				JArray data = (JArray)JsonConvert.DeserializeObject(jsonContent);
-				HashSet<string> set = new HashSet<string>();
+                string fileName = Server.MapPath($"~/Files/HaveReadMessage/{User.Identity.GetUserId()}.json");
+                if (!System.IO.File.Exists(fileName))
+                {
+                    System.IO.File.WriteAllText(fileName, "[]");
+                }
 
-				foreach (string WMSN in data)
-				{
-					set.Add(WMSN);
-				}
+                string jsonContent = System.IO.File.ReadAllText(fileName);
+                JArray data = (JArray)JsonConvert.DeserializeObject(jsonContent);
+                HashSet<string> set = new HashSet<string>();
 
-				foreach (string WMSN in WMSNs)
-				{
-					set.Add(WMSN);
-				}
+                foreach (string WMSN in data)
+                {
+                    set.Add(WMSN);
+                }
 
-				JArray jsonArray = new JArray(set.Select(item => new JValue(item)));
+                foreach (string WMSN in WMSNs)
+                {
+                    set.Add(WMSN);
+                }
 
-				System.IO.File.WriteAllText(fileName, JsonConvert.SerializeObject(jsonArray));
-				return Json(new { Success = true });
-			}
-			catch
-			{
-				return Json(new { Error = true });
-			}
-		}
-		#endregion
-	}
+                JArray jsonArray = new JArray(set.Select(item => new JValue(item)));
+
+                System.IO.File.WriteAllText(fileName, JsonConvert.SerializeObject(jsonArray));
+                res.AccessState = ResState.Success;
+                return Content(JsonConvert.SerializeObject(res), "application/json");
+            }
+            catch (Exception ex)
+            {
+                res.AccessState = ResState.Failed;
+                res.ErrorMessage = ex.Message;
+                return Content(JsonConvert.SerializeObject(res), "application/json");
+            }
+        }
+        #endregion
+    }
 }

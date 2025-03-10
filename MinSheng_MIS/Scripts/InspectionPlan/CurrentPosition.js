@@ -133,6 +133,7 @@
 }
 const bim = new UpViewer(document.getElementById('BIM'))
 const currentLocation = new CurrentLocation()
+const alertCollapse = new AlertCollapse()
 
 const InspectionCurrentPos_Data = { current: [], another: [] };
 const InspectionCurrentPos_Pins = [];
@@ -201,7 +202,7 @@ window.addEventListener('load', async () => {
             dataType: "json",
             contentType: "application/json;charset=utf-8",
         })
-        console.log("getData", res);
+        // console.log("getData", res);
         // use fakeData
         if (useFake) {
             Object.entries(res).forEach(([k, v]) => {
@@ -219,8 +220,12 @@ window.addEventListener('load', async () => {
         return res
     }
     async function init() {
-        await currentLocation.init();
-        const res = await getData()
+        const [res, ,] = await Promise.all([
+            getData(),
+            currentLocation.init(),
+            alertCollapse.init(),
+            bim.init()
+        ])
 
         ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
         ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
@@ -229,7 +234,6 @@ window.addEventListener('load', async () => {
         ChartInspectionAberrantLevel(res?.ChartInspectionAberrantLevel)
         ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
 
-        await bim.init()
         await bim.loadModels(bim.getModelsUrl(currentLocation.value))
         await createBeaconPoint(currentLocation.FSN);
         InspectionCurrentPos(res?.InspectionCurrentPos)
@@ -623,7 +627,7 @@ window.addEventListener('load', async () => {
                     const d = InspectionCurrentPos_Data.another.find(x => x.name === target.dataset.name);
                     console.log("InspectionAnotherPos Select:", d)
                     currentLocation.setViewName(d.ViewName);
-                    
+
                     container.replaceChildren()
                     container.appendChild(target)
                     container_another.replaceChildren()
@@ -833,6 +837,68 @@ function CurrentLocation() {
     }
 
     return this
+}
+
+//小鈴鐺
+function AlertCollapse() {
+    this.container;
+    this.btn;
+    this.data = [];
+    this.isRead = new Set();
+    this.timer = null;
+    this.getData = async () => {
+        this.data = await $.getJSON("/WarningMessage_Management/BellMessageInfo")
+        const html = this.data.map(createItem).join('');
+        this.container.replaceChildren()
+        this.container.insertAdjacentHTML('beforeend', html)
+    }
+    this.getRead = async () => {
+        await $.getJSON("/WarningMessage_Management/GetHaveReadMessage").then(x => {
+            x.Datas.forEach(d => this.isRead.add(d))
+        })
+        let count = 0;
+        for (const d of this.data) {
+            if (!this.isRead.has(d.WMSN)) {
+                count++;
+            }
+        }
+        this.badge.textContent = count || null;
+    }
+    this.read = async (list) => {
+        await $.ajax({
+            url: `/WarningMessage_Management/PostHaveReadMessage`, 
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(list),
+        })
+    }
+    this.init = async () => {
+        this.btn = document.querySelector(`[data-bs-target="#AlertCollapse"]`)
+        this.collapse = document.querySelector("#AlertCollapse")
+        this.container = this.collapse.querySelector(".simplebar-content")
+        this.badge = this.btn.querySelector(".badge")
+        this.update()
+        this.collapse.addEventListener('show.bs.collapse', async () => {
+            this.read(this.data.map(d => d.WMSN))
+        })
+    }
+    this.update = async () => {
+        clearTimeout(this.timer)
+        await this.getData();
+        await this.getRead();
+        this.timer = setTimeout(this.update, 10000)
+    }
+    function createItem(d) {
+        return `
+        <a class="alert-item" target="_blank" data-level="${d.WMType}" data-process-state="${d.WMState}">
+            <i class="icon-alert"></i>
+            <span class="road">${d.Location ?? ""}</span>
+            <span class="time">${d.TimeOfOccurrence}</span>
+            <span class="title">${d.Message}</span>
+            <span class="process-state"></span>
+        </a>`
+    }
+    return this;
 }
 
 const __DEBUG_DOWNLOAD_JSON__ = false;
