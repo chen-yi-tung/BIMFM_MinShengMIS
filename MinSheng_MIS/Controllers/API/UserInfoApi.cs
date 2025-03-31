@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using MinSheng_MIS.Services.Helpers;
 
 namespace MinSheng_MIS.Controllers.API
 {
@@ -42,6 +43,7 @@ namespace MinSheng_MIS.Controllers.API
         [Route("Login")]
         public async Task<JObject> Login([FromBody] AppLoginViewModel user)
         {
+            string loginResult = "巡檢APP登入嘗試失敗!"; // 預設登入失敗
             JObject jo = new JObject()
             {
                 { "State", "Success" },
@@ -55,7 +57,7 @@ namespace MinSheng_MIS.Controllers.API
                 if (result == SignInStatus.Success)
                 {
                     jo["Datas"] = JWTToken(user.Account);
-
+                    loginResult = "巡檢APP登入成功!";
                     // 紀錄該使用者已登入
                     if (!_db.LoginUserList.Any(x => x.UserID == user.Account))
                     {
@@ -73,6 +75,8 @@ namespace MinSheng_MIS.Controllers.API
                 jo["State"] = "Failed";
                 jo["ErrorMessage"] = ex.Message;
             }
+            // 記錄登入 Log
+            LogHelper.WriteLoginLog("AccountController", user.Account, loginResult);
             return jo;
         }
 

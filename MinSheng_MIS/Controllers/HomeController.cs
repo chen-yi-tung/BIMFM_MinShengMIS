@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MinSheng_MIS.Models;
+using MinSheng_MIS.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,10 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
+using MinSheng_MIS.Services.Helpers;
+
 
 namespace MinSheng_MIS.Controllers
 {
@@ -76,6 +80,8 @@ namespace MinSheng_MIS.Controllers
         {
             string account = form["UserID"];
             string password = form["UserPW"];
+            string controllerName = "AccountController";
+
             var userdata = UserManager.Users.Where(x => x.IsEnabled == true).Where(x => x.UserName == account && x.Authority != "4").FirstOrDefault();
             if (userdata != null)
             {
@@ -83,9 +89,11 @@ namespace MinSheng_MIS.Controllers
                 if (result == SignInStatus.Success)
                 {
                     Session["MyName"] = userdata.MyName;
+                    LogHelper.WriteLoginLog(this, account, "後台登入成功!");
                     return RedirectToAction("Index", "PlanManagement");
                 }
             }
+            LogHelper.WriteLoginLog(this, account, "後台登入嘗試失敗!");
             ViewBag.Message = "登入嘗試失敗!";
             return View();
         }
