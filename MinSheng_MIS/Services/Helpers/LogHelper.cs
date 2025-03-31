@@ -9,7 +9,8 @@ namespace MinSheng_MIS.Services.Helpers
 {
     public static class LogHelper
     {
-        private static readonly string LogDirectory = HttpContext.Current.Server.MapPath("~/Logs/LoginLogs");
+        private static readonly string yearMonth = DateTime.Now.ToString("yyyyMM");
+        private static readonly string LogDirectory = HttpContext.Current.Server.MapPath($"~/Logs/LoginLogs/{yearMonth}");
 
         #region 記錄登入log
         public static void WriteLoginLog(object controller, string username, string result)
