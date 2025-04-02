@@ -11,7 +11,7 @@ namespace MinSheng_MIS.Services.Helpers
     {
         private static readonly string yearMonth = DateTime.Now.ToString("yyyyMM");
         private static readonly string LogDirectory = HttpContext.Current.Server.MapPath($"~/Logs/LoginLogs/{yearMonth}");
-        private static readonly string ErrorLogDirectory = HttpContext.Current.Server.MapPath($"~/Logs/LoginLogs/{yearMonth}");
+        private static readonly string ErrorLogDirectory = HttpContext.Current.Server.MapPath($"~/Logs/ErrorLogs/{yearMonth}");
 
         #region 記錄登入log
         public static void WriteLoginLog(object controller, string username, string result)
