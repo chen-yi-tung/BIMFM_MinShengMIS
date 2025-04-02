@@ -13,6 +13,7 @@ using System.IO;
 using static System.Net.WebRequestMethods;
 using System.Net;
 using System.Xml.Linq;
+using MinSheng_MIS.Services.Helpers;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -37,40 +38,48 @@ namespace MinSheng_MIS.Controllers
 		[HttpPost]
 		public ActionResult CreateMeetingMinutes(MeetingMinutesInfo Info)
 		{
-			if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+			try
+			{
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
-			//MMSN
-			var mmsnnum = 1;
-			var currentmmsnnum = db.MeetingMinutes.Where(x => x.MeetingDate == Info.MeetingDate).Count();
-			if (currentmmsnnum > 0)
+                //MMSN
+                var mmsnnum = 1;
+                var currentmmsnnum = db.MeetingMinutes.Where(x => x.MeetingDate == Info.MeetingDate).Count();
+                if (currentmmsnnum > 0)
+                {
+                    mmsnnum = currentmmsnnum + 1;
+                }
+                Info.MMSN = Info.MeetingDate.Date.ToString("yyMMdd") + mmsnnum.ToString().PadLeft(2, '0');
+                var FileName = "";
+                //新增會議紀錄文件
+                if (Info.MeetingFile != null)
+                {
+                    //檢查會議記錄文件格式
+                    string extension = Path.GetExtension(Info.MeetingFile.FileName); //檔案副檔名
+                    if (ComFunc.IsConformedForDocument(Info.MeetingFile.ContentType, extension)
+                        || ComFunc.IsConformedForPdf(Info.MeetingFile.ContentType, extension)
+                        || ComFunc.IsConformedForImage(Info.MeetingFile.ContentType, extension)) //檔案白名單檢查
+                    {
+                        #region 新增會議記錄文件
+                        // 檔案上傳
+                        if (!ComFunc.UploadFile(Info.MeetingFile, Server.MapPath($"~/{folderPath}/"), Info.MMSN))
+                            return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
+                        FileName = Info.MMSN + extension;
+                        #endregion
+                    }
+                    else
+                        return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
+                }
+                //新增會議紀錄
+                MeetingMinutesService mm = new MeetingMinutesService();
+                mm.AddMeetingMinutes(Info, FileName, User.Identity.Name);
+                return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+            }
+			catch(Exception ex)
 			{
-				mmsnnum = currentmmsnnum + 1;
-			}
-			Info.MMSN = Info.MeetingDate.Date.ToString("yyMMdd") + mmsnnum.ToString().PadLeft(2, '0');
-			var FileName = "";
-			//新增會議紀錄文件
-			if (Info.MeetingFile != null)
-			{
-				//檢查會議記錄文件格式
-				string extension = Path.GetExtension(Info.MeetingFile.FileName); //檔案副檔名
-				if (ComFunc.IsConformedForDocument(Info.MeetingFile.ContentType, extension)
-                    || ComFunc.IsConformedForPdf(Info.MeetingFile.ContentType, extension)
-                    || ComFunc.IsConformedForImage(Info.MeetingFile.ContentType, extension)) //檔案白名單檢查
-				{
-					#region 新增會議記錄文件
-					// 檔案上傳
-					if (!ComFunc.UploadFile(Info.MeetingFile, Server.MapPath($"~/{folderPath}/"), Info.MMSN))
-						return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
-					FileName = Info.MMSN + extension;
-					#endregion
-				}
-				else
-					return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
-			}
-			//新增會議紀錄
-			MeetingMinutesService mm = new MeetingMinutesService();
-			mm.AddMeetingMinutes(Info, FileName, User.Identity.Name);
-			return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
 		}
 		#endregion
 
@@ -82,76 +91,92 @@ namespace MinSheng_MIS.Controllers
 		}
 		public ActionResult EditReadBody(string id)
 		{
-			var item = db.MeetingMinutes.Find(id);
-			if (item == null) return new HttpNotFoundResult("無此資料");
-			JObject jo = new JObject
+			try
 			{
-				{ "MMSN", item.MMSN },
-				{ "MeetingTopic", item.MeetingTopic },
-				{ "MeetingDate", $"{item.MeetingDate:yyyy-MM-dd}" },
-				{ "MeetingDateStart", $"{item.MeetingDateStart:hh:mm}" },
-				{ "MeetingDateEnd", $"{item.MeetingDateEnd:hh:mm}" },
-				{ "MeetingVenue", item.MeetingVenue },
-				{ "Chairperson", item.Chairperson },
-				{ "Participant", item.Participant },
-				{ "ExpectedAttendence", item.ExpectedAttendence },
-				{ "ActualAttendence", item.ActualAttendence },
-				{ "AbsenteeList", item.AbsenteeList },
-				{ "TakeTheMinutes", item.TakeTheMinutes },
-				{ "Agenda", item.Agenda },
-				{ "MeetingContent", item.MeetingContent },
-				{ "FilePath" , !string.IsNullOrEmpty(item.MeetingFile) ? "/" + folderPath + "/" + item.MeetingFile : null}
-			};
+                var item = db.MeetingMinutes.Find(id);
+                if (item == null) return new HttpNotFoundResult("無此資料");
+                JObject jo = new JObject
+            {
+                { "MMSN", item.MMSN },
+                { "MeetingTopic", item.MeetingTopic },
+                { "MeetingDate", $"{item.MeetingDate:yyyy-MM-dd}" },
+                { "MeetingDateStart", $"{item.MeetingDateStart:hh:mm}" },
+                { "MeetingDateEnd", $"{item.MeetingDateEnd:hh:mm}" },
+                { "MeetingVenue", item.MeetingVenue },
+                { "Chairperson", item.Chairperson },
+                { "Participant", item.Participant },
+                { "ExpectedAttendence", item.ExpectedAttendence },
+                { "ActualAttendence", item.ActualAttendence },
+                { "AbsenteeList", item.AbsenteeList },
+                { "TakeTheMinutes", item.TakeTheMinutes },
+                { "Agenda", item.Agenda },
+                { "MeetingContent", item.MeetingContent },
+                { "FilePath" , !string.IsNullOrEmpty(item.MeetingFile) ? "/" + folderPath + "/" + item.MeetingFile : null}
+            };
 
-			string result = JsonConvert.SerializeObject(jo);
-			return Content(result, "application/json");
+                string result = JsonConvert.SerializeObject(jo);
+                return Content(result, "application/json");
+            }
+			catch(Exception ex)
+			{
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
 		}
 		[HttpPost]
 		public ActionResult EditMeetingMinutes(MeetingMinutesInfo Info)
 		{
-			if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
-			var FName = db.MeetingMinutes.Find(Info.MMSN).MeetingFile;
-			var FileName = "";
-			//檢查是否要編輯或刪除會議紀錄文件
-			if (Info.MeetingFileName != null) //維持原檔案
+			try
 			{
-				FileName = FName;
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+                var FName = db.MeetingMinutes.Find(Info.MMSN).MeetingFile;
+                var FileName = "";
+                //檢查是否要編輯或刪除會議紀錄文件
+                if (Info.MeetingFileName != null) //維持原檔案
+                {
+                    FileName = FName;
 
-			}
-			else if (Info.MeetingFile != null) //新增或更新檔案
+                }
+                else if (Info.MeetingFile != null) //新增或更新檔案
+                {
+                    //若原有檔案則刪除舊檔案
+                    if (!string.IsNullOrEmpty(FName))
+                    {
+                        ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), FName, null);
+                    }
+                    //檢查新上傳會議記錄文件格式
+                    string extension = Path.GetExtension(Info.MeetingFile.FileName); //檔案副檔名
+                    if (ComFunc.IsConformedForDocument(Info.MeetingFile.ContentType, extension)
+                        || ComFunc.IsConformedForPdf(Info.MeetingFile.ContentType, extension)
+                        || ComFunc.IsConformedForImage(Info.MeetingFile.ContentType, extension)) //檔案白名單檢查
+                    {
+                        #region 新增會議紀錄文件
+                        // 檔案上傳
+                        if (!ComFunc.UploadFile(Info.MeetingFile, Server.MapPath($"~/{folderPath}/"), Info.MMSN))
+                            return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
+                        FileName = Info.MMSN + extension;
+                        #endregion
+                    }
+                    else
+                        return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
+                }
+                else //若為空且原有檔案，則刪除原有檔案
+                {
+                    if (!string.IsNullOrEmpty(FName))
+                    {
+                        ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), FName, null);
+                    }
+                }
+                //編輯會議紀錄
+                MeetingMinutesService mm = new MeetingMinutesService();
+                mm.EditMeetingMinutes(Info, FileName, User.Identity.Name);
+                return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+            }
+			catch(Exception ex)
 			{
-				//若原有檔案則刪除舊檔案
-				if (!string.IsNullOrEmpty(FName))
-				{
-					ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), FName, null);
-				}
-				//檢查新上傳會議記錄文件格式
-				string extension = Path.GetExtension(Info.MeetingFile.FileName); //檔案副檔名
-				if (ComFunc.IsConformedForDocument(Info.MeetingFile.ContentType, extension)
-                    || ComFunc.IsConformedForPdf(Info.MeetingFile.ContentType, extension)
-                    || ComFunc.IsConformedForImage(Info.MeetingFile.ContentType, extension)) //檔案白名單檢查
-				{
-					#region 新增會議紀錄文件
-					// 檔案上傳
-					if (!ComFunc.UploadFile(Info.MeetingFile, Server.MapPath($"~/{folderPath}/"), Info.MMSN))
-						return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
-					FileName = Info.MMSN + extension;
-					#endregion
-				}
-				else
-					return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
-			}
-			else //若為空且原有檔案，則刪除原有檔案
-			{
-				if (!string.IsNullOrEmpty(FName))
-				{
-					ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), FName, null);
-				}
-			}
-			//編輯會議紀錄
-			MeetingMinutesService mm = new MeetingMinutesService();
-			mm.EditMeetingMinutes(Info, FileName, User.Identity.Name);
-			return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
 		}
 		#endregion
 
@@ -164,26 +189,34 @@ namespace MinSheng_MIS.Controllers
 		[HttpGet]
 		public ActionResult ReadBody(string id)
 		{
-			var item = db.MeetingMinutes.Find(id);
-			if (item == null) return new HttpNotFoundResult("無此資料");
-			JObject jo = new JObject
-			{
-				{ "MMSN", item.MMSN },
-				{ "MeetingTopic", item.MeetingTopic },
-				{ "MeetingDate", $"{item.MeetingDate:yyyy-MM-dd}" },
-				{ "MeetingTime", $"{item.MeetingDateStart:hh:mm}-{item.MeetingDateEnd:hh:mm}" },
-				{ "MeetingVenue", item.MeetingVenue },
-				{ "Chairperson", item.Chairperson },
-				{ "Participant", item.Participant },
-				{ "ExpectedAttendence", $"應到:{item.ExpectedAttendence}位  出席:{item.ActualAttendence}位  缺席:{item.AbsenteeList}位" },
-				{ "TakeTheMinutes", item.TakeTheMinutes },
-				{ "Agenda", item.Agenda },
-				{ "MeetingContent", item.MeetingContent },
-				{ "FilePath" , !string.IsNullOrEmpty(item.MeetingFile) ? "/" + folderPath + "/" + item.MeetingFile : null}
-			};
+            try
+            {
+                var item = db.MeetingMinutes.Find(id);
+                if (item == null) return new HttpNotFoundResult("無此資料");
+                JObject jo = new JObject
+            {
+                { "MMSN", item.MMSN },
+                { "MeetingTopic", item.MeetingTopic },
+                { "MeetingDate", $"{item.MeetingDate:yyyy-MM-dd}" },
+                { "MeetingTime", $"{item.MeetingDateStart:hh:mm}-{item.MeetingDateEnd:hh:mm}" },
+                { "MeetingVenue", item.MeetingVenue },
+                { "Chairperson", item.Chairperson },
+                { "Participant", item.Participant },
+                { "ExpectedAttendence", $"應到:{item.ExpectedAttendence}位  出席:{item.ActualAttendence}位  缺席:{item.AbsenteeList}位" },
+                { "TakeTheMinutes", item.TakeTheMinutes },
+                { "Agenda", item.Agenda },
+                { "MeetingContent", item.MeetingContent },
+                { "FilePath" , !string.IsNullOrEmpty(item.MeetingFile) ? "/" + folderPath + "/" + item.MeetingFile : null}
+            };
 
-			string result = JsonConvert.SerializeObject(jo);
-			return Content(result, "application/json");
+                string result = JsonConvert.SerializeObject(jo);
+                return Content(result, "application/json");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
 		}
 		#endregion
 
@@ -196,19 +229,27 @@ namespace MinSheng_MIS.Controllers
 		[HttpDelete]
 		public ActionResult DeleteMeetingMinutes(string MMSN)
 		{
-			var mm = db.MeetingMinutes.Find(MMSN);
-			if (mm != null)
-			{
-				//若原有會議紀錄檔案要刪除
-                if (!string.IsNullOrEmpty(mm.MeetingFile))
-				{
-                    ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), mm.MeetingFile, null);
+            try
+            {
+                var mm = db.MeetingMinutes.Find(MMSN);
+                if (mm != null)
+                {
+                    //若原有會議紀錄檔案要刪除
+                    if (!string.IsNullOrEmpty(mm.MeetingFile))
+                    {
+                        ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), mm.MeetingFile, null);
+                    }
+                    db.MeetingMinutes.Remove(mm);
+                    db.SaveChanges();
+                    return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
                 }
-                db.MeetingMinutes.Remove(mm);
-				db.SaveChanges();
-				return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
-			}
-            return new HttpNotFoundResult("查無資料，無法刪除");
+                return new HttpNotFoundResult("查無資料，無法刪除");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
 		#endregion
 	}

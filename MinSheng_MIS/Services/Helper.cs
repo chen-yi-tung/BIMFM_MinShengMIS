@@ -13,6 +13,7 @@ using System.Web.Http;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http.Results;
+using MinSheng_MIS.Services.Helpers;
 
 namespace MinSheng_MIS.Services
 {
@@ -83,6 +84,7 @@ namespace MinSheng_MIS.Services
         public static ActionResult HandleMyCusResException(Controller controller, MyCusResException error)
         {
             controller.Response.StatusCode = (int)HttpStatusCode.OK;
+            LogHelper.WriteErrorLog(controller, HttpContext.Current?.User?.Identity?.Name, error.Message.ToString());
             return new ContentResult
             {
                 Content = JsonConvert.SerializeObject(new JsonResService<string>
@@ -116,6 +118,7 @@ namespace MinSheng_MIS.Services
         public static ActionResult HandleException(Controller controller)
         {
             controller.Response.StatusCode = (int)HttpStatusCode.OK;
+            LogHelper.WriteErrorLog(controller, HttpContext.Current?.User?.Identity?.Name, "系統異常！");
             return new ContentResult
             {
                 Content = JsonConvert.SerializeObject(new JsonResService<string>

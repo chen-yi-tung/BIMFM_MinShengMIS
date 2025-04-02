@@ -10,6 +10,7 @@ using MinSheng_MIS.Models;
 using System.IO;
 using MinSheng_MIS.Services;
 using MinSheng_MIS.Attributes;
+using MinSheng_MIS.Services.Helpers;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -79,6 +80,7 @@ namespace MinSheng_MIS.Controllers
             }
             catch (Exception ex)
             {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                 return Content(ex.Message, "application/json");
             }
         }
@@ -95,41 +97,48 @@ namespace MinSheng_MIS.Controllers
 
         public ActionResult EditMonthlyReport(CreateData createData)
         {
-            if (string.IsNullOrEmpty(createData.YearMonth)) return Json(new { success = false, message = "Item not found" });
-            string[] parts = createData.YearMonth.Split('-');
-            // Data Annotation
-            if (!ModelState.IsValid) return Content("<br>檔案大小不可超過10MB。","application/json");  // Data Annotation未通過
-
-            if (createData.ReportFile != null)
+            try
             {
-                var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(createData.ReportFile);
-                if (!isValid)
-                {
-                    return Content(erroeMessage, "application/json");
-                }
-            }
-            Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-            var item = db.MonthlyReport.Find(createData.MRSN);
-            if (item != null)
-            {
-                item.ReportTitle = createData.ReportTitle;
-                item.ReportContent = createData.ReportContent;
-                item.UploadUserName = User.Identity.Name;
-                item.UploadDateTime = DateTime.Now;
-                item.Year = parts[0];
-                item.Month = parts[1];
-                if (createData.ReportFile != null && createData.ReportFile.ContentLength > 0)
-                {
-                    string folderPath = Path.Combine(System.Web.Hosting.HostingEnvironment.MapPath("~"), "Files", "MonthlyReport");
-                    if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-                    item.ReportFile = item.MRSN + Path.GetExtension(createData.ReportFile.FileName);
-                    createData.ReportFile.SaveAs(Path.Combine(folderPath, item.ReportFile));
-                }
-                db.SaveChanges();
-                return Json(new { success = true });
-            }
-            else return Json(new { success = false, message = "Item not found" });
+                if (string.IsNullOrEmpty(createData.YearMonth)) return Json(new { success = false, message = "Item not found" });
+                string[] parts = createData.YearMonth.Split('-');
+                // Data Annotation
+                if (!ModelState.IsValid) return Content("<br>檔案大小不可超過10MB。", "application/json");  // Data Annotation未通過
 
+                if (createData.ReportFile != null)
+                {
+                    var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(createData.ReportFile);
+                    if (!isValid)
+                    {
+                        return Content(erroeMessage, "application/json");
+                    }
+                }
+                Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+                var item = db.MonthlyReport.Find(createData.MRSN);
+                if (item != null)
+                {
+                    item.ReportTitle = createData.ReportTitle;
+                    item.ReportContent = createData.ReportContent;
+                    item.UploadUserName = User.Identity.Name;
+                    item.UploadDateTime = DateTime.Now;
+                    item.Year = parts[0];
+                    item.Month = parts[1];
+                    if (createData.ReportFile != null && createData.ReportFile.ContentLength > 0)
+                    {
+                        string folderPath = Path.Combine(System.Web.Hosting.HostingEnvironment.MapPath("~"), "Files", "MonthlyReport");
+                        if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+                        item.ReportFile = item.MRSN + Path.GetExtension(createData.ReportFile.FileName);
+                        createData.ReportFile.SaveAs(Path.Combine(folderPath, item.ReportFile));
+                    }
+                    db.SaveChanges();
+                    return Json(new { success = true });
+                }
+                else return Json(new { success = false, message = "Item not found" });
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -164,6 +173,7 @@ namespace MinSheng_MIS.Controllers
             }
             catch (Exception ex)
             {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                 return Json(new { success = false, message = ex.Message });// Return an error JSON response with the exception message
             }
         }
@@ -173,19 +183,27 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult Readbody(string id)
         {
-            JObject jo = new JObject();
-            Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
-            var item = db.MonthlyReport.Find(id);
-            if (item == null) return new HttpNotFoundResult("optional description");
-            jo["MRSN"] = item.MRSN;
-            jo["ReportTitle"] = item.ReportTitle;
-            jo["UploadUserName"] = item.UploadUserName;
-            jo["UploadDateTime"] = item.UploadDateTime.ToString("yyyy-MM-dd"); ;
-            jo["ReportContent"] = item.ReportContent;
-            jo["YearMonth"] = item.Year + "-" + item.Month;
-            jo["FilePath"] = string.IsNullOrEmpty(item.ReportFile) ? null : "/Files/MonthlyReport/" + item.ReportFile;
-            string result = JsonConvert.SerializeObject(jo);
-            return Content(result, "application/json");
+            try
+            {
+                JObject jo = new JObject();
+                Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+                var item = db.MonthlyReport.Find(id);
+                if (item == null) return new HttpNotFoundResult("optional description");
+                jo["MRSN"] = item.MRSN;
+                jo["ReportTitle"] = item.ReportTitle;
+                jo["UploadUserName"] = item.UploadUserName;
+                jo["UploadDateTime"] = item.UploadDateTime.ToString("yyyy-MM-dd"); ;
+                jo["ReportContent"] = item.ReportContent;
+                jo["YearMonth"] = item.Year + "-" + item.Month;
+                jo["FilePath"] = string.IsNullOrEmpty(item.ReportFile) ? null : "/Files/MonthlyReport/" + item.ReportFile;
+                string result = JsonConvert.SerializeObject(jo);
+                return Content(result, "application/json");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
 
         public class ReportData

@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Services.Helpers;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -142,6 +143,7 @@ namespace MinSheng_MIS.Controllers
                     transaction.Rollback();
                     result.AccessState = ResState.Failed;
                     result.ErrorMessage = $"操作失敗: {ex.Message}";
+                    LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                     return Content(JsonConvert.SerializeObject(result), "application/json");
                 }
             }
@@ -400,6 +402,7 @@ namespace MinSheng_MIS.Controllers
                     transaction.Rollback();
                     result.AccessState = ResState.Failed;
                     result.ErrorMessage = $"操作失敗: {ex.Message} {(ex.InnerException != null ? ex.InnerException.Message : string.Empty)}";
+                    LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                     return Content(JsonConvert.SerializeObject(result), "application/json");
                 }
             }

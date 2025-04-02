@@ -2,6 +2,7 @@
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Services.Helpers;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -33,8 +34,16 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> AddWarningMessagenAsync(WarningMessageCreateModel info)
         {
-            await _warningMessageService.AddWarningMessageAsync(info);
-            return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+            try
+            {
+                await _warningMessageService.AddWarningMessageAsync(info);
+                return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -47,8 +56,16 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult WarningMessageFillin(FillinInfo info)
         {
-            _warningMessageService.AddWarningMessageFillinRecord(info, User.Identity.Name);
-            return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+            try
+            {
+                _warningMessageService.AddWarningMessageFillinRecord(info, User.Identity.Name);
+                return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            } 
         }
         #endregion
 
@@ -61,44 +78,52 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult GetWarningMessageInfo(string WMSN)
         {
-            var messageinfo = _db.WarningMessage.Find(WMSN);
-            var WMTypedic = Surface.WMType(); //警示訊息事件等級對照
-            var WMState = Surface.WMState(); //警示訊息事件處理狀況對照
-            var FloorName = _db.Floor_Info.Find(messageinfo.FSN)?.FloorName.ToString();
-            var Area = _db.Floor_Info.Find(messageinfo.FSN)?.AreaInfo?.Area.ToString();
-
-            //取得警示訊息資訊
-            WarningMessageViewModel warningMessage = new WarningMessageViewModel();
-            warningMessage.WMSN = WMSN;
-            warningMessage.WMType = WMTypedic[messageinfo.WMType];
-            warningMessage.WMState = WMState[messageinfo.WMState];
-            warningMessage.TimeOfOccurrence = messageinfo.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss");
-            warningMessage.Location = Area + " " + FloorName;
-            warningMessage.Message = messageinfo.Message;
-
-            //取得填報紀錄
-            var records = _db.WarningMessageFillinRecord.Where(x => x.WMSN == WMSN).ToList();
-            if (records.Count() > 0)
+            try
             {
-                List<WarningMessageFillinRecordViewModel> rlist = new List<WarningMessageFillinRecordViewModel>();
-                foreach (var record in records)
+                var messageinfo = _db.WarningMessage.Find(WMSN);
+                var WMTypedic = Surface.WMType(); //警示訊息事件等級對照
+                var WMState = Surface.WMState(); //警示訊息事件處理狀況對照
+                var FloorName = _db.Floor_Info.Find(messageinfo.FSN)?.FloorName.ToString();
+                var Area = _db.Floor_Info.Find(messageinfo.FSN)?.AreaInfo?.Area.ToString();
+
+                //取得警示訊息資訊
+                WarningMessageViewModel warningMessage = new WarningMessageViewModel();
+                warningMessage.WMSN = WMSN;
+                warningMessage.WMType = WMTypedic[messageinfo.WMType];
+                warningMessage.WMState = WMState[messageinfo.WMState];
+                warningMessage.TimeOfOccurrence = messageinfo.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss");
+                warningMessage.Location = Area + " " + FloorName;
+                warningMessage.Message = messageinfo.Message;
+
+                //取得填報紀錄
+                var records = _db.WarningMessageFillinRecord.Where(x => x.WMSN == WMSN).ToList();
+                if (records.Count() > 0)
                 {
-                    WarningMessageFillinRecordViewModel r = new WarningMessageFillinRecordViewModel();
-                    r.FillinDateTime = record.FillinDateTime.ToString("yyyy-MM-dd HH:mm:ss");
-                    r.MyName = _db.AspNetUsers.Where(x => x.UserName == record.FillinUserName).FirstOrDefault().MyName.ToString();
-                    r.FillinState = WMState[record.FillinState];
-                    r.Memo = record.Memo;
-                    rlist.Add(r);
+                    List<WarningMessageFillinRecordViewModel> rlist = new List<WarningMessageFillinRecordViewModel>();
+                    foreach (var record in records)
+                    {
+                        WarningMessageFillinRecordViewModel r = new WarningMessageFillinRecordViewModel();
+                        r.FillinDateTime = record.FillinDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+                        r.MyName = _db.AspNetUsers.Where(x => x.UserName == record.FillinUserName).FirstOrDefault().MyName.ToString();
+                        r.FillinState = WMState[record.FillinState];
+                        r.Memo = record.Memo;
+                        rlist.Add(r);
+                    }
+                    warningMessage.WarningMessageFillinRecord = rlist;
                 }
-                warningMessage.WarningMessageFillinRecord = rlist;
-            }
-            else
-            {
-                warningMessage.WarningMessageFillinRecord = null;
-            }
+                else
+                {
+                    warningMessage.WarningMessageFillinRecord = null;
+                }
 
-            string result = JsonConvert.SerializeObject(warningMessage);
-            return Content(result, "application/json");
+                string result = JsonConvert.SerializeObject(warningMessage);
+                return Content(result, "application/json");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -107,26 +132,34 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult BellMessageInfo()
         {
-            JArray messages = new JArray();
-            var messagelist = _db.WarningMessage.Where(x => x.WMState == "1" || x.WMState == "2").OrderByDescending(x => x.TimeOfOccurrence).ToList();
-            foreach (var m in messagelist)
+            try
             {
-                JObject message = new JObject();
-                Floor_Info floor = _db.Floor_Info.Find(m.FSN);
-
-                message.Add("WMSN", m.WMSN);
-                if (floor != null)
+                JArray messages = new JArray();
+                var messagelist = _db.WarningMessage.Where(x => x.WMState == "1" || x.WMState == "2").OrderByDescending(x => x.TimeOfOccurrence).ToList();
+                foreach (var m in messagelist)
                 {
-                    message.Add("Location", floor.AreaInfo.Area + floor.FloorName);
-                }
-                message.Add("Message", m.Message);
-                message.Add("WMType", m.WMType);
-                message.Add("WMState", m.WMState);
-                message.Add("TimeOfOccurrence", m.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss"));
-                messages.Add(message);
-            }
+                    JObject message = new JObject();
+                    Floor_Info floor = _db.Floor_Info.Find(m.FSN);
 
-            return Content(JsonConvert.SerializeObject(messages), "application/json");
+                    message.Add("WMSN", m.WMSN);
+                    if (floor != null)
+                    {
+                        message.Add("Location", floor.AreaInfo.Area + floor.FloorName);
+                    }
+                    message.Add("Message", m.Message);
+                    message.Add("WMType", m.WMType);
+                    message.Add("WMState", m.WMState);
+                    message.Add("TimeOfOccurrence", m.TimeOfOccurrence.ToString("yyyy-MM-dd HH:mm:ss"));
+                    messages.Add(message);
+                }
+
+                return Content(JsonConvert.SerializeObject(messages), "application/json");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -158,6 +191,7 @@ namespace MinSheng_MIS.Controllers
             {
                 res.AccessState = ResState.Failed;
                 res.ErrorMessage = ex.Message;
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                 return Content(JsonConvert.SerializeObject(res), "application/json");
             }
         }
@@ -206,6 +240,7 @@ namespace MinSheng_MIS.Controllers
             {
                 res.AccessState = ResState.Failed;
                 res.ErrorMessage = ex.Message;
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                 return Content(JsonConvert.SerializeObject(res), "application/json");
             }
         }

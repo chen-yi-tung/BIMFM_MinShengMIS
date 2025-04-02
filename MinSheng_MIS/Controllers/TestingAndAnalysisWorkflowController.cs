@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Services.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -39,63 +40,71 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateTestingAndAnalysisWorkflow(TA_Workflow ta_workflow)
 		{
-            #region 檢查是否有同實驗類型、同實驗名稱之採驗分析流程建立
-            var isExist = db.TestingAndAnalysisWorkflow.Count(x => x.ExperimentType == ta_workflow.ExperimentType && x.ExperimentName == ta_workflow.ExperimentName);
-            if(isExist > 0)
+            try
             {
-                return Content("此採驗分析流程已存在", "application/json; charset=utf-8");
-            }
-            #endregion
-            ModelState.Remove("TAWSN");
-            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
-            else if (ta_workflow.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗標籤名稱 的長度最多200個字元。");
-            else if (ta_workflow.DataName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗數據欄位名稱 的長度最多200個字元。");
-
-            DateTime now = DateTime.Now;
-            // 新增採驗分析流程
-            var count = await db.TestingAndAnalysisWorkflow.Where(x => DbFunctions.TruncateTime(x.UploadDateTime) == now.Date).CountAsync() + 1;  // 採驗分析流程流水碼
-			var workflow = new TestingAndAnalysisWorkflow
-			{
-				TAWSN = now.ToString("yyMMdd") + count.ToString().PadLeft(3, '0'),
-				ExperimentType = ta_workflow.ExperimentType,
-				ExperimentName = ta_workflow.ExperimentName,
-                UploadUserName = User.Identity.Name,
-				UploadDateTime = now,
-                WorkflowFile = "undefined"
-            };
-			db.TestingAndAnalysisWorkflow.Add(workflow);
-            // 新增採驗分析_實驗標籤
-            ICollection<TestingAndAnalysis_LabelName> labelList = AddOrUpdateList<TestingAndAnalysis_LabelName>(ta_workflow.LabelName, workflow.TAWSN);
-            db.TestingAndAnalysis_LabelName.AddRange(labelList);
-            // 新增採驗分析_實驗數據
-            ICollection<TestingAndAnalysis_DataName> dataList = AddOrUpdateList<TestingAndAnalysis_DataName>(ta_workflow.DataName, workflow.TAWSN);
-            db.TestingAndAnalysis_DataName.AddRange(dataList);
-            // [實驗採樣分析流程檔案]檔案處理，目前只提供單個檔案上傳
-            if (ta_workflow.WorkflowFile != null && ta_workflow.WorkflowFile.ContentLength > 0) // 上傳
-            {
-                var File = ta_workflow.WorkflowFile;
-                string extension = Path.GetExtension(File.FileName); // 檔案副檔名
-                if (ComFunc.IsConformedForDocument(File.ContentType, extension)
-                    || ComFunc.IsConformedForPdf(File.ContentType, extension)
-                    || ComFunc.IsConformedForImage(File.ContentType, extension)) // 檔案白名單檢查
+                #region 檢查是否有同實驗類型、同實驗名稱之採驗分析流程建立
+                var isExist = db.TestingAndAnalysisWorkflow.Count(x => x.ExperimentType == ta_workflow.ExperimentType && x.ExperimentName == ta_workflow.ExperimentName);
+                if (isExist > 0)
                 {
-                    if(File.ContentLength > 10 * 1024 * 1024)
-                    {
-                        return Content("<br>檔案大小不得超過 10MB。", "application/json; charset=utf-8");
-                    }
-                    // 檔案上傳
-                    if (!ComFunc.UploadFile(File, Server.MapPath($"~/{folderPath}/"), workflow.TAWSN))
-                        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
-                    workflow.WorkflowFile = workflow.TAWSN + extension;
-                    db.TestingAndAnalysisWorkflow.AddOrUpdate(workflow);
+                    return Content("此採驗分析流程已存在", "application/json; charset=utf-8");
                 }
-                else
-                    //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式！");
-                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
-            }
-            await db.SaveChangesAsync();
+                #endregion
+                ModelState.Remove("TAWSN");
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+                else if (ta_workflow.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗標籤名稱 的長度最多200個字元。");
+                else if (ta_workflow.DataName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗數據欄位名稱 的長度最多200個字元。");
 
-            return Content("Succeed");
+                DateTime now = DateTime.Now;
+                // 新增採驗分析流程
+                var count = await db.TestingAndAnalysisWorkflow.Where(x => DbFunctions.TruncateTime(x.UploadDateTime) == now.Date).CountAsync() + 1;  // 採驗分析流程流水碼
+                var workflow = new TestingAndAnalysisWorkflow
+                {
+                    TAWSN = now.ToString("yyMMdd") + count.ToString().PadLeft(3, '0'),
+                    ExperimentType = ta_workflow.ExperimentType,
+                    ExperimentName = ta_workflow.ExperimentName,
+                    UploadUserName = User.Identity.Name,
+                    UploadDateTime = now,
+                    WorkflowFile = "undefined"
+                };
+                db.TestingAndAnalysisWorkflow.Add(workflow);
+                // 新增採驗分析_實驗標籤
+                ICollection<TestingAndAnalysis_LabelName> labelList = AddOrUpdateList<TestingAndAnalysis_LabelName>(ta_workflow.LabelName, workflow.TAWSN);
+                db.TestingAndAnalysis_LabelName.AddRange(labelList);
+                // 新增採驗分析_實驗數據
+                ICollection<TestingAndAnalysis_DataName> dataList = AddOrUpdateList<TestingAndAnalysis_DataName>(ta_workflow.DataName, workflow.TAWSN);
+                db.TestingAndAnalysis_DataName.AddRange(dataList);
+                // [實驗採樣分析流程檔案]檔案處理，目前只提供單個檔案上傳
+                if (ta_workflow.WorkflowFile != null && ta_workflow.WorkflowFile.ContentLength > 0) // 上傳
+                {
+                    var File = ta_workflow.WorkflowFile;
+                    string extension = Path.GetExtension(File.FileName); // 檔案副檔名
+                    if (ComFunc.IsConformedForDocument(File.ContentType, extension)
+                        || ComFunc.IsConformedForPdf(File.ContentType, extension)
+                        || ComFunc.IsConformedForImage(File.ContentType, extension)) // 檔案白名單檢查
+                    {
+                        if (File.ContentLength > 10 * 1024 * 1024)
+                        {
+                            return Content("<br>檔案大小不得超過 10MB。", "application/json; charset=utf-8");
+                        }
+                        // 檔案上傳
+                        if (!ComFunc.UploadFile(File, Server.MapPath($"~/{folderPath}/"), workflow.TAWSN))
+                            return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯！");
+                        workflow.WorkflowFile = workflow.TAWSN + extension;
+                        db.TestingAndAnalysisWorkflow.AddOrUpdate(workflow);
+                    }
+                    else
+                        //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式！");
+                        return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
+                }
+                await db.SaveChangesAsync();
+
+                return Content("Succeed");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -109,61 +118,69 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> EditTestingAndAnalysisWorkflow(TA_Workflow ta_workflow)
         {
-            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
-
-            #region 檢查是否有同實驗類型、同實驗名稱之採驗分析流程建立
-            var isExist = db.TestingAndAnalysisWorkflow.Count(x => x.ExperimentType == ta_workflow.ExperimentType && x.ExperimentName == ta_workflow.ExperimentName && x.TAWSN != ta_workflow.TAWSN);
-            if (isExist > 0)
+            try
             {
-                return Content("此採驗分析流程實驗類型及實驗名稱重複", "application/json; charset=utf-8");
-            }
-            #endregion
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
 
-            var workflow = await db.TestingAndAnalysisWorkflow.FirstOrDefaultAsync(x => x.TAWSN == ta_workflow.TAWSN);
-            if (workflow == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "TAWSN is Undefined.");
-            else if (ta_workflow.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗標籤名稱 的長度最多200個字元。");
-            else if (ta_workflow.DataName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗數據欄位名稱 的長度最多200個字元。");
-
-            // 編輯採樣分析流程
-            workflow.ExperimentType = ta_workflow.ExperimentType;
-            workflow.ExperimentName = ta_workflow.ExperimentName;
-            // 編輯實驗標籤
-            db.TestingAndAnalysis_LabelName.RemoveRange(workflow.TestingAndAnalysis_LabelName);
-            ICollection<TestingAndAnalysis_LabelName> ta_labels = AddOrUpdateList<TestingAndAnalysis_LabelName>(ta_workflow.LabelName, workflow.TAWSN);
-            workflow.TestingAndAnalysis_LabelName = ta_labels;
-            // 編輯實驗數據
-            db.TestingAndAnalysis_DataName.RemoveRange(workflow.TestingAndAnalysis_DataName);
-            ICollection<TestingAndAnalysis_DataName> ta_datas = AddOrUpdateList<TestingAndAnalysis_DataName>(ta_workflow.DataName, workflow.TAWSN);
-            workflow.TestingAndAnalysis_DataName = ta_datas;
-            // [實驗採樣分析流程檔案]檔案處理，目前只提供單個檔案上傳且刪除
-            if (ta_workflow.WorkflowFile != null && ta_workflow.WorkflowFile.ContentLength > 0) // 上傳
-            {
-                var newFile = ta_workflow.WorkflowFile;
-                string extension = Path.GetExtension(newFile.FileName); // 檔案副檔名
-                if (ComFunc.IsConformedForDocument(newFile.ContentType, extension)
-                    || ComFunc.IsConformedForPdf(newFile.ContentType, extension)
-                    || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
+                #region 檢查是否有同實驗類型、同實驗名稱之採驗分析流程建立
+                var isExist = db.TestingAndAnalysisWorkflow.Count(x => x.ExperimentType == ta_workflow.ExperimentType && x.ExperimentName == ta_workflow.ExperimentName && x.TAWSN != ta_workflow.TAWSN);
+                if (isExist > 0)
                 {
-                    if (newFile.ContentLength > 10 * 1024 * 1024)
-                    {
-                        return Content("<br>檔案大小不得超過 10MB。", "application/json; charset=utf-8");
-                    }
-                    // 舊檔案刪除
-                    ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), workflow.WorkflowFile, null);
-                    // 檔案上傳
-                    if (!ComFunc.UploadFile(newFile, Server.MapPath($"~/{folderPath}/"), workflow.TAWSN))
-                        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!(舊檔案已刪除)");
-                    workflow.WorkflowFile = workflow.TAWSN + extension;
+                    return Content("此採驗分析流程實驗類型及實驗名稱重複", "application/json; charset=utf-8");
                 }
-                else
-                    //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式！");
-                    return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
+                #endregion
+
+                var workflow = await db.TestingAndAnalysisWorkflow.FirstOrDefaultAsync(x => x.TAWSN == ta_workflow.TAWSN);
+                if (workflow == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "TAWSN is Undefined.");
+                else if (ta_workflow.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗標籤名稱 的長度最多200個字元。");
+                else if (ta_workflow.DataName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "實驗數據欄位名稱 的長度最多200個字元。");
+
+                // 編輯採樣分析流程
+                workflow.ExperimentType = ta_workflow.ExperimentType;
+                workflow.ExperimentName = ta_workflow.ExperimentName;
+                // 編輯實驗標籤
+                db.TestingAndAnalysis_LabelName.RemoveRange(workflow.TestingAndAnalysis_LabelName);
+                ICollection<TestingAndAnalysis_LabelName> ta_labels = AddOrUpdateList<TestingAndAnalysis_LabelName>(ta_workflow.LabelName, workflow.TAWSN);
+                workflow.TestingAndAnalysis_LabelName = ta_labels;
+                // 編輯實驗數據
+                db.TestingAndAnalysis_DataName.RemoveRange(workflow.TestingAndAnalysis_DataName);
+                ICollection<TestingAndAnalysis_DataName> ta_datas = AddOrUpdateList<TestingAndAnalysis_DataName>(ta_workflow.DataName, workflow.TAWSN);
+                workflow.TestingAndAnalysis_DataName = ta_datas;
+                // [實驗採樣分析流程檔案]檔案處理，目前只提供單個檔案上傳且刪除
+                if (ta_workflow.WorkflowFile != null && ta_workflow.WorkflowFile.ContentLength > 0) // 上傳
+                {
+                    var newFile = ta_workflow.WorkflowFile;
+                    string extension = Path.GetExtension(newFile.FileName); // 檔案副檔名
+                    if (ComFunc.IsConformedForDocument(newFile.ContentType, extension)
+                        || ComFunc.IsConformedForPdf(newFile.ContentType, extension)
+                        || ComFunc.IsConformedForImage(newFile.ContentType, extension)) // 檔案白名單檢查
+                    {
+                        if (newFile.ContentLength > 10 * 1024 * 1024)
+                        {
+                            return Content("<br>檔案大小不得超過 10MB。", "application/json; charset=utf-8");
+                        }
+                        // 舊檔案刪除
+                        ComFunc.DeleteFile(Server.MapPath($"~/{folderPath}/"), workflow.WorkflowFile, null);
+                        // 檔案上傳
+                        if (!ComFunc.UploadFile(newFile, Server.MapPath($"~/{folderPath}/"), workflow.TAWSN))
+                            return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "檔案上傳過程出錯!(舊檔案已刪除)");
+                        workflow.WorkflowFile = workflow.TAWSN + extension;
+                    }
+                    else
+                        //return new HttpStatusCodeResult(HttpStatusCode.UnsupportedMediaType, "非系統可接受的檔案格式！");
+                        return Content("<br>非系統可接受的檔案格式!<br>僅支援上傳圖片、Word或PDF！", "application/json; charset=utf-8");
+                }
+
+                db.TestingAndAnalysisWorkflow.AddOrUpdate(workflow);
+                await db.SaveChangesAsync();
+
+                return Content("Succeed");
             }
-
-            db.TestingAndAnalysisWorkflow.AddOrUpdate(workflow);
-            await db.SaveChangesAsync();
-
-            return Content("Succeed");
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -176,21 +193,29 @@ namespace MinSheng_MIS.Controllers
 
         public async Task<ActionResult> Read_Data(string id)
         {
-            var workflow = await db.TestingAndAnalysisWorkflow.FirstOrDefaultAsync(x => x.TAWSN == id);
-            if (workflow == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "TAWSN is Undefined.");
-
-            TA_Workflow_ViewModel model = new TA_Workflow_ViewModel
+            try
             {
-                TAWSN = workflow.TAWSN,
-                ExperimentType = workflow.ExperimentType,
-                ExperimentName = workflow.ExperimentName,
-                UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == workflow.UploadUserName)?.Result.MyName,
-                UploadDateTime = workflow.UploadDateTime.ToString("yyyy-MM-dd HH:mm:ss"),
-                FilePath = !string.IsNullOrEmpty(workflow.WorkflowFile) ? ComFunc.UrlMaker(folderPath, workflow.WorkflowFile) : null,
-                LabelNames = workflow.TestingAndAnalysis_LabelName.Select(x => new TA_Label { LNSN = x.LNSN, LabelName = x.LabelName})?.ToList(),
-                DataNames = workflow.TestingAndAnalysis_DataName.Select(x => new TA_Data { DNSN = x.DNSN, DataName = x.DataName})?.ToList()
-            };
-            return Content(JsonConvert.SerializeObject(model), "application/json");
+                var workflow = await db.TestingAndAnalysisWorkflow.FirstOrDefaultAsync(x => x.TAWSN == id);
+                if (workflow == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "TAWSN is Undefined.");
+
+                TA_Workflow_ViewModel model = new TA_Workflow_ViewModel
+                {
+                    TAWSN = workflow.TAWSN,
+                    ExperimentType = workflow.ExperimentType,
+                    ExperimentName = workflow.ExperimentName,
+                    UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == workflow.UploadUserName)?.Result.MyName,
+                    UploadDateTime = workflow.UploadDateTime.ToString("yyyy-MM-dd HH:mm:ss"),
+                    FilePath = !string.IsNullOrEmpty(workflow.WorkflowFile) ? ComFunc.UrlMaker(folderPath, workflow.WorkflowFile) : null,
+                    LabelNames = workflow.TestingAndAnalysis_LabelName.Select(x => new TA_Label { LNSN = x.LNSN, LabelName = x.LabelName })?.ToList(),
+                    DataNames = workflow.TestingAndAnalysis_DataName.Select(x => new TA_Data { DNSN = x.DNSN, DataName = x.DataName })?.ToList()
+                };
+                return Content(JsonConvert.SerializeObject(model), "application/json");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -198,17 +223,25 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult TestingAndAnalysis_LabelName(string TAWSN)
         {
-            List<JObject> list = new List<JObject>();
-            var labels = db.TestingAndAnalysisWorkflow.FirstOrDefault(x => x.TAWSN == TAWSN)?.TestingAndAnalysis_LabelName;
-            foreach (var item in labels)
+            try
             {
-                JObject jo = new JObject
+                List<JObject> list = new List<JObject>();
+                var labels = db.TestingAndAnalysisWorkflow.FirstOrDefault(x => x.TAWSN == TAWSN)?.TestingAndAnalysis_LabelName;
+                foreach (var item in labels)
+                {
+                    JObject jo = new JObject
                 {
                     { "LabelName", item.LabelName },
                 };
-                list.Add(jo);
+                    list.Add(jo);
+                }
+                return Content(JsonConvert.SerializeObject(list), "application/json");
             }
-            return Content(JsonConvert.SerializeObject(list), "application/json");
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -216,17 +249,25 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult TestingAndAnalysis_DataName(string TAWSN)
         {
-            List<JObject> list = new List<JObject>();
-            var labels = db.TestingAndAnalysisWorkflow.FirstOrDefault(x => x.TAWSN == TAWSN)?.TestingAndAnalysis_DataName;
-            foreach (var item in labels)
+            try
             {
-                JObject jo = new JObject
+                List<JObject> list = new List<JObject>();
+                var labels = db.TestingAndAnalysisWorkflow.FirstOrDefault(x => x.TAWSN == TAWSN)?.TestingAndAnalysis_DataName;
+                foreach (var item in labels)
+                {
+                    JObject jo = new JObject
                 {
                     { "DataName", item.DataName },
                 };
-                list.Add(jo);
+                    list.Add(jo);
+                }
+                return Content(JsonConvert.SerializeObject(list), "application/json");
             }
-            return Content(JsonConvert.SerializeObject(list), "application/json");
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 

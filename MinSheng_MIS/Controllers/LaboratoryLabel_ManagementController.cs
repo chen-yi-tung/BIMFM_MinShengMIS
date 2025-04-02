@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Services.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -37,28 +38,36 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateLaboratoryLabel(EL_Info el_info)
 		{
-            ModelState.Remove("ELSN");
-            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
-            else if (el_info.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "標籤名稱 的長度最多200個字元。");
+            try
+            {
+                ModelState.Remove("ELSN");
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+                else if (el_info.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "標籤名稱 的長度最多200個字元。");
 
-            DateTime now = DateTime.Now;
-            // 新增實驗標籤
-            var count = await db.ExperimentalLabel.Where(x => DbFunctions.TruncateTime(x.UploadDateTime) == now.Date).CountAsync() + 1;  // 實驗標籤流水碼
-			var label = new ExperimentalLabel
-			{
-				ELSN = now.ToString("yyMMdd") + count.ToString().PadLeft(3, '0'),
-				TAWSN = el_info.TAWSN,
-				EDate = el_info.EDate,
-                UploadUserName = User.Identity.Name,
-                UploadDateTime = now
-            };
-            db.ExperimentalLabel.Add(label);
-            // 新增實驗標籤項目
-            ICollection<ExperimentalLabel_Item> items = AddOrUpdateList<ExperimentalLabel_Item>(el_info.LabelName, label.ELSN);
-            db.ExperimentalLabel_Item.AddRange(items);
-            await db.SaveChangesAsync();
+                DateTime now = DateTime.Now;
+                // 新增實驗標籤
+                var count = await db.ExperimentalLabel.Where(x => DbFunctions.TruncateTime(x.UploadDateTime) == now.Date).CountAsync() + 1;  // 實驗標籤流水碼
+                var label = new ExperimentalLabel
+                {
+                    ELSN = now.ToString("yyMMdd") + count.ToString().PadLeft(3, '0'),
+                    TAWSN = el_info.TAWSN,
+                    EDate = el_info.EDate,
+                    UploadUserName = User.Identity.Name,
+                    UploadDateTime = now
+                };
+                db.ExperimentalLabel.Add(label);
+                // 新增實驗標籤項目
+                ICollection<ExperimentalLabel_Item> items = AddOrUpdateList<ExperimentalLabel_Item>(el_info.LabelName, label.ELSN);
+                db.ExperimentalLabel_Item.AddRange(items);
+                await db.SaveChangesAsync();
 
-            return Content("Succeed");
+                return Content("Succeed");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -72,24 +81,32 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public async Task<ActionResult> EditLaboratoryLabel(EL_Info el_info)
         {
-            if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
-            else if (el_info.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "標籤名稱 的長度最多200個字元。");
+            try
+            {
+                if (!ModelState.IsValid) return Helper.HandleInvalidModelState(this);  // Data Annotation未通過
+                else if (el_info.LabelName.Where(x => x.Trim().Length > 200).Count() > 0) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "標籤名稱 的長度最多200個字元。");
 
-            var label = await db.ExperimentalLabel.FirstOrDefaultAsync(x => x.ELSN == el_info.ELSN);
-            if (label == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "ELSN is Undefined.");
+                var label = await db.ExperimentalLabel.FirstOrDefaultAsync(x => x.ELSN == el_info.ELSN);
+                if (label == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "ELSN is Undefined.");
 
-            // 編輯實驗標籤
-            label.TAWSN = el_info.TAWSN;
-            label.EDate = el_info.EDate;
-            // 編輯實驗標籤項目
-            db.ExperimentalLabel_Item.RemoveRange(label.ExperimentalLabel_Item);
-            ICollection<ExperimentalLabel_Item> label_items = AddOrUpdateList<ExperimentalLabel_Item>(el_info.LabelName, label.ELSN);
-            label.ExperimentalLabel_Item = label_items;
+                // 編輯實驗標籤
+                label.TAWSN = el_info.TAWSN;
+                label.EDate = el_info.EDate;
+                // 編輯實驗標籤項目
+                db.ExperimentalLabel_Item.RemoveRange(label.ExperimentalLabel_Item);
+                ICollection<ExperimentalLabel_Item> label_items = AddOrUpdateList<ExperimentalLabel_Item>(el_info.LabelName, label.ELSN);
+                label.ExperimentalLabel_Item = label_items;
 
-            db.ExperimentalLabel.AddOrUpdate(label);
-            await db.SaveChangesAsync();
+                db.ExperimentalLabel.AddOrUpdate(label);
+                await db.SaveChangesAsync();
 
-            return Content("Succeed");
+                return Content("Succeed");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -102,20 +119,28 @@ namespace MinSheng_MIS.Controllers
 
         public async Task<ActionResult> Read_Data(string id)
         {
-            var label = await db.ExperimentalLabel.FirstOrDefaultAsync(x => x.ELSN == id);
-            if (label == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "ELSN is Undefined.");
-
-            EL_ViewModel model = new EL_ViewModel
+            try
             {
-                ExperimentType = label.TestingAndAnalysisWorkflow?.ExperimentType,
-                ExperimentName = label.TestingAndAnalysisWorkflow?.ExperimentName,
-                TAWSN = label.TAWSN,
-                EDate = label.EDate.ToString("yyyy-MM-dd"),
-                UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == label.UploadUserName)?.Result.MyName,
-                UploadDateTime = label.UploadDateTime.ToString("yyyy-MM-dd"),
-                LaboratoryLabelItem = label.ExperimentalLabel_Item.Select(x => new EL_Item { ELISN = x.ELISN, LabelName = x.LabelName}).ToList()
-            };
-            return Content(JsonConvert.SerializeObject(model), "application/json");
+                var label = await db.ExperimentalLabel.FirstOrDefaultAsync(x => x.ELSN == id);
+                if (label == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "ELSN is Undefined.");
+
+                EL_ViewModel model = new EL_ViewModel
+                {
+                    ExperimentType = label.TestingAndAnalysisWorkflow?.ExperimentType,
+                    ExperimentName = label.TestingAndAnalysisWorkflow?.ExperimentName,
+                    TAWSN = label.TAWSN,
+                    EDate = label.EDate.ToString("yyyy-MM-dd"),
+                    UploadUserName = db.AspNetUsers.FirstOrDefaultAsync(x => x.UserName == label.UploadUserName)?.Result.MyName,
+                    UploadDateTime = label.UploadDateTime.ToString("yyyy-MM-dd"),
+                    LaboratoryLabelItem = label.ExperimentalLabel_Item.Select(x => new EL_Item { ELISN = x.ELISN, LabelName = x.LabelName }).ToList()
+                };
+                return Content(JsonConvert.SerializeObject(model), "application/json");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 

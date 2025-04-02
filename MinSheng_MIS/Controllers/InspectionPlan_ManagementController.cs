@@ -1,5 +1,6 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Services.Helpers;
 using MinSheng_MIS.Surfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -69,6 +70,7 @@ namespace MinSheng_MIS.Controllers
             }
             catch (Exception ex)
             {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                 return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -119,6 +121,7 @@ namespace MinSheng_MIS.Controllers
             }
             catch (Exception ex)
             {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                 return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -453,6 +456,7 @@ namespace MinSheng_MIS.Controllers
             }
             catch (Exception ex)
             {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                 return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }

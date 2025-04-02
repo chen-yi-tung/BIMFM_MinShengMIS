@@ -16,6 +16,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Data.Entity.Validation;
 using static MinSheng_MIS.Controllers.ManageController;
+using MinSheng_MIS.Services.Helpers;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -108,13 +109,8 @@ namespace MinSheng_MIS.Controllers
             }
             catch (Exception ex)
             {
-                //JObject jo = new JObject
-                //{
-                //    { "Succeed", false },
-                //    { "ErrorMessage",string.Join( ",", ex.Message )}
-                //};
                 Response.StatusCode = 500;
-                //string ResultString = JsonConvert.SerializeObject(jo);
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                 return Content(string.Join(",", ex.Message));
             }
         }
@@ -130,10 +126,18 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult Edit_LoadData(string id)
         {
-            AccountData accountData = new AccountData();
-            var data = accountData.GetCurAccountData(id, false);
-            string result = JsonConvert.SerializeObject(data);
-            return Content(result, "application/json");
+            try
+            {
+                AccountData accountData = new AccountData();
+                var data = accountData.GetCurAccountData(id, false);
+                string result = JsonConvert.SerializeObject(data);
+                return Content(result, "application/json");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            } 
         }
         [HttpPost]
         public ActionResult Edit_SaveData(FormCollection form)
@@ -185,10 +189,18 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult Delete_LoadData(string id)
         {
-            AccountData accountData = new AccountData();
-            var data = accountData.GetCurAccountData(id, true);
-            string result = JsonConvert.SerializeObject(data);
-            return Content(result, "application/json");
+            try
+            {
+                AccountData accountData = new AccountData();
+                var data = accountData.GetCurAccountData(id, true);
+                string result = JsonConvert.SerializeObject(data);
+                return Content(result, "application/json");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         [HttpDelete]
         public ActionResult Delete_Account(string id)
@@ -246,6 +258,7 @@ namespace MinSheng_MIS.Controllers
             {
                 ModelState.AddModelError("", error);
             }
+            LogHelper.WriteErrorLog(this, User.Identity.Name, result.Errors.ToString());
             return View(model);
         }
         #endregion

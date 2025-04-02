@@ -2,6 +2,7 @@
 using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Services.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ namespace MinSheng_MIS.Controllers
             }
             catch (Exception ex)
             {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
                 ViewBag.ErrorMessage = $"Error initializing RFID SDK: {ex.Message}";
             }
         }

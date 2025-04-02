@@ -80,20 +80,25 @@ namespace MinSheng_MIS.Controllers
         {
             string account = form["UserID"];
             string password = form["UserPW"];
-            string controllerName = "AccountController";
-
-            var userdata = UserManager.Users.Where(x => x.IsEnabled == true).Where(x => x.UserName == account && x.Authority != "4").FirstOrDefault();
-            if (userdata != null)
+            try
             {
-                var result = await SignInManager.PasswordSignInAsync(account, password, isPersistent: false, shouldLockout: false);
-                if (result == SignInStatus.Success)
+                var userdata = UserManager.Users.Where(x => x.IsEnabled == true).Where(x => x.UserName == account && x.Authority != "4").FirstOrDefault();
+                if (userdata != null)
                 {
-                    Session["MyName"] = userdata.MyName;
-                    LogHelper.WriteLoginLog(this, account, "後台登入成功!");
-                    return RedirectToAction("Index", "PlanManagement");
+                    var result = await SignInManager.PasswordSignInAsync(account, password, isPersistent: false, shouldLockout: false);
+                    if (result == SignInStatus.Success)
+                    {
+                        Session["MyName"] = userdata.MyName;
+                        LogHelper.WriteLoginLog(this, account, "後台登入成功!");
+                        return RedirectToAction("Index", "PlanManagement");
+                    }
+                    LogHelper.WriteLoginLog(this, account, "後台登入嘗試失敗!");
                 }
             }
-            LogHelper.WriteLoginLog(this, account, "後台登入嘗試失敗!");
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, account, ex.Message.ToString());
+            }
             ViewBag.Message = "登入嘗試失敗!";
             return View();
         }

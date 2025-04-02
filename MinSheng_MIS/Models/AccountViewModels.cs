@@ -1,6 +1,7 @@
 ﻿using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
+using MinSheng_MIS.Services.Helpers;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Validation;
 using System.Linq;
+using System.Web;
 using System.Xml.Linq;
 
 namespace MinSheng_MIS.Models
@@ -172,8 +174,9 @@ namespace MinSheng_MIS.Models
                     return 400;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogHelper.WriteErrorLog(this, HttpContext.Current?.User?.Identity?.Name, ex.Message.ToString());
                 return 500;
             }
         }
@@ -197,8 +200,9 @@ namespace MinSheng_MIS.Models
                     return 400; //無此使用者
                 }
             }
-            catch (Exception) 
-            { 
+            catch (Exception ex) 
+            {
+                LogHelper.WriteErrorLog(this, HttpContext.Current?.User?.Identity?.Name, ex.Message.ToString());
                 return 500; 
             }
         }

@@ -1,6 +1,7 @@
 ﻿using MinSheng_MIS.Models;
 using MinSheng_MIS.Models.ViewModels;
 using MinSheng_MIS.Services;
+using MinSheng_MIS.Services.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
@@ -101,7 +102,7 @@ namespace MinSheng_MIS.Controllers
             {
                 return Helper.HandleMyCusResException(this, ex);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return Helper.HandleException(this);
             }

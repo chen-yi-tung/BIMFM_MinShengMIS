@@ -13,6 +13,7 @@ using System.Data.Entity.Migrations;
 using MinSheng_MIS.Services;
 using MinSheng_MIS.Surfaces;
 using System.Windows.Media;
+using MinSheng_MIS.Services.Helpers;
 
 namespace MinSheng_MIS.Controllers
 {
@@ -35,52 +36,60 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult CreateDesignDiagrams(DesignDiagramsViewModel ddvm)
         {
-            JObject jo = new JObject();
-            DateTime today = DateTime.Now.Date;
+            try
+            {
+                JObject jo = new JObject();
+                DateTime today = DateTime.Now.Date;
 
-            #region 檢查是否有同名稱&圖說類型之設計圖說存在
-            var isexist = db.DesignDiagrams.Where(x => x.ImgName == ddvm.ImgName && x.ImgType == ddvm.ImgType);
-            if (isexist.Count() > 0)
-            {
-                return Content("<br>此設計圖說已存在!", "application/json");
-            }
-            #endregion
-
-            #region 存設計圖說
-            #region 檢查檔案格式
-            var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(ddvm.DesignDiagrams);
-            if (!isValid)
-            {
-                return Content(erroeMessage,"application/json");
-            }
-            else
-            {
-                string Folder = Server.MapPath("~/Files/DesignDiagrams");
-                System.IO.Directory.CreateDirectory(Folder);
-                var todayPrefix = DateTime.Today.ToString("yyMMdd");
-                var lastDDSN = db.DesignDiagrams.Where(x => x.DDSN.StartsWith(todayPrefix)).OrderByDescending(x => x.DDSN).FirstOrDefault();
-                var num = 1;
-                if (lastDDSN != null)
+                #region 檢查是否有同名稱&圖說類型之設計圖說存在
+                var isexist = db.DesignDiagrams.Where(x => x.ImgName == ddvm.ImgName && x.ImgType == ddvm.ImgType);
+                if (isexist.Count() > 0)
                 {
-                    num = Convert.ToInt32(lastDDSN.DDSN) % 100 + 1;
+                    return Content("<br>此設計圖說已存在!", "application/json");
                 }
-                var newDDSN = today.ToString("yyMMdd") + num.ToString().PadLeft(2, '0');
-                string Filename = newDDSN + Path.GetExtension(ddvm.DesignDiagrams.FileName);
-                System.IO.Directory.CreateDirectory(Folder);
-                string filefullpath = Path.Combine(Folder, Filename);
-                ddvm.DesignDiagrams.SaveAs(filefullpath);
                 #endregion
 
-                #region 新增設計圖說至資料庫
-                var addDD = new DesignDiagramsService();
-                addDD.AddDesignDiagrams(ddvm, newDDSN, Filename);
-                #endregion
+                #region 存設計圖說
+                #region 檢查檔案格式
+                var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(ddvm.DesignDiagrams);
+                if (!isValid)
+                {
+                    return Content(erroeMessage, "application/json");
+                }
+                else
+                {
+                    string Folder = Server.MapPath("~/Files/DesignDiagrams");
+                    System.IO.Directory.CreateDirectory(Folder);
+                    var todayPrefix = DateTime.Today.ToString("yyMMdd");
+                    var lastDDSN = db.DesignDiagrams.Where(x => x.DDSN.StartsWith(todayPrefix)).OrderByDescending(x => x.DDSN).FirstOrDefault();
+                    var num = 1;
+                    if (lastDDSN != null)
+                    {
+                        num = Convert.ToInt32(lastDDSN.DDSN) % 100 + 1;
+                    }
+                    var newDDSN = today.ToString("yyMMdd") + num.ToString().PadLeft(2, '0');
+                    string Filename = newDDSN + Path.GetExtension(ddvm.DesignDiagrams.FileName);
+                    System.IO.Directory.CreateDirectory(Folder);
+                    string filefullpath = Path.Combine(Folder, Filename);
+                    ddvm.DesignDiagrams.SaveAs(filefullpath);
+                    #endregion
 
-                jo.Add("Succeed", true);
-                string result = JsonConvert.SerializeObject(jo);
-                return Content(result, "application/json");
+                    #region 新增設計圖說至資料庫
+                    var addDD = new DesignDiagramsService();
+                    addDD.AddDesignDiagrams(ddvm, newDDSN, Filename);
+                    #endregion
+
+                    jo.Add("Succeed", true);
+                    string result = JsonConvert.SerializeObject(jo);
+                    return Content(result, "application/json");
+                }
+                #endregion
             }
-            #endregion
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -100,78 +109,102 @@ namespace MinSheng_MIS.Controllers
         [HttpGet]
         public ActionResult Readbody(string id)
         {
-            JObject jo = new JObject();
-            var item = db.DesignDiagrams.Find(id);
-            jo["DDSN"] = item.DDSN;
-            jo["ImgName"] = item.ImgName;
-            jo["ImgType"] = item.ImgType;
-            jo["DesignDiagrams"] = !string.IsNullOrEmpty(item.ImgPath) ? "/Files/DesignDiagrams" + item.ImgPath : null;
-            jo["UploadDate"] = item.UploadDate;
-            jo.Add("Succeed", true);
-            string result = JsonConvert.SerializeObject(jo);
+            try
+            {
+                JObject jo = new JObject();
+                var item = db.DesignDiagrams.Find(id);
+                jo["DDSN"] = item.DDSN;
+                jo["ImgName"] = item.ImgName;
+                jo["ImgType"] = item.ImgType;
+                jo["DesignDiagrams"] = !string.IsNullOrEmpty(item.ImgPath) ? "/Files/DesignDiagrams" + item.ImgPath : null;
+                jo["UploadDate"] = item.UploadDate;
+                jo.Add("Succeed", true);
+                string result = JsonConvert.SerializeObject(jo);
 
-            return Content(result, "application/json");
+                return Content(result, "application/json");
+            }
+            catch(Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         [HttpGet]
         public ActionResult ReadbodyForDelete(string id)
         {
-            JObject jo = new JObject();
-            var item = db.DesignDiagrams.Find(id);
-            jo["DDSN"] = item.DDSN;
-            jo["ImgName"] = item.ImgName;
-            var dic = Surface.ImgType();
-            jo["ImgType"] = dic[item.ImgType];
-            jo["DesignDiagrams"] = !string.IsNullOrEmpty(item.ImgPath) ? "/Files/DesignDiagrams" + item.ImgPath : null;
-            jo["UploadDate"] = item.UploadDate;
-            jo.Add("Succeed", true);
-            string result = JsonConvert.SerializeObject(jo);
+            try
+            {
+                JObject jo = new JObject();
+                var item = db.DesignDiagrams.Find(id);
+                jo["DDSN"] = item.DDSN;
+                jo["ImgName"] = item.ImgName;
+                var dic = Surface.ImgType();
+                jo["ImgType"] = dic[item.ImgType];
+                jo["DesignDiagrams"] = !string.IsNullOrEmpty(item.ImgPath) ? "/Files/DesignDiagrams" + item.ImgPath : null;
+                jo["UploadDate"] = item.UploadDate;
+                jo.Add("Succeed", true);
+                string result = JsonConvert.SerializeObject(jo);
 
-            return Content(result, "application/json");
+                return Content(result, "application/json");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         [HttpPost]
         public ActionResult EditDesignDiagrams(DesignDiagramsViewModel ddvm)
         {
-            JObject jo = new JObject();
-            #region 檢查是否有同名稱&圖說類型之設計圖說存在
-            var isexist = db.DesignDiagrams.Where(x => x.ImgName == ddvm.ImgName && x.ImgType == ddvm.ImgType && x.DDSN != ddvm.DDSN);
-            if (isexist.Count() > 0)
+            try
             {
-                return Content("<br>此設計圖說已存在!", "application/json");
-            }
-            #endregion
-            string Filename = "";
-            #region 存設計圖說
-            if (ddvm.DesignDiagrams != null)
-            {
-                var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(ddvm.DesignDiagrams);
-                if (!isValid)
+                JObject jo = new JObject();
+                #region 檢查是否有同名稱&圖說類型之設計圖說存在
+                var isexist = db.DesignDiagrams.Where(x => x.ImgName == ddvm.ImgName && x.ImgType == ddvm.ImgType && x.DDSN != ddvm.DDSN);
+                if (isexist.Count() > 0)
                 {
-                    return Content(erroeMessage, "application/json");
+                    return Content("<br>此設計圖說已存在!", "application/json");
                 }
-                else
+                #endregion
+                string Filename = "";
+                #region 存設計圖說
+                if (ddvm.DesignDiagrams != null)
                 {
-                    string file = db.DesignDiagrams.Find(ddvm.DDSN).ImgPath.ToString();
-                    string fileFullPath = Server.MapPath($"~/Files/DesignDiagrams{file}");
-                    if (System.IO.File.Exists(fileFullPath))
+                    var (isValid, erroeMessage) = ComFunc.IsConformedForImageAndPdf(ddvm.DesignDiagrams);
+                    if (!isValid)
                     {
-                        System.IO.File.Delete(fileFullPath);
+                        return Content(erroeMessage, "application/json");
                     }
-                    string Folder = Server.MapPath("~/Files/DesignDiagrams");
-                    System.IO.Directory.CreateDirectory(Folder);
-                    Filename = ddvm.DDSN + Path.GetExtension(ddvm.DesignDiagrams.FileName);
-                    string filefullpath = Path.Combine(Folder, Filename);
-                    ddvm.DesignDiagrams.SaveAs(filefullpath);
+                    else
+                    {
+                        string file = db.DesignDiagrams.Find(ddvm.DDSN).ImgPath.ToString();
+                        string fileFullPath = Server.MapPath($"~/Files/DesignDiagrams{file}");
+                        if (System.IO.File.Exists(fileFullPath))
+                        {
+                            System.IO.File.Delete(fileFullPath);
+                        }
+                        string Folder = Server.MapPath("~/Files/DesignDiagrams");
+                        System.IO.Directory.CreateDirectory(Folder);
+                        Filename = ddvm.DDSN + Path.GetExtension(ddvm.DesignDiagrams.FileName);
+                        string filefullpath = Path.Combine(Folder, Filename);
+                        ddvm.DesignDiagrams.SaveAs(filefullpath);
+                    }
                 }
-            }
 
-            #endregion
-            #region 編輯設備操作手冊至資料庫
-            var addDD = new DesignDiagramsService();
-            addDD.EditDesignDiagrams(ddvm, ddvm.DDSN, Filename);
-            #endregion
-            jo.Add("Succeed", true);
-            string result = JsonConvert.SerializeObject(jo);
-            return Content(result, "application/json");
+                #endregion
+                #region 編輯設備操作手冊至資料庫
+                var addDD = new DesignDiagramsService();
+                addDD.EditDesignDiagrams(ddvm, ddvm.DDSN, Filename);
+                #endregion
+                jo.Add("Succeed", true);
+                string result = JsonConvert.SerializeObject(jo);
+                return Content(result, "application/json");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
 
@@ -184,24 +217,32 @@ namespace MinSheng_MIS.Controllers
         [HttpPost]
         public ActionResult DeleteDesignDiagrams(string id)
         {
-            JObject jo = new JObject();
-
-            #region 刪除設備操作手冊
-            var dd = db.DesignDiagrams.Find(id);
-            string filefullpath = Server.MapPath($"~/Files/DesignDiagrams{dd.ImgPath}");
-            if (System.IO.File.Exists(filefullpath))
+            try
             {
-                System.IO.File.Delete(filefullpath);
-            }
+                JObject jo = new JObject();
 
-            #endregion
-            #region 刪除設備操作手冊至資料庫
-            db.DesignDiagrams.Remove(dd);
-            db.SaveChanges();
-            #endregion
-            jo.Add("Succeed", true);
-            string result = JsonConvert.SerializeObject(jo);
-            return Content(result, "application/json");
+                #region 刪除設備操作手冊
+                var dd = db.DesignDiagrams.Find(id);
+                string filefullpath = Server.MapPath($"~/Files/DesignDiagrams{dd.ImgPath}");
+                if (System.IO.File.Exists(filefullpath))
+                {
+                    System.IO.File.Delete(filefullpath);
+                }
+
+                #endregion
+                #region 刪除設備操作手冊至資料庫
+                db.DesignDiagrams.Remove(dd);
+                db.SaveChanges();
+                #endregion
+                jo.Add("Succeed", true);
+                string result = JsonConvert.SerializeObject(jo);
+                return Content(result, "application/json");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteErrorLog(this, User.Identity.Name, ex.Message.ToString());
+                return Content(string.Join(",", ex.Message));
+            }
         }
         #endregion
     }
