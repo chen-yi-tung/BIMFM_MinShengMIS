@@ -23,16 +23,18 @@ namespace MinSheng_MIS.Services
         #region 新增竣工圖
         public void AddAsBuiltDrawing(AsBuiltDrawingViewModel info, string ADSN, string FileName)
         {
-            var drawing = new AsBuiltDrawing();
-            drawing.ADSN = ADSN;
-            drawing.ImgPath = "/" + FileName;
-            drawing.FSN = info.FSN;
-            drawing.DSubSystemID = info.DSubSystemID;
-            drawing.ImgNum = info.ImgNum;
-            drawing.ImgName = info.ImgName;
-            drawing.ImgVersion = info.ImgVersion;
-            drawing.UploadDate = DateTime.Now;
-            drawing.UploadUser = HttpContext.Current.User.Identity.Name;
+            var drawing = new AsBuiltDrawing
+            {
+                ADSN = ADSN,
+                ImgPath = "/" + FileName,
+                FSN = info.FSN,
+                DSubSystemID = info.DSubSystemID,
+                ImgNum = info.ImgNum,
+                ImgName = info.ImgName,
+                ImgVersion = info.ImgVersion,
+                UploadDate = DateTime.Now,
+                UploadUser = HttpContext.Current.User.Identity.Name
+            };
 
             db.AsBuiltDrawing.AddOrUpdate(drawing);
             db.SaveChanges();
@@ -57,7 +59,5 @@ namespace MinSheng_MIS.Services
             db.SaveChanges();
         }
         #endregion
-
-
     }
 }
