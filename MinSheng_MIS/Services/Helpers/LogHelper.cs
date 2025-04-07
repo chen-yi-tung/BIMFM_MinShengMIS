@@ -62,7 +62,7 @@ namespace MinSheng_MIS.Services.Helpers
                 }
 
                 // 產生每日的日誌檔案名稱 (例: 2025-03-31_login.txt)
-                string logFileName = Path.Combine(ErrorLogDirectory, $"{DateTime.Now:yyyy-MM-dd}_login.txt");
+                string logFileName = Path.Combine(ErrorLogDirectory, $"{DateTime.Now:yyyy-MM-dd}_error.txt");
 
                 // 取得當前 Controller 名稱
                 string controllerName = controller?.GetType().Name ?? "UnknownController";
