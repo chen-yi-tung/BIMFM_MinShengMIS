@@ -18,7 +18,7 @@ namespace MinSheng_MIS.Services
 {
     public class AsBuiltDrawingService
     {
-        Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
+        private readonly Bimfm_MinSheng_MISEntities db = new Bimfm_MinSheng_MISEntities();
 
         #region 新增竣工圖
         public void AddAsBuiltDrawing(AsBuiltDrawingViewModel info, string ADSN, string FileName)
