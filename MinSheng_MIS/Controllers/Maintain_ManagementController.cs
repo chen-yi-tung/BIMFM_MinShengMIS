@@ -129,7 +129,7 @@ namespace MinSheng_MIS.Controllers
             {
                 return Helper.HandleMyCusResException(this, ex);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Helper.HandleException(this);
             }

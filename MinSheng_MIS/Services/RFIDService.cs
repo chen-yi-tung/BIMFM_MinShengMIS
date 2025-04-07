@@ -212,9 +212,6 @@ namespace MinSheng_MIS.Services
                 //return Json(new { RFIDInternalCode = (string)null, ErrorMessage = ex.Message });
                 throw new MyCusResException($"{ex.Message}");
             }
-
-            res.AccessState = ResState.Success;
-            return res;
         }
         private string SendCommandToLocalServer(string command)
         {

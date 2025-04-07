@@ -101,7 +101,7 @@ namespace MinSheng_MIS.Controllers
                     #endregion
 
                     #region 新增一筆 StockChangesRecord
-                    var newCount = 1;
+                    //var newCount = 1;
 
                     var stockChangesRecord = new StockChangesRecord
                     {

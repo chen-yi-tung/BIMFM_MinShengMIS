@@ -362,7 +362,7 @@ namespace MinSheng_MIS.Services
                 res.Datas = $"產生{count}筆保養單!";
                 return res;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 res.AccessState = ResState.Failed;
                 res.Datas = $"產生{count}筆保養單!";
@@ -483,11 +483,11 @@ namespace MinSheng_MIS.Services
         {
             #region 變數
             JsonResService<string> res = new JsonResService<string>();
-            string folderPath = @"C:\Users\User\Downloads\BeaconPoint_20250218";
+            //string folderPath = @"C:\Users\User\Downloads\BeaconPoint_20250218";
             string outputFilePath = @"C:\Users\User\Desktop\bt_20250218.csv";
 
             // 讀取GUID的csv或excel路徑
-            string readFilePath = @"C:\Users\User\Downloads\藍芽發射器ELEMENT ID列表.xlsx";
+            //string readFilePath = @"C:\Users\User\Downloads\藍芽發射器ELEMENT ID列表.xlsx";
             #endregion
 
             #region json to csv

@@ -80,8 +80,8 @@ namespace MinSheng_MIS.Controllers
 
         #region RFID掃描
         private RFIDAPI rfid;
-        private static string connectedPort = null; // Store the connected port
-        private static bool isReaderConnected = false; // Flag to track if the reader is already connected
+        //private static string connectedPort = null; // Store the connected port
+        //private static bool isReaderConnected = false; // Flag to track if the reader is already connected
         private static string LocalServerIp = null; // Automatically discovered IP
         private static int LocalServerPort = 5000; // Port on which the local server listens
         private static string CentralRegistryUrl = null; // Central registry URL
