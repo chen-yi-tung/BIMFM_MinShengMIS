@@ -127,7 +127,7 @@ namespace MinSheng_MIS.Services
         public JArray GetEquipmentByRFID(List<string> rfids)
         {
             JArray ja = new JArray();
-            var equipmentSet = _db.RFID.Where(r => rfids.Contains(r.RFIDInternalCode)).Select(r => r.EquipmentInfo).ToHashSet();
+            var equipmentSet = _db.RFID.Where(r => rfids.Contains(r.RFIDInternalCode.Substring(4, r.RFIDInternalCode.Length - 8))).Select(r => r.EquipmentInfo).ToHashSet();
             foreach (var equipment in equipmentSet)
             {
                 JObject itemObject = new JObject();
