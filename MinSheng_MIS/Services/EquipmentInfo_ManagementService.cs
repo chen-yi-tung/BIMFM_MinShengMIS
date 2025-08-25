@@ -268,6 +268,7 @@ namespace MinSheng_MIS.Services
             if (dest is IEquipmentInfoDetail info)
             {
                 info.InstallDate = equipment.InstallDate?.ToString("yyyy-MM-dd");
+                info.WarrantyStartDate = equipment.WarrantyStartDate?.ToString("yyyy-MM-dd");
                 info.EState = ConvertStringToEnum<EState>(equipment.EState).GetLabel();
                 info.ASN = equipment.Floor_Info.ASN.ToString();
                 info.AreaName = equipment.Floor_Info.AreaInfo.Area;

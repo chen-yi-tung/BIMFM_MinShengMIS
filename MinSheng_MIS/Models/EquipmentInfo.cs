@@ -32,10 +32,15 @@ namespace MinSheng_MIS.Models
         public string Brand { get; set; }
         public string Vendor { get; set; }
         public string Model { get; set; }
+        public string WarrantyManufacturer { get; set; }
+        public string ServiceLife { get; set; }
+        public string WarrantyPhone { get; set; }
         public string ContactPhone { get; set; }
         public string OperatingVoltage { get; set; }
         public string OtherInfo { get; set; }
         public Nullable<System.DateTime> InstallDate { get; set; }
+        public Nullable<System.DateTime> WarrantyStartDate { get; set; }
+        public string AssetNumber { get; set; }
         public string Memo { get; set; }
         public Nullable<int> DBID { get; set; }
         public string GUID { get; set; }

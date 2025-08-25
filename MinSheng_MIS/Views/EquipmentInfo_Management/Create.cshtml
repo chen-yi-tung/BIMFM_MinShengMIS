@@ -53,6 +53,10 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="AssetNumber">財產編號</label>
+                    <input class="form-control" id="AssetNumber" name="AssetNumber" type="text" />
+                </div>
+                <div class="form-group">
                     <label for="Brand">設備廠牌</label>
                     <input class="form-control" id="Brand" name="Brand" type="text" maxlength="50" />
                 </div>
@@ -61,11 +65,29 @@
                     <input class="form-control" id="Model" name="Model" type="text" maxlength="50" />
                 </div>
                 <div class="form-group">
-                    <label for="Vendor">設備廠商</label>
+                    <label for="WarrantyManufacturer">保固廠商</label>
+                    <input class="form-control" id="WarrantyManufacturer" name="WarrantyManufacturer" type="text" maxlength="50" />
+                </div>
+                <div class="form-group">
+                    <label for="ServiceLife">保固時程</label>
+                    <input class="form-control" id="ServiceLife" name="ServiceLife" type="text" maxlength="50" />
+                </div>
+                <div class="form-group">
+                    <label for="WarrantyPhone">保固廠商電話</label>
+                    <input class="form-control" id="WarrantyPhone" name="WarrantyPhone" type="text" maxlength="50" />
+                </div>
+                <div class="form-group">
+                    <label for="WarrantyStartDate">保固起始日期</label>
+                    <div style="position: relative; overflow: hidden;">
+                        <input class="form-control calendar-input" id="WarrantyStartDate" name="WarrantyStartDate" type="text" placeholder="年-月-日" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Vendor">維修廠商</label>
                     <input class="form-control" id="Vendor" name="Vendor" type="text" maxlength="50" />
                 </div>
                 <div class="form-group">
-                    <label for="ContactPhone">連絡電話</label>
+                    <label for="ContactPhone">維修廠商電話</label>
                     <input class="form-control" id="ContactPhone" name="ContactPhone" type="text" />
                 </div>
                 <div class="form-group">

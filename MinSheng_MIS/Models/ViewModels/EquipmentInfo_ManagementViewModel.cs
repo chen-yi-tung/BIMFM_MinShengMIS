@@ -80,6 +80,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public class EquipmentInfoDetailModel : EquipInfo, IEquipmentInfoDetail
     {
         public new string InstallDate { get; set; } // 安裝日期
+        public new string WarrantyStartDate { get; set; } // 保固起始日期
         public string FilePath { get; set; } // 設備照片路徑
         public string FileName { get; set; } // 設備照片名稱
         public string EState { get; set; } // 設備狀態
@@ -92,6 +93,7 @@ namespace MinSheng_MIS.Models.ViewModels
     public interface IEquipmentInfoDetail : IEquipmentInfo
     {
         new string InstallDate { get; set; } // 安裝日期
+        new string WarrantyStartDate { get; set; } //保固起始日期
 
         string ESN { get; set; } // 設備資料(EquipmentInfo)編號
         string FilePath { get; set; } // 設備照片路徑
@@ -184,8 +186,12 @@ namespace MinSheng_MIS.Models.ViewModels
         string FSN { get; set; } // 樓層編號
         string Brand { get; set; } // 設備廠牌
         string Model { get; set; } // 設備型號
-        string Vendor { get; set; } // 設備廠商
-        string ContactPhone { get; set; } // 連絡電話
+        string WarrantyManufacturer { get; set; } // 保固廠商
+        string ServiceLife { get; set; } // 保固時程
+        string WarrantyPhone { get; set; } // 保固廠商電話
+        DateTime? WarrantyStartDate { get; set; } //保固起始日期
+        string ContactPhone { get; set; } // 維修廠商電話
+        string AssetNumber { get; set; } // 維修廠商電話
         string OperatingVoltage { get; set; } // 使用電壓
         string OtherInfo { get; set; } // 其他耗材資料
         string Memo { get; set; } // 備註
@@ -213,12 +219,25 @@ namespace MinSheng_MIS.Models.ViewModels
         [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
         [Display(Name = "設備型號")]
         public string Model { get; set; } // 設備型號
+        [StringLength(200, ErrorMessage = "{0} 的長度最多200個字元。")]
+        [Display(Name = "保固廠商")]
+        public string WarrantyManufacturer { get; set; } // 保固廠商
+        [StringLength(200, ErrorMessage = "{0} 的長度最多200個字元。")]
+        [Display(Name = "保固時程")]
+        public string ServiceLife { get; set; } // 保固時程
+        [StringLength(200, ErrorMessage = "{0} 的長度最多200個字元。")]
+        [Display(Name = "保固廠商電話")]
+        public string WarrantyPhone { get; set; } // 保固廠商電話
+        public DateTime? WarrantyStartDate { get; set; } // 保固起始日期
         [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
-        [Display(Name = "設備廠商")]
-        public string Vendor { get; set; } // 設備廠商
+        [Display(Name = "維修廠商")]
+        public string Vendor { get; set; } // 維修廠商電話
         [StringLength(50, ErrorMessage = "{0} 的長度最多50個字元。")]
-        [Display(Name = "連絡電話")]
-        public string ContactPhone { get; set; } // 連絡電話
+        [Display(Name = "維修廠商電話")]
+        public string ContactPhone { get; set; } // 維修廠商電話
+        [StringLength(200, ErrorMessage = "{0} 的長度最多50個字元。")]
+        [Display(Name = "財產編碼")]
+        public string AssetNumber { get; set; } // 財產編碼
         [StringLength(20, ErrorMessage = "{0} 的長度最多20個字元。")]
         [Display(Name = "使用電壓")]
         public string OperatingVoltage { get; set; } // 使用電壓

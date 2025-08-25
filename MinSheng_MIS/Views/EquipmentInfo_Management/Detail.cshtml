@@ -87,8 +87,7 @@
 
         //基本資料欄位
         const SerializedName = [
-            {
-                text: "設備圖片", value: "FilePath", type: "ImgPath" },
+            {text: "設備圖片", value: "FilePath", type: "ImgPath" },
             { text: "設備名稱", value: "EName" },
             { text: "設備狀態", value: "EState" },
             { text: "設備編號", value: "NO" },
@@ -96,9 +95,14 @@
             { text: "樓層", value: "FloorName" },
             { text: "設備廠牌", value: "Brand" },
             { text: "設備型號", value: "Model" },
-            { text: "設備廠商", value: "Vendor" },
-            { text: "聯絡電話", value: "ContactPhone" },
+            { text: "保固廠商", value: "WarrantyManufacturer" },
+            { text: "保固時程", value: "ServiceLife" },
+            { text: "保固廠商電話", value: "WarrantyPhone" },
+            { text: "保固起始日期", value: "WarrantyStartDate", type: "Date" },
+            { text: "維修廠商", value: "Vendor" },
+            { text: "維修廠商電話", value: "ContactPhone" },
             { text: "安裝日期", value: "InstallDate", type: "Date" },
+            { text: "財產編碼", value: "AssetNumber" },
             { text: "使用電壓", value: "OperatingVoltage" },
             { text: "其他耗材資料", value: "OtherInfo" },
             { text: "備註", value: "Memo" },

@@ -280,10 +280,15 @@
           <Property Name="Brand" Type="nvarchar" MaxLength="50" />
           <Property Name="Vendor" Type="nvarchar" MaxLength="50" />
           <Property Name="Model" Type="nvarchar" MaxLength="50" />
+          <Property Name="WarrantyManufacturer" Type="nvarchar" MaxLength="200" />
+          <Property Name="ServiceLife" Type="nvarchar" MaxLength="200" />
+          <Property Name="WarrantyPhone" Type="nvarchar" MaxLength="200" />
           <Property Name="ContactPhone" Type="nvarchar" MaxLength="50" />
           <Property Name="OperatingVoltage" Type="nvarchar" MaxLength="20" />
           <Property Name="OtherInfo" Type="nvarchar" MaxLength="200" />
           <Property Name="InstallDate" Type="datetime" />
+          <Property Name="WarrantyStartDate" Type="date" />
+          <Property Name="AssetNumber" Type="nvarchar" MaxLength="200" />
           <Property Name="Memo" Type="nvarchar" MaxLength="200" />
           <Property Name="DBID" Type="int" />
           <Property Name="GUID" Type="nvarchar" MaxLength="200" />
@@ -2108,10 +2113,15 @@
           <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Vendor" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="WarrantyManufacturer" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceLife" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="WarrantyPhone" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="ContactPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="OperatingVoltage" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="OtherInfo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="InstallDate" Type="DateTime" Precision="3" />
+          <Property Name="WarrantyStartDate" Type="DateTime" Precision="0" />
+          <Property Name="AssetNumber" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="DBID" Type="Int32" />
           <Property Name="GUID" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
@@ -3463,10 +3473,15 @@
                 <ScalarProperty Name="GUID" ColumnName="GUID" />
                 <ScalarProperty Name="DBID" ColumnName="DBID" />
                 <ScalarProperty Name="Memo" ColumnName="Memo" />
+                <ScalarProperty Name="AssetNumber" ColumnName="AssetNumber" />
+                <ScalarProperty Name="WarrantyStartDate" ColumnName="WarrantyStartDate" />
                 <ScalarProperty Name="InstallDate" ColumnName="InstallDate" />
                 <ScalarProperty Name="OtherInfo" ColumnName="OtherInfo" />
                 <ScalarProperty Name="OperatingVoltage" ColumnName="OperatingVoltage" />
                 <ScalarProperty Name="ContactPhone" ColumnName="ContactPhone" />
+                <ScalarProperty Name="WarrantyPhone" ColumnName="WarrantyPhone" />
+                <ScalarProperty Name="ServiceLife" ColumnName="ServiceLife" />
+                <ScalarProperty Name="WarrantyManufacturer" ColumnName="WarrantyManufacturer" />
                 <ScalarProperty Name="Model" ColumnName="Model" />
                 <ScalarProperty Name="Vendor" ColumnName="Vendor" />
                 <ScalarProperty Name="Brand" ColumnName="Brand" />

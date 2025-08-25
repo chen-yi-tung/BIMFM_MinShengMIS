@@ -290,7 +290,8 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
 
         document.querySelectorAll("#basicZone input, #basicZone select, #basicZone textarea").forEach((el) => {
             if (el.id && el.type !== "file" && el.type !== "checkbox" && el.id !== "ASN") {
-                el.value = el.id === "InstallDate" ? dateTransform({ InstallDate: el.value }).InstallDate : el.value;
+                el.value = el.id === "InstallDate" ? dateTransform({ InstallDate: el.value }).InstallDate : el.value
+                el.value = el.id === "WarrantyStartDate" ? dateTransform({ WarrantyStartDate: el.value }).WarrantyStartDate : el.value;
                 fd.append(el.id, el.value);
             }
         });
