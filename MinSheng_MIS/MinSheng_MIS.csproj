@@ -521,6 +521,9 @@
     <Compile Include="Models\TestingAndAnalysis_LabelName.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Tmp_EquipmentInfo.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Tokens.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

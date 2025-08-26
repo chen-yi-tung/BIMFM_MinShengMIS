@@ -286,7 +286,7 @@
           <Property Name="ContactPhone" Type="nvarchar" MaxLength="50" />
           <Property Name="OperatingVoltage" Type="nvarchar" MaxLength="20" />
           <Property Name="OtherInfo" Type="nvarchar" MaxLength="200" />
-          <Property Name="InstallDate" Type="datetime" />
+          <Property Name="InstallDate" Type="date" />
           <Property Name="WarrantyStartDate" Type="date" />
           <Property Name="AssetNumber" Type="nvarchar" MaxLength="200" />
           <Property Name="Memo" Type="nvarchar" MaxLength="200" />
@@ -654,6 +654,35 @@
           <Property Name="WorkflowFile" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="UploadUserName" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="UploadDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tmp_EquipmentInfo">
+          <Key>
+            <PropertyRef Name="ESN" />
+          </Key>
+          <Property Name="ESN" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="Ename" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="NO" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="FSN" Type="nvarchar" MaxLength="5" Nullable="false" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="50" />
+          <Property Name="Model" Type="nvarchar" MaxLength="50" />
+          <Property Name="WarrantyManufacturer" Type="nvarchar" MaxLength="200" />
+          <Property Name="ServiceLife" Type="nvarchar" MaxLength="200" />
+          <Property Name="WarrantyPhone" Type="nvarchar" MaxLength="200" />
+          <Property Name="Vendor" Type="nvarchar" MaxLength="50" />
+          <Property Name="ContactPhone" Type="nvarchar" MaxLength="50" />
+          <Property Name="OperatingVoltage" Type="nvarchar" MaxLength="20" />
+          <Property Name="OtherInfo" Type="nvarchar" MaxLength="200" />
+          <Property Name="InstallDate" Type="date" />
+          <Property Name="WarrantyStartDate" Type="date" />
+          <Property Name="AssetNumber" Type="nvarchar" MaxLength="200" />
+          <Property Name="Memo" Type="nvarchar" MaxLength="200" />
+          <Property Name="DBID" Type="int" />
+          <Property Name="GUID" Type="nvarchar" MaxLength="200" />
+          <Property Name="ElementID" Type="nvarchar" MaxLength="200" />
+          <Property Name="Estate" Type="char" MaxLength="1" />
+          <Property Name="TSN" Type="char" MaxLength="8" />
+          <Property Name="IsDelete" Type="bit" />
+          <Property Name="Ephoto" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Tokens">
           <Key>
@@ -1357,6 +1386,7 @@
           <EntitySet Name="TestingAndAnalysis_DataName" EntityType="Self.TestingAndAnalysis_DataName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Self.TestingAndAnalysis_LabelName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Self.TestingAndAnalysisWorkflow" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tmp_EquipmentInfo" EntityType="Self.Tmp_EquipmentInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tokens" EntityType="Self.Tokens" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessage" EntityType="Self.WarningMessage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WarningMessageFillinRecord" EntityType="Self.WarningMessageFillinRecord" Schema="dbo" store:Type="Tables" />
@@ -1621,6 +1651,7 @@
           <EntitySet Name="TestingAndAnalysis_DataName" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysis_DataName" />
           <EntitySet Name="TestingAndAnalysis_LabelName" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysis_LabelName" />
           <EntitySet Name="TestingAndAnalysisWorkflow" EntityType="Bimfm_MinSheng_MISModel.TestingAndAnalysisWorkflow" />
+          <EntitySet Name="Tmp_EquipmentInfo" EntityType="Bimfm_MinSheng_MISModel.Tmp_EquipmentInfo" />
           <EntitySet Name="Tokens" EntityType="Bimfm_MinSheng_MISModel.Tokens" />
           <EntitySet Name="WarningMessage" EntityType="Bimfm_MinSheng_MISModel.WarningMessage" />
           <EntitySet Name="WarningMessageFillinRecord" EntityType="Bimfm_MinSheng_MISModel.WarningMessageFillinRecord" />
@@ -2119,7 +2150,7 @@
           <Property Name="ContactPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="OperatingVoltage" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="OtherInfo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="InstallDate" Type="DateTime" Precision="3" />
+          <Property Name="InstallDate" Type="DateTime" Precision="0" />
           <Property Name="WarrantyStartDate" Type="DateTime" Precision="0" />
           <Property Name="AssetNumber" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
@@ -2557,6 +2588,35 @@
           <NavigationProperty Name="ExperimentalLabel" Relationship="Bimfm_MinSheng_MISModel.FK_ExperimentalLabel_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysisWorkflow" ToRole="ExperimentalLabel" />
           <NavigationProperty Name="TestingAndAnalysis_DataName" Relationship="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_DataName_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysisWorkflow" ToRole="TestingAndAnalysis_DataName" />
           <NavigationProperty Name="TestingAndAnalysis_LabelName" Relationship="Bimfm_MinSheng_MISModel.FK_TestingAndAnalysis_LabelName_TestingAndAnalysisWorkflow" FromRole="TestingAndAnalysisWorkflow" ToRole="TestingAndAnalysis_LabelName" />
+        </EntityType>
+        <EntityType Name="Tmp_EquipmentInfo">
+          <Key>
+            <PropertyRef Name="ESN" />
+          </Key>
+          <Property Name="ESN" Type="String" Nullable="false" MaxLength="12" FixedLength="true" Unicode="false" />
+          <Property Name="Ename" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="NO" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FSN" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="WarrantyManufacturer" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceLife" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="WarrantyPhone" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Vendor" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ContactPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="OperatingVoltage" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="OtherInfo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="InstallDate" Type="DateTime" Precision="0" />
+          <Property Name="WarrantyStartDate" Type="DateTime" Precision="0" />
+          <Property Name="AssetNumber" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Memo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="DBID" Type="Int32" />
+          <Property Name="GUID" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ElementID" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Estate" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="TSN" Type="String" MaxLength="8" FixedLength="true" Unicode="false" />
+          <Property Name="IsDelete" Type="Boolean" />
+          <Property Name="Ephoto" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Tokens">
           <Key>
@@ -3878,6 +3938,36 @@
                 <ScalarProperty Name="ExperimentName" ColumnName="ExperimentName" />
                 <ScalarProperty Name="ExperimentType" ColumnName="ExperimentType" />
                 <ScalarProperty Name="TAWSN" ColumnName="TAWSN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tmp_EquipmentInfo">
+            <EntityTypeMapping TypeName="Bimfm_MinSheng_MISModel.Tmp_EquipmentInfo">
+              <MappingFragment StoreEntitySet="Tmp_EquipmentInfo">
+                <ScalarProperty Name="Ephoto" ColumnName="Ephoto" />
+                <ScalarProperty Name="IsDelete" ColumnName="IsDelete" />
+                <ScalarProperty Name="TSN" ColumnName="TSN" />
+                <ScalarProperty Name="Estate" ColumnName="Estate" />
+                <ScalarProperty Name="ElementID" ColumnName="ElementID" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="DBID" ColumnName="DBID" />
+                <ScalarProperty Name="Memo" ColumnName="Memo" />
+                <ScalarProperty Name="AssetNumber" ColumnName="AssetNumber" />
+                <ScalarProperty Name="WarrantyStartDate" ColumnName="WarrantyStartDate" />
+                <ScalarProperty Name="InstallDate" ColumnName="InstallDate" />
+                <ScalarProperty Name="OtherInfo" ColumnName="OtherInfo" />
+                <ScalarProperty Name="OperatingVoltage" ColumnName="OperatingVoltage" />
+                <ScalarProperty Name="ContactPhone" ColumnName="ContactPhone" />
+                <ScalarProperty Name="Vendor" ColumnName="Vendor" />
+                <ScalarProperty Name="WarrantyPhone" ColumnName="WarrantyPhone" />
+                <ScalarProperty Name="ServiceLife" ColumnName="ServiceLife" />
+                <ScalarProperty Name="WarrantyManufacturer" ColumnName="WarrantyManufacturer" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="FSN" ColumnName="FSN" />
+                <ScalarProperty Name="NO" ColumnName="NO" />
+                <ScalarProperty Name="Ename" ColumnName="Ename" />
+                <ScalarProperty Name="ESN" ColumnName="ESN" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
