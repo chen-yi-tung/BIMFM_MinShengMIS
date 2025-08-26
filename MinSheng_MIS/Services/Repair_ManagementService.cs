@@ -154,10 +154,14 @@ namespace MinSheng_MIS.Services
             jo.Add("OtherInfo", equipment.OtherInfo);
 
             jo.Add("Brand", equipment.Brand);
+            jo.Add("WarrantyManufacturer", equipment.WarrantyManufacturer);
+            jo.Add("ServiceLife", equipment.ServiceLife);
+            jo.Add("WarrantyPhone", equipment.WarrantyPhone);
             jo.Add("Vendor", equipment.Vendor);
             jo.Add("ContactPhone", equipment.ContactPhone);
-            jo.Add("InstallDate", equipment.InstallDate);
-
+            jo.Add("InstallDate", equipment.WarrantyStartDate );
+            jo.Add("WarrantyStartDate", equipment.WarrantyStartDate);
+            jo.Add("AssetNumber", equipment.AssetNumber);
             jo.Add("Memo", equipment.Memo);
             jo.Add("EPhoto", $"Files/EquipmentInfo/{equipment.EPhoto}");
 
