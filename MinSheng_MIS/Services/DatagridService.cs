@@ -976,7 +976,7 @@ namespace MinSheng_MIS.Services
             }
             else
             {
-                Data = Data.OrderByDescending(x => x.NO);
+                Data = Data.OrderBy(x => x.NO);
             }
             #endregion
 
