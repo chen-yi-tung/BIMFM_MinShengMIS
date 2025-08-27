@@ -226,7 +226,6 @@ namespace MinSheng_MIS.Controllers
 			ViewBag.id = id;
 			return View();
 		}
-        [AllowAnonymous]
 		[HttpDelete]
 		public ActionResult DeleteMeetingMinutes(string MMSN)
 		{
