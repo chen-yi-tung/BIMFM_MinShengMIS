@@ -167,7 +167,7 @@ function FileUploader({
                     </div>
                     <div class="upload-tips">
                         <div>檔案格式支援 .jpg、.jpeg、.png 或 .pdf。</div>
-                        <div>檔案大小不得超過 10MB。</div>
+                        <div>檔案大小不得超過 50MB。</div>
                     </div>
                 </div>
                 <hr class="form-file-hr">
