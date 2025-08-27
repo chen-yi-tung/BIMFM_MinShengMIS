@@ -156,7 +156,8 @@ namespace MinSheng_MIS.Controllers
             ViewBag.id = id;
             return View();
         }
-        public ActionResult Delete_MonthlyReport(CreateData createData, string MRSN = "")
+        [HttpDelete]
+        public ActionResult Delete_MonthlyReport(string MRSN = "")
         {
             try
             {

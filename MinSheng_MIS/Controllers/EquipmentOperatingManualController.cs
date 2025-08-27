@@ -35,7 +35,7 @@ namespace MinSheng_MIS.Controllers
             try
             {
                 JObject jo = new JObject();
-                #region 先檢查是否有同系統&子系統&設備名稱&廠牌&型號 之操作手冊存在
+                #region 先檢查是否有同設備名稱&廠牌&型號 之操作手冊存在
                 var isexist = db.EquipmentOperatingManual.Where(x => x.EName == eom.EName && x.Brand == eom.Brand && x.Model == eom.Model);
                 if (isexist.Count() > 0)
                 {
