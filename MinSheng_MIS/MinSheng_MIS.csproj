@@ -1656,6 +1656,7 @@
     <Content Include="Content\img\Search.svg" />
     <Content Include="Content\img\test.jpg" />
     <Content Include="Content\img\weather\heavy-rain.png" />
+    <Content Include="Content\img\icon-file.svg" />
     <Content Include="Content\InformationManagement.css" />
     <Content Include="Content\loading.css" />
     <Content Include="Content\login.css" />
