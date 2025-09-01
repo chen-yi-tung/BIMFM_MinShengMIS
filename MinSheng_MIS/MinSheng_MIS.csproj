@@ -1668,9 +1668,6 @@
     <Content Include="Files\AsBuiltDrawing\23070701.jpg" />
     <Content Include="Files\AsBuiltDrawing\YY070701.jpg" />
     <Content Include="Files\DesignDiagrams\23062704.gif" />
-    <Content Include="Files\EquipmentOperatingManual\000002.gif" />
-    <Content Include="Files\EquipmentOperatingManual\000003.gif" />
-    <Content Include="Files\EquipmentOperatingManual\000004.gif" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -1763,7 +1760,6 @@
     <Content Include="AllFile\2023-03-30_settings.gradle" />
     <Content Include="jsonSamples\inquiryPlan.json" />
     <Content Include="jsonSamples\QuotationItem.json" />
-    <Content Include="Files\EquipmentOperatingManual\000005.pdf" />
     <Content Include="Scripts\datatable_new.js" />
     <Content Include="Scripts\dataTable\OneDeviceOneCard.js" />
     <Content Include="Scripts\dataTable\RFIDResultModal.js" />
@@ -1967,6 +1963,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BimModels\" />
+    <Folder Include="Files\EquipmentOperatingManual\" />
     <Folder Include="Views\Beacon\" />
     <Folder Include="Views\Datagrid\" />
     <Folder Include="Views\DropDownList\" />

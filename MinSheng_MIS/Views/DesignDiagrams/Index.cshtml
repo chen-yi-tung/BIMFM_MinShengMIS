@@ -93,7 +93,7 @@
                 columns: [[
                     dg.hiddenColumn('DDSN'),
                     dg.hiddenColumn('ImgPath'),
-                    dg.column('ImgName', '圖名', 200),
+                    dg.column('ImgName', '圖名', 1000),
                     dg.column('ImgType', '圖說種類', 180),
                     dg.column('UploadDate', '上傳日期時間', 180, (v, row, i) => {
                         return dateTransform(v);
