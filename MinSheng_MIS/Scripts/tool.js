@@ -145,6 +145,7 @@ function FileUploader({
     customValidity = true,
     customValidityText = '請選擇檔案'
 }) {
+    const fileIcon = "/Content/img/icon-file.svg"
     const temp = () => {
         return `
         <div class="${className}">
@@ -190,6 +191,10 @@ function FileUploader({
     this.items = []
 
     const list = this.element.find(".form-file-list")
+    const hr = this.element.find(".form-file-hr")
+
+    list.css("display", "none");
+    hr.css("display", "none");
 
     if (customValidity) {
         this.check = this.element.find("#_checkFile")
@@ -210,26 +215,28 @@ function FileUploader({
             file = { name: path.split("/").pop(), type: "image/" };
             //file = { name: path.split("/").at(-1) }
         }
-        let container = $(temp_item(file.name))
+        const container = $(temp_item(file.name))
         list.append(container);
 
         this.items.push({ container, file })
 
-        let fileName = container.find("#FileName")
+        const fileName = container.find("#FileName")
+        const filePreview = container.find(".form-file-preview")
 
         //檢查檔案格式為PDF時，回傳連結
         const fileExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.csv'];
         if (fileExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
             fileName.replaceWith(`<a href="${path}" target="_blank">${file.name}</a>`);
+            //filePreview.replaceWith(`<div class=""><img src="/Content/img/icon-file.svg"></div>`)
+            filePreview.attr('src', fileIcon)
         } else {
             fileName.text(file.name);
             fileName.attr("href", path);
+            filePreview.attr('src', path)
         }
 
-        document.querySelector('.form-file-list').style.display = 'flex';
-        document.querySelector('.form-file-preview').style.display = 'flex';
-        document.querySelector('.form-file-hr').style.display = 'block';
-        document.querySelector('.form-file-preview').src = path;
+        list.css("display", "");
+        hr.css("display", "");
 
         this.check && this.check.prop("checked", true);
     }
@@ -295,8 +302,8 @@ function FileUploader({
             let input = this.input.get(0)
             if (!multiple) { this.clearAllFile() }
             if (input.files && input.files.length !== 0) {
-                this.element.find(".form-file-hr").css("display", "block");
-                this.element.find("#FileGroup").css("display", "flex");
+                list.css("display", "");
+                hr.css("display", "");
 
                 for (let i = 0; i < input.files.length; i++) {
                     let file = input.files[i];
@@ -306,7 +313,8 @@ function FileUploader({
                     this.items.push({ container, file })
 
                     //顯示檔名+附檔名
-                    let fileName = container.find("#FileName")
+                    const fileName = container.find("#FileName")
+                    const filePreview = container.find(".form-file-preview")
 
                     //檢查檔案格式是否為PDF
                     //if (file.name.toLowerCase().endsWith('.pdf')) {
@@ -325,19 +333,20 @@ function FileUploader({
                     if (file.type.startsWith("image/")) {
                         const reader = new FileReader(); //轉換為Base64格式
                         reader.onload = function (event) {
-                            let img = container.find(".form-file-preview");
-                            img.attr("src", event.target.result);
-                            img.css("display", "block");
+                            filePreview.attr("src", event.target.result);
                         };
                         reader.readAsDataURL(file);
+                    }
+                    else {
+                        filePreview.attr("src", fileIcon);
                     }
 
                     this.check && this.check.prop("checked", true);
                 }
             } else {
                 // 當沒有檔案時，隱藏<hr>
-                this.element.find(".form-file-hr").css("display", "none");
-                this.element.find("#FileGroup").css("display", "none");
+                list.css("display", "none");
+                hr.css("display", "none");
             }
             input.value = null
         })
@@ -350,8 +359,8 @@ function FileUploader({
                 this.items.splice(index, 1)
             }
             if (this.items.length == 0) {
-                this.element.find(".form-file-hr").css("display", "none");
-                this.element.find("#FileGroup").css("display", "none");
+                list.css("display", "none");
+                hr.css("display", "none");
                 this.check && this.check.prop("checked", false);
             }
         })
