@@ -78,7 +78,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult ViewName(int? ASN)
         {
             List<JObject> list = new List<JObject>();
-            var abc = db.Floor_Info.AsQueryable();
+            var abc = db.Floor_Info.Where(x => x.FSN != "1_0").AsQueryable();
             if (ASN != null)
             {
                 abc = db.Floor_Info.Where(x => x.ASN == ASN);

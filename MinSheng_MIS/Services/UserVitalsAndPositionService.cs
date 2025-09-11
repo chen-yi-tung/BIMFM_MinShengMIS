@@ -15,7 +15,7 @@ namespace MinSheng_MIS.Services
     public class UserVitalsAndPositionService
     {
         private readonly Bimfm_MinSheng_MISEntities _db;
-        private readonly int _maxInspectDwellTime = Convert.ToInt32(ConfigurationManager.AppSettings["FloatAlarm_TimeInterval"]);
+        private readonly int _maxInspectDwellTime = Convert.ToInt32(ConfigurationManager.AppSettings["MaxInspectDwellTime"]);
         private readonly int _rateLowerLimit = Convert.ToInt32(ConfigurationManager.AppSettings["HeartRateLowerLimit"]);
         private readonly int _rateUpperLimit = Convert.ToInt32(ConfigurationManager.AppSettings["HeartRateUpperLimit"]);
 
