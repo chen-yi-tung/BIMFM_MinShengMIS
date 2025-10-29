@@ -40,7 +40,7 @@
         }
     }
 
-    static async pushSelect({ id, url, name = "Text", value = "Value", placeholder = "請選擇", filter } = {}) {
+    static async pushSelect({ id, url, name = "Text", value = "Value", placeholder = "請選擇", filter, disabled = [] } = {}) {
         const select = formDropdown.getSelect(id);
         if (!select) {
             console.warn(`[formDropdown.setValue] not found select element with id "${id}".`);
@@ -62,6 +62,9 @@
                 const option = document.createElement("option");
                 option.value = item[value];
                 option.textContent = item[name];
+                if (disabled?.length > 0 && disabled.includes(option.value)) {
+                    option.disabled = true
+                }
                 select.appendChild(option);
             });
         } catch (error) {
@@ -121,29 +124,29 @@
         return select;
     }
 
-    static async ASN({ id = "ASN", fsnId = "FSN", value = null, fsnValue = null, placeholder = "請選擇" } = {}) {
-        const select = await formDropdown.pushSelect({ id, url: "/DropDownList/Area", placeholder });
+    static async ASN({ id = "ASN", fsnId = "FSN", value = null, fsnValue = null, placeholder = "請選擇", disabled = [], fsnDisabled = [] } = {}) {
+        const select = await formDropdown.pushSelect({ id, url: "/DropDownList/Area", placeholder, disabled });
         const subSelect = formDropdown.getSelect(fsnId);
         const initialized = select.dataset?.fdInitialized;
         formDropdown.setValue(select, value);
         if (subSelect) {
-            await formDropdown.FSN({ id: subSelect, data: value, value: fsnValue });
+            await formDropdown.FSN({ id: subSelect, data: value, value: fsnValue, disabled: fsnDisabled });
             if (initialized) {
                 return select;
             }
             select.dataset.fdInitialized = true;
             select.addEventListener("change", async function (e) {
-                await formDropdown.FSN({ id: subSelect, data: select.value, placeholder: select.value ? placeholder : void 0 });
+                await formDropdown.FSN({ id: subSelect, data: select.value, placeholder: select.value ? placeholder : void 0, disabled: fsnDisabled });
             });
             formDropdown.addResetEvent(select, async () => {
-                await formDropdown.FSN({ id: subSelect, data: null });
+                await formDropdown.FSN({ id: subSelect, data: null, disabled: fsnDisabled });
             });
 
         }
         return select;
     }
-    static async FSN({ id = "FSN", data, value, placeholder = "請先選擇棟別" } = {}) {
-        const select = await formDropdown.pushSelect({ id, url: `/DropDownList/Floor?ASN=${data}`, placeholder });
+    static async FSN({ id = "FSN", data, value, placeholder = "請先選擇棟別", disabled = [] } = {}) {
+        const select = await formDropdown.pushSelect({ id, url: `/DropDownList/Floor?ASN=${data}`, placeholder, disabled });
         formDropdown.setValue(select, value);
         return select;
     }

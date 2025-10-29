@@ -1,5 +1,6 @@
 ﻿const DEBUG_TEST = false;
 async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
+    const fsnDisabled = ['1_0']
     const fileUploader = new FileUploader({
         container: "#FileUploader",
         className: "form-group col-3fr",
@@ -58,7 +59,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
                     }
                 });
             }
-            await formDropdown.ASN({ id: asn, fsnId: fsn });
+            await formDropdown.ASN({ id: asn, fsnId: fsn, fsnDisabled });
 
             this.modal.addEventListener("shown.bs.modal", async () => {
                 await this.bim.init();
@@ -77,6 +78,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
                 fsnId: this.modal.querySelector("#FSN"),
                 value: data.ASN ?? void 0,
                 fsnValue: data.FSN ?? void 0,
+                fsnDisabled
             });
             this.modal.querySelector("#Name").value = data.Name ?? "";
             this.modal.querySelector("#Memo").value = data.Memo ?? "";
@@ -203,6 +205,7 @@ async function init_EquipmentInfo({ data = null, edit = false, } = {}) {
     formDropdown.ASN({
         value: data?.ASN ?? null,
         fsnValue: data?.FSN ?? null,
+        fsnDisabled
     });
 
     if (!edit || !data) {
