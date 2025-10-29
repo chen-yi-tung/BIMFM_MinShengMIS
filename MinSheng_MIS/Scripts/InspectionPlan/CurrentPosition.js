@@ -788,9 +788,11 @@ function CurrentLocation() {
     this.init = async () => {
         this.data = await $.getJSON("/DropDownList/ViewName")
         menu.replaceChildren();
+        this.activeIndex = this.data.findIndex((e) => e.Value === '進抽站-B2F')
         const htmls = this.data.map((e, i) => {
             const active = this.activeIndex === i ? 'active' : '';
-            return `<li><a class="dropdown-item ${active}" data-index="${i}" data-value="${e.Value}">${e.Text}</a></li>`
+            const disabled = e.Value === '進抽站-B3F'
+            return `<li><button class="dropdown-item ${active}" data-index="${i}" data-value="${e.Value}" ${disabled ? 'disabled' : ''}>${e.Text}</button></li>`
         })
         menu.insertAdjacentHTML('beforeend', htmls.join(''));
         this.updateData()
@@ -866,7 +868,7 @@ function AlertCollapse() {
     }
     this.read = async (list) => {
         await $.ajax({
-            url: `/WarningMessage_Management/PostHaveReadMessage`, 
+            url: `/WarningMessage_Management/PostHaveReadMessage`,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(list),
