@@ -55,6 +55,20 @@ namespace MinSheng_MIS.Controllers
             } // 將 Minor 映射到 DeviceName
             [JsonIgnore]
             public string Minor { get; set; }
+            [JsonIgnore]
+            public Nullable<decimal> Location_X { get; set; }
+            [JsonIgnore]
+            public Nullable<decimal> Location_Y { get; set; }
+            public List<decimal> Position
+            {
+                get
+                {
+                    var list = new List<decimal>();
+                    if (Location_X.HasValue) list.Add(Location_X.Value);
+                    if (Location_Y.HasValue) list.Add(Location_Y.Value);
+                    return list;
+                }
+            }
         }
         #endregion
     }
