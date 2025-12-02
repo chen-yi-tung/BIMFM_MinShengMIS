@@ -140,6 +140,11 @@
             const pin = new ForgePin({
                 viewer: this.viewer,
                 dbId: d.DBID,
+                position: !!d?.Position?.length ? {
+                    x: d.Position?.[0] ?? 0,
+                    y: d.Position?.[1] ?? 0,
+                    z: d.Position?.[2] ?? 0,
+                } : undefined,
                 data: d,
                 model,
                 img: "/Content/img/bluetooth.svg",
