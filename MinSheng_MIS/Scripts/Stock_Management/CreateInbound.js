@@ -154,7 +154,7 @@ async function init_CreateInbound() {
         if (!form.reportValidity()) {
             return;
         }
-        if (!RFIDGrid.data.length === 0) {
+        if (!RFIDGrid.data?.length) {
             DT.createDialogModal("請先掃描RFID！");
             return;
         }
