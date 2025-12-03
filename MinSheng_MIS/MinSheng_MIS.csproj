@@ -1646,6 +1646,7 @@
     <Content Include="Content\img\bluetooth.svg" />
     <Content Include="Content\img\bs-logo.png" />
     <Content Include="Content\img\calendar.png" />
+    <Content Include="Content\img\equipment.svg" />
     <Content Include="Content\img\gis-marker.png" />
     <Content Include="Content\img\heart.svg" />
     <Content Include="Content\img\inner-map.jpg" />
