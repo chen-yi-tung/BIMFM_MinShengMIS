@@ -389,7 +389,7 @@ namespace MinSheng_MIS.Services
                 _db.InspectionPlan_RFIDOrder.RemoveRange(deleteRFID);
                 _db.SaveChanges();
                 //填報完成檢查是否該工單已執行完成
-                var checkAllDone = _db.InspectionPlan_Time.Where(x => x.InspectionState != "3").Count();
+                var checkAllDone = _db.InspectionPlan_Time.Where(x => x.InspectionState != "3" && x.IPSN == data.IPSN).Count();
                 if (checkAllDone == 0) //巡檢時段皆已巡檢完成
                 {
                     var inspectionPlan = _db.InspectionPlan.Find(data.IPSN);
