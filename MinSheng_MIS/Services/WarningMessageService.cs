@@ -73,6 +73,18 @@ namespace MinSheng_MIS.Services
         #region 新增警示訊息
         public async Task AddWarningMessageAsync(ICreateWarningMessage info, string otherInfo = null)
         {
+            if (info.WMClass == WMClass.AbnormalHeartRate || info.WMClass == WMClass.ProlongedStop)
+            {
+                var userLastWarning = await _db.WarningMessage
+                .Where(x => x.UserName == info.UserName && x.WMClass == ((int)info.WMClass).ToString())
+                .OrderByDescending(x => x.TimeOfOccurrence)
+                .FirstOrDefaultAsync();
+
+                if (userLastWarning != null && userLastWarning.WMState != ((int)WMState.Completed).ToString())
+                    // 已有未處理的相同使用者心率異常/停留過久警示訊息，跳過新增
+                    return;
+            }
+
             var latest = await _db.WarningMessage.OrderByDescending(x => x.WMSN).FirstOrDefaultAsync();
 
             var warningMsg = new WarningMessage
