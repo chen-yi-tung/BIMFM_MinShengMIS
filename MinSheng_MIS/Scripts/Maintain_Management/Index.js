@@ -1,6 +1,6 @@
 ﻿async function addDropDownList() {
     await $('.maintain-user-name').tagbox({
-        url: "/DropDownList/MaintainUserName",
+        url: "/DropDownList/AssignmentUserName",
         textField: 'Text',
         valueField: 'Value',
         method: 'get',
