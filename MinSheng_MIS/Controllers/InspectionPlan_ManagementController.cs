@@ -261,7 +261,10 @@ namespace MinSheng_MIS.Controllers
                                 {
                                     sheet.CreateRow(rowIndex).CreateCell(0).SetCellValue(eqName);
                                     sheet.GetRow(rowIndex).GetCell(0).CellStyle = WordStyle;
-                                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count - 1, 0, 0));
+                                    if(count > 1)
+                                    {
+                                        sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count - 1, 0, 0));
+                                    }
                                     var BrowIndex = rowIndex;
                                     //檢查項目
                                     foreach (var item in checkItems)
@@ -313,7 +316,9 @@ namespace MinSheng_MIS.Controllers
                                 {
                                     sheet.CreateRow(rowIndex).CreateCell(0).SetCellValue(eqName);
                                     sheet.GetRow(rowIndex).GetCell(0).CellStyle = WordStyle;
-                                    sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count - 1, 0, 0));
+                                    if (count > 1) {
+                                        sheet.AddMergedRegion(new NPOI.SS.Util.CellRangeAddress(rowIndex, rowIndex + count - 1, 0, 0));
+                                    }
                                     var BrowIndex = rowIndex;
                                     //檢查項目
                                     foreach (var item in checkItems)
