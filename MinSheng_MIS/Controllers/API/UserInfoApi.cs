@@ -97,7 +97,7 @@ namespace MinSheng_MIS.Controllers.API
 
             // 建立 Token
             var token = new JwtSecurityToken(
-                expires: DateTime.UtcNow.AddMinutes(30),
+                expires: DateTime.UtcNow.AddHours(4),
                 claims: new[] { new Claim(nameof(ipAddress), ipAddress), new Claim(ClaimTypes.Name, userName) },
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
