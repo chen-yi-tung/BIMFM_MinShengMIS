@@ -240,20 +240,26 @@ namespace MinSheng_MIS.Services
             if (equipments == null || equipments.Count == 0)
                 return EquipmentOperatingState;
 
-            // 設備總數
-            int total = equipments.Count;
+            var stateMap = Surface.EState();   // Dictionary<string, string>
 
-            // 各狀態統計
-            int normal = equipments.Count(x => x.EState == "1"); //正常
-            int report = equipments.Count(x => x.EState == "2"); //報修中
-            int disable = equipments.Count(x => x.EState == "3"); //停用
+            // 統計每個狀態出現次數
+            var stateCount = equipments
+                .GroupBy(e => e.EState)
+                .ToDictionary(g => g.Key, g => g.Count());
 
-            jo["total"] = total;
-            jo["normal"] = normal;
-            jo["report"] = report;
-            jo["disable"] = disable;
+            // 依 stateMap 決定輸出內容與排序
+            foreach (var kv in stateMap)
+            {
+                var stateKey = kv.Key;      // "1" / "2" / "3"
+                var label = kv.Value;       // "正常" / "報修中" / "停用"
+                var value = stateCount.ContainsKey(stateKey) ? stateCount[stateKey] : 0;
 
-            EquipmentOperatingState.Add(jo);
+                EquipmentOperatingState.Add(new JObject
+                {
+                    ["label"] = label,
+                    ["value"] = value
+                });
+            }
 
             return EquipmentOperatingState;
         }
