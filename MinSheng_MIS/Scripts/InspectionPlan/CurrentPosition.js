@@ -211,10 +211,10 @@ window.addEventListener('load', async () => {
                 }
             })
             if (res['InspectionCurrentPos'].current?.length === 0) {
-                res['InspectionCurrentPos'].current = fakeData?.InspectionCurrentPos?.current;
+                res['InspectionCurrentPos'].current = [...fakeData?.InspectionCurrentPos?.current];
             }
             if (res['InspectionCurrentPos'].another?.length === 0) {
-                res['InspectionCurrentPos'].another = fakeData?.InspectionCurrentPos?.another;
+                res['InspectionCurrentPos'].another = [...fakeData?.InspectionCurrentPos?.another];
             }
         }
         return res
@@ -583,6 +583,37 @@ window.addEventListener('load', async () => {
     //空間人員即時位置
 
     function InspectionCurrentPos(data) {
+        // --整理目前空間資料--
+        const box3 = bim.viewer.model.getBoundingBox()
+        const box = new THREE.Box2(
+            new THREE.Vector2(box3.min.x, box3.min.y),
+            new THREE.Vector2(box3.max.x, box3.max.y)
+        )
+        data.current = data.current.reduce((t, e) => {
+            // 計算是否在模型邊界內，是才更新資料，不是則套用舊資料，無舊資料則為無定位資訊
+            const old = InspectionCurrentPos_Data.current.find(x => x.name === e.name)
+            if (e.position && !box.containsPoint(new THREE.Vector2({
+                x: e.position.x,
+                y: e.position.y
+            }))) {
+                e.position = old?.position ?? null
+            }
+            // 無定位資訊則轉去其他空間
+            if (!e.position) {
+                data.another.push({
+                    ...e,
+                    location: '無定位資訊',
+                    position: null,
+                    ViewName: null
+                })
+            }
+            else {
+                t.push(e)
+            }
+            return t
+        }, [])
+        // --
+
         InspectionCurrentPos_Pins.forEach((pin) => {
             pin.destroy()
         })
@@ -626,6 +657,7 @@ window.addEventListener('load', async () => {
                 if (target.parentElement.id === 'InspectionAnotherPos') {
                     const d = InspectionCurrentPos_Data.another.find(x => x.name === target.dataset.name);
                     console.log("InspectionAnotherPos Select:", d)
+                    if (!d.ViewName) return;
                     currentLocation.setViewName(d.ViewName);
 
                     container.replaceChildren()
@@ -633,6 +665,7 @@ window.addEventListener('load', async () => {
                     container_another.replaceChildren()
                     return;
                 }
+
                 const activePersons = Array.from(document.querySelectorAll('.plan-person.active'))
                 activePersons.forEach((el) => {
                     el.classList.remove('active')
@@ -669,7 +702,6 @@ window.addEventListener('load', async () => {
             })
             function createPerson(data) {
                 needCreatePin && createPin(data)
-                data.time = dateTransform(data.time);
                 return `<div class="plan-person ${isAlert(data) ? 'error' : ''}" data-name="${data.name}">
                     <div class="plan-person-icon"><i class="${getIcon(data)}"></i></div>
                     <div class="plan-person-content">
@@ -688,7 +720,7 @@ window.addEventListener('load', async () => {
                             </div>
                             <div class="plan-person-alert">${createAlert(data?.alert)}</div>
                         </div>
-                        <div class="plan-person-time">最後更新時間：<span>${data.time}</span></div>
+                        <div class="plan-person-time">最後更新時間：<span>${dateTransform(data.time)}</span></div>
                     </div>
                 </div>`
 
@@ -734,7 +766,6 @@ window.addEventListener('load', async () => {
                         pin.show()
                         pin.update()
                     }
-
                 }
             }
 
