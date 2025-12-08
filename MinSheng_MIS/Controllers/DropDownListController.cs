@@ -647,7 +647,7 @@ namespace MinSheng_MIS.Controllers
         public ActionResult EquipmentNoEName(string FSN)
         {
             List<JObject> list = new List<JObject>();
-            var table = db.EquipmentInfo.Where(e => e.FSN == FSN).ToList();
+            var table = db.EquipmentInfo.Where(e => e.FSN == FSN && e.EState != "3").ToList();
             foreach (var item in table)
             {
                 JObject jo = new JObject();
