@@ -234,30 +234,27 @@ namespace MinSheng_MIS.Services
         public JArray EquipmentOperatingState(string FSN)
         {
             JArray EquipmentOperatingState = new JArray();
+            JObject jo = new JObject();
             var equipments = db.EquipmentInfo.Where(x => x.FSN == FSN).ToList();
 
             if (equipments == null || equipments.Count == 0)
                 return EquipmentOperatingState;
 
-            var groups = equipments
-                           .GroupBy(x => x.EName)
-                           .ToList();
+            // 設備總數
+            int total = equipments.Count;
 
-            foreach (var g in groups)
-            {
-                JArray items = new JArray(
-                    g.Select(x => new JObject
-                    {
-                        ["state"] = x.EState != null ? x.EState.ToString() : null
-                    })
-                );
+            // 各狀態統計
+            int normal = equipments.Count(x => x.EState == "1"); //正常
+            int report = equipments.Count(x => x.EState == "2"); //報修中
+            int disable = equipments.Count(x => x.EState == "3"); //停用
 
-                EquipmentOperatingState.Add(new JObject
-                {
-                    ["name"] = g.Key,
-                    ["items"] = items
-                });
-            }
+            jo["total"] = total;
+            jo["normal"] = normal;
+            jo["report"] = report;
+            jo["disable"] = disable;
+
+            EquipmentOperatingState.Add(jo);
+
             return EquipmentOperatingState;
         }
         #endregion
