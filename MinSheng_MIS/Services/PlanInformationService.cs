@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Linq;
 using System.Numerics;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 using static MinSheng_MIS.Services.UniParams;
 
@@ -233,6 +234,30 @@ namespace MinSheng_MIS.Services
         public JArray EquipmentOperatingState(string FSN)
         {
             JArray EquipmentOperatingState = new JArray();
+            var equipments = db.EquipmentInfo.Where(x => x.FSN == FSN).ToList();
+
+            if (equipments == null || equipments.Count == 0)
+                return EquipmentOperatingState;
+
+            var groups = equipments
+                           .GroupBy(x => x.EName)
+                           .ToList();
+
+            foreach (var g in groups)
+            {
+                JArray items = new JArray(
+                    g.Select(x => new JObject
+                    {
+                        ["state"] = x.EState != null ? x.EState.ToString() : null
+                    })
+                );
+
+                EquipmentOperatingState.Add(new JObject
+                {
+                    ["name"] = g.Key,
+                    ["items"] = items
+                });
+            }
             return EquipmentOperatingState;
         }
         #endregion
@@ -241,6 +266,7 @@ namespace MinSheng_MIS.Services
         public JArray EnvironmentInfo(string FSN)
         {
             JArray EnvironmentInfo = new JArray();
+
             return EnvironmentInfo;
         }
         #endregion

@@ -435,9 +435,9 @@ window.addEventListener('load', async () => {
             function getState(s) {
                 switch (s) {
                     case "3":
-                        return "red";
-                    case "2":
                         return "orange";
+                    case "2":
+                        return "red";
                     case "1":
                         return "green";
                     default:
