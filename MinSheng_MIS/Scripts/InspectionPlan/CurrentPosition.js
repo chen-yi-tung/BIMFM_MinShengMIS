@@ -229,10 +229,11 @@ window.addEventListener('load', async () => {
 
         ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
         ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
-        EquipmentOperatingState(res?.EquipmentOperatingState)
-        EnvironmentInfo(res?.EnvironmentInfo)
+        //EquipmentOperatingState(res?.EquipmentOperatingState)
+        //EnvironmentInfo(res?.EnvironmentInfo)
         ChartInspectionAberrantLevel(res?.ChartInspectionAberrantLevel)
         ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
+        ChartEquipmentState(res?.EquipmentOperatingState)
 
         await bim.loadModels(bim.getModelsUrl(currentLocation.value))
         await createBeaconPoint(currentLocation.FSN);
@@ -276,10 +277,11 @@ window.addEventListener('load', async () => {
 
         ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
         ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
-        EquipmentOperatingState(res?.EquipmentOperatingState)
-        EnvironmentInfo(res?.EnvironmentInfo)
+        //EquipmentOperatingState(res?.EquipmentOperatingState)
+        //EnvironmentInfo(res?.EnvironmentInfo)
         ChartInspectionAberrantLevel(res?.ChartInspectionAberrantLevel)
         ChartInspectionAberrantResolve(res?.ChartInspectionAberrantResolve)
+        ChartEquipmentState(res?.EquipmentOperatingState)
         InspectionCurrentPos(res?.InspectionCurrentPos)
 
         timer = setTimeout(update, updateTime)
@@ -515,6 +517,53 @@ window.addEventListener('load', async () => {
                 chartPlugins.pieBackground,
                 chartPlugins.centerText,
                 chartPlugins.htmlLegend
+            ]
+        })
+    }
+    //設備狀態
+    function ChartEquipmentState(data) {
+        const container = document.getElementById('ChartEquipmentState');
+        const ctx = getOrCreateElement(container, 'canvas')
+        const backgroundColor = ["#72E998", "#E77272", "#8F8F8F"]
+        ctx.width = pieSize
+        ctx.height = pieSize
+        let chart = Chart.getChart(ctx)
+        if (chart) {
+            chart.data.labels = data.map(x => x.label);
+            chart.data.datasets[0].data = data.map(x => x.value);
+            chart.update();
+            return;
+        }
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.map(x => x.label),
+                datasets: [{
+                    label: '設備狀態',
+                    data: data.map(x => x.value),
+                    backgroundColor,
+                    borderWidth: 0,
+                }]
+            },
+            options: {
+                responsive: false,
+                layout: { padding: 4 },
+                plugins: {
+                    legend, tooltip, pieBackground, emptyDoughnut,
+                    htmlLegend: {
+                        statistics: {
+                            value: (data) => data.reduce((t, e) => t + e, 0),
+                            unit: "總設備數"
+                        },
+                        percentage: true,
+                        value: true,
+                    }
+                }
+            },
+            plugins: [
+                chartPlugins.pieBackground,
+                chartPlugins.htmlLegend,
+                chartPlugins.emptyDoughnut
             ]
         })
     }

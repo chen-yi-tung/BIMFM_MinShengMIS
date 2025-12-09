@@ -707,6 +707,20 @@ body {
     }
 }
 
+#box-InspectionAberrant {
+    flex: 1;
+    .vstack {
+        height: 100%;
+    }
+}
+
+#ChartInspectionAberrantLevel,
+#ChartInspectionAberrantResolve {
+    &.horizontal {
+        width: 100%;
+    }
+}
+
 #box-EquipmentOperatingState {
     flex: 1 0 auto;
 

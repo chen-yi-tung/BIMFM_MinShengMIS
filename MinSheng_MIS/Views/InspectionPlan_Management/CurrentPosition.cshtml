@@ -26,16 +26,27 @@
                     <div id="ChartInspectionCompleteState" class="horizontal catalog-line"></div>
                 </div>
             </div>
-            <div class="info-box" id="box-EquipmentOperatingState">
+            <div class="info-box" id="box-InspectionAberrant">
+                <div class="info-box-header">本月緊急事件等級占比/處理狀況</div>
+                <div class="info-box-body">
+                    <div class="vstack" role="chart">
+                        <div id="ChartInspectionAberrantLevel" class="horizontal catalog-line"></div>
+                        <hr>
+                        <div id="ChartInspectionAberrantResolve" class="horizontal catalog-line"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="info-box" id="box-EquipmentOperatingState">
                 <div class="info-box-header">設備運轉狀態</div>
                 <div class="info-box-body p-0">
                     <div id="EquipmentOperatingState" data-simplebar></div>
                 </div>
-            </div>
-            <div class="info-box" id="box-EnvironmentInfo">
+            </div> -->
+            <!-- <div class="info-box" id="box-EnvironmentInfo">
                 <div class="info-box-header">環境資訊</div>
                 <div class="info-box-body" id="EnvironmentInfo"></div>
-            </div>
+            </div> -->
+        </div>
     </section>
     <section class="center-area">
         <div class="viewerContainer">
@@ -68,14 +79,10 @@
     </section>
     <section class="end-area" data-simplebar>
         <div class="info-area">
-            <div class="info-box" id="box-InspectionAberrant">
-                <div class="info-box-header">本月緊急事件等級占比/處理狀況</div>
-                <div class="info-box-body">
-                    <div class="vstack" role="chart">
-                        <div id="ChartInspectionAberrantLevel" class="horizontal catalog-line"></div>
-                        <hr>
-                        <div id="ChartInspectionAberrantResolve" class="horizontal catalog-line"></div>
-                    </div>
+            <div class="info-box" id="box-ChartEquipmentState">
+                <div class="info-box-header">設備狀態</div>
+                <div class="info-box-body" role="chart">
+                    <div id="ChartEquipmentState" class="horizontal catalog-line"></div>
                 </div>
             </div>
             <div class="info-box" id="box-InspectionCurrentPos">
