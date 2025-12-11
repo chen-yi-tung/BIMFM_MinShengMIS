@@ -162,7 +162,7 @@ namespace MinSheng_MIS.Controllers.API
             {
                 // 1. 心率異常告警
                 if (!data.Heartbeat.HasValue || _service.AddHeartRateAbnormalWarning(data.Heartbeat.Value))
-                    await _warningMsgService.AddWarningMessageAsync(new WarningMessageCreateModel
+                    await _warningMsgService.AddOrUpdateWarningMessageAsync(new WarningMessageCreateModel
                     {
                         WMClass = UniParams.WMClass.AbnormalHeartRate,
                         FSN = data.FSN,
@@ -175,7 +175,7 @@ namespace MinSheng_MIS.Controllers.API
                 {
                     var floor = await _db.Floor_Info.FindAsync(data.FSN);
 
-                    await _warningMsgService.AddWarningMessageAsync(new WarningMessageCreateModel
+                    await _warningMsgService.AddOrUpdateWarningMessageAsync(new WarningMessageCreateModel
                     {
                         WMClass = UniParams.WMClass.ProlongedStop,
                         FSN = data.FSN,

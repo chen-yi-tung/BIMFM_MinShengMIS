@@ -36,7 +36,7 @@ namespace MinSheng_MIS.Controllers
         {
             try
             {
-                await _warningMessageService.AddWarningMessageAsync(info);
+                await _warningMessageService.AddOrUpdateWarningMessageAsync(info);
                 return Content(JsonConvert.SerializeObject(new JObject { { "Succeed", true } }), "application/json");
             }
             catch(Exception ex)

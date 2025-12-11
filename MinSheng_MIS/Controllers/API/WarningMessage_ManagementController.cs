@@ -41,7 +41,7 @@ namespace MinSheng_MIS.Controllers.API
                     else
                     {
                         info.UserName = userID;
-                        await _warningMessageService.AddWarningMessageAsync(info);
+                        await _warningMessageService.AddOrUpdateWarningMessageAsync(info);
                         result.AccessState = ResState.Success;
                     }
                 }

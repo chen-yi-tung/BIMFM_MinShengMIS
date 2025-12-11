@@ -71,18 +71,78 @@ namespace MinSheng_MIS.Services
         #endregion
 
         #region 新增警示訊息
-        public async Task AddWarningMessageAsync(ICreateWarningMessage info, string otherInfo = null)
+        public async Task AddOrUpdateWarningMessageAsync(ICreateWarningMessage info, string otherInfo = null)
         {
-            if (info.WMClass == WMClass.AbnormalHeartRate || info.WMClass == WMClass.ProlongedStop)
-            {
-                var userLastWarning = await _db.WarningMessage
-                .Where(x => x.UserName == info.UserName && x.WMClass == ((int)info.WMClass).ToString())
-                .OrderByDescending(x => x.TimeOfOccurrence)
-                .FirstOrDefaultAsync();
+            // 預先處理常數，避免在 LINQ 中重複轉型
+            string wmClassStr = ((int)info.WMClass).ToString();
+            string stateCompleted = ((int)WMState.Completed).ToString();
+            DateTime today = DateTime.Now.Date;
 
-                if (userLastWarning != null && userLastWarning.WMState != ((int)WMState.Completed).ToString())
-                    // 已有未處理的相同使用者心率異常/停留過久警示訊息，跳過新增
-                    return;
+            switch (info.WMClass)
+            {
+                case WMClass.AbnormalHeartRate:
+                    //  取得當前使用者今日未有地點的未復歸心率異常警示訊息
+                    var candidates = await _db.WarningMessage
+                        .Where(x => x.TimeOfOccurrence >= today
+                                    && x.UserName == info.UserName
+                                    && x.WMClass == wmClassStr
+                                    && x.WMState != stateCompleted
+                                    && (x.FSN == null || x.FSN == info.FSN)) // 條件合併查詢
+                        .ToListAsync();
+
+                    var uncompletedNoLocationWarning = candidates.FirstOrDefault(x => x.FSN == null);
+
+                    // 當前無地點
+                    if (info.FSN == null)
+                        if (uncompletedNoLocationWarning == null)
+                            break; // 沒有無地點的警示紀錄 => 跳出，新增一筆
+                        else
+                            return; // 有無地點的警示紀錄 => 回傳，不新增
+                    // 當前有地點
+                    else
+                    {
+                        // 取得當前使用者今日同當前地點的未復歸心率異常警示訊息
+                        var uncompletedSameLocationWarning = candidates.FirstOrDefault(x => x.FSN == info.FSN);
+                        // 有無地點警示紀錄，且有同當前地點警示紀錄
+                        if (uncompletedNoLocationWarning != null && uncompletedSameLocationWarning != null)
+                        {
+                            // 刪除無地點的警示紀錄
+                            _db.WarningMessage.Remove(uncompletedNoLocationWarning);
+                            await _db.SaveChangesAsync();
+                            return;
+                        }
+                        // 有無地點警示紀錄，且沒有同當前地點警示紀錄
+                        else if (uncompletedNoLocationWarning != null && uncompletedSameLocationWarning == null)
+                        {
+                            // 更新無地點的警示紀錄為當前地點
+                            uncompletedNoLocationWarning.FSN = info.FSN;
+                            uncompletedNoLocationWarning.Location_X = info.Location_X;
+                            uncompletedNoLocationWarning.Location_Y = info.Location_Y;
+                            _db.WarningMessage.AddOrUpdate(uncompletedNoLocationWarning);
+                            await _db.SaveChangesAsync();
+                            return;
+                        }
+                        // 沒有無地點警示紀錄，且有同當前地點警示紀錄
+                        else if (uncompletedNoLocationWarning == null && uncompletedSameLocationWarning != null)
+                            return; // 有同當前地點的警示紀錄 => 回傳，不新增
+                        else 
+                            break; // 跳出，新增一筆
+                    }
+                    break;
+                case WMClass.ProlongedStop:
+                    var userLastWarning = await _db.WarningMessage
+                        .Where(x => x.TimeOfOccurrence >= today
+                            && x.UserName == info.UserName 
+                            && x.WMClass == wmClassStr
+                            && x.FSN == info.FSN
+                            && x.WMState != stateCompleted)
+                        .FirstOrDefaultAsync();
+                    if (userLastWarning != null)
+                        return;
+                    break;
+
+                default:
+                    break;
             }
 
             var latest = await _db.WarningMessage.OrderByDescending(x => x.WMSN).FirstOrDefaultAsync();
