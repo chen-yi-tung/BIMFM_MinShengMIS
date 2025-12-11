@@ -335,11 +335,11 @@ namespace MinSheng_MIS.Services
                     {"name", db.AspNetUsers.Where(x => x.UserName == current.UserName).First().MyName },
                     {"heart", current.Heartbeat },
                     {"heartAlert", current.Heartbeat < _rateLowerLimit || current.Heartbeat > _rateUpperLimit },
-                    {"location", $"{current?.Floor_Info.AreaInfo.Area} {current?.Floor_Info.FloorName}" },
+                    {"location", current?.Floor_Info != null ? $"{current.Floor_Info.AreaInfo.Area} {current.Floor_Info.FloorName}" : null},
                     {"time", current.TrackTime.ToString("yyyy-MM-dd HH:mm") },
                     {"alert", jAlert },
                     {"position", jPos },
-                    {"ViewName", current?.Floor_Info.ViewName },
+                    {"ViewName", current?.Floor_Info?.ViewName ?? null },
                 };
                 if (current.FSN == FSN)
                     jaCurrent.Add(jUser);
