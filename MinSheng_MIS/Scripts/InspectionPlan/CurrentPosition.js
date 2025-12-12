@@ -93,9 +93,9 @@
                 time: '2024-12-09 15:19',
                 alert: [],
                 position: {
-                    x: 42,
-                    y: 12
-                },
+                    x: 40.07488098560233,
+                    y: 40.6716940232145
+                }
             },
         ],
         another: [
@@ -210,22 +210,22 @@ window.addEventListener('load', async () => {
                     res[k] = fakeData?.[k];
                 }
             })
-            if (res['InspectionCurrentPos'].current?.length === 0) {
-                res['InspectionCurrentPos'].current = [...fakeData?.InspectionCurrentPos?.current];
-            }
-            if (res['InspectionCurrentPos'].another?.length === 0) {
-                res['InspectionCurrentPos'].another = [...fakeData?.InspectionCurrentPos?.another];
-            }
+            //if (res['InspectionCurrentPos'].current?.length === 0) {
+            res['InspectionCurrentPos'].current = [...fakeData?.InspectionCurrentPos?.current];
+            //}
+            //if (res['InspectionCurrentPos'].another?.length === 0) {
+            res['InspectionCurrentPos'].another = [...fakeData?.InspectionCurrentPos?.another];
+            //}
         }
         return res
     }
     async function init() {
-        const [res, ,] = await Promise.all([
-            getData(),
+        await Promise.all([
             currentLocation.init(),
             alertCollapse.init(),
             bim.init()
         ])
+        const res = await getData()
 
         ChartInspectionEquipmentState(res?.ChartInspectionEquipmentState)
         ChartInspectionCompleteState(res?.ChartInspectionCompleteState)
@@ -528,6 +528,13 @@ window.addEventListener('load', async () => {
         ctx.width = pieSize
         ctx.height = pieSize
         let chart = Chart.getChart(ctx)
+        if (!data.length) {
+            data = [
+                { label: '正常', value: 0 },
+                { label: '報修中', value: 0 },
+                { label: '停用', value: 0 }
+            ]
+        }
         if (chart) {
             chart.data.labels = data.map(x => x.label);
             chart.data.datasets[0].data = data.map(x => x.value);
@@ -650,17 +657,24 @@ window.addEventListener('load', async () => {
         }
         function containsPoint(position) {
             if (!position) return false;
-            return box.containsPoint(new THREE.Vector2({
-                x: position.x,
-                y: position.y
-            }))
+            return box.containsPoint(new THREE.Vector2(
+                position.x,
+                position.y
+            ))
         }
         data.current = data.current.reduce((t, e) => {
             // 計算是否在模型邊界內，是才更新資料，不是則套用舊資料，無舊資料則為無定位資訊
             const old = InspectionCurrentPos_Data.current.find(x => x.name === e.name)
             if (old?.position) old.position = parsePosition(old.position)
             e.position = parsePosition(e.position)
-            if (!containsPoint(e.position)) {
+            const cp = containsPoint(e.position)
+            console.log({
+                oldp: old?.position,
+                ep: e.position,
+                box,
+                cp
+            })
+            if (!cp) {
                 e.position = old?.position ?? null
             }
             // 無定位資訊則轉去其他空間
@@ -685,6 +699,7 @@ window.addEventListener('load', async () => {
         InspectionCurrentPos_Pins.length = 0;
         InspectionCurrentPos_Data.current = data.current;
         InspectionCurrentPos_Data.another = data.another;
+
         const infoBox = document.getElementById('box-InspectionCurrentPos');
         const container = document.getElementById('InspectionCurrentPos');
         const container_another = document.getElementById('InspectionAnotherPos');
