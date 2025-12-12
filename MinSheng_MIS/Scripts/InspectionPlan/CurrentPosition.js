@@ -667,14 +667,7 @@ window.addEventListener('load', async () => {
             const old = InspectionCurrentPos_Data.current.find(x => x.name === e.name)
             if (old?.position) old.position = parsePosition(old.position)
             e.position = parsePosition(e.position)
-            const cp = containsPoint(e.position)
-            console.log({
-                oldp: old?.position,
-                ep: e.position,
-                box,
-                cp
-            })
-            if (!cp) {
+            if (!containsPoint(e.position)) {
                 e.position = old?.position ?? null
             }
             // 無定位資訊則轉去其他空間
@@ -790,7 +783,7 @@ window.addEventListener('load', async () => {
                                 <span class="plan-person-name">${data.name}</span>
                                 <div class="plan-person-heart">
                                     <i class="${getHeartIcon(data.heartAlert)}"></i>
-                                    <span class="value">${data.heart}</span>
+                                    <span class="value">${data.heart ?? '-'}</span>
                                     <span class="unit">下/分</span>
                                 </div>
                                 <div class="plan-person-locate">
