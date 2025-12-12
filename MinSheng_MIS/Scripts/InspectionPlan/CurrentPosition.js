@@ -638,20 +638,36 @@ window.addEventListener('load', async () => {
             new THREE.Vector2(box3.min.x, box3.min.y),
             new THREE.Vector2(box3.max.x, box3.max.y)
         )
+        // 轉換位置為指定格式 { x, y } | null
+        function parsePosition(position) {
+            if (!position) return null;
+            const { x, y } = position;
+            if ((x === undefined || x === null) && (y === undefined || y === null)) return null;
+            return {
+                x: x ?? 0,
+                y: y ?? 0
+            };
+        }
+        function containsPoint(position) {
+            if (!position) return false;
+            return box.containsPoint(new THREE.Vector2({
+                x: position.x,
+                y: position.y
+            }))
+        }
         data.current = data.current.reduce((t, e) => {
             // 計算是否在模型邊界內，是才更新資料，不是則套用舊資料，無舊資料則為無定位資訊
             const old = InspectionCurrentPos_Data.current.find(x => x.name === e.name)
-            if (e.position && !box.containsPoint(new THREE.Vector2({
-                x: e.position.x,
-                y: e.position.y
-            }))) {
+            if (old?.position) old.position = parsePosition(old.position)
+            e.position = parsePosition(e.position)
+            if (!containsPoint(e.position)) {
                 e.position = old?.position ?? null
             }
             // 無定位資訊則轉去其他空間
             if (!e.position) {
                 data.another.push({
                     ...e,
-                    location: '無定位資訊',
+                    location: null,
                     position: null,
                     ViewName: null
                 })
@@ -764,7 +780,7 @@ window.addEventListener('load', async () => {
                                 </div>
                                 <div class="plan-person-locate">
                                     <i class="fa-solid fa-location-dot"></i>
-                                    <span class="value">${data.location}</span>
+                                    <span class="value">${data.location ?? '無定位資訊'}</span>
                                 </div>
                             </div>
                             <div class="plan-person-alert">${createAlert(data?.alert)}</div>
